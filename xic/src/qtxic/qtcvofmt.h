@@ -111,10 +111,12 @@ private slots:
     void cifcname_menu_changed(int);
     void ciflayer_menu_changed(int);
     void ciflabel_menu_changed(int);
+    void cif_flags_slot(QAction*);
     void ciflast_btn_slot();
     void cgxcut_btn_slot(int);
     void oasoff_btn_slot(int);
     void oasnwp_btn_slot(int);
+    void format_changed_slot(int);
 
 private:
     QComboBox   *fmt_level;

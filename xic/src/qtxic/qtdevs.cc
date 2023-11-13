@@ -300,7 +300,7 @@ namespace {
 QTdevMenuDlg *QTdevMenuDlg::instPtr;
 
 QTdevMenuDlg::QTdevMenuDlg(GRobject caller, stringlist *wl) :
-    QTdraw(XW_DEFAULT)
+    QTdraw(XW_DEFAULT), QTbag(this)
 {
     // wl is consumed
     instPtr = this;

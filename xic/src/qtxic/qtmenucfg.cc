@@ -1118,7 +1118,7 @@ QTmenuConfig::instantiateSubwMenus(int wnum)
 void
 QTmenuConfig::updateDynamicMenus()
 {
-    /**** FIXME!
+/*XXX FIXME!
     GtkItemFactory *item_factory = gtkMenu()->itemFactory;
     // Destroy the present user menu widget tree.
     {
@@ -1224,7 +1224,7 @@ QTmenuConfig::updateDynamicMenus()
             cnt++;
         }
     }
-    */
+*/
 }
 
 
@@ -1321,7 +1321,7 @@ QTmenuConfig::set_main_global_sens(const MenuList *list, bool sens)
 {
     (void)list;
     (void)sens;
-    /*
+/*XXX Fixme
     GtkItemFactory *item_factory = gtkMenu()->itemFactory;
     if (!item_factory)
         return;
@@ -1367,7 +1367,7 @@ QTmenuConfig::set_main_global_sens(const MenuList *list, bool sens)
         else
             gtk_widget_set_sensitive(widget, sens);
     }
-    */
+*/
 }
 
 

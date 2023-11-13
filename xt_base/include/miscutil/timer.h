@@ -49,8 +49,6 @@
 
 namespace miscutil {
 
-    inline class cTimer *Timer();
-
     class cTimer
     {
 #ifdef TIMER_TEST_NULL
@@ -66,9 +64,9 @@ namespace miscutil {
 
     public:
 #ifdef TIMER_TEST_NULL
-        friend inline cTimer *Timer()       { return (cTimer::ptr()); }
+        static cTimer *self()       { return (cTimer::ptr()); }
 #else
-        friend inline cTimer *Timer()       { return (instancePtr); }
+        static cTimer *self()       { return (instancePtr); }
 #endif
 
         cTimer();

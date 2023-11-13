@@ -46,6 +46,8 @@
 
 class QTmainwin;
 class QTparam;
+class QMouseEvent;
+class QResizeEvent;
 
 // Represent a character to display.
 //
@@ -164,11 +166,13 @@ public:
 
     unsigned int xval()         { return (p_xval); }
     unsigned int yval()         { return (p_yval); }
-    int width()                 { return (p_width); }
-    int height()                { return (p_height); }
 
 private slots:
-    void font_changed(int);
+    void font_changed_slot(int);
+    void resize_slot(QResizeEvent*);
+    void button_down_slot(QMouseEvent*);
+    void button_up_slot(QMouseEvent*);
+    void motion_slot(QMouseEvent*);
 
 private:
     void select(int, int);

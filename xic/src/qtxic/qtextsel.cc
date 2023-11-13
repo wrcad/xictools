@@ -91,7 +91,7 @@ cExt::PopUpSelections(GRobject caller, ShowMode mode)
 
 QTextNetSelDlg *QTextNetSelDlg::instPtr;
 
-QTextNetSelDlg::QTextNetSelDlg(GRobject caller)
+QTextNetSelDlg::QTextNetSelDlg(GRobject caller) : QTbag(this)
 {
     instPtr = this;
     es_caller = caller;

@@ -72,18 +72,18 @@ namespace {
                 Fcn = 0;
                 Fcnt = 0;
                 Fmax = cnt;
-                Ftime = Timer()->elapsed_msec();
+                Ftime = cTimer::self()->elapsed_msec();
             }
 
         void check()
             {
                 Fcnt++;
-                if (Ftime != Timer()->elapsed_msec()) {
+                if (Ftime != cTimer::self()->elapsed_msec()) {
                     if (Fcn) {
                         PL()->ShowPromptV("Flattening %s %d/%d",
                             Tstring(Fcn), Fcnt, Fmax);
                     }
-                    Ftime = Timer()->elapsed_msec();
+                    Ftime = cTimer::self()->elapsed_msec();
                 }
             }
 
@@ -819,7 +819,7 @@ cEdit::flatten_cell_recurse(cTfmStack *tstk, CDs *sdesc, int depth,
         while ((odesc = gdesc.next()) != 0) {
             if (!odesc->is_normal())
                 continue;
-            if (Timer()->check_interval(check_time)) {
+            if (cTimer::self()->check_interval(check_time)) {
                 DSPpkg::self()->CheckForInterrupt();
                 if (DSP()->Interrupt()) {
                     tstk->TPush();

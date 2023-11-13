@@ -81,6 +81,7 @@ public:
     bool getFont(void*, int);
     void registerCallback(void*, int);
     void unregisterCallback(void*, int);
+    QFont *new_font(const char*, bool);
 
     static bool stringBounds(const char*, int, int*, int*);
     static bool stringBounds(const char*, const QWidget*, int*, int*);
@@ -100,7 +101,6 @@ signals:
     void fontChanged(int);
 
 private:
-    QFont *new_font(const char*, bool);
     void refresh(int);
     static void on_null_ptr();
 
@@ -144,15 +144,15 @@ public:
 
     // GRpopup overrides
     void set_visible(bool visib)
-        {
-            if (visib) {
-                show();
-                raise();
-                activateWindow();
-            }
-            else
-                hide();
+    {
+        if (visib) {
+            show();
+            raise();
+            activateWindow();
         }
+        else
+            hide();
+    }
     void register_caller(GRobject, bool=false, bool=false);
     void popdown();
 
@@ -167,15 +167,8 @@ public:
     int current_size();
     void add_choice(const QFont*, const char*);
 
-    // This widget will be deleted when closed with the title bar "X"
-    // button.  Qt::WA_DeleteOnClose does not work - our destructor is
-    // not called.  The default behavior is to hide the widget instead
-    // of deleting it, which would likely be a core leak here.
-    void closeEvent(QCloseEvent*) { quit_slot(); }
-
 signals:
     void select_action(int, const char*, void*);
-    void dismiss();
 
 private slots:
     void action_slot();

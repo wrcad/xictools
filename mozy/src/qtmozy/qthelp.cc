@@ -331,7 +331,7 @@ namespace {
 
 
 QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QDialog(prnt),
-    QTbag()
+    QTbag(this)
 {
     // If has_menu is false, the widget will not have the menu or the
     // status bar visible.

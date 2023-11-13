@@ -51,7 +51,7 @@ namespace {
     //
     inline bool checkInterrupt(const char *msg = 0)
     {
-        return (Timer()->check_interval(CDcheckTime) &&
+        return (cTimer::self()->check_interval(CDcheckTime) &&
             CD()->CheckInterrupt(msg));
     }
 }

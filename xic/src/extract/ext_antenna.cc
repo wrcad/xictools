@@ -87,7 +87,7 @@ namespace {
 
     inline bool checkInterrupt()
     {
-        if (Timer()->check_interval(check_time)) {
+        if (cTimer::self()->check_interval(check_time)) {
             if (DSP()->MainWdesc() && DSP()->MainWdesc()->Wdraw())
                 DSPpkg::self()->CheckForInterrupt();
             return (XM()->ConfirmAbort());

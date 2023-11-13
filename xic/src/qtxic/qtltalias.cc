@@ -95,7 +95,7 @@ namespace {
 
 QTlayerAliasDlg *QTlayerAliasDlg::instPtr;
 
-QTlayerAliasDlg::QTlayerAliasDlg(GRobject c)
+QTlayerAliasDlg::QTlayerAliasDlg(GRobject c) : QTbag(this)
 {
     instPtr = this;
     la_open = 0;

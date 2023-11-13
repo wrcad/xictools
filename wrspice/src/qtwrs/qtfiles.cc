@@ -151,7 +151,7 @@ char *QTfilesListDlg::f_cwd;
 int QTfilesListDlg::f_timer_tag;
 QTfilesListDlg *QTfilesListDlg::instPtr;
 
-QTfilesListDlg::QTfilesListDlg(int xx, int yy)
+QTfilesListDlg::QTfilesListDlg(int xx, int yy) : QTbag(this)
 {
     fl_caller = TB()->entries(tid_files)->action();;
     instPtr = this;

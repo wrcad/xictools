@@ -377,23 +377,18 @@ QTextCmdDlg::~QTextCmdDlg()
 void
 QTextCmdDlg::update()
 {
-    /*XXX
     for (int i = 0; i < cmd_excmd->num_buttons(); i++) {
         if (cmd_excmd->button(i)->var()) {
-            bool bstate = gtk_toggle_button_get_active(
-                GTK_TOGGLE_BUTTON(cmd_bx[i]));
+            bool bstate = cmd_bx[i]->isChecked();
             bool vstate = CDvdb()->getVariable(cmd_excmd->button(i)->var());
             if (lstring::ciprefix("no", cmd_excmd->button(i)->var())) {
                 if (bstate == vstate)
-                    gtk_button_clicked(GTK_BUTTON(cmd_bx[i]));
+                    cmd_bx[i]->setChecked(!vstate);;
             }
-            else {
-                if (bstate != vstate)
-                    gtk_button_clicked(GTK_BUTTON(cmd_bx[i]));
-            }
+            else if (bstate != vstate)
+                cmd_bx[i]->setChecked(vstate);;
         }
     }
-    */
 }
 
 
@@ -413,59 +408,56 @@ QTextCmdDlg::go_btn_slot(bool)
 void
 QTextCmdDlg::check_state_changed_slot(int)
 {
-    /*XXX fixme
-    if (!Cmd)
-        return;
-    if (caller == Cmd->cmd_go && !GTKdev::GetStatus(caller))
+    if (sender() == cmd_go && !QTdev::GetStatus(sender()))
         return;
     bool down = false;
-    if (!Cmd->cmd_action)
+    if (!cmd_action)
         down = true;
     else {
-        for (int i = 0; i < Cmd->cmd_excmd->num_buttons(); i++) {
+        for (int i = 0; i < cmd_excmd->num_buttons(); i++) {
             bool sens = false;
             bool set = false;
             for (int j = 0; j < EXT_BSENS; j++) {
-                unsigned int ix = Cmd->cmd_excmd->button(i)->sens()[j];
+                unsigned int ix = cmd_excmd->button(i)->sens()[j];
                 if (ix) {
                     ix--;
-                    if ((int)ix < Cmd->cmd_excmd->num_buttons()) {
+                    if ((int)ix < cmd_excmd->num_buttons()) {
                         set = true;
-                        sens = gtk_toggle_button_get_active(
-                            GTK_TOGGLE_BUTTON(Cmd->cmd_bx[ix]));
+                        sens = cmd_bx[ix]->isChecked();
                         if (sens)
                             break;
                     }
                 }
             }
-            gtk_widget_set_sensitive(Cmd->cmd_bx[i], !set || sens);
+            cmd_bx[i]->setEnabled(!set || sens);
         }
-        const char *string = 0;
-        int x = 0, y = 0;
-        if (Cmd->cmd_text && caller == Cmd->cmd_go) {
-            string = gtk_entry_get_text(GTK_ENTRY(Cmd->cmd_text));
-            gdk_window_get_origin(gtk_widget_get_window(Cmd->cmd_popup),
-                &x, &y);
+        QByteArray ba;
+        int xx = 0, yy = 0;
+        if (cmd_text && sender() == cmd_go) {
+            ba = cmd_text->text().toLatin1();
+            QPoint pn = pos();
+            xx = pn.x();
+            yy = pn.y();
+
         }
 
         // Hide the widget during computation.  If the action returns true,
         // we don't pop down, so make the widget visible again if it still
         // exists.  The widget may have been destroyed.
 
-        if (caller == Cmd->cmd_go)
-            gtk_widget_hide(Cmd->cmd_popup);
-        if (!Cmd->cmd_action ||
-                !(*Cmd->cmd_action)(GTKdev::GetLabel(caller),
-                Cmd->cmd_arg, GTKdev::GetStatus(caller), string, x, y))
+        if (sender() == cmd_go)
+            hide();
+        if (!cmd_action ||
+                !(*cmd_action)(QTdev::GetLabel(sender()),
+                cmd_arg, QTdev::GetStatus(sender()), ba.constData(), xx, yy))
             down = true;
-        else if (Cmd)
-            gtk_widget_show(Cmd->cmd_popup);
-        if (Cmd && caller == Cmd->cmd_go)
-            GTKdev::Deselect(caller);
+        else
+            show();
+        if (sender() == cmd_go)
+            QTdev::Deselect(sender());
     }
     if (down)
         EX()->PopUpExtCmd(0, MODE_OFF, 0, 0, 0);
-    */
 }
 
 

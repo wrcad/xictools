@@ -106,7 +106,7 @@ cConvert::PopUpHierarchies(GRobject caller, ShowMode mode)
 
 QTchdListDlg *QTchdListDlg::instPtr;
 
-QTchdListDlg::QTchdListDlg(GRobject c)
+QTchdListDlg::QTchdListDlg(GRobject c) : QTbag(this)
 {
     instPtr = this;
     chl_caller = c;

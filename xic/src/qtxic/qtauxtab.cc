@@ -92,7 +92,7 @@ cConvert::PopUpAuxTab(GRobject caller, ShowMode mode)
 
 QTauxTabDlg *QTauxTabDlg::instPtr;
 
-QTauxTabDlg::QTauxTabDlg(GRobject c)
+QTauxTabDlg::QTauxTabDlg(GRobject c) : QTbag(this)
 {
     instPtr = this;
     at_caller = c;

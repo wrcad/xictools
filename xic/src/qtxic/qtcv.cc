@@ -166,6 +166,7 @@ QTconvertFmtDlg::QTconvertFmtDlg(GRobject c, int inp_type,
 
     QLabel *label = new QLabel(tr("Input Source"));
     hbox->addWidget(label);
+    label->setAlignment(Qt::AlignCenter);
 
     cv_input = new QComboBox();
     hbox->addWidget(cv_input);

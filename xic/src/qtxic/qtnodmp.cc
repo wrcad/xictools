@@ -67,6 +67,7 @@
 #include <QPushButton>
 #include <QLineEdit>
 #include <QTreeWidget>
+#include <QTreeWidgetItem>
 #include <QRadioButton>
 #include <QSplitter>
 #include <QCheckBox>
@@ -81,60 +82,25 @@ namespace {
     //
     char *list_get_text(QTreeWidget *list, int row, int col)
     {
-        return (0);
-        /*
-        GtkTreePath *p = gtk_tree_path_new_from_indices(row, -1);
-        GtkTreeModel *store = gtk_tree_view_get_model(GTK_TREE_VIEW(list));
-        GtkTreeIter iter;
-        if (!gtk_tree_model_get_iter(store, &iter, p))
+        QTreeWidgetItem *itm = list->topLevelItem(row);
+        if (!itm)
             return (0);
-        char *text;
-        gtk_tree_model_get(store, &iter, col, &text, -1);
-        gtk_tree_path_free(p);
-        return (lstring::tocpp(text));
-        */
+        QString st = itm->text(col);
+        if (st.isNull())
+            return (0);
+        return (lstring::copy(st.toLatin1().constData()));
     }
 
     void list_move_to(QTreeWidget *list, int row)
     {
-        /*
-        // Run events, this is important:  If the cells have been
-        // recently updated, the get_background_area call will return
-        // a bogus value!  (GTK bug)
-        //
-        gtk_DoEvents(1000);
-
-        // Don't scroll unless we have to, the scroll_to_cell function
-        // doesn't do the right thing, so we attempt to handle this
-        // ourselves.  We can do this since to cell height is fixed.
-
-        GtkAdjustment *adj = gtk_tree_view_get_vadjustment(GTK_TREE_VIEW(list));
-        if (!adj)
-            return;
-
-        GtkTreePath *p = gtk_tree_path_new_from_indices(row, -1);
-        GdkRectangle r;
-        gtk_tree_view_get_background_area(GTK_TREE_VIEW(list), p, 0, &r);
-
-        int last_row = (int)(gtk_adjustment_get_value(adj)/r.height);
-        int vis_rows = (int)(gtk_adjustment_get_page_size(adj)/r.height);
-        if (row < last_row || row > last_row + vis_rows) {
-            gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(list), p, 0,
-                false, 0.0, 0.0);
-        }
-        gtk_tree_path_free(p);
-        */
+        // Scroll to make the row visible if necessary.  QT probably
+        // does this automatically?
+        // XXX Check this.
     }
 
     void list_select_row(QTreeWidget *list, int row)
     {
-        /*
-        GtkTreePath *p = gtk_tree_path_new_from_indices(row, -1);
-        GtkTreeSelection *sel =
-            gtk_tree_view_get_selection(GTK_TREE_VIEW(list));
-        gtk_tree_selection_select_path(sel, p);
-        gtk_tree_path_free(p);
-        */
+        list->setCurrentItem(list->topLevelItem(row));
     }
 }
 
@@ -195,12 +161,9 @@ cSced::PopUpNodeMap(GRobject caller, ShowMode mode, int node)
 
 
 bool QTnodeMapDlg::nm_use_extract;
-short int QTnodeMapDlg::nm_win_width;
-short int QTnodeMapDlg::nm_win_height;
-short int QTnodeMapDlg::nm_grip_pos;
 QTnodeMapDlg *QTnodeMapDlg::instPtr;
 
-QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node)
+QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node) : QTbag(this)
 {
     instPtr = this;
     nm_caller = caller;
@@ -224,8 +187,6 @@ QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node)
     nm_cdesc = 0;
     nm_rm_affirm = 0;
     nm_join_affirm = 0;
-    nm_n_no_select = false;
-    nm_t_no_select = false;
 
     setWindowTitle(tr("Node (Net) Name Mapping"));
     setAttribute(Qt::WA_DeleteOnClose);
@@ -319,6 +280,9 @@ QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node)
         tr("Internal?") << tr("Mapped") << tr("Set")));
     nm_node_list->header()->setMinimumSectionSize(25);
     nm_node_list->header()->resizeSection(0, 50);
+    connect(nm_node_list,
+        SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
+        this, SLOT(nodesel_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*)));
 
     // terminal listing text
     //
@@ -327,9 +291,12 @@ QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node)
     nm_term_list->setHeaderLabels(QStringList(QList<QString>() <<
         tr("Terminals?")));
     nm_term_list->header()->setMinimumSectionSize(25);
+    connect(nm_term_list,
+        SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
+        this, SLOT(termsel_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*)));
 
     int wd1 = 0.75*width();
-    spl->setSizes(QList<int>() << wd1 << width());
+    spl->setSizes(QList<int>() << 0.8*width() << 0.2*width());
 
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_PROP)) {
@@ -375,13 +342,6 @@ QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node)
     if (node < 0 && DSP()->ShowingNode() >= 0 && ExtIf()->selectShowNode(-1))
         node = DSP()->ShowingNode();
 
-/*XXX
-    if (nm_win_width > 0 && nm_win_height > 0) {
-        gtk_window_set_default_size(GTK_WINDOW(wb_shell),
-            nm_win_width, nm_win_height);
-        gtk_paned_set_position(GTK_PANED(nm_paned), nm_grip_pos);
-    }
-*/
     if (DSP()->CurMode() == Physical)
         nm_use_extract = true;
     update(node);
@@ -408,17 +368,6 @@ QTnodeMapDlg::~QTnodeMapDlg()
         nm_join_affirm->popdown();
     if (nm_caller)
         QTdev::SetStatus(nm_caller, false);
-    if (wb_shell) {
-/*
-        int wid = gdk_window_get_width(gtk_widget_get_window(wb_shell));
-        int hei = gdk_window_get_height(gtk_widget_get_window(wb_shell));
-        nm_win_width = wid;
-        nm_win_height = hei;
-        nm_grip_pos = gtk_paned_get_position(GTK_PANED(nm_paned));
-        g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
-            (gpointer)nm_cancel_proc, wb_shell);
-*/
-    }
     if (nm_node) {
         DSP()->HliteElecTerm(ERASE, nm_node, nm_cdesc, 0);
         CDterm *t;
@@ -512,42 +461,38 @@ QTnodeMapDlg::show_node_terms(int node)
     }
     nm_cdesc = 0;
 
-/*
-    GtkTreeIter iter;
-    const char *strings[1];
     const char *msg = "no terminals found";
     CDs *cursde = CurCell(Electrical, true);
     if (!cursde)
         return;
     if (node < 0) {
-        strings[0] = "bad node";
-        gtk_list_store_append(store, &iter);
-        gtk_list_store_set(store, &iter, 0, strings[0], -1);
+        QTreeWidgetItem *itm = new QTreeWidgetItem();
+        itm->setText(0, "bad node");
+        nm_term_list->addTopLevelItem(itm);
     }
     else if (node == 0) {
-        strings[0] = "ground node";
-        gtk_list_store_append(store, &iter);
-        gtk_list_store_set(store, &iter, 0, strings[0], -1);
+        QTreeWidgetItem *itm = new QTreeWidgetItem();
+        itm->setText(0, "ground node");
+        nm_term_list->addTopLevelItem(itm);
         nm_showing_node = node;
     }
     else {
         bool didone = false;
         stringlist *sl = SCD()->getElecNodeContactNames(cursde, node);
         for (stringlist *s = sl; s; s = s->next) {
-            strings[0] = s->string;
-            gtk_list_store_append(store, &iter);
-            gtk_list_store_set(store, &iter, 0, strings[0], -1);
+            QTreeWidgetItem *itm = new QTreeWidgetItem();
+            itm->setText(0, s->string);
+            nm_term_list->addTopLevelItem(itm);
             didone = true;
         }
         stringlist::destroy(sl);
         if (!didone) {
-            strings[0] = msg;
-            gtk_list_store_append(store, &iter);
-            gtk_list_store_set(store, &iter, 0, strings[0], -1);
+            QTreeWidgetItem *itm = new QTreeWidgetItem();
+            itm->setText(0, msg);
+            nm_term_list->addTopLevelItem(itm);
         }
         nm_showing_node = node;
     }
-*/
     DSP()->ShowNode(DISPLAY, nm_showing_node);
 }
 
@@ -574,7 +519,7 @@ QTnodeMapDlg::update_map()
     int last_row = 0;
     int vis_rows = 10;
     {
-/*
+/*XXX
         GtkTreePath *p = gtk_tree_path_new_from_indices(0, -1);
         GdkRectangle r;
         gtk_tree_view_get_background_area(GTK_TREE_VIEW(nm_node_list),
@@ -595,9 +540,6 @@ QTnodeMapDlg::update_map()
     nm_remove->setEnabled(false);
 
     nm_node_list->clear();
-
-/*
-    GtkTreeIter iter;
     int sz = map->countNodes();
     for (int i = 0; i < sz; i++) {
         char buf1[32], buf2[4];
@@ -614,17 +556,19 @@ QTnodeMapDlg::update_map()
             *t++ = 'G';
         if (map->isSet(i))
             *t++ = 'Y';
-        gtk_list_store_append(store, &iter);
-        gtk_list_store_set(store, &iter, 0, strings[0], 1, strings[1],
-            2, strings[2], -1);
+        QTreeWidgetItem *itm = new QTreeWidgetItem();
+        itm->setText(0, strings[0]);
+        itm->setText(1, strings[1]);
+        itm->setText(2, strings[2]);
+        nm_node_list->addTopLevelItem(itm);
     }
 
-    sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(NM->nm_term_list));
-    gtk_tree_selection_unselect_all(sel);
-    store =
-        GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(nm_term_list)));
-    gtk_list_store_clear(store);
-    gtk_widget_set_sensitive(nm_find_btn, false);
+    QList<QTreeWidgetItem*> terms = nm_term_list->selectedItems();
+    for (int i = 0; i < terms.size(); i++)
+        terms[i]->setSelected(false);
+    nm_term_list->clear();
+
+    nm_find_btn->setEnabled(false);
     if (nm_node) {
         DSP()->HliteElecTerm(ERASE, nm_node, nm_cdesc, 0);
         CDterm *t;
@@ -635,7 +579,6 @@ QTnodeMapDlg::update_map()
         DSP()->HlitePhysTerm(ERASE, t);
         nm_node = 0;
     }
-*/
     nm_cdesc = 0;
 
     // The node number may have changed, try to find the new one, but
@@ -699,17 +642,14 @@ QTnodeMapDlg::enable_point(bool on)
 int
 QTnodeMapDlg::node_of_row(int row)
 {
-    /*
-    char *text = list_get_text(NM->nm_node_list, row, 0);
-    if (!text)
+    QTreeWidgetItem *itm = nm_node_list->topLevelItem(row);
+    if (!itm)
         return (-1);
-    int node;
-    if (sscanf(text, "%d", &node) < 1 || node < 0)
-        node = -1;
-    delete [] text;
+    bool ok;
+    int node = itm->text(0).toInt(&ok);
+    if (!ok)
+        return (-1);
     return (node);
-    */
-return (-1);
 }
 
 
@@ -1046,7 +986,7 @@ QTnodeMapDlg::unmap_btn_slot(bool state)
         }
     }
     PopUpMessage("No name/node link found.", false);
-//XXX    GTKdev::Deselect(caller);
+    QTdev::Deselect(sender());
 }
 
 
@@ -1111,22 +1051,122 @@ QTnodeMapDlg::srch_text_changed_slot(const QString&)
 
 
 void
+QTnodeMapDlg::nodesel_changed_slot(QTreeWidgetItem *itm, QTreeWidgetItem*)
+{
+    nm_showing_row = -1;
+    nm_rename->setEnabled(false);
+    nm_remove->setEnabled(false);
+    if (nm_rm_affirm)
+        nm_rm_affirm->popdown();
+    if (nm_join_affirm)
+        nm_join_affirm->popdown();
+    if (wb_input)
+        wb_input->popdown();
+
+    nm_showing_row = nm_node_list->indexOfTopLevelItem(itm);
+    int node = node_of_row(nm_showing_row);
+    if (node < 0)
+        return;
+
+    // Lock out the call back to QTnodeMapDlg::update, select the node in
+    // physical if command is active.
+    nm_noupdating = true;
+    ExtIf()->selectShowNode(node);
+    nm_noupdating = false;
+
+    show_node_terms(node);
+    if (DSP()->CurMode() == Electrical) {
+
+        char *text = list_get_text(nm_node_list, nm_showing_row, 2);
+        if (text && (text[0] == 'Y' || text[0] == 'Y')) {
+            // Y, with or without G.  If G, the global name must
+            // have been assigned, so editing is allowed.
+
+            nm_rename->setEnabled(true);
+            nm_remove->setEnabled(true);
+        }
+        else if (text && text[0] == 'G') {
+            nm_rename->setEnabled(false);
+            nm_remove->setEnabled(false);
+        }
+        else
+            nm_rename->setEnabled(true);
+        delete [] text;
+    }
+}
+
+
+void
+QTnodeMapDlg::termsel_changed_slot(QTreeWidgetItem *itm, QTreeWidgetItem*)
+{
+    if (!itm)
+        return;
+    nm_showing_term_row = -1;
+    nm_find_btn->setEnabled(false);
+    if (nm_node) {
+        DSP()->HliteElecTerm(ERASE, nm_node, nm_cdesc, 0);
+        CDterm *t;
+        if (nm_cdesc)
+            t = ((CDp_cnode*)nm_node)->inst_terminal();
+        else
+            t = ((CDp_snode*)nm_node)->cell_terminal();
+        DSP()->HlitePhysTerm(ERASE, t);
+        nm_node = 0;
+    }
+    nm_cdesc = 0;
+
+    nm_showing_term_row =  nm_term_list->indexOfTopLevelItem(itm);
+
+    char *text = list_get_text(nm_term_list, nm_showing_term_row, 0);
+    if (text) {
+        bool torw = ((text[0] == 'T' || text[0] == 'W') && text[1] == ' ');
+        // True for wire or terminal device indicators, which mean
+        // nothing to the find terminal function.
+        nm_find_btn->setEnabled(!torw);
+
+        if (DSP()->CurMode() == Physical) {
+            CDs *psd = CurCell(Physical);
+            if (psd) {
+                if (!ExtIf()->associate(psd)) {
+                    Log()->ErrorLogV(mh::Processing,
+                        "Association failed!\n%s", Errs()->get_error());
+                }
+            }
+        }
+        if (!torw) {
+            CDc *cdesc;
+            CDp_node *pn;
+            int vecix;  // unused
+            if (DSP()->FindTerminal(text, &cdesc, &vecix, &pn)) {
+                DSP()->HliteElecTerm(DISPLAY, pn, cdesc, -1);
+                CDterm *t;
+                if (cdesc)
+                    t = ((CDp_cnode*)pn)->inst_terminal();
+                else
+                    t = ((CDp_snode*)pn)->cell_terminal();
+                DSP()->HlitePhysTerm(DISPLAY, t);
+                nm_node = pn;
+                nm_cdesc = cdesc;
+            }
+        }
+        delete [] text;
+    }
+}
+
+
+void
 QTnodeMapDlg::deselect_btn_slot()
 {
     DSP()->ShowNode(ERASE, nm_showing_node);
     nm_showing_node = -1;
 
-/*
-    GtkTreeSelection *sel =
-        gtk_tree_view_get_selection(GTK_TREE_VIEW(NM->nm_node_list));
-    gtk_tree_selection_unselect_all(sel);
-
-    sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(NM->nm_term_list));
-    gtk_tree_selection_unselect_all(sel);
-    GtkListStore *store = GTK_LIST_STORE(
-        gtk_tree_view_get_model(GTK_TREE_VIEW(NM->nm_term_list)));
-    gtk_list_store_clear(store);
-*/
+    QList<QTreeWidgetItem*> nodes = nm_node_list->selectedItems();
+    for (int i = 0; i < nodes.size(); i++)
+        nodes[i]->setSelected(false);
+    QList<QTreeWidgetItem*> terms = nm_term_list->selectedItems();
+    for (int i = 0; i < terms.size(); i++)
+        terms[i]->setSelected(false);
+    nm_term_list->clear();
 
     nm_find_btn->setEnabled(false);
     nm_rename->setEnabled(false);
@@ -1208,230 +1248,8 @@ QTnodeMapDlg::font_changed_slot(int fnum)
         update(0);
     }
 }
-
-
-#ifdef notdef
-
-// Static function.
-int
-QTnodeMapDlg::nm_select_nlist_proc(GtkTreeSelection*, GtkTreeModel*,
-    GtkTreePath *path, int issel, void*)
-{
-    if (NM) {
-        if (issel) {
-            NM->nm_showing_row = -1;
-            gtk_widget_set_sensitive(NM->nm_rename, false);
-            gtk_widget_set_sensitive(NM->nm_remove, false);
-            if (NM->nm_rm_affirm)
-                NM->nm_rm_affirm->popdown();
-            if (NM->nm_join_affirm)
-                NM->nm_join_affirm->popdown();
-            if (NM->wb_input)
-                NM->wb_input->popdown();
-            return (true);
-        }
-        if (NM->nm_n_no_select) {
-            // Don't let a focus event select anything!
-            NM->nm_n_no_select = false;
-            return (false);
-        }
-
-        // See note in tlist_proc.
-        if (NM->nm_showing_row >= 0)
-            return (true);
-
-        int *indices = gtk_tree_path_get_indices(path);
-        if (!indices)
-            return (false);
-        NM->nm_showing_row = *indices;
-        int node = nm_node_of_row(*indices);
-        if (node < 0)
-            return (true);
-
-        // Lock out the call back to QTnodeMapDlg::update, select the node in
-        // physical if command is active.
-        NM->nm_noupdating = true;
-        ExtIf()->selectShowNode(node);
-        NM->nm_noupdating = false;
-
-        NM->show_node_terms(node);
-        if (DSP()->CurMode() == Electrical) {
-
-            char *text = list_get_text(NM->nm_node_list, NM->nm_showing_row, 2);
-            if (text && (text[0] == 'Y' || text[0] == 'Y')) {
-                // Y, with or without G.  If G, the global name must
-                // have been assigned, so editing is allowed.
-
-                gtk_widget_set_sensitive(NM->nm_rename, true);
-                gtk_widget_set_sensitive(NM->nm_remove, true);
-            }
-            else if (text && text[0] == 'G') {
-                gtk_widget_set_sensitive(NM->nm_rename, false);
-                gtk_widget_set_sensitive(NM->nm_remove, false);
-            }
-            else
-                gtk_widget_set_sensitive(NM->nm_rename, true);
-            delete [] text;
-        }
-        return (true);
-    }
-    return (true);
-}
-
-
-// Static function.
-// This handler is a hack to avoid a GtkTreeWidget defect:  when focus
-// is taken and there are no selections, the 0'th row will be
-// selected.  There seems to be no way to avoid this other than a hack
-// like this one.  We set a flag to lock out selection changes in this
-// case.
-//
-bool
-QTnodeMapDlg::nm_n_focus_proc(GtkWidget*, GdkEvent*, void*)
-{
-    if (NM) {
-        GtkTreeSelection *sel =
-            gtk_tree_view_get_selection(GTK_TREE_VIEW(NM->nm_node_list));
-        // If nothing selected set the flag.
-        if (!gtk_tree_selection_get_selected(sel, 0, 0))
-            NM->nm_n_no_select = true;
-    }
-    return (false);
-}
-        
-
-// Static function.
-int
-QTnodeMapDlg::nm_select_tlist_proc(GtkTreeSelection*, GtkTreeModel *store,
-    GtkTreePath *path, int issel, void*)
-{
-    if (NM) {
-        // The calling sequence from selections in the GtkTreeView is
-        // a little screwy.  Suppose that you initially select row 1. 
-        // That event will call this function once with issel false as
-        // expected.  Then click row 2 and find that this function is
-        // called three times:  isset=false.  row=2.  isset=true,
-        // row=1, isset=false, row=2.
-        //
-        // int *ii = gtk_tree_path_get_indices(path);
-        // printf("tlist %d %d\n", issel, *ii);
-
-        if (issel) {
-            NM->nm_showing_term_row = -1;
-            gtk_widget_set_sensitive(NM->nm_find_btn, false);
-            if (NM->nm_node) {
-                DSP()->HliteElecTerm(ERASE, NM->nm_node, NM->nm_cdesc, 0);
-                CDterm *t;
-                if (NM->nm_cdesc)
-                    t = ((CDp_cnode*)NM->nm_node)->inst_terminal();
-                else
-                    t = ((CDp_snode*)NM->nm_node)->cell_terminal();
-                DSP()->HlitePhysTerm(ERASE, t);
-                NM->nm_node = 0;
-            }
-            NM->nm_cdesc = 0;
-            return (true);
-        }
-        if (NM->nm_t_no_select) {
-            // Don't let a focus event select anything!
-            NM->nm_t_no_select = false;
-            return (false);
-        }
-
-        // Here's the fix for above: ignore the first call.
-        if (NM->nm_showing_term_row >= 0)
-            return (true);
-
-        int *indices = gtk_tree_path_get_indices(path);
-        if (!indices)
-            return (false);
-        NM->nm_showing_term_row = *indices;
-        GtkTreeIter iter;
-        if (!gtk_tree_model_get_iter(store, &iter, path))
-            return (true);
-        char *text;
-        gtk_tree_model_get(store, &iter, 0, &text, -1);
-        if (text) {
-            bool torw = ((text[0] == 'T' || text[0] == 'W') && text[1] == ' ');
-            // True for wire or terminal device indicators, which mean
-            // nothing to the find terminal function.
-            gtk_widget_set_sensitive(NM->nm_find_btn, !torw);
-
-            if (DSP()->CurMode() == Physical) {
-                CDs *psd = CurCell(Physical);
-                if (psd) {
-                    if (!ExtIf()->associate(psd)) {
-                        Log()->ErrorLogV(mh::Processing,
-                            "Association failed!\n%s", Errs()->get_error());
-                    }
-                }
-            }
-            if (!torw) {
-                CDc *cdesc;
-                CDp_node *pn;
-                int vecix;  // unused
-                if (DSP()->FindTerminal(text, &cdesc, &vecix, &pn)) {
-                    DSP()->HliteElecTerm(DISPLAY, pn, cdesc, -1);
-                    CDterm *t;
-                    if (cdesc)
-                        t = ((CDp_cnode*)pn)->inst_terminal();
-                    else
-                        t = ((CDp_snode*)pn)->cell_terminal();
-                    DSP()->HlitePhysTerm(DISPLAY, t);
-                    NM->nm_node = pn;
-                    NM->nm_cdesc = cdesc;
-                }
-            }
-            free(text);
-        }
-        return (true);
-    }
-    return (false);
-}
-
-
-// Static function.
-// Focus handler.
-//
-bool
-QTnodeMapDlg::nm_t_focus_proc(GtkWidget*, GdkEvent*, void*)
-{
-    if (NM) {
-        GtkTreeSelection *sel =
-            gtk_tree_view_get_selection(GTK_TREE_VIEW(NM->nm_term_list));
-        // If nothing selected set the flag.
-        if (!gtk_tree_selection_get_selected(sel, 0, 0))
-            NM->nm_t_no_select = true;
-    }
-    return (false);
-}
-        
-
-
-// Static function.
-// Handler for the rename button.
-//
-void
-QTnodeMapDlg::nm_rename_proc(GtkWidget *caller, void*)
-{
-}
-
-
-// Static function.
-// Handler for pressing Enter in the text entry, will press the search
-// button.
-//
-void
-QTnodeMapDlg::nm_activate_proc(GtkWidget*, void*)
-{
-    if (!NM)
-        return;
-    GTKdev::CallCallback(NM->nm_srch_btn);
-}
-
 // End of QTnodeMapDlg functions.
 
-#endif
 
 NmpState::~NmpState()
 {

@@ -140,7 +140,7 @@ cConvert::PopUpLibraries(GRobject caller, ShowMode mode)
 const char *QTlibsDlg::nolibmsg = "There are no libraries found.";
 QTlibsDlg *QTlibsDlg::instPtr;
 
-QTlibsDlg::QTlibsDlg(GRobject c)
+QTlibsDlg::QTlibsDlg(GRobject c) : QTbag(this)
 {
     instPtr = this;
     lb_caller = c;

@@ -94,7 +94,7 @@ public:
     }
 
 private slots:
-    void font_changed(int);
+    void font_changed_slot(int);
     void recall_menu_slot(QAction*);
     void store_menu_slot(QAction*);
     void long_text_slot();

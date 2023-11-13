@@ -503,9 +503,9 @@ QTpkg::CheckForInterrupt()
         return (true);
 
     // Cut expense if called too frequently.
-    if (Timer()->elapsed_msec() == lasttime)
+    if (cTimer::self()->elapsed_msec() == lasttime)
         return (false);
-    lasttime = Timer()->elapsed_msec();
+    lasttime = cTimer::self()->elapsed_msec();
 
 //    while (gtk_events_pending())
 //        gtk_main_iteration();
@@ -522,6 +522,7 @@ QTpkg::CheckForInterrupt()
 int
 QTpkg::Iconify(int)
 {
+    //XXX
     return (0);
 }
 
@@ -863,7 +864,8 @@ cKeys::check_exec(bool exact)
     if (!k_keypos)
         return;
 
-    MenuEnt *ent = MainMenu()->MatchEntry(k_keys, k_keypos, k_win_number, exact);
+    MenuEnt *ent =
+        MainMenu()->MatchEntry(k_keys, k_keypos, k_win_number, exact);
     if (!ent || !ent->cmd.caller)
         return;
 
@@ -929,10 +931,9 @@ cKeys::font_changed(int fnum)
 
 DrawType QTsubwin::sw_drawtype = DrawNative;
 
-QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(),
+QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
     QTdraw(XW_DRAWING)
 {
-    wb_shell = this;
     sw_toolbar = 0;
     sw_pixmap = 0;
     sw_keys_pressed = 0;
@@ -1065,14 +1066,15 @@ QTsubwin::subw_initialize(int wnum)
 /*XXX
     int xpos, ypos;
     if (LastPos[wnum].width) {
-        gtk_widget_set_uposition(w->shell, LastPos[wnum].x, LastPos[wnum].y);
+        move(LastPos[wnum].x, LastPos[wnum].y);
         gtk_window_set_default_size(GTK_WINDOW(w->shell), LastPos[wnum].width,
             LastPos[wnum].height);
         xpos = LastPos[wnum].x;
         ypos = LastPos[wnum].y;
     }
     else {
-        GdkRectangle rect;
+        QSize sz = size();
+        QPoint pos = position();
         ShellGeometry(QTmainwin::self()->shell, &rect, 0);
         rect.x += rect.width - 560;
         rect.y += wnum*40 + 60; // make room for device toolbar
@@ -2191,56 +2193,16 @@ QTsubwin::help_slot()
 // End of QRsubwin slots.
  
 
-/*
-// Redraw the main or subwindow after an expose.  Break it up into
-// exposed rectangles to save time.  Call the application to
-// actually redraw the viewport.
-//
-static int
-redraw_hdlr(GtkWidget *widget, GdkEvent *event, void *client_data)
-{
-    if (widget->parent == DontRedrawMe) {
-        DontRedrawMe = 0;
-        return (false);
-    }
-    if (gtkHaveDrag && XM()->no_pixmap_store)
-        return (false);
-
-    xic_bag *w = static_cast<xic_bag*>(client_data);
-
-    GdkEventExpose *pev = (GdkEventExpose*)event;
-    if (!GetCurSymbol() || !XM()->app_ready) {
-        w->windesc->w_clip_rect = w->windesc->w_viewport;
-        w->windesc->ShowGrid();
-        XM()->app_ready = true;
-    }
-    else {
-        GdkRectangle *rects;
-        int nrects;
-        gdk_region_get_rectangles(pev->region, &rects, &nrects);
-        for (int i = 0; i < nrects; i++) {
-            BBox BB(rects[i].x, rects[i].y + rects[i].height,
-                rects[i].x + rects[i].width, rects[i].y);
-            w->windesc->Update(&BB);
-        }
-        g_free(rects);
-    }
-    return (true);
-}
-*/
-
-
-//-----------------------------------------------------------------------------
-
-inline bool
-is_shift_down()
-{
-    return (QApplication::keyboardModifiers() & Qt::ShiftModifier);
-}
-
-
 //-----------------------------------------------------------------------------
 // GTKmainwin functions
+
+namespace {
+    bool is_shift_down()
+    {
+        return (QApplication::keyboardModifiers() & Qt::ShiftModifier);
+    }
+}
+
 
 QTmainwin::QTmainwin(QWidget *prnt) : QTsubwin(0, prnt)
 {
@@ -2450,7 +2412,7 @@ QTmainwin::closeEvent(QCloseEvent *ev)
 }
 
 
-// Handler from the "wr" button.
+// Handler for the "WR" button.
 //
 void
 QTmainwin::wr_btn_slot()
@@ -2471,6 +2433,13 @@ QTmainwin::update_coords_slot(int xx, int yy)
 {
     mw_coords->print(xx, yy, QTcoord::COOR_MOTION);
 }
+
+
+void
+QTmainwin::revert_slot()
+{
+    activateWindow();
+}
 // End of QTmainwin functions.
 
 
@@ -2484,8 +2453,7 @@ cMain::GetCurFileSelection()
         return (0);
     static char *tbuf;
     delete [] tbuf;
-/*
-    tbuf = QTfilePopup::any_selection();
+    tbuf = QTfileDlg::any_selection();
     if (tbuf)
         return (tbuf);
 
@@ -2496,7 +2464,6 @@ cMain::GetCurFileSelection()
     tbuf = QTmainwin::get_file_selection();
     if (tbuf)
         return (tbuf);
-*/
 
     tbuf = QTmainwin::get_lib_selection();
     if (tbuf)
@@ -2506,7 +2473,7 @@ cMain::GetCurFileSelection()
     if (tbuf)
         return (tbuf);
 
-/*
+/*XXX
     // look for selected text in an Info window
     GdkWindow *window = gdk_selection_owner_get(GDK_SELECTION_PRIMARY);
     if (window) {
@@ -2530,8 +2497,8 @@ cMain::GetCurFileSelection()
 void
 cMain::DisableDialogs()
 {
-//    QTmainwin::cells_panic();
-//    QTmainwin::files_panic();
+    QTmainwin::cells_panic();
+    QTmainwin::files_panic();
     QTmainwin::libs_panic();
     QTmainwin::tree_panic();
 }
@@ -2707,97 +2674,9 @@ main_local::form_submit_hdlr(void *data)
 
 
 
-#ifdef NOTDEF
-
-//-----------------------------------------------------------------------
-//  Event and signal handlers
-//-----------------------------------------------------------------------
-
-static void
-main_cancel_proc(GtkWidget*, void*)
-{
-    GTKmenuPtr->M_Exit(0);
-}
-
-
-static void
-subwin_cancel_proc(GtkWidget*, void *client_data)
-{
-    int wnum = (long)client_data;
-    wnum--;
-    if (wnum >= 0 && wnum < NUM_SUBWINDOWS)
-        delete XM()->subwins[wnum];
-}
-
-
-static int
-map_hdlr(GtkWidget*, GdkEvent *event, void *client_data)
-{
-    return (true);
-}
-
-
-// Resize after the main or subwindow size change.  Call the application
-// with the new size.
-//
-static int
-resize_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
-{
-    xic_bag *w = static_cast<xic_bag*>(client_data);
-    if (event->type == GDK_CONFIGURE && w->windesc) {
-        int width, height;
-        gdk_window_get_size(caller->window, &width, &height);
-        w->windesc->resize_callback(width, height);
-    }
-    return (true);
-}
-
- 
-// Redraw the main or subwindow after an expose.  Break it up into
-// exposed rectangles to save time.  Call the application to
-// actually redraw the viewport.
-//
-static int
-redraw_hdlr(GtkWidget *widget, GdkEvent *event, void *client_data)
-{
-    if (widget->parent == DontRedrawMe) {
-        DontRedrawMe = 0;
-        return (false);
-    }
-    if (gtkHaveDrag && XM()->no_pixmap_store)
-        return (false);
-
-    xic_bag *w = static_cast<xic_bag*>(client_data);
-
-    GdkEventExpose *pev = (GdkEventExpose*)event;
-    if (!GetCurSymbol() || !XM()->app_ready) {
-        w->windesc->w_clip_rect = w->windesc->w_viewport;
-        w->windesc->ShowGrid();
-        XM()->app_ready = true;
-    }
-    else {
-#if GTK_CHECK_VERSION(1,3,15)
-        GdkRectangle *rects;
-        int nrects;
-        gdk_region_get_rectangles(pev->region, &rects, &nrects);
-        for (int i = 0; i < nrects; i++) {
-            BBox BB(rects[i].x, rects[i].y + rects[i].height,
-                rects[i].x + rects[i].width, rects[i].y);
-            w->windesc->Update(&BB);
-        }
-        g_free(rects);
-#else
-        BBox BB(pev->area.x, pev->area.y + pev->area.height,
-            pev->area.x + pev->area.width, pev->area.y);
-        w->windesc->Update(&BB);
-#endif
-    }
-    return (true);
-}
-
+#ifdef notdef
 
 static unsigned int grabbed_key;
-
 
 
 // Struct to hold state for button press grab action.
@@ -2838,15 +2717,6 @@ private:
     bool send_event;        // true if event was synthesized
 };
 static grabstate_t grabstate;
-
-
-static int
-focus_hdlr(GtkWidget *widget, GdkEvent *event, void *client_data)
-{
-    // Nothing to do but handle this to avoid default action of
-    // issuing expose event
-    return (true);
-}
 
 #endif
 

@@ -159,7 +159,7 @@ QTchdOpenDlg *QTchdOpenDlg::instPtr;
 
 QTchdOpenDlg::QTchdOpenDlg(GRobject caller,
     bool(*callback)(const char*, const char*, int, void*),
-    void *arg, const char *init_idname, const char *init_str)
+    void *arg, const char *init_idname, const char *init_str) : QTbag(this)
 {
     instPtr = this;
     co_caller = caller;

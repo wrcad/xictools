@@ -47,12 +47,14 @@
 #include "select.h"
 #include "events.h"
 #include "keymap.h"
+#include "miscutil/timer.h"
 #include "bitmaps/lsearch.xpm"
 #include "bitmaps/lsearchn.xpm"
 
 #include <unistd.h>
 #include <errno.h>
 
+#include <QApplication>
 #include <QWidget>
 #include <QMouseEvent>
 #include <QDragEnterEvent>
@@ -202,11 +204,103 @@ QTltab::setup_drawable()
 }
 
 
+namespace {
+    struct blinker
+    {
+        blinker(QTsubwin*, const CDl*);
+
+        ~blinker()
+        {
+            delete b_dim_pm;
+            delete b_norm_pm;
+        }
+
+        bool is_ok()
+        {
+            return (b_wid > 0 && b_hei > 0 && b_dim_pm && b_norm_pm);
+        }
+
+        void show_dim()
+        {
+            if (!b_dim_pm)
+                return;
+//            gdk_window_copy_area(b_wbag->Window(), b_wbag->GC(), 0, 0,
+//                b_dim_pm, 0, 0, b_wid, b_hei);
+//            gdk_flush();
+//XXX
+printf("dim\n");
+        }
+
+        void show_norm()
+        {
+            if (!b_norm_pm)
+                return;
+//            gdk_window_copy_area(b_wbag->Window(), b_wbag->GC(), 0, 0,
+//                b_norm_pm, 0, 0, b_wid, b_hei);
+//            gdk_flush();
+//XXX
+printf("normal\n");
+        }
+
+        static unsigned int revbytes(unsigned bits, int nb)
+        {
+            unsigned int tmp = bits;
+            bits = 0;
+            unsigned char *a = (unsigned char*)&tmp;
+            unsigned char *b = (unsigned char*)&bits;
+            nb--;
+            for (int i = 0; i <= nb; i++)
+                b[i] = a[nb-i];
+            return (bits);
+        }
+
+        static bool button3_down()
+        {
+            return (QApplication::mouseButtons() & Qt::RightButton);
+        }
+
+        static int blink_idle(void*);
+
+    private:
+        QTsubwin *b_wbag;
+        QPixmap *b_dim_pm;
+        QPixmap *b_norm_pm;
+        int b_wid;
+        int b_hei;
+    };
+
+    blinker *blinkers[DSP_NUMWINS];
+    int blink_timer_id;
+    bool blink_state;
+}
+
+
 void
 QTltab::blink(CDl *ld)
 {
-    //XXX FIXME
-(void)ld;
+    if (lt_disabled)
+        return;
+
+    for (int i = 0; i < DSP_NUMWINS; i++) {
+        WindowDesc *wd = DSP()->Window(i);
+        if (!wd)
+            continue;
+        QTsubwin *w = dynamic_cast<QTsubwin*>(wd->Wbag());
+        if (!w)
+            continue;
+        blinker *b = new blinker(w, ld);
+        if (!b->is_ok()) {
+            delete b;
+            continue;
+        }
+        blinker *oldb = blinkers[i];
+        blinkers[i] = b;
+        delete oldb;
+    }
+    if (!blink_timer_id) {
+        blink_timer_id =
+            QTpkg::self()->RegisterIdleProc(blinker::blink_idle, 0);
+    }
 }
 
 
@@ -582,297 +676,10 @@ QTltab::ltab_ent_timer(void *arg)
 // End of QTltab functions.
 
 
-#ifdef notdef
-
-/*
-static unsigned int
-revbytes(unsigned bits, int nb)
-{
-    unsigned int tmp = bits;
-    bits = 0;
-    unsigned char *a = (unsigned char*)&tmp;
-    unsigned char *b = (unsigned char*)&bits;
-    nb--;
-    for (int i = 0; i <= nb; i++)
-        b[i] = a[nb-i];
-    return (bits);
-}
-*/
-
-
 #define DIMPIXVAL 5
 
-#ifdef WIN32
-
-// Since the gtk implementation doesn't work as of 2.24.10, do it
-// in Win32.  Some pretty ugly stuff here.
-
 namespace {
-    GdkGCValuesMask Win32GCvalues =
-        (GdkGCValuesMask)(GDK_GC_FOREGROUND | GDK_GC_BACKGROUND);
-
-    struct blinker
-    {
-        blinker(GTKsubwin*, const CDl*);
-
-        ~blinker()
-            {
-                if (b_dcMemNorm)
-                    DeleteDC(b_dcMemNorm);
-                if (b_bmapNorm)
-                    DeleteBitmap(b_bmapNorm);
-                if (b_dcMemDim)
-                    DeleteDC(b_dcMemDim);
-                if (b_bmapDim)
-                    DeleteBitmap(b_bmapDim);
-            }
-
-        bool is_ok()
-            {
-                return (b_wid > 0 && b_hei > 0 && b_dcMemNorm && b_bmapNorm &&
-                    b_dcMemDim && b_bmapDim);
-            }
-
-        void show_dim()
-            {
-                if (!b_dcMemDim || !b_bmapDim)
-                    return;
-                HDC dc = gdk_win32_hdc_get(b_wbag->Window(), b_wbag->GC(),
-                    Win32GCvalues);
-                BitBlt(dc, b_xoff, b_yoff, b_wid + 1, b_hei + 1, b_dcMemDim,
-                    0, 0, SRCCOPY);
-                gdk_win32_hdc_release(b_wbag->Window(), b_wbag->GC(),
-                    Win32GCvalues);
-            }
-
-        void show_norm()
-            {
-                if (!b_dcMemNorm || !b_bmapNorm)
-                    return;
-                HDC dc = gdk_win32_hdc_get(b_wbag->Window(), b_wbag->GC(),
-                    Win32GCvalues);
-                BitBlt(dc, b_xoff, b_yoff, b_wid + 1, b_hei + 1, b_dcMemNorm,
-                    0, 0, SRCCOPY);
-                gdk_win32_hdc_release(b_wbag->Window(), b_wbag->GC(),
-                    Win32GCvalues);
-            }
-
-    private:
-        GTKsubwin *b_wbag;
-        HDC b_dcMemDim;
-        HDC b_dcMemNorm;
-        HBITMAP b_bmapDim;
-        HBITMAP b_bmapNorm;
-        int b_wid;
-        int b_hei;
-        int b_xoff;
-        int b_yoff;
-    };
-
-
-    blinker::blinker(GTKsubwin *wb, const CDl *ld)
-    {
-        b_wbag = wb;
-        b_dcMemDim = 0;
-        b_dcMemNorm = 0;
-        b_bmapDim = 0;
-        b_bmapNorm = 0;
-        b_xoff = 0;
-        b_yoff = 0;
-
-        gdk_window_get_size(wb->Window(), &b_wid, &b_hei);
-        if (b_wid < 0 || b_hei < 0 || (!b_wid && !b_hei))
-            return;
-
-        // Note the ordering of the COLORREFs relative to the GDK pixels.
-
-        // The dim pixel that alternates with the regular color.
-        DspLayerParams *lp = dsp_prm(ld);
-        COLORREF dimpix = RGB(
-            (GetBValue(lp->pixel())*DIMPIXVAL)/10,
-            (GetGValue(lp->pixel())*DIMPIXVAL)/10,
-            (GetRValue(lp->pixel())*DIMPIXVAL)/10);
-
-        if (GDK_IS_WINDOW(wb->Window())) {
-            // Need this correction for windows without implementation.
-
-            gdk_window_get_internal_paint_info(wb->Window(), 0,
-                &b_xoff, &b_yoff);
-            b_xoff = -b_xoff;
-            b_yoff = -b_yoff;
-        }
-
-        HDC dc = gdk_win32_hdc_get(wb->Window(), wb->GC(), Win32GCvalues);
-        struct dc_releaser
-        {
-            dc_releaser(GTKsubwin *wbg)  { wbag = wbg; }
-            ~dc_releaser()
-            {
-                gdk_win32_hdc_release(wbag->Window(), wbag->GC(),
-                    Win32GCvalues);
-            }
-            GTKsubwin *wbag;
-        } releaser(wb);
-
-        // Create a pixmap backing the entire window.
-        b_dcMemNorm = CreateCompatibleDC(dc);
-        if (!b_dcMemNorm)
-            return;
-        b_bmapNorm = CreateCompatibleBitmap(dc, b_wid, b_hei);
-        if (!b_bmapNorm)
-            return;
-        HBITMAP obm = SelectBitmap(b_dcMemNorm, b_bmapNorm);
-        BitBlt(b_dcMemNorm, 0, 0, b_wid + 1, b_hei + 1, dc, b_xoff, b_yoff,
-            SRCCOPY);
-        SelectBitmap(b_dcMemNorm, obm);
-        // The bimap must not be selected into a dc when passed to the
-        // image map add function (M$ headache #19305).
-        DeleteDC(b_dcMemNorm);
-        b_dcMemNorm = 0;
-
-        // Create am image list, which gives us the masking function.
-        HIMAGELIST h = ImageList_Create(b_wid, b_hei, ILC_COLORDDB | ILC_MASK,
-            0, 0);
-        if (!h)
-            return;
-
-        ImageList_SetBkColor(h, dimpix);
-        // in 256 color mode, the mask is always for the background,
-        // whatever pixel is passed.
-
-        COLORREF pix = RGB(GetBValue(lp->pixel()),
-            GetGValue(lp->pixel()), GetRValue(lp->pixel()));
-        if (ImageList_AddMasked(h, b_bmapNorm, pix) < 0) {
-            ImageList_Destroy(h);
-            return;
-        }
-        DeleteBitmap(b_bmapNorm);
-        b_bmapNorm = 0;
-
-        // Create a bitmap and draw the image,  The dim-color background
-        // of the image list replaces ld->pixel.  Destroy the image list
-        // since we're done with it.
-        b_dcMemDim = CreateCompatibleDC(dc);
-        if (!b_dcMemDim) {
-            ImageList_Destroy(h);
-            return;
-        }
-        b_bmapDim = CreateCompatibleBitmap(dc, b_wid, b_hei);
-        if (!b_bmapDim) {
-            ImageList_Destroy(h);
-            return;
-        }
-        SelectBitmap(b_dcMemDim, b_bmapDim);
-        ImageList_Draw(h, 0, b_dcMemDim, 0, 0, ILD_NORMAL);
-        ImageList_Destroy(h);
-
-        // Recreate the reference bitmap.  It gets trashed by the image
-        // list creation function, so it doesn't work to keep the
-        // original.
-        b_dcMemNorm = CreateCompatibleDC(dc);
-        if (!b_dcMemNorm)
-            return;
-        b_bmapNorm = CreateCompatibleBitmap(dc, b_wid, b_hei);
-        if (!b_bmapNorm)
-            return;
-        SelectBitmap(b_dcMemNorm, b_bmapNorm);
-        BitBlt(b_dcMemNorm, 0, 0, b_wid + 1, b_hei + 1, dc, b_xoff, b_yoff,
-            SRCCOPY);
-    }
-
-
-    // Return true if button 3 is pressed.
-    //
-    bool button3_down()
-    {
-        return (GetAsyncKeyState(VK_RBUTTON) < 0);
-    }
-}
-
-
-#else
-
-namespace {
-    struct blinker
-    {
-        blinker(GTKsubwin*, const CDl*);
-
-        ~blinker()
-            {
-#if GTK_CHECK_VERSION(3,0,0)
-                if (b_dim_pm)
-                    b_dim_pm->dec_ref();
-                if (b_norm_pm)
-                    b_norm_pm->dec_ref();
-#else
-                if (b_dim_pm)
-                    gdk_pixmap_unref(b_dim_pm);
-                if (b_norm_pm)
-                    gdk_pixmap_unref(b_norm_pm);
-#endif
-            }
-
-        bool is_ok()
-            {
-                return (b_wid > 0 && b_hei > 0 && b_dim_pm && b_norm_pm);
-            }
-
-        void show_dim()
-            {
-                if (!b_dim_pm)
-                    return;
-#if GTK_CHECK_VERSION(3,0,0)
-                b_dim_pm->copy_to_window(b_wbag->GetDrawable()->get_window(),
-                    b_wbag->GC(), 0, 0, 0, 0, b_wid, b_hei);
-#else
-                gdk_window_copy_area(b_wbag->Window(), b_wbag->GC(), 0, 0,
-                    b_dim_pm, 0, 0, b_wid, b_hei);
-                gdk_flush();
-#endif
-            }
-
-        void show_norm()
-            {
-                if (!b_norm_pm)
-                    return;
-#if GTK_CHECK_VERSION(3,0,0)
-                b_norm_pm->copy_to_window(b_wbag->GetDrawable()->get_window(),
-                    b_wbag->GC(), 0, 0, 0, 0, b_wid, b_hei);
-#else
-                gdk_window_copy_area(b_wbag->Window(), b_wbag->GC(), 0, 0,
-                    b_norm_pm, 0, 0, b_wid, b_hei);
-#endif
-                gdk_flush();
-            }
-
-    private:
-        GTKsubwin *b_wbag;
-#if GTK_CHECK_VERSION(3,0,0)
-        ndkPixmap *b_dim_pm;
-        ndkPixmap *b_norm_pm;
-#else
-        GdkPixmap *b_dim_pm;
-        GdkPixmap *b_norm_pm;
-#endif
-        int b_wid;
-        int b_hei;
-    };
-
-
-    unsigned int revbytes(unsigned bits, int nb)
-    {
-        unsigned int tmp = bits;
-        bits = 0;
-        unsigned char *a = (unsigned char*)&tmp;
-        unsigned char *b = (unsigned char*)&bits;
-        nb--;
-        for (int i = 0; i <= nb; i++)
-            b[i] = a[nb-i];
-        return (bits);
-    }
-
-
-    blinker::blinker(GTKsubwin *wb, const CDl *ld)
+    blinker::blinker(QTsubwin *wb, const CDl *ld)
     {
         b_wbag = wb;
         b_dim_pm = 0;
@@ -880,118 +687,7 @@ namespace {
         b_wid = 0;
         b_hei = 0;
 
-#if GTK_CHECK_VERSION(3,0,0)
-        if (!wb)
-            return;
-
-        GdkWindow *window = wb->GetDrawable()->get_window();
-        ndkPixmap *pm = new ndkPixmap(window, 1, 1);
-        if (!pm)
-            return;
-        wb->GetDrawable()->set_pixmap(pm);
-        wb->SetColor(dsp_prm(ld)->pixel());
-        wb->Pixel(0, 0);
-        wb->GetDrawable()->set_window(window);  // frees pm
-        ndkImage *im = new ndkImage(pm, 0, 0, 1, 1);
-        if (!im)
-            return;
-
-        int bpp = im->get_bytes_per_pixel();
-
-        int im_order = im->get_byte_order();
-        int order = GDK_LSB_FIRST;
-        unsigned int pix = 1;
-        if (!(*(unsigned char*)&pix))
-            order = GDK_MSB_FIRST;
-
-        pix = 0;
-        memcpy(&pix, im->get_pixels(), bpp);
-        if (order != im_order)
-            pix = revbytes(pix, bpp);
-        if (order == GDK_MSB_FIRST)
-            pix >>= 8*(sizeof(int) - bpp);
-        delete im;
-
-        // im->visual = 0 from pixmap
-        unsigned int red_mask, green_mask, blue_mask;
-        gdk_visual_get_red_pixel_details(GTKdev::self()->Visual(),
-            &red_mask, 0, 0);
-        gdk_visual_get_green_pixel_details(GTKdev::self()->Visual(),
-            &green_mask, 0, 0);
-        gdk_visual_get_blue_pixel_details(GTKdev::self()->Visual(),
-            &blue_mask, 0, 0);
-
-        int r = (pix & red_mask);
-        r = (((r * DIMPIXVAL)/10) & red_mask);
-        int g = (pix & green_mask);
-        g = (((g * DIMPIXVAL)/10) & green_mask);
-        int b = (pix & blue_mask);
-        b = (((b * DIMPIXVAL)/10) & blue_mask);
-        unsigned int dimpix = r | g | b;
-
-        if (order == GDK_MSB_FIRST) {
-            pix <<= 8*(sizeof(int) - bpp);
-            dimpix <<= 8*(sizeof(int) - bpp);
-        }
-        if (order != im_order) {
-            pix = revbytes(pix, bpp);
-            dimpix = revbytes(dimpix, bpp);
-        }
-
-        b_wid = wb->GetDrawable()->get_width();
-        b_hei = wb->GetDrawable()->get_height();
-        if (b_wid < 0 || b_hei < 0 || (!b_wid && !b_hei))
-            return;
-
-        pm = new ndkPixmap(window, b_wid, b_hei,
-            gdk_visual_get_depth(GTKdev::self()->Visual()));
-        if (!pm)
-            return;
-        pm->copy_from_window(window, wb->GC(), 0, 0, 0, 0, b_wid, b_hei);
-        b_norm_pm = pm;
-
-        // There is a bug in 2.24.10, using the window rather than the
-        // pixmap in gdk_image_get doesn't work.  The image has offsets
-        // that seem to require compensation with
-        // gdk_window_get_internal_paint_info() or similar, but I could
-        // never get this to work properly.
-
-        im = new ndkImage(pm, 0, 0, b_wid, b_hei);
-        if (!im) {
-            delete pm;
-            b_norm_pm = 0;
-            return;
-        }
-
-        // There may be some alpha info that should be ignored.
-        unsigned int mask = red_mask | green_mask | blue_mask;
-
-        char *z = (char*)im->get_pixels();
-        int i = b_wid*b_hei;
-        while (i--) {
-            unsigned f = 0;
-            unsigned char *a = (unsigned char*)&f;
-            for (int j = 0; j < bpp; j++)
-                a[j] = *z++;
-            if ((f & mask) == (pix & mask)) {
-                z -= bpp;
-                a = (unsigned char*)&dimpix;
-                for (int j = 0; j < bpp; j++)
-                    *z++ = a[j];
-            }
-        }
-        pm = new ndkPixmap(window, b_wid, b_hei);
-        if (!pm) {
-            delete im;
-            b_norm_pm->dec_ref();
-            b_norm_pm = 0;
-            return;
-        }
-        im->copy_to_pixmap(pm, wb->GC(), 0, 0, 0, 0, b_wid, b_hei);
-        delete im;
-        b_dim_pm = pm;
-
-#else
+/*XXX
         if (!wb)
             return;
 
@@ -1099,32 +795,14 @@ namespace {
         gdk_draw_image(pm, wb->GC(), im, 0, 0, 0, 0, b_wid, b_hei);
         gdk_image_destroy(im);
         b_dim_pm = pm;
-#endif
+*/
     }
 
 
-    // Return true if button 3 is pressed.
-    //
-    bool button3_down()
-    {
-        unsigned state;
-        GTKmainwin::self()->QueryPointer(0, 0, &state);
-        return (state & GDK_BUTTON3_MASK);
-    }
-}
-
-#endif
-
-
-namespace {
-    blinker *blinkers[DSP_NUMWINS];
-    int blink_timer_id;
-    bool blink_state;
-
-
+    // Static function.
     // Idle proc for blinking layers.
     //
-    int blink_idle(void*) {
+    int blinker::blink_idle(void*) {
         int cnt = 0;
         for (int i = 0; i < DSP_NUMWINS; i++) {
             if (!blinkers[i])
@@ -1157,31 +835,3 @@ namespace {
     }
 }
 
-
-void
-GTKltab::blink(CDl *ld)
-{
-    if (lt_disabled)
-        return;
-
-    for (int i = 0; i < DSP_NUMWINS; i++) {
-        WindowDesc *wd = DSP()->Window(i);
-        if (!wd)
-            continue;
-        GTKsubwin *w = dynamic_cast<GTKsubwin*>(wd->Wbag());
-        if (!w)
-            continue;
-        blinker *b = new blinker(w, ld);
-        if (!b->is_ok()) {
-            delete b;
-            continue;
-        }
-        blinker *oldb = blinkers[i];
-        blinkers[i] = b;
-        delete oldb;
-    }
-    if (!blink_timer_id)
-        blink_timer_id = g_idle_add(blink_idle, 0);
-}
-
-#endif

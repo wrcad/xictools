@@ -88,7 +88,7 @@ public:
         pbtn_NUMBTNS
     };
 
-    QTplotDlg(int type) : QTdraw(type)
+    QTplotDlg(int type) : QTdraw(type), QTbag(this)
     {
         pb_graph = 0;
         pb_gbox = 0;

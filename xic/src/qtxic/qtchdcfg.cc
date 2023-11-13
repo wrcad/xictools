@@ -165,7 +165,7 @@ QTchdCfgCellEdit::dropEvent(QDropEvent *ev)
 
 QTchdCfgDlg *QTchdCfgDlg::instPtr;
 
-QTchdCfgDlg::QTchdCfgDlg(GRobject caller, const char *chdname)
+QTchdCfgDlg::QTchdCfgDlg(GRobject caller, const char *chdname) : QTbag(this)
 {
     instPtr = this;
     cf_caller = caller;

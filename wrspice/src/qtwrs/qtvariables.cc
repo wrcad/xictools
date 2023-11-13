@@ -107,7 +107,7 @@ QTtoolbar::UpdateVariables()
 const char *QTvarListDlg::vl_btns[] = { 0 };
 QTvarListDlg *QTvarListDlg::instPtr;
 
-QTvarListDlg::QTvarListDlg(int xx, int yy, const char *s)
+QTvarListDlg::QTvarListDlg(int xx, int yy, const char *s) : QTbag(this)
 {
     instPtr = this;
 

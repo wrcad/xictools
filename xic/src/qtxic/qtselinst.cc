@@ -142,7 +142,7 @@ cMain::PopUpFilterInstances(CDol *list)
 CDol *QTcellInstSelectDlg::ci_return;
 QTcellInstSelectDlg *QTcellInstSelectDlg::instPtr;
 
-QTcellInstSelectDlg::QTcellInstSelectDlg(CDol *l, bool filtmode)
+QTcellInstSelectDlg::QTcellInstSelectDlg(CDol *l, bool filtmode) : QTbag(this)
 {
     instPtr = this;
     ci_list = 0;

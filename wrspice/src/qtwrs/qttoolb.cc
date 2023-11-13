@@ -311,7 +311,7 @@ sToolbar *ToolBar() { return (TB()); }
 
 QTtoolbar *QTtoolbar::instancePtr;
 
-QTtoolbar::QTtoolbar()
+QTtoolbar::QTtoolbar() : QTbag(0)
 {
     if (instancePtr) {
         fprintf(stderr, "Singleton class QTtoolbar already instantiated.\n");

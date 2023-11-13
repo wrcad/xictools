@@ -136,7 +136,7 @@ cFC::clearMarks()
 
 QTfastCapDlg *QTfastCapDlg::instPtr;
 
-QTfastCapDlg::QTfastCapDlg(GRobject c)
+QTfastCapDlg::QTfastCapDlg(GRobject c) : QTbag(this)
 {
     instPtr = this;
     fc_caller = c;

@@ -100,7 +100,7 @@ QTmainwin::files_panic()
 // cursor seems to never appear with the standard logic.  In order to
 // make the busy cursor appear, had to use a timeout as below.
 
-/*
+/*XXX
 namespace {
     int msw_timeout(void *caller)
     {
@@ -177,7 +177,7 @@ char *QTfilesListDlg::f_cwd;
 int QTfilesListDlg::f_timer_tag;
 QTfilesListDlg *QTfilesListDlg::instPtr;
 
-QTfilesListDlg::QTfilesListDlg(GRobject c)
+QTfilesListDlg::QTfilesListDlg(GRobject c) : QTbag(this)
 {
     fl_caller = c;
     instPtr = this;

@@ -89,7 +89,7 @@ using namespace qtinterf;
 class qtinterf::QTbag : virtual public GRwbag
 {
 public:
-    QTbag(QWidget* = 0);
+    QTbag(QWidget*);
     virtual ~QTbag();
 
     // QT-SPECIFIC

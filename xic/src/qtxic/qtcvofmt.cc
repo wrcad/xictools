@@ -331,9 +331,11 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     label = new QLabel(tr("Output Format:  CIF archive"));
     hbox->addWidget(label);
     label->setAlignment(Qt::AlignCenter);
+    hbox->addSpacing(20);
 
     fmt_cifext = new QPushButton(tr("Extension Flags"));
     hbox->addWidget(fmt_cifext);
+    hbox->addSpacing(20);
     fmt_cifext->setAutoDefault(false);
     fmt_cifflags = new QMenu();
     fmt_cifext->setMenu(fmt_cifflags);
@@ -343,23 +345,21 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
         FIO()->CifStyle().flags_export() : FIO()->CifStyle().flags();
     fmt_cifflags->addAction(fmt_which_flags[(int)fmt_strip]);
 
-/* XXX
-    g_object_set_data(G_OBJECT(mi), "cvofmt", this);
-    g_signal_connect(G_OBJECT(mi), "activate",
-        G_CALLBACK(fmt_flags_proc), (void*)"Strip");
-    GtkWidget *msep = gtk_menu_item_new();  // separator
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), msep);
-    gtk_widget_show(msep);
-*/
+    fmt_cifflags->addSeparator();
+    int i = 1;
     for (fmt_menu *m = fmt_cif_extensions; m->name; m++) {
         QAction *a = fmt_cifflags->addAction(m->name);
         a->setCheckable(true);
         a->setChecked(m->code & flgs);
+        a->setData(i++);
     }
+    connect(fmt_cifflags, SIGNAL(triggered(QAction*)),
+        this, SLOT(cif_flags_slot(QAction*)));
 
     QPushButton *btn = new QPushButton(tr("Last Seen"));
     hbox->addWidget(btn);
     btn->setAutoDefault(false);
+    btn->setMaximumWidth(100);
     connect(btn, SIGNAL(clicked()), this, SLOT(ciflast_btn_slot()));
 
     // next two rows in three columns
@@ -450,7 +450,6 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
         G_CALLBACK(fmt_style_proc), (void*)(long)LABEL_STYLE);
 */
 
-
     // CGX page
     //
     page = new QWidget();
@@ -521,10 +520,8 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
 
     configure(fmtmode);
 
-/*
-    g_signal_connect(G_OBJECT(fmt_form), "switch-page",
-        G_CALLBACK(fmt_page_proc), this);
-*/
+    connect(this, SIGNAL(currentChanged(int)),
+        this, SLOT(format_changed_slot(int)));
 }
 
 
@@ -532,12 +529,6 @@ QTconvOutFmt::~QTconvOutFmt()
 {
     if (fmt_oasadv && QTdev::GetStatus(fmt_oasadv))
         QTdev::CallCallback(fmt_oasadv);
-
-    // This prevents the handler from being called after this is
-    // deleted, which can happen when the widgets are destroyed.
-
-//    g_signal_handlers_disconnect_by_func(G_OBJECT(fmt_form),
-//        (gpointer)fmt_page_proc, this);
 }
 
 
@@ -574,20 +565,16 @@ QTconvOutFmt::update()
     }
     fmt_sb_gdsunit->setValue(initd);
 
-/*
     unsigned int flgs = fmt_strip ?
         FIO()->CifStyle().flags_export() : FIO()->CifStyle().flags();
-    GList *g0 = gtk_container_get_children(GTK_CONTAINER(fmt_cifflags));
-    GtkWidget *lab = gtk_bin_get_child(GTK_BIN(g0->data));
-    gtk_label_set_text(GTK_LABEL(lab), which_flags[(int)fmt_strip]);
+    QList<QAction*> actions = fmt_cifflags->actions();
     int cnt = 0;
-    // list: strip, separator, flags ...
-    for (GList *l = g0->next->next; l; cnt++, l = l->next) {
-        gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(l->data),
-           cif_extensions[cnt].code & flgs);
+    for (int i = 1; i < actions.size(); i++) {
+        if (actions[i]->data().toInt() == 0)
+            continue;
+        actions[i]->setChecked(fmt_cif_extensions[cnt].code & flgs);
+        cnt++;
     }
-    g_list_free(g0);
-*/
 
     for (int i = 0; fmt_cname_formats[i].name; i++) {
         if (fmt_cname_formats[i].code == FIO()->CifStyle().cname_type()) {
@@ -630,15 +617,8 @@ QTconvOutFmt::configure(cvofmt_mode mode)
         fmt_gdsftlab->show();
         fmt_gdsftopt->show();
         fmt_oasmap->hide();
-/*XXX
-        for (int i = 0; ; i++) {
-            GtkWidget *w =
-                gtk_notebook_get_nth_page(GTK_NOTEBOOK(fmt_form), i);
-            if (!w)
-                break;
-            gtk_widget_show(w);
-        }
-*/
+        for (int i = 0; i < count(); i++)
+            setTabVisible(i, true);
     }
     else if (mode == cvofmt_native) {
         // Converting native cell files.
@@ -647,18 +627,8 @@ QTconvOutFmt::configure(cvofmt_mode mode)
         fmt_gdsftopt->hide();
         fmt_oasmap->hide();
         // hide 4 (XIC) and larger
-/*
-        for (int i = 0; ; i++) {
-            GtkWidget *w =
-                gtk_notebook_get_nth_page(GTK_NOTEBOOK(fmt_form), i);
-            if (!w)
-                break;
-            if (i >= 4)
-                gtk_widget_hide(w);
-            else
-                gtk_widget_show(w);
-        }
-*/
+        for (int i = 0; i < count(); i++)
+            setTabVisible(i, (i < 4));
     }
     else if (mode == cvofmt_chd) {
         // Converting using CHD.
@@ -667,18 +637,8 @@ QTconvOutFmt::configure(cvofmt_mode mode)
         fmt_gdsftopt->hide();
         fmt_oasmap->hide();
         // hide 4 (XIC) and larger but keep 7 (CGD)
-/*
-        for (int i = 0; ; i++) {
-            GtkWidget *w =
-                gtk_notebook_get_nth_page(GTK_NOTEBOOK(fmt_form), i);
-            if (!w)
-                break;
-            if (i >= 4)
-                gtk_widget_hide(w);
-            else
-                gtk_widget_show(w);
-        }
-*/
+        for (int i = 0; i < count(); i++)
+            setTabVisible(i, (i < 4) || i == 7);
     }
     else if (mode == cvofmt_chdfile) {
         // Converting using CHD file.
@@ -687,18 +647,8 @@ QTconvOutFmt::configure(cvofmt_mode mode)
         fmt_gdsftopt->hide();
         fmt_oasmap->hide();
         // hide 4 (XIC) and larger but keep 6 and 7 (CHD and CGD)
-/*
-        for (int i = 0; ; i++) {
-            GtkWidget *w =
-                gtk_notebook_get_nth_page(GTK_NOTEBOOK(fmt_form), i);
-            if (!w)
-                break;
-            if (i >= 4)
-                gtk_widget_hide(w);
-            else
-                gtk_widget_show(w);
-        }
-*/
+        for (int i = 0; i < count(); i++)
+            setTabVisible(i, (i < 4) || i == 6 || i == 7);
     }
     else if (mode == cvofmt_asm) {
         // Assembling.
@@ -707,18 +657,8 @@ QTconvOutFmt::configure(cvofmt_mode mode)
         fmt_gdsftopt->hide();
         fmt_oasmap->show();
         // hide 5 (Text) and larger
-/*
-        for (int i = 0; ; i++) {
-            GtkWidget *w =
-                gtk_notebook_get_nth_page(GTK_NOTEBOOK(fmt_form), i);
-            if (!w)
-                break;
-            if (i >= 5)
-                gtk_widget_hide(w);
-            else
-                gtk_widget_show(w);
-        }
-*/
+        for (int i = 0; i < count(); i++)
+            setTabVisible(i, (i < 5));
     }
     else if (mode == cvofmt_db) {
         // Setting options (export control).
@@ -727,18 +667,8 @@ QTconvOutFmt::configure(cvofmt_mode mode)
         fmt_gdsftopt->hide();
         fmt_oasmap->show();
         // hide 4 (XIC) and larger
-/*
-        for (int i = 0; ; i++) {
-            GtkWidget *w =
-                gtk_notebook_get_nth_page(GTK_NOTEBOOK(fmt_form), i);
-            if (!w)
-                break;
-            if (i >= 4)
-                gtk_widget_hide(w);
-            else
-                gtk_widget_show(w);
-        }
-*/
+        for (int i = 0; i < count(); i++)
+            setTabVisible(i, (i < 4));
     }
 }
 
@@ -909,6 +839,51 @@ QTconvOutFmt::ciflabel_menu_changed(int i)
 
 
 void
+QTconvOutFmt::cif_flags_slot(QAction *a)
+{
+    QByteArray ba = a->text().toLatin1();
+    const char *s = ba.constData();
+    if (a->data().toInt() == 0) {
+        fmt_strip = !fmt_strip;
+        unsigned int flgs = fmt_strip ?
+            FIO()->CifStyle().flags_export() : FIO()->CifStyle().flags();
+        a->setText(fmt_which_flags[(int)fmt_strip]);
+        QList<QAction*> actions = fmt_cifflags->actions();
+        int cnt = 0;
+        for (int i = 1; i < actions.size(); i++) {
+            if (actions[i]->data().toInt() == 0)
+                continue;
+            actions[i]->setChecked(fmt_cif_extensions[cnt].code & flgs);
+            cnt++;
+        }
+        return;
+    }
+    int i = a->data().toInt() - 1;
+    if (QTdev::GetStatus(a)) {
+        if (fmt_strip)
+            FIO()->CifStyle().set_flag_export(fmt_cif_extensions[i].code);
+        else
+            FIO()->CifStyle().set_flag(fmt_cif_extensions[i].code);
+    }
+    else {
+        if (fmt_strip)
+            FIO()->CifStyle().unset_flag_export(fmt_cif_extensions[i].code);
+        else
+            FIO()->CifStyle().unset_flag(fmt_cif_extensions[i].code);
+    }
+    if (FIO()->CifStyle().flags() != 0xfff ||
+            FIO()->CifStyle().flags_export() != 0) {
+        char buf[64];
+        snprintf(buf, sizeof(buf), "%d %d", FIO()->CifStyle().flags(),
+            FIO()->CifStyle().flags_export());
+        CDvdb()->setVariable(VA_CifOutExtensions, buf);
+    }
+    else
+        CDvdb()->clearVariable(VA_CifOutExtensions);
+}
+
+
+void
 QTconvOutFmt::ciflast_btn_slot()
 {
     char *string = FIO()->LastCifStyle();
@@ -950,74 +925,10 @@ QTconvOutFmt::oasnwp_btn_slot(int state)
 }
 
 
-#ifdef notdef
-
-
-// Static function.
 void
-QTconvOutFmt::fmt_flags_proc(GtkWidget *caller, void *client_data)
+QTconvOutFmt::format_changed_slot(int page)
 {
-    QTconvOutFmt *fmt = (QTconvOutFmt*)g_object_get_data(G_OBJECT(caller),
-        "cvofmt");
-    if (!fmt)
-        return;
-    char *s = (char*)client_data;
-    if (!strcmp(s, "Strip")) {
-        fmt->fmt_strip = !fmt->fmt_strip;
-        unsigned int flgs = fmt->fmt_strip ?
-            FIO()->CifStyle().flags_export() : FIO()->CifStyle().flags();
-/*
-        GList *g0 =
-            gtk_container_get_children(GTK_CONTAINER(fmt->fmt_cifflags));
-        GtkWidget *lab = gtk_bin_get_child(GTK_BIN(g0->data));
-        gtk_label_set_text(GTK_LABEL(lab), which_flags[(int)fmt->fmt_strip]);
-        int cnt = 0;
-        // list: strip, separator, flags ...
-        for (GList *l = g0->next->next; l; cnt++, l = l->next) {
-            gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(l->data),
-                fmt_cif_extensions[cnt].code & flgs);
-        }
-        g_list_free(g0);
-*/
-        return;
-    }
-    for (int i = 0; fmt_cif_extensions[i].name; i++) {
-        if (strcmp(s, fmt_cif_extensions[i].name))
-            continue;
-        if (GTKdev::GetStatus(caller)) {
-            if (fmt->fmt_strip)
-                FIO()->CifStyle().set_flag_export(fmt_cif_extensions[i].code);
-            else
-                FIO()->CifStyle().set_flag(fmt_cif_extensions[i].code);
-        }
-        else {
-            if (fmt->fmt_strip)
-                FIO()->CifStyle().unset_flag_export(fmt_cif_extensions[i].code);
-            else
-                FIO()->CifStyle().unset_flag(fmt_cif_extensions[i].code);
-        }
-        if (FIO()->CifStyle().flags() != 0xfff ||
-                FIO()->CifStyle().flags_export() != 0) {
-            char buf[64];
-            snprintf(buf, sizeof(buf), "%d %d", FIO()->CifStyle().flags(),
-                FIO()->CifStyle().flags_export());
-            CDvdb()->setVariable(VA_CifOutExtensions, buf);
-        }
-        else
-            CDvdb()->clearVariable(VA_CifOutExtensions);
-        return;
-    }
+    if (fmt_cb)
+        (*fmt_cb)(page);
 }
 
-
-// Static function.
-//
-void
-QTconvOutFmt::fmt_page_proc(GtkWidget*, GtkWidget*, int pagenum, void *arg)
-{
-    QTconvOutFmt *fmt = (QTconvOutFmt*)arg;
-    if (fmt->fmt_cb)
-        (*fmt->fmt_cb)(pagenum);
-}
-
-#endif

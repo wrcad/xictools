@@ -179,7 +179,7 @@ QTprpEditorDlg::sAddEnt QTprpEditorDlg::po_phys_addmenu[] = {
 };
 
 
-QTprpEditorDlg::QTprpEditorDlg(CDo *odesc, PRPmode activ)
+QTprpEditorDlg::QTprpEditorDlg(CDo *odesc, PRPmode activ) : QTprpBase(this)
 {
     instPtr = this;
     po_activ = 0;

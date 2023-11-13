@@ -4086,7 +4086,7 @@ sDevDesc::find(CDs *sdesc, sDevInst **dlist, const BBox *AOI, bool findall,
     sDevInst *d0 = 0;
     uint64_t check_time = 0;
     for (int i = 0; i < g->num; i++) {
-        if (Timer()->check_interval(check_time)) {
+        if (cTimer::self()->check_interval(check_time)) {
             if (DSP()->MainWdesc() && DSP()->MainWdesc()->Wdraw())
                 DSPpkg::self()->CheckForInterrupt();
             if (XM()->ConfirmAbort()) {

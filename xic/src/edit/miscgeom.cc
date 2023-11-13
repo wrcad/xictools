@@ -418,10 +418,10 @@ cEdit::createLayer(CDs *sdesc, const BBox *pAOI, CDl *ld, const char *str,
     else {
         int cnt = 0;
         uint64_t check_time = 0;
-        Timer()->check_interval(check_time);
+        cTimer::self()->check_interval(check_time);
         while ((gBB = grd.advance()) != 0) {
             cnt++;
-            if (Timer()->check_interval(check_time))
+            if (cTimer::self()->check_interval(check_time))
                 PL()->ShowPromptV("Evaluating region %d/%d.", cnt, numgrd);
 
             // If we're doing a bloat, expand the grid cell size, and

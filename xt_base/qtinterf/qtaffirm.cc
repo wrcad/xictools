@@ -111,7 +111,7 @@ QTaffirmDlg::~QTaffirmDlg()
     if (p_caller && !p_no_desel) {
         QObject *o = (QObject*)p_caller;
         if (o->isWidgetType()) {
-            QPushButton *btn = dynamic_cast<QPushButton*>(o);
+            QAbstractButton *btn = dynamic_cast<QAbstractButton*>(o);
             if (btn)
                 btn->setChecked(false);
         }
@@ -143,16 +143,18 @@ QTaffirmDlg::register_caller(GRobject c, bool no_dsl, bool handle_popdn)
         QObject *o = (QObject*)c;
         if (o) {
             if (o->isWidgetType()) {
-                QPushButton *btn = dynamic_cast<QPushButton*>(o);
-                if (btn)
+                QAbstractButton *btn = dynamic_cast<QAbstractButton*>(o);
+                if (btn) {
                     connect(btn, SIGNAL(clicked()),
                         this, SLOT(cancel_btn_slot()));
+                }
             }
             else {
                 QAction *a = dynamic_cast<QAction*>(o);
-                if (a)
+                if (a) {
                     connect(a, SIGNAL(triggered()),
                         this, SLOT(cancel_btn_slot()));
+                }
             }
         }
     }
@@ -178,8 +180,6 @@ QTaffirmDlg::affirm_btn_slot()
 {
     if (p_callback)
         (*p_callback)(true, p_cb_arg);
-    emit affirm(true, p_cb_arg);
-    delete this;
 }
 
 
@@ -188,7 +188,5 @@ QTaffirmDlg::cancel_btn_slot()
 {
     if (p_callback)
         (*p_callback)(false, p_cb_arg);
-    emit affirm(false, p_cb_arg);
-    delete this;
 }
 

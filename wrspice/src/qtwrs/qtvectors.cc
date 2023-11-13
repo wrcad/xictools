@@ -130,7 +130,7 @@ const char *QTvectorListDlg::vl_btns[] =
     { "Desel All", "Print", "Plot", "Delete", 0 };
 QTvectorListDlg *QTvectorListDlg::instPtr;
 
-QTvectorListDlg::QTvectorListDlg(int xx, int yy, const char *s)
+QTvectorListDlg::QTvectorListDlg(int xx, int yy, const char *s) : QTbag(this)
 {
     instPtr = this;
     vl_affirm = 0;

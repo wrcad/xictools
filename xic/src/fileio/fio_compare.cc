@@ -589,10 +589,11 @@ namespace {
 
         void pr1(unsigned int cellcnt, unsigned int numcells)
             {
-                if (!(cellcnt & 0xff) || cfb_tm != Timer()->elapsed_msec()) {
+                if (!(cellcnt & 0xff) ||
+                        cfb_tm != cTimer::self()->elapsed_msec()) {
                     FIO()->ifInfoMessage(IFMSG_INFO , cfb_fmt, 
                         cellcnt, numcells, cfb_str[(cfb_nx++ & 0x3)]);
-                    cfb_tm = Timer()->elapsed_msec();
+                    cfb_tm = cTimer::self()->elapsed_msec();
                 }
                 cfb_numcells = numcells;
                 cfb_cellcnt = cellcnt;
@@ -600,10 +601,10 @@ namespace {
 
         void pr2()
             {
-                if (cfb_tm != Timer()->elapsed_msec()) {
+                if (cfb_tm != cTimer::self()->elapsed_msec()) {
                     FIO()->ifInfoMessage(IFMSG_INFO , cfb_fmt, 
                         cfb_cellcnt, cfb_numcells, cfb_str[(cfb_nx++ & 0x3)]);
-                    cfb_tm = Timer()->elapsed_msec();
+                    cfb_tm = cTimer::self()->elapsed_msec();
                 }
             }
 

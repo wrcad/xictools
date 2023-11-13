@@ -113,7 +113,7 @@ cFH::updateString()
 
 QTfastHenryDlg *QTfastHenryDlg::instPtr;
 
-QTfastHenryDlg::QTfastHenryDlg(GRobject c)
+QTfastHenryDlg::QTfastHenryDlg(GRobject c) : QTbag(this)
 {
     instPtr = this;
     fh_caller = c;

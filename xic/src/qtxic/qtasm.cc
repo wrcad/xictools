@@ -175,7 +175,7 @@ int QTasmDlg::asm_fmt_type = cConvert::cvGds;
 
 QTasmDlg *QTasmDlg::instPtr;
 
-QTasmDlg::QTasmDlg(GRobject c)
+QTasmDlg::QTasmDlg(GRobject c) : QTbag(this)
 {
     instPtr = this;
     asm_caller = c;

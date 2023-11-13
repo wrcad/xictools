@@ -21,6 +21,7 @@ than Apply/Dismiss have auto default turned off.
 Mouse wheel support in drawing wins.  DONE
 
 These use QMenuBar, which gets hijacked in Apple.
+All but the main window now use QToolbar.
 qtasm.cc
 qtdebug.cc
 qtdevs.cc
@@ -64,17 +65,17 @@ qtplace.cc:    OK hasUrls() text/twostring text/cellname text/string text/plain
 These have "#ifdef notdef", i.e., code to translate.
 qtasmpage.cc  selections, tree widget drops
 qtdebug.cc   keypress, selections
-qtextcmd.cc  update function
 qtextdev.cc  selections
-qtextset.cc edit block
 qtfiles.cc  selection, clipboard
 qthtext.cc  selections
 qtlogo.cc   font selection
 qtltab.cc   blinking layers
 qtmenucfg.cc  fixme dynamic entries
-qtnodmp.cc  selections, misc handlers
 qtoalibs.cc selections, button press
 qttree.cc   clipboard, drag, possibly deselect collapsed selection
+
+QTparam: selections are ugly.  Define a new "selection color",
+What to do about X selections?
 
 These use QTcanvas
 qtdevs.cc

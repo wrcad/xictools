@@ -116,6 +116,9 @@ private slots:
     void p2_gpmulti_btn_slot(int);
     void p2_gpmthd_menu_slot(int);
 
+    void p3_edit_btn_slot();
+    void p3_del_btn_slot(bool);
+    void p3_und_btn_slot(bool);
     void p3_noseries_btn_slot(int);
     void p3_nopara_btn_slot(int);
     void p3_keepshrt_btn_slot(int);
@@ -146,12 +149,8 @@ private:
     void misc_page();
     void set_sens();
     void show_grp_node(QCheckBox*);
-
-    /*
     void dev_menu_upd();
-    static bool es_editsave(const char*, void*, XEtype);
-    static void es_dev_menu_proc(GtkWidget*, void*);
-    */
+    static bool editsave_cb(const char*, void*, XEtype);
 
     GRobject    es_caller;
     QTabWidget  *es_notebook;
@@ -183,6 +182,9 @@ private:
     QCheckBox   *es_p2_gpmulti;
     QComboBox   *es_p2_gpmthd;
 
+    QComboBox   *es_p3_device_menu;
+    QPushButton *es_p3_delblk;
+    QPushButton *es_p3_undblk;
     QCheckBox   *es_p3_noseries;
     QCheckBox   *es_p3_nopara;
     QCheckBox   *es_p3_keepshrt;

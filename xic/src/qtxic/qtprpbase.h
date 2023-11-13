@@ -50,7 +50,7 @@ class QMimeData;
 class QTprpBase : public QTbag
 {
 public:
-    QTprpBase()
+    QTprpBase(QWidget *me) : QTbag(me)
     {
         pb_line_selected = -1;
         pb_list = 0;

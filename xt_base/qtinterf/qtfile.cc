@@ -169,10 +169,6 @@ static const char * const go_xpm[] = {
 
 namespace qtinterf
 {
-    struct QTfsMon : public GRmonList
-    {
-        char *any_selection();
-    };
 
     // Subclass QTreeWidgetItem to hold directory modification time.
     //
@@ -582,17 +578,11 @@ file_list_widget::start_drag()
 // End of file_list_widget functions.
 
 
-// Keep a list of all active file selection pop-ups so we can find
-// selected text.
-//
-namespace { QTfsMon FSmonitor; }
-
-
 // Return the selection from any file selection pop-up.  The window
 // manager probably allows only one selection.
 //
 char *
-QTfsMon::any_selection()
+QTfileDlg::QTfsMon::any_selection()
 {
     for (elt *e = list; e; e = e->next) {
         QTfileDlg *fs = static_cast<QTfileDlg*>(e->obj);
@@ -604,23 +594,27 @@ QTfsMon::any_selection()
     }
     return (0);
 }
+// End of QTfsMon functions.
 
 
-namespace {
-    // The default strings for the filter combo.  The first two are not
-    // editable, the rest can be set arbitrarily by the user.
-    //
-    const char *filter_options[] =
-    {
-        "all:",
-        "archive: *.cif *.cgx *.gds *.oas *.strm *.stream",
-        0,
-        0,
-        0,
-        0,
-        0
-    };
-}
+// The default strings for the filter combo.  The first two are not
+// editable, the rest can be set arbitrarily by the user.
+//
+const char *QTfileDlg::filter_options[] =
+{
+    "all:",
+    "archive: *.cif *.cgx *.gds *.oas *.strm *.stream",
+    0,
+    0,
+    0,
+    0,
+    0
+};
+
+// Keep a list of all active file selection pop-ups so we can find
+// selected text.
+//
+QTfileDlg::QTfsMon QTfileDlg::FSmonitor;
 
 QTfileDlg::QTfileDlg(QTbag *owner, FsMode mode, void *arg,
     const char *root_or_fname) :
@@ -678,8 +672,10 @@ QTfileDlg::QTfileDlg(QTbag *owner, FsMode mode, void *arg,
     policy.setVerticalPolicy(QSizePolicy::Expanding);
     setSizePolicy(policy);
 
-    closed_folder_icon = QApplication::style()->standardIcon(QStyle::SP_DirIcon);
-    open_folder_icon = QApplication::style()->standardIcon(QStyle::SP_DirOpenIcon);
+    closed_folder_icon =
+        QApplication::style()->standardIcon(QStyle::SP_DirIcon);
+    open_folder_icon =
+        QApplication::style()->standardIcon(QStyle::SP_DirOpenIcon);
 
     if (f_config == fsSEL) {
         setWindowTitle(QString(tr("File Selection")));
@@ -701,8 +697,6 @@ QTfileDlg::QTfileDlg(QTbag *owner, FsMode mode, void *arg,
     }
     else if (f_config == fsSAVE || f_config == fsOPEN) {
         // Don't steal focus
-//        setAttribute(Qt::WA_ShowWithoutActivating);
-//XXX file selector comes up empty
         // name should be tilde and dot expanded
         char *fn;
         if (root_or_fname && *root_or_fname) {
@@ -967,6 +961,8 @@ QTfileDlg::QTfileDlg(QTbag *owner, FsMode mode, void *arg,
             SIGNAL(itemDoubleClicked(QListWidgetItem*)),
             this, SLOT(list_double_clicked_slot(QListWidgetItem*)));
     }
+    if (f_config == fsSAVE || f_config == fsOPEN)
+        connect(this, SIGNAL(revert()), parent(), SLOT(revert_slot()));
     init();
 
     f_timer = new QTimer(this);
@@ -2079,13 +2075,9 @@ QTfileDlg::check_slot()
         delete dead_list.at(i);
 
     if (!f_reverted) {
-        // Give the focus back to the parent.
-        if (f_config == fsSAVE || f_config == fsOPEN) {
-            if (parent()) {
-                ((QWidget*)parent())->activateWindow();
-                ((QWidget*)parent())->setFocus();
-            }
-        }
+        // Give the focus back to the parent if it uses a prompt.
+        if (f_config == fsSAVE || f_config == fsOPEN)
+            emit revert();
         f_reverted = true;
     }
 }
@@ -2197,7 +2189,6 @@ stringdiff(stringlist **s1p, stringlist **s2p)
 	*s1p = s1;
 	*s2p = s2;
 }
-
 
 
 /* XXX

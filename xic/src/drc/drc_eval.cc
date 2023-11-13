@@ -470,7 +470,7 @@ done:
         PL()->RestorePrompt();
     setErrorLevel(errtmp);
     drc_doing_inter = false;
-    drc_stop_time = Timer()->elapsed_msec();
+    drc_stop_time = cTimer::self()->elapsed_msec();
     return (drc_err_count > 0);
 }
 
@@ -603,7 +603,7 @@ cDRC::batchTest(const BBox *AOI, FILE *fp, sLstr *lstr, BBox *errBB,
         }
     }
     close_drc(blist);
-    drc_stop_time = Timer()->elapsed_msec();
+    drc_stop_time = cTimer::self()->elapsed_msec();
     return (ret);
 }
 
@@ -671,7 +671,7 @@ cDRC::gridBatchTest(const BBox *AOI, FILE *outfp)
         return (XIbad);
     }
 
-    long start_time = Timer()->elapsed_msec();
+    long start_time = cTimer::self()->elapsed_msec();
     unsigned int tot_errs = 0;
     unsigned int tot_checked = 0;
     drc_doing_grid = (nvals > 1);
@@ -840,7 +840,7 @@ cDRC::chdGridBatchTest(cCHD *chd, const char *cellname, const BBox *AOI,
         CDcdb()->destroyTable(false);
     }
 
-    long start_time = Timer()->elapsed_msec();
+    long start_time = cTimer::self()->elapsed_msec();
     unsigned int tot_errs = 0;
     unsigned int tot_checked = 0;
     drc_doing_grid = (nvals > 1);
@@ -995,7 +995,7 @@ cDRC::batchListTest(const CDol *slist, FILE *fp, sLstr *lstr, BBox *errBB)
         }
     }
     close_drc(blist);
-    drc_stop_time = Timer()->elapsed_msec();
+    drc_stop_time = cTimer::self()->elapsed_msec();
 }
 
 
@@ -1500,7 +1500,7 @@ cDRC::init_drc(const BBox *AOI, Blist **blist, bool skip_cnt)
     }
 
     sPF::set_skip_drc(true);  // ignore objects with CDNoDRC set
-    drc_start_time = Timer()->elapsed_msec();
+    drc_start_time = cTimer::self()->elapsed_msec();
 
     drc_num_checked = 0;
     drc_err_count = 0;
@@ -1687,7 +1687,7 @@ cDRC::check_interrupt(bool force)
     }
     if (force)
         drc_check_time = 0;
-    if (Timer()->check_interval(drc_check_time)) {
+    if (cTimer::self()->check_interval(drc_check_time)) {
         if (drc_num_checked) {
             DSPpkg::self()->CheckForInterrupt();
             if (DSP()->Interrupt() && drc_doing_inter) {
@@ -1704,7 +1704,8 @@ cDRC::check_interrupt(bool force)
                 return (true);
             }
             if (intrMaxTime() > 0 &&
-                    Timer()->elapsed_msec() - drc_start_time > intrMaxTime()) {
+                    cTimer::self()->elapsed_msec() - drc_start_time >
+                    intrMaxTime()) {
                 PL()->ShowPrompt("DRC time limit reached.");
                 return (true);
             }

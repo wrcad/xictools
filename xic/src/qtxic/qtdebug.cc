@@ -156,7 +156,7 @@ namespace {
 
 QTscriptDebuggerDlg *QTscriptDebuggerDlg::instPtr;
 
-QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c)
+QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c) : QTbag(this)
 {
     instPtr = this;
     db_caller = c;

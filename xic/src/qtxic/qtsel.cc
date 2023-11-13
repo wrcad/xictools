@@ -88,7 +88,7 @@ cMain::PopUpSelectControl(GRobject caller, ShowMode mode)
 
 QTselectDlg *QTselectDlg::instPtr;
 
-QTselectDlg::QTselectDlg(GRobject c)
+QTselectDlg::QTselectDlg(GRobject c) : QTbag(this)
 {
     instPtr = this;
     sl_caller = c;

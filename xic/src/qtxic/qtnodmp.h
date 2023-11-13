@@ -59,6 +59,7 @@ class QLineEdit;
 class QRadioButton;
 class QTreeWidget;
 class QCheckBox;
+class QTreeWidgetItem;
 
 using namespace ns_nodmp;
 
@@ -97,6 +98,8 @@ private slots:
     void help_btn_slot();
     void srch_btn_slot();
     void srch_text_changed_slot(const QString&);
+    void nodesel_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*);
+    void termsel_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*);
     void deselect_btn_slot();
     void dismiss_btn_slot();
     void usex_btn_slot(int);
@@ -112,15 +115,6 @@ private:
     static void nm_name_cb(const char*, void*);
     static void nm_join_cb(bool, void*);
     static void nm_rm_cb(bool, void*);
-
-    /*
-    static int nm_select_nlist_proc(GtkTreeSelection*, GtkTreeModel*,
-        GtkTreePath*, int, void*);
-    static bool nm_n_focus_proc(GtkWidget*, GdkEvent*, void*);
-    static int nm_select_tlist_proc(GtkTreeSelection*, GtkTreeModel*,
-        GtkTreePath*, int, void*);
-    static bool nm_t_focus_proc(GtkWidget*, GdkEvent*, void*);
-    */
 
     NmpState    *nm_cmd;
     GRobject    nm_caller;
@@ -140,8 +134,6 @@ private:
     int         nm_showing_row;
     int         nm_showing_term_row;
     bool        nm_noupdating;
-    bool        nm_n_no_select;         // treeview focus hack
-    bool        nm_t_no_select;         // treeview focus hack
 
     CDp_node    *nm_node;
     CDc         *nm_cdesc;
@@ -150,11 +142,6 @@ private:
     GRaffirmPopup *nm_join_affirm;
 
     static bool nm_use_extract;
-
-    static short int nm_win_width;
-    static short int nm_win_height;
-    static short int nm_grip_pos;
-
     static QTnodeMapDlg *instPtr;
 };
 

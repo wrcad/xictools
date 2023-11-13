@@ -105,7 +105,7 @@ cConvert::PopUpGeometries(GRobject caller, ShowMode mode)
 
 QTcgdListDlg *QTcgdListDlg::instPtr;
 
-QTcgdListDlg::QTcgdListDlg(GRobject c)
+QTcgdListDlg::QTcgdListDlg(GRobject c) : QTbag(this)
 {
     instPtr = this;
     cgl_caller = c;

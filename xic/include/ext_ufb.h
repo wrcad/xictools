@@ -102,7 +102,7 @@ namespace ext_group {
                                     u_wheel[wcnt]);
                         }
                     }
-                    if (Timer()->check_interval(u_check_time)) {
+                    if (cTimer::self()->check_interval(u_check_time)) {
                         if (DSP()->MainWdesc() && DSP()->MainWdesc()->Wdraw())
                             DSPpkg::self()->CheckForInterrupt();
                         return (XM()->ConfirmAbort());

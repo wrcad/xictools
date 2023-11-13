@@ -49,7 +49,11 @@
 #include "events.h"
 #include "pushpop.h"
 
+#include <QApplication>
 #include <QHBoxLayout>
+#include <QMouseEvent>
+#include <QResizeEvent>
+#include <QClipboard>
 
 
 // Display the parameter text in the parameter readout area.
@@ -60,6 +64,7 @@ cMain::ShowParameters(const char*)
     if (QTparam::self())
         QTparam::self()->print();
 }
+// End of cMain functions.
 
 
 QTparam *QTparam::instPtr = 0;
@@ -67,6 +72,14 @@ QTparam *QTparam::instPtr = 0;
 QTparam::QTparam(QTmainwin *prnt) : QWidget(prnt), QTdraw(XW_TEXT)
 {
     instPtr = this;
+    p_drag_x = 0;
+    p_drag_y = 0;
+    p_has_drag = false;
+    p_dragged = false;
+    p_xval = 0;
+    p_yval = 0;
+    p_width = 0;
+    p_height = 0;
 
     gd_viewport = QTdrawIf::new_draw_interface(DrawNative, false, this);
     QHBoxLayout *hbox = new QHBoxLayout(this);
@@ -78,7 +91,16 @@ QTparam::QTparam(QTmainwin *prnt) : QWidget(prnt), QTdraw(XW_TEXT)
     if (FC.getFont(&fnt, FNT_SCREEN))
         gd_viewport->set_font(fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed(int)), Qt::QueuedConnection);
+        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+
+    connect(Viewport(), SIGNAL(resize_event(QResizeEvent*)),
+        this, SLOT(resize_slot(QResizeEvent*)));
+    connect(Viewport(), SIGNAL(press_event(QMouseEvent*)),
+        this, SLOT(button_down_slot(QMouseEvent*)));
+    connect(Viewport(), SIGNAL(release_event(QMouseEvent*)),
+        this, SLOT(button_up_slot(QMouseEvent*)));
+    connect(Viewport(), SIGNAL(motion_event(QMouseEvent*)),
+        this, SLOT(motion_slot(QMouseEvent*)));
 }
 
 
@@ -97,7 +119,6 @@ QTparam::print()
     TextExtent(0, &fwid, &fhei);
 
     p_xval = 2;
-//XXX
     p_yval = fhei - 3;
 
     unsigned int selectno;
@@ -217,12 +238,6 @@ QTparam::display(int start, int end)
 {
     if (start == 0 && end == 256) {
         SetWindowBackground(DSP()->Color(PromptBackgroundColor));
-        /*
-        int wid = GetDrawable()->get_width();
-        int hei = GetDrawable()->get_width();
-        SetColor(DSP()->Color(PromptBackgroundColor));
-        Box(0, 0, wid, hei);
-        */
         SetBackground(DSP()->Color(PromptBackgroundColor));
         Clear();
     }
@@ -256,32 +271,16 @@ QTparam::select(int x1, int x2)
                 if (xo2 > xend)
                     xend = xo2;
             }
-#ifdef WIN32
-            // For some reason the owner_set code doesn't work in
-            // Windows.
-
-            /*
-            char *str = QTparam::self()->p_text.get_sel();
+            char *str = p_text.get_sel();
             if (str) {
-                GtkClipboard *cb = gtk_clipboard_get_for_display(
-                    gdk_display_get_default(), GDK_SELECTION_PRIMARY);
-                gtk_clipboard_set_with_owner(cb, targets, n_targets,
-                    primary_get_cb, primary_clear_cb, G_OBJECT(Viewport()));
-                delete [] str;
                 display(xstart, xend);
+                QApplication::clipboard()->setText(str);
+                delete [] str;
             }
-            */
-#else
-            display(xstart, xend);
-//            gtk_selection_owner_set(Viewport(), GDK_SELECTION_PRIMARY,
-//                GDK_CURRENT_TIME);
-#endif
         }
     }
-    else if (was_sel) {
+    else if (was_sel)
         deselect();
-//        gtk_selection_owner_set(0, GDK_SELECTION_PRIMARY, GDK_CURRENT_TIME);
-    }
 }
 
 
@@ -290,34 +289,18 @@ QTparam::select(int x1, int x2)
 void
 QTparam::select_word(int xx)
 {
-//    bool was_sel = deselect();
+    bool was_sel = deselect();
     if (p_text.select_word(xx)) {
         unsigned int xstart, xend;
         if (p_text.has_sel(&xstart, &xend)) {
-#ifdef WIN32
-            // For some reason the owner_set code doesn't work in
-            // Windows.
-
-            /*
-            char *str = QTparam::self()->p_text.get_sel();
+            char *str = p_text.get_sel();
             if (str) {
-                GtkClipboard *cb = gtk_clipboard_get_for_display(
-                    gdk_display_get_default(), GDK_SELECTION_PRIMARY);
-                gtk_clipboard_set_with_owner(cb, targets, n_targets,
-                    primary_get_cb, primary_clear_cb, G_OBJECT(Viewport()));
-                delete [] str;
                 display(xstart, xend);
+                QApplication::clipboard()->setText(str);
+                delete [] str;
             }
-            */
-#else
-            display(xstart, xend);
-//            gtk_selection_owner_set(Viewport(), GDK_SELECTION_PRIMARY,
-//                GDK_CURRENT_TIME);
-#endif
         }
     }
-//    else if (was_sel)
-//        gtk_selection_owner_set(0, GDK_SELECTION_PRIMARY, GDK_CURRENT_TIME);
 }
 
 
@@ -364,142 +347,8 @@ QTparam::primary_clear_cb(GtkClipboard*, void*)
 */
 
 
-#ifdef NOTDEF
-// Static function.
-// Pop up info about the parameter display area in help mode.
-//
-int
-QTparam::readout_btn_hdlr(GtkWidget*, GdkEvent *event, void*)
-{
-    if (!QTparam::self())
-        return (false);
-    if (event->button.button == 1 && event->type == GDK_BUTTON_PRESS) {
-        if (XM()->IsDoingHelp() && !is_shift_down())
-            DSPmainWbag(PopUpHelp("statusline"))
-        else {
-            QTparam::self()->p_has_drag = true;
-            QTparam::self()->p_dragged = false;
-            QTparam::self()->p_drag_x = (int)event->button.x;
-            QTparam::self()->p_drag_y = (int)event->button.y;
-        }
-        return (true);
-    }
-    if (event->button.button == 1 && event->type == GDK_BUTTON_RELEASE) {
-        if (QTparam::self()->p_has_drag && !QTparam::self()->p_dragged)
-            QTparam::self()->select_word(QTparam::self()->p_drag_x);
-        QTparam::self()->p_has_drag = false;
-        return (true);
-    }
-    return (false);
-}
-
-
-// Static functions.
-// Pointer motion handler.
-//
-int
-QTparam::readout_motion_hdlr(GtkWidget*, GdkEvent *event, void*)
-{
-    if (!QTparam::self())
-        return (false);
-    if (QTparam::self()->p_has_drag) {
-        int mvx = (int)event->motion.x;
-        QTparam::self()->select(QTparam::self()->p_drag_x, mvx);
-        QTparam::self()->p_dragged = true;
-        return (true);
-    }   
-    return (false);
-}
-        
-
-// Static function.
-// Expose handler.
-//
-#if GTK_CHECK_VERSION(3,0,0)
-int
-QTparam::readout_redraw(GtkWidget*, cairo_t *cr, void*)
-#else
-int
-QTparam::readout_redraw(GtkWidget*, GdkEvent *event, void*)
-#endif
-{
-    if (!QTparam::self())
-        return (false);
-#if GTK_CHECK_VERSION(3,0,0)
-    QTparam::self()->GetDrawable()->refresh(QTparam::self()->CpyGC(), cr);
-#else
-    GdkEventExpose *pev = (GdkEventExpose*)event;
-    if (QTparam::self() && GDK_IS_DRAWABLE(QTparam::self()->gd_window)) {
-        GdkRectangle *rects;
-        int nrects;
-        gdk_region_get_rectangles(pev->region, &rects, &nrects);
-        for (int i = 0; i < nrects; i++) {
-            gdk_window_copy_area(QTparam::self()->gd_window, QTparam::self()->CpyGC(),
-                rects[i].x, rects[i].y, QTparam::self()->p_pm,
-                rects[i].x, rects[i].y, rects[i].width, rects[i].height);
-        }
-        g_free(rects);
-    }
-#endif
-
-    return (true);
-}
-
-
-// Static function.
-// Font change handler.
-//
 void
-QTparam::readout_font_change(GtkWidget*, void*, void*)
-{
-#if GTK_CHECK_VERSION(3,0,0)
-    if (QTparam::self() && GDK_IS_WINDOW(QTparam::self()->GetDrawable()->get_window())) {
-#else
-    if (QTparam::self() && GDK_IS_DRAWABLE(QTparam::self()->gd_window)) {
-#endif
-        int fw, fh;
-        QTparam::self()->TextExtent(0, &fw, &fh);
-        gtk_widget_set_size_request(QTparam::self()->gd_viewport, -1, fh + 2);
-        QTparam::self()->print();
-    }
-}
-
-
-// Static function.
-// Selection clear handler.
-//
-int
-QTparam::readout_selection_clear(GtkWidget*, GdkEventSelection*, void*)
-{
-    if (QTparam::self())
-        QTparam::self()->deselect();
-    return (true);
-}
-
-
-void
-QTparam::readout_selection_get(GtkWidget*, GtkSelectionData *data,
-    guint, guint, void*)
-{
-    if (gtk_selection_data_get_selection(data) != GDK_SELECTION_PRIMARY)
-        return;
-    if (!QTparam::self())
-        return;
-        
-    char *str = QTparam::self()->p_text.get_sel();
-    if (!str)
-        return;  // refuse
-    int length = strlen(str);
-
-    gtk_selection_data_set(data, GDK_SELECTION_TYPE_STRING,
-        8*sizeof(char), (unsigned char*)str, length);
-    delete [] str;
-}
-#endif  //NOTDEF
-
-
-void
-QTparam::font_changed(int fnum)
+QTparam::font_changed_slot(int fnum)
 {
     if (fnum == FNT_SCREEN) {
         QFont *fnt;
@@ -507,6 +356,71 @@ QTparam::font_changed(int fnum)
             gd_viewport->set_font(fnt);
         print();
     }
+}
+
+void
+QTparam::resize_slot(QResizeEvent*)
+{
+    print();
+}
+
+
+namespace {
+    bool is_shift_down()
+    {
+        return (QApplication::keyboardModifiers() & Qt::ShiftModifier);
+    }
+}
+
+
+void
+QTparam::button_down_slot(QMouseEvent *ev)
+{
+    if (ev->button() == Qt::LeftButton &&
+            ev->type() == QEvent::MouseButtonPress) {
+        if (XM()->IsDoingHelp() && !is_shift_down())
+            DSPmainWbag(PopUpHelp("statusline"))
+        else {
+            p_has_drag = true;
+            p_dragged = false;
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+            p_drag_x = ev->position().x();
+            p_drag_y = ev->position().y();
+#else
+            p_drag_x = ev->x();
+            p_drag_y = ev->y();
+#endif
+        }
+        ev->accept();
+    }
+    else
+        ev->ignore();
+}
+
+
+void
+QTparam::button_up_slot(QMouseEvent *ev)
+{
+    if (ev->button() == Qt::LeftButton &&
+            ev->type() == QEvent::MouseButtonRelease) {
+        if (p_has_drag && !p_dragged)
+            select_word(p_drag_x);
+        p_has_drag = false;
+        ev->accept();
+    }
+    else
+        ev->ignore();
+}
+
+
+void
+QTparam::motion_slot(QMouseEvent *ev)
+{
+    if (p_has_drag) {
+        int mvx = ev->position().x();
+        select(p_drag_x, mvx);
+        p_dragged = true;
+    }   
 }
 // End of QTparam functions.
 
@@ -624,8 +538,8 @@ ptext_t::display(QTparam *prm, unsigned int fc, unsigned int lc)
     prm->SetWindowBackground(DSP()->Color(PromptBackgroundColor));
     prm->SetBackground(DSP()->Color(PromptBackgroundColor));
     prm->SetColor(DSP()->Color(PromptBackgroundColor));
-    prm->Box(pt_chars[fc].pc_posn, 0,
-        pt_chars[lc-1].pc_posn + pt_chars[lc-1].pc_width - 1, prm->height());
+    prm->Box(pt_chars[fc].pc_posn, prm->height(),
+        pt_chars[lc-1].pc_posn + pt_chars[lc-1].pc_width - 1, 0);
 
     char bf[2];
     bf[1] = 0;
@@ -633,8 +547,8 @@ ptext_t::display(QTparam *prm, unsigned int fc, unsigned int lc)
         bf[0] = pt_chars[i].pc_char;
         if (pt_sel_end > pt_sel_start && i >= pt_sel_start && i < pt_sel_end) {
             prm->SetColor(DSP()->Color(PromptBackgroundColor) ^ -1);
-            prm->Box(pt_chars[i].pc_posn, 0,
-                pt_chars[i].pc_posn + pt_chars[i].pc_width - 1, prm->height());
+            prm->Box(pt_chars[i].pc_posn, prm->height(),
+                pt_chars[i].pc_posn + pt_chars[i].pc_width - 1, 0);
             prm->SetColor(DSP()->Color(PromptBackgroundColor));
             prm->Text(bf, pt_chars[i].pc_posn, prm->yval(), 0);
         }

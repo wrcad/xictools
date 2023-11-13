@@ -139,6 +139,9 @@ QTextSetupDlg::QTextSetupDlg(GRobject c)
     es_p2_gpglob = 0;
     es_p2_gpmulti = 0;
     es_p2_gpmthd = 0;
+    es_p3_device_menu = 0;
+    es_p3_delblk = 0;
+    es_p3_undblk = 0;
     es_p3_noseries = 0;
     es_p3_nopara = 0;
     es_p3_keepshrt = 0;
@@ -520,40 +523,36 @@ QTextSetupDlg::devs_page()
     vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
-    // Menu bar.
-    //
-#ifdef USE_QTOOLBAR
-    QToolBar *menubar = new QToolBar();
-#else
-    QMenuBar *menubar = new QMenuBar();
-#endif
-    vbox->addWidget(menubar);
+    QHBoxLayout *hbox = new QHBoxLayout();
+    vbox->addLayout(hbox);
+    hbox->setContentsMargins(qmtop);
+    hbox->setSpacing(2);
 
-    // Device Block menu.
-    QAction *a;
-#ifdef USE_QTOOLBAR
-    a = menubar->addAction(tr("&Device Block"));
-    QMenu *menu = new QMenu();
-    a->setMenu(menu);
-    QToolButton *tb = dynamic_cast<QToolButton*>(menubar->widgetForAction(a));
-    if (tb)
-        tb->setPopupMode(QToolButton::InstantPopup);
-#else
-    QMenu *menu = menubar->addMenu(tr("&Device Block"));
-#endif
+    // Device Block menu button.
+    es_p3_device_menu = new QComboBox();
+    hbox->addWidget(es_p3_device_menu);
+    es_p3_device_menu->addItem(tr("New"));
+    es_p3_device_menu->setItemData(0, (qulonglong)0);
 
-    // New, 0, es_dev_menu_proc, 0, 0
-    a = menu->addAction(tr("New"));
+    QPushButton *btn = new QPushButton(tr("Edit"));
+    hbox->addWidget(btn);
+    btn->setAutoDefault(false);
+    connect(btn, SIGNAL(clicked()),
+        this, SLOT(p3_edit_btn_slot()));
 
-    // Delete, 0, es_dev_menu_proc, 1, <CheckItem>
-    a = menu->addAction(tr("Delete"));
-    a->setCheckable(true);
+    es_p3_delblk = new QPushButton(tr("Delete"));;
+    hbox->addWidget(es_p3_delblk);
+    es_p3_delblk->setCheckable(true);
+    es_p3_delblk->setAutoDefault(false);
+    connect(es_p3_delblk, SIGNAL(toggled(bool)),
+        this, SLOT(p3_del_btn_slot(bool)));
 
-    // Undelete, 0, es_dev_menu_proc, 2, 0);
-    a = menu->addAction(tr("Undelete"));
-    a->setCheckable(true);
-
-//    item = gtk_separator_menu_item_new();
+    es_p3_undblk = new QPushButton(tr("Undelete"));;
+    hbox->addWidget(es_p3_undblk);
+    es_p3_undblk->setCheckable(true);
+    es_p3_undblk->setAutoDefault(false);
+    connect(es_p3_undblk, SIGNAL(toggled(bool)),
+        this, SLOT(p3_und_btn_slot(bool)));
 
     // Check boxes.
     //
@@ -1011,6 +1010,58 @@ QTextSetupDlg::show_grp_node(QCheckBox *caller)
 }
 
 
+// Update the Device Block menu.
+//
+void
+QTextSetupDlg::dev_menu_upd()
+{
+    es_p3_device_menu->clear();
+    es_p3_device_menu->addItem(tr("New"));
+    es_p3_device_menu->setItemData(0, (qulonglong)0);
+
+    stringlist *dnames = EX()->listDevices();
+    int ix = 1;
+    for (stringlist *sl = dnames; sl; sl = sl->next) {
+        const char *t = sl->string;
+        char *nm = lstring::gettok(&t);
+        char *pf = lstring::gettok(&t);
+        sDevDesc *d = EX()->findDevice(nm, pf);
+        delete [] nm;
+        delete [] pf;
+
+        if (d) {
+            es_p3_device_menu->addItem(sl->string);
+            es_p3_device_menu->setItemData(ix, (qulonglong)d);
+            ix++;
+        }
+    }
+    stringlist::destroy(dnames);
+}
+
+
+// Static function.
+// Callback from the text editor.
+//
+bool
+QTextSetupDlg::editsave_cb(const char *fname, void*, XEtype type)
+{
+    if (type == XE_QUIT)
+        unlink(fname);
+    else if (type == XE_SAVE) {
+        FILE *fp = filestat::open_file(fname, "r");
+        if (!fp) {
+            Log()->ErrorLog(mh::Initialization, filestat::error_msg());
+            return (true);
+        }
+        bool ret = EX()->parseDevice(fp, true);
+        fclose(fp);
+        if (ret && QTextSetupDlg::self())
+            QTextSetupDlg::self()->dev_menu_upd();
+    }
+    return (true);
+}
+
+
 void
 QTextSetupDlg::help_btn_slot()
 {
@@ -1339,6 +1390,53 @@ QTextSetupDlg::p2_gpmthd_menu_slot(int i)
 }
 
 
+void
+QTextSetupDlg::p3_edit_btn_slot()
+{
+    sDevDesc *d = (sDevDesc*)es_p3_device_menu->currentData().toULongLong();;
+    char *fname = filestat::make_temp("xi");
+    FILE *fp = filestat::open_file(fname, "w");
+    if (!fp) {
+        Log()->ErrorLog(mh::Initialization, filestat::error_msg());
+        return;
+    }
+    if (d)
+        d->print(fp);
+    fclose(fp);
+    DSPmainWbag(PopUpTextEditor(fname, editsave_cb, d, false))
+}
+
+
+void
+QTextSetupDlg::p3_del_btn_slot(bool state)
+{
+    if (!state)
+        return;
+    sDevDesc *d = (sDevDesc*)es_p3_device_menu->currentData().toULongLong();;
+    QTdev::Deselect(es_p3_delblk);
+    if (d && EX()->removeDevice(Tstring(d->name()), d->prefix())) {
+        d->set_next(0);
+        delete es_devdesc;
+        es_devdesc = d;
+        es_p3_undblk->setEnabled(true);
+        dev_menu_upd();
+        EX()->invalidateGroups();
+    }
+}
+
+
+void
+QTextSetupDlg::p3_und_btn_slot(bool)
+{
+    if (es_devdesc) {
+        EX()->addDevice(es_devdesc);
+        EX()->invalidateGroups();
+        es_devdesc = 0;
+        es_p3_undblk->setEnabled(false);
+        dev_menu_upd();
+    }
+}
+
 
 void
 QTextSetupDlg::p3_noseries_btn_slot(int state)
@@ -1579,109 +1677,3 @@ QTextSetupDlg::p4_iter_count_slot(int)
     }
 }
 
-
-#ifdef notdef
-
-// Update the Device Block menu.
-//
-void
-QTextSetupDlg::dev_menu_upd()
-{
-    GList *gl = gtk_container_get_children(GTK_CONTAINER(es_p2_menu));
-    int cnt = 0;
-    for (GList *l = gl; l; l = l->next, cnt++) {
-        if (cnt > 3)  // ** skip first four entries **
-            gtk_widget_destroy(GTK_WIDGET(l->data));
-    }
-    g_list_free(gl);
-
-    stringlist *dnames = EX()->listDevices();
-    for (stringlist *sl = dnames; sl; sl = sl->next) {
-        const char *t = sl->string;
-        char *nm = lstring::gettok(&t);
-        char *pf = lstring::gettok(&t);
-        sDevDesc *d = EX()->findDevice(nm, pf);
-        delete [] nm;
-        delete [] pf;
-
-        if (d) {
-            GtkWidget *mi = gtk_menu_item_new_with_label(sl->string);
-            gtk_widget_show(mi);
-            g_signal_connect(G_OBJECT(mi), "activate",
-                G_CALLBACK(es_dev_menu_proc), d);
-            gtk_menu_shell_append(GTK_MENU_SHELL(es_p2_menu), mi);
-        }
-    }
-    stringlist::destroy(dnames);
-}
-
-
-// Static function.
-// Callback from the text editor popup.
-//
-bool
-QTextSetupDlg::es_editsave(const char *fname, void*, XEtype type)
-{
-    if (type == XE_QUIT)
-        unlink(fname);
-    else if (type == XE_SAVE) {
-        FILE *fp = filestat::open_file(fname, "r");
-        if (!fp) {
-            Log()->ErrorLog(mh::Initialization, filestat::error_msg());
-            return (true);
-        }
-        bool ret = EX()->parseDevice(fp, true);
-        fclose(fp);
-        if (ret && Es)
-            Es->dev_menu_upd();
-    }
-    return (true);
-}
-
-
-// Static function.
-// Edit a Device Block.
-//
-void
-QTextSetupDlg::es_dev_menu_proc(GtkWidget *caller, void *client_data)
-{
-    long type = (long)g_object_get_data(G_OBJECT(caller), MIDX);
-    if (type == 2) {
-        // Undelete button
-        EX()->addDevice(Es->es_devdesc);
-        EX()->invalidateGroups();
-        Es->es_devdesc = 0;
-        gtk_widget_set_sensitive(Es->es_p2_undblk, false);
-        Es->dev_menu_upd();
-        return;
-    }
-    if (type == 1 && !client_data) {
-        // delete button;
-        return;
-    }
-    sDevDesc *d = (sDevDesc*)client_data;
-    if (GTKdev::GetStatus(Es->es_p2_delblk)) {
-        GTKdev::Deselect(Es->es_p2_delblk);
-        if (d && EX()->removeDevice(Tstring(d->name()), d->prefix())) {
-            d->set_next(0);
-            delete Es->es_devdesc;
-            Es->es_devdesc = d;
-            gtk_widget_set_sensitive(Es->es_p2_undblk, true);
-            Es->dev_menu_upd();
-            EX()->invalidateGroups();
-        }
-        return;
-    }
-    char *fname = filestat::make_temp("xi");
-    FILE *fp = filestat::open_file(fname, "w");
-    if (!fp) {
-        Log()->ErrorLog(mh::Initialization, filestat::error_msg());
-        return;
-    }
-    if (d)
-        d->print(fp);
-    fclose(fp);
-    DSPmainWbag(PopUpTextEditor(fname, es_editsave, d, false))
-}
-
-#endif

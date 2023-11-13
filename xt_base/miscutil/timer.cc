@@ -170,10 +170,10 @@ namespace miscutil {
     cTimer::timer_thread_cb(void*)
     {
         for (;;) {
-            Timer()->t_elapsed_time = Tvals::millisec();
-            Sleep(Timer()->t_period);
-            if (Timer()->t_callback)
-                (*Timer()->t_callback)();
+            cTimer::self()->t_elapsed_time = Tvals::millisec();
+            Sleep(cTimer::self()->t_period);
+            if (cTimer::self()->t_callback)
+                (*cTimer::self()->t_callback)();
         }
     }
 
@@ -184,10 +184,10 @@ namespace miscutil {
     cTimer::timer_thread_cb(void*)
     {
         for (;;) {
-            Timer()->t_elapsed_time = Tvals::millisec();
-            milli_sleep(Timer()->t_period);
-            if (Timer()->t_callback)
-                (*Timer()->t_callback)();
+            cTimer::self()->t_elapsed_time = Tvals::millisec();
+            milli_sleep(cTimer::self()->t_period);
+            if (cTimer::self()->t_callback)
+                (*cTimer::self()->t_callback)();
         }
         return (0);
     }
@@ -198,9 +198,9 @@ namespace miscutil {
     cTimer::alarm_hdlr(int)
     {
         signal(SIGALRM, alarm_hdlr);
-        Timer()->t_elapsed_time = Tvals::millisec();
-        if (Timer()->t_callback)
-            (*Timer()->t_callback)();
+        cTimer::self()->t_elapsed_time = Tvals::millisec();
+        if (cTimer::self()->t_callback)
+            (*cTimer::self()->t_callback)();
     }
 
 #endif

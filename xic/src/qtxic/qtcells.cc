@@ -161,7 +161,7 @@ namespace {
 
 QTcellsDlg *QTcellsDlg::instPtr;
 
-QTcellsDlg::QTcellsDlg(GRobject c)
+QTcellsDlg::QTcellsDlg(GRobject c) : QTbag(this)
 {
     instPtr = this;
     c_caller = c;

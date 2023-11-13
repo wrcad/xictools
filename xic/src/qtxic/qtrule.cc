@@ -98,6 +98,7 @@ QTruleDlg *QTruleDlg::instPtr;
 
 QTruleDlg::QTruleDlg(GRobject c, DRCtype type, const char *username,
     bool (*callback)(const char*, void*), void *arg, const DRCtestDesc *rule)
+    : QTbag(this)
 {
     instPtr = this;
     ru_caller = c;

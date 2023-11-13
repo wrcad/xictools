@@ -83,7 +83,7 @@ cConvert::PopUpEmpties(stringlist *list)
 
 QTemptyDlg *QTemptyDlg::instPtr;
 
-QTemptyDlg::QTemptyDlg(stringlist *l)
+QTemptyDlg::QTemptyDlg(stringlist *l) : QTbag(this)
 {
     instPtr = this;
     ec_list = 0;

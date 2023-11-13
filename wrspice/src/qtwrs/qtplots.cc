@@ -148,7 +148,7 @@ QTtoolbar::UpdatePlots(int lev)
 const char *QTplotListDlg::pl_btns[] = { "New Plot", "Delete Current", 0 };
 QTplotListDlg *QTplotListDlg::instPtr;
 
-QTplotListDlg::QTplotListDlg(int xx, int yy, const char *s)
+QTplotListDlg::QTplotListDlg(int xx, int yy, const char *s) : QTbag(this)
 {
     instPtr = this;
     pl_affirm = 0;

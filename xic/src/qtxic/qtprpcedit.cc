@@ -113,7 +113,7 @@ QTcellPrpDlg::sAddEnt QTcellPrpDlg::pc_phys_addmenu[] = {
 
 QTcellPrpDlg *QTcellPrpDlg::instPtr;
 
-QTcellPrpDlg::QTcellPrpDlg()
+QTcellPrpDlg::QTcellPrpDlg() : QTbag(this)
 {
     instPtr = this;
     pc_edit = 0;

@@ -110,7 +110,7 @@ QTtoolbar::UpdateRunops()
 const char *QTrunopListDlg::tl_btns[] = { "Delete Inactive", 0 };
 QTrunopListDlg *QTrunopListDlg::instPtr;
 
-QTrunopListDlg::QTrunopListDlg(int xx, int yy, const char *s)
+QTrunopListDlg::QTrunopListDlg(int xx, int yy, const char *s) : QTbag(this)
 {
     instPtr = this;
     tl_affirm = 0;

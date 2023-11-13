@@ -48,6 +48,8 @@
 #include "keymap.h"
 #include "sced.h"
 
+#include <QApplication>
+#include <QClipboard>
 #include <QLayout>
 #include <QToolButton>
 #include <QMenu>
@@ -155,11 +157,13 @@ QTedit::QTedit(bool nogr) : QTdraw(XW_TEXT)
     }
 
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed(int)));
+        this, SLOT(font_changed_slot(int)));
 
     connect(Viewport(), SIGNAL(resize_event(QResizeEvent*)),
         this, SLOT(resize_slot(QResizeEvent*)));
     connect(Viewport(), SIGNAL(press_event(QMouseEvent*)),
+        this, SLOT(press_slot(QMouseEvent*)));
+    connect(Viewport(), SIGNAL(release_event(QMouseEvent*)),
         this, SLOT(press_slot(QMouseEvent*)));
     connect(Viewport(), SIGNAL(enter_event(QEnterEvent*)),
         this, SLOT(enter_slot(QEnterEvent*)));
@@ -335,6 +339,7 @@ QTedit::show_lt_button(bool show_btn)
 void
 QTedit::get_selection(bool)
 {
+    // called to stuff clipboard into editing line.
 }
 
 
@@ -370,8 +375,16 @@ QTedit::check_pixmap()
 
 
 void
-QTedit::init_selection(bool)
+QTedit::init_selection(bool selected)
 {
+    if (selected) {
+        // Copy highlighted text to clipboard.
+        char *str = get_sel();
+        if (str) {
+            QApplication::clipboard()->setText(str);
+            delete [] str;
+        }
+    }
 }
 
 
@@ -386,7 +399,7 @@ QTedit::warp_pointer()
 
 
 void
-QTedit::font_changed(int fnum)
+QTedit::font_changed_slot(int fnum)
 {
     if (fnum == FNT_SCREEN) {
         QFont *fnt;

@@ -332,7 +332,7 @@ const char *QTlogoDlg::lgo_pathwidth[] =
 double QTlogoDlg::lgo_defpixsz = 1.0;
 QTlogoDlg *QTlogoDlg::instPtr;
 
-QTlogoDlg::QTlogoDlg(GRobject c)
+QTlogoDlg::QTlogoDlg(GRobject c) : QTbag(this)
 {
     instPtr = this;
     lgo_caller = c;

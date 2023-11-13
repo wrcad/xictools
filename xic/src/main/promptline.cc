@@ -2771,7 +2771,10 @@ cPromptEdit::button_release_handler(int btn, int x, int)
     if (btn != 1)
         return;
 
+//    if (pe_has_drag && !pe_dragged)
+//        select_word(pe_drag_x);
     pe_has_drag = false;
+
     if (!pe_dragged) {
         // Not dragging, no selection, so scroll the prompt line. 
         // This can only happen when the text is longer than the

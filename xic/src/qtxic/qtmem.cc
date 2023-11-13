@@ -102,7 +102,7 @@ cMain::PopUpMemory(ShowMode mode)
 
 QTmemMonDlg *QTmemMonDlg::instPtr;
 
-QTmemMonDlg::QTmemMonDlg() : QTdraw(XW_TEXT)
+QTmemMonDlg::QTmemMonDlg() : QTdraw(XW_TEXT), QTbag(this)
 {
     instPtr = this;
 

@@ -94,6 +94,7 @@ cMain::PopUpCellFlags(GRobject caller, ShowMode mode, const stringlist *list,
 QTcflagsDlg *QTcflagsDlg::instPtr;
 
 QTcflagsDlg::QTcflagsDlg(GRobject caller, const stringlist *sl, int dmode)
+    : QTbag(this)
 {
     instPtr = this;
     cf_caller = caller;

@@ -1275,7 +1275,7 @@ bangcmds::pwd(const char*)
 void
 bangcmds::time(const char*)
 {
-    printf("%.3f\n", Timer()->elapsed_msec()/1000.0);
+    printf("%.3f\n", cTimer::self()->elapsed_msec()/1000.0);
 }
 
 

@@ -110,7 +110,7 @@ cEdit::PropertyInfoPurge(CDo *odold, CDo *odnew)
 
 QTprpInfoDlg *QTprpInfoDlg::instPtr;
 
-QTprpInfoDlg::QTprpInfoDlg(CDo *odesc)
+QTprpInfoDlg::QTprpInfoDlg(CDo *odesc) : QTprpBase(this)
 {
     instPtr = this;
 

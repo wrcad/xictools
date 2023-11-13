@@ -262,7 +262,7 @@ GRwbag *
 QTdev::NewWbag(const char*, GRwbag *reuse)
 {
     if (!reuse)
-        reuse = new QTbag();
+        reuse = new QTbag(0);
     return (reuse);
 }
 

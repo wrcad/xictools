@@ -170,7 +170,7 @@ cMain::cMain()
     setupHcopy();       // setup hardcopy interface
     setupBangCmds();    // set up text '!' commands
 
-    Timer()->register_callback(timer_proc);
+    cTimer::self()->register_callback(timer_proc);
 }
 
 
@@ -230,7 +230,7 @@ namespace {
             }
 
         void app_listen_init()
-            { Timer()->start(getenv("XIC_NOTIMER") ? 0 : 1000); }
+            { cTimer::self()->start(getenv("XIC_NOTIMER") ? 0 : 1000); }
 
         void app_transact_init() { DSP()->SetInterrupt(DSPinterNone); }
 
@@ -305,7 +305,7 @@ namespace {
             return;
 #endif
      
-        if (die_when && Timer()->elapsed_msec() > die_when) {
+        if (die_when && cTimer::self()->elapsed_msec() > die_when) {
             XM()->Exit(ExitPanic);
 #ifdef SIGKILL
             raise(SIGKILL);
@@ -318,13 +318,13 @@ namespace {
                 DSPpkg::self()->RegisterIdleProc(m_proc, 0);
         }
 #ifdef HAVE_SECURE
-        char *s = XM()->Auth()->periodicTest(Timer()->elapsed_msec()); 
+        char *s = XM()->Auth()->periodicTest(cTimer::self()->elapsed_msec()); 
         if (s) {
             if (XM()->RunMode() == ModeNormal)
                 DSPpkg::self()->RegisterIdleProc(v_proc, s);
             else {
                 delete [] s;
-                die_when = Timer()->elapsed_msec() + 
+                die_when = cTimer::self()->elapsed_msec() + 
                     AC_LIFETIME_MINUTES*60*1000;
             }
         }

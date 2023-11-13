@@ -112,6 +112,7 @@ const char *QTcircuitListDlg::cl_btns[] = { "Delete Current", 0 };
 QTcircuitListDlg *QTcircuitListDlg::instPtr;
 
 QTcircuitListDlg::QTcircuitListDlg(int xx, int yy, const char *s)
+    : QTbag(this)
 {
     instPtr = this;
     cl_affirm = 0;

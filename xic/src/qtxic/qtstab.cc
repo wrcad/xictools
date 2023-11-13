@@ -89,7 +89,7 @@ cMain::PopUpSymTabs(GRobject caller, ShowMode mode)
 
 QTstabDlg *QTstabDlg::instPtr;
 
-QTstabDlg::QTstabDlg(GRobject c)
+QTstabDlg::QTstabDlg(GRobject c) : QTbag(this)
 {
     instPtr = this;
     tb_caller = c;

@@ -117,7 +117,8 @@ QTsubwin::PopUpGrid(GRobject caller, ShowMode mode)
 
 QTgridDlg *QTgridDlg::grid_pops[DSP_NUMWINS];
 
-QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTdraw(XW_TEXT)
+QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTdraw(XW_TEXT),
+    QTbag(this)
 {
     p_parent = owner;
     gd_snapbox = 0;
@@ -527,16 +528,6 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTdraw(XW_TEXT)
     gd_cancel = new QPushButton(tr("Dismiss"));
     hbox->addWidget(gd_cancel);
     connect(gd_cancel, SIGNAL(clicked()), this, SLOT(dismiss_slot()));
-
-    // Initially focus to the Snap Spacing entry.  Set up a handler
-    // so that Enter will call apply, then a second Enter will call
-    // cancel.
-    //
-    /*
-    gtk_window_set_focus(GTK_WINDOW(wb_shell), focus_widget);
-    g_signal_connect(G_OBJECT(wb_shell), "key-release-event",
-        G_CALLBACK(gd_key_hdlr), grid_pops + gd_win_num);
-XXX    */
 
     update();
 }
@@ -1270,16 +1261,3 @@ QTgridDlg::vp_resize_slot(QResizeEvent*)
     redraw();
 }
 
-
-#ifdef notdef
-
-
-// Static function.
-int
-QTgridDlg::gd_key_hdlr(GtkWidget*, GdkEvent *event, void *arg)
-{
-    QTgridDlg *grd = *(QTgridDlg**)arg;
-    return (0);
-}
-
-#endif

@@ -324,6 +324,7 @@ signals:
 private slots:
     void wr_btn_slot();
     void update_coords_slot(int, int);
+    void revert_slot();
 
 private:
     // QWidget virtual overrides

@@ -120,7 +120,7 @@ QToaLibsDlg *QToaLibsDlg::instPtr;
 #define PLACE_BTN "Place"
 
 
-QToaLibsDlg::QToaLibsDlg(GRobject c)
+QToaLibsDlg::QToaLibsDlg(GRobject c) : QTbag(this)
 {
     instPtr = this;
     lb_caller = c;

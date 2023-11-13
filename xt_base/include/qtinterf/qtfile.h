@@ -74,6 +74,11 @@ class qtinterf::QTfileDlg : public QDialog, public GRfilePopup, public QTbag
 public:
     enum ActionType { A_NOOP, A_COPY, A_MOVE, A_LINK, A_ASK };
 
+    struct QTfsMon : public GRmonList
+    {
+        char *any_selection();
+    };
+
     QTfileDlg(QTbag*, FsMode, void*, const char*);
     ~QTfileDlg();
 
@@ -111,11 +116,14 @@ public:
     QSize sizeHint() const      { return (QSize(500, 250)); }
     QSize minimumSizeHint()     const { return (QSize(250, 125)); }
 
+    static char *any_selection()    { return (FSmonitor.any_selection()); }
+
     static void DoFileAction(QTbag*, const char*, const char*, ActionType);
 
 signals:
     void file_selected(const char*, void*);
     void dismiss();
+    void revert();
 
 private slots:
     void open_slot();
@@ -187,6 +195,9 @@ private:
 
     QIcon closed_folder_icon;
     QIcon open_folder_icon;
+
+    static const char *filter_options[];
+    static QTfsMon FSmonitor;
 };
 
 #endif

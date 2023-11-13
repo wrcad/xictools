@@ -144,10 +144,9 @@ namespace {
 PMretType QTmodifDlg::m_retval;
 QTmodifDlg *QTmodifDlg::instPtr;
 
-QTmodifDlg::QTmodifDlg(stringlist *l, bool(*s)(const char*))
+QTmodifDlg::QTmodifDlg(stringlist *l, bool(*s)(const char*)) : QTbag(this)
 {
     instPtr = this;
-    wb_shell = this;
     stringlist::sort(l);
     int sz = stringlist::length(l);
     m_list = new s_item[sz+1];

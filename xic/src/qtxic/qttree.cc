@@ -143,6 +143,7 @@ cMain::PopUpTree(GRobject caller, ShowMode mode, const char *root,
 QTtreeDlg *QTtreeDlg::instPtr;
 
 QTtreeDlg::QTtreeDlg(GRobject c, const char *root, TreeUpdMode dmode)
+    : QTbag(this)
 {
     instPtr = this;
     t_caller = c;
@@ -376,7 +377,7 @@ QTtreeDlg::check_fb()
         snprintf(buf, sizeof(buf), "%s:  %u", "Nodes processed", t_ucount);
         t_info->setText(buf);
     }
-    if (Timer()->check_interval(t_check_time)) {
+    if (cTimer::self()->check_interval(t_check_time)) {
         if (DSP()->MainWdesc() && DSP()->MainWdesc()->Wdraw())
             QTpkg::self()->CheckForInterrupt();
         return (XM()->ConfirmAbort());

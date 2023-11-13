@@ -201,7 +201,7 @@ QTcgdOpenDlg *QTcgdOpenDlg::instPtr;
 
 QTcgdOpenDlg::QTcgdOpenDlg(GRobject caller,
     bool(*callback)(const char*, const char*, int, void*), void *arg,
-    const char *init_idname, const char *init_str)
+    const char *init_idname, const char *init_str) : QTbag(this)
 {
     instPtr = this;
     cgo_caller = caller;
@@ -384,14 +384,6 @@ QTcgdOpenDlg::QTcgdOpenDlg(GRobject caller,
     cgo_idname = new QLineEdit();
     cgo_idname->setReadOnly(false);
     hbox->addWidget(cgo_idname);
-
-/*
-    g_signal_connect(G_OBJECT(wb_shell), "key-press-event",
-        G_CALLBACK(cgo_key_hdlr), 0);
-    g_signal_connect(G_OBJECT(cgo_nbook), "switch-page",
-        G_CALLBACK(cgo_page_proc), 0);
-*/
-
 
     // Apply/Dismiss buttons.
     //
@@ -606,59 +598,3 @@ QTcgdOpenDlg::dismiss_btn_slot()
     Cvt()->PopUpCgdOpen(0, MODE_OFF, 0, 0, 0, 0, 0, 0);
 }
 
-
-#ifdef notdef
-
-// Private static GTK signal handler.
-// Return is taken as an Apply press, if chars have been entered.
-//
-int
-QTcgdOpenDlg::cgo_key_hdlr(GtkWidget*, GdkEvent *ev, void*)
-{
-    if (Cgo && ev->key.keyval == GDK_KEY_Return) {
-        const char *string;
-        int pg = gtk_notebook_get_current_page(GTK_NOTEBOOK(Cgo->cgo_nbook));
-        if (pg == 0) {
-            string = gtk_entry_get_text(GTK_ENTRY(Cgo->cgo_p1_entry));
-            if (string && *string) {
-                Cgo->apply_proc(Cgo->cgo_apply);
-                return (true);
-            }
-        }
-        else if (pg == 1) {
-            string = gtk_entry_get_text(GTK_ENTRY(Cgo->cgo_p2_entry));
-            if (string && *string) {
-                Cgo->apply_proc(Cgo->cgo_apply);
-                return (true);
-            }
-        }
-        else {
-            string = Cgo->encode_remote_spec(0);
-            if (string && *string) {
-                Cgo->apply_proc(Cgo->cgo_apply);
-                delete [] string;
-                return (true);
-            }
-        }
-    }
-    return (false);
-}
-
-
-// Private static GTK signal handler.
-// Handle page change, set focus to text entry.
-//
-void
-QTcgdOpenDlg::cgo_page_proc(GtkNotebook*, void*, int num, void*)
-{
-    if (!Cgo)
-        return;
-    if (num == 0)
-        gtk_window_set_focus(GTK_WINDOW(Cgo->wb_shell), Cgo->cgo_p1_entry);
-    else if (num == 1)
-        gtk_window_set_focus(GTK_WINDOW(Cgo->wb_shell), Cgo->cgo_p2_entry);
-    else
-        gtk_window_set_focus(GTK_WINDOW(Cgo->wb_shell), Cgo->cgo_p3_host);
-}
-
-#endif

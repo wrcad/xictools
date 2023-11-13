@@ -73,16 +73,21 @@ GRfont::fnt_t GRfont::app_fonts[] =
 int GRfont::num_app_fonts =
     sizeof(GRfont::app_fonts)/sizeof(GRfont::app_fonts[0]);
 
-//#define DEF_FIXED_FACE "Courier New"
-//#define DEF_PROP_FACE "Helvetica"
-#define DEF_FIXED_FACE "Menlo"
-#define DEF_PROP_FACE "Arial"
 #ifdef __APPLE__
 #define DEF_SIZE 11
+#define DEF_FIXED_FACE "Menlo"
+#define DEF_PROP_FACE "Arial"
+#else
+#ifdef WIN32
+#define DEF_SIZE 9
+#define DEF_FIXED_FACE "Menlo"
+#define DEF_PROP_FACE "Arial"
 #else
 #define DEF_SIZE 9
+#define DEF_FIXED_FACE "Courier New"
+#define DEF_PROP_FACE "Helvetica"
 #endif
-
+#endif
 
 QTfont *QTfont::instancePtr = 0;
 
@@ -268,6 +273,42 @@ QTfont::unregisterCallback(void *pwidget, int fnum)
 }
 
 
+// Create a font for the string given in name, which has the form
+// "family [style keywords] [size]".
+//
+QFont *
+QTfont::new_font(const char *name, bool fixed)
+{
+    char *family;
+    stringlist *style;
+    int size;
+    parse_freeform_font_string(name, &family, &style, &size);
+    if (!family) {
+        if (fixed)
+            family = lstring::copy("courier");
+        else
+            family = lstring::copy("helvetica");
+    }
+    QFont *font = new QFont(QString(family), size);
+    delete family;
+    font->setStyleHint(fixed ? QFont::TypeWriter : QFont::Helvetica);
+    font->setFixedPitch(fixed);
+    for (stringlist *s = style; s; s = s->next) {
+        if (!strcasecmp(s->string, "bold"))
+            font->setBold(true);
+        else if (!strcasecmp(s->string, "italic"))
+            font->setItalic(true);
+    }
+    stringlist::destroy(style);
+
+    // Reset the critical info in case there was not a perfect match.
+    QFontInfo fi(*font);
+    font->setFamily(fi.family());
+    font->setPointSize(fi.pointSize());
+    return (font);
+}
+
+
 // Static function.
 // Return the string width/height for the font index provided.
 //
@@ -384,42 +425,6 @@ QTfont::lineHeight(const QWidget *widget)
         return (fm.height());
     }
     return (16);
-}
-
-
-// Create a font for the string given in name, which has the form
-// "family [style keywords] [size]".
-//
-QFont *
-QTfont::new_font(const char *name, bool fixed)
-{
-    char *family;
-    stringlist *style;
-    int size;
-    parse_freeform_font_string(name, &family, &style, &size);
-    if (!family) {
-        if (fixed)
-            family = lstring::copy("courier");
-        else
-            family = lstring::copy("helvetica");
-    }
-    QFont *font = new QFont(QString(family), size);
-    delete family;
-    font->setStyleHint(fixed ? QFont::TypeWriter : QFont::Helvetica);
-    font->setFixedPitch(fixed);
-    for (stringlist *s = style; s; s = s->next) {
-        if (!strcasecmp(s->string, "bold"))
-            font->setBold(true);
-        else if (!strcasecmp(s->string, "italic"))
-            font->setItalic(true);
-    }
-    stringlist::destroy(style);
-
-    // Reset the critical info in case there was not a perfect match.
-    QFontInfo fi(*font);
-    font->setFamily(fi.family());
-    font->setPointSize(fi.pointSize());
-    return (font);
 }
 
 
@@ -629,16 +634,18 @@ QTfontDlg::register_caller(GRobject c, bool no_dsl, bool handle_popdn)
         QObject *o = (QObject*)c;
         if (o) {
             if (o->isWidgetType()) {
-                QPushButton *btn = dynamic_cast<QPushButton*>(o);
-                if (btn)
+                QAbstractButton *btn = dynamic_cast<QAbstractButton*>(o);
+                if (btn) {
                     connect(btn, SIGNAL(clicked()),
                         this, SLOT(quit_slot()));
+                }
             }
             else {
                 QAction *a = dynamic_cast<QAction*>(o);
-                if (a)
+                if (a) {
                     connect(a, SIGNAL(triggered()),
                         this, SLOT(quit_slot()));
+                }
             }
         }
     }
@@ -672,12 +679,15 @@ QTfontDlg::set_font_name(const char *fontname)
 
     if (!fontname || !*fontname)
         return;
-//XXX
+    QFont *font = QTfont::self()->new_font(fontname, false);
+    if (font)
+        select_font(font);
+    delete font;
 }
 
 
 // GRfontPopup override
-// Update the label text (if a label is being user).
+// Update the sample text (if a label is being used).
 //
 void
 QTfontDlg::update_label(const char *text)
@@ -687,8 +697,12 @@ QTfontDlg::update_label(const char *text)
         if (!owner || !owner->MonitorActive(this))
             return;
     }
-    (void)text;
-//XXX
+    if (ft_preview) {
+        if (text)
+            ft_preview->setPlainText(text);
+        else
+            ft_preview->setPlainText(PREVIEW_STRING);
+    }
 }
 
 
@@ -698,7 +712,8 @@ QTfontDlg::select_font(const QFont *fnt)
     if (!fnt)
         return;
     QString fam = fnt->family();
-    QList<QListWidgetItem*> list = ft_face_list->findItems(fam, Qt::MatchExactly);
+    QList<QListWidgetItem*> list =
+        ft_face_list->findItems(fam, Qt::MatchExactly);
     if (list.size() > 0) {
         ft_face_list->setCurrentItem(list.at(0));
         face_changed_slot(list.at(0), 0);
@@ -740,7 +755,7 @@ QTfontDlg::select_font(const QFont *fnt)
         ft_size_list->setCurrentItem(list.at(0));
 
     ft_preview->setFont(*fnt);
-    ft_preview->setPlainText(QString(PREVIEW_STRING));
+    ft_preview->setPlainText(PREVIEW_STRING);
 }
 
 
@@ -852,7 +867,6 @@ QTfontDlg::action_slot()
 void
 QTfontDlg::quit_slot()
 {
-    emit dismiss();
     delete this;
 }
 
@@ -861,7 +875,7 @@ void
 QTfontDlg::face_changed_slot(QListWidgetItem *new_item, QListWidgetItem*)
 {
     if (!new_item) {
-        ft_preview->setPlainText(QString(""));
+        ft_preview->setPlainText("");
         return;
     }
     QString qface = new_item->text();
