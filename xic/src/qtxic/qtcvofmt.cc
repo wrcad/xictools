@@ -42,6 +42,7 @@
 #include "main.h"
 #include "cvrt.h"
 #include "fio.h"
+#include "qtinterf/qtdblsb.h"
 
 #include <QLayout>
 #include <QGroupBox>
@@ -51,7 +52,6 @@
 #include <QPushButton>
 #include <QMenu>
 #include <QAction>
-#include <QDoubleSpinBox>
 
 
 #define FMT_MAX_ID 5
@@ -219,7 +219,7 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
 
     hbox->addStretch(1);
 
-    fmt_sb_gdsunit = new QDoubleSpinBox();
+    fmt_sb_gdsunit = new QTdoubleSpinBox();
     hbox->addWidget(fmt_sb_gdsunit);
     fmt_sb_gdsunit->setMinimum(0.01);
     fmt_sb_gdsunit->setMaximum(100.0);

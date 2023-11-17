@@ -43,6 +43,7 @@
 #include "dsp_inlines.h"
 #include "geo_grid.h"
 #include "promptline.h"
+#include "qtinterf/qtdblsb.h"
 
 #include <QLayout>
 #include <QGroupBox>
@@ -51,7 +52,6 @@
 #include <QComboBox>
 #include <QLineEdit>
 #include <QSpinBox>
-#include <QDoubleSpinBox>
 #include <QRadioButton>
 #include <QCheckBox>
 #include <QMenu>
@@ -207,7 +207,7 @@ QTlayerExpDlg::QTlayerExpDlg(GRobject c)
     connect(lx_none, SIGNAL(toggled(bool)),
         this, SLOT(none_btn_slot(bool)));
 
-    lx_sb_part = new QDoubleSpinBox();
+    lx_sb_part = new QTdoubleSpinBox();
     lx_sb_part->setMinimum(GRD_PART_MIN);
     lx_sb_part->setMaximum(GRD_PART_MAX);
     lx_sb_part->setDecimals(2);

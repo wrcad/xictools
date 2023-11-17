@@ -45,6 +45,7 @@
 #include "dsp_inlines.h"
 #include "promptline.h"
 #include "errorlog.h"
+#include "qtinterf/qtdblsb.h"
 
 #include <QLayout>
 #include <QTabWidget>
@@ -54,7 +55,6 @@
 #include <QCheckBox>
 #include <QComboBox>
 #include <QSpinBox>
-#include <QDoubleSpinBox>
 #include <QPushButton>
 #include <QRadioButton>
 #include <QMenu>
@@ -746,14 +746,14 @@ QTcompareDlg::flat_geom_page()
     wnd_r_label->setAlignment(Qt::AlignCenter);
 
     int ndgt = CD()->numDigits();
-    cmp_sb_p3_aoi_left = new QDoubleSpinBox();
+    cmp_sb_p3_aoi_left = new QTdoubleSpinBox();
     grid->addWidget(cmp_sb_p3_aoi_left, 1, 2);
     cmp_sb_p3_aoi_left->setMinimum(-1e6);
     cmp_sb_p3_aoi_left->setMaximum(1e6);
     cmp_sb_p3_aoi_left->setDecimals(ndgt);
     cmp_sb_p3_aoi_left->setValue(MICRONS(FIO()->CvtWindow()->left));
 
-    cmp_sb_p3_aoi_right = new QDoubleSpinBox();
+    cmp_sb_p3_aoi_right = new QTdoubleSpinBox();
     grid->addWidget(cmp_sb_p3_aoi_right, 2, 2);
     cmp_sb_p3_aoi_right->setMinimum(-1e6);
     cmp_sb_p3_aoi_right->setMaximum(1e6);
@@ -768,14 +768,14 @@ QTcompareDlg::flat_geom_page()
     grid->addWidget(wnd_t_label, 2, 3);
     wnd_t_label->setAlignment(Qt::AlignCenter);
 
-    cmp_sb_p3_aoi_bottom = new QDoubleSpinBox();
+    cmp_sb_p3_aoi_bottom = new QTdoubleSpinBox();
     grid->addWidget(cmp_sb_p3_aoi_bottom, 1, 4);
     cmp_sb_p3_aoi_bottom->setMinimum(-1e6);
     cmp_sb_p3_aoi_bottom->setMaximum(1e6);
     cmp_sb_p3_aoi_bottom->setDecimals(ndgt);
     cmp_sb_p3_aoi_bottom->setValue(MICRONS(FIO()->CvtWindow()->bottom));
 
-    cmp_sb_p3_aoi_top = new QDoubleSpinBox();
+    cmp_sb_p3_aoi_top = new QTdoubleSpinBox();
     grid->addWidget(cmp_sb_p3_aoi_top, 2, 4);
     cmp_sb_p3_aoi_top->setMinimum(-1e6);
     cmp_sb_p3_aoi_top->setMaximum(1e6);

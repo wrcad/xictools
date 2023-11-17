@@ -48,43 +48,6 @@
 
 
 //----------------------------------------------------------------------------
-// A Double Spin Box that uses exponential notation.
-
-#include <QDoubleSpinBox>
-#include "spnumber/spnumber.h"
-
-class QTexpDoubleSpinBox : public QDoubleSpinBox
-{
-public:
-    explicit QTexpDoubleSpinBox(QWidget *prnt = nullptr) :
-        QDoubleSpinBox(prnt)
-    {
-        QDoubleSpinBox::setDecimals(400);
-    }
-    ~QTexpDoubleSpinBox() { }
-
-    // This is subtle:  there is a hard-coded round function in
-    // QDoubleSpinBox that is used in setValue that will round the
-    // values to zero if the negative exponent is too large.  A way
-    // around this is to set the decimals value to something large
-    // (see source code).  We implement our own decimals for
-    // significant figs display.
-
-    int decimals() const        { return (d_decimals); }
-    void setDecimals(int d)     { d_decimals = d; }
-
-    // Virtual overrides.
-    void stepBy(int);
-    double valueFromText(const QString & text) const;
-    QString textFromValue(double value) const;
-    QValidator::State validate(QString &text, int&) const;
-
-private:
-    int d_decimals;
-};
-
-
-//----------------------------------------------------------------------------
 // A string Spin Box that is used for keyword choice selection.
 
 #include <QGroupBox>
@@ -94,6 +57,11 @@ class QCheckBox;
 class QPushButton;
 class QLineEdit;
 class QTkwent;
+namespace qtinterf {
+    class QTdoubleSpinBox;
+    class QTexpDoubleSpinBox;
+}
+using namespace qtinterf;
 
 class QTchoiceSpinBox : public QSpinBox
 {
@@ -189,8 +157,8 @@ private:
     QPushButton *ke_deflt;              // "def" button
     QLineEdit   *ke_entry;              // entry area
     QLineEdit   *ke_entry2;             // second entry area
-    QDoubleSpinBox *ke_spbox;           // spin box
-    QDoubleSpinBox *ke_spbox2;          // second spin box
+    QTdoubleSpinBox *ke_spbox;          // spin box
+    QTdoubleSpinBox *ke_spbox2;         // second spin box
     QTchoiceSpinBox *ke_choice;         // for keyword choice
     QTexpDoubleSpinBox *ke_expsb;       // for exponential input spin box
 };

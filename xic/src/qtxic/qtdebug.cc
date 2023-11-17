@@ -400,6 +400,8 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c) : QTbag(this)
         this, SLOT(text_changed_slot()));
     connect(wb_textarea, SIGNAL(mime_data_received(const QMimeData*)),
         this, SLOT(mime_data_received_slot(const QMimeData*)));
+    connect(wb_textarea, SIGNAL(key_press_event(QKeyEvent*)),
+        this, SLOT(key_press_slot(QKeyEvent*)));
 
     QTextDocument *doc = wb_textarea->document();
     connect(doc, SIGNAL(contentsChange(int, int, int)),
@@ -410,25 +412,6 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c) : QTbag(this)
         wb_textarea->setFont(*fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
-//XXX handle key press
-/*
-    gtk_widget_add_events(wb_shell, GDK_KEY_PRESS_MASK);
-    g_signal_connect(G_OBJECT(wb_shell), "key-press-event",
-        G_CALLBACK(db_key_dn_hdlr), 0);
-
-    GtkTextBuffer *tbf =
-        gtk_text_view_get_buffer(GTK_TEXT_VIEW(wb_textarea));
-    g_signal_connect(G_OBJECT(tbf), "insert-text",
-        G_CALLBACK(db_insert_text_proc), this);
-    g_signal_connect(G_OBJECT(tbf), "delete-range",
-        G_CALLBACK(db_delete_range_proc), this);
-
-    if (db_caller) {
-        g_signal_connect(G_OBJECT(db_caller), "toggled",
-            G_CALLBACK(db_cancel_proc), wb_shell);
-    }
-    text_set_change_hdlr(wb_textarea, db_change_proc, 0, true);
-*/
 
     db_in_undo = false;
     check_sens();
@@ -1665,6 +1648,40 @@ QTscriptDebuggerDlg::mouse_press_slot(QMouseEvent *ev)
 
 
 void
+QTscriptDebuggerDlg::key_press_slot(QKeyEvent *ev)
+{
+    // Handle key presses in the debugger window.  This provides
+    // additional accelerators for start/run/reset.
+
+    if (db_mode == DBedit) {
+        // Eat the spacebar press, so that it doesn't "press" the mode
+        // button.
+
+        if (ev->key() == Qt::Key_Space)
+            ev->ignore();
+    }
+    else if (db_mode == DBrun) {
+        switch (ev->key()) {
+        case Qt::Key_Space:
+        case Qt::Key_T:
+            step();
+            ev->ignore();
+            break;
+        case Qt::Key_R:
+            run();
+            ev->ignore();
+            break;
+        case Qt::Key_Backspace:
+        case Qt::Key_E:
+            start();
+            ev->ignore();
+            break;
+        }
+    }
+}
+
+
+void
 QTscriptDebuggerDlg::text_changed_slot()
 {
     if (db_text_changed)
@@ -1792,52 +1809,8 @@ QTscriptDebuggerDlg::font_changed_slot(int fnum)
         refresh(false, locPresent, true);
     }
 }
-
-
-#ifdef notdef
-
-
-// Static function.
-// Handle key presses in the debugger window.  This provides additional
-// accelerators for start/run/reset.
-//
-int
-QTscriptDebuggerDlg::db_key_dn_hdlr(GtkWidget*, GdkEvent *event, void*)
-{
-    if (!Dbg)
-        return (false);
-    if (Dbg->db_mode == DBedit) {
-        // Eat the spacebar press, so that it doesn't "press" the
-        // mode button.
-        if (event->key.string) {
-            if (*event->key.string == ' ')
-                return (true);
-        }
-        return (false);
-    }
-    else if (Dbg->db_mode == DBrun) {
-        if (event->key.string) {
-            switch (*event->key.string) {
-            case ' ':
-            case 't':
-                Dbg->step();
-                return (true);
-            case 'r':
-                Dbg->run();
-                return (true);
-            case '\b':
-            case 'e':
-                Dbg->start();
-                return (true);
-            }
-        }
-    }
-    return (false);
-}
-
 // End of QTscriptDebuggerDlg functions.
 
-#endif
 
 //
 // The variables monitor.

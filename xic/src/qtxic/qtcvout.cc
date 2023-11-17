@@ -42,10 +42,10 @@
 #include "cvrt.h"
 #include "fio.h"
 #include "dsp_inlines.h"
-//#include "qtcv.h"
 #include "qtcnmap.h"
 #include "qtwndc.h"
 #include "qtcvofmt.h"
+#include "qtinterf/qtdblsb.h"
 
 #include <QLayout>
 #include <QGroupBox>
@@ -53,7 +53,6 @@
 #include <QTabWidget>
 #include <QPushButton>
 #include <QCheckBox>
-#include <QDoubleSpinBox>
 
 
 //--------------------------------------------------------------------
@@ -314,7 +313,7 @@ QTconvertOutDlg::QTconvertOutDlg(GRobject c, CvoCallback callback, void *arg)
     phbox->addWidget(label);
     label->setAlignment(Qt::AlignCenter);
 
-    cvo_sb_scale = new QDoubleSpinBox();;
+    cvo_sb_scale = new QTdoubleSpinBox();;
     phbox->addWidget(cvo_sb_scale);
     cvo_sb_scale->setMinimum(CDSCALEMIN);
     cvo_sb_scale->setMaximum(CDSCALEMAX);

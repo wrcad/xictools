@@ -39,6 +39,7 @@
  *========================================================================*/
 
 #include "qtxform.h"
+#include "qtinterf/qtdblsb.h"
 #include "edit.h"
 #include "dsp_inlines.h"
 
@@ -180,12 +181,11 @@ QTxformDlg::QTxformDlg(GRobject c,
     lbl = new QLabel(tr("Magnification"));
     hbox->addWidget(lbl);
 
-    tf_mag = new QDoubleSpinBox();
+    tf_mag = new QTdoubleSpinBox();
     tf_mag->setValue(1.0);
-    tf_mag->setMinimum(TFM_MIND);
-    tf_mag->setMaximum(TFM_MAXD);
+    tf_mag->setRange(TFM_MIND, TFM_MAXD);
     tf_mag->setDecimals(TFM_NUMD);
-    hbox->addWidget(lbl);
+    hbox->addWidget(tf_mag);
     connect(tf_mag, SIGNAL(valueChanged(double)),
         this, SLOT(magnification_change_slot(double)));
 

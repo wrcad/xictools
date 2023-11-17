@@ -56,7 +56,9 @@ class QLabel;
 class QTabWidget;
 class QCheckBox;
 class QPushButton;
-class QDoubleSpinBox;
+namespace qtinterf {
+    class QTdoubleSpinBox;
+}
 
 class QTconvertFmtDlg : public QDialog
 {
@@ -129,7 +131,7 @@ private:
     QTcnameMap  *cv_cnmap;
     QTwindowCfg *cv_wnd;
     QLabel      *cv_tx_label;
-    QDoubleSpinBox *cv_sb_scale;
+    QTdoubleSpinBox *cv_sb_scale;
 
     bool (*cv_callback)(int, void*);
     void *cv_arg;

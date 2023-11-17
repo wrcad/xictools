@@ -42,11 +42,11 @@
 #include "cvrt.h"
 #include "fio_alias.h"
 #include "menu.h"
+#include "qtinterf/qtdblsb.h"
 
 #include <QLayout>
 #include <QLineEdit>
 #include <QCheckBox>
-#include <QDoubleSpinBox>
 #include <QLabel>
 #include <QGroupBox>
 #include <QTreeWidget>
@@ -183,7 +183,7 @@ QTasmPage::QTasmPage(QTasmDlg *mt)
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
-    pg_sb_scale = new QDoubleSpinBox();
+    pg_sb_scale = new QTdoubleSpinBox();
     pg_sb_scale->setRange(CDSCALEMIN, CDSCALEMAX);
     pg_sb_scale->setDecimals(ASM_NUMD);
     pg_sb_scale->setValue(1.0);

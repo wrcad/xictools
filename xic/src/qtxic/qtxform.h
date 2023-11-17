@@ -44,11 +44,13 @@
 #include "main.h"
 #include "qtmain.h"
 
+
 class QCheckBox;
 class QComboBox;
-class QDoubleSpinBox;
 class QPushButton;
-
+namespace qtinterf {
+    class QTdoubleSpinBox;
+}
 
 class QTxformDlg : public QDialog
 {
@@ -90,7 +92,7 @@ private:
     QCheckBox *tf_rflx;
     QCheckBox *tf_rfly;
     QComboBox *tf_ang;
-    QDoubleSpinBox *tf_mag;
+    QTdoubleSpinBox *tf_mag;
     QPushButton *tf_id;
     QPushButton *tf_last;
     QPushButton *tf_cancel;

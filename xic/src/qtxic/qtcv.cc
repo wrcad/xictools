@@ -46,13 +46,13 @@
 #include "qtcvofmt.h"
 #include "qtcnmap.h"
 #include "qtwndc.h"
+#include "qtinterf/qtdblsb.h"
 
 #include <QLayout>
 #include <QGroupBox>
 #include <QLabel>
 #include <QTabWidget>
 #include <QCheckBox>
-#include <QDoubleSpinBox>
 #include <QPushButton>
 #include <QComboBox>
 
@@ -291,7 +291,7 @@ QTconvertFmtDlg::QTconvertFmtDlg(GRobject c, int inp_type,
 
     // Conversion scale
     //
-    cv_sb_scale = new QDoubleSpinBox();
+    cv_sb_scale = new QTdoubleSpinBox();
     hb->addWidget(cv_sb_scale);
     cv_sb_scale->setMinimum(CDSCALEMIN);
     cv_sb_scale->setMaximum(CDSCALEMAX);

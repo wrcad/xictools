@@ -50,7 +50,9 @@ class QCheckBox;
 class QLabel;
 class QPushButton;
 class QMenu;
-class QDoubleSpinBox;
+namespace qtinterf {
+    class QTdoubleSpinBox;
+}
 
 
 //-------------------------------------------------------------------------
@@ -112,10 +114,10 @@ private:
     QPushButton *wnd_rbutton;
     QMenu       *wnd_s_menu;
     QMenu       *wnd_r_menu;
-    QDoubleSpinBox *wnd_sb_left;
-    QDoubleSpinBox *wnd_sb_bottom;
-    QDoubleSpinBox *wnd_sb_right;
-    QDoubleSpinBox *wnd_sb_top;
+    QTdoubleSpinBox *wnd_sb_left;
+    QTdoubleSpinBox *wnd_sb_bottom;
+    QTdoubleSpinBox *wnd_sb_right;
+    QTdoubleSpinBox *wnd_sb_top;
 
     WndSensMode (*wnd_sens_test)();
     WndFuncMode wnd_func_mode;

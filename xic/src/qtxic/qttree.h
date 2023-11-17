@@ -76,6 +76,9 @@ public:
         setWindowFlags(f);
     }
 
+
+    static bool has_selection()         { return (instPtr->t_selection); }
+
     // Program is exiting, disable updates.
     static void set_panic()             { instPtr = 0; }
 

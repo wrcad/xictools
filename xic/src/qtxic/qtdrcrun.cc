@@ -50,6 +50,7 @@
 #include "errorlog.h"
 #include "promptline.h"
 #include "qtinterf/qttextw.h"
+#include "qtinterf/qtdblsb.h"
 #ifdef WIN32
 #include "windows.h"
 #endif
@@ -61,7 +62,6 @@
 #include <QPushButton>
 #include <QTabWidget>
 #include <QLineEdit>
-#include <QDoubleSpinBox>
 #include <QCheckBox>
 #include <QMouseEvent>
 
@@ -257,7 +257,7 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
     dc_none->setAutoDefault(false);
     connect(dc_none, SIGNAL(toggled(bool)), this, SLOT(none_btn_slot(bool)));
 
-    dc_sb_part = new QDoubleSpinBox();
+    dc_sb_part = new QTdoubleSpinBox();
     dc_sb_part->setRange(DRC_PART_MIN, DRC_PART_MAX);
     dc_sb_part->setDecimals(2);
     dc_sb_part->setValue(DRC_PART_DEF);
@@ -295,7 +295,7 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
 
     int ndgt = CD()->numDigits();
 
-    dc_sb_left = new QDoubleSpinBox();
+    dc_sb_left = new QTdoubleSpinBox();
     dc_sb_left->setRange(-1e6, 1e6);
     dc_sb_left->setDecimals(ndgt);
     dc_sb_left->setValue(0.0);
@@ -306,7 +306,7 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
     dc_b_label = new QLabel(tr("Bottom"));
     grid->addWidget(dc_b_label, 1, 2);
 
-    dc_sb_bottom = new QDoubleSpinBox();
+    dc_sb_bottom = new QTdoubleSpinBox();
     dc_sb_bottom->setRange(-1e6, 1e6);
     dc_sb_bottom->setDecimals(ndgt);
     dc_sb_bottom->setValue(0.0);
@@ -317,7 +317,7 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
     dc_r_label = new QLabel(tr("Right"));
     grid->addWidget(dc_r_label, 2, 0);
 
-    dc_sb_right = new QDoubleSpinBox();
+    dc_sb_right = new QTdoubleSpinBox();
     dc_sb_right->setRange(-1e6, 1e6);
     dc_sb_right->setDecimals(ndgt);
     dc_sb_right->setValue(0.0);
@@ -328,7 +328,7 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
     dc_t_label = new QLabel(tr("Top"));
     grid->addWidget(dc_t_label, 2, 2);
 
-    dc_sb_top = new QDoubleSpinBox();
+    dc_sb_top = new QTdoubleSpinBox();
     dc_sb_top->setRange(-1e6, 1e6);
     dc_sb_top->setDecimals(ndgt);
     dc_sb_top->setValue(0.0);

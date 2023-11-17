@@ -48,8 +48,10 @@
 class QLayout;
 class QLabel;
 class QPushButton;
-class QDoubleSpinBox;
 class QCheckBox;
+namespace qtinterf {
+    class QTdoubleSpinBox;
+}
 
 //-----------------------------------------------------------------------------
 //  Pop-up for the Zoom command
@@ -98,11 +100,11 @@ private slots:
 private:
     WindowDesc *zm_window;
     QCheckBox *zm_autoy;
-    QDoubleSpinBox *zm_yscale;
-    QDoubleSpinBox *zm_zoom;
-    QDoubleSpinBox *zm_x;
-    QDoubleSpinBox *zm_y;
-    QDoubleSpinBox *zm_wid;
+    QTdoubleSpinBox *zm_yscale;
+    QTdoubleSpinBox *zm_zoom;
+    QTdoubleSpinBox *zm_x;
+    QTdoubleSpinBox *zm_y;
+    QTdoubleSpinBox *zm_wid;
 };
 
 #endif

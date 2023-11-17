@@ -40,13 +40,13 @@
 
 #include "qtasm.h"
 #include "cvrt.h"
+#include "qtinterf/qtdblsb.h"
 
 #include <QLayout>
 #include <QLabel>
 #include <QComboBox>
 #include <QCheckBox>
 #include <QLineEdit>
-#include <QDoubleSpinBox>
 
 
 //-----------------------------------------------------------------------------
@@ -100,13 +100,13 @@ QTasmTf::QTasmTf(QTasmPage *src)
     tf_pxy_label->setAlignment(Qt::AlignCenter);
     grid->addWidget(tf_pxy_label, 0, 0);
 
-    tf_sb_placement_x = new QDoubleSpinBox();
+    tf_sb_placement_x = new QTdoubleSpinBox();
     tf_sb_placement_x->setRange(-1e6, 1e6);
     tf_sb_placement_x->setDecimals(ndgt);
     tf_sb_placement_x->setValue(0.0);
     grid->addWidget(tf_sb_placement_x, 0, 1);
 
-    tf_sb_placement_y = new QDoubleSpinBox();
+    tf_sb_placement_y = new QTdoubleSpinBox();
     tf_sb_placement_y->setRange(-1e6, 1e6);
     tf_sb_placement_y->setDecimals(ndgt);
     tf_sb_placement_y->setValue(0.0);
@@ -140,7 +140,7 @@ QTasmTf::QTasmTf(QTasmPage *src)
     tf_mag_label->setAlignment(Qt::AlignCenter);
     grid->addWidget(tf_mag_label, 2, 0);
 
-    tf_sb_magnification = new QDoubleSpinBox();
+    tf_sb_magnification = new QTdoubleSpinBox();
     tf_sb_magnification->setRange(CDMAGMIN, CDMAGMAX);
     tf_sb_magnification->setDecimals(ASM_NUMD);
     tf_sb_magnification->setValue(1.0);
@@ -191,13 +191,13 @@ QTasmTf::QTasmTf(QTasmPage *src)
     tf_lb_label->setAlignment(Qt::AlignCenter);
     grid->addWidget(tf_lb_label, 1, 0);
 
-    tf_sb_win_l = new QDoubleSpinBox();
+    tf_sb_win_l = new QTdoubleSpinBox();
     tf_sb_win_l->setRange(-1e6, 1e6);
     tf_sb_win_l->setDecimals(ndgt);
     tf_sb_win_l->setValue(0.0);
     grid->addWidget(tf_sb_win_l, 1, 1);
 
-    tf_sb_win_b = new QDoubleSpinBox();
+    tf_sb_win_b = new QTdoubleSpinBox();
     tf_sb_win_b->setRange(-1e6, 1e6);
     tf_sb_win_b->setDecimals(ndgt);
     tf_sb_win_b->setValue(0.0);
@@ -210,13 +210,13 @@ QTasmTf::QTasmTf(QTasmPage *src)
     tf_rt_label->setAlignment(Qt::AlignRight);
     grid->addWidget(tf_rt_label, 2, 0);
 
-    tf_sb_win_r = new QDoubleSpinBox();
+    tf_sb_win_r = new QTdoubleSpinBox();
     tf_sb_win_r->setRange(-1e6, 1e6);
     tf_sb_win_r->setDecimals(ndgt);
     tf_sb_win_r->setValue(0.0);
     grid->addWidget(tf_sb_win_r, 2, 1);
 
-    tf_sb_win_t = new QDoubleSpinBox();
+    tf_sb_win_t = new QTdoubleSpinBox();
     tf_sb_win_t->setRange(-1e6, 1e6);
     tf_sb_win_t->setDecimals(ndgt);
     tf_sb_win_t->setValue(0.0);
@@ -231,7 +231,7 @@ QTasmTf::QTasmTf(QTasmPage *src)
     tf_sc_label->setAlignment(Qt::AlignCenter);
     grid->addWidget(tf_sc_label, 3, 0);
 
-    tf_sb_scale = new QDoubleSpinBox();
+    tf_sb_scale = new QTdoubleSpinBox();
     tf_sb_scale->setRange(CDSCALEMIN, CDSCALEMAX);
     tf_sb_scale->setDecimals(ASM_NUMD);
     tf_sb_scale->setValue(1.0);

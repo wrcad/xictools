@@ -252,7 +252,8 @@ QTcanvas::erase_last_overlay()
     }
 }
 
-/*
+/******************************************************************************
+
 Theory of overlays.
 
 There are three drawing levels, from the bottom up.  The lowest
@@ -287,9 +288,8 @@ default annotation is applied, the annotation background can be created.
 The annotation backgound may subsequently change as the annotation
 changes within the application.  This must be implementated in
 application code.
-*/
 
-
+******************************************************************************/
 
 
 // Switch the drawing context to the supplied pixmap, or back to the

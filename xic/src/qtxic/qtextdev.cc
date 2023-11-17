@@ -341,25 +341,22 @@ QTextDevDlg::relist()
         ed_erase_all->setEnabled(true);
         ed_devs_listed = true;
     }
-/*XXX
-    GtkListStore *store =
-        GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(ed_list)));
-    gtk_list_store_clear(store);
-    GtkTreeIter iter;
+    ed_list->clear();
     for (stringlist *l = devlist; l; l = l->next) {
-        gtk_list_store_append(store, &iter);
+        QTreeWidgetItem *itm = new QTreeWidgetItem();
+        ed_list->addTopLevelItem(itm);
 
-        char *ls[3];
         char *s = l->string;
-        ls[0] = lstring::gettok(&s);
-        ls[1] = lstring::gettok(&s);
-        ls[2] = lstring::gettok(&s);
-        gtk_list_store_set(store, &iter, 0, ls[0], 1, ls[1], 2, ls[2], -1);
-        delete [] ls[0];
-        delete [] ls[1];
-        delete [] ls[2];
+        char *t = lstring::gettok(&s);
+        itm->setText(0, t);
+        delete [] t;
+        t = lstring::gettok(&s);
+        itm->setText(1, t);
+        delete [] t;
+        t = lstring::gettok(&s);
+        itm->setText(2, t);
+        delete [] t;
     }
-*/
     stringlist::destroy(devlist);
     delete [] ed_selection;
     ed_selection = 0;
@@ -488,62 +485,33 @@ QTextDevDlg::erase_btn_slot()
 
 
 void
-QTextDevDlg::current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*)
+QTextDevDlg::current_item_changed_slot(QTreeWidgetItem *itm, QTreeWidgetItem*)
 {
-
-    //XXX FIXME handle selections
-#ifdef notdef
-// Static function.
-//
-int
-QTextDevDlg::ed_selection_proc(GtkTreeSelection*, GtkTreeModel *store,
-    GtkTreePath *path, int issel, void *)
-{
-// Selection callback for the list.  This is called when a new selection
-// is made, but not when the selection disappears, which happens when the
-// list is updated.
-    if (ED) {
-        if (!ED->ed_devs_listed)
-            return (false);
-        if (ED->ed_no_select && !issel)
-            return (false);
-        char *name = 0, *pref = 0;
-        GtkTreeIter iter;
-        if (gtk_tree_model_get_iter(store, &iter, path))
-            gtk_tree_model_get(store, &iter, 0, &name, 1, &pref, -1);
-        if (!name || !pref) {
-            free(name);
-            free(pref);
-            return (false);
-        }
-        if (!strcmp(name, "no") && !strcmp(pref, "devices")) {
-            // First two tokens of nodevmsg.
-            gtk_widget_set_sensitive(ED->ed_show, false);
-            gtk_widget_set_sensitive(ED->ed_erase, false);
-            free(name);
-            free(pref);
-            return (false);
-        }
-        if (issel) {
-            gtk_widget_set_sensitive(ED->ed_show, true);
-            gtk_widget_set_sensitive(ED->ed_erase, true);
-            free(name);
-            free(pref);
-            return (true);
-        }
-        delete [] ED->ed_selection;
-        ED->ed_selection = new char[strlen(name) + strlen(pref) + 2];
-        char *t = lstring::stpcpy(ED->ed_selection, name);
-        *t++ = ' ';
-        strcpy(t, pref);
-        gtk_widget_set_sensitive(ED->ed_show, true);
-        gtk_widget_set_sensitive(ED->ed_erase, true);
-        free(name);
-        free(pref);
+    if (!ed_devs_listed)
+        return;
+    if (!itm)
+        return;
+    QByteArray ba1 = itm->text(0).toLatin1();
+    const char *name = ba1.constData();
+    if (!name)
+        return;
+    QByteArray ba2 = itm->text(1).toLatin1();
+    const char *pref = ba2.constData();
+    if (!pref)
+        return;
+    if (!strcmp(name, "no") && !strcmp(pref, "devices")) {
+        // First two tokens of nodevmsg.
+        ed_show->setEnabled(false);
+        ed_erase->setEnabled(false);
+        return;
     }
-    return (true);
-}
-#endif
+    delete [] ed_selection;
+    ed_selection = new char[strlen(name) + strlen(pref) + 2];
+    char *t = lstring::stpcpy(ed_selection, name);
+    *t++ = ' ';
+    strcpy(t, pref);
+    ed_show->setEnabled(true);
+    ed_erase->setEnabled(true);
 }
 
 

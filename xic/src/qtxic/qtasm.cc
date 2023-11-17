@@ -46,6 +46,7 @@
 #include "qtinterf/qtlist.h"
 #include "qtinterf/qtfont.h"
 #include "qtinterf/qtinput.h"
+#include "qtinterf/qtdblsb.h"
 #include "miscutil/filestat.h"
 
 #include <QLayout>
@@ -59,7 +60,6 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QGroupBox>
-#include <QDoubleSpinBox>
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QMimeData>

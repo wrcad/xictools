@@ -46,6 +46,7 @@
 #include "qtcnmap.h"
 #include "qtllist.h"
 #include "qtwndc.h"
+#include "qtinterf/qtdblsb.h"
 
 #include <QLayout>
 #include <QGroupBox>
@@ -54,7 +55,6 @@
 #include <QPushButton>
 #include <QCheckBox>
 #include <QComboBox>
-#include <QDoubleSpinBox>
 
 
 //--------------------------------------------------------------------
@@ -390,7 +390,7 @@ QTconvertInDlg::QTconvertInDlg(GRobject c, bool (*callback)(int, void*), void *a
     phbox->addWidget(label);
     label->setAlignment(Qt::AlignCenter);
 
-    cvi_sb_scale = new QDoubleSpinBox();
+    cvi_sb_scale = new QTdoubleSpinBox();
     phbox->addWidget(cvi_sb_scale);
     cvi_sb_scale->setMinimum(CDSCALEMIN);
     cvi_sb_scale->setMaximum(CDSCALEMAX);

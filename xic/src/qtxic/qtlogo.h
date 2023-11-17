@@ -51,7 +51,9 @@ class QRadioButton;
 class QCheckBox;
 class QComboBox;
 class QPushButton;
-class QDoubleSpinBox;
+namespace qtinterf {
+    class QTdoubleSpinBox;
+}
 
 class QTlogoDlg : public QDialog, public QTbag
 {
@@ -91,18 +93,18 @@ private slots:
 private:
     static ESret lgo_sav_cb(const char*, void*);
 
-    GRobject lgo_caller;
+    GRobject    lgo_caller;
     QRadioButton *lgo_vector;
     QRadioButton *lgo_manh;
     QRadioButton *lgo_pretty;
-    QCheckBox *lgo_setpix;
-    QComboBox *lgo_endstyle;
-    QComboBox *lgo_pwidth;
-    QCheckBox *lgo_create;
+    QCheckBox   *lgo_setpix;
+    QComboBox   *lgo_endstyle;
+    QComboBox   *lgo_pwidth;
+    QCheckBox   *lgo_create;
     QPushButton *lgo_dump;
     QPushButton *lgo_sel;
-    QDoubleSpinBox *lgo_sb_pix;
-    GRledPopup *lgo_sav_pop;
+    QTdoubleSpinBox *lgo_sb_pix;
+    GRledPopup  *lgo_sav_pop;
 
     static const char *lgo_endstyles[];
     static const char *lgo_pathwidth[];

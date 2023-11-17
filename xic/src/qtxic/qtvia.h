@@ -53,8 +53,10 @@
 class QComboBox;
 class QLineEdit;
 class QPushButton;
-class QDoubleSpinBox;
 class QSpinBox;
+namespace qtinterf {
+    class QTdoubleSpinBox;
+}
 
 class QTstdViaDlg : public QDialog
 {
@@ -97,26 +99,26 @@ private:
 
     CDc             *stv_cdesc;
 
-    QDoubleSpinBox  *stv_sb_wid;
-    QDoubleSpinBox  *stv_sb_hei;
+    QTdoubleSpinBox  *stv_sb_wid;
+    QTdoubleSpinBox  *stv_sb_hei;
     QSpinBox        *stv_sb_rows;
     QSpinBox        *stv_sb_cols;
-    QDoubleSpinBox  *stv_sb_spa_x;
-    QDoubleSpinBox  *stv_sb_spa_y;
-    QDoubleSpinBox  *stv_sb_enc1_x;
-    QDoubleSpinBox  *stv_sb_enc1_y;
-    QDoubleSpinBox  *stv_sb_off1_x;
-    QDoubleSpinBox  *stv_sb_off1_y;
-    QDoubleSpinBox  *stv_sb_enc2_x;
-    QDoubleSpinBox  *stv_sb_enc2_y;
-    QDoubleSpinBox  *stv_sb_off2_x;
-    QDoubleSpinBox  *stv_sb_off2_y;
-    QDoubleSpinBox  *stv_sb_org_x;
-    QDoubleSpinBox  *stv_sb_org_y;
-    QDoubleSpinBox  *stv_sb_imp1_x;
-    QDoubleSpinBox  *stv_sb_imp1_y;
-    QDoubleSpinBox  *stv_sb_imp2_x;
-    QDoubleSpinBox  *stv_sb_imp2_y;
+    QTdoubleSpinBox  *stv_sb_spa_x;
+    QTdoubleSpinBox  *stv_sb_spa_y;
+    QTdoubleSpinBox  *stv_sb_enc1_x;
+    QTdoubleSpinBox  *stv_sb_enc1_y;
+    QTdoubleSpinBox  *stv_sb_off1_x;
+    QTdoubleSpinBox  *stv_sb_off1_y;
+    QTdoubleSpinBox  *stv_sb_enc2_x;
+    QTdoubleSpinBox  *stv_sb_enc2_y;
+    QTdoubleSpinBox  *stv_sb_off2_x;
+    QTdoubleSpinBox  *stv_sb_off2_y;
+    QTdoubleSpinBox  *stv_sb_org_x;
+    QTdoubleSpinBox  *stv_sb_org_y;
+    QTdoubleSpinBox  *stv_sb_imp1_x;
+    QTdoubleSpinBox  *stv_sb_imp1_y;
+    QTdoubleSpinBox  *stv_sb_imp2_x;
+    QTdoubleSpinBox  *stv_sb_imp2_y;
 
     static QTstdViaDlg *instPtr;
 };

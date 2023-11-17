@@ -51,6 +51,8 @@
 #include "tech_extract.h"
 #include "qtinterf/qttextw.h"
 #include "qtinterf/qtinput.h"
+#include "qtinterf/qtdblsb.h"
+#include "qtinterf/qtexpsb.h"
 
 #include <QLayout>
 #include <QTabWidget>
@@ -61,7 +63,6 @@
 #include <QMouseEvent>
 #include <QLineEdit>
 #include <QComboBox>
-#include <QDoubleSpinBox>
 
 
 //-----------------------------------------------------------------------------
@@ -306,7 +307,7 @@ QTfastCapDlg::QTfastCapDlg(GRobject c) : QTbag(this)
 
     int ndgt = CD()->numDigits();
 
-    fc_sb_plane_bloat = new QDoubleSpinBox();
+    fc_sb_plane_bloat = new QTdoubleSpinBox();
     fc_sb_plane_bloat->setRange(FC_PLANE_BLOAT_MIN, FC_PLANE_BLOAT_MAX);
     fc_sb_plane_bloat->setDecimals(ndgt);
     fc_sb_plane_bloat->setValue(FC_PLANE_BLOAT_DEF);
@@ -320,7 +321,7 @@ QTfastCapDlg::QTfastCapDlg(GRobject c) : QTbag(this)
     hb->setContentsMargins(qmtop);
     hb->setSpacing(2);
 
-    fc_sb_substrate_thickness = new QDoubleSpinBox();
+    fc_sb_substrate_thickness = new QTdoubleSpinBox();
     fc_sb_substrate_thickness->setRange(
         SUBSTRATE_THICKNESS_MIN, SUBSTRATE_THICKNESS_MAX);
     fc_sb_substrate_thickness->setDecimals(ndgt);
@@ -349,7 +350,7 @@ QTfastCapDlg::QTfastCapDlg(GRobject c) : QTbag(this)
     hb->setContentsMargins(qmtop);
     hb->setSpacing(2);
 
-    fc_sb_substrate_eps = new QDoubleSpinBox();
+    fc_sb_substrate_eps = new QTdoubleSpinBox();
     fc_sb_substrate_eps->setRange(SUBSTRATE_EPS_MIN, SUBSTRATE_EPS_MAX);
     fc_sb_substrate_eps->setDecimals(3);
     fc_sb_substrate_eps->setValue(SUBSTRATE_EPS);
@@ -378,12 +379,11 @@ QTfastCapDlg::QTfastCapDlg(GRobject c) : QTbag(this)
     hb->setContentsMargins(qmtop);
     hb->setSpacing(2);
 
-
-//XXX This is exponential display, can QT do this?
-    fc_sb_panel_target = new QDoubleSpinBox();
+    fc_sb_panel_target = new QTexpDoubleSpinBox();
     fc_sb_panel_target->setRange(FC_MIN_TARG_PANELS, FC_MAX_TARG_PANELS);
     fc_sb_panel_target->setDecimals(1);
     fc_sb_panel_target->setValue(FC_DEF_TARG_PANELS);
+    fc_sb_panel_target->setSingleStep(0);
     hb->addWidget(fc_sb_panel_target);
     connect(fc_sb_panel_target, SIGNAL(valueChanged(double)),
         this, SLOT(panels_changed_slot(double)));

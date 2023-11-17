@@ -40,13 +40,13 @@
 
 #include <qtwndc.h>
 #include "fio.h"
+#include "qtinterf/qtdblsb.h"
 
 #include <QLayout>
 #include <QCheckBox>
 #include <QLabel>
 #include <QPushButton>
 #include <QMenu>
-#include <QDoubleSpinBox>
 
 
 //-------------------------------------------------------------------------
@@ -141,7 +141,7 @@ QTwindowCfg::QTwindowCfg(WndSensMode(sens_test)(), WndFuncMode fmode)
     col = new QVBoxLayout();
     hbox->addLayout(col);
 
-    wnd_sb_left = new QDoubleSpinBox();
+    wnd_sb_left = new QTdoubleSpinBox();
     col->addWidget(wnd_sb_left);
     wnd_sb_left->setMinimum(1e-6);
     wnd_sb_left->setMaximum(1e6);
@@ -160,7 +160,7 @@ QTwindowCfg::QTwindowCfg(WndSensMode(sens_test)(), WndFuncMode fmode)
     connect(wnd_sb_left, SIGNAL(valueChanged(double)),
         this, SLOT(left_value_slot(double)));
 
-    wnd_sb_right = new QDoubleSpinBox();
+    wnd_sb_right = new QTdoubleSpinBox();
     col->addWidget(wnd_sb_right);
     wnd_sb_right->setMinimum(1e-6);
     wnd_sb_right->setMaximum(1e6);
@@ -189,7 +189,7 @@ QTwindowCfg::QTwindowCfg(WndSensMode(sens_test)(), WndFuncMode fmode)
     col = new QVBoxLayout();
     hbox->addLayout(col);
 
-    wnd_sb_bottom = new QDoubleSpinBox();
+    wnd_sb_bottom = new QTdoubleSpinBox();
     col->addWidget(wnd_sb_bottom);
     wnd_sb_bottom->setMinimum(1e-6);
     wnd_sb_bottom->setMaximum(1e6);
@@ -206,7 +206,7 @@ QTwindowCfg::QTwindowCfg(WndSensMode(sens_test)(), WndFuncMode fmode)
     connect(wnd_sb_bottom, SIGNAL(valueChanged(double)),
         this, SLOT(bottom_value_slot(double)));
 
-    wnd_sb_top = new QDoubleSpinBox();
+    wnd_sb_top = new QTdoubleSpinBox();
     col->addWidget(wnd_sb_top);
     wnd_sb_top->setMinimum(1e-6);
     wnd_sb_top->setMaximum(1e6);

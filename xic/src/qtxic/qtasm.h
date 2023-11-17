@@ -71,9 +71,11 @@ class QTconvOutFmt;
 namespace qtinterf { class QTactivity; }
 
 class QLabel;
-class QDoubleSpinBox;
 class QCheckBox;
 class QTreeWidget;
+namespace qtinterf {
+    class QTdoubleSpinBox;
+}
 
 
 // Transformation parameters for instances.
@@ -140,13 +142,13 @@ private:
     QTasmPage   *tf_owner;              // container
     // "basic" page
     QLabel      *tf_pxy_label;          // placement label
-    QDoubleSpinBox *tf_sb_placement_x;  // placement x spin button
-    QDoubleSpinBox *tf_sb_placement_y;  // placement y spin button
+    QTdoubleSpinBox *tf_sb_placement_x; // placement x spin button
+    QTdoubleSpinBox *tf_sb_placement_y; // placement y spin button
     QLabel      *tf_ang_label;          // angle label
     QComboBox   *tf_angle;              // angle option menu 0-315 in 45 incr.
     QCheckBox   *tf_mirror;             // reflection button
     QLabel      *tf_mag_label;          // magnification label
-    QDoubleSpinBox *tf_sb_magnification;// magnification spin button
+    QTdoubleSpinBox *tf_sb_magnification;// magnification spin button
     QLabel      *tf_name_label;         // placement name label
     QLineEdit   *tf_name;               // placement name
     // "advanced" page
@@ -157,13 +159,13 @@ private:
     QCheckBox   *tf_ecf_pre;            // empty cell pre-filtering
     QCheckBox   *tf_ecf_post;           // empty cell post-filtering
     QLabel      *tf_lb_label;           // l,b label
-    QDoubleSpinBox *tf_sb_win_l;        // window left spin button
-    QDoubleSpinBox *tf_sb_win_b;        // window bottom spin button
+    QTdoubleSpinBox *tf_sb_win_l;       // window left spin button
+    QTdoubleSpinBox *tf_sb_win_b;       // window bottom spin button
     QLabel      *tf_rt_label;           // r,t label
-    QDoubleSpinBox *tf_sb_win_r;        // window right spin button
-    QDoubleSpinBox *tf_sb_win_t;        // window top spin button
+    QTdoubleSpinBox *tf_sb_win_r;       // window right spin button
+    QTdoubleSpinBox *tf_sb_win_t;       // window top spin button
     QLabel      *tf_sc_label;           // scale factor label
-    QDoubleSpinBox *tf_sb_scale;        // scale spin button
+    QTdoubleSpinBox *tf_sb_scale;       // scale spin button
     QCheckBox   *tf_no_hier;            // no hier check box
     int         tf_angle_ix;            // current angle selection index
 };
@@ -195,7 +197,7 @@ private:
     QCheckBox   *pg_skip_layers;    // skip layer list layers button
     QLineEdit   *pg_layer_list;     // layer list entry
     QLineEdit   *pg_layer_aliases;  // layer aliases entry
-    QDoubleSpinBox *pg_sb_scale;    // scale spin button
+    QTdoubleSpinBox *pg_sb_scale;   // scale spin button
     QLineEdit   *pg_prefix;         // cell name modification prefix entry
     QLineEdit   *pg_suffix;         // cell name modification suffix entry
     QLabel      *pg_prefix_lab;     // prefix label

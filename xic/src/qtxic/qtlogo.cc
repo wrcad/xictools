@@ -43,6 +43,7 @@
 #include "dsp_inlines.h"
 #include "ginterf/grfont.h"
 #include "miscutil/filestat.h"
+#include "qtinterf/qtdblsb.h"
 
 #include <QLayout>
 #include <QLabel>
@@ -50,7 +51,6 @@
 #include <QCheckBox>
 #include <QComboBox>
 #include <QPushButton>
-#include <QDoubleSpinBox>
 
 
 void
@@ -404,7 +404,7 @@ QTlogoDlg::QTlogoDlg(GRobject c) : QTbag(this)
     connect(lgo_setpix, SIGNAL(stateChanged(int)),
         this, SLOT(pixel_btn_slot(int)));
 
-    lgo_sb_pix = new QDoubleSpinBox();
+    lgo_sb_pix = new QTdoubleSpinBox();
     col2->addWidget(lgo_sb_pix);
     lgo_sb_pix->setDecimals(CD()->numDigits());
     lgo_sb_pix->setMinimum(MICRONS(1));

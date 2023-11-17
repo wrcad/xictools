@@ -54,7 +54,9 @@ class QLineEdit;
 class QMenu;
 class QAction;
 class QSpinBox;
-class QDoubleSpinBox;
+namespace qtinterf {
+    class QTdoubleSpinBox;
+}
 
 class QTlayerExpDlg : public QDialog
 {
@@ -115,7 +117,7 @@ private:
     QPushButton     *lx_recall;
     QMenu           *lx_save_menu;
     QMenu           *lx_recall_menu;
-    QDoubleSpinBox  *lx_sb_part;
+    QTdoubleSpinBox *lx_sb_part;
     QSpinBox        *lx_sb_thread;
 
     double lx_last_part_size;

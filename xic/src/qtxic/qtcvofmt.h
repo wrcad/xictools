@@ -52,7 +52,9 @@ class QPushButton;
 class QLabel;
 class QComboBox;
 class QMenu;
-class QDoubleSpinBox;
+namespace qtinterf {
+    class QTdoubleSpinBox;
+}
 
 
 //-------------------------------------------------------------------------
@@ -138,7 +140,7 @@ private:
     QComboBox   *fmt_cifcname;
     QComboBox   *fmt_ciflayer;
     QComboBox   *fmt_ciflabel;
-    QDoubleSpinBox *fmt_sb_gdsunit;
+    QTdoubleSpinBox *fmt_sb_gdsunit;
 
     void (*fmt_cb)(int);
     bool fmt_strip;

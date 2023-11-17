@@ -32,117 +32,85 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * Xic Integrated Circuit Layout and Schematic Editor                     *
+ * WRspice Circuit Simulation and Analysis Tool                           *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#ifndef QTCVIN_H
-#define QTCVIN_H
-
-#include "main.h"
-#include "qtmain.h"
-
-#include <QDialog>
+#include "spnumber/spnumber.h"
+#include "qtexpsb.h"
 
 
-class QLabel;
-class QTabWidget;
-class QCheckBox;
-class QComboBox;
-class QTcnameMap;
-class QTlayerList;
-class QTwindowCfg;
-namespace qtinterf {
-    class QTdoubleSpinBox;
+//----------------------------------------------------------------------------
+// A Double Spin Box that uses exponential notation.
+
+using namespace qtinterf;
+
+void
+QTexpDoubleSpinBox::stepBy(int n)
+{
+    double d = value();
+    bool neg = false;
+    if (d < 0) {
+        neg = true;
+        d = -d;
+    }
+    double logd = log10(d);
+    int ex = (int)floor(logd);
+    logd -= ex;
+    double mant = pow(10.0, logd);
+
+    double del = 1.0;
+    if ((n > 0 && !neg) || (n < 0 && neg))
+        mant += del;
+    else {
+        if (mant - del < 1.0)
+            mant = 1.0 - (1.0 - mant + del)/10;
+        else
+            mant -= del;
+    }
+    d = mant * pow(10.0, ex);
+    if (neg)
+        d = -d;
+    if (d > maximum())
+        d = maximum();
+    else if (d < minimum())
+        d = minimum();
+    setValue(d);
 }
 
-class QTconvertInDlg : public QDialog
+
+double
+QTexpDoubleSpinBox::valueFromText(const QString & text) const
 {
-    Q_OBJECT
+    QByteArray text_ba = text.toLatin1();
+    const char *str = text_ba.constData();
+    double *d = SPnum.parse(&str, true);
+    if (d)
+        return (*d);
+    return (0.0/0.0);  // NaN, "can't happen"
+}
 
-public:
-    struct fmt_menu
-    {
-        const char *name;
-        int code;
-    };
 
-    QTconvertInDlg(GRobject, bool(*)(int, void*), void*);
-    ~QTconvertInDlg();
+QString
+QTexpDoubleSpinBox::textFromValue(double value) const
+{
+    const char *str = SPnum.printnum(value, (const char*)0, true,
+        decimals());
+    while (isspace(*str))
+        str++;
+    return (QString(str));
+}
 
-    void update();
 
-    void set_transient_for(QWidget *prnt)
-    {
-        Qt::WindowFlags f = windowFlags();
-        setParent(prnt);
-#ifdef __APPLE__
-        f |= Qt::Tool;
-#endif
-        setWindowFlags(f);
-    }
-
-    static QTconvertInDlg *self()           { return (instPtr); }
-
-private slots:
-    void help_btn_slot();
-    void nbook_page_slot(int);
-    void nonpc_btn_slot(int);
-    void yesoapc_btn_slot(int);
-    void nolyr_btn_slot(int);
-    void over_menu_slot(int);
-    void replace_btn_slot(int);
-    void merge_btn_slot(int);
-    void polys_btn_slot(int);
-    void dup_menu_slot(int);
-    void empties_btn_slot(int);
-    void dtypes_btn_slot(int);
-    void force_menu_slot(int);
-    void noflvias_btn_slot(int);
-    void noflpcs_btn_slot(int);
-    void nofllbs_btn_slot(int);
-    void nolabels_btn_slot(int);
-    void merg_menu_slot(int);
-    void scale_changed_slot(double);
-    void read_btn_slot();
-    void dismiss_btn_slot();
-
-private:
-    GRobject    cvi_caller;
-    QLabel      *cvi_label;
-    QTabWidget  *cvi_nbook;
-    QCheckBox   *cvi_nonpc;
-    QCheckBox   *cvi_yesoapc;
-    QCheckBox   *cvi_nolyr;
-    QCheckBox   *cvi_replace;
-    QComboBox   *cvi_over;
-    QCheckBox   *cvi_merge;
-    QCheckBox   *cvi_polys;
-    QComboBox   *cvi_dup;
-    QCheckBox   *cvi_empties;
-    QCheckBox   *cvi_dtypes;
-    QComboBox   *cvi_force;
-    QCheckBox   *cvi_noflvias;
-    QCheckBox   *cvi_noflpcs;
-    QCheckBox   *cvi_nofllbs;
-    QCheckBox   *cvi_nolabels;
-    QComboBox   *cvi_merg;
-    QTdoubleSpinBox *cvi_sb_scale;
-    QTcnameMap  *cvi_cnmap;
-    QTlayerList *cvi_llist;
-    QTwindowCfg *cvi_wnd;
-    bool        (*cvi_callback)(int, void*);
-    void        *cvi_arg;
-
-    static const char *cvi_mergvals[];
-    static const char *cvi_overvals[];
-    static const char *cvi_dupvals[];
-    static fmt_menu cvi_forcevals[];
-    static int cvi_merg_val;
-    static QTconvertInDlg *instPtr;
-};
-
-#endif
+// Change the way we validate user input (if validate => valueFromText)
+QValidator::State
+QTexpDoubleSpinBox::validate(QString &text, int&) const
+{
+    QByteArray text_ba = text.toLatin1();
+    const char *str = text_ba.constData();
+    double *d = SPnum.parse(&str, true);
+    return (d ? QValidator::Acceptable : QValidator::Invalid);
+}
 

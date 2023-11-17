@@ -50,10 +50,12 @@
 class QLabel;
 class QTabWidget;
 class QCheckBox;
-class QDoubleSpinBox;
 class QTconvOutFmt;
 class QTwindowCfg;
 class QTcnameMap;
+namespace qtinterf {
+    class QTdoubleSpinBox;
+}
 
 typedef bool(*CvoCallback)(FileType, bool, void*);
 
@@ -122,7 +124,7 @@ private:
     QCheckBox   *cvo_keepbad;
     QCheckBox   *cvo_invis_p;
     QCheckBox   *cvo_invis_e;
-    QDoubleSpinBox *cvo_sb_scale;
+    QTdoubleSpinBox *cvo_sb_scale;
     QTconvOutFmt *cvo_fmt;
     QTwindowCfg *cvo_wnd;
     QTcnameMap  *cvo_cnmap;

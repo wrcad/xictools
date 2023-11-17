@@ -52,10 +52,12 @@ class QTabWidget;
 class QLineEdit;
 class QCheckBox;
 class QSpinBox;
-class QDoubleSpinBox;
 class QPushButton;
 class QRadioButton;
 class QMenu;
+namespace qtinterf {
+    class QTdoubleSpinBox;
+}
 
 class QTcompareDlg : public QDialog
 {
@@ -201,10 +203,10 @@ private:
     QPushButton *cmp_p3_r_btn;
     QMenu       *cmp_p3_s_menu;
     QMenu       *cmp_p3_r_menu;
-    QDoubleSpinBox *cmp_sb_p3_aoi_left;
-    QDoubleSpinBox *cmp_sb_p3_aoi_bottom;
-    QDoubleSpinBox *cmp_sb_p3_aoi_right;
-    QDoubleSpinBox *cmp_sb_p3_aoi_top;
+    QTdoubleSpinBox *cmp_sb_p3_aoi_left;
+    QTdoubleSpinBox *cmp_sb_p3_aoi_bottom;
+    QTdoubleSpinBox *cmp_sb_p3_aoi_right;
+    QTdoubleSpinBox *cmp_sb_p3_aoi_top;
     QSpinBox    *cmp_sb_p3_fine_grid;
     QSpinBox    *cmp_sb_p3_coarse_mult;
 

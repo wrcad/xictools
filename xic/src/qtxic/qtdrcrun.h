@@ -55,9 +55,11 @@
 
 class QPushButon;
 class QLineEdit;
-class QDoubleSpinBox;
 class QCheckBox;
 class QLabel;
+namespace qtinterf {
+    class QTdoubleSpinBox;
+}
 
 class QTdrcRunDlg : public QDialog
 {
@@ -118,7 +120,7 @@ private:
     QLineEdit   *dc_chdname;
     QLineEdit   *dc_cname;
     QPushButton *dc_none;
-    QDoubleSpinBox *dc_sb_part;
+    QTdoubleSpinBox *dc_sb_part;
     QCheckBox   *dc_wind;
     QCheckBox   *dc_flat;
     QPushButton *dc_set;
@@ -126,10 +128,10 @@ private:
     QLabel      *dc_b_label;
     QLabel      *dc_r_label;
     QLabel      *dc_t_label;
-    QDoubleSpinBox *dc_sb_left;
-    QDoubleSpinBox *dc_sb_bottom;
-    QDoubleSpinBox *dc_sb_right;
-    QDoubleSpinBox *dc_sb_top;
+    QTdoubleSpinBox *dc_sb_left;
+    QTdoubleSpinBox *dc_sb_bottom;
+    QTdoubleSpinBox *dc_sb_right;
+    QTdoubleSpinBox *dc_sb_top;
     QPushButton *dc_check;
     QPushButton *dc_checkbg;
     QTtextEdit  *dc_jobs;

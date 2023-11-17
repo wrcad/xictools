@@ -56,8 +56,10 @@ class QPushButton;
 class QCheckBox;
 class QLineEdit;
 class QSpinBox;
-class QDoubleSpinBox;
 class QLabel;
+namespace qtinterf {
+    class QTdoubleSpinBox;
+}
 struct sDevDesc;
 
 
@@ -193,7 +195,7 @@ private:
     QCheckBox   *es_p3_usecache;
     QCheckBox   *es_p3_nordcache;
     QCheckBox   *es_p3_deltaset;
-    QDoubleSpinBox *es_p3_sb_delta;
+    QTdoubleSpinBox *es_p3_sb_delta;
     QCheckBox   *es_p3_trytile;
     QLabel      *es_p3_lmax;
     QLabel      *es_p3_lgrid;

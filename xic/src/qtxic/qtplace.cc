@@ -44,13 +44,13 @@
 #include "select.h"
 #include "pbtn_menu.h"
 #include "qtmenu.h"
+#include "qtinterf/qtdblsb.h"
 
 #include <QLayout>
 #include <QLabel>
 #include <QPushButton>
 #include <QComboBox>
 #include <QSpinBox>
-#include <QDoubleSpinBox>
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QMimeData>
@@ -219,7 +219,7 @@ QTplaceDlg::QTplaceDlg(bool noprompt)
 
     pl_label_dx = new QLabel(tr("Dx"));
     vb->addWidget(pl_label_dx);;
-    pl_dx = new QDoubleSpinBox();
+    pl_dx = new QTdoubleSpinBox();
     vb->addWidget(pl_dx);;
     pl_dx->setMaximum(1e6);
     pl_dx->setMinimum(-1e6);
@@ -230,7 +230,7 @@ QTplaceDlg::QTplaceDlg(bool noprompt)
 
     pl_label_dy = new QLabel(tr("Dy"));
     vb->addWidget(pl_label_dy);;
-    pl_dy = new QDoubleSpinBox();
+    pl_dy = new QTdoubleSpinBox();
     vb->addWidget(pl_dy);
     pl_dy->setMaximum(1e6);
     pl_dy->setMinimum(-1e6);

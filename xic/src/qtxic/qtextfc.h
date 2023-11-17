@@ -56,8 +56,11 @@ class QPushButton;
 class QLineEdit;
 class QComboBox;
 class QCheckBox;
-class QDoubleSpinBox;
 class QMouseEvent;
+namespace qtinterf {
+    class QTdoubleSpinBox;
+    class QTexpDoubleSpinBox;
+}
 
 class QTfastCapDlg : public QDialog, public QTbag
 {
@@ -148,10 +151,10 @@ private:
 
     QComboBox   *fc_units;
     QCheckBox   *fc_enab;
-    QDoubleSpinBox *fc_sb_plane_bloat;
-    QDoubleSpinBox *fc_sb_substrate_thickness;
-    QDoubleSpinBox *fc_sb_substrate_eps;
-    QDoubleSpinBox *fc_sb_panel_target;
+    QTdoubleSpinBox *fc_sb_plane_bloat;
+    QTdoubleSpinBox *fc_sb_substrate_thickness;
+    QTdoubleSpinBox *fc_sb_substrate_eps;
+    QTexpDoubleSpinBox *fc_sb_panel_target;
 
     QCheckBox   *fc_dbg_zoids;
     QCheckBox   *fc_dbg_vrbo;

@@ -54,9 +54,11 @@
 
 class QLabel;
 class QLineEdit;
-class QDoubleSpinBox;
 class QCheckBox;
 class QPushButton;
+namespace qtinterf {
+    class QTdoubleSpinBox;
+}
 
 class QTruleDlg : public QDialog, public QTbag
 {
@@ -109,19 +111,19 @@ private:
     QLabel      *ru_target_la;
     QLineEdit   *ru_target_ent;
     QLabel      *ru_dimen_la;
-    QDoubleSpinBox *ru_dimen_sb;
-    QDoubleSpinBox *ru_area_sb;
+    QTdoubleSpinBox *ru_dimen_sb;
+    QTdoubleSpinBox *ru_area_sb;
     QLabel      *ru_diag_la;
-    QDoubleSpinBox *ru_diag_sb;
+    QTdoubleSpinBox *ru_diag_sb;
     QLabel      *ru_net_la;
-    QDoubleSpinBox *ru_net_sb;
+    QTdoubleSpinBox *ru_net_sb;
     QCheckBox   *ru_use_st;
     QPushButton *ru_edit_st;
     QLabel      *ru_enc_la;
-    QDoubleSpinBox *ru_enc_sb;
+    QTdoubleSpinBox *ru_enc_sb;
     QLabel      *ru_opp_la;
-    QDoubleSpinBox *ru_opp_sb1;
-    QDoubleSpinBox *ru_opp_sb2;
+    QTdoubleSpinBox *ru_opp_sb1;
+    QTdoubleSpinBox *ru_opp_sb2;
     QLabel      *ru_user_la;
     QLineEdit   *ru_user_ent;
     QLabel      *ru_descr_la;

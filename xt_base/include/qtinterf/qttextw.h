@@ -98,6 +98,7 @@ signals:
     void press_event(QMouseEvent*);
     void motion_event(QMouseEvent*);
     void mime_data_received(const QMimeData*);
+    void key_press_event(QKeyEvent*);
 
 protected:
     void resizeEvent(QResizeEvent *ev)
@@ -119,17 +120,20 @@ protected:
     // Tricky stuff here to allow window to handle drag/drop while
     // in read-only mode.
 
-    void dragEnterEvent(QDragEnterEvent *ev) {
+    void dragEnterEvent(QDragEnterEvent *ev)
+    {
         if (canInsertFromMimeData(ev->mimeData()))
             ev->acceptProposedAction();
     }
 
-    void dragMoveEvent(QDragMoveEvent *ev) {
+    void dragMoveEvent(QDragMoveEvent *ev)
+    {
         if (canInsertFromMimeData(ev->mimeData()))
             ev->acceptProposedAction();
     }
 
-    void dropEvent(QDropEvent *ev) {
+    void dropEvent(QDropEvent *ev)
+    {
         insertFromMimeData(ev->mimeData());
         ev->acceptProposedAction();
     }
@@ -142,8 +146,16 @@ protected:
         return (QTextEdit::canInsertFromMimeData(source));
     }
 
-    void insertFromMimeData(const QMimeData *source) {
+    void insertFromMimeData(const QMimeData *source)
+    {
         emit mime_data_received(source);
+    }
+
+    void keyPressEvent(QKeyEvent *ev)
+    {
+        emit key_press_event(ev);
+        if (ev->isAccepted())
+            QTextEdit::keyPressEvent(ev);
     }
 };
 

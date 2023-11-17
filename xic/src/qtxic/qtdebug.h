@@ -113,13 +113,6 @@ private slots:
     void font_changed_slot(int);
 
 private:
-    /*
-    static void dv_cancel_proc(GtkWidget*, void*);
-    static int dv_select_proc(GtkTreeSelection*, GtkTreeModel*,
-        GtkTreePath*, int, void*);
-    static bool dv_focus_proc(GtkWidget*, GdkEvent*, void*);
-    */
-
     QTreeWidget *dv_list;
     void        *dv_pointer;
 };
@@ -201,6 +194,7 @@ private slots:
     void help_slot();
     void mode_btn_slot();
     void mouse_press_slot(QMouseEvent*);
+    void key_press_slot(QKeyEvent*);
     void text_changed_slot();
     void text_change_slot(int, int, int);
     void mime_data_received_slot(const QMimeData*);

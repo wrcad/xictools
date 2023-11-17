@@ -24,8 +24,10 @@ CCFILES = \
     qtactivity.cc \
     qtaffirm.cc \
     qtcanvas.cc \
+    qtdblsb.cc \
     qtdraw.cc \
     qtedit.cc \
+    qtexpsb.cc \
     qtfile.cc \
     qtfont.cc \
     qthcopy.cc \
@@ -47,7 +49,9 @@ MOCFILES = \
     moc_activity.cpp \
     moc_affirm.cpp \
     moc_canvas.cpp \
+    moc_dblsb.cpp \
     moc_edit.cpp \
+    moc_expsb.cpp \
     moc_file.cpp \
     moc_font.cpp \
     moc_hcopy.cpp \
@@ -81,7 +85,9 @@ $(LIB_TARGET): $(LIBOBJS)
 moc_activity.o: moc_activity.cpp  $(MOC_INCLUDE)/qtactivity.h 
 moc_affirm.o: moc_affirm.cpp  $(MOC_INCLUDE)/qtaffirm.h 
 moc_canvas.o: moc_canvas.cpp  $(MOC_INCLUDE)/qtcanvas.h 
+moc_dblsb.o: moc_dblsb.cpp  $(MOC_INCLUDE)/qtdblsb.h 
 moc_edit.o: moc_edit.cpp  $(MOC_INCLUDE)/qtedit.h 
+moc_expsb.o: moc_expsb.cpp  $(MOC_INCLUDE)/qtexpsb.h 
 moc_file.o: moc_file.cpp  $(MOC_INCLUDE)/qtfile.h 
 moc_font.o: moc_font.cpp  $(MOC_INCLUDE)/qtfont.h 
 moc_hcopy.o: moc_hcopy.cpp  $(MOC_INCLUDE)/qthcopy.h 
@@ -103,8 +109,12 @@ moc_affirm.cpp: $(MOC) $(MOC_INCLUDE)/qtaffirm.h
 	$(MOC) $(MOC_INCLUDE)/qtaffirm.h -o moc_affirm.cpp
 moc_canvas.cpp: $(MOC) $(MOC_INCLUDE)/qtcanvas.h
 	$(MOC) $(MOC_INCLUDE)/qtcanvas.h -o moc_canvas.cpp
+moc_dblsb.cpp: $(MOC) $(MOC_INCLUDE)/qtdblsb.h
+	$(MOC) $(MOC_INCLUDE)/qtdblsb.h -o moc_dblsb.cpp
 moc_edit.cpp: $(MOC) $(MOC_INCLUDE)/qtedit.h
 	$(MOC) $(MOC_INCLUDE)/qtedit.h -o moc_edit.cpp
+moc_expsb.cpp: $(MOC) $(MOC_INCLUDE)/qtexpsb.h
+	$(MOC) $(MOC_INCLUDE)/qtexpsb.h -o moc_expsb.cpp
 moc_file.cpp: $(MOC) $(MOC_INCLUDE)/qtfile.h
 	$(MOC) $(MOC_INCLUDE)/qtfile.h -o moc_file.cpp
 moc_font.cpp: $(MOC) $(MOC_INCLUDE)/qtfont.h

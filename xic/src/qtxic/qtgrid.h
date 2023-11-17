@@ -51,7 +51,6 @@ class QGroupBox;
 class QLabel;
 class QPushButton;
 class QSpinBox;
-class QDoubleSpinBox;
 class QCheckBox;
 class QComboBox;
 class QRadioButton;
@@ -60,7 +59,8 @@ class QMouseEvent;
 class QResizeEvent;
 class QKeyPressEvent;
 namespace qtinterf {
-class QTcanvas;
+    class QTcanvas;
+    class QTdoubleSpinBox;
 }
 
 
@@ -134,7 +134,7 @@ private:
     void keyPressEvent(QKeyEvent*);
 
     QGroupBox   *gd_snapbox;
-    QDoubleSpinBox *gd_resol;
+    QTdoubleSpinBox *gd_resol;
     QLabel      *gd_mfglabel;
     QSpinBox    *gd_snap;
     QCheckBox   *gd_snapbtn;

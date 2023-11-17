@@ -45,6 +45,7 @@
 #include "errorlog.h"
 #include "qtmenu.h"
 #include "spnumber/spnumber.h"
+#include "qtinterf/qtdblsb.h"
 
 #include <QLayout>
 #include <QGroupBox>
@@ -53,7 +54,6 @@
 #include <QScrollArea>
 #include <QCheckBox>
 #include <QComboBox>
-#include <QDoubleSpinBox>
 #include <QSpinBox>
 #include <QLineEdit>
 
@@ -63,6 +63,9 @@
 //
 // Help system keywords used:
 //  xic:pcparams
+
+//XXX Probably need to detect the need for and use exponential notation
+// spin button here.
 
 namespace {
     void start_modal(QDialog *w)
@@ -431,7 +434,7 @@ QTpcellParamsDlg::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
             // A spin button.  Will use .4f format for floating point
             // numbers, need a way to specify print format.
 
-            QDoubleSpinBox *w = new QDoubleSpinBox;
+            QTdoubleSpinBox *w = new QTdoubleSpinBox;
             w->setObjectName(qsname);
 
             int ndgt = 0;
@@ -495,7 +498,7 @@ QTpcellParamsDlg::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
         if (pc->type() == PCstep) {
             // As for range, but with a step increment.
 
-            QDoubleSpinBox *w = new QDoubleSpinBox();;
+            QTdoubleSpinBox *w = new QTdoubleSpinBox();;
             w->setObjectName(qsname);
 
             int ndgt = 0;
@@ -569,7 +572,7 @@ QTpcellParamsDlg::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
             // This is not really implemented, need to see what Ciranova
             // does with this.
 
-            QDoubleSpinBox *w = new QDoubleSpinBox;
+            QTdoubleSpinBox *w = new QTdoubleSpinBox;
             w->setObjectName(qsname);
 
             int ndgt = 0;
@@ -677,7 +680,7 @@ QTpcellParamsDlg::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
         return (w);
     }
     else if (p->type() == PCPfloat) {
-        QDoubleSpinBox *w = new QDoubleSpinBox;
+        QTdoubleSpinBox *w = new QTdoubleSpinBox;
         w->setObjectName(qsname);
         w->setRange(-1e30, 1e30);
         w->setDecimals(4);
@@ -687,7 +690,7 @@ QTpcellParamsDlg::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
         return (w);
     }
     else if (p->type() == PCPdouble) {
-        QDoubleSpinBox *w = new QDoubleSpinBox;
+        QTdoubleSpinBox *w = new QTdoubleSpinBox;
         w->setObjectName(qsname);
         w->setRange(-1e30, 1e30);
         w->setDecimals(4);
@@ -875,7 +878,7 @@ QTpcellParamsDlg::num_type_slot(double val)
         const char *s2 = p->stringVal();
         if (s2 && (*s2 == '\'' || *s2 == '"'))
             lstr.add_c(*s2);
-        QDoubleSpinBox *sb = qobject_cast<QDoubleSpinBox*>(obj);
+        QTdoubleSpinBox *sb = qobject_cast<QTdoubleSpinBox*>(obj);
         if (!sb)
             return;
         lstr.add(sb->cleanText().toLatin1().constData());

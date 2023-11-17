@@ -118,8 +118,8 @@ sSPnumber::printnum(double num, const char *unitstr, bool fix, int numd)
     if (numd < 2)
         numd = CP.NumDigits();
 #endif
-    if (numd < 2)
-        numd = 6;
+    if (numd < 0)
+        numd = 0;
     if (numd > 15)
         numd = 15;
 

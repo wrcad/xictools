@@ -40,6 +40,7 @@
 
 #include "qtattri.h"
 #include "dsp_inlines.h"
+#include "qtinterf/qtdblsb.h"
 
 #include <QLayout>
 #include <QTabWidget>
@@ -49,7 +50,6 @@
 #include <QCheckBox>
 #include <QComboBox>
 #include <QSpinBox>
-#include <QDoubleSpinBox>
 #include <QBitmap>
 
 
@@ -474,7 +474,7 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     label = new QLabel(tr("Default minimum label height"));
     grid->addWidget(label, 1, 0);
 
-    at_sb_lheight = new QDoubleSpinBox();
+    at_sb_lheight = new QTdoubleSpinBox();
     grid->addWidget(at_sb_lheight, 1, 1);
     at_sb_lheight->setRange(CD_MIN_TEXT_HEI, CD_MAX_TEXT_HEI);
     at_sb_lheight->setDecimals(2);

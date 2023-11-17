@@ -52,6 +52,7 @@
 #include "tech.h"
 #include "tech_extract.h"
 #include "miscutil/filestat.h"
+#include "qtinterf/qtdblsb.h"
 
 #include <QLayout>
 #include <QGroupBox>
@@ -66,7 +67,6 @@
 #include <QMenu>
 #include <QAction>
 #include <QSpinBox>
-#include <QDoubleSpinBox>
 #include <QLineEdit>
 
 #ifdef __APPLE__
@@ -610,7 +610,7 @@ QTextSetupDlg::devs_page()
         this, SLOT(p3_deltaset_btn_slot(int)));
 
     int ndgt = CD()->numDigits();
-    es_p3_sb_delta = new QDoubleSpinBox();
+    es_p3_sb_delta = new QTdoubleSpinBox();
     es_p3_sb_delta->setRange(0.01, 1000.0);
     es_p3_sb_delta->setDecimals(ndgt);
     es_p3_sb_delta->setValue(0.01);

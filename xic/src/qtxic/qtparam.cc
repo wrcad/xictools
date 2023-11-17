@@ -417,7 +417,11 @@ void
 QTparam::motion_slot(QMouseEvent *ev)
 {
     if (p_has_drag) {
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         int mvx = ev->position().x();
+#else
+        int mvx = ev->x();
+#endif
         select(p_drag_x, mvx);
         p_dragged = true;
     }   

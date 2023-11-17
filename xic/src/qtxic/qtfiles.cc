@@ -1496,68 +1496,12 @@ QTfilesListDlg::dismiss_btn_slot()
 }
 
 
-#ifdef notdef
+/* XXX
 
+// Maybe use this to override internal mime data for Ctrl-C selection.
+// Would like to add full path to selection.
 
-// Private static GTK signal handler.
-void
-files_bag::f_realize_proc(GtkWidget *widget, void *arg)
-{
-    // Remove the primary selection clipboard before selection. 
-    // In order to return the full path, we have to handle
-    // selections ourselves.
-    //
-    gtk_text_buffer_remove_selection_clipboard(
-        gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget)),
-        gtk_widget_get_clipboard(widget, GDK_SELECTION_PRIMARY));
-    text_realize_proc(widget, arg);
-}
+QMimeData * QTextEdit::createMimeDataFromSelection() const
 
+*/
 
-// Private static GTK signal handler.
-void
-files_bag::f_unrealize_proc(GtkWidget *widget, void*)
-{
-    // Stupid alert:  put the clipboard back into the buffer to
-    // avoid a whine when remove_selection_clipboard is called in
-    // unrealize.
-
-    gtk_text_buffer_add_selection_clipboard(
-        gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget)),
-        gtk_widget_get_clipboard(widget, GDK_SELECTION_PRIMARY));
-}
-
-
-// Private static GTK signal handler.
-// In GTK-2, this overrides the built-in selection-get function.
-//
-void
-files_bag::f_selection_get(GtkWidget *widget,
-    GtkSelectionData *selection_data, guint, guint, void*)
-{
-    if (gtk_selection_data_get_selection(selection_data) !=
-            GDK_SELECTION_PRIMARY)
-        return;  
-
-    // stop native handler
-    g_signal_stop_emission_by_name(G_OBJECT(widget), "selection-get");
-
-    char *s = instPtr->get_selection();
-    gtk_selection_data_set(selection_data,
-        gtk_selection_data_get_target(selection_data),
-        8, (unsigned char*)s, s ? strlen(s) + 1 : 0);
-    delete [] s;
-}
-
-
-// Private static GTK signal handler.
-// Selection clear handler, need to do this ourselves in GTK-2.
-//
-int
-files_bag::f_selection_clear(GtkWidget *widget, GdkEventSelection*, void*)  
-{
-    text_select_range(widget, 0, 0);
-    return (true);
-}
-
-#endif

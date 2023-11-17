@@ -52,9 +52,11 @@ class QLabel;
 class QPushButton;
 class QComboBox;
 class QSpinBox;
-class QDoubleSpinBox;
 class QDragEnterEvent;
 class QDropEvent;
+namespace qtinterf {
+    class QTdoubleSpinBox;
+}
 
 class QTplaceDlg : public QDialog, public cEdit::sPCpopup
 {
@@ -131,8 +133,8 @@ private:
 
     QSpinBox *pl_nx;
     QSpinBox *pl_ny;
-    QDoubleSpinBox *pl_dx;
-    QDoubleSpinBox *pl_dy;
+    QTdoubleSpinBox *pl_dx;
+    QTdoubleSpinBox *pl_dy;
     QSpinBox *pl_mmlen;
 
     static QTplaceDlg *instPtr;

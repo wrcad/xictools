@@ -50,6 +50,7 @@
 #include "menu.h"
 #include "undolist.h"
 #include "promptline.h"
+#include "qtinterf/qtdblsb.h"
 
 #include <QLayout>
 #include <QGroupBox>
@@ -58,7 +59,6 @@
 #include <QComboBox>
 #include <QLineEdit>
 #include <QSpinBox>
-#include <QDoubleSpinBox>
 
 
 //--------------------------------------------------------------------
@@ -249,12 +249,12 @@ QTstdViaDlg::QTstdViaDlg(GRobject caller, CDc *cdesc)
     int ndgt = CD()->numDigits();
     label = new QLabel(tr("cut width, height"));
     grid->addWidget(label, 2, 0);
-    stv_sb_wid = new QDoubleSpinBox();
+    stv_sb_wid = new QTdoubleSpinBox();
     stv_sb_wid->setRange(WID_MIN, WID_MAX);
     stv_sb_wid->setDecimals(ndgt);
     stv_sb_wid->setValue(WID_DEF);
     grid->addWidget(stv_sb_wid, 2, 1);
-    stv_sb_hei = new QDoubleSpinBox();
+    stv_sb_hei = new QTdoubleSpinBox();
     stv_sb_hei->setRange(HEI_MIN, HEI_MAX);
     stv_sb_hei->setDecimals(ndgt);
     stv_sb_hei->setValue(HEI_DEF);
@@ -273,12 +273,12 @@ QTstdViaDlg::QTstdViaDlg(GRobject caller, CDc *cdesc)
 
     label = new QLabel(tr("cut spacing X,Y"));
     grid->addWidget(label, 4, 0);
-    stv_sb_spa_x = new QDoubleSpinBox();
+    stv_sb_spa_x = new QTdoubleSpinBox();
     stv_sb_spa_x->setRange(SPA_X_MIN, SPA_X_MAX);
     stv_sb_spa_x->setDecimals(ndgt);
     stv_sb_spa_x->setValue(SPA_X_DEF);
     grid->addWidget(stv_sb_spa_x, 4, 1);
-    stv_sb_spa_y = new QDoubleSpinBox();
+    stv_sb_spa_y = new QTdoubleSpinBox();
     stv_sb_spa_y->setRange(SPA_Y_MIN, SPA_Y_MAX);
     stv_sb_spa_y->setDecimals(ndgt);
     stv_sb_spa_y->setValue(SPA_Y_DEF);
@@ -286,12 +286,12 @@ QTstdViaDlg::QTstdViaDlg(GRobject caller, CDc *cdesc)
 
     label = new QLabel(tr("enclosure 1 X,Y"));
     grid->addWidget(label, 5, 0);
-    stv_sb_enc1_x = new QDoubleSpinBox();
+    stv_sb_enc1_x = new QTdoubleSpinBox();
     stv_sb_enc1_x->setRange(ENC1_X_MIN, ENC1_X_MAX);
     stv_sb_enc1_x->setDecimals(ndgt);
     stv_sb_enc1_x->setValue(ENC1_X_DEF);
     grid->addWidget(stv_sb_enc1_x, 5, 1);
-    stv_sb_enc1_y = new QDoubleSpinBox();
+    stv_sb_enc1_y = new QTdoubleSpinBox();
     stv_sb_enc1_y->setRange(ENC1_Y_MIN, ENC1_Y_MAX);
     stv_sb_enc1_y->setDecimals(ndgt);
     stv_sb_enc1_y->setValue(ENC1_Y_DEF);
@@ -299,12 +299,12 @@ QTstdViaDlg::QTstdViaDlg(GRobject caller, CDc *cdesc)
 
     label = new QLabel(tr("offset 1 X,Y"));
     grid->addWidget(label, 6, 0);
-    stv_sb_off1_x = new QDoubleSpinBox();
+    stv_sb_off1_x = new QTdoubleSpinBox();
     stv_sb_off1_x->setRange(OFF1_X_MIN, OFF1_X_MAX);
     stv_sb_off1_x->setDecimals(ndgt);
     stv_sb_off1_x->setValue(OFF1_X_DEF);
     grid->addWidget(stv_sb_off1_x, 6, 1);
-    stv_sb_off1_y = new QDoubleSpinBox();
+    stv_sb_off1_y = new QTdoubleSpinBox();
     stv_sb_off1_y->setRange(OFF1_Y_MIN, OFF1_Y_MAX);
     stv_sb_off1_y->setDecimals(ndgt);
     stv_sb_off1_y->setValue(OFF1_Y_DEF);
@@ -312,12 +312,12 @@ QTstdViaDlg::QTstdViaDlg(GRobject caller, CDc *cdesc)
 
     label = new QLabel(tr("enclosure 2 X,Y"));
     grid->addWidget(label, 7, 0);
-    stv_sb_enc2_x = new QDoubleSpinBox();
+    stv_sb_enc2_x = new QTdoubleSpinBox();
     stv_sb_enc2_x->setRange(ENC2_X_MIN, ENC2_X_MAX);
     stv_sb_enc2_x->setDecimals(ndgt);
     stv_sb_enc2_x->setValue(ENC2_X_DEF);
     grid->addWidget(stv_sb_enc2_x, 7, 1);
-    stv_sb_enc2_y = new QDoubleSpinBox();
+    stv_sb_enc2_y = new QTdoubleSpinBox();
     stv_sb_enc2_y->setRange(ENC2_Y_MIN, ENC2_Y_MAX);
     stv_sb_enc2_y->setDecimals(ndgt);
     stv_sb_enc2_y->setValue(ENC2_Y_DEF);
@@ -325,12 +325,12 @@ QTstdViaDlg::QTstdViaDlg(GRobject caller, CDc *cdesc)
 
     label = new QLabel(tr("offset 2 X,Y"));
     grid->addWidget(label, 8, 0);
-    stv_sb_off2_x = new QDoubleSpinBox();
+    stv_sb_off2_x = new QTdoubleSpinBox();
     stv_sb_off2_x->setRange(OFF2_X_MIN, OFF2_X_MAX);
     stv_sb_off2_x->setDecimals(ndgt);
     stv_sb_off2_x->setValue(OFF2_X_DEF);
     grid->addWidget(stv_sb_off2_x, 8, 1);
-    stv_sb_off2_y = new QDoubleSpinBox();
+    stv_sb_off2_y = new QTdoubleSpinBox();
     stv_sb_off2_y->setRange(OFF2_Y_MIN, OFF2_Y_MAX);
     stv_sb_off2_y->setDecimals(ndgt);
     stv_sb_off2_y->setValue(OFF2_Y_DEF);
@@ -338,12 +338,12 @@ QTstdViaDlg::QTstdViaDlg(GRobject caller, CDc *cdesc)
 
     label = new QLabel(tr("origin offset X,Y"));
     grid->addWidget(label, 9, 0);
-    stv_sb_org_x = new QDoubleSpinBox();
+    stv_sb_org_x = new QTdoubleSpinBox();
     stv_sb_org_x->setRange(ORG_X_MIN, ORG_X_MAX);
     stv_sb_org_x->setDecimals(ndgt);
     stv_sb_org_x->setValue(ORG_X_DEF);
     grid->addWidget(stv_sb_org_x, 9, 1);
-    stv_sb_org_y = new QDoubleSpinBox();
+    stv_sb_org_y = new QTdoubleSpinBox();
     stv_sb_org_y->setRange(ORG_Y_MIN, ORG_Y_MAX);
     stv_sb_org_y->setDecimals(ORG_Y_DEF);
     stv_sb_org_y->setValue(ORG_Y_DEF);
@@ -360,12 +360,12 @@ QTstdViaDlg::QTstdViaDlg(GRobject caller, CDc *cdesc)
 
     label = new QLabel(tr("implant 1 enc X,Y"));
     grid->addWidget(label, 11, 0);
-    stv_sb_imp1_x = new QDoubleSpinBox();
+    stv_sb_imp1_x = new QTdoubleSpinBox();
     stv_sb_imp1_x->setRange(IMP1_X_MIN, IMP1_X_MAX);
     stv_sb_imp1_x->setDecimals(ndgt);
     stv_sb_imp1_x->setValue(IMP1_X_DEF);
     grid->addWidget(stv_sb_imp1_x, 11, 1);
-    stv_sb_imp1_y = new QDoubleSpinBox();
+    stv_sb_imp1_y = new QTdoubleSpinBox();
     stv_sb_imp1_y->setRange(IMP1_Y_MIN, IMP1_Y_MAX);
     stv_sb_imp1_y->setDecimals(ndgt);
     stv_sb_imp1_y->setValue(IMP1_Y_DEF);
@@ -373,12 +373,12 @@ QTstdViaDlg::QTstdViaDlg(GRobject caller, CDc *cdesc)
 
     label = new QLabel(tr("implant 2 enc X,Y"));
     grid->addWidget(label, 12, 0);
-    stv_sb_imp2_x = new QDoubleSpinBox();
+    stv_sb_imp2_x = new QTdoubleSpinBox();
     stv_sb_imp2_x->setRange(IMP2_X_MIN, IMP2_X_MAX);
     stv_sb_imp2_x->setDecimals(ndgt);
     stv_sb_imp2_x->setValue(IMP2_X_DEF);
     grid->addWidget(stv_sb_imp2_x, 12, 1);
-    stv_sb_imp2_y = new QDoubleSpinBox();
+    stv_sb_imp2_y = new QTdoubleSpinBox();
     stv_sb_imp2_y->setRange(IMP2_Y_MIN, IMP2_Y_MAX);
     stv_sb_imp2_y->setDecimals(ndgt);
     stv_sb_imp2_y->setValue(IMP2_Y_DEF);

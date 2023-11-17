@@ -40,12 +40,12 @@
 
 #include "qtdspwin.h"
 #include "cvrt.h"
+#include "qtinterf/qtdblsb.h"
 
 #include <QLayout>
 #include <QGroupBox>
 #include <QLabel>
 #include <QPushButton>
-#include <QDoubleSpinBox>
 
 
 //-----------------------------------------------------------------------------
@@ -139,7 +139,7 @@ QTdisplayWinDlg::QTdisplayWinDlg(GRobject caller, const BBox *BB,
     col1->addWidget(label);
 
     int ndgt = CD()->numDigits();
-    dw_sb_x = new QDoubleSpinBox();
+    dw_sb_x = new QTdoubleSpinBox();
     dw_sb_x->setMinimum(-1e6);
     dw_sb_x->setMaximum(1e6);
     dw_sb_x->setDecimals(ndgt);
@@ -148,7 +148,7 @@ QTdisplayWinDlg::QTdisplayWinDlg(GRobject caller, const BBox *BB,
     connect(dw_sb_x, SIGNAL(valueChanged(double)),
         this, SLOT(x_value_changed(double)));
 
-    dw_sb_y = new QDoubleSpinBox();
+    dw_sb_y = new QTdoubleSpinBox();
     dw_sb_y->setMinimum(-1e6);
     dw_sb_y->setMaximum(1e6);
     dw_sb_y->setDecimals(ndgt);
@@ -160,7 +160,7 @@ QTdisplayWinDlg::QTdisplayWinDlg(GRobject caller, const BBox *BB,
     label = new QLabel(tr("Window Width"));
     col1->addWidget(label);
 
-    dw_sb_wid = new QDoubleSpinBox();
+    dw_sb_wid = new QTdoubleSpinBox();
     dw_sb_wid->setMinimum(0.1);
     dw_sb_wid->setMaximum(1e6);
     dw_sb_wid->setDecimals(2);

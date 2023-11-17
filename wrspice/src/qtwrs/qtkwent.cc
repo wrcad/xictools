@@ -40,6 +40,8 @@
 
 #include "qtkwent.h"
 #include "qttoolb.h"
+#include "qtinterf/qtdblsb.h"
+#include "qtinterf/qtexpsb.h"
 #include "spnumber/spnumber.h"
 #include <math.h>
 
@@ -47,76 +49,6 @@
 #include <QCheckBox>
 #include <QPushButton>
 #include <QLineEdit>
-#include <QDoubleSpinBox>
-
-
-//----------------------------------------------------------------------------
-// A Double Spin Box that uses exponential notation.
-
-void
-QTexpDoubleSpinBox::stepBy(int n)
-{
-    double d = value();
-    bool neg = false;
-    if (d < 0) {
-        neg = true;
-        d = -d;
-    }
-    double logd = log10(d);
-    int ex = (int)floor(logd);
-    logd -= ex;
-    double mant = pow(10.0, logd);
-
-    double del = 1.0;
-    if ((n > 0 && !neg) || (n < 0 && neg))
-        mant += del;
-    else {
-        if (mant - del < 1.0)
-            mant = 1.0 - (1.0 - mant + del)/10;
-        else
-            mant -= del;
-    }
-    d = mant * pow(10.0, ex);
-    if (neg)
-        d = -d;
-    if (d > maximum())
-        d = maximum();
-    else if (d < minimum())
-        d = minimum();
-    setValue(d);
-}
-
-
-double
-QTexpDoubleSpinBox::valueFromText(const QString & text) const
-{
-    QByteArray text_ba = text.toLatin1();
-    const char *str = text_ba.constData();
-    double *d = SPnum.parse(&str, true);
-    if (d)
-        return (*d);
-    return (0.0/0.0);  // NaN, "can't happen"
-}
-
-QString
-QTexpDoubleSpinBox::textFromValue(double value) const
-{
-    const char *str = SPnum.printnum(value, (const char*)0, true,
-        decimals());
-    while (isspace(*str))
-        str++;
-    return (QString(str));
-}
-
-// Change the way we validate user input (if validate => valueFromText)
-QValidator::State
-QTexpDoubleSpinBox::validate(QString &text, int&) const
-{
-    QByteArray text_ba = text.toLatin1();
-    const char *str = text_ba.constData();
-    double *d = SPnum.parse(&str, true);
-    return (d ? QValidator::Acceptable : QValidator::Invalid);
-}
 
 
 //----------------------------------------------------------------------------
@@ -209,11 +141,11 @@ QTkwent::QTkwent(EntryMode m, EntryCallback cb, xKWent *kwstruct,
             hbox->addWidget(ke_entry2);
         }
         else {
-            ke_spbox = new QDoubleSpinBox();
+            ke_spbox = new QTdoubleSpinBox();
             ke_spbox->setRange(ke_kwstruct->min, ke_kwstruct->max);
             hbox->addWidget(ke_spbox);
             if (ke_mode == KW_INT_2) {
-                ke_spbox2 = new QDoubleSpinBox();
+                ke_spbox2 = new QTdoubleSpinBox();
                 ke_spbox2->setRange(ke_kwstruct->min, ke_kwstruct->max);
                 hbox->addWidget(ke_spbox2);
             }

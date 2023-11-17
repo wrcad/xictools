@@ -42,12 +42,12 @@
 #include "main.h"
 #include "dsp_inlines.h"
 #include "qtmain.h"
+#include "qtinterf/qtdblsb.h"
 #include <math.h>
 
 #include <QLayout>
 #include <QLabel>
 #include <QPushButton>
-#include <QDoubleSpinBox>
 #include <QCheckBox>
 #include <QGroupBox>
 
@@ -122,7 +122,7 @@ QTzoomDlg::QTzoomDlg(QTbag *owner, WindowDesc *w)
         lbl = new QLabel();
         lbl->setText(tr("Y-Scale"));
         hbox->addWidget(lbl);
-        zm_yscale = new QDoubleSpinBox();
+        zm_yscale = new QTdoubleSpinBox();
         zm_yscale->setMaximum(CDSCALEMAX);
         zm_yscale->setMinimum(CDSCALEMIN);
         zm_yscale->setValue(1.0);
@@ -142,7 +142,7 @@ QTzoomDlg::QTzoomDlg(QTbag *owner, WindowDesc *w)
     lbl = new QLabel();
     lbl->setText(tr("Zoom Factor"));
     hbox->addWidget(lbl);
-    zm_zoom = new QDoubleSpinBox();
+    zm_zoom = new QTdoubleSpinBox();
     zm_zoom->setMaximum(CDSCALEMAX);
     zm_zoom->setMinimum(CDSCALEMIN);
     zm_zoom->setValue(1.0);
@@ -162,13 +162,13 @@ QTzoomDlg::QTzoomDlg(QTbag *owner, WindowDesc *w)
     lbl->setText(tr("Center X,Y"));
     hbox->addWidget(lbl);
     int ndgt = w->Mode() == Physical ? CD()->numDigits() : 3;
-    zm_x = new QDoubleSpinBox();
+    zm_x = new QTdoubleSpinBox();
     zm_x->setMaximum(1e6);
     zm_x->setMinimum(-1e6);
     zm_x->setValue(0.0);
     zm_x->setDecimals(ndgt);
     hbox->addWidget(zm_x);
-    zm_y = new QDoubleSpinBox();
+    zm_y = new QTdoubleSpinBox();
     zm_y->setMaximum(1e6);
     zm_y->setMinimum(-1e6);
     zm_y->setValue(0.0);
@@ -183,7 +183,7 @@ QTzoomDlg::QTzoomDlg(QTbag *owner, WindowDesc *w)
     lbl = new QLabel();
     lbl->setText(tr("Window Width"));
     hbox->addWidget(lbl);
-    zm_wid = new QDoubleSpinBox();
+    zm_wid = new QTdoubleSpinBox();
     zm_wid->setMaximum(1e6);
     zm_wid->setMinimum(0.1);
     zm_wid->setValue(100.0);

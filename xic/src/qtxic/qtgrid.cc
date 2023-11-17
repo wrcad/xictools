@@ -44,6 +44,7 @@
 #include "errorlog.h"
 #include "tech.h"
 #include "qtinterf/qtcanvas.h"
+#include "qtinterf/qtdblsb.h"
 
 #include <QLayout>
 #include <QAction>
@@ -51,7 +52,6 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QSpinBox>
-#include <QDoubleSpinBox>
 #include <QCheckBox>
 #include <QComboBox>
 #include <QRadioButton>
@@ -226,7 +226,7 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTdraw(XW_TEXT),
     vb->setContentsMargins(qm);
     vb->setSpacing(2);
 
-    gd_resol = new QDoubleSpinBox();
+    gd_resol = new QTdoubleSpinBox();
     vb->addWidget(gd_resol);
     gd_resol->setRange(0.0, 10000.0);
     gd_resol->setDecimals(4);

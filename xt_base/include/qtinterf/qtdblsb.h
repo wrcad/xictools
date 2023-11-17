@@ -32,116 +32,40 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * Xic Integrated Circuit Layout and Schematic Editor                     *
+ * QtInterf Graphical Interface Library                                   *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#ifndef QTCVIN_H
-#define QTCVIN_H
+#ifndef QTDBLSB_H
+#define QTDBLSB_H
 
-#include "main.h"
-#include "qtmain.h"
-
-#include <QDialog>
+#include <QDoubleSpinBox>
+#include <QLineEdit>
 
 
-class QLabel;
-class QTabWidget;
-class QCheckBox;
-class QComboBox;
-class QTcnameMap;
-class QTlayerList;
-class QTwindowCfg;
+//----------------------------------------------------------------------------
+// A Double Spin Box that provides a way to adjust the step.
+
 namespace qtinterf {
     class QTdoubleSpinBox;
 }
 
-class QTconvertInDlg : public QDialog
+class qtinterf::QTdoubleSpinBox : public QDoubleSpinBox
 {
     Q_OBJECT
-
 public:
-    struct fmt_menu
+    explicit QTdoubleSpinBox(QWidget *prnt = nullptr) :
+        QDoubleSpinBox(prnt)
     {
-        const char *name;
-        int code;
-    };
-
-    QTconvertInDlg(GRobject, bool(*)(int, void*), void*);
-    ~QTconvertInDlg();
-
-    void update();
-
-    void set_transient_for(QWidget *prnt)
-    {
-        Qt::WindowFlags f = windowFlags();
-        setParent(prnt);
-#ifdef __APPLE__
-        f |= Qt::Tool;
-#endif
-        setWindowFlags(f);
+        connect(lineEdit(), SIGNAL(cursorPositionChanged(int, int)),
+            this, SLOT(cursor_moved_slot(int, int)));
     }
-
-    static QTconvertInDlg *self()           { return (instPtr); }
+    ~QTdoubleSpinBox() { }
 
 private slots:
-    void help_btn_slot();
-    void nbook_page_slot(int);
-    void nonpc_btn_slot(int);
-    void yesoapc_btn_slot(int);
-    void nolyr_btn_slot(int);
-    void over_menu_slot(int);
-    void replace_btn_slot(int);
-    void merge_btn_slot(int);
-    void polys_btn_slot(int);
-    void dup_menu_slot(int);
-    void empties_btn_slot(int);
-    void dtypes_btn_slot(int);
-    void force_menu_slot(int);
-    void noflvias_btn_slot(int);
-    void noflpcs_btn_slot(int);
-    void nofllbs_btn_slot(int);
-    void nolabels_btn_slot(int);
-    void merg_menu_slot(int);
-    void scale_changed_slot(double);
-    void read_btn_slot();
-    void dismiss_btn_slot();
-
-private:
-    GRobject    cvi_caller;
-    QLabel      *cvi_label;
-    QTabWidget  *cvi_nbook;
-    QCheckBox   *cvi_nonpc;
-    QCheckBox   *cvi_yesoapc;
-    QCheckBox   *cvi_nolyr;
-    QCheckBox   *cvi_replace;
-    QComboBox   *cvi_over;
-    QCheckBox   *cvi_merge;
-    QCheckBox   *cvi_polys;
-    QComboBox   *cvi_dup;
-    QCheckBox   *cvi_empties;
-    QCheckBox   *cvi_dtypes;
-    QComboBox   *cvi_force;
-    QCheckBox   *cvi_noflvias;
-    QCheckBox   *cvi_noflpcs;
-    QCheckBox   *cvi_nofllbs;
-    QCheckBox   *cvi_nolabels;
-    QComboBox   *cvi_merg;
-    QTdoubleSpinBox *cvi_sb_scale;
-    QTcnameMap  *cvi_cnmap;
-    QTlayerList *cvi_llist;
-    QTwindowCfg *cvi_wnd;
-    bool        (*cvi_callback)(int, void*);
-    void        *cvi_arg;
-
-    static const char *cvi_mergvals[];
-    static const char *cvi_overvals[];
-    static const char *cvi_dupvals[];
-    static fmt_menu cvi_forcevals[];
-    static int cvi_merg_val;
-    static QTconvertInDlg *instPtr;
+    void cursor_moved_slot(int, int);
 };
 
 #endif

@@ -20,6 +20,20 @@ than Apply/Dismiss have auto default turned off.
 
 Mouse wheel support in drawing wins.  DONE
 
+---
+QClipboard* clipboard = QApplication::clipboard();
+
+clipboard->setText(text, QClipboard::Clipboard);
+
+if (clipboard->supportsSelection()) {
+    clipboard->setText(text, QClipboard::Selection);
+}
+
+#if defined(Q_OS_LINUX)
+    QThread::msleep(1); //workaround for copied text not being available...
+#endif
+---
+
 These use QMenuBar, which gets hijacked in Apple.
 All but the main window now use QToolbar.
 qtasm.cc
@@ -65,17 +79,20 @@ qtplace.cc:    OK hasUrls() text/twostring text/cellname text/string text/plain
 These have "#ifdef notdef", i.e., code to translate.
 qtasmpage.cc  selections, tree widget drops
 qtdebug.cc   keypress, selections
-qtextdev.cc  selections
-qtfiles.cc  selection, clipboard
+qtextdev.cc  clean up unused slots, check selections
+qtfiles.cc  add path to ^C clipb selection?  How?
 qthtext.cc  selections
 qtlogo.cc   font selection
 qtltab.cc   blinking layers
 qtmenucfg.cc  fixme dynamic entries
 qtoalibs.cc selections, button press
-qttree.cc   clipboard, drag, possibly deselect collapsed selection
+qttree.cc   clipboard, possibly deselect collapsed selection
 
 QTparam: selections are ugly.  Define a new "selection color",
 What to do about X selections?
+
+// Need to detect need for and use exponential spin button.
+qtpcprms.cc
 
 These use QTcanvas
 qtdevs.cc

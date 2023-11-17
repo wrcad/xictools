@@ -32,7 +32,7 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * QtInterf Graphical Interface Library                                   *
+ * WRspice Circuit Simulation and Analysis Tool                           *
  *                                                                        *
  *========================================================================*
  $Id:$
@@ -42,43 +42,45 @@
 #define QTEXPSB_H
 
 #include <QDoubleSpinBox>
-#include "spnumber/spnumber.h"
+
 
 //----------------------------------------------------------------------------
 // A Double Spin Box that uses exponential notation.
 
-class QTexpDoubleSpinBox : public QDoubleSpinBox
+namespace qtinterf {
+    class QTexpDoubleSpinBox;
+}
+
+class qtinterf::QTexpDoubleSpinBox : public QDoubleSpinBox
 {
 public:
-    explicit QTexpDoubleSpinBox(QWidget *parent = nullptr) :
-        QDoubleSpinBox(parent) { }
+    explicit QTexpDoubleSpinBox(QWidget *prnt = nullptr) :
+        QDoubleSpinBox(prnt)
+    {
+        QDoubleSpinBox::setDecimals(400);
+        d_decimals = 5;
+    }
     ~QTexpDoubleSpinBox() { }
 
-    double valueFromText(const QString & text) const
-    {
-        QByteArray text_ba = text.toLatin1();
-        const char *str = text_ba.constData();
-        double *d = SPnum.parse(&str, true);
-        if (d)
-            return (*d);
-        return (0.0/0.0);  // NaN, "can't happen"
-    }
+    // This is subtle:  there is a hard-coded round function in
+    // QDoubleSpinBox that is used in setValue that will round the
+    // values to zero if the negative exponent is too large.  A way
+    // around this is to set the decimals value to something large
+    // (see source code).  We implement our own decimals for
+    // significant figs display.
 
-    QString textFromValue(double value) const
-    {
-        const char *str = SPnum.printnum(value, (const char*)0, true,
-            decimals());
-        return (QString(str));
-    }
+    int decimals() const        { return (d_decimals); }
+    void setDecimals(int d)     { d_decimals = d; }
 
-    // Change the way we validate user input (if validate => valueFromText)
-    QValidator::State validate(QString &text, int&) const
-    {
-        QByteArray text_ba = text.toLatin1();
-        const char *str = text_ba.constData();
-        double *d = SPnum.parse(&str, true);
-        return (d ? QValidator::Acceptable : QValidator::Invalid);
-    }
+    // Virtual overrides.
+    void stepBy(int);
+    double valueFromText(const QString & text) const;
+    QString textFromValue(double value) const;
+    QValidator::State validate(QString &text, int&) const;
+
+private:
+    int d_decimals;
 };
 
 #endif
+

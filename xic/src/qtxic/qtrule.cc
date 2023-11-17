@@ -41,13 +41,13 @@
 #include "qtrule.h"
 #include "drc_kwords.h"
 #include "dsp_inlines.h"
+#include "qtinterf/qtdblsb.h"
 
 #include <QLayout>
 #include <QGroupBox>
 #include <QLabel>
 #include <QPushButton>
 #include <QLineEdit>
-#include <QDoubleSpinBox>
 #include <QCheckBox>
 
 
@@ -218,13 +218,13 @@ QTruleDlg::QTruleDlg(GRobject c, DRCtype type, const char *username,
     hb->setSpacing(0);
 
     int ndgt = CD()->numDigits();
-    ru_dimen_sb = new QDoubleSpinBox();
+    ru_dimen_sb = new QTdoubleSpinBox();
     ru_dimen_sb->setRange(0.0, 1e6);
     ru_dimen_sb->setDecimals(ndgt);
     ru_dimen_sb->setValue(0.0);
     hb->addWidget(ru_dimen_sb);
 
-    ru_area_sb = new QDoubleSpinBox();
+    ru_area_sb = new QTdoubleSpinBox();
     ru_area_sb->setRange(0.0, 1e6);
     ru_area_sb->setDecimals(6);
     ru_area_sb->setValue(0.0);
@@ -235,7 +235,7 @@ QTruleDlg::QTruleDlg(GRobject c, DRCtype type, const char *username,
     ru_diag_la = new QLabel(tr("Non-Manhattan \"diagonal\" dimension"));
     grid->addWidget(ru_diag_la, 5, 0);
 
-    ru_diag_sb = new QDoubleSpinBox();
+    ru_diag_sb = new QTdoubleSpinBox();
     ru_diag_sb->setRange(0.0, 1e6);
     ru_diag_sb->setDecimals(ndgt);
     ru_diag_sb->setValue(0.0);
@@ -246,7 +246,7 @@ QTruleDlg::QTruleDlg(GRobject c, DRCtype type, const char *username,
     ru_net_la = new QLabel(tr("Same-Net spacing"));
     grid->addWidget(ru_net_la, 6, 0);
 
-    ru_net_sb = new QDoubleSpinBox();
+    ru_net_sb = new QTdoubleSpinBox();
     ru_net_sb->setRange(0.0, 1e6);
     ru_net_sb->setDecimals(ndgt);
     ru_net_sb->setValue(0.0);
@@ -266,7 +266,7 @@ QTruleDlg::QTruleDlg(GRobject c, DRCtype type, const char *username,
         "are fully enclosed"));
     grid->addWidget(ru_enc_la, 8, 0);
 
-    ru_enc_sb = new QDoubleSpinBox();
+    ru_enc_sb = new QTdoubleSpinBox();
     ru_enc_sb->setRange(0.0, 1e6);
     ru_enc_sb->setDecimals(ndgt);
     ru_enc_sb->setValue(0.0);
@@ -282,13 +282,13 @@ QTruleDlg::QTruleDlg(GRobject c, DRCtype type, const char *username,
     hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
-    ru_opp_sb1 = new QDoubleSpinBox();
+    ru_opp_sb1 = new QTdoubleSpinBox();
     ru_opp_sb1->setRange(0.0, 1e6);
     ru_opp_sb1->setDecimals(ndgt);
     ru_opp_sb1->setValue(0.0);
     hb->addWidget(ru_opp_sb1);
 
-    ru_opp_sb2 = new QDoubleSpinBox();
+    ru_opp_sb2 = new QTdoubleSpinBox();
     ru_opp_sb2->setRange(0.0, 1e6);
     ru_opp_sb2->setDecimals(ndgt);
     ru_opp_sb2->setValue(0.0);

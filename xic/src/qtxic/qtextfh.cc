@@ -50,6 +50,7 @@
 #include "select.h"
 #include "qtinterf/qttextw.h"
 #include "qtinterf/qtinput.h"
+#include "qtinterf/qtdblsb.h"
 
 #include <QLayout>
 #include <QTabWidget>
@@ -60,7 +61,6 @@
 #include <QCheckBox>
 #include <QLineEdit>
 #include <QSpinBox>
-#include <QDoubleSpinBox>
 
 
 //-----------------------------------------------------------------------------
@@ -351,7 +351,7 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c) : QTbag(this)
     hb1->setContentsMargins(qm);
     hb1->setSpacing(0);
 
-    fh_sb_rh = new QDoubleSpinBox();
+    fh_sb_rh = new QTdoubleSpinBox();
     hb1->addWidget(fh_sb_rh);
     fh_sb_rh->setRange(FH_MIN_DEF_RH, FH_MAX_DEF_RH);
     fh_sb_rh->setDecimals(3);
@@ -395,7 +395,7 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c) : QTbag(this)
     hb1->setContentsMargins(qm);
     hb1->setSpacing(0);
 
-    fh_sb_volel_min = new QDoubleSpinBox();
+    fh_sb_volel_min = new QTdoubleSpinBox();
     hb1->addWidget(fh_sb_volel_min);
     fh_sb_volel_min->setRange(FH_MIN_VOLEL_MIN, FH_MAX_VOLEL_MIN);
     fh_sb_volel_min->setDecimals(2);

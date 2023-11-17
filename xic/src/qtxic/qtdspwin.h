@@ -47,7 +47,9 @@
 #include <QDialog>
 
 class QPushButton;
-class QDoubleSpinBox;
+namespace qtinterf {
+    class QTdoubleSpinBox;
+}
 
 
 class QTdisplayWinDlg : public QDialog
@@ -82,9 +84,9 @@ private:
     GRobject dw_caller;
     QPushButton *dw_apply;
     QPushButton *dw_center;
-    QDoubleSpinBox *dw_sb_x;
-    QDoubleSpinBox *dw_sb_y;
-    QDoubleSpinBox *dw_sb_wid;
+    QTdoubleSpinBox *dw_sb_x;
+    QTdoubleSpinBox *dw_sb_y;
+    QTdoubleSpinBox *dw_sb_wid;
 
     WindowDesc *dw_window;
     bool (*dw_callback)(bool, const BBox*, void*);

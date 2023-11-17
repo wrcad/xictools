@@ -56,8 +56,10 @@ class QCheckBox;
 class QLineEdit;
 class QComboBox;
 class QSpinBox;
-class QDoubleSpinBox;
 class QPushButton;
+namespace qtinterf {
+    class QTdoubleSpinBox;
+}
 
 class QTfastHenryDlg : public QDialog, public QTbag
 {
@@ -144,8 +146,8 @@ private:
     QCheckBox   *fh_enab;
     QSpinBox    *fh_sb_manh_grid_cnt;
     QSpinBox    *fh_sb_nhinc;
-    QDoubleSpinBox *fh_sb_rh;
-    QDoubleSpinBox *fh_sb_volel_min;
+    QTdoubleSpinBox *fh_sb_rh;
+    QTdoubleSpinBox *fh_sb_volel_min;
     QSpinBox    *fh_sb_volel_target;
 
     QTtextEdit  *fh_jobs;

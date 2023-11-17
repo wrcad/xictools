@@ -55,7 +55,9 @@ class QWidget;
 class QSpinBox;
 class QCheckBox;
 class QComboBox;
-class QDoubleSpinBox;
+namespace qtinterf {
+    class QTdoubleSpinBox;
+}
 
 class QTattributesDlg : public QDialog
 {
@@ -119,7 +121,7 @@ private:
     QSpinBox    *at_sb_tmsize;
 
     QComboBox   *at_hdn;
-    QDoubleSpinBox *at_sb_lheight;
+    QTdoubleSpinBox *at_sb_lheight;
     QSpinBox    *at_sb_llen;
     QSpinBox    *at_sb_llines;
 

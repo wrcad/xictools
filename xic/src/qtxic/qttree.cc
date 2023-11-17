@@ -51,11 +51,16 @@
 #include "miscutil/timer.h"
 #include <algorithm>
 
+#include <QApplication>
 #include <QLayout>
 #include <QGroupBox>
 #include <QLabel>
 #include <QPushButton>
 #include <QTreeWidget>
+#include <QClipboard>
+#include <QMouseEvent>
+#include <QDrag>>
+#include <QMimeData>
 
 
 //----------------------------------------------------------------------
@@ -64,16 +69,62 @@
 // Help system keywords used:
 //  xic:tree
 
-namespace {
-    /*
-    GtkTargetEntry target_table[] = {
-        { (char*)"CELLNAME",    0, 0 },
-        { (char*)"STRING",      0, 1 },
-        { (char*)"text/plain",  0, 2 }
-    };
-    guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
-    */
+// Derive a QTreeWidget class with our own drag source, which is a
+// plain text cell name.
+//
+class tree_widget : public QTreeWidget
+{
+public:
+    tree_widget(QWidget *prnt = 0) : QTreeWidget(prnt) { }
+
+protected:
+    void mousePressEvent(QMouseEvent*);
+    void mouseReleaseEvent(QMouseEvent*);
+    void mouseMoveEvent(QMouseEvent*);
+
+private:
+    QPoint drag_pos;
+};
+
+void
+tree_widget::mousePressEvent(QMouseEvent *ev)
+{
+    if (ev->button() == Qt::LeftButton)
+        drag_pos = ev->pos();
+    QTreeWidget::mousePressEvent(ev);
 }
+
+
+void
+tree_widget::mouseReleaseEvent(QMouseEvent *ev)
+{
+    QTreeWidget::mouseReleaseEvent(ev);
+}
+
+
+void
+tree_widget::mouseMoveEvent(QMouseEvent *ev)
+{
+    if (ev->buttons() & Qt::LeftButton) {
+        int dist = (ev->pos() - drag_pos).manhattanLength();
+        if (QTtreeDlg::has_selection()) {
+            if (dist > QApplication::startDragDistance()) {
+                QDrag *drag = new QDrag(this);
+                char *c = QTtreeDlg::self()->get_selection();
+                QMimeData *md = new QMimeData();
+                md->setText(c);
+                delete [] c;
+                drag->setMimeData(md);
+                drag->exec(Qt::CopyAction);
+            }
+            ev->accept();
+            return;
+        }
+    }
+    QTreeWidget::mouseMoveEvent(ev);
+}
+// End of tree_widget functions.
+
 
 #define TREE_WIDTH 400
 #define TREE_HEIGHT 300
@@ -98,6 +149,7 @@ QTmainwin::tree_panic()
 {
     QTtreeDlg::set_panic();
 }
+// Wnd of QTmainwin functions.
 
 
 // Pop up a window displaying a tree diagram of the hierarchy of the
@@ -209,10 +261,10 @@ QTtreeDlg::QTtreeDlg(GRobject c, const char *root, TreeUpdMode dmode)
 
     // scrolled tree
     //
-    t_tree = new QTreeWidget();
+    t_tree = new tree_widget();
     vbox->addWidget(t_tree);
     t_tree->setHeaderHidden(true);
-    t_tree->setDragDropMode(QAbstractItemView::DragOnly);
+    t_tree->setDragDropMode(QAbstractItemView::NoDragDrop);
 
     connect(t_tree, SIGNAL(itemCollapsed(QTreeWidgetItem*)),
         this, SLOT(item_collapsed_slot(QTreeWidgetItem*)));
@@ -763,11 +815,13 @@ QTtreeDlg::item_selection_changed_slot()
     delete [] t_selection;
     t_selection = 0;
     QList<QTreeWidgetItem*> lst = w->selectedItems();
-    if (!lst.isEmpty())
+    if (!lst.isEmpty()) {
         t_selection = lstring::copy(lst[0]->text(0).toLatin1().constData());
-//XXX add to clipboard
-//   gtk_selection_owner_set(Tree->t_tree, GDK_SELECTION_PRIMARY,
-//      GDK_CURRENT_TIME);
+        // User can press Ctrl-C (Command-C in Apple) to put selection
+        // into global clipboard.
+//XXX
+//        QApplication::clipboard()->setText(t_selection);
+    }
     check_sens();
 }
 
