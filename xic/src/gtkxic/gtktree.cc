@@ -480,7 +480,7 @@ sTree::check_fb()
         snprintf(buf, sizeof(buf), "%s:  %u", "Nodes processed", t_ucount);
         gtk_label_set_text(GTK_LABEL(wb_textarea), buf);
     }
-    if (Timer()->check_interval(t_check_time)) {
+    if (cTimer::self()->check_interval(t_check_time)) {
         if (DSP()->MainWdesc() && DSP()->MainWdesc()->Wdraw())
             GTKpkg::self()->CheckForInterrupt();
         return (XM()->ConfirmAbort());
