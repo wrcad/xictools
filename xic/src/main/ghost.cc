@@ -218,26 +218,25 @@ cGhost::RestoreGhost()
 void
 cGhost::RepaintGhost()
 {
-    DSPmainDraw(DrawGhost())
+    EV()->CurrentWin()->Wdraw()->DrawGhost();
 }
 
 
 void
 cGhost::BumpGhostPointer(int gmode)
 {
-//XXX fix this
     switch (gmode) {
     case GFdisk:
     case GFdonut:
     case GFarc:
     case GFdiskpth:
     case GFarcpth:
-        DSPmainDraw(DrawGhost())
+        RepaintGhost();
         break;
     case GFbox_ns:
     case GFzoom:
     case GFpterms:
-        DSPmainDraw(DrawGhost())
+        RepaintGhost();
         break;
     default:
         break;

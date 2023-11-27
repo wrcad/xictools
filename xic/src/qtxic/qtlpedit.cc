@@ -121,6 +121,12 @@ QTlayerParamDlg::QTlayerParamDlg(GRobject c, const char *msg,
     instPtr = this;
     lp_caller = c;
     lp_text = 0;
+
+    lp_lyr_menu = 0;
+    lp_ext_menu = 0;
+    lp_phy_menu = 0;
+    lp_cvt_menu = 0;
+
     lp_label = 0;
     lp_cancel = 0;
     lp_edit = 0;
@@ -142,13 +148,13 @@ QTlayerParamDlg::QTlayerParamDlg(GRobject c, const char *msg,
     lp_tline = 0;
     lp_antenna = 0;
     lp_nddt = 0;
-    lp_page = 0;
 
     lp_ldesc = 0;
     lp_line_selected = -1;
     lp_in_callback = false;
     lp_start = 0;
     lp_end = 0;
+    lp_page = 0;
 
     setWindowTitle(tr("Tech Parameter Editor"));
     setAttribute(Qt::WA_DeleteOnClose);

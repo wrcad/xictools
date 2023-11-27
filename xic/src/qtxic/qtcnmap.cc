@@ -55,6 +55,12 @@
 QTcnameMap::QTcnameMap(bool outp)
 {
     cn_output = outp;
+    cn_prefix = 0;
+    cn_suffix = 0;
+    cn_to_lower = 0;
+    cn_to_upper = 0;
+    cn_rd_alias = 0;
+    cn_wr_alias = 0;
 
     setTitle(tr("Cell Name Mapping"));
 

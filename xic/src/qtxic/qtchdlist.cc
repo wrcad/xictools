@@ -230,16 +230,6 @@ QTchdListDlg::QTchdListDlg(GRobject c) : QTbag(this)
         SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
         this,
         SLOT(current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*)));
-/*
-    connect(chl_list, SIGNAL(itemActivated(QTreeWidgetItem*, int)),
-        this, SLOT(item_activated_slot(QTreeWidgetItem*, int)));
-    connect(chl_list, SIGNAL(itemClicked(QTreeWidgetItem*, int)),
-        this, SLOT(item_clicked_slot(QTreeWidgetItem*, int)));
-    connect(chl_list, SIGNAL(itemSelectionChanged()),
-        this, SLOT(item_selection_changed()));
-*/
-//    g_signal_connect(G_OBJECT(chl_list), "button-press-event",
-//        G_CALLBACK(lb_button_press_proc), this);
 
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_PROP))

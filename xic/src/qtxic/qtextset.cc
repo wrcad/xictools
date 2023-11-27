@@ -116,6 +116,7 @@ QTextSetupDlg::QTextSetupDlg(GRobject c)
     es_notebook = 0;
     es_clrex = 0;
     es_doex = 0;
+
     es_p1_extview = 0;
     es_p1_groups = 0;
     es_p1_nodes = 0;
@@ -124,6 +125,7 @@ QTextSetupDlg::QTextSetupDlg(GRobject c)
     es_p1_recurs = 0;
     es_p1_tedit = 0;
     es_p1_tfind = 0;
+
     es_p2_nlprpset = 0;
     es_p2_nlprp = 0;
     es_p2_nllset = 0;
@@ -139,6 +141,7 @@ QTextSetupDlg::QTextSetupDlg(GRobject c)
     es_p2_gpglob = 0;
     es_p2_gpmulti = 0;
     es_p2_gpmthd = 0;
+
     es_p3_device_menu = 0;
     es_p3_delblk = 0;
     es_p3_undblk = 0;
@@ -156,6 +159,7 @@ QTextSetupDlg::QTextSetupDlg(GRobject c)
     es_p3_lgrid = 0;
     es_p3_sb_maxpts = 0;
     es_p3_sb_gridpts = 0;
+
     es_p4_flkeyset = 0;
     es_p4_flkeys = 0;
     es_p4_exopq = 0;
@@ -167,6 +171,7 @@ QTextSetupDlg::QTextSetupDlg(GRobject c)
     es_p4_apfix = 0;
     es_p4_sb_loop = 0;
     es_p4_sb_iters = 0;
+
     es_gpmhst = 0;
     es_devdesc = 0;
 

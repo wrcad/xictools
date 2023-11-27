@@ -158,7 +158,6 @@ QTcolorDlg *QTcolorDlg::instPtr;
 QTcolorDlg::QTcolorDlg(GRobject c)
 {
     instPtr = this;
-    c_mode = CLR_CURLYR;
     c_caller = c;
     c_modemenu = 0;
     c_categmenu = 0;
@@ -168,6 +167,7 @@ QTcolorDlg::QTcolorDlg(GRobject c)
     c_listpop = 0;
     c_display_mode = DSP()->CurMode();
     c_ref_mode = DSP()->CurMode();
+    c_mode = CLR_CURLYR;
     c_red = 0;
     c_green = 0;
     c_blue = 0;

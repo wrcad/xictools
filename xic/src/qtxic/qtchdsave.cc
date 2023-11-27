@@ -196,13 +196,11 @@ QTchdSaveDlg::QTchdSaveDlg(GRobject caller,
     btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
-    // This allows user to change label text.
-//    g_object_set_data(G_OBJECT(cs_popup), "label", cs_label);
-
     cs_text = new QTchdSavePathEdit();
     vbox->addWidget(cs_text);
     cs_text->setReadOnly(false);
     cs_text->setAcceptDrops(true);
+//XXX need this?
 //    connect(cs_text, SIGNAL(textChanged(const QString&)),
 //        this, SLOT(text_changed_slot(const QString&)));
 

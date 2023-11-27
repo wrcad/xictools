@@ -191,10 +191,6 @@ QTcgdListDlg::QTcgdListDlg(GRobject c) : QTbag(this)
         this, SLOT(item_clicked_slot(QTreeWidgetItem*, int)));
     connect(cgl_list, SIGNAL(itemSelectionChanged()),
         this, SLOT(item_selection_changed()));
-//    g_signal_connect(G_OBJECT(chl_list), "button-press-event",
-//        G_CALLBACK(lb_button_press_proc), this);
-    // Set up font and tracking.
-//    GTKfont::setupFont(cgl_list, FNT_PROP, true);
 
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_PROP))
@@ -278,7 +274,7 @@ QTcgdListDlg::update()
         }
     }
     // This resizes columns and the widget.
-    /*
+    /*XXX
     gtk_tree_view_columns_autosize(GTK_TREE_VIEW(cgl_list));
     if (rowsel >= 0) {
         GtkTreePath *p = gtk_tree_path_new_from_indices(rowsel, -1);

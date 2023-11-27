@@ -46,6 +46,7 @@
 
 #include <QDialog>
 
+
 class QResizeEvent;
 
 class QTmemMonDlg : public QDialog, public QTbag, public QTdraw

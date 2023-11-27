@@ -89,8 +89,6 @@ private slots:
     void add_menu_slot(QAction*);
     void help_btn_slot();
     void mouse_press_slot(QMouseEvent*);
-//    void mouse_motion_slot(QMouseEvent*);
-//    void mime_data_received_slot(const QMimeData*);
     void dismiss_btn_slot();
     void font_changed_slot(int);
 
@@ -100,14 +98,13 @@ private:
     void select_range(int, int);
     void handle_button_down(QMouseEvent*);
     void handle_button_up(QMouseEvent*);
-//    void handle_mouse_motion(QMouseEvent*);
-//    void handle_mime_data_received(const QMimeData*);
 
     QPushButton *pc_edit;
     QPushButton *pc_del;
     QPushButton *pc_add;
-    QMenu *pc_addmenu;
-    PrptyText *pc_list;
+    QMenu       *pc_addmenu;
+    PrptyText   *pc_list;
+
     int pc_line_selected;
     int pc_action_calls;
     int pc_start;

@@ -553,9 +553,9 @@ GTKpkg::CheckForInterrupt()
         return (true);
 
     // Cut expense if called too frequently.
-    if (Timer()->elapsed_msec() == lasttime)
+    if (cTimer()->elapsed_msec() == lasttime)
         return (false);
-    lasttime = Timer()->elapsed_msec();
+    lasttime = cTimer()->elapsed_msec();
 
     if (dispatch_events) {
 #if GTK_CHECK_VERSION(3,0,0)

@@ -122,10 +122,6 @@ private:
     CDl *lp_history[LP_PALETTE_COLS];
     CDl *lp_user[LP_PALETTE_COLS * LP_PALETTE_ROWS];
 
-//    int lp_pmap_width;  
-//    int lp_pmap_height;
-//    bool lp_pmap_dirty;
-
     int lp_drag_x;
     int lp_drag_y;
     bool lp_dragging;

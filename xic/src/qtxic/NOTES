@@ -2,24 +2,34 @@ Issues:
 1.  How to implement "tranisent-for" behavior in pop-up windows.  Than is,
 how to keep them on top of the main window, without making them modal or
 setting the flag to keep them on top of everything.
-Solution:  Set the dialog parent to the associated transient parent.  This works
-for Linux and Windows, but not for Apple.  On Apple, st the Qt::Flag, which
-enforces desired behavior, but changes the appearance of the dialogs, which
-is ok.
+Solution:  Set the dialog parent to the associated transient parent. 
+This works for Linux and Windows, but not for Apple.  On Apple, st the
+Qt::Flag, which enforces desired behavior, but changes the appearance
+of the dialogs, which is ok.
 
-2.  How to handle drawing, accommoting the paint events and other
+2.  How to handle drawing, accommodating the paint events and other
 specifics.  Presently there are visible artifacts and things not quite
-right involving mostly ghosting and animation, recoloring, highlighting..
+right involving mostly ghosting and animation, recoloring, highlighting.
+OK- things are coming together.
 
+3.  Double spin btns, step issue, exponential button in extfc.cc and
+elsewhere?
+Regular double spin box has a way for user to set step size.
+There is an exponential spin box presently.
 TODO
-Double spin btns, step issue, exponential button in extfc.cc and elsewhere?
-Qinterf objects: Qt::Tool, parenting
+Allow the user to sert step size in exponential spin box.
 
-Button defaulting. button state indication.  FIXED, all of the buttons other
-than Apply/Dismiss have auto default turned off.
+4.  Button defaulting.  button state indication.  FIXED, all of the
+buttons other than Apply/Dismiss have auto default turned off.
 
-Mouse wheel support in drawing wins.  DONE
+5.  Mouse wheel support in drawing wins.  DONE
 
+6.  TODO:  An event dispatch queue system like GTK version, implement
+a BUSY mode and lock out most events when busy, etc.
+
+7.  TODO Key mapping for Apple.  Need to implement Home, Num +/-, others?
+
+8.  TODO Add X-button 2 pasteing when under X.
 ---
 QClipboard* clipboard = QApplication::clipboard();
 
@@ -34,8 +44,10 @@ if (clipboard->supportsSelection()) {
 #endif
 ---
 
-These use QMenuBar, which gets hijacked in Apple.
-All but the main window now use QToolbar.
+9.  What to do with the "xdraw" interface.  Is it still useful?
+
+10.  These use QMenuBar, which gets hijacked in Apple.
+FIXED:  All but the main window now use QToolbar.
 qtasm.cc
 qtdebug.cc
 qtdevs.cc
@@ -76,15 +88,10 @@ qtmain.cc:     OK (drawing win drop)
 qtplace.cc:    OK hasUrls() text/twostring text/cellname text/string text/plain
 
 // FIX THIS STUFF
-These have "#ifdef notdef", i.e., code to translate.
-qtasmpage.cc  selections, tree widget drops
-qtdebug.cc   keypress, selections
+qtdebug.cc   selections
 qtextdev.cc  clean up unused slots, check selections
 qtfiles.cc  add path to ^C clipb selection?  How?
 qthtext.cc  selections
-qtlogo.cc   font selection
-qtltab.cc   blinking layers
-qtmenucfg.cc  fixme dynamic entries
 qtoalibs.cc selections, button press
 qttree.cc   clipboard, possibly deselect collapsed selection
 
@@ -93,6 +100,96 @@ What to do about X selections?
 
 // Need to detect need for and use exponential spin button.
 qtpcprms.cc
+
+qtasm.cc:  /*XXX
+qtasm.cc:/*XXX
+qtasm.cc:/*XXX
+qtasm.cc:/*XXX
+qtasm.cc:    /*XXX
+qtasm.cc:    /*XXX
+qtasm.cc:         /*XXX
+qtasm.cc:             /*XXX
+qtasm.cc:              /*XXX
+qtasm.cc:/*XXX
+qtasmpage.cc://XXX need to redraw?
+qtcflags.cc://XXX    gtk_widget_set_size_request(GTK_WIDGET(wb_textarea), ww, hh);
+qtcgdlist.cc:    /*XXX
+qtcgdopen.cc:/* XXX use in llist
+qtcgdopen.cc:/*XXX
+qtchdlist.cc:             /* XXX
+qtchdlist.cc:    /* XXX
+qtchdlist.cc:        /* XXX
+qtchdlist.cc:        /* XXX
+qtchdsave.cc://XXX need this?
+qtcmp.cc:/*XXX
+qtcmp.cc:/*XXX
+qtcmp.cc:/*XXX
+qtdebug.cc://XXX        QTdev::SetFocus(Dbg->wb_shell);
+qtdebug.cc://XXX    GTKdev::SetFocus(Dbg->wb_shell);
+qtdebug.cc:/*XXX
+qtdebug.cc:/*XXX
+qtdebug.cc:/*XXX
+qtdebug.cc://XXX needs redraw        update();
+qtdevs.cc:                //XXX ?
+qtdevs.cc:            /*XXX
+qtdevs.cc:            /*XXX
+qtdrcrun.cc://XXX    g_object_set_data(G_OBJECT(button), "abort", (void*)1);
+qtextfc.cc: // XXX Earlier releases will show the debug page.
+qtfiles.cc:/*XXX
+qtfiles.cc://XXX
+qtfiles.cc:/*XXX
+qtfiles.cc:                    /* XXX
+qtfiles.cc:/* XXX
+qtgrid.cc://XXX
+qtgrid.cc://XXX        SetColor(style->bg[GTK_STATE_ACTIVE].pixel);
+qthtext.cc:    /*XXX
+qthtext.cc:    /*XXX
+qthtext.cc:        //XXX redraw
+qthtext.cc:    /*XXX
+qthtext.cc:        //XXX probably need something here.
+qtkeymacro.cc:// XXX also one of these in subwin_d.cc
+qtkeymacro.cc:/*  XXX This doesn't work.  F'n QT doesn't seem to have a way to
+qtkeymap.cc:/* XXX how to get *numeric* +/-? */
+qtlibs.cc:        /*XXX
+qtlibs.cc:    /*XXX
+qtlibs.cc:    /*XXX
+qtlogo.cc:// XXX FIXME: handle multi lines, justification
+qtlogo.cc:// XXX FIXME: handle multi lines, justification
+qtlpal.cc://XXX    lp_recall_proc(0, 0);
+qtlpal.cc://XXX    lp_save_proc(0, 0);
+qtltab.cc://XXX fixme: pages of Painter not active messages.
+qtltab.cc:        //XXX redraw
+qtltalias.cc:// XXX Translation to buttons from original menu bar.
+qtltalias.cc://XXX need this?
+qtltalias.cc:/*XXX
+qtltalias.cc:    /*XXX
+qtltalias.cc:        /*XXX
+qtmain.cc:    // XXX Fix this if possible.
+qtmain.cc:    /*XXX
+qtmain.cc:    /* XXX
+qtmain.cc:    //XXX
+qtmain.cc:/*XXX
+qtmain.cc:/*XXX
+qtmain.cc://XXX fixme
+qtmain.cc:        //XXX
+qtmain.cc:/*XXX
+qtmenucfg.cc://  xic:XXX  (XXX is command code)
+qtmenucfg.cc://  shapes:XXX (XXX is shape code)
+qtmenucfg.cc://  user:XXX (XXX is user code)
+qtmenucfg.cc:        //XXX Are there other entries to keep sensitive?
+qtmenucfg.cc:    // XXX Old GTK message, don't know if it still applies.
+qtmenucfg.cc:/*XXX
+qtnodmp.cc:        // XXX Check this.
+qtnodmp.cc:/*XXX
+qtoalibs.cc:/*XXX
+qtoalibs.cc://XXX check this
+qtpcprms.cc://XXX Probably need to detect the need for and use exponential notation
+qtpcprms.cc:        /*XXX
+qtprpcedit.cc://XXX
+qttedit.cc:/*XXX
+qttedit.cc:/*XXX
+qttree.cc:    //XXX FIXME
+qttree.cc://XXX
 
 These use QTcanvas
 qtdevs.cc

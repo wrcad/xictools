@@ -55,6 +55,12 @@
 
 QTlayerList::QTlayerList()
 {
+    ll_luse = 0;
+    ll_lskip = 0;
+    ll_laylist = 0;
+    ll_aluse = 0;
+    ll_aledit = 0;
+
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);

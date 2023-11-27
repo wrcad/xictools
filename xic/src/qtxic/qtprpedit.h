@@ -45,6 +45,7 @@
 
 #include <QDialog>
 
+
 class QPushButton;
 class QMenu;
 class QAction;
@@ -108,10 +109,11 @@ private:
     QPushButton *po_edit;
     QPushButton *po_del;
     QPushButton *po_add;
-    QMenu *po_addmenu;
+    QMenu       *po_addmenu;
     QPushButton *po_global;
     QPushButton *po_info;
-    QAction *po_name_btn;
+    QAction     *po_name_btn;
+
     int po_dspmode;
 
     static QTprpEditorDlg *instPtr;

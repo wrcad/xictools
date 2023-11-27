@@ -111,14 +111,15 @@ QTphysTermDlg::QTphysTermDlg(GRobject caller, TermEditInfo *tinfo,
     instPtr = this;
     te_caller = caller;
     te_name = 0;
-    te_layer = 0;
-    te_flags = 0;
-    te_fixed = 0;
     te_physgrp = 0;
+    te_layer = 0;
+    te_fixed = 0;
+    te_flags = 0;
+    te_sb_toindex = 0;
+
     te_action = action;
     te_term = term;
     te_lname = 0;
-    te_sb_toindex= 0;
 
     setWindowTitle(tr("Terminal Edit"));
     setAttribute(Qt::WA_DeleteOnClose);

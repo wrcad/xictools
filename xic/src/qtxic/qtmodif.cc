@@ -150,8 +150,11 @@ QTmodifDlg::QTmodifDlg(stringlist *l, bool(*s)(const char*)) : QTbag(this)
     stringlist::sort(l);
     int sz = stringlist::length(l);
     m_list = new s_item[sz+1];
+    m_saveproc = 0;
     m_field = 0;
     m_width = 0;
+    m_label = 0;
+    m_text = 0;
     s_item *itm = m_list;
     bool ptoo = FIO()->IsListPCellSubMasters();
     bool vtoo = FIO()->IsListViaSubMasters();

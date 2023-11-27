@@ -51,12 +51,12 @@
 #include "qtinterf/qtinterf.h"
 #include <QWidget>
 
+
 class QEnterEvent;
 class QToolButton;
 
 // String storage registers, 0 is "last", 1-5 are general.
 #define PE_NUMSTORES 6
-
 
 class QTedit : public QWidget, public cPromptEdit, public QTdraw
 {
@@ -120,3 +120,4 @@ private:
 };
 
 #endif
+

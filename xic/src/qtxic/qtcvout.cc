@@ -111,7 +111,6 @@ QTconvertOutDlg::QTconvertOutDlg(GRobject c, CvoCallback callback, void *arg)
 {
     instPtr = this;
     cvo_caller = c;
-    cvo_fmt = 0;
     cvo_label = 0;
     cvo_nbook = 0;
     cvo_strip = 0;
@@ -125,8 +124,10 @@ QTconvertOutDlg::QTconvertOutDlg(GRobject c, CvoCallback callback, void *arg)
     cvo_keepbad = 0;
     cvo_invis_p = 0;
     cvo_invis_e = 0;
-    cvo_cnmap = 0;
+    cvo_sb_scale = 0;
+    cvo_fmt = 0;
     cvo_wnd = 0;
+    cvo_cnmap = 0;
     cvo_callback = callback;
     cvo_arg = arg;
     cvo_useallcells = false;
@@ -549,15 +550,8 @@ QTconvertOutDlg::keepbad_btn_slot(int state)
 void
 QTconvertOutDlg::scale_changed_slot(double d)
 {
-printf("%f\n", d);
-    FIO()->SetWriteScale(d);
-/* XXX
-    const char *s = Cvo->sb_scale.get_string();
-    char *endp;
-    double d = strtod(s, &endp);
-    if (endp > s && d >= CDSCALEMIN && d <= CDSCALEMAX)
+    if (d >= CDSCALEMIN && d <= CDSCALEMAX)
         FIO()->SetWriteScale(d);
-*/
 }
 
 

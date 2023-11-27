@@ -128,13 +128,17 @@ QTfillPatDlg::QTfillPatDlg(GRobject c) : QTdraw(XW_DRAWING), QTbag(this)
     fp_stoframe = 0;
     fp_stoctrl = 0;
     memset(fp_stores, 0, sizeof(fp_stores));
+    fp_spnx = 0;
+    fp_spny = 0;
+    fp_defpats = 0;
 
     fp_fp = 0;
     fp_pattern_bank = 0;
     fp_width = fp_height = 0;
     fp_foreg = fp_pixbg = 0;
     memset(fp_array, 0, sizeof(fp_array));
-    fp_nx = fp_ny = 0;
+    fp_nx = 8;
+    fp_ny = 8;
     fp_margin = 0;
     fp_def_box_w = fp_def_box_h = 0;
     fp_pat_box_h = 0;
@@ -148,9 +152,6 @@ QTfillPatDlg::QTfillPatDlg(GRobject c) : QTdraw(XW_DRAWING), QTbag(this)
     fp_downbtn = 0;
     fp_dragging = false;
     fp_editing = false;
-
-    fp_nx = 8;
-    fp_ny = 8;
 
     setWindowTitle(tr("Fill Pattern Editor"));
     setAttribute(Qt::WA_DeleteOnClose);

@@ -103,6 +103,10 @@ QTjoinDlg::QTjoinDlg(GRobject c)
     jn_mverts_label = 0;
     jn_mgroup_label = 0;
     jn_mqueue_label = 0;
+    jn_mverts = 0;
+    jn_mgroup = 0;
+    jn_mqueue = 0;
+
     jn_last_mverts = DEF_JoinMaxVerts;
     jn_last_mgroup = DEF_JoinMaxGroup;
     jn_last_mqueue = DEF_JoinMaxQueue;

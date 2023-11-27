@@ -564,6 +564,8 @@ cEventHdlr::ResizeCallback(WindowDesc *wdesc, int width, int height)
     if (wdesc->Window()->width() <= 0)
         return;
 
+    if (wdesc->Ratio() == 0.0)
+        wdesc->SetRatio(1.0);
     wdesc->InitWindow((wdesc->Window()->left + wdesc->Window()->right)/2,
         (wdesc->Window()->top + wdesc->Window()->bottom)/2,
         wdesc->ViewportWidth()/wdesc->Ratio());

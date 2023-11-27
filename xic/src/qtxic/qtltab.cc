@@ -44,6 +44,7 @@
 #include "qtmenu.h"
 #include "qtinterf/qtfont.h"
 #include "dsp_inlines.h"
+#include "dsp_layer.h"
 #include "select.h"
 #include "events.h"
 #include "keymap.h"
@@ -129,6 +130,7 @@ QTltab::QTltab(bool nogr) : QTdraw(XW_LTAB)
     ltab_sbtn = 0;
     ltab_lsearch = 0;
     ltab_lsearchn = 0;
+
     ltab_search_str = 0;
     ltab_last_index = 0;
     ltab_last_mode = -1;
@@ -205,15 +207,11 @@ QTltab::setup_drawable()
 
 
 namespace {
+
     struct blinker
     {
         blinker(QTsubwin*, const CDl*);
-
-        ~blinker()
-        {
-            delete b_dim_pm;
-            delete b_norm_pm;
-        }
+        ~blinker();
 
         bool is_ok()
         {
@@ -224,54 +222,41 @@ namespace {
         {
             if (!b_dim_pm)
                 return;
-//            gdk_window_copy_area(b_wbag->Window(), b_wbag->GC(), 0, 0,
-//                b_dim_pm, 0, 0, b_wid, b_hei);
-//            gdk_flush();
-//XXX
-printf("dim\n");
+            b_win->Viewport()->draw_pixmap(0, 0, b_dim_pm, 0, 0, b_wid, b_hei);
+            b_win->Viewport()->update();
         }
 
         void show_norm()
         {
             if (!b_norm_pm)
                 return;
-//            gdk_window_copy_area(b_wbag->Window(), b_wbag->GC(), 0, 0,
-//                b_norm_pm, 0, 0, b_wid, b_hei);
-//            gdk_flush();
-//XXX
-printf("normal\n");
-        }
-
-        static unsigned int revbytes(unsigned bits, int nb)
-        {
-            unsigned int tmp = bits;
-            bits = 0;
-            unsigned char *a = (unsigned char*)&tmp;
-            unsigned char *b = (unsigned char*)&bits;
-            nb--;
-            for (int i = 0; i <= nb; i++)
-                b[i] = a[nb-i];
-            return (bits);
+            b_win->Viewport()->draw_pixmap(0, 0, b_norm_pm, 0, 0, b_wid, b_hei);
+            b_win->Viewport()->update();
         }
 
         static bool button3_down()
         {
-            return (QApplication::mouseButtons() & Qt::RightButton);
+            return (QApplication::mouseButtons() &
+                (Qt::RightButton | Qt::LeftButton));
         }
 
         static int blink_idle(void*);
 
     private:
-        QTsubwin *b_wbag;
+        QTsubwin *b_win;
         QPixmap *b_dim_pm;
         QPixmap *b_norm_pm;
         int b_wid;
         int b_hei;
+
+        static blinker *blinkers[DSP_NUMWINS];
+        static int blink_timer_id;
+        static bool blink_state;
     };
 
-    blinker *blinkers[DSP_NUMWINS];
-    int blink_timer_id;
-    bool blink_state;
+    blinker *blinker::blinkers[DSP_NUMWINS];
+    int blinker::blink_timer_id;
+    bool blinker::blink_state;
 }
 
 
@@ -293,13 +278,6 @@ QTltab::blink(CDl *ld)
             delete b;
             continue;
         }
-        blinker *oldb = blinkers[i];
-        blinkers[i] = b;
-        delete oldb;
-    }
-    if (!blink_timer_id) {
-        blink_timer_id =
-            QTpkg::self()->RegisterIdleProc(blinker::blink_idle, 0);
     }
 }
 
@@ -681,121 +659,48 @@ QTltab::ltab_ent_timer(void *arg)
 namespace {
     blinker::blinker(QTsubwin *wb, const CDl *ld)
     {
-        b_wbag = wb;
+        b_win = wb;
         b_dim_pm = 0;
-        b_norm_pm = 0;
-        b_wid = 0;
-        b_hei = 0;
-
-/*XXX
-        if (!wb)
+        b_norm_pm = wb ? new QPixmap(*wb->Viewport()->pixmap()) : 0;
+        b_wid = b_norm_pm ? b_norm_pm->width() : 0;
+        b_hei = b_norm_pm ? b_norm_pm->height() : 0;
+        if (!wb || !ld)
             return;
 
-        GdkPixmap *pm = gdk_pixmap_new(wb->Window(), 1, 1,
-            gdk_visual_get_depth(GTKdev::self()->Visual()));
-        if (!pm)
-            return;
-        GdkWindow *bk = wb->Window();
-        wb->SetWindow(pm);
-        wb->SetColor(dsp_prm(ld)->pixel());
-        wb->Pixel(0, 0);
-        wb->SetWindow(bk);
-        GdkImage *im = gdk_image_get(pm, 0, 0, 1, 1);
-        gdk_pixmap_unref(pm);
-        if (!im)
-            return;
-
-        int bpp = im->bpp;
-
-        int im_order = im->byte_order;
-        int order = GDK_LSB_FIRST;
-        unsigned int pix = 1;
-        if (!(*(unsigned char*)&pix))
-            order = GDK_MSB_FIRST;
-
-        pix = 0;
-        memcpy(&pix, im->mem, bpp);
-        if (order != im_order)
-            pix = revbytes(pix, bpp);
-        if (order == GDK_MSB_FIRST)
-            pix >>= 8*(sizeof(int) - bpp);
-        gdk_image_destroy(im);
-
-        // im->visual = 0 from pixmap
-        unsigned red_mask = GTKdev::self()->Visual()->red_mask;
-        unsigned green_mask = GTKdev::self()->Visual()->green_mask;
-        unsigned blue_mask = GTKdev::self()->Visual()->blue_mask;
-        int r = (pix & red_mask);
-        r = (((r * DIMPIXVAL)/10) & red_mask);
-        int g = (pix & green_mask);
-        g = (((g * DIMPIXVAL)/10) & green_mask);
-        int b = (pix & blue_mask);
-        b = (((b * DIMPIXVAL)/10) & blue_mask);
-        unsigned int dimpix = r | g | b;
-
-        if (order == GDK_MSB_FIRST) {
-            pix <<= 8*(sizeof(int) - bpp);
-            dimpix <<= 8*(sizeof(int) - bpp);
-        }
-        if (order != im_order) {
-            pix = revbytes(pix, bpp);
-            dimpix = revbytes(dimpix, bpp);
-        }
-
-        gdk_window_get_size(wb->Window(), &b_wid, &b_hei);
-        if (b_wid < 0 || b_hei < 0 || (!b_wid && !b_hei))
-            return;
-
-        pm = gdk_pixmap_new(wb->Window(), b_wid, b_hei,
-            GTKdev::self()->Visual()->depth);
-        if (!pm)
-            return;
-        gdk_window_copy_area(pm, wb->GC(), 0, 0, wb->Window(), 0, 0,
-            b_wid, b_hei);
-        b_norm_pm = pm;
-
-        // There is a bug in 2.24.10, using the window rather than the
-        // pixmap in gdk_image_get doesn't work.  The image has offsets
-        // that seem to require compensation with
-        // gdk_window_get_internal_paint_info() or similar, but I could
-        // never get this to work properly.
-
-        im = gdk_image_get(pm, 0, 0, b_wid, b_hei);
-        if (!im) {
-            gdk_pixmap_unref(pm);
-            b_norm_pm = 0;
-            return;
-        }
-
-        // There may be some alpha info that should be ignored.
-        unsigned int mask = red_mask | green_mask | blue_mask;
-
-        char *z = (char*)im->mem;
-        int i = b_wid*b_hei;
-        while (i--) {
-            unsigned f = 0;
-            unsigned char *a = (unsigned char*)&f;
-            for (int j = 0; j < bpp; j++)
-                a[j] = *z++;
-            if ((f & mask) == (pix & mask)) {
-                z -= bpp;
-                a = (unsigned char*)&dimpix;
-                for (int j = 0; j < bpp; j++)
-                    *z++ = a[j];
+        QImage qimg(b_wid, b_hei, QImage::Format_RGB32);
+        QPainter p(&qimg);
+        p.drawPixmap(0, 0, *b_norm_pm);
+        QRgb rgb(dsp_prm(ld)->pixel());
+        QColor qcref(rgb);
+        QColor qcdim(qRgb((qRed(rgb)*DIMPIXVAL)/10,
+            (qGreen(rgb)*DIMPIXVAL)/10, (qBlue(rgb)*DIMPIXVAL)/10));
+        for (int c = 0; c < b_wid; c++) {
+            for (int r = 0; r < b_hei; r++) {
+                if (qimg.pixelColor(c, r) == qcref)
+                    qimg.setPixelColor(c, r, qcdim);
             }
         }
-        pm = gdk_pixmap_new(wb->Window(), b_wid, b_hei,
-            gdk_visual_get_depth(GTKdev::self()->Visual()));
-        if (!pm) {
-            gdk_image_destroy(im);
-            gdk_pixmap_unref(b_norm_pm);
-            b_norm_pm = 0;
-            return;
+        b_dim_pm = new QPixmap(b_wid, b_hei);
+        QPainter pd(b_dim_pm);
+        pd.drawImage(0, 0, qimg);
+
+        if (is_ok()) {
+            blinker *oldb = blinkers[wb->win_number()];
+            blinkers[wb->win_number()] = this;
+            delete oldb;
+
+            if (!blink_timer_id) {
+                blink_timer_id =
+                    QTpkg::self()->RegisterIdleProc(blink_idle, 0);
+            }
         }
-        gdk_draw_image(pm, wb->GC(), im, 0, 0, 0, 0, b_wid, b_hei);
-        gdk_image_destroy(im);
-        b_dim_pm = pm;
-*/
+    }
+
+
+    blinker::~blinker()
+    {
+        delete b_dim_pm;
+        delete b_norm_pm;
     }
 
 
@@ -813,7 +718,7 @@ namespace {
             else
                 blinkers[i]->show_norm();
         }
-        cTimer::milli_sleep(200);
+        cTimer::milli_sleep(400);
 
         if (!button3_down()) {
             for (int i = 0; i < DSP_NUMWINS; i++) {

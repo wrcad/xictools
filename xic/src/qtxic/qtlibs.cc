@@ -151,6 +151,7 @@ QTlibsDlg::QTlibsDlg(GRobject c) : QTbag(this)
     lb_content_pop = 0;
     lb_selection = 0;
     lb_contlib = 0;
+
     lb_open_pb = 0;
     lb_close_pb = 0;
 
@@ -202,8 +203,6 @@ QTlibsDlg::QTlibsDlg(GRobject c) : QTbag(this)
         this, SLOT(item_clicked_slot(QTreeWidgetItem*, int)));
     connect(lb_list, SIGNAL(itemSelectionChanged()),
         this, SLOT(item_selection_changed()));
-//    g_signal_connect(G_OBJECT(lb_list), "button-press-event",
-//        G_CALLBACK(lb_button_press_proc), this);
 
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_PROP))
@@ -320,7 +319,7 @@ QTlibsDlg::update()
             lb_content_pop->set_button_sens(-1);
     }
     if (oldsel) {
-        /*
+        /*XXX
         // This re-selects the previously selected library.
         if (!gtk_tree_model_get_iter_first(GTK_TREE_MODEL(store), &iter)) {
             delete [] oldsel;
@@ -563,7 +562,7 @@ QTlibsDlg::item_clicked_slot(QTreeWidgetItem *item, int col)
             delete [] tmp;
         }
     }
-    /*
+    /*XXX
     GtkTreePath *p;
     GtkTreeViewColumn *col;
     if (!gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(LB->lb_list),
@@ -592,7 +591,7 @@ QTlibsDlg::item_clicked_slot(QTreeWidgetItem *item, int col)
 void
 QTlibsDlg::item_selection_changed()
 {
-    /*
+    /*XXX
     char *text = 0;
     GtkTreeIter iter;
     if (gtk_tree_model_get_iter(store, &iter, path))

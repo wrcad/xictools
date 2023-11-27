@@ -48,6 +48,7 @@
 
 #include <QDialog>
 
+
 class QLabel;
 class QPushButton;
 class QComboBox;
@@ -117,25 +118,25 @@ private:
     QPushButton *pl_arraybtn;
     QPushButton *pl_replbtn;
     QPushButton *pl_smashbtn;
-    QComboBox *pl_refmenu;
+    QComboBox   *pl_refmenu;
 
-    QLabel *pl_label_nx;
-    QLabel *pl_label_ny;
-    QLabel *pl_label_dx;
-    QLabel *pl_label_dy;
+    QLabel      *pl_label_nx;
+    QLabel      *pl_label_ny;
+    QLabel      *pl_label_dx;
+    QLabel      *pl_label_dy;
 
-    QComboBox *pl_masterbtn;
+    QComboBox   *pl_masterbtn;
     QPushButton *pl_placebtn;
     QPushButton *pl_menu_placebtn;
 
-    GRledPopup *pl_str_editor;
-    char *pl_dropfile;
-
-    QSpinBox *pl_nx;
-    QSpinBox *pl_ny;
+    QSpinBox    *pl_nx;
+    QSpinBox    *pl_ny;
     QTdoubleSpinBox *pl_dx;
     QTdoubleSpinBox *pl_dy;
-    QSpinBox *pl_mmlen;
+    QSpinBox    *pl_mmlen;
+
+    GRledPopup  *pl_str_editor;
+    char        *pl_dropfile;
 
     static QTplaceDlg *instPtr;
 

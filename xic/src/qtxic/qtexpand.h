@@ -50,6 +50,7 @@ class QLineEdit;
 class QPushButton;
 class QToolButton;
 
+
 class QTexpandDlg : public QDialog, public GRpopup
 {
     Q_OBJECT
@@ -106,8 +107,8 @@ private slots:
     void dismiss_slot();
 
 private:
-    QLabel *label;
-    QLineEdit *edit;
+    QLabel      *b_label;
+    QLineEdit   *b_edit;
     QPushButton *b_help;
     QToolButton *b_plus;
     QToolButton *b_minus;

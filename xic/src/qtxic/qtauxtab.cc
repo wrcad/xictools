@@ -99,9 +99,12 @@ QTauxTabDlg::QTauxTabDlg(GRobject c) : QTbag(this)
     at_addbtn = 0;
     at_rembtn = 0;
     at_clearbtn = 0;
+    at_over = 0;
+    at_skip = 0;
     at_add_pop = 0;
     at_remove_pop = 0;
     at_clear_pop = 0;
+
     at_start = 0;
     at_end = 0;
     at_drag_x = at_drag_y = 0;

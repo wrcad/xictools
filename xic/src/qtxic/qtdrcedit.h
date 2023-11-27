@@ -48,6 +48,7 @@
 
 #include <QDialog>
 
+
 //-----------------------------------------------------------------------------
 // Pop up to display a listing of design rules for the current layer.
 //
@@ -61,8 +62,6 @@ class QTdrcRuleEditDlg : public QDialog, public DRCedit
     Q_OBJECT
 
 public:
-//    edit { emEdit, emInhibit, emDelete, emUndo, emQuit };
-
     QTdrcRuleEditDlg(GRobject);
     ~QTdrcRuleEditDlg();
 
@@ -98,12 +97,6 @@ private:
     static bool dim_cb(const char*, void*);
     static void dim_show_msg(const char*);
     static bool dim_editsave(const char*, void*, XEtype);
-
-    /*
-    static void dim_rule_proc(GtkWidget*, void*);
-    static void dim_rule_menu_proc(GtkWidget*, void*);
-    static int dim_text_btn_hdlr(GtkWidget*, GdkEvent*, void*);
-    */
 
     GRobject    dim_caller;         // initiating button
     QTtextEdit  *dim_text;          // text area

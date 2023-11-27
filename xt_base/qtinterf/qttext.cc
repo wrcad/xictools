@@ -178,6 +178,8 @@ QTtextDlg::sizeHint() const
 {
     int w = 80 * QTfont::stringWidth(0, FNT_FIXED);
     int h = 24 * QTfont::lineHeight(FNT_FIXED);
+    if (tx_which == PuWarn || tx_which == PuErr || tx_which == PuErrAlso)
+        h /= 2;
     return (QSize(w+4, h+4));
 }
 

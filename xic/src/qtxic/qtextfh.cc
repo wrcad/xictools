@@ -118,6 +118,7 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c) : QTbag(this)
     instPtr = this;
     fh_caller = c;
     fh_label = 0;
+
     fh_foreg = 0;
     fh_out = 0;
     fh_file = 0;
@@ -127,6 +128,7 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c) : QTbag(this)
     fh_fmax = 0;
     fh_ndec = 0;
     fh_path = 0;
+
     fh_units = 0;
     fh_nhinc_ovr = 0;
     fh_nhinc_fh = 0;
@@ -136,8 +138,10 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c) : QTbag(this)
     fh_sb_rh = 0;
     fh_sb_volel_min = 0;
     fh_sb_volel_target = 0;
+
     fh_jobs = 0;
     fh_kill = 0;
+
     fh_no_reset = false;
     fh_start = 0;
     fh_end = 0;

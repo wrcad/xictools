@@ -46,6 +46,11 @@
 
 #include <QGroupBox>
 
+
+//-------------------------------------------------------------------------
+// Subwidget group for window control
+//
+
 class QCheckBox;
 class QLabel;
 class QPushButton;
@@ -53,11 +58,6 @@ class QMenu;
 namespace qtinterf {
     class QTdoubleSpinBox;
 }
-
-
-//-------------------------------------------------------------------------
-// Subwidget group for window control
-//
 
 // Sensitivity logic.
 enum WndSensMode {

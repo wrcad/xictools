@@ -46,9 +46,9 @@
 
 #include <QDialog>
 
+
 class QComboBox;
 class QPushButton;
-
 
 class QTstabDlg : public QDialog, public QTbag
 {
@@ -85,16 +85,16 @@ private:
     static void tb_clr_cb(bool, void*);
     static void tb_del_cb(bool, void*);
 
-    GRobject tb_caller;
-    QComboBox *tb_tables;
+    GRobject    tb_caller;
+    QComboBox   *tb_tables;
     QPushButton *tb_add;
     QPushButton *tb_clr;
     QPushButton *tb_del;
 
-    GRledPopup *tb_add_pop;
+    GRledPopup  *tb_add_pop;
     GRaffirmPopup *tb_clr_pop;
     GRaffirmPopup *tb_del_pop;
-    stringlist *tb_namelist;
+    stringlist  *tb_namelist;
 
     static QTstabDlg *instPtr;
 };

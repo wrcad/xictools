@@ -234,6 +234,9 @@ QTcompareDlg::QTcompareDlg(GRobject c)
     cmp_layer_list = 0;
     cmp_layer_use = 0;
     cmp_layer_skip = 0;
+    cmp_sb_max_errs = 0;
+
+    cmp_p1_recurse = 0;
     cmp_p1_expand_arrays = 0;
     cmp_p1_slop = 0;
     cmp_p1_dups = 0;
@@ -247,21 +250,28 @@ QTcompareDlg::QTcompareDlg(GRobject c)
     cmp_p1_wires_prp = 0;
     cmp_p1_labels_prp = 0;
     cmp_p1_insts_prp = 0;
-    cmp_p1_recurse = 0;
     cmp_p1_phys = 0;
     cmp_p1_elec = 0;
     cmp_p1_cell_prp = 0;
     cmp_p1_fltr = 0;
     cmp_p1_setup = 0;
     cmp_p1_fltr_mode = PrpFltDflt;
+
     cmp_p2_expand_arrays = 0;
     cmp_p2_recurse = 0;
     cmp_p2_insts = 0;
+
     cmp_p3_aoi_use = 0;
     cmp_p3_s_btn = 0;
     cmp_p3_r_btn = 0;
     cmp_p3_s_menu = 0;
     cmp_p3_r_menu = 0;
+    cmp_sb_p3_aoi_left = 0;
+    cmp_sb_p3_aoi_bottom = 0;
+    cmp_sb_p3_aoi_right = 0;
+    cmp_sb_p3_aoi_top = 0;
+    cmp_sb_p3_fine_grid = 0;
+    cmp_sb_p3_coarse_mult = 0;
 
     setWindowTitle(tr("Compare Layouts"));
     setAttribute(Qt::WA_DeleteOnClose);
@@ -1085,7 +1095,7 @@ QTcompareDlg::get_bb(BBox *BB)
     double b = cmp_sb_p3_aoi_bottom->value();
     double r = cmp_sb_p3_aoi_right->value();
     double t = cmp_sb_p3_aoi_top->value();
-/*
+/*XXX
     double l, b, r, t;
     int i = 0;
     i += sscanf(sb_p3_aoi_left.get_string(), "%lf", &l);

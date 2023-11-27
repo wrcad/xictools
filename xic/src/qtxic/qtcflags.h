@@ -57,21 +57,21 @@ public:
     struct cf_elt
     {
         cf_elt(CDcellName n, bool i, bool l)
-            {
-                next = 0;
-                name = n;
-                immutable = i;
-                library = l;
-            }
+        {
+            next = 0;
+            name = n;
+            immutable = i;
+            library = l;
+        }
 
         static void destroy(const cf_elt *e)
-            {
-                while (e) {
-                    const cf_elt *ex = e;
-                    e = e->next;
-                    delete ex;
-                }
+        {
+            while (e) {
+                const cf_elt *ex = e;
+                e = e->next;
+                delete ex;
             }
+        }
 
         cf_elt *next;
         CDcellName name;

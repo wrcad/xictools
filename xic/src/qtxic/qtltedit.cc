@@ -79,10 +79,10 @@ const char *QTltabEditDlg::initmsg = "Layer Editor -- add or remove layers.";
 QTltabEditDlg::QTltabEditDlg(GRobject c)
 {
     le_caller = c;
+    le_label = 0;
     le_add = 0;
     le_rem = 0;
     le_opmenu = 0;
-    le_label = 0;
 
     setWindowTitle(tr("Layer Editor"));
     setAttribute(Qt::WA_DeleteOnClose);

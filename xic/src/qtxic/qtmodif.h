@@ -100,14 +100,14 @@ private slots:
 private:
     void refresh();
 
-    s_item *m_list;                    // list of cells
-    bool (*m_saveproc)(const char*);   // save callback
-    int m_field;                       // max cell name length
-    int m_width;                       // max total string length
-    QLabel *m_label;
-    QTtextEdit *m_text;
+    s_item      *m_list;                // list of cells
+    bool (*m_saveproc)(const char*);    // save callback
+    int         m_field;                // max cell name length
+    int         m_width;                // max total string length
+    QLabel      *m_label;
+    QTtextEdit  *m_text;
 
-    static PMretType m_retval;         // return flag
+    static PMretType m_retval;          // return flag
     static QTmodifDlg *instPtr;
 };
 

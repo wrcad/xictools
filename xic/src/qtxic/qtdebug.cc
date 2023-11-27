@@ -474,36 +474,24 @@ QTscriptDebuggerDlg::set_mode(DBmode mode)
             db_mode = DBedit;
             wb_textarea->set_editable(true);
             refresh(true, locPresent);
-//XXX            text_set_change_hdlr(wb_textarea, db_change_proc, 0, true);
             db_modelabel->setText(tr("Edit Mode"));
             db_execmenu->setEnabled(false);
             db_editmenu->setEnabled(true);
-//            g_object_set(G_OBJECT(db_modebtn), "label", "Run", (char*)0);
 
-//            GdkCursor *c = gdk_cursor_new(GDK_XTERM);
-//            gdk_window_set_cursor(
-//                gtk_text_view_get_window(GTK_TEXT_VIEW(wb_textarea),
-//                GTK_TEXT_WINDOW_TEXT), c);
-//            g_object_unref(G_OBJECT(c));
+            wb_textarea->setCursor(Qt::IBeamCursor);
         }
     }
     else if (mode == DBrun) {
         if (db_mode != DBrun) {
             db_mode = DBrun;
-//            text_set_change_hdlr(wb_textarea, db_change_proc, 0, false);
             wb_textarea->set_editable(false);
             refresh(true, locPresent);
             start();
             db_modelabel->setText(tr("Exec Mode"));
             db_execmenu->setEnabled(true);
             db_editmenu->setEnabled(false);
-//            g_object_set(G_OBJECT(db_modebtn), "label", "Edit", (char*)0);
 
-//            GdkCursor *c = gdk_cursor_new(GDK_TOP_LEFT_ARROW);
-//            gdk_window_set_cursor(
-//                gtk_text_view_get_window(GTK_TEXT_VIEW(wb_textarea),
-//                GTK_TEXT_WINDOW_TEXT),  c);
-//            g_object_unref(G_OBJECT(c));
+            wb_textarea->setCursor(Qt::ArrowCursor);
         }
     }
 }
@@ -596,7 +584,7 @@ QTscriptDebuggerDlg::step()
         PL()->SavePrompt();
         start();
         PL()->RestorePrompt();
-//        QTdev::SetFocus(Dbg->wb_shell);
+//XXX        QTdev::SetFocus(Dbg->wb_shell);
 //        gtk_window_set_focus(GTK_WINDOW(Dbg->wb_shell), Dbg->wb_textarea);
         return;
     }
@@ -620,7 +608,7 @@ QTscriptDebuggerDlg::step()
     db_status = Equiescent;
     set_sens(true);
     update_variables();
-//    GTKdev::SetFocus(Dbg->wb_shell);
+//XXX    GTKdev::SetFocus(Dbg->wb_shell);
 //    gtk_window_set_focus(GTK_WINDOW(Dbg->wb_shell), Dbg->wb_textarea);
 }
 
@@ -1101,6 +1089,33 @@ QTscriptDebuggerDlg::monitor()
 }
 
 
+void
+QTscriptDebuggerDlg::open_file()
+{
+    db_file_ptr = fopen(db_file_path, "r");
+    if (db_file_ptr) {
+        histlist::destroy(db_undo_list);
+        db_undo_list = 0;
+        histlist::destroy(db_redo_list);
+        db_redo_list = 0;
+        check_sens();
+        db_in_undo = true;
+        set_mode(DBedit);
+        SI()->Clear();
+        breakpoint(-1);
+        db_line = 0;
+        start();
+        db_text_changed = false;
+        db_in_undo = false;
+        db_saveas->setEnabled(false);
+        db_title->setText(db_file_path);
+        fclose(db_file_ptr);
+        db_file_ptr = 0;
+        db_modebtn->setEnabled(true);
+    }
+}
+
+
 namespace {
     // Return a variable token.  The tokens can be separated by white
     // space and/or commas.  A token can have a following range
@@ -1264,30 +1279,8 @@ QTscriptDebuggerDlg::db_open_cb(const char *namein, void*)
 int
 QTscriptDebuggerDlg::db_open_idle(void*)
 {
-// XXX ridiculous make non-static
-    if (instPtr) {
-        instPtr->db_file_ptr = fopen(instPtr->db_file_path, "r");
-        if (instPtr->db_file_ptr) {
-            histlist::destroy(instPtr->db_undo_list);
-            instPtr->db_undo_list = 0;
-            histlist::destroy(instPtr->db_redo_list);
-            instPtr->db_redo_list = 0;
-            instPtr->check_sens();
-            instPtr->db_in_undo = true;
-            instPtr->set_mode(DBedit);
-            SI()->Clear();
-            instPtr->breakpoint(-1);
-            instPtr->db_line = 0;
-            instPtr->start();
-            instPtr->db_text_changed = false;
-            instPtr->db_in_undo = false;
-            instPtr->db_saveas->setEnabled(false);
-            instPtr->db_title->setText(instPtr->db_file_path);
-            fclose(instPtr->db_file_ptr);
-            instPtr->db_file_ptr = 0;
-            instPtr->db_modebtn->setEnabled(true);
-        }
-    }
+    if (instPtr)
+        instPtr->open_file();
     return (0);
 }
 
@@ -1722,7 +1715,6 @@ QTscriptDebuggerDlg::text_change_slot(int strt, int nch_rm, int nch_add)
         strncpy(ntext, text+strt, nch_rm);
         ntext[nch_rm] = 0;
         delete [] text;
-//XXX?        char *s = lstring::tocpp(gtk_text_iter_get_text(istart, iend));
         db_undo_list = new histlist(ntext, strt, true, db_undo_list);
         histlist::destroy(db_redo_list);
         db_redo_list = 0;
@@ -1891,8 +1883,38 @@ QTdbgVarsDlg::update(stringlist *vars)
 
 
 void
-QTdbgVarsDlg::current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*)
+QTdbgVarsDlg::current_item_changed_slot(QTreeWidgetItem *itm, QTreeWidgetItem*)
 {
+    if (!QTscriptDebuggerDlg::self())
+        return;
+    QByteArray bavar = itm->text(0).toLatin1();
+    QByteArray baval = itm->text(1).toLatin1();
+    const char *var = bavar.constData();
+    const char *val = baval.constData();
+
+    if (var && val) {
+        char buf[128];
+        snprintf(buf, sizeof(buf), "assign %s = ", var);
+
+        bool busy;
+        const char *in = QTscriptDebuggerDlg::self()->var_prompt(val, buf,
+            &busy);
+        if (busy)
+            return;
+
+        if (!in) {
+            PL()->ErasePrompt();
+            return;
+        }
+        char *s = SIparse()->setVar(var, in);
+        if (s) {
+            PL()->ShowPrompt(s);
+            delete [] s;
+            return;
+        }
+        QTscriptDebuggerDlg::self()->update_variables();
+        PL()->ErasePrompt();
+    }
 }
 
 
@@ -1932,63 +1954,3 @@ QTdbgVarsDlg::font_changed_slot(int fnum)
     }
 }
 
-
-#ifdef notdef
-
-
-// Static function.
-// Selection callback for the list.  Note that we return false which
-// prevents actually accepting the selection, so this is just a fancy
-// button-press handler.
-//
-int
-QTdbgVarsDlg::dv_select_proc(GtkTreeSelection*, GtkTreeModel *store,
-    GtkTreePath *path, int issel, void*)
-{
-    if (Dbg && Dbg->db_vars_pop) {
-        if (issel)
-            return (true);
-        if (!Dbg->db_vars_pop->dv_no_select) {
-            Dbg->db_vars_pop->dv_no_select = false;
-            return (false);
-        }
-        char *var = 0, *val = 0;
-        GtkTreeIter iter;
-        if (gtk_tree_model_get_iter(store, &iter, path))
-            gtk_tree_model_get(store, &iter, 0, &var, 1, &val, -1);
-        if (var && val) {
-            char buf[128];
-            snprintf(buf, sizeof(buf), "assign %s = ", var);
-
-            bool busy;
-            const char *in = Dbg->var_prompt(val, buf, &busy);
-            if (busy) {
-                free(var);
-                free(val);
-                return (false);
-            }
-
-            if (!in) {
-                PL()->ErasePrompt();
-                free(var);
-                free(val);
-                return (false);
-            }
-            char *s = SIparse()->setVar(var, in);
-            if (s) {
-                PL()->ShowPrompt(s);
-                delete [] s;
-                free(var);
-                free(val);
-                return (false);
-            }
-            Dbg->update_variables();
-            PL()->ErasePrompt();
-        }
-        free(var);
-        free(val);
-    }
-    return (false);
-}
-
-#endif

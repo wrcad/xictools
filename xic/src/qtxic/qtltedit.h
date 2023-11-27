@@ -47,10 +47,10 @@
 
 #include <QDialog>
 
+
 class QPushButton;
 class QComboBox;
 class QLabel;
-
 
 class QTltabEditDlg : public QDialog, public sLcb
 {
@@ -85,12 +85,12 @@ private slots:
 private:
     char *le_get_lname();
 
-    GRobject le_caller;         // initiating button
+    GRobject    le_caller;      // initiating button
 
-    QLabel *le_label;           // message area
+    QLabel      *le_label;      // message area
     QPushButton *le_add;        // add layer button
     QPushButton *le_rem;        // remove layer button
-    QComboBox *le_opmenu;       // removed layers menu;
+    QComboBox   *le_opmenu;     // removed layers menu;
 
     static const char *initmsg;
 };

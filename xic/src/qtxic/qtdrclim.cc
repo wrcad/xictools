@@ -105,6 +105,10 @@ QTdrcLimitsDlg::QTdrcLimitsDlg(GRobject c)
     dl_b1 = 0;
     dl_b2 = 0;
     dl_b3 = 0;
+    dl_sb_max_errs = 0;
+    dl_sb_imax_objs = 0;
+    dl_sb_imax_time = 0;
+    dl_sb_imax_errs = 0;
 
     setWindowTitle(tr("DRC Parameter Setup"));
     setAttribute(Qt::WA_DeleteOnClose);

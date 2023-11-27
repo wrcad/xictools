@@ -45,6 +45,13 @@
 #include "qtmain.h"
 #include <QDialog>
 
+
+//-----------------------------------------------------------------------------
+//  Pop-up for the Zoom command
+//
+// Help system keywords used:
+//  xic:zoom
+
 class QLayout;
 class QLabel;
 class QPushButton;
@@ -52,12 +59,6 @@ class QCheckBox;
 namespace qtinterf {
     class QTdoubleSpinBox;
 }
-
-//-----------------------------------------------------------------------------
-//  Pop-up for the Zoom command
-//
-// Help system keywords used:
-//  xic:zoom
 
 class QTzoomDlg : public QDialog, public GRpopup
 {
@@ -98,8 +99,8 @@ private slots:
     void dismiss_btn_slot();
 
 private:
-    WindowDesc *zm_window;
-    QCheckBox *zm_autoy;
+    WindowDesc  *zm_window;
+    QCheckBox   *zm_autoy;
     QTdoubleSpinBox *zm_yscale;
     QTdoubleSpinBox *zm_zoom;
     QTdoubleSpinBox *zm_x;

@@ -127,17 +127,19 @@ QToaLibsDlg::QToaLibsDlg(GRobject c) : QTbag(this)
     lb_openbtn = 0;
     lb_writbtn = 0;
     lb_contbtn = 0;
+    lb_defsbtn = 0;
     lb_techbtn = 0;
     lb_destbtn = 0;
     lb_both = 0;
     lb_phys = 0;
     lb_elec = 0;
     lb_list = 0;
+
     lb_content_pop = 0;
-    lb_selection = 0;
-    lb_contlib = 0;
     lb_open_pm = 0;
     lb_close_pm = 0;
+    lb_selection = 0;
+    lb_contlib = 0;
     lb_tempstr = 0;
 
     setWindowTitle(tr("OpenAccess Libraries"));
@@ -403,7 +405,7 @@ QToaLibsDlg::update()
     }
     if (oldsel) {
         // This re-selects the previously selected library.
-/*
+/*XXX
         for (int i = 0; ; i++) {
             GtkTreePath *p = gtk_tree_path_new_from_indices(i, -1);
             if (!gtk_tree_model_get_iter(GTK_TREE_MODEL(store), &iter, p)) {
@@ -579,7 +581,8 @@ QToaLibsDlg::lb_content_cb(const char *cellname, void*)
 {
     if (!QToaLibsDlg::self())
         return;
-    if (!QToaLibsDlg::self()->lb_contlib || !QToaLibsDlg::self()->lb_content_pop)
+    if (!QToaLibsDlg::self()->lb_contlib ||
+            !QToaLibsDlg::self()->lb_content_pop)
         return;
     if (!cellname)
         return;
@@ -598,14 +601,15 @@ QToaLibsDlg::lb_content_cb(const char *cellname, void*)
         // Clear persistent OA cells-loaded table.
         OAif()->clear_name_table();
 
-        if (!OAif()->load_cell(QToaLibsDlg::self()->lb_contlib, sel, 0, CDMAXCALLDEPTH, true,
-                0, &p0)) {
+        if (!OAif()->load_cell(QToaLibsDlg::self()->lb_contlib, sel, 0,
+                CDMAXCALLDEPTH, true, 0, &p0)) {
             Log()->ErrorLog(mh::Processing, Errs()->get_error());
             delete [] sel;
             return;
         }
         if (p0) {
-            char *dbname = PC()->addSuperMaster(QToaLibsDlg::self()->lb_contlib, sel,
+            char *dbname = PC()->addSuperMaster(
+                QToaLibsDlg::self()->lb_contlib, sel,
                 DSP()->CurMode() == Physical ? "layout" : "schematic", p0);
             PCellParam::destroy(p0);
             if (EditIf()->hasEdit()) {

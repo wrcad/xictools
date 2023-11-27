@@ -115,6 +115,8 @@ QTeditSetupDlg::QTeditSetupDlg(GRobject c)
     ed_noww = 0;
     ed_crcovr = 0;
     ed_depth = 0;
+    ed_sb_ulen = 0;
+    ed_sb_maxgobjs = 0;
 
     setWindowTitle(tr("Editing Setup"));
     setAttribute(Qt::WA_DeleteOnClose);

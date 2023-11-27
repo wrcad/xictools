@@ -47,8 +47,8 @@
 #include <QPushButton>
 #include <QToolButton>
 
-class QAction;
 
+class QAction;
 
 class QTmenu : public MenuMain
 {
@@ -102,7 +102,6 @@ private:
 };
 
 class QTmenuButton : public QToolButton
-//XXXclass QTmenuButton : public QPushButton
 {
     Q_OBJECT
 

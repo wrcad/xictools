@@ -76,7 +76,7 @@ QTcoord::QTcoord(QWidget *prnt) : QWidget(prnt), QTdraw(XW_TEXT)
     co_rel = false;
     co_snap = true;
 
-    gd_viewport = QTdrawIf::new_draw_interface(DrawNative, false, this);
+    gd_viewport = new QTcanvas();
     QHBoxLayout *hbox = new QHBoxLayout(this);
     hbox->setContentsMargins(0, 0, 0, 0);
     hbox->setSpacing(0);

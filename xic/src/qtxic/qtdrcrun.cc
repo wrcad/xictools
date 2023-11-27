@@ -162,6 +162,7 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
     dc_checkbg = 0;
     dc_jobs = 0;
     dc_kill = 0;
+
     dc_start = 0;
     dc_end = 0;
     dc_line_selected = -1;
@@ -344,10 +345,12 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
     dc_check->setAutoDefault(false);
     connect(dc_check, SIGNAL(toggled(bool)), this, SLOT(check_btn_slot(bool)));
 
+    // XXX set up event dispatch loop in QT
     // This is black magic to allow button pressess/releases to be
     // dispatched when the busy flag is set.  Un-setting the Check
     // button will pause the DRC run.
-//XXX    g_object_set_data(G_OBJECT(button), "abort", (void*)1);
+    // g_object_set_data(G_OBJECT(button), "abort", (void*)1);
+    // Tested inn the event dispatch loop in GTK.
 
     dc_checkbg = new QPushButton(tr("Check in\nBackground"));
     grid->addWidget(dc_checkbg, 3, 2, 1, 2);

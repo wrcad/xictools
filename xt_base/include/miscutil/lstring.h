@@ -459,7 +459,7 @@ namespace lstring {
 
     // Return a malloc'ed token, advance the pointer to next token. 
     // Tokens are separated by white space or characters in sepchars,
-    // it this is not null.
+    // if this is not null.
     //
     template <class T> char *
     gettok(T **s, const char *sepchars = 0)

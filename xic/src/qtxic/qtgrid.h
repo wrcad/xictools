@@ -46,6 +46,7 @@
 
 #include <QDialog>
 
+
 class QAction;
 class QGroupBox;
 class QLabel;
@@ -62,7 +63,6 @@ namespace qtinterf {
     class QTcanvas;
     class QTdoubleSpinBox;
 }
-
 
 class QTgridDlg : public QDialog, public QTbag, public QTdraw, public GRpopup
 {
@@ -95,39 +95,39 @@ public:
     void update(bool = false);
     void initialize();
 
-    private slots:
-        void help_btn_slot();
-        void resol_changed_slot(double);
-        void snap_changed_slot(int);
-        void gridpersnap_btn_slot(int);
-        void edge_menu_slot(int);
-        void off_grid_btn_slot(int);
-        void use_nm_btn_slot(int);
-        void wire_edge_btn_slot(int);
-        void wire_path_btn_slot(int);
+private slots:
+    void help_btn_slot();
+    void resol_changed_slot(double);
+    void snap_changed_slot(int);
+    void gridpersnap_btn_slot(int);
+    void edge_menu_slot(int);
+    void off_grid_btn_slot(int);
+    void use_nm_btn_slot(int);
+    void wire_edge_btn_slot(int);
+    void wire_path_btn_slot(int);
 
-        void show_btn_slot(bool);
-        void top_btn_slot(bool);
-        void store_menu_slot(QAction*);
-        void rcl_menu_slot(QAction*);
-        void noaxes_btn_slot(bool);
-        void plaxes_btn_slot(bool);
-        void oraxes_btn_slot(bool);
-        void cmult_changed_slot(int);
-        void solid_btn_slot(bool);
-        void dots_btn_slot(bool);
-        void stip_btn_slot(bool);
-        void cross_size_changed(int);
-        void nocoarse_btn_slot(int);
-        void thresh_changed_slot(int);
-        void apply_slot();
-        void dismiss_slot();
-        void smp_btn_press_slot(QMouseEvent*);
-        void smp_btn_release_slot(QMouseEvent*);
-        void smp_motion_slot(QMouseEvent*);
-        void vp_btn_press_slot(QMouseEvent*);
-        void vp_btn_release_slot(QMouseEvent*);
-        void vp_resize_slot(QResizeEvent*);
+    void show_btn_slot(bool);
+    void top_btn_slot(bool);
+    void store_menu_slot(QAction*);
+    void rcl_menu_slot(QAction*);
+    void noaxes_btn_slot(bool);
+    void plaxes_btn_slot(bool);
+    void oraxes_btn_slot(bool);
+    void cmult_changed_slot(int);
+    void solid_btn_slot(bool);
+    void dots_btn_slot(bool);
+    void stip_btn_slot(bool);
+    void cross_size_changed(int);
+    void nocoarse_btn_slot(int);
+    void thresh_changed_slot(int);
+    void apply_slot();
+    void dismiss_slot();
+    void smp_btn_press_slot(QMouseEvent*);
+    void smp_btn_release_slot(QMouseEvent*);
+    void smp_motion_slot(QMouseEvent*);
+    void vp_btn_press_slot(QMouseEvent*);
+    void vp_btn_release_slot(QMouseEvent*);
+    void vp_resize_slot(QResizeEvent*);
 
 private:
     void redraw();

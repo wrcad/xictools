@@ -45,6 +45,7 @@
 
 #include <QDialog>
 
+
 class QMimeData;
 
 class QTprpInfoDlg : public QDialog, public QTprpBase

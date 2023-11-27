@@ -50,6 +50,7 @@
 #include "qtmain.h"
 #include "qtmenu.h"
 
+
 class QLabel;
 class QCheckBox;
 
@@ -85,13 +86,13 @@ private slots:
     void elec_check_box_slot(int);
 
 private:
-    QLabel *mc_label;
-    QCheckBox *mc_ophys;
-    QCheckBox *mc_oelec;
-    SymTab *mc_names;
-    bool mc_allflag;        // user pressed "apply to all"
-    bool mc_do_phys;
-    bool mc_do_elec;
+    QLabel      *mc_label;
+    QCheckBox   *mc_ophys;
+    QCheckBox   *mc_oelec;
+    SymTab      *mc_names;
+    bool        mc_allflag;         // user pressed "apply to all"
+    bool        mc_do_phys;
+    bool        mc_do_elec;
 
     static QTmergeDlg *instPtr;
 };

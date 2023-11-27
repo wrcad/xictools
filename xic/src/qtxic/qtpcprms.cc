@@ -164,6 +164,7 @@ QTpcellParamsDlg::QTpcellParamsDlg(GRobject c, PCellParam *prm,
     pcp_caller = c;
     pcp_label = 0;
     pcp_swin = 0;
+
     pcp_params = 0;
     pcp_params_bak = 0;
     pcp_dbname = 0;
@@ -296,7 +297,7 @@ QTpcellParamsDlg::update(const char *dbname, PCellParam *p0)
         QWidget *entry = setup_entry(p, lstr, &ltext);
         grid->addWidget(entry, rcnt, 1);
 
-        /*
+        /*XXX
         if (ltext) {
             label = new QLabel(ltext);
             grid->addWidget(rcnt, 2);

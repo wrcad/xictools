@@ -110,9 +110,11 @@ QTxformDlg::QTxformDlg(GRobject c,
     tf_rflx = 0;
     tf_rfly = 0;
     tf_ang = 0;
+    tf_mag = 0;
     tf_id = 0;
     tf_last = 0;
     tf_cancel = 0;
+
     tf_callback = callback;
     tf_arg = arg;
 
@@ -370,7 +372,7 @@ QTxformDlg::identity_btn_slot()
 {
     ED()->saveCurTransform(0);
     ED()->clearCurTransform();
-//XXX    gtk_window_set_focus(GTK_WINDOW(Tfm->tf_popup), Tfm->tf_cancel);
+    tf_cancel->setFocus();
 }
 
 
@@ -378,7 +380,7 @@ void
 QTxformDlg::last_btn_slot()
 {
     ED()->recallCurTransform(0);
-//XXX    gtk_window_set_focus(GTK_WINDOW(Tfm->tf_popup), Tfm->tf_cancel);
+    tf_cancel->setFocus();
 }
 
 

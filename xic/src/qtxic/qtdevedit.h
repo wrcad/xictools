@@ -134,7 +134,8 @@ private:
     QLineEdit   *de_branch;
     QCheckBox   *de_nophys;
     int         de_menustate;
-    int         de_xref, de_yref;
+    int         de_xref;
+    int         de_yref;
 
     static const char *orient_labels[];
     static QTdeviceDlg *instPtr;

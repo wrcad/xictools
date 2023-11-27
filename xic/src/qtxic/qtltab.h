@@ -54,6 +54,7 @@
 
 #include <QWidget>
 
+
 class QToolButton;
 class QScrollBar;
 class QHBoxLayout;
@@ -136,3 +137,4 @@ private:
 };
 
 #endif
+

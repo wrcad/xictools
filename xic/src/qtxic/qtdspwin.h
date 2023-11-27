@@ -46,11 +46,11 @@
 
 #include <QDialog>
 
+
 class QPushButton;
 namespace qtinterf {
     class QTdoubleSpinBox;
 }
-
 
 class QTdisplayWinDlg : public QDialog
 {
@@ -81,7 +81,7 @@ private slots:
     void dismiss_btn_slot();
 
 private:
-    GRobject dw_caller;
+    GRobject    dw_caller;
     QPushButton *dw_apply;
     QPushButton *dw_center;
     QTdoubleSpinBox *dw_sb_x;

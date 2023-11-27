@@ -100,11 +100,12 @@ QTlayerAliasDlg::QTlayerAliasDlg(GRobject c) : QTbag(this)
     instPtr = this;
     la_open = 0;
     la_save = 0;
-    la_del = 0;
     la_new = 0;
+    la_del = 0;
     la_edit = 0;
     la_list = 0;
     la_decimal = 0;
+
     la_affirm = 0;
     la_line_edit = 0;
     la_calling_btn = c;
@@ -174,16 +175,6 @@ QTlayerAliasDlg::QTlayerAliasDlg(GRobject c) : QTbag(this)
         SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
         this,
         SLOT(current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*)));
-/*
-    connect(la_list, SIGNAL(itemActivated(QTreeWidgetItem*, int)),
-        this, SLOT(item_activated_slot(QTreeWidgetItem*, int)));
-    connect(la_list, SIGNAL(itemClicked(QTreeWidgetItem*, int)),
-        this, SLOT(item_clicked_slot(QTreeWidgetItem*, int)));
-    connect(la_list, SIGNAL(itemSelectionChanged()),
-        this, SLOT(item_selection_changed()));
-*/
-//    g_signal_connect(G_OBJECT(chl_list), "button-press-event",
-//        G_CALLBACK(lb_button_press_proc), this);
 
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_PROP))
@@ -289,7 +280,8 @@ QTlayerAliasDlg::str_cb(const char *str, void *arg)
                 latab.parse(CDvdb()->getVariable(VA_LayerAlias));
                 latab.dumpFile(fp);
                 fclose(fp);
-                QTlayerAliasDlg::self()->PopUpMessage("Layer alias data saved.", true, false, true);
+                QTlayerAliasDlg::self()->PopUpMessage(
+                    "Layer alias data saved.", true, false, true);
             }
         }
         return (ESTR_DN);
@@ -330,7 +322,7 @@ void
 QTlayerAliasDlg::yn_cb(bool yn, void*)
 {
     if (yn && QTlayerAliasDlg::self()->la_row >= 0) {
-/*
+/*XXX
         GtkTreePath *p = gtk_tree_path_new_from_indices(QTlayerAliasDlg::self()->la_row, -1);
         GtkTreeModel *store = 
             gtk_tree_view_get_model(GTK_TREE_VIEW(QTlayerAliasDlg::self()->la_list));
@@ -419,7 +411,7 @@ QTlayerAliasDlg::del_btn_slot()
 void
 QTlayerAliasDlg::edit_btn_slot()
 {
-    /*
+    /*XXX
     if (la_row >= 0) {
         GtkTreePath *p = gtk_tree_path_new_from_indices(la_row, -1);
         GtkTreeModel *store = 
@@ -470,7 +462,7 @@ QTlayerAliasDlg::current_item_changed_slot(QTreeWidgetItem *cur,
             la_edit->setEnabled(false);
         return;
     }
-        /*
+        /*XXX
     if (indices)
         la_row = *indices;
         */

@@ -116,8 +116,9 @@ QTmenuConfig::QTmenuConfig()
     }
     instancePtr = this;
 
-    style_menu = 0;
-    shape_menu = 0;
+    mc_style_menu = 0;
+    mc_shape_menu = 0;
+    mc_menu_disabled = false;
 
     connect(this, SIGNAL(exec_idle(MenuEnt*)),
         this, SLOT(idle_exec_slot(MenuEnt*)), Qt::QueuedConnection);
@@ -844,11 +845,11 @@ QTmenuConfig::instantiateSideButtonMenus()
             }
         }
         if (EditIf()->styleList()) {
-            style_menu = new QMenu(QTmainwin::self());
+            mc_style_menu = new QMenu(QTmainwin::self());
             for (const char *const *s = EditIf()->styleList(); *s; s++)
-                style_menu->addAction(tr(*s));
+                mc_style_menu->addAction(tr(*s));
 
-            connect(style_menu, SIGNAL(triggered(QAction*)),
+            connect(mc_style_menu, SIGNAL(triggered(QAction*)),
                 this, SLOT(style_menu_slot(QAction*)));
         }
     }
@@ -909,11 +910,11 @@ QTmenuConfig::instantiateSideButtonMenus()
             }
         }
         if (ScedIf()->shapesList()) {
-            shape_menu = new QMenu(QTmainwin::self());
+            mc_shape_menu = new QMenu(QTmainwin::self());
             for (const char *const *s = ScedIf()->shapesList(); *s; s++)
-                shape_menu->addAction(tr(*s));
+                mc_shape_menu->addAction(tr(*s));
 
-            connect(shape_menu, SIGNAL(triggered(QAction*)),
+            connect(mc_shape_menu, SIGNAL(triggered(QAction*)),
                 this, SLOT(shape_menu_slot(QAction*)));
         }
     }
@@ -1118,113 +1119,94 @@ QTmenuConfig::instantiateSubwMenus(int wnum)
 void
 QTmenuConfig::updateDynamicMenus()
 {
-/*XXX FIXME!
-    GtkItemFactory *item_factory = gtkMenu()->itemFactory;
-    // Destroy the present user menu widget tree.
+    MenuBox *mbox = MainMenu()->FindMainMenu("user");
+    if (!mbox)
+        return;
+    if (!mbox->menu || !mbox->isDynamic())
+        return;
+    // Get this before RebuildDynamicMenus clears it.
+    QMenu *user_menu = (QMenu*)mbox->menu[0].cmd.caller;
+    if (!user_menu)
+        return;
+    // Clean out present user actions.
+    for (MenuEnt *ent = &mbox->menu[userMenu_END]; ent->entry; ent++) {
+        if (ent->user_action) {
+            user_menu->removeAction(action(ent));
+            delete action(ent);
+            ent->user_action = 0;
+        }
+    }
+
+    MainMenu()->RebuildDynamicMenus();
+
+    // Add the dynamic entries.
+
+    // Stack for sub-menus,
+    struct stfrm
     {
-        GtkWidget *mitem = gtk_item_factory_get_item(item_factory, "/User");
-        if (!mitem)
-            return;
-        GtkWidget *menu = GTK_MENU_ITEM(mitem)->submenu;
-        if (!menu)
-            return;
-        GList *gl = gtk_container_children(GTK_CONTAINER(menu));
-        for (GList *l = gl; l; l = l->next)
-            gtk_widget_destroy(GTK_WIDGET(l->data));
-        g_list_free(gl);
+        stfrm(QMenu *m, const char *nm, int c, stfrm *n)
+        {
+            menu = m;
+            name = nm;
+            next = n;
+            strp = c;
+        }
+
+        QMenu *menu;        // sub-menu pointer
+        const char *name;   // name on menu button
+        stfrm *next;        // previous stack frame
+        int strp;           // number of chars to strip from front of
+                            //  path string
+    };
+    stfrm *prvfrms = 0;
+
+    QMenu *curmenu = user_menu;
+    const char *curname = "/user";
+    int curstrp = strlen(curname) + 1;
+    for (MenuEnt *ent = &mbox->menu[userMenu_END]; ent->entry; ent++) {
+
+        if (prvfrms) {
+            if (strncmp(curname, ent->description + prvfrms->strp,
+                    strlen(curname))) {
+                // Menu name not a prefix, pop stack.
+                stfrm *tmp = prvfrms;
+                prvfrms = tmp->next;
+                curmenu = tmp->menu;
+                curname = tmp->name;
+                curstrp = tmp->strp;
+                delete tmp;
+            }
+        }
+        ent->menutext = ent->description + strlen("/user/");
+        if (ent->is_menu()) {
+            ent->item = "<Branch>";
+            // Push stack for new menu.
+            ent->user_action = curmenu->addAction(tr(ent->menutext));
+            prvfrms = new stfrm(curmenu, curname, curstrp, prvfrms);
+            curmenu = new QMenu();
+            curname = ent->menutext;
+            action(ent)->setMenu(curmenu);
+            curstrp += strlen(curname) + 1;
+            connect(curmenu, SIGNAL(triggered(QAction*)),
+                this, SLOT(user_menu_slot(QAction*)));
+            continue;
+        }
+
+        ent->user_action = curmenu->addAction(tr(ent->menutext));
+        if (ent->is_toggle()) {
+            action(ent)->setCheckable(true);
+            action(ent)->setChecked(ent->is_set());
+        }
+        action(ent)->setShortcut(QKeySequence(ent->accel));
+        action(ent)->setToolTip(tr(ent->description));
+        action(ent)->setData((int)(ent - mbox->menu));
+        if (ent->is_alt())
+            action(ent)->setVisible(false);
+        if (ent->is_separator())
+            curmenu->addSeparator();
+        ent->cmd.caller = ent->user_action;
+        ent->cmd.wdesc = DSP()->MainWdesc();
     }
-
-    Menu()->RebuildDynamicMenus();
-
-    if_entry mi[50];
-    MenuBox *mbox = Menu()->FindMainMenu("user");
-    if (mbox && mbox->menu && mbox->isDynamic()) {
-
-        set(mbox->menu[userMenu], "/_User", 0);
-        set(mbox->menu[userMenuDebug], "/User/_Debugger", 0);
-        set(mbox->menu[userMenuHash], "/User/_Rehash", 0);
-
-        int i = 0, j = 0;
-        for (MenuEnt *ent = mbox->menu; ent->entry && i < userMenu_END;
-                ent++) {
-            mi[j++] = if_entry(ent->menutext, ent->accel,
-                i ? HANDLED : 0, i, ent->item);
-            if (ent->is_separator())
-                mi[j++] = if_entry("/User/sep", 0, 0, NOTMAPPED,
-                    "<Separator>");
-            i++;
-        }
-
-        GtkItemFactoryEntry *menu = new GtkItemFactoryEntry[j];
-        memcpy(menu, mi, j*sizeof(GtkItemFactoryEntry));
-        make_entries(item_factory, menu, j, mbox->menu, i);
-        delete [] menu;
-
-        // name the menubar object
-        GtkWidget *widget = gtk_item_factory_get_item(item_factory,
-            "/User");
-        if (widget)
-            gtk_widget_set_name(widget, "User");
-
-        // Create new GtkMenuStrings.
-        int cnt = 0;
-        for (MenuEnt *ent = mbox->menu; ent->entry; ent++) {
-            if (cnt >= userMenu_END) {
-                ent->menutext = ent->description;
-                if (ent->is_menu())
-                    ent->item = "<Branch>";
-            }
-            cnt++;
-        }
-
-        // Add the dynamic entries.
-        cnt = 0;
-        for (MenuEnt *ent = &mbox->menu[userMenu_END]; ent->entry; ent++) {
-            GtkItemFactoryEntry entry;
-            char buf[256];
-            // The name may have underscores, which we don't want
-            // to be taken as accelerator keys.  Have to hack
-            // around this.
-            bool name_hack = false;
-            entry.path = (gchar*)ent->menutext;
-            if (strchr(entry.path, '_')) {
-                strcpy(buf, entry.path);
-                // change underscores to hyphens
-                for (char *s = buf; *s; s++) {
-                    if (*s == '_')
-                        *s = '-';
-                }
-                entry.path = buf;
-                name_hack = true;
-            }
-            entry.accelerator = (gchar*)ent->accel;
-            entry.item_type = (gchar*)ent->item;
-            if (!entry.item_type) {
-                entry.callback = HANDLER;
-                entry.callback_action = (ent - mbox->menu);
-            }
-            else {
-                entry.callback = 0;
-                entry.callback_action = 0;
-            }
-            gtk_item_factory_create_item(item_factory, &entry,
-                mbox->menu, 2);
-            char *tmp = gtkMenu()->strip_accel(entry.path);
-            GtkWidget *btn = gtk_item_factory_get_widget(item_factory, tmp);
-            delete [] tmp;
-            if (btn) {
-                if (name_hack) {
-                    // btn just added, set "real" label
-                    char *t = strrchr(ent->menutext, '/');
-                    if (t)
-                        Menu()->SetLabel(btn, t+1);
-                }
-                ent->cmd.caller = btn;
-            }
-            cnt++;
-        }
-    }
-*/
 }
 
 
@@ -1319,55 +1301,26 @@ QTmenuConfig::switch_menu_mode(DisplayMode mode, int wnum)
 void
 QTmenuConfig::set_main_global_sens(const MenuList *list, bool sens)
 {
-    (void)list;
-    (void)sens;
-/*XXX Fixme
-    GtkItemFactory *item_factory = gtkMenu()->itemFactory;
-    if (!item_factory)
-        return;
+    mc_menu_disabled = !sens;
     for (const MenuList *ml = list; ml; ml = ml->next) {
         if (!ml->menubox || !ml->menubox->menu)
             continue;
         MenuEnt *ent = ml->menubox->menu;
-
-        char *t = gtkMenu()->strip_accel(ent->menutext);
-        GtkWidget *widget = gtk_item_factory_get_item(item_factory, t);
-        delete [] t;
-        if (!widget)
-            continue;
+        QMenu *topmenu = (QMenu*)ent[0].cmd.caller;
 
         if (lstring::ciprefix("view", ml->menubox->name)) {
-            // for View Menu, keep Allocation button sensitive
-            GtkWidget *menu = GTK_MENU_ITEM(widget)->submenu;
-            if (menu) {
-                GList *gl = gtk_container_children(GTK_CONTAINER(menu));
-                for (GList *l = gl; l; l = l->next)
-                    gtk_widget_set_sensitive(GTK_WIDGET(l->data), sens);
-                g_list_free(gl);
+            // For the View Menu, keep Allocation button sensitive.
+            for (ent++; ent->entry; ent++) {
+                if (ent - ml->menubox->menu == viewMenuAlloc)
+                    action(ent)->setEnabled(true);
+                else
+                    action(ent)->setEnabled(sens);
             }
-            widget = gtk_item_factory_get_item(item_factory,
-                "/View/Allocation");
-            if (widget)
-                gtk_widget_set_sensitive(GTK_WIDGET(widget), true);
         }
-        else if (lstring::ciprefix("attr", ml->menubox->name)) {
-            // for Attributes Menu, keep Freeze button sensitive
-            GtkWidget *menu = GTK_MENU_ITEM(widget)->submenu;
-            if (menu) {
-                GList *gl = gtk_container_children(GTK_CONTAINER(menu));
-                for (GList *l = gl; l; l = l->next)
-                    gtk_widget_set_sensitive(GTK_WIDGET(l->data), sens);
-                g_list_free(gl);
-            }
-            widget = gtk_item_factory_get_item(item_factory,
-                "/Attributes/Freeze Display");
-            if (widget)
-                gtk_widget_set_sensitive(GTK_WIDGET(widget), true);
-        }
+        //XXX Are there other entries to keep sensitive?
         else
-            gtk_widget_set_sensitive(widget, sens);
+            topmenu->setEnabled(sens);
     }
-*/
 }
 
 
@@ -1864,13 +1817,13 @@ printf("exec_slot alt_caller\n");
 void
 QTmenuConfig::style_slot(MenuEnt *ent)
 {
-    if (style_menu) {
+    if (mc_style_menu) {
         QWidget *btn = (QWidget*)ent->cmd.caller;
         if (!btn)
             return;
         QPoint pt = btn->pos();
         pt.setX(pt.x() + btn->width());
-        style_menu->exec(btn->parentWidget()->mapToGlobal(pt));
+        mc_style_menu->exec(btn->parentWidget()->mapToGlobal(pt));
     }
 }
 
@@ -1878,13 +1831,13 @@ QTmenuConfig::style_slot(MenuEnt *ent)
 void
 QTmenuConfig::shape_slot(MenuEnt *ent)
 {
-    if (style_menu) {
+    if (mc_style_menu) {
         QWidget *btn = (QWidget*)ent->cmd.caller;
         if (!btn)
             return;
         QPoint pt = btn->pos();
         pt.setX(pt.x() + btn->width());
-        shape_menu->exec(btn->parentWidget()->mapToGlobal(pt));
+        mc_shape_menu->exec(btn->parentWidget()->mapToGlobal(pt));
     }
 }
 
@@ -1980,49 +1933,4 @@ QTmenuConfig::get_style_pixmap()
     // CDWIRE_EXTEND
     return (style_e_xpm);
 }
-
-
-#ifdef notdef
-
-// Static function.
-// Add a set of entries the the item factory, extracting the just-added
-// widget into the CmdDesc of the related menu.
-//
-void
-gtkMenuConfig::make_entries(GtkItemFactory *item_factory,
-    GtkItemFactoryEntry *entries, int nitems, MenuEnt *menu, int menuitems)
-{
-    for (int i = 0; i < nitems; i++) {
-        if (entries[i].callback == HANDLED)
-            entries[i].callback = HANDLER;
-        else if (entries[i].callback_action != 0) {
-            // separator
-            gtk_item_factory_create_item(item_factory, entries + i, menu, 2);
-            continue;
-        }
-
-        char *path = gtkMenu()->strip_accel(entries[i].path);
-        GtkWidget *w = gtk_item_factory_get_item(item_factory, path);
-        if (!w) {
-            gtk_item_factory_create_item(item_factory, entries + i, menu, 2);
-            w = gtk_item_factory_get_item(item_factory, path);
-        }
-        int indx = entries[i].callback_action;
-        if (w && indx < menuitems) {
-            menu[indx].cmd.caller = w;
-            if (entries[i].callback == (GtkSignalFunc)menu_handler &&
-                    menu[indx].is_set() && entries[i].item_type &&
-                    (!strcmp(entries[i].item_type, "<CheckItem>") ||
-                    !strcmp(entries[i].item_type, "<ToggleItem>")))
-                Menu()->Select(w);
-            if (menu[indx].description) {
-                GtkTooltips *tt = gtk_NewTooltip();
-                gtk_tooltips_set_tip(tt, w, menu[indx].description, "");
-            }
-        }
-        delete [] path;
-    }
-}
-
-#endif
 

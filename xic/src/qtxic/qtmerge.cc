@@ -155,6 +155,7 @@ QTmergeDlg::QTmergeDlg(mitem_t *mi)
 
     setWindowTitle(tr("Symbol Merge"));
     setAttribute(Qt::WA_DeleteOnClose);
+//    gtk_window_set_resizable(GTK_WINDOW(mc_popup), false);
 
     mc_names->add(lstring::copy(mi->name), (void*)1, false);
 
@@ -166,10 +167,6 @@ QTmergeDlg::QTmergeDlg(mitem_t *mi)
         query(mi);
         return;
     }
-printf("x1\n");
-
-//    gtk_window_set_resizable(GTK_WINDOW(mc_popup), false);
-//    gtk_BlackHoleFix(mc_popup);
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;
@@ -308,15 +305,4 @@ QTmergeDlg::elec_check_box_slot(int checked)
 {
     mc_do_elec = checked;
 }
-
-
-/*
-// Static function.
-void
-QTmergeDlg::mc_cancel_proc(GtkWidget*, void*)
-{
-    Cvt()->PopUpMergeControl(MODE_UPD, 0);
-}
-
-*/
 

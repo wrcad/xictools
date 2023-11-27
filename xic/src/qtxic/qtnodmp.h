@@ -116,8 +116,8 @@ private:
     static void nm_join_cb(bool, void*);
     static void nm_rm_cb(bool, void*);
 
-    NmpState    *nm_cmd;
     GRobject    nm_caller;
+    NmpState    *nm_cmd;
     QPushButton *nm_use_np;;
     QPushButton *nm_rename;
     QPushButton *nm_remove;

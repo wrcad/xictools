@@ -46,6 +46,7 @@
 
 #include <QDialog>
 
+
 //-------------------------------------------------------------------------
 // Pop-up to control group/node/path selections
 //

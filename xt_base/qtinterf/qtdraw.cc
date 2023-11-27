@@ -39,37 +39,11 @@
  *========================================================================*/
 
 #include "qtdraw.h"
-#include "qtcanvas.h"
 #include "miscutil/texttf.h"
-#ifdef WITH_X11
-#include "qtcanvas_x.h"
-#endif
 
 #include <QApplication>
 
 using namespace qtinterf;
-
-
-QTdrawIf *
-QTdrawIf::new_draw_interface(DrawType type, bool use_common, QWidget *parent)
-{
-    (void)use_common; //XXX
-    if (type == DrawGL) {
-        fprintf(stderr,
-            "GL is not currently supported, using native QT graphics.\n");
-        type = DrawNative;
-    }
-    if (type == DrawX) {
-#ifdef WITH_X11
-        return (new QTcanvas_x(use_common, parent));
-#else
-        fprintf(stderr,
-            "X11 is not currently supported, using native QT graphics.\n");
-        type = DrawNative;
-#endif
-    }
-    return (new QTcanvas(parent));
-}
 
 
 // Graphics context storage.  The 0 element is the default.
@@ -161,12 +135,12 @@ QTdraw::DrawGhost()
     // This will show the ghost drawing if it has been paused, such as
     // when the ghost changes.  Previously, we would call MovePointer
     // and let the move events trigger the redraw, but applications
-    // moving the pointer is no longer generqlly supported in QT, at
+    // moving the pointer is no longer generally supported in QT, at
     // least in an obvious way.  This is the replacement for the
     // MovePointer calls, the only purpose of which was to wake up the
     // ghosting.
 
-    QPoint qp = ((QWidget*)gd_viewport)->mapFromGlobal(QCursor::pos());
+    QPoint qp = gd_viewport->mapFromGlobal(QCursor::pos());
     gd_viewport->draw_ghost(qp.x(), qp.y());
 }
 
@@ -175,7 +149,7 @@ void
 QTdraw::QueryPointer(int *x, int *y, unsigned *state)
 {
     QPoint ptg(QCursor::pos());
-    QPoint ptw = Viewport()->mapFromGlobal(ptg);
+    QPoint ptw = gd_viewport->mapFromGlobal(ptg);
     if (x)
         *x = ptw.x();
     if (y)

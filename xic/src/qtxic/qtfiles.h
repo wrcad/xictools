@@ -85,7 +85,7 @@ public:
         setWindowFlags(f);
     }
 
-    const char *get_directory()         { return (f_directory); }
+    const char *get_directory()         { return (fl_directory); }
     static void panic()                 { instPtr = 0; }
     static QTfilesListDlg *self()       { return (instPtr); }
 
@@ -108,11 +108,11 @@ private:
     bool show_content();
     void set_sensitive(const char*, bool);
 
-    static int f_idle_proc(void*);
-    static int f_timer(void*);
-    static void f_monitor_setup();
-    static bool f_check_path_and_update(const char*);
-    static void f_update_text(QTtextEdit*, const char*);
+    static int fl_idle_proc(void*);
+    static int fl_timer(void*);
+    static void fl_monitor_setup();
+    static bool fl_check_path_and_update(const char*);
+    static void fl_update_text(QTtextEdit*, const char*);
 
     static sPathList *fl_listing(int);
     static char *fl_is_symfile(const char*);
@@ -121,18 +121,18 @@ private:
     static void fl_desel(void*);
 
     GRobject    fl_caller;
-    QPushButton *f_buttons[MAX_BTNS];
-    QHBoxLayout *f_button_box;
-    QComboBox   *f_menu;
-    QStackedWidget *f_notebook;
+    QPushButton *fl_buttons[MAX_BTNS];
+    QHBoxLayout *fl_button_box;
+    QComboBox   *fl_menu;
+    QStackedWidget *fl_notebook;
 
-    int         f_start;
-    int         f_end;
-    bool        f_drag_start;   // used for drag/drop
-    int         f_drag_btn;     // drag button
-    int         f_drag_x;       // drag start location
-    int         f_drag_y;
-    char        *f_directory;   // visible directory
+    int         fl_start;
+    int         fl_end;
+    bool        fl_drag_start;      // used for drag/drop
+    int         fl_drag_btn;        // drag button
+    int         fl_drag_x;          // drag start location
+    int         fl_drag_y;
+    char        *fl_directory;      // visible directory
 
     char        *fl_selection;
     char        *fl_contlib;
@@ -140,13 +140,9 @@ private:
     cCHD        *fl_chd;
     int         fl_noupdate;
 
-//        void (*f_desel)(void*); // deselection notification
-//        int (*f_btn_hdlr)(GtkWidget*, GdkEvent*, void*);
-//        void (*f_destroy)(GtkWidget*, void*);
-
-    static sPathList *f_path_list;  // the search path struct
-    static char *f_cwd;             // the current directory
-    static int f_timer_tag;         // timer id for file monitor
+    static sPathList *fl_path_list;     // the search path struct
+    static char *fl_cwd;                // the current directory
+    static int fl_timer_tag;            // timer id for file monitor
     static const char *nofiles_msg;
     static const char *files_msg;
     static QTfilesListDlg *instPtr;

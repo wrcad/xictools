@@ -86,11 +86,11 @@ private slots:
     void dismiss_btn_slot();
 
 private:
-    GRobject fl_caller;
-    QCheckBox *fl_novias;
-    QCheckBox *fl_nopcells;
-    QCheckBox *fl_nolabels;
-    QCheckBox *fl_merge;
+    GRobject    fl_caller;
+    QCheckBox   *fl_novias;
+    QCheckBox   *fl_nopcells;
+    QCheckBox   *fl_nolabels;
+    QCheckBox   *fl_merge;
     QPushButton *fl_go;
 
     bool (*fl_callback)(const char*, bool, const char*, void*);

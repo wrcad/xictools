@@ -91,28 +91,22 @@ private slots:
 
 private:
     void set_sens(bool);
-    /*
-    static void jn_cancel_proc(GtkWidget*, void*);
-    static void jn_action(GtkWidget*, void*);
-    static void jn_val_changed(GtkWidget*, void*);
-    */
 
-    GRobject jn_caller;
-    QCheckBox *jn_nolimit;
-    QCheckBox *jn_clean;
-    QCheckBox *jn_wires;
+    GRobject    jn_caller;
+    QCheckBox   *jn_nolimit;
+    QCheckBox   *jn_clean;
+    QCheckBox   *jn_wires;
     QPushButton *jn_join;
     QPushButton *jn_join_lyr;
     QPushButton *jn_join_all;
     QPushButton *jn_split_h;
     QPushButton *jn_split_v;
-    QLabel *jn_mverts_label;
-    QLabel *jn_mgroup_label;
-    QLabel *jn_mqueue_label;
-
-    QSpinBox *jn_mverts;
-    QSpinBox *jn_mgroup;
-    QSpinBox *jn_mqueue;
+    QLabel      *jn_mverts_label;
+    QLabel      *jn_mgroup_label;
+    QLabel      *jn_mqueue_label;
+    QSpinBox    *jn_mverts;
+    QSpinBox    *jn_mgroup;
+    QSpinBox    *jn_mqueue;
 
     int jn_last_mverts;
     int jn_last_mgroup;

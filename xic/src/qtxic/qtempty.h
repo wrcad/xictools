@@ -46,9 +46,9 @@
 #include "qtinterf/qttextw.h"
 #include <QDialog>
 
+
 class QLabel;
 class QMouseEvent;
-
 
 class QTemptyDlg : public QDialog, public QTbag
 {
@@ -95,12 +95,12 @@ private slots:
 private:
     void refresh();
 
-    e_item *ec_list;                    // list of cells
-    SymTab *ec_tab;                     // table of checked cells
-    QLabel *ec_label;                   // label widget
+    e_item  *ec_list;                   // list of cells
+    SymTab  *ec_tab;                    // table of checked cells
+    QLabel  *ec_label;                  // label widget
     QTtextEdit *ec_text;                // text area
-    int ec_field;                       // max cell name length
-    bool ec_changed;
+    int     ec_field;                   // max cell name length
+    bool    ec_changed;
 
     static QTemptyDlg *instPtr;
 };

@@ -126,9 +126,6 @@ cMain::SetupLayers(void *dp, GRdraw *cx, void *scxptr)
 //                if (lp->fill()->xPixmap())
 //                    DeleteBitmap((HBITMAP)lp->fill()->xPixmap());
 #endif
-#ifdef WITH_QUARTZ
-//XXX Need equiv. code for Quartz.
-#endif
 #endif
                 lp->fill()->setXpixmap(c->phys_pms[i]);
             }
@@ -144,9 +141,6 @@ cMain::SetupLayers(void *dp, GRdraw *cx, void *scxptr)
                 if (lp->fill()->xPixmap())
                     XFreePixmap((Display*)dp, (Pixmap)lp->fill()->xPixmap());
 #else
-#ifdef WITH_QUARTZ
-//XXX Need equiv. code for Quartz.
-#endif
 #ifdef WIN32
 //                if (lp->fill()->xPixmap())
 //                    DeleteBitmap((HBITMAP)lp->fill()->xPixmap());
