@@ -157,11 +157,12 @@ QTconvertInDlg::QTconvertInDlg(GRobject c, bool (*callback)(int, void*), void *a
     cvi_nofllbs = 0;
     cvi_nolabels = 0;
     cvi_merg = 0;
-    cvi_callback = callback;
-    cvi_arg = arg;
+    cvi_sb_scale = 0;
     cvi_cnmap = 0;
     cvi_llist = 0;
     cvi_wnd = 0;
+    cvi_callback = callback;
+    cvi_arg = arg;
 
     // Dangerous to leave this in effect, force user to turn it on
     // when needed.
@@ -712,12 +713,7 @@ QTconvertInDlg::merg_menu_slot(int i)
 void
 QTconvertInDlg::scale_changed_slot(double d)
 {
-    /*XXX
-    const char *s = Cvi->sb_scale.get_string();
-    char *endp;
-    double d = strtod(s, &endp);
-    if (endp > s && d >= CDSCALEMIN && d <= CDSCALEMAX)
-    */
+    if (d >= CDSCALEMIN && d <= CDSCALEMAX)
         FIO()->SetReadScale(d);
 }
 

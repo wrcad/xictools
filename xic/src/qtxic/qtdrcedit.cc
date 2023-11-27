@@ -117,8 +117,8 @@ QTdrcRuleEditDlg::QTdrcRuleEditDlg(GRobject c)
     instPtr = this;
     dim_caller = c;
     dim_text = 0;
-    dim_inhibit = 0;
     dim_edit = 0;
+    dim_inhibit = 0;
     dim_del = 0;
     dim_undo = 0;
     dim_menu = 0;

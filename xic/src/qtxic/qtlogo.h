@@ -64,6 +64,8 @@ public:
     ~QTlogoDlg();
 
     void update();
+    void update_fontsel();
+    static const char *font(bool init=false);
 
     void set_transient_for(QWidget *prnt)
     {
@@ -75,7 +77,8 @@ public:
         setWindowFlags(f);
     }
 
-    static QTlogoDlg *self()            { return (instPtr); }
+    QTfontDlg *fontsel()            { return (lgo_fontsel); }
+    static QTlogoDlg *self()        { return (instPtr); }
 
 private slots:
     void vector_btn_slot(bool);
@@ -91,7 +94,9 @@ private slots:
     void dismiss_btn_slot();
 
 private:
+    static int lgo_upd_label(void*);
     static ESret lgo_sav_cb(const char*, void*);
+    static void lgo_cb(const char*, const char*, void*);
 
     GRobject    lgo_caller;
     QRadioButton *lgo_vector;
@@ -105,10 +110,12 @@ private:
     QPushButton *lgo_sel;
     QTdoubleSpinBox *lgo_sb_pix;
     GRledPopup  *lgo_sav_pop;
+    QTfontDlg   *lgo_fontsel;
 
     static const char *lgo_endstyles[];
     static const char *lgo_pathwidth[];
     static double lgo_defpixsz;
+    static char *lgo_font;
     static QTlogoDlg *instPtr;
 };
 

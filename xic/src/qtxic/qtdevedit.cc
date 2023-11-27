@@ -283,9 +283,7 @@ QTdeviceDlg::QTdeviceDlg(GRobject caller)
         de_yref = pb->pos_y();
 
         QTdev::SetStatus(de_toggle, true);
-/*XXX
-        de_branch_proc(de_toggle, 0);
-*/
+        hotspot_btn_slot(true);
     }
 
     de_nophys = new QCheckBox(tr("No Physical Implementation"));

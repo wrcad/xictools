@@ -98,7 +98,7 @@ private:
     static void c_get_rgb(int, int*, int*, int*);
     static void c_list_callback(const char*, void*);
 
-    GRobject c_caller;
+    GRobject    c_caller;
     QComboBox   *c_modemenu;
     QComboBox   *c_categmenu;
     QComboBox   *c_attrmenu;

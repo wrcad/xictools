@@ -82,6 +82,9 @@ QTedit::QTedit(bool nogr) : QTdraw(XW_TEXT)
 
     pe_firstinsert = false;
     pe_indicating = false;
+    pe_rcl_btn = 0;
+    pe_sto_btn = 0;
+    pe_ltx_btn = 0;
     if (nogr)
         return;
 
@@ -144,7 +147,7 @@ QTedit::QTedit(bool nogr) : QTdraw(XW_TEXT)
     connect(pe_ltx_btn, SIGNAL(clicked()),
         this, SLOT(long_text_slot()));
 
-    gd_viewport = QTdrawIf::new_draw_interface(DrawNative, false, this);
+    gd_viewport = new QTcanvas();
     hbox->addWidget(Viewport());
     Viewport()->setAcceptDrops(true);
 
@@ -726,147 +729,3 @@ QTedit::keys_press_slot(QMouseEvent *ev)
         DSPmainWbag(PopUpHelp("keyspresd"))
 }
 
-
-#ifdef notdef
-
-namespace {
-    // Copy the string, encoding unicode excapes to UTF-8 characters.
-    //
-    char *uni_decode(const char *str)
-    {
-        sLstr lstr;
-        if (str) {
-            for (const char *s = str; *s; s++) {
-                sUni uc;
-                if (*s == '\\') {
-                    if (*(s+1) == 'u') {
-                        // This should be followed by exactly 4 hex digits.
-                        const char *t = s+2;
-                        if (uc.addc(t[0]) && uc.addc(t[1]) && uc.addc(t[2]) &&
-                                uc.addc(t[3])) {
-                            lstr.add(uc.utf8_encode());
-                            s += 5;
-                            continue;
-                        }
-                    }
-                    if (*(s+1) == 'U') {
-                        // This should be followed by exactly 8 hex digits.
-                        const char *t = s+2;
-                        if (uc.addc(t[0]) && uc.addc(t[1]) && uc.addc(t[2]) &&
-                                uc.addc(t[3]) && uc.addc(t[4]) && uc.addc(t[5]) &&
-                                uc.addc(t[6]) && uc.addc(t[7])) {
-                            lstr.add(uc.utf8_encode());
-                            s += 9;
-                            continue;
-                        }
-                    }
-                }
-                lstr.add_c(*s);
-            }
-        }
-        return (lstr.string_trim());
-    }
-}
-
-
-// Selection handler, supports hypertext transfer
-//
-void
-pe_selection_proc(GtkWidget*, GtkSelectionData *sdata, void*)
-{
-    if (gtk_selection_data_get_length(data) < 0) {
-        ptr()->draw_cursor(DRAW);
-        return;
-    }
-    if (gtk_selection_data_get_data_type(data) != GDK_SELECTION_TYPE_STRING) {
-        Log()->ErrorLog(mh::Internal,
-            "Selection conversion failed. not string data.");
-        ptr()->draw_cursor(DRAW);
-        return;
-    }
-
-    hyList *hpl = 0;
-    GdkWindow *wnd = gdk_selection_owner_get(GDK_SELECTION_PRIMARY);
-    if (wnd) {
-        GtkWidget *widget;
-        gdk_window_get_user_data(wnd, (void**)&widget);
-        if (widget && GTK_IS_TEXT_VIEW(widget)) {
-            int code = (intptr_t)g_object_get_data(G_OBJECT(widget),
-                "hyexport");
-            if (code) {
-                GtkTextBuffer *gb =
-                    gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));
-                GtkTextIter siter, eiter;
-                gtk_text_buffer_get_selection_bounds(gb, &siter, &eiter);
-                int start = gtk_text_iter_get_offset(&siter);
-
-                // The text is coming from the Property Editor or
-                // Property Info pop-up, fetch the original
-                // hypertext to insert.
-                CDo *odesc;
-                PrptyText *p = EditIf()->PropertyResolve(code, start, &odesc);
-                if (p && p->prpty()) {
-                    CDs *cursd = CurCell(true);
-                    if (cursd)
-                        hpl = cursd->hyPrpList(odesc, p->prpty());
-                }
-            }
-        }
-    }
-    if (!hpl) {
-        // Might not be 0-terminated?
-        int len = gtk_selection_data_get_length(data);
-        char *s = new char[len + 1];
-        memcpy(s, gtk_selection_data_get_data(data), len);
-        s[len] = 0;
-        char *d = uni_decode(s);
-        delete [] s;
-        ptr()->insert(d);
-        delete [] d;
-    }
-    else {
-        ptr()->insert(hpl);
-        hyList::destroy(hpl);
-    }
-}
-
-
-// Static function.
-// Selection clear handler.
-//
-int
-GTKedit::pe_selection_clear(GtkWidget*, GdkEventSelection*, void*)
-{
-    if (ptr())
-        ptr()->deselect(true);
-    return (true);
-}
-
-
-void
-GTKedit::pe_selection_get(GtkWidget*, GtkSelectionData *data,
-    guint, guint, void*)
-{
-    if (gtk_selection_data_get_selection(data) != GDK_SELECTION_PRIMARY)
-        return;
-    if (!ptr())
-        return;
-        
-    unsigned char *s = (unsigned char*)ptr()->get_sel();
-    if (!s)
-        return;  // refuse
-    int length = strlen((const char*)s);
-
-    // The UTF8_STRING atom was discovered by looking at GTK source.
-    // GDK_SELECTION_TYPE_STRING doesn't work for UTF-8 when target
-    // is a GTK window.
-
-    gtk_selection_data_set(data,
-        gdk_atom_intern_static_string("UTF8_STRING"), 8*sizeof(char),
-        s, length);
-    delete [] s;
-}
-
-// End of handlers
-
-#endif

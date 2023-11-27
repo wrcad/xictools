@@ -121,6 +121,7 @@ QTcellPrpDlg::QTcellPrpDlg() : QTbag(this)
     pc_add = 0;
     pc_addmenu = 0;
     pc_list = 0;
+
     pc_line_selected = -1;
     pc_action_calls = 0;
     pc_start = 0;
@@ -377,6 +378,7 @@ QTcellPrpDlg::handle_button_down(QMouseEvent *ev)
         if (p && pc_line_selected != linesel) {
             pc_line_selected = linesel;
             select_range(p->start() + strlen(p->head()), p->end());
+//XXX
 //            if (pc_btn_callback)
 //                (*pc_btn_callback)(p);
             delete [] str;

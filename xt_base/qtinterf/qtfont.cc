@@ -281,6 +281,7 @@ QTfont::new_font(const char *name, bool fixed)
 {
     char *family;
     stringlist *style;
+    char *sty = 0;
     int size;
     parse_freeform_font_string(name, &family, &style, &size);
     if (!family) {
@@ -289,16 +290,26 @@ QTfont::new_font(const char *name, bool fixed)
         else
             family = lstring::copy("helvetica");
     }
+    if (style) {
+        sty = stringlist::flatten(style, " ");
+        char *t = sty + strlen(sty) - 1;
+        if (*t == ' ')
+            *t = 0;
+    }
     QFont *font = new QFont(QString(family), size);
     delete family;
     font->setStyleHint(fixed ? QFont::TypeWriter : QFont::Helvetica);
     font->setFixedPitch(fixed);
+    if (sty)
+        font->setStyleName(sty);
+/*
     for (stringlist *s = style; s; s = s->next) {
         if (!strcasecmp(s->string, "bold"))
             font->setBold(true);
         else if (!strcasecmp(s->string, "italic"))
             font->setItalic(true);
     }
+*/
     stringlist::destroy(style);
 
     // Reset the critical info in case there was not a perfect match.
@@ -478,6 +489,21 @@ namespace {
     private:
         int pref_width;
     };
+
+    class preview_widget : public QTextEdit
+    {
+    public:
+        preview_widget(QWidget *prnt = 0) : QTextEdit(prnt) { }
+
+        QSize sizeHint() const
+        {
+            QSize qs = QTextEdit::sizeHint();
+            qs.setHeight(50);
+            return (qs);
+        }
+
+        QSize minimumSizeHint() const { return (sizeHint()); }
+    };
 }
 
 
@@ -563,8 +589,7 @@ QTfontDlg::QTfontDlg(QTbag *owner, int indx, void *arg) :
     vb = new QVBoxLayout(gb);
     vb->setContentsMargins(qmtop);
     vb->setSpacing(2);
-    ft_preview = new QTextEdit();
-    ft_preview->setFixedHeight(50);
+    ft_preview = new preview_widget();
     vb->addWidget(ft_preview);
 
     hbox = new QHBoxLayout();
@@ -582,6 +607,8 @@ QTfontDlg::QTfontDlg(QTbag *owner, int indx, void *arg) :
     ft_menu->setMinimumHeight(qs.height());
     ft_menu->setEditable(false);
     connect(ft_menu, SIGNAL(activated(int)), this, SLOT(menu_choice_slot(int)));
+    if (indx <= 0)
+        ft_menu->hide();
 
     ft_quit = new QPushButton(tr("Dismiss"));
     hbox->addWidget(ft_quit);
@@ -667,7 +694,7 @@ QTfontDlg::popdown()
 
 
 // GRfontDlg override
-// Set the font.
+// Set the font, return false on error.
 void
 QTfontDlg::set_font_name(const char *fontname)
 {
@@ -680,9 +707,10 @@ QTfontDlg::set_font_name(const char *fontname)
     if (!fontname || !*fontname)
         return;
     QFont *font = QTfont::self()->new_font(fontname, false);
-    if (font)
+    if (font) {
         select_font(font);
-    delete font;
+        delete font;
+    }
 }
 
 
@@ -716,7 +744,7 @@ QTfontDlg::select_font(const QFont *fnt)
         ft_face_list->findItems(fam, Qt::MatchExactly);
     if (list.size() > 0) {
         ft_face_list->setCurrentItem(list.at(0));
-        face_changed_slot(list.at(0), 0);
+//        face_changed_slot(list.at(0), 0);
     }
     else {
         // Try again, stripping the foundry.  QFontInfo always appends
@@ -753,6 +781,17 @@ QTfontDlg::select_font(const QFont *fnt)
     list = ft_size_list->findItems(qs, Qt::MatchExactly);
     if (list.size() > 0)
         ft_size_list->setCurrentItem(list.at(0));
+    else {
+        // Find the next larger size.
+        for (int i = 0; i < ft_size_list->count(); i++) {
+            QListWidgetItem *wi = ft_size_list->item(i);
+            QString qswi = wi->text();
+            if (qswi.toInt() > qs.toInt()) {
+                ft_size_list->setCurrentItem(wi);
+                break;
+            }
+        }
+    }
 
     ft_preview->setFont(*fnt);
     ft_preview->setPlainText(PREVIEW_STRING);
@@ -822,16 +861,31 @@ QTfontDlg::add_choice(const QFont *, const char *descr)
 
 
 void
+QTfontDlg::set_apply_btn_name(const char *bname)
+{
+    ft_apply->setText(bname);
+}
+
+
+void
 QTfontDlg::action_slot()
 {
+    sLstr lstr;
     char *face = current_face();
     if (!face)
         return;
-    int sz = current_size();
-    if (sz <= 0) {
-        delete [] face;
-        return;
+    if (strchr(face, ' ')) {
+        lstr.add_c('"');
+        lstr.add(face);
+        lstr.add_c('"');
     }
+    else
+        lstr.add(face);
+    delete [] face;
+        
+    int sz = current_size();
+    if (sz <= 0)
+        return;
     char *sty = current_style();
     if (sty) {
         if (!strcasecmp(sty, "normal")) {
@@ -839,28 +893,26 @@ QTfontDlg::action_slot()
             sty = 0;
         }
     }
-    int len = strlen(face);
-    if (sty)
-        len += strlen(sty) + 1;
-    len += 12;
-    char *spec = new char[len];
-    strcpy(spec, face);
-    char *t = spec + strlen(face);
-    delete [] face;
     if (sty) {
-        *t++ = ' ';
-        strcpy(t, sty);
-        t += strlen(sty);
-        delete [] sty;
+        lstr.add_c(' ');
+        lstr.add(sty);
     }
-    *t++ = ' ';
-    snprintf(t, 11, "%d", sz);
-    int fnum = ft_menu->currentIndex() + 1;
-    FC.setName(spec, fnum);
-    if (p_callback)
-        (*p_callback)(FC.getLabel(fnum), spec, p_cb_arg);
-    emit select_action(fnum, spec, p_cb_arg);
-    delete [] spec;
+    lstr.add_c(' ');
+    lstr.add_d(sz);
+
+    if (ft_menu->isHidden()) {
+        QByteArray ba = ft_apply->text().toLatin1();
+        if (p_callback)
+            (*p_callback)(ba.constData(), lstr.string(), p_cb_arg);
+        emit select_action(0, lstr.string(), p_cb_arg);
+    }
+    else {
+        int fnum = ft_menu->currentIndex() + 1;
+        FC.setName(lstr.string(), fnum);
+        if (p_callback)
+            (*p_callback)(FC.getLabel(fnum), lstr.string(), p_cb_arg);
+        emit select_action(fnum, lstr.string(), p_cb_arg);
+    }
 }
 
 
@@ -923,38 +975,73 @@ QTfontDlg::face_changed_slot(QListWidgetItem *new_item, QListWidgetItem*)
     if (fnt) {
         ft_preview->setFont(*fnt);
         delete fnt;
+        ft_preview->setPlainText(PREVIEW_STRING);
     }
     else
-        ft_preview->setPlainText(QString(""));
+        ft_preview->setPlainText("");
 }
 
 
 void
 QTfontDlg::style_changed_slot(QListWidgetItem *new_item, QListWidgetItem*)
 {
-    (void)new_item;
+    if (!new_item)
+        return;
+    if (!ft_face_list->currentItem())
+        return;
+
+    // Revise the list of sizes.  This appears unneeded at least for
+    // QT6 on Apple as the size list seems the same for everything.
+
+    QString qstyle = new_item->text();
+    QString qface = ft_face_list->currentItem()->text();
+    QString qsize;
+    if (ft_size_list->currentItem())
+        qsize = ft_size_list->currentItem()->text();
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+    QList<int> sizes = QFontDatabase::smoothSizes(qface, qstyle);
+#else
+    QList<int> sizes = fdb->smoothSizes(qface, qstyle);
+#endif
+    ft_size_list->clear();
+    for (int i = 0; i < sizes.size(); i++)
+        ft_size_list->addItem(QString("%1").arg(sizes.at(i)));
+    QList<QListWidgetItem*> list = ft_size_list->findItems(qsize,
+        Qt::MatchExactly);
+    if (list.size() > 0)
+        ft_size_list->setCurrentItem(list.at(0));
+    else
+        ft_size_list->setCurrentRow(0);
+
     QFont *fnt = current_selection();
     if (fnt) {
         ft_preview->setFont(*fnt);
         delete fnt;
+        ft_preview->setPlainText(PREVIEW_STRING);
     }
     else
-        ft_preview->setPlainText(QString(""));
+        ft_preview->setPlainText("");
 }
 
 
 void
 QTfontDlg::size_changed_slot(QListWidgetItem *new_item, QListWidgetItem*)
 {
-    (void)new_item;
+    if (!new_item)
+        return;
+    if (!ft_face_list->currentItem())
+        return;
+    if (!ft_style_list->currentItem())
+        return;
+
     QFont *fnt = current_selection();
     if (fnt) {
         ft_preview->setFont(*fnt);
         delete fnt;
-        ft_preview->setPlainText(QString(PREVIEW_STRING));
+        ft_preview->setPlainText(PREVIEW_STRING);
     }
     else
-        ft_preview->setPlainText(QString(""));
+        ft_preview->setPlainText("");
 }
 
 
@@ -991,8 +1078,10 @@ QTfontDlg::menu_choice_slot(int indx)
         if (!FC.isFixed(indx) || fixed)
             ft_face_list->addItem(families.at(i));
     }
-    QFont *fnt;
-    FC.getFont(&fnt, indx);
-    select_font(fnt);
+    if (indx > 0) {
+        QFont *fnt;
+        FC.getFont(&fnt, indx);
+        select_font(fnt);
+    }
 }
 

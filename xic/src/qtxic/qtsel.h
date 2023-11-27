@@ -46,6 +46,7 @@
 
 #include <QDialog>
 
+
 class QRadioButton;
 class QCheckBox;
 class QPushButton;

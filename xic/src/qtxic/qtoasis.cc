@@ -125,6 +125,11 @@ QToasisDlg::QToasisDlg(GRobject c)
     oas_noruns = 0;
     oas_noarrs = 0;
     oas_nosim = 0;
+    oas_sb_entm = 0;
+    oas_sb_enta = 0;
+    oas_sb_entx = 0;
+    oas_sb_entt = 0;
+
     oas_lastm = REP_RUN_MIN;
     oas_lasta = REP_ARRAY_MIN;
     oas_lastt = REP_MAX_REPS;
@@ -149,6 +154,7 @@ QToasisDlg::QToasisDlg(GRobject c)
     connect(oas_notrap, SIGNAL(stateChanged(int)),
         this, SLOT(nozoid_btn_slot(int)));
 
+    hbox->addSpacing(4);
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
     btn->setAutoDefault(false);
@@ -181,19 +187,16 @@ QToasisDlg::QToasisDlg(GRobject c)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
+    QLabel *label = new QLabel(tr("Property masking"));
+    hbox->addWidget(label);
+    label->setAlignment(Qt::AlignCenter);
+
     oas_pmask = new QComboBox();
     hbox->addWidget(oas_pmask);
     for (int i = 0; pmaskvals[i]; i++)
         oas_pmask->addItem(pmaskvals[i], i);
     connect(oas_pmask, SIGNAL(currentIndexChanged(int)),
         this, SLOT(pmask_menu_slot(int)));
-
-    QLabel *label = new QLabel(tr("Property masking"));
-    hbox->addWidget(label);
-    label->setAlignment(Qt::AlignCenter);
-
-//XXX want a separatior here
-//    GtkWidget *sep = gtk_hseparator_new();
 
     hbox = new QHBoxLayout(0);
     hbox->setContentsMargins(qm);

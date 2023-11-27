@@ -83,18 +83,6 @@ private slots:
     void dismiss_btn_slot();
 
 private:
-    /*
-    void button_hdlr(GtkWidget*);
-
-    static void cs_cancel_proc(GtkWidget*, void*);
-    static void cs_action(GtkWidget*, void*);
-
-    static void cs_change_proc(GtkWidget*, void*);
-    static int cs_key_hdlr(GtkWidget*, GdkEvent*, void*);
-    static void cs_drag_data_received(GtkWidget*, GdkDragContext*,
-        gint, gint, GtkSelectionData*, guint, guint);
-    */
-
     GRobject    cs_caller;
     QLabel      *cs_label;
     QLineEdit   *cs_text;

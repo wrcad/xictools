@@ -106,6 +106,7 @@ QTpcellCtrlDlg::QTpcellCtrlDlg(GRobject c)
     pcc_hidestr = 0;
     pcc_listsm = 0;
     pcc_allwarn = 0;
+    pcc_sb_psz = 0;
 
     setWindowTitle(tr("PCell Control"));
     setAttribute(Qt::WA_DeleteOnClose);

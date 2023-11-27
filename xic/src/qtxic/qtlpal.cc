@@ -225,32 +225,12 @@ QTlayerPaletteDlg::QTlayerPaletteDlg(GRobject caller) : QTdraw(XW_LPAL)
 
     connect(Viewport(), SIGNAL(resize_event(QResizeEvent*)),
         this, SLOT(resize_slot(QResizeEvent*)));
-/*XXX
-    connect(Viewport(), SIGNAL(new_painter(QPainter*)),
-        this, SLOT(new_painter_slot(QPainter*)));
-    connect(Viewport(), SIGNAL(paint_event(QPaintEvent*)),
-        this, SLOT(paint_slot(QPaintEvent*)));
-*/
     connect(Viewport(), SIGNAL(press_event(QMouseEvent*)),
         this, SLOT(button_down_slot(QMouseEvent*)));
     connect(Viewport(), SIGNAL(release_event(QMouseEvent*)),
         this, SLOT(button_up_slot(QMouseEvent*)));
     connect(Viewport(), SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(motion_slot(QMouseEvent*)));
-/*XXX
-    connect(Viewport(), SIGNAL(key_press_event(QKeyEvent*)),
-        this, SLOT(key_down_slot(QKeyEvent*)));
-    connect(Viewport(), SIGNAL(key_release_event(QKeyEvent*)),
-        this, SLOT(key_up_slot(QKeyEvent*)));
-    connect(Viewport(), SIGNAL(enter_event(QEnterEvent*)),
-        this, SLOT(enter_slot(QEnterEvent*)));
-    connect(Viewport(), SIGNAL(leave_event(QEvent*)),
-        this, SLOT(leave_slot(QEvent*)));
-    connect(Viewport(), SIGNAL(focus_in_event(QFocusEvent*)),
-        this, SLOT(focus_in_slot(QFocusEvent*)));
-    connect(Viewport(), SIGNAL(focus_out_event(QFocusEvent*)),
-        this, SLOT(focus_out_slot(QFocusEvent*)));
-*/
     connect(Viewport(), SIGNAL(drag_enter_event(QDragEnterEvent*)),
         this, SLOT(drag_enter_slot(QDragEnterEvent*)));
     connect(Viewport(), SIGNAL(drop_event(QDropEvent*)),
@@ -261,13 +241,13 @@ QTlayerPaletteDlg::QTlayerPaletteDlg(GRobject caller) : QTdraw(XW_LPAL)
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     init_size();
-//    lp_recall_proc(0, 0);
+//XXX    lp_recall_proc(0, 0);
 }
 
 
 QTlayerPaletteDlg::~QTlayerPaletteDlg()
 {
-//    lp_save_proc(0, 0);
+//XXX    lp_save_proc(0, 0);
 
     instPtr = 0;
     SetGbag(0);
@@ -1005,20 +985,6 @@ QTlayerPaletteDlg::motion_slot(QMouseEvent *ev)
         drag->exec(Qt::CopyAction);
     }
 }
-
-
-/*
-void
-QTlayerPaletteDlg::key_down_slot(QKeyEvent*)
-{
-}
-
-
-void
-QTlayerPaletteDlg::key_up_slot(QKeyEvent*)
-{
-}
-*/
 
 
 void

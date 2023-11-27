@@ -179,12 +179,15 @@ QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node) : QTbag(this)
     nm_term_list = 0;
     nm_usex_btn = 0;
     nm_find_btn = 0;
+
     nm_showing_node = -1;
     nm_showing_row = -1;
     nm_showing_term_row = -1;
     nm_noupdating = false;
+
     nm_node = 0;
     nm_cdesc = 0;
+
     nm_rm_affirm = 0;
     nm_join_affirm = 0;
 
@@ -827,7 +830,8 @@ QTnodeMapDlg::nm_name_cb(const char *name, void*)
         // Callback frees nametok.
         instPtr->nm_join_affirm = instPtr->PopUpAffirm(0, LW_CENTER, buf,
             instPtr->nm_join_cb, nametok);
-        instPtr->nm_join_affirm->register_usrptr((void**)&instPtr->nm_join_affirm);
+        instPtr->nm_join_affirm->register_usrptr(
+            (void**)&instPtr->nm_join_affirm);
         return;
     }
     instPtr->set_name(nametok);

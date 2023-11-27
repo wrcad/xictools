@@ -46,6 +46,7 @@
 #include "qtltab.h"
 #include "qthtext.h"
 #include "qtzoom.h"
+#include "qtmenucfg.h"
 #include "qtinterf/qtfile.h"
 #include "qtinterf/qtmsg.h"
 #include "extif.h"
@@ -151,72 +152,69 @@ struct NULLwin : public DSPwbag, public NULLwbag,  NULLwinApp,
 #define GS_NBTNS 8
 
 namespace {
-    /* XXX
-    // Struct to hold state for button press grab action.  This overrides
-    // the "automatic grab" so that the cursor tracks the subwindow
-    // crossings.
+    // Struct to hold state for button press grab action.
+    //
+    // XXX Fix this if possible.
+    // QT widgets grab events when a mouse button is pressed until
+    // released, which prevents continuity between drawing windows
+    // when dragging.  One can use the click-twice alternative to get
+    // around this in some cases.
     //
     struct grabstate_t
     {
         grabstate_t()
-            {
-                for (int i = 0; i < GS_NBTNS; i++) {
-                    caller[i] = 0;
-                    send_event[i] = false;
-                }
-                noopbtn = false;
-            }
+        {
+            for (int i = 0; i < GS_NBTNS; i++)
+                gs_caller[i] = 0;
+            gs_noopbtn = false;
+        }
 
-        void set(GtkWidget *w, GdkEventButton *be)
-            {
-                if (be->button >= GS_NBTNS)
-                    return;
-                gdk_pointer_grab(gtk_widget_get_window(w), true,
-                    GDK_BUTTON_RELEASE_MASK, 0, 0, be->time);
-                caller[be->button] = w;
-                send_event[be->button] = be->send_event;
+        void set(QWidget *w, QMouseEvent *ev)
+        {
+            if (ev->button() >= GS_NBTNS)
+                return;
+            gs_caller[ev->button()] = w;
+        }
 
-                if (be->send_event)
-                    gdk_pointer_ungrab(be->time);
-            }
+        bool is_armed(QMouseEvent *ev)
+        {
+            return (ev->button() < GS_NBTNS && gs_caller[ev->button()] != 0);
+        }
 
-        bool is_armed(GdkEventButton *be)
-            { return (be->button < GS_NBTNS && caller[be->button] != 0); }
+        void clear(QMouseEvent *ev)
+        {
+            if (ev->button() >= GS_NBTNS)
+                return;
+            gs_caller[ev->button()] = 0;
+        }
 
-        void clear(GdkEventButton *be)
-            {
-                if (be->button >= GS_NBTNS)
-                    return;
-                caller[be->button] = 0;
-                send_event[be->button] = false;
-                gdk_pointer_ungrab(be->time);
-            }
-
-        void clear(unsigned int btn, unsigned int time)
-            {
-                if (btn >= GS_NBTNS)
-                    return;
-                caller[btn] = 0;
-                send_event[btn] = false;
-                gdk_pointer_ungrab(time);
-            }
+        void clear(unsigned int btn)
+        {
+            if (btn >= GS_NBTNS)
+                return;
+            gs_caller[btn] = 0;
+        }
 
         bool check_noop(bool n)
-            { bool x = noopbtn; noopbtn = n; return (x); }
+        {
+            bool x = gs_noopbtn;
+            gs_noopbtn = n;
+            return (x);
+        }
 
-        GtkWidget *widget(int n) { return (n <= GS_NBTNS ? caller[n] : 0); }
+        QWidget *widget(unsigned int n)
+        {
+            return (n <= GS_NBTNS ? gs_caller[n] : 0);
+        }
 
     private:
-        GtkWidget *caller[GS_NBTNS];    // target windows
-        bool send_event[GS_NBTNS];      // true if event was synthesized
-        bool noopbtn;                   // true when simulating no-op button
+        QWidget *gs_caller[GS_NBTNS];     // target windows
+        bool gs_noopbtn;                  // true when simulating no-op button
     };
 
-    unsigned int grabbed_key;
     grabstate_t grabstate;
-    */
 
-    /*
+    /*XXX
     // Event handling.  This contains the main event handler, plus a queue
     // for saving events for later dispatch.
     //
@@ -538,8 +536,7 @@ QTpkg::SubwinInit(int wnum)
         return (false);
     if (wnum < 1 || wnum >= DSP_NUMWINS)
         return (false);
-    QTsubwin *w = new QTsubwin(wnum, QTmainwin::self());
-    w->subw_initialize(wnum);
+    new QTsubwin(wnum, QTmainwin::self());
     return (true);
 }
 
@@ -792,8 +789,8 @@ QTpkg::RegisterEventHandler(void(*handler)(QEvent*, void*), void *arg)
 cKeys::cKeys(int wnum, QWidget *prnt) : QTcanvas(prnt)
 {
     k_keypos = 0;
-    memset(k_keys, 0, CBUFMAX+1);
     k_win_number = wnum;
+    memset(k_keys, 0, CBUFMAX+1);
     k_cmd = 0;
 
     QFont *fnt;
@@ -929,7 +926,14 @@ cKeys::font_changed(int fnum)
 //-----------------------------------------------------------------------------
 // QTsubwin functions
 
-DrawType QTsubwin::sw_drawtype = DrawNative;
+namespace {
+    // Share common ghost drawing parameters between similar drawing
+    // windows.
+    cGhostDrawCommon GhostDrawCommon;
+
+    // Keep track of previous locations.
+    QRect LastPos[DSP_NUMWINS];
+}
 
 QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
     QTdraw(XW_DRAWING)
@@ -945,26 +949,12 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    if (sw_win_number == 0) {
-        const char *str = getenv("GR_SYSTEM");
-        if (str) {
-            if (!strcasecmp(str, "X"))
-                sw_drawtype = DrawX;
-            if (!strcasecmp(str, "GL"))
-                sw_drawtype = DrawGL;
-            if (!strcasecmp(str, "QT") || !strcasecmp(str, "native"))
-                sw_drawtype = DrawNative;
-        }
-        if (sw_drawtype == DrawGL)
-            printf("Using OpenGL graphics system.\n");
-        else if (sw_drawtype == DrawX)
-            printf("Using custom X-Windows graphics system.\n");
-        else
-            printf("Using QT native graphics system.\n");
-    }
-    gd_viewport = QTdrawIf::new_draw_interface(sw_drawtype, true, this);
-    Viewport()->setFocusPolicy(Qt::StrongFocus);
-    Viewport()->setAcceptDrops(true);
+    gd_viewport = new QTcanvas();
+    gd_viewport->set_ghost_common(&GhostDrawCommon);
+    gd_viewport->setFocusPolicy(Qt::StrongFocus);
+    gd_viewport->setAcceptDrops(true);
+    if (sw_win_number >= 0)
+        GhostDrawCommon.gd_windows[sw_win_number] = gd_viewport;
 
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_SCREEN))
@@ -972,33 +962,33 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed(int)), Qt::QueuedConnection);
 
-    connect(Viewport(), SIGNAL(resize_event(QResizeEvent*)),
+    connect(gd_viewport, SIGNAL(resize_event(QResizeEvent*)),
         this, SLOT(resize_slot(QResizeEvent*)));
-    connect(Viewport(), SIGNAL(new_painter(QPainter*)),
+    connect(gd_viewport, SIGNAL(new_painter(QPainter*)),
         this, SLOT(new_painter_slot(QPainter*)));
-    connect(Viewport(), SIGNAL(paint_event(QPaintEvent*)),
+    connect(gd_viewport, SIGNAL(paint_event(QPaintEvent*)),
         this, SLOT(paint_slot(QPaintEvent*)));
-    connect(Viewport(), SIGNAL(press_event(QMouseEvent*)),
+    connect(gd_viewport, SIGNAL(press_event(QMouseEvent*)),
         this, SLOT(button_down_slot(QMouseEvent*)));
-    connect(Viewport(), SIGNAL(release_event(QMouseEvent*)),
+    connect(gd_viewport, SIGNAL(release_event(QMouseEvent*)),
         this, SLOT(button_up_slot(QMouseEvent*)));
-    connect(Viewport(), SIGNAL(motion_event(QMouseEvent*)),
+    connect(gd_viewport, SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(motion_slot(QMouseEvent*)));
-    connect(Viewport(), SIGNAL(key_press_event(QKeyEvent*)),
+    connect(gd_viewport, SIGNAL(key_press_event(QKeyEvent*)),
         this, SLOT(key_down_slot(QKeyEvent*)));
-    connect(Viewport(), SIGNAL(key_release_event(QKeyEvent*)),
+    connect(gd_viewport, SIGNAL(key_release_event(QKeyEvent*)),
         this, SLOT(key_up_slot(QKeyEvent*)));
-    connect(Viewport(), SIGNAL(enter_event(QEnterEvent*)),
+    connect(gd_viewport, SIGNAL(enter_event(QEnterEvent*)),
         this, SLOT(enter_slot(QEnterEvent*)));
-    connect(Viewport(), SIGNAL(leave_event(QEvent*)),
+    connect(gd_viewport, SIGNAL(leave_event(QEvent*)),
         this, SLOT(leave_slot(QEvent*)));
-    connect(Viewport(), SIGNAL(focus_in_event(QFocusEvent*)),
+    connect(gd_viewport, SIGNAL(focus_in_event(QFocusEvent*)),
         this, SLOT(focus_in_slot(QFocusEvent*)));
-    connect(Viewport(), SIGNAL(focus_out_event(QFocusEvent*)),
+    connect(gd_viewport, SIGNAL(focus_out_event(QFocusEvent*)),
         this, SLOT(focus_out_slot(QFocusEvent*)));
-    connect(Viewport(), SIGNAL(drag_enter_event(QDragEnterEvent*)),
+    connect(gd_viewport, SIGNAL(drag_enter_event(QDragEnterEvent*)),
         this, SLOT(drag_enter_slot(QDragEnterEvent*)));
-    connect(Viewport(), SIGNAL(drop_event(QDropEvent*)),
+    connect(gd_viewport, SIGNAL(drop_event(QDropEvent*)),
         this, SLOT(drop_slot(QDropEvent*)));
 
     if (sw_win_number == 0)
@@ -1024,32 +1014,10 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
     hbox->addWidget(sw_toolbar);
     hbox->addWidget(sw_keys_pressed);
 
-    vbox->addWidget(Viewport());
-}
+    vbox->addWidget(gd_viewport);
+    set_transient_for(QTmainwin::self());
 
-
-QTsubwin::~QTsubwin()
-{
-    PopUpExpand(0, MODE_OFF, 0, 0, 0, false);
-    PopUpGrid(0, MODE_OFF);
-    PopUpZoom(0, MODE_OFF);
-    if (sw_win_number > 0) {
-        WindowDesc *wdesc = DSP()->Window(sw_win_number);
-        if (!wdesc)
-            return;
-        wdesc->SetWbag(0);
-        wdesc->SetWdraw(0);
-        pre_destroy(sw_win_number);
-        MainMenu()->DestroySubwinMenu(sw_win_number);
-    }
-}
-
-
-// Function to initialize a subwindow.
-//
-void
-QTsubwin::subw_initialize(int wnum)
-{
+// Start of old init function.
     char buf[32];
     snprintf(buf, sizeof(buf), "%s %d", XM()->Product(), wnum);
     setWindowTitle(buf);
@@ -1063,26 +1031,17 @@ QTsubwin::subw_initialize(int wnum)
 
     connect(this, SIGNAL(update_coords(int, int)),
         QTmainwin::self(), SLOT(update_coords_slot(int, int)));
-/*XXX
-    int xpos, ypos;
-    if (LastPos[wnum].width) {
-        move(LastPos[wnum].x, LastPos[wnum].y);
-        gtk_window_set_default_size(GTK_WINDOW(w->shell), LastPos[wnum].width,
-            LastPos[wnum].height);
-        xpos = LastPos[wnum].x;
-        ypos = LastPos[wnum].y;
+
+    if (LastPos[wnum].width()) {
+        move(LastPos[wnum].x(), LastPos[wnum].y());
     }
     else {
         QSize sz = size();
-        QPoint pos = position();
-        ShellGeometry(QTmainwin::self()->shell, &rect, 0);
-        rect.x += rect.width - 560;
-        rect.y += wnum*40 + 60; // make room for device toolbar
-        gtk_widget_set_uposition(w->shell, rect.x, rect.y);
-        xpos = rect.x;
-        ypos = rect.y;
+        QSize wsz = QTmainwin::self()->size();
+        move(wsz.width() - sz.width(), wnum*40 + 60);
     }
 
+/*XXX
     // Set up double-click cancel on label event box.
     //
     for (MenuEnt *mx = GTKmenuPtr->Msubwins[wnum]->menu; mx->entry; mx++) {
@@ -1098,9 +1057,13 @@ QTsubwin::subw_initialize(int wnum)
 
     // Application initialization callback.
     //
-    QSize qs = Viewport()->size();
-//XXX draws twice, first here than later from resize
-    DSP()->Initialize(qs.width(), qs.height(), wnum);
+    // The viewport size is wrong until show is called, however calling
+    // show generates a premature resize event that causes trouble. 
+    // Below is a hack to get around this by estimating the size from
+    // the window size, which is correct here.
+
+    QSize qs = sizeHint();
+    DSP()->Initialize(qs.width()-4, qs.height()-30, wnum);
     show();
     raise();
     activateWindow();
@@ -1109,29 +1072,36 @@ QTsubwin::subw_initialize(int wnum)
 }
 
 
-void
-QTsubwin::pre_destroy(int wnum)
+QTsubwin::~QTsubwin()
 {
-    (void)wnum;
-    /* XXX
-    GdkRectangle rect, rect_d;
-    gtk_ShellGeometry(wb_shell, &rect, &rect_d);
+    PopUpExpand(0, MODE_OFF, 0, 0, 0, false);
+    PopUpGrid(0, MODE_OFF);
+    PopUpZoom(0, MODE_OFF);
+    if (sw_win_number >= 0)
+        GhostDrawCommon.gd_windows[sw_win_number] = 0;
+    if (sw_win_number > 0) {
+        WindowDesc *wdesc = DSP()->Window(sw_win_number);
+        if (!wdesc)
+            return;
+        wdesc->SetWbag(0);
+        wdesc->SetWdraw(0);
+        delete wdesc;
 
-    // Save relative to corner of main window.  Absolute coords can
-    // change if the main window is moved to a different monitor in
-    // multi-monitor setups.
+        MainMenu()->DestroySubwinMenu(sw_win_number);
 
-    int x, y;
-    gdk_window_get_origin(gtk_widget_get_window(GTKmainwin::self()->Shell()),
-        &x, &y);
-    LastPos[wnum].x = rect_d.x - x;
-    LastPos[wnum].y = rect_d.y - y;
-    LastPos[wnum].width = rect.width;
-    LastPos[wnum].height = rect.height;
+        QSize sz = size();
+        QPoint posn = pos();
 
-    g_signal_handlers_disconnect_by_func(G_OBJECT(wb_shell),
-        (gpointer)subwin_cancel_proc, (void*)(intptr_t)wnum);
-    */
+//XXX fixme
+        // Save relative to corner of main window.  Absolute coords can
+        // change if the main window is moved to a different monitor in
+        // multi-monitor setups.
+
+        LastPos[sw_win_number].setX(posn.x());
+        LastPos[sw_win_number].setY(posn.y());
+        LastPos[sw_win_number].setWidth(sz.width());
+        LastPos[sw_win_number].setHeight(sz.height());
+    }
 }
 
 
@@ -1182,7 +1152,7 @@ QTsubwin::CopyPixmap(const BBox *BB)
 {
     gd_viewport->refresh(BB->left, BB->top, BB->right - BB->left + 1,
         BB->bottom - BB->top + 1);
-//    Viewport()->repaint(BB->left, BB->top, BB->right - BB->left + 1,
+//    gd_viewport->repaint(BB->left, BB->top, BB->right - BB->left + 1,
 //        BB->bottom - BB->top + 1);
 }
 
@@ -1600,34 +1570,21 @@ QTsubwin::button_down_slot(QMouseEvent *ev)
         button = 2;
     else if (ev->button() == Qt::RightButton)
         button = 3;
-
     button = Kmap()->ButtonMap(button);
-/*
-    if (!GTK_WIDGET_SENSITIVE(GTKmenuPtr->mainMenu) && button == 1)
-        // menu is insensitive, so ignore press
-        return (true);
-    if (event->type == GDK_2BUTTON_PRESS ||
-            event->type == GDK_3BUTTON_PRESS)
-        return (true);
-    xic_bag *w = static_cast<xic_bag*>(client_data);
-*/
+
     if (wb_message)
         wb_message->popdown();
+
+    if (QTmenuConfig::self()->menu_disabled() && button == 1)
+        // menu is insensitive, so ignore press
+        return;
 
     bool showing_ghost = ShowingGhost();
     if (showing_ghost)
         ShowGhost(ERASE);
-/*
-    if (!XM()->IsDoingHelp() || XM()->IsCallback())
-        grabstate.set(caller, bev);
-*/
 
-        // Override the "automatic grab" so that the cursor tracks
-        // the subwindow crossings.
-        //
-        // Subtle point:  the callbacks can call their own event
-        // loops, so we have to set the grab state before the
-        // callbacks are called.
+    if (!XM()->IsDoingHelp() || EV()->IsCallback())
+        grabstate.set(gd_viewport, ev);
 
     int state = ev->modifiers();
 
@@ -1635,16 +1592,16 @@ QTsubwin::button_down_slot(QMouseEvent *ev)
     case 1:
         // basic point operation
         if ((state & Qt::ShiftModifier) &&
-            (state & Qt::ControlModifier) &&
-            (state & Qt::AltModifier)) {
-            // Control-Shift-Alt-Button1 simulates Button4
-//            grabstate.check_simb4(true);
+                (state & Qt::ControlModifier) &&
+                (state & Qt::AltModifier)) {
+            // Control-Shift-Alt-Button1 simulates a "no-op" button press.
+            grabstate.check_noop(true);
             if (XM()->IsDoingHelp())
-                PopUpHelp("button4");
-            else {
+                PopUpHelp("noopbutton");
+            else if (sw_windesc) {
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-                EV()->ButtonNopCallback(sw_windesc, ev->position().x(),
-                    ev->position().y(), mod_state(state));
+                EV()->ButtonNopCallback(sw_windesc,
+                    ev->position().x(), ev->position().y(), mod_state(state));
 #else
                 EV()->ButtonNopCallback(sw_windesc, ev->x(), ev->y(),
                     mod_state(state));
@@ -1653,10 +1610,11 @@ QTsubwin::button_down_slot(QMouseEvent *ev)
         }
         else {
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-            EV()->Button1Callback(sw_windesc, ev->position().x(), ev->position().y(),
-                mod_state(state));
+            EV()->Button1Callback(sw_windesc,
+                ev->position().x(), ev->position().y(), mod_state(state));
 #else
-            EV()->Button1Callback(sw_windesc, ev->x(), ev->y(), mod_state(state));
+            EV()->Button1Callback(sw_windesc, ev->x(), ev->y(),
+                mod_state(state));
 #endif
         }
         break;
@@ -1666,10 +1624,11 @@ QTsubwin::button_down_slot(QMouseEvent *ev)
             PopUpHelp("button2");
         else {
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-            EV()->Button2Callback(sw_windesc, ev->position().x(), ev->position().y(),
-                mod_state(state));
+            EV()->Button2Callback(sw_windesc,
+                ev->position().x(), ev->position().y(), mod_state(state));
 #else
-            EV()->Button2Callback(sw_windesc, ev->x(), ev->y(), mod_state(state));
+            EV()->Button2Callback(sw_windesc, ev->x(), ev->y(),
+                mod_state(state));
 #endif
         }
         break;
@@ -1679,10 +1638,11 @@ QTsubwin::button_down_slot(QMouseEvent *ev)
             PopUpHelp("button3");
         else {
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-            EV()->Button3Callback(sw_windesc, ev->position().x(), ev->position().y(),
-                mod_state(state));
+            EV()->Button3Callback(sw_windesc,
+                ev->position().x(), ev->position().y(), mod_state(state));
 #else
-            EV()->Button3Callback(sw_windesc, ev->x(), ev->y(), mod_state(state));
+            EV()->Button3Callback(sw_windesc, ev->x(), ev->y(),
+                mod_state(state));
 #endif
         }
         break;
@@ -1692,10 +1652,11 @@ QTsubwin::button_down_slot(QMouseEvent *ev)
             PopUpHelp("button4");
         else {
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-            EV()->ButtonNopCallback(sw_windesc, ev->position().x(), ev->position().y(),
-                mod_state(state));
+            EV()->ButtonNopCallback(sw_windesc,
+                ev->position().x(), ev->position().y(), mod_state(state));
 #else
-            EV()->ButtonNopCallback(sw_windesc, ev->x(), ev->y(), mod_state(state));
+            EV()->ButtonNopCallback(sw_windesc, ev->x(), ev->y(),
+                mod_state(state));
 #endif
         }
         break;
@@ -1727,25 +1688,22 @@ QTsubwin::button_up_slot(QMouseEvent *ev)
         button = 2;
     else if (ev->button() == Qt::RightButton)
         button = 3;
-
     button = Kmap()->ButtonMap(button);
-/*
-    if (!GTK_WIDGET_SENSITIVE(GTKmenuPtr->mainMenu) && button == 1)
-        // menu is insensitive, so ignore release
-        return (true);
-    xic_bag *w = static_cast<xic_bag*>(client_data);
 
-    if (!grabstate.is_armed(bev)) {
-        grabstate.check_simb4(false);
-        return (true);
+    if (QTmenuConfig::self()->menu_disabled() && button == 1)
+        // menu is insensitive, so ignore release
+        return;
+
+    if (!grabstate.is_armed(ev)) {
+        grabstate.check_noop(false);
+        return;
     }
-    grabstate.clear(bev->time);
+    grabstate.clear(ev);
 
     // this finishes processing the button up event at the server,
     // otherwise motions are frozen until this function returns
-    while (gtk_events_pending())
-        gtk_main_iteration();
-*/
+//    while (gtk_events_pending())
+//        gtk_main_iteration();
 
     // The point can be outside of the viewport, due to the grab.
     // Check for this.
@@ -1766,9 +1724,8 @@ QTsubwin::button_up_slot(QMouseEvent *ev)
 
     switch (button) {
     case 1:
-//        if (grabstate.check_simb4(false)) {
+        if (grabstate.check_noop(false)) {
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-        if (0) {
             EV()->ButtonNopReleaseCallback((in ? sw_windesc : 0),
                 ev->position().x(), ev->position().y(), mod_state(state));
         }
@@ -1777,7 +1734,6 @@ QTsubwin::button_up_slot(QMouseEvent *ev)
                 ev->position().x(), ev->position().y(), mod_state(state));
         }
 #else
-        if (0) {
             EV()->ButtonNopReleaseCallback((in ? sw_windesc : 0),
                 ev->x(), ev->y(), mod_state(state));
         }
@@ -1839,8 +1795,7 @@ QTsubwin::motion_slot(QMouseEvent *ev)
             !r.contains(ev->x(), ev->y())) {
 #endif
         // Leave event is not reliably delivered so do this here, too.
-        UndrawGhost();
-//XXX        gd_gbag->set_ghost_func(gd_gbag->get_ghost_func());  // set first flag
+        UndrawGhost(true);
         ev->ignore();
         return;
     }
@@ -1886,7 +1841,6 @@ QTsubwin::key_down_slot(QKeyEvent *ev)
     if (wb_message)
         wb_message->popdown();
 
-//XXX
 //printf("%x %x %x %x %x\n", ev->key(), ev->nativeScanCode(),
 //ev->nativeVirtualKey(), ev->modifiers(), mod_state(ev->modifiers()));
 
@@ -1900,15 +1854,8 @@ QTsubwin::key_down_slot(QKeyEvent *ev)
         return;
     }
 
-/*XXX
-    if (ev->key() == Qt::Key_Shift || ev->key() == Qt::Key_Control) {
-        gdk_keyboard_grab(caller->window, true, kev->time);
-        grabbed_key = kev->keyval;
-    }
-*/
-
     keypress_handler(ev->key(), mod_state(ev->modifiers()), string,
-        Viewport()->hasFocus() &&
+        gd_viewport->hasFocus() &&
         QTmainwin::self()->PromptLine()->underMouse(), false);
 }
 
@@ -1927,13 +1874,6 @@ QTsubwin::key_up_slot(QKeyEvent *ev)
         return;
     }
     ev->accept();
-
-/*
-    if (grabbed_key && grabbed_key == event->key.keyval) {
-        grabbed_key = 0;
-        gdk_keyboard_ungrab(event->key.time);
-    }
-*/
 
     if (!QTmainwin::self() || QTpkg::self()->NotMapped())
         return;
@@ -1965,44 +1905,26 @@ QTsubwin::enter_slot(QEnterEvent *ev)
     }
     ev->accept();
 
-    Viewport()->setFocus();
+    gd_viewport->setFocus();
 
-    /*
-    GdkEventCrossing *cev = (GdkEventCrossing*)event;
-    if (grabstate.widget(1) == caller) {
-        if (!(cev->state & GDK_BUTTON1_MASK)) {
-            grabstate.clear(1, cev->time);
+    if (grabstate.widget(Qt::LeftButton) == gd_viewport) {
+        if (!(ev->buttons() & Qt::LeftButton)) {
+            grabstate.clear(Qt::LeftButton);
             EV()->Button1ReleaseCallback(0, 0, 0, 0);
         }
     }
-    if (grabstate.widget(2) == caller) {
-        if (!(cev->state & GDK_BUTTON2_MASK)) {
-            grabstate.clear(2, cev->time);
+    if (grabstate.widget(Qt::MiddleButton) == gd_viewport) {
+        if (!(ev->buttons() & Qt::MiddleButton)) {
+            grabstate.clear(Qt::MiddleButton);
             EV()->Button2ReleaseCallback(0, 0, 0, 0);
         }
     }
-    if (grabstate.widget(3) == caller) {
-        if (!(cev->state & GDK_BUTTON3_MASK)) {
-            grabstate.clear(3, cev->time);
+    if (grabstate.widget(Qt::RightButton) == gd_viewport) {
+        if (!(ev->buttons() & Qt::RightButton)) {
+            grabstate.clear(Qt::RightButton);
             EV()->Button3ReleaseCallback(0, 0, 0, 0);
         }
     }
-    if (grabstate.widget(4) == caller) {
-        if (!(cev->state & GDK_BUTTON4_MASK))
-            grabstate.clear(4, cev->time);
-    }
-    if (grabstate.widget(5) == caller) {
-        if (!(cev->state & GDK_BUTTON4_MASK))
-            grabstate.clear(5, cev->time);
-    }
-    if (grabstate.widget(6) == caller) {
-        if (!(cev->state & GDK_BUTTON4_MASK)) {
-            grabstate.clear(6, cev->time);
-            EV()->ButtonNopReleaseCallback(0, 0, 0, 0);
-        }
-    }
-    */
-
 
     EV()->MotionCallback(sw_windesc,
         mod_state(QGuiApplication::keyboardModifiers()));
@@ -2027,8 +1949,7 @@ QTsubwin::leave_slot(QEvent *ev)
 
     EV()->MotionCallback(sw_windesc,
         mod_state(QGuiApplication::keyboardModifiers()));
-    UndrawGhost();
-//XXX    gd_gbag->set_ghost_func(gd_gbag->get_ghost_func());  // set first flag
+    UndrawGhost(true);
 }
 
 
@@ -2249,6 +2170,8 @@ QTmainwin::QTmainwin(QWidget *prnt) : QTsubwin(0, prnt)
     hbox->setStretch(0, 0);
 
     QLineEdit *ltab_entry = new QLineEdit();
+    // Important:  Don't let this eat the Tab, otherwise can't Undo!
+    ltab_entry->setFocusPolicy(Qt::ClickFocus);
     ltab_entry->setMinimumWidth(60);
     ltab_entry->setMaximumWidth(120);
     hbox->addWidget(ltab_entry);
@@ -2280,7 +2203,7 @@ QTmainwin::QTmainwin(QWidget *prnt) : QTsubwin(0, prnt)
     hbox->addWidget(mw_splitter);
     mw_splitter->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
     mw_splitter->addWidget(mw_layertab);
-    mw_splitter->addWidget(Viewport());
+    mw_splitter->addWidget(gd_viewport);
 
     // This sets the handle in a sensible place, not easy!
     int wd = sizeHint().width();
@@ -2310,6 +2233,8 @@ QTmainwin::QTmainwin(QWidget *prnt) : QTsubwin(0, prnt)
 
     connect(this, SIGNAL(update_coords(int, int)),
         this, SLOT(update_coords_slot(int, int)));
+
+//    initialize();
 }
 
 
@@ -2372,7 +2297,7 @@ QTmainwin::initialize()
     QTmenu::self()->InitTopButtonMenu();
     QTmenu::self()->InitSideButtonMenus();
 
-    Viewport()->setFocus();
+    gd_viewport->setFocus();
 }
 
 
@@ -2390,11 +2315,11 @@ QTmainwin::send_key_event(sKeyEvent *kev)
     activateWindow();
     if (kev->type == KEY_PRESS) {
         QKeyEvent ev(QEvent::KeyPress, kev->key, mod, QString(kev->text));
-        QCoreApplication::sendEvent(Viewport(), &ev);
+        QCoreApplication::sendEvent(gd_viewport, &ev);
     }
     if (kev->type == KEY_RELEASE) {
         QKeyEvent ev(QEvent::KeyRelease, kev->key, mod, QString(kev->text));
-        QCoreApplication::sendEvent(Viewport(), &ev);
+        QCoreApplication::sendEvent(gd_viewport, &ev);
     }
 }
 
@@ -2671,52 +2596,4 @@ main_local::form_submit_hdlr(void *data)
 }
 
 #endif // HAVE_MOZY
-
-
-
-#ifdef notdef
-
-static unsigned int grabbed_key;
-
-
-// Struct to hold state for button press grab action.
-//
-struct grabstate_t
-{
-    void set(GtkWidget *w, GdkEventButton *be)
-        {
-            gdk_pointer_grab(w->window, true, GDK_BUTTON_RELEASE_MASK,
-                0, 0, be->time);
-            caller = w;
-            button = be->button;
-            simbtn4 = false;
-            send_event = be->send_event;
-            if (send_event)
-                gdk_pointer_ungrab(be->time);
-        }
-
-    bool is_armed(GdkEventButton *be)
-        { return (caller && button == be->button); }
-
-    void clear(unsigned int t)
-        { caller = 0; gdk_pointer_ungrab(t); }
-
-    bool is_caller(GtkWidget *w)
-        { return (caller == w && !send_event); }
-
-    bool check_simb4(bool n)
-        { bool x = simbtn4; simbtn4 = n; return (x); }
-
-    int btn()
-        { return (button); }
-
-private:
-    GtkWidget *caller;      // target window
-    unsigned button;        // mouse button code
-    bool simbtn4;           // true when simulating button 4
-    bool send_event;        // true if event was synthesized
-};
-static grabstate_t grabstate;
-
-#endif
 

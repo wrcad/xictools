@@ -261,22 +261,29 @@ QTbag::PopUpHelp(const char *wordin)
     }
     char buf[256];
     buf[0] = 0;
-    char *word = buf;
     if (wordin) {
-        strcpy(buf, wordin);
-        char *s = buf + strlen(buf) - 1;
-        while (*s == ' ')
-            *s-- = '\0';
+        while (isspace(*wordin))
+            wordin++;
+        if (*wordin) {
+            strcpy(buf, wordin);
+            char *s = buf + strlen(buf) - 1;
+            while (*s == ' ')
+                *s-- = '\0';
+        }
     }
+    char *word = buf[0] ? buf : 0;;
 
     HLPtopic *top = 0;
     if (HLP()->context()->resolveKeyword(word, &top, 0, 0, 0, false, true))
         return (false);
     if (!top) {
-        if (word && *word)
-            snprintf(buf, 256, "Error: No such topic: %s\n", word);
-        else
+        if (!word)
             snprintf(buf, 256, "Error: no top level topic\n");
+        else {
+            char *tt = lstring::copy(word);
+            snprintf(buf, 256, "Error: No such topic: %s\n", tt);
+            delete [] tt;
+        }
         PopUpErr(MODE_ON, buf);
         return (false);
     }

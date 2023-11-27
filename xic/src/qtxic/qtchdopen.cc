@@ -259,9 +259,9 @@ QTchdOpenDlg::QTchdOpenDlg(GRobject caller,
     co_p2_text = new QTchdOpenPathEdit();
     p_vbox->addWidget(co_p2_text);
     co_p2_text->setReadOnly(false);
-    co_p1_text->setAcceptDrops(true);
+    co_p2_text->setAcceptDrops(true);
 
-// Add vspace
+    p_vbox->addSpacing(20);
 
     label = new QLabel(tr("Handle geometry records in saved CHD file:"));
     p_vbox->addWidget(label);
@@ -294,6 +294,7 @@ QTchdOpenDlg::QTchdOpenDlg(GRobject caller,
         QTdev::SetStatus(co_p2_none, true);
         break;
     }
+    p_vbox->addStretch(1);
 
     co_nbook->addTab(page, tr("CHD file"));
 
@@ -310,13 +311,6 @@ QTchdOpenDlg::QTchdOpenDlg(GRobject caller,
     co_idname = new QLineEdit();
     co_idname->setReadOnly(false);
     hbox->addWidget(co_idname);
-
-/*
-    g_signal_connect(G_OBJECT(wb_shell), "key-press-event",
-        G_CALLBACK(co_key_hdlr), 0);
-    g_signal_connect(G_OBJECT(co_nbook), "switch-page",
-        G_CALLBACK(co_page_proc), 0);
-*/
 
     // Apply/Dismiss buttons
     //

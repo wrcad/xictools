@@ -48,8 +48,8 @@
 
 #include <QDialog>
 
-class QLabel;
 
+class QLabel;
 
 class QTsimRunDlg : public QDialog
 {

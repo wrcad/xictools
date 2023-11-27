@@ -41,7 +41,9 @@
 #ifndef QTCANVAS_H
 #define QTCANVAS_H
 
-#include "qtdraw.h"
+#include "ginterf/graphics.h"
+#include "ginterf/grlinedb.h"
+
 #include <QWidget>
 #include <QBrush>
 #include <QPen>
@@ -60,10 +62,35 @@ class QEnterEvent;
 class QFocusEvent;
 
 namespace qtinterf {
+    class cGhostDrawCommon;
     class QTcanvas;
 }
 
-class qtinterf::QTcanvas : public QTdrawIf
+class qtinterf::cGhostDrawCommon
+{
+public:
+    cGhostDrawCommon();
+
+    void set_ghost(GhostDrawFunc, int, int);
+    void show_ghost(bool);
+    void undraw_ghost(bool);
+    void draw_ghost(int, int);
+
+    GhostDrawFunc gd_ghost_draw_func;
+    GRlineDb    *gd_linedb;
+    int         gd_ref_x;
+    int         gd_ref_y;
+    int         gd_last_x;
+    int         gd_last_y;
+    int         gd_ghost_cx_cnt;
+    bool        gd_first_ghost;
+    bool        gd_show_ghost;
+    bool        gd_undraw;
+    bool        gd_xor_mode;
+    qtinterf::QTcanvas *gd_windows[8];
+};
+
+class qtinterf::QTcanvas : public QWidget
 {
     Q_OBJECT
 
@@ -71,14 +98,18 @@ public:
     QTcanvas(QWidget *parent = nullptr);
     ~QTcanvas();
 
-    QPixmap *pixmap()           { return (da_pixmap); }
+    QPixmap *pixmap()           
+    {
+        return (da_pixmap_bak ? da_pixmap_bak : da_pixmap);
+    }
 
-    void switch_to_pixmap2();
+    void switch_to_pixmap2(QPixmap* = 0);
     void switch_from_pixmap2(int, int, int, int, int, int);
+    void clear_pixmap2();
+    void set_draw_to_pixmap(QPixmap*);
     void set_overlay_mode(bool);
     void create_overlay_backg();
     void erase_last_overlay();
-    void set_draw_to_pixmap(QPixmap*);
     void set_clipping(int, int, int, int);
     void refresh(int, int, int, int);
     void refresh()              { refresh(0, 0, width(), height()); }
@@ -127,23 +158,116 @@ public:
 
     QPainter *cur_painter() { return (da_painter); }
 
+    //
     // Ghost drawing.
-    void set_ghost(GhostDrawFunc, int, int);
-    void show_ghost(bool);
-    void undraw_ghost(bool);
-    void draw_ghost(int, int);
+    //
 
-    void set_ghost_mode(bool);
-    void set_ghost_color(unsigned int);
-    bool has_ghost()        { return (gd_ghost_draw_func != 0); }
-    bool showing_ghost()    { return (gd_show_ghost && has_ghost()); }
-    GRlineDb *linedb()      { return (gd_linedb); }
+    void set_ghost_common(cGhostDrawCommon *c)
+    {
+        if (c)
+            da_ghost_draw_ptr = c;
+        else
+            da_ghost_draw_ptr = &da_local;
+    }
 
-    GhostDrawFunc get_ghost_func()  { return (gd_ghost_draw_func); }
+    void set_ghost(GhostDrawFunc dfunc, int xx, int yy)
+    {
+        da_ghost_draw_ptr->set_ghost(dfunc, xx, yy);
+    }
+
+    void show_ghost(bool showit)
+    {
+        da_ghost_draw_ptr->show_ghost(showit);
+    }
+
+    void undraw_ghost(bool reset)
+    {
+        da_ghost_draw_ptr->undraw_ghost(reset);
+    }
+
+    void draw_ghost(int xx, int yy)
+    {
+        da_ghost_draw_ptr->draw_ghost(xx, yy);
+    }
+
+    void xordrw_beg()
+    {
+        da_painter->setCompositionMode(
+            QPainter::RasterOp_SourceXorDestination);
+        set_color(da_ghost_fg);
+    }
+
+    void xordrw_end()
+    {
+        set_color(da_fg);
+        da_painter->setCompositionMode(
+            QPainter::CompositionMode_SourceOver);
+    }
+
+    void drw_beg()      { set_color(da_ghost_fg); }
+    void drw_end()      { set_color(da_fg); }
+
+    void gdrw_setbg()
+    {
+        if (!da_ghost_bg_set) {
+            QPixmap *tmp = da_overlay_bg;
+            da_overlay_bg = da_ghost_overlay_bg;
+            da_ghost_overlay_bg = tmp;
+            da_ghost_bg_set = true;
+        }
+    }
+
+    void gdrw_unsetbg()
+    {
+        if (da_ghost_bg_set) {
+            QPixmap *tmp = da_overlay_bg;
+            da_overlay_bg = da_ghost_overlay_bg;
+            da_ghost_overlay_bg = tmp;
+            da_ghost_bg_set = false;
+        }
+    }
+
+    void set_ghost_mode(bool xor_mode)
+    {
+        da_ghost_draw_ptr->gd_xor_mode = xor_mode;
+    }
+
+    void set_ghost_color(unsigned int pixel)
+    {
+        if (da_ghost_draw_ptr->gd_xor_mode) {
+            da_ghost.setRgb(pixel);
+            da_ghost_fg.setRgb(pixel ^ da_bg.rgb());
+        }
+        else {
+            set_foreground(pixel);
+            da_ghost_fg.setRgb(pixel);
+        }
+    }
+
+    bool has_ghost()
+    {
+        return (da_ghost_draw_ptr->gd_ghost_draw_func != 0);
+    }
+
+    bool showing_ghost()
+    {
+        return (da_ghost_draw_ptr->gd_show_ghost && has_ghost());
+    }
+
+    GRlineDb *linedb()
+    {
+        return (da_ghost_draw_ptr->gd_linedb);
+    }
+
+    GhostDrawFunc get_ghost_func()
+    {
+        return (da_ghost_draw_ptr->gd_ghost_draw_func);
+    }
+
     void set_ghost_func(GhostDrawFunc f)
     {
-        gd_ghost_draw_func = f;
-        gd_first_ghost = true;
+        da_ghost_draw_ptr->gd_ghost_draw_func = f;
+        da_ghost_draw_ptr->gd_first_ghost = true;
     }
 
 signals:
@@ -253,18 +377,11 @@ private:
     int         da_olw, da_olh;     //  bounding box.
 
     // Ghost drawing.
-    QPixmap     *gd_overlay_bg;
-    GhostDrawFunc gd_ghost_draw_func;
-    GRlineDb    *gd_linedb;
-    int         gd_ref_x;
-    int         gd_ref_y;
-    int         gd_last_x;
-    int         gd_last_y;
-    int         gd_ghost_cx_cnt;
-    bool        gd_first_ghost;
-    bool        gd_show_ghost;
-    bool        gd_undraw;
-    bool        gd_xor_mode;        // XOR drawing, not supported presently
+    QPixmap     *da_ghost_overlay_bg;   // Ghost drawing background.
+    cGhostDrawCommon *da_ghost_draw_ptr;// Access pointer for ghost drawing
+                                        //  parameters.
+    cGhostDrawCommon da_local;          // Local block of ghost drawing
+                                        //  parameters.
 };
 
 #endif

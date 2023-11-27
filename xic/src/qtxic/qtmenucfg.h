@@ -67,6 +67,8 @@ public:
     void switch_menu_mode(DisplayMode, int);
     void set_main_global_sens(const MenuList*, bool);
 
+    bool menu_disabled() const  { return (mc_menu_disabled); }
+
     static QTmenuConfig *self()
     {
         if (!instancePtr)
@@ -111,8 +113,9 @@ private:
     const char **get_style_pixmap();
     static void on_null_ptr();
 
-    QMenu *style_menu;
-    QMenu *shape_menu;
+    QMenu *mc_style_menu;
+    QMenu *mc_shape_menu;
+    bool mc_menu_disabled;
 
     static QTmenuConfig *instancePtr;
 };

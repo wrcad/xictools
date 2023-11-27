@@ -137,6 +137,7 @@ cConvert::PopUpFiles(GRobject caller, ShowMode mode)
         return;
 
     // This is needed to reliably show the busy cursor.
+//XXX
 //    QTpkg::self()->SetWorking(true);
 //    QTpkg::self()->RegisterTimeoutProc(500, msw_timeout, caller);
 
@@ -172,38 +173,34 @@ const char *QTfilesListDlg::files_msg =
 
 // The directories in the path are monitored for changes.
 //
-sPathList *QTfilesListDlg::f_path_list;
-char *QTfilesListDlg::f_cwd;
-int QTfilesListDlg::f_timer_tag;
+sPathList *QTfilesListDlg::fl_path_list;
+char *QTfilesListDlg::fl_cwd;
+int QTfilesListDlg::fl_timer_tag;
 QTfilesListDlg *QTfilesListDlg::instPtr;
 
 QTfilesListDlg::QTfilesListDlg(GRobject c) : QTbag(this)
 {
-    fl_caller = c;
     instPtr = this;
-
+    fl_caller = c;
     for (int i = 0; i < MAX_BTNS; i++)
-        f_buttons[i] = 0;
-    f_button_box = 0;
-    f_menu = 0;
-    f_notebook = 0;
-    f_start = 0;
-    f_end = 0;
-    f_drag_start = false;
-    f_drag_btn = 0;
-    f_drag_x = 0;
-    f_drag_y = 0;
-    f_directory = 0;
+        fl_buttons[i] = 0;
+    fl_button_box = 0;
+    fl_menu = 0;
+    fl_notebook = 0;
+
+    fl_start = 0;
+    fl_end = 0;
+    fl_drag_start = false;
+    fl_drag_btn = 0;
+    fl_drag_x = 0;
+    fl_drag_y = 0;
+    fl_directory = 0;
 
     fl_selection = 0;
     fl_contlib = 0;
     fl_content_pop = 0;
     fl_chd = 0;
     fl_noupdate = 0;
-
-//    f_btn_hdlr = btn_hdlr;
-//    f_destroy = destroy;
-//    f_desel = desel;
 
     setWindowTitle(tr("Path Files Listing"));
     setAttribute(Qt::WA_DeleteOnClose);
@@ -215,10 +212,10 @@ QTfilesListDlg::QTfilesListDlg(GRobject c) : QTbag(this)
     vbox->setSpacing(2);
 
     // Create the layout for the button row.
-    f_button_box = new QHBoxLayout();
-    vbox->addLayout(f_button_box);
-    f_button_box->setContentsMargins(qm);
-    f_button_box->setSpacing(2);
+    fl_button_box = new QHBoxLayout();
+    vbox->addLayout(fl_button_box);
+    fl_button_box->setContentsMargins(qm);
+    fl_button_box->setSpacing(2);
 
     // title label
     //
@@ -236,23 +233,23 @@ QTfilesListDlg::QTfilesListDlg(GRobject c) : QTbag(this)
     if (!QTfont::stringBounds(0, FNT_FIXED, &fw, &fh))
         fw = 8;
     int cols = (sizeHint().width()-8)/fw - 2;
-    if (!f_path_list) {
-        f_path_list = fl_listing(cols);
-        f_monitor_setup();
+    if (!fl_path_list) {
+        fl_path_list = fl_listing(cols);
+        fl_monitor_setup();
     }
-    else if (cols != f_path_list->columns()) {
-        for (sDirList *dl = f_path_list->dirs(); dl; dl = dl->next())
+    else if (cols != fl_path_list->columns()) {
+        for (sDirList *dl = fl_path_list->dirs(); dl; dl = dl->next())
             dl->set_dirty(true);
-        f_path_list->set_columns(cols);
-        f_idle_proc(0);
+        fl_path_list->set_columns(cols);
+        fl_idle_proc(0);
     }
 
-    f_menu = new QComboBox();
-    vbox->addWidget(f_menu);
+    fl_menu = new QComboBox();
+    vbox->addWidget(fl_menu);
 
     // creates notebook
     init_viewing_area();
-    vbox->addWidget(f_notebook);
+    vbox->addWidget(fl_notebook);
 
     // dismiss button
     //
@@ -267,11 +264,11 @@ QTfilesListDlg::QTfilesListDlg(GRobject c) : QTbag(this)
 QTfilesListDlg::~QTfilesListDlg()
 {
     instPtr = 0;
-    if (f_path_list) {
-        for (sDirList *dl = f_path_list->dirs(); dl; dl = dl->next())
+    if (fl_path_list) {
+        for (sDirList *dl = fl_path_list->dirs(); dl; dl = dl->next())
             dl->set_dataptr(0);
     }
-    delete [] f_directory;
+    delete [] fl_directory;
 
     if (fl_caller)
         QTdev::Deselect(fl_caller);
@@ -327,9 +324,9 @@ QTfilesListDlg::update()
 void
 QTfilesListDlg::update(const char *path, const char **buttons, int numbuttons)
 {
-    if (path && f_path_list) {
+    if (path && fl_path_list) {
         stringlist *s0 = 0, *se = 0;
-        for (sDirList *dl = f_path_list->dirs(); dl; dl = dl->next()) {
+        for (sDirList *dl = fl_path_list->dirs(); dl; dl = dl->next()) {
             if (!s0)
                 s0 = se = new stringlist(lstring::copy(dl->dirname()), 0);
             else {
@@ -337,7 +334,7 @@ QTfilesListDlg::update(const char *path, const char **buttons, int numbuttons)
                 se = se->next;
             }
         }
-        if (f_check_path_and_update(path))
+        if (fl_check_path_and_update(path))
             relist(s0);
         stringlist::destroy(s0);
     }
@@ -346,17 +343,17 @@ QTfilesListDlg::update(const char *path, const char **buttons, int numbuttons)
         if (numbuttons > MAX_BTNS)
             numbuttons = MAX_BTNS;
 
-        for (int i = 0; f_buttons[i]; i++) {
-            f_button_box->removeWidget(f_buttons[i]);
-            f_buttons[i]->deleteLater();
-            f_buttons[i] = 0;
+        for (int i = 0; fl_buttons[i]; i++) {
+            fl_button_box->removeWidget(fl_buttons[i]);
+            fl_buttons[i]->deleteLater();
+            fl_buttons[i] = 0;
         }
         for (int i = 0; i < numbuttons; i++) {
             QPushButton *btn = new QPushButton(tr(buttons[i]));
-            f_button_box->addWidget(btn);
+            fl_button_box->addWidget(btn);
             btn->setCheckable(true);
             btn->setAutoDefault(false);
-            f_buttons[i] = btn;
+            fl_buttons[i] = btn;
             connect(btn, SIGNAL(toggled(bool)),
                 this, SLOT(button_slot(bool)));
         }
@@ -383,13 +380,13 @@ QTfilesListDlg::get_selection()
         }
     }
 
-    if (!f_directory || !*f_directory)
+    if (!fl_directory || !*fl_directory)
         return (0);
     char *s = wb_textarea->get_selection();
     if (s) {
         if (*s) {
             sLstr lstr;
-            lstr.add(f_directory);
+            lstr.add(fl_directory);
             lstr.add_c('/');
             lstr.add(s);
             delete [] s;
@@ -406,35 +403,35 @@ QTfilesListDlg::get_selection()
 void
 QTfilesListDlg::init_viewing_area()
 {
-    if (f_path_list) {
-        for (sDirList *dl = f_path_list->dirs(); dl; dl = dl->next())
+    if (fl_path_list) {
+        for (sDirList *dl = fl_path_list->dirs(); dl; dl = dl->next())
             dl->set_dataptr(0);
     }
-    if (!f_notebook)
-        f_notebook = new QStackedWidget();
-    if (!f_path_list)
+    if (!fl_notebook)
+        fl_notebook = new QStackedWidget();
+    if (!fl_path_list)
         return;
 
     int init_page = 0;
     int maxchars = 120;
-    if (f_path_list && f_directory) {
+    if (fl_path_list && fl_directory) {
         int i = 0;
-        for (sDirList *dl = f_path_list->dirs(); dl; dl = dl->next()) {
-            if (!strcmp(f_directory, dl->dirname())) {
+        for (sDirList *dl = fl_path_list->dirs(); dl; dl = dl->next()) {
+            if (!strcmp(fl_directory, dl->dirname())) {
                 init_page = i;
                 break;
             }
             i++;
         }
     }
-    delete [] f_directory;
-    f_directory = 0;
+    delete [] fl_directory;
+    fl_directory = 0;
 
     char buf[256];
     int i = 0;
-    for (sDirList *dl = f_path_list->dirs(); dl; i++, dl = dl->next()) {
+    for (sDirList *dl = fl_path_list->dirs(); dl; i++, dl = dl->next()) {
         if (i == init_page)
-            f_directory = lstring::copy(dl->dirname());
+            fl_directory = lstring::copy(dl->dirname());
 
         int len = strlen(dl->dirname());
         if (len <= maxchars)
@@ -445,22 +442,22 @@ QTfilesListDlg::init_viewing_area()
             strcpy(buf + partchars, " ... ");
             strcat(buf, dl->dirname() + len - partchars);
         }
-        f_menu->addItem(buf);
+        fl_menu->addItem(buf);
 
         create_page(dl);
         QTtextEdit *nbtext = (QTtextEdit*)dl->dataptr();
         if (nbtext) {
-            f_notebook->addWidget(nbtext);
+            fl_notebook->addWidget(nbtext);
         }
         if (i == init_page)
             wb_textarea = nbtext;
     }
-    connect(f_notebook, SIGNAL(currentChanged(int)),
+    connect(fl_notebook, SIGNAL(currentChanged(int)),
         this, SLOT(page_change_slot(int)));
 
-    f_notebook->setCurrentIndex(init_page);
-    f_menu->setCurrentIndex(init_page);
-    connect(f_menu, SIGNAL(currentIndexChanged(int)),
+    fl_notebook->setCurrentIndex(init_page);
+    fl_menu->setCurrentIndex(init_page);
+    connect(fl_menu, SIGNAL(currentIndexChanged(int)),
         this, SLOT(menu_change_slot(int)));
 }
 
@@ -481,7 +478,7 @@ namespace {
 }
 
 
-// Reset the notebook listings.  The f_path_list has already been set. 
+// Reset the notebook listings.  The fl_path_list has already been set. 
 // The argument is the old path list, which still represents the state
 // of the menu and pages.
 //
@@ -509,7 +506,7 @@ QTfilesListDlg::relist(stringlist *oldlist)
     }
 
     int n = 0;
-    for (sDirList *dl = f_path_list->dirs(); dl; n++, dl = dl->next()) {
+    for (sDirList *dl = fl_path_list->dirs(); dl; n++, dl = dl->next()) {
         int oldn = findstr(dl->dirname(), ary, len);
         if (oldn == n)
             continue;
@@ -518,9 +515,9 @@ QTfilesListDlg::relist(stringlist *oldlist)
             // the corresponding change to the notebook, menu, and the
             // array.
 
-            QWidget *pg = f_notebook->widget(oldn);
-            f_notebook->removeWidget(pg);
-            f_notebook->insertWidget(n, pg);
+            QWidget *pg = fl_notebook->widget(oldn);
+            fl_notebook->removeWidget(pg);
+            fl_notebook->insertWidget(n, pg);
 
             const char *t = ary[oldn];
             // We know that oldn is larger than n.
@@ -533,7 +530,7 @@ QTfilesListDlg::relist(stringlist *oldlist)
         // and menu entry, and add to the array.
 
         QWidget *pg = create_page(dl);
-        f_notebook->insertWidget(n, pg);
+        fl_notebook->insertWidget(n, pg);
 
         char buf[256];
         int maxchars = 120;
@@ -562,13 +559,13 @@ QTfilesListDlg::relist(stringlist *oldlist)
     // Anything at position n or above is not in the list so should be
     // deleted.
 
-    while (f_notebook->widget(n) != 0)
-        f_notebook->removeWidget(f_notebook->widget(n));
+    while (fl_notebook->widget(n) != 0)
+        fl_notebook->removeWidget(fl_notebook->widget(n));
 
     // Clear the combo box.
-    f_menu->clear();
+    fl_menu->clear();
 
-    for (sDirList *dl = f_path_list->dirs(); dl; dl = dl->next()) {
+    for (sDirList *dl = fl_path_list->dirs(); dl; dl = dl->next()) {
         char buf[256];
         int maxchars = 120;
         int dlen = strlen(dl->dirname());
@@ -580,10 +577,10 @@ QTfilesListDlg::relist(stringlist *oldlist)
             strcpy(buf + partchars, " ... ");
             strcat(buf, dl->dirname() + dlen - partchars);
         }
-        f_menu->addItem(buf);
+        fl_menu->addItem(buf);
     }
-    n = f_notebook->currentIndex();
-    f_menu->setCurrentIndex(n);
+    n = fl_notebook->currentIndex();
+    fl_menu->setCurrentIndex(n);
 }
 
 
@@ -593,10 +590,10 @@ void
 QTfilesListDlg::select_range(QTtextEdit *caller, int start, int end)
 {
     caller->select_range(start, end);
-    f_start = start;
-    f_end = end;
-//    if (f_desel)
-//        (*f_desel)(this);
+    fl_start = start;
+    fl_end = end;
+//    if (fl_desel)
+//        (*fl_desel)(this);
 }
 
 
@@ -634,32 +631,32 @@ QTfilesListDlg::create_page(sDirList *dl)
         this, SLOT(mime_data_received_slot(const QMimeData*)));
 
 /*XXX
-    if (f_btn_hdlr) {
+    if (fl_btn_hdlr) {
         gtk_widget_add_events(nbtext, GDK_BUTTON_PRESS_MASK);
         g_signal_connect(G_OBJECT(nbtext), "button-press-event",
-            G_CALLBACK(f_btn_hdlr), this);
+            G_CALLBACK(fl_btn_hdlr), this);
     }
     g_signal_connect(G_OBJECT(nbtext), "button-release-event",
-        G_CALLBACK(f_btn_release_hdlr), this);
+        G_CALLBACK(fl_btn_release_hdlr), this);
     g_signal_connect(G_OBJECT(nbtext), "motion-notify-event",
-        G_CALLBACK(f_motion), this);
+        G_CALLBACK(fl_motion), this);
     g_signal_connect_after(G_OBJECT(nbtext), "realize",
-        G_CALLBACK(f_realize_proc), this);
+        G_CALLBACK(fl_realize_proc), this);
 
     g_signal_connect(G_OBJECT(nbtext), "unrealize",
-        G_CALLBACK(f_unrealize_proc), this);
+        G_CALLBACK(fl_unrealize_proc), this);
 
     // Gtk-2 is tricky to overcome internal selection handling.
-    // Must remove clipboard (in f_realize_proc), and explicitly
+    // Must remove clipboard (in fl_realize_proc), and explicitly
     // call gtk_selection_owner_set after selecting text.  Note
     // also that explicit clear-event handling is needed.
 
     gtk_selection_add_targets(nbtext, GDK_SELECTION_PRIMARY,
         target_table, n_targets);
     g_signal_connect(G_OBJECT(nbtext), "selection-clear-event",
-        G_CALLBACK(f_selection_clear), 0);
+        G_CALLBACK(fl_selection_clear), 0);
     g_signal_connect(G_OBJECT(nbtext), "selection-get",
-        G_CALLBACK(f_selection_get), 0);
+        G_CALLBACK(fl_selection_get), 0);
 
     GtkTextBuffer *textbuf =
         gtk_text_view_get_buffer(GTK_TEXT_VIEW(nbtext));
@@ -669,7 +666,7 @@ QTfilesListDlg::create_page(sDirList *dl)
 
     // drag source (starts explicitly)
     g_signal_connect(G_OBJECT(nbtext), "drag-data-get",
-        G_CALLBACK(f_source_drag_data_get), this);
+        G_CALLBACK(fl_source_drag_data_get), this);
 
     // drop site
     gtk_drag_dest_set(nbtext, GTK_DEST_DEFAULT_ALL, target_table,
@@ -677,7 +674,7 @@ QTfilesListDlg::create_page(sDirList *dl)
         (GdkDragAction)(GDK_ACTION_COPY | GDK_ACTION_MOVE |
          GDK_ACTION_LINK | GDK_ACTION_ASK));
     g_signal_connect_after(G_OBJECT(nbtext), "drag-data-received",
-        G_CALLBACK(f_drag_data_received), this);
+        G_CALLBACK(fl_drag_data_received), this);
 */
     return (page);
 }
@@ -859,9 +856,9 @@ void
 QTfilesListDlg::set_sensitive(const char *bname, bool state)
 {
     QString qs(bname);
-    for (int i = 0; f_buttons[i]; i++) {
-        if (f_buttons[i]->text() == qs) {
-            f_buttons[i]->setEnabled(state);
+    for (int i = 0; fl_buttons[i]; i++) {
+        if (fl_buttons[i]->text() == qs) {
+            fl_buttons[i]->setEnabled(state);
             break;
         }
     }
@@ -876,23 +873,23 @@ QTfilesListDlg::set_sensitive(const char *bname, bool state)
 // Idle procedure to update the file list.
 //
 int
-QTfilesListDlg::f_idle_proc(void*)
+QTfilesListDlg::fl_idle_proc(void*)
 {
-    for (sDirList *dl = f_path_list->dirs(); dl; dl = dl->next()) {
+    for (sDirList *dl = fl_path_list->dirs(); dl; dl = dl->next()) {
         if (dl->dirty()) {
             sFileList fl(dl->dirname());
-            fl.read_list(f_path_list->checkfunc(), f_path_list->incldirs());
+            fl.read_list(fl_path_list->checkfunc(), fl_path_list->incldirs());
             int *colwid;
-            char *txt = fl.get_formatted_list(f_path_list->columns(),
-                false, f_path_list->no_files_msg(), &colwid);
+            char *txt = fl.get_formatted_list(fl_path_list->columns(),
+                false, fl_path_list->no_files_msg(), &colwid);
             dl->set_dirfiles(txt, colwid);
             dl->set_dirty(false);
             if (instPtr) {
-                f_update_text((QTtextEdit*)dl->dataptr(), dl->dirfiles());
+                fl_update_text((QTtextEdit*)dl->dataptr(), dl->dirfiles());
                 if ((QTtextEdit*)dl->dataptr() == instPtr->wb_textarea) {
                     /* XXX
-                    if (instPtr->f_desel)
-                        (*instPtr->f_desel)(instPtr);
+                    if (instPtr->fl_desel)
+                        (*instPtr->fl_desel)(instPtr);
                         */
                 }
             }
@@ -906,16 +903,16 @@ QTfilesListDlg::f_idle_proc(void*)
 // Check if directory has been modified, and set dirty flag if so.
 //
 int
-QTfilesListDlg::f_timer(void*)
+QTfilesListDlg::fl_timer(void*)
 {
     // If the cwd changes, update everything
     char *cwd = getcwd(0, 0);
     if (cwd) {
-        if (!f_cwd || strcmp(f_cwd, cwd)) {
-            delete [] f_cwd;
-            f_cwd = lstring::tocpp(cwd);
+        if (!fl_cwd || strcmp(fl_cwd, cwd)) {
+            delete [] fl_cwd;
+            fl_cwd = lstring::tocpp(cwd);
             if (instPtr)
-                instPtr->update(f_path_list->path_string());
+                instPtr->update(fl_path_list->path_string());
             return (true);
         }
         else
@@ -923,7 +920,7 @@ QTfilesListDlg::f_timer(void*)
     }
 
     bool dirtyone = false;
-    for (sDirList *dl = f_path_list->dirs(); dl; dl = dl->next()) {
+    for (sDirList *dl = fl_path_list->dirs(); dl; dl = dl->next()) {
         if (dl->mtime() != 0) {
             struct stat st;
             if (stat(dl->dirname(), &st) == 0 && dl->mtime() != st.st_mtime) {
@@ -934,7 +931,7 @@ QTfilesListDlg::f_timer(void*)
         }
     }
     if (dirtyone)
-        QTdev::self()->AddIdleProc(f_idle_proc, 0);
+        QTdev::self()->AddIdleProc(fl_idle_proc, 0);
 
     return (true);
 }
@@ -944,18 +941,18 @@ QTfilesListDlg::f_timer(void*)
 // Set up monitoring of the directories in the path.
 //
 void
-QTfilesListDlg::f_monitor_setup()
+QTfilesListDlg::fl_monitor_setup()
 {
-    if (!f_cwd)
-        f_cwd = lstring::tocpp(getcwd(0, 0));
+    if (!fl_cwd)
+        fl_cwd = lstring::tocpp(getcwd(0, 0));
 
-    for (sDirList *d = f_path_list->dirs(); d; d = d->next()) {
+    for (sDirList *d = fl_path_list->dirs(); d; d = d->next()) {
         struct stat st;
         if (stat(d->dirname(), &st) == 0)
             d->set_mtime(st.st_mtime);
     }
-    if (!f_timer_tag)
-        f_timer_tag = QTdev::self()->AddTimer(1000, f_timer, 0);
+    if (!fl_timer_tag)
+        fl_timer_tag = QTdev::self()->AddTimer(1000, fl_timer, 0);
 }
 
 
@@ -964,14 +961,14 @@ QTfilesListDlg::f_monitor_setup()
 // the files list, and at the same time update the files list.
 //
 bool
-QTfilesListDlg::f_check_path_and_update(const char *path)
+QTfilesListDlg::fl_check_path_and_update(const char *path)
 {
     int cnt = 0;
     sDirList *dl;
-    for (dl = f_path_list->dirs(); dl; cnt++, dl = dl->next()) ;
+    for (dl = fl_path_list->dirs(); dl; cnt++, dl = dl->next()) ;
     sDirList **array = new sDirList*[cnt];
     cnt = 0;
-    for (dl = f_path_list->dirs(); dl; cnt++, dl = dl->next())
+    for (dl = fl_path_list->dirs(); dl; cnt++, dl = dl->next())
         array[cnt] = dl;
     // cnt is number of old path elements
 
@@ -1014,11 +1011,11 @@ QTfilesListDlg::f_check_path_and_update(const char *path)
                 // not already there, create new element
                 sDirList *d = new sDirList(p);
                 sFileList fl(p);
-                fl.read_list(f_path_list->checkfunc(),
-                    f_path_list->incldirs());
+                fl.read_list(fl_path_list->checkfunc(),
+                    fl_path_list->incldirs());
                 int *colwid;
-                char *txt = fl.get_formatted_list(f_path_list->columns(),
-                    false, f_path_list->no_files_msg(), &colwid);
+                char *txt = fl.get_formatted_list(fl_path_list->columns(),
+                    false, fl_path_list->no_files_msg(), &colwid);
                 d->set_dirfiles(txt, colwid);
                 if (!d0)
                     de = d0 = d;
@@ -1040,7 +1037,7 @@ QTfilesListDlg::f_check_path_and_update(const char *path)
     }
     delete [] array;
     if (changed)
-        f_path_list->set_dirs(d0);
+        fl_path_list->set_dirs(d0);
     return (changed);
 }
 
@@ -1049,7 +1046,7 @@ QTfilesListDlg::f_check_path_and_update(const char *path)
 // Refresh the text while keeping current top location.
 //
 void
-QTfilesListDlg::f_update_text(QTtextEdit *text, const char *newtext)
+QTfilesListDlg::fl_update_text(QTtextEdit *text, const char *newtext)
 {
     if (instPtr == 0 || text == 0 || newtext == 0)
         return;
@@ -1260,10 +1257,10 @@ void
 QTfilesListDlg::page_change_slot(int pg)
 {
     int i = 0;
-    for (sDirList *dl = f_path_list->dirs(); dl; i++, dl = dl->next()) {
+    for (sDirList *dl = fl_path_list->dirs(); dl; i++, dl = dl->next()) {
         if (i == pg && dl->dataptr()) {
-            delete [] f_directory;
-            f_directory = lstring::copy(dl->dirname());
+            delete [] fl_directory;
+            fl_directory = lstring::copy(dl->dirname());
             if (wb_textarea)
                 wb_textarea->select_range(0, 0);
             wb_textarea = (QTtextEdit*)dl->dataptr();
@@ -1277,7 +1274,7 @@ QTfilesListDlg::page_change_slot(int pg)
 void
 QTfilesListDlg::menu_change_slot(int i)
 {
-    f_notebook->setCurrentIndex(i);
+    fl_notebook->setCurrentIndex(i);
 }
 
 
@@ -1299,11 +1296,11 @@ QTfilesListDlg::resize_slot(QResizeEvent *ev)
     if (!QTfont::stringBounds(0, FNT_FIXED, &fw, &fh))
         fw = 8;
     int cols = ev->size().width()/fw - 2;
-    if (cols != f_path_list->columns()) {
-        for (sDirList *dl = f_path_list->dirs(); dl; dl = dl->next())
+    if (cols != fl_path_list->columns()) {
+        for (sDirList *dl = fl_path_list->dirs(); dl; dl = dl->next())
             dl->set_dirty(true);
-        f_path_list->set_columns(cols);
-        f_idle_proc(0);
+        fl_path_list->set_columns(cols);
+        fl_idle_proc(0);
     }
 }
 
@@ -1313,7 +1310,7 @@ QTfilesListDlg::mouse_press_slot(QMouseEvent *ev)
 {
     if (ev->type() == QEvent::MouseButtonRelease) {
         ev->accept();
-        f_drag_start = false;
+        fl_drag_start = false;
         return;
     }
     if (ev->type() != QEvent::MouseButtonPress) {
@@ -1326,7 +1323,7 @@ QTfilesListDlg::mouse_press_slot(QMouseEvent *ev)
     set_sensitive(FB_PLACE, false);
     set_sensitive(FB_CONTENT, false);
 
-    f_drag_start = false;
+    fl_drag_start = false;
     if (!wb_textarea)
         return;
     if (wb_textarea->toPlainText() == QString(nofiles_msg))
@@ -1355,8 +1352,8 @@ QTfilesListDlg::mouse_press_slot(QMouseEvent *ev)
     }
 
     const int *colwid = 0;
-    for (sDirList *dl = f_path_list->dirs(); dl; dl = dl->next()) {
-        if (dl->dataptr() && !strcmp(f_directory, dl->dirname())) {
+    for (sDirList *dl = fl_path_list->dirs(); dl; dl = dl->next()) {
+        if (dl->dataptr() && !strcmp(fl_directory, dl->dirname())) {
             colwid = dl->col_width();
             break;
         }
@@ -1430,10 +1427,10 @@ QTfilesListDlg::mouse_press_slot(QMouseEvent *ev)
         if (strchr("GBOCL", code))
             set_sensitive(FB_CONTENT, true);
 
-        f_drag_start = true;
-        f_drag_btn = ev->button();
-        f_drag_x = xx;
-        f_drag_y = yy;
+        fl_drag_start = true;
+        fl_drag_btn = ev->button();
+        fl_drag_x = xx;
+        fl_drag_y = yy;
     }
 }
 
@@ -1441,16 +1438,16 @@ QTfilesListDlg::mouse_press_slot(QMouseEvent *ev)
 void
 QTfilesListDlg::mouse_motion_slot(QMouseEvent *ev)
 {
-    if (!f_drag_start)
+    if (!fl_drag_start)
         return;
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-    if (abs(ev->position().x() - f_drag_x) < 5 &&
-            abs(ev->position().y() - f_drag_y) < 5)
+    if (abs(ev->position().x() - fl_drag_x) < 5 &&
+            abs(ev->position().y() - fl_drag_y) < 5)
 #else
-    if (abs(ev->x() - f_drag_x) < 5 && abs(ev->y() - f_drag_y) < 5)
+    if (abs(ev->x() - fl_drag_x) < 5 && abs(ev->y() - fl_drag_y) < 5)
 #endif
         return;
-    f_drag_start = false;
+    fl_drag_start = false;
 
     char *s = get_selection();
     if (!s)
@@ -1481,7 +1478,7 @@ QTfilesListDlg::mime_data_received_slot(const QMimeData *dta)
             // text/twostring, keep the first token only.
             *t = 0;
         }
-        const char *dst = f_directory;
+        const char *dst = fl_directory;
         if (dst && *dst && strcmp(pth, dst))
             QTfileDlg::DoFileAction(this, pth, dst, QTfileDlg::A_NOOP);
         delete [] pth;

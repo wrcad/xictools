@@ -103,11 +103,11 @@ private slots:
 
 private:
     void set_layername(const char *n)
-        {
-            const char *nn = lstring::copy(n);
-            delete [] te_lname;
-            te_lname = nn;
-        }
+    {
+        const char *nn = lstring::copy(n);
+        delete [] te_lname;
+        te_lname = nn;
+    }
 
     GRobject    te_caller;
     QLabel      *te_lab_top;

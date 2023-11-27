@@ -64,12 +64,12 @@ public:
     struct ci_item
     {
         ci_item()
-            {
-                cdesc = 0;
-                name = 0;
-                index = 0;
-                sel = false;
-            }
+        {
+            cdesc = 0;
+            name = 0;
+            index = 0;
+            sel = false;
+        }
 
         CDc *cdesc;                         // instance desc
         const char *name;                   // master cell name
@@ -117,3 +117,4 @@ private:
 };
 
 #endif
+

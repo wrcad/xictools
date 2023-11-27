@@ -46,6 +46,7 @@
 
 #include <QDialog>
 
+
 //
 // Panel for setting misc OA interface parameters.
 //

@@ -473,7 +473,7 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTdraw(XW_TEXT),
     connect(gd_sample, SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(smp_motion_slot(QMouseEvent*)));
 
-    gd_viewport = QTdrawIf::new_draw_interface(DrawNative, false, this);
+    gd_viewport = new QTcanvas();
     grd->addWidget(gd_viewport, 2, 1);
     gd_viewport->setFixedSize(QSize(200, 10));
 
@@ -711,7 +711,7 @@ SetColor(clr.rgb());
         Box(os, 0, xs, hei);
 Update();
 
-        QTdrawIf *tmp = gd_viewport;
+        QTcanvas *tmp = gd_viewport;
         gd_viewport = gd_sample;
         SetWindowBackground(QTdev::self()->NameColor("black"));
         Clear();
@@ -748,7 +748,7 @@ Update();
         Clear();
         Update();
 
-        QTdrawIf *tmp = gd_viewport;
+        QTcanvas *tmp = gd_viewport;
         gd_viewport = gd_sample;
         SetWindowBackground(clr.rgb());
         Clear();

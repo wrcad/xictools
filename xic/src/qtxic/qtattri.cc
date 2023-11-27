@@ -266,11 +266,27 @@ QTattributesDlg::QTattributesDlg(GRobject c)
 {
     instPtr = this;
     at_caller = c;
+    at_cursor = 0;
+    at_fullscr = 0;
+    at_sb_visthr = 0;
+    at_sb_cxpct = 0;
+    at_sb_offset = 0;
+
     at_minst = 0;
     at_mcntr = 0;
+
     at_abprop = 0;
+    at_sb_tsize = 0;
+
     at_ebterms = 0;
+    at_sb_ttsize = 0;
+    at_sb_tmsize = 0;
+
     at_hdn = 0;
+    at_sb_lheight = 0;
+    at_sb_llen = 0;
+    at_sb_llines = 0;
+
     at_ebthst = 0;
 
     setWindowTitle(tr("Window Attributes"));

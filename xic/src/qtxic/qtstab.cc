@@ -97,6 +97,7 @@ QTstabDlg::QTstabDlg(GRobject c) : QTbag(this)
     tb_add = 0;
     tb_clr = 0;
     tb_del = 0;
+
     tb_add_pop = 0;
     tb_clr_pop = 0;
     tb_del_pop = 0;

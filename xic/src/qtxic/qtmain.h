@@ -54,6 +54,7 @@
 #include <QDialog>
 #include <QFontMetrics>
 
+
 struct sKeyEvent;
 class QTcoord;
 class QTparam;
@@ -89,11 +90,11 @@ class QTpkg : public DSPpkg
 {
 public:
     QTpkg()
-        {
-            pkg_busy_popup      = 0;
-            pkg_in_main_loop    = false;
-            pkg_not_mapped      = false;
-        }
+    {
+        pkg_busy_popup      = 0;
+        pkg_in_main_loop    = false;
+        pkg_not_mapped      = false;
+    }
 
     static QTpkg *self() { return (dynamic_cast<QTpkg*>(DSPpkg::self())); }
 
@@ -160,7 +161,6 @@ public:
     char *key_buf()     { return (k_keys); }
     void append(char c) { k_keys[k_keypos++] = c; }
 
-
 private slots:
     void font_changed(int);
 
@@ -180,8 +180,15 @@ public:
     QTsubwin(int, QWidget* = 0);
     ~QTsubwin();
 
-    void subw_initialize(int);
-    void pre_destroy(int);
+    void set_transient_for(QWidget *prnt)
+    {
+        Qt::WindowFlags f = windowFlags();
+        setParent(prnt);
+#ifdef __APPLE__
+        f |= Qt::Tool;
+#endif
+        setWindowFlags(f);
+    }
 
     // cAppWinFuncs interface
     //
@@ -220,8 +227,7 @@ public:
     QToolBar *ToolBar()             { return (sw_toolbar); }
     cKeys *Keys()                   { return (sw_keys_pressed); }
     void clear_expand()             { sw_expand = 0; }
-
-    static DrawType draw_type()     { return (sw_drawtype); }
+    int win_number()                { return (sw_win_number); }
 
     QSize sizeHint()                const { return (QSize(500, 400)); }
     QSize minimumSizeHint()         const { return (QSize(250, 200)); }
@@ -260,9 +266,6 @@ protected:
     QTgridDlg   *sw_gridpop;
     WindowDesc  *sw_windesc;
     int         sw_win_number;
-
-private:
-    static DrawType sw_drawtype;
 };
 
 

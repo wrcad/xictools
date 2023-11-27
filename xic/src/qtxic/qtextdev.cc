@@ -106,10 +106,11 @@ QTextDevDlg::QTextDevDlg(GRobject caller)
     ed_select = 0;
     ed_compute = 0;
     ed_compare = 0;
-    ed_selection = 0;
-    ed_sdesc = 0;
     ed_measbox = 0;
     ed_paint = 0;
+
+    ed_selection = 0;
+    ed_sdesc = 0;
     ed_devs_listed = false;
 
     setWindowTitle(tr("Show/Select Devices"));

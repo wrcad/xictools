@@ -70,10 +70,10 @@ private slots:
     void text_changed_slot(const QString&);
 
 private:
-    QCheckBox *ll_luse;
-    QCheckBox *ll_lskip;
-    QLineEdit *ll_laylist;
-    QCheckBox *ll_aluse;
+    QCheckBox   *ll_luse;
+    QCheckBox   *ll_lskip;
+    QLineEdit   *ll_laylist;
+    QCheckBox   *ll_aluse;
     QPushButton *ll_aledit;
 };
 

@@ -46,6 +46,7 @@
 
 #include <QDialog>
 
+
 class QRadioButton;
 class QComboBox;
 class QCheckBox;
@@ -120,15 +121,15 @@ private:
     QTdoubleSpinBox *lx_sb_part;
     QSpinBox        *lx_sb_thread;
 
-    double lx_last_part_size;
+    double          lx_last_part_size;
 
-    static char *last_lexpr;
-    static int depth_hst;
-    static int create_mode;
-    static bool fast_mode;
-    static bool use_merge;
-    static bool do_recurse;
-    static bool noclear;
+    static char     *last_lexpr;
+    static int      depth_hst;
+    static int      create_mode;
+    static bool     fast_mode;
+    static bool     use_merge;
+    static bool     do_recurse;
+    static bool     noclear;
 
     static QTlayerExpDlg *instPtr;
 };

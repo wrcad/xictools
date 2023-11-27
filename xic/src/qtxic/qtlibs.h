@@ -96,17 +96,17 @@ private:
     static stringlist *lb_pathlibs();
     static stringlist *lb_add_dir(char*, stringlist*);
 
-    GRobject lb_caller;
+    GRobject    lb_caller;
     QPushButton *lb_openbtn;
     QPushButton *lb_contbtn;
     QTreeWidget *lb_list;
     QPushButton *lb_noovr;
     GRmcolPopup *lb_content_pop;
-    char *lb_selection;
-    char *lb_contlib;
+    char        *lb_selection;
+    char        *lb_contlib;
 
-    QPixmap *lb_open_pb;
-    QPixmap *lb_close_pb;
+    QPixmap     *lb_open_pb;
+    QPixmap     *lb_close_pb;
 
     static const char *nolibmsg;
     static QTlibsDlg *instPtr;

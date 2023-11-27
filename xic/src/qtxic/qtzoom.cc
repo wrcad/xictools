@@ -229,8 +229,6 @@ QTzoomDlg::popdown()
     if (!p_parent)
         return;
     QTbag *owner = dynamic_cast<QTbag*>(p_parent);
-//XXX    if (owner)
-//XXX        QTdev::SetFocus(owner->Shell());
     if (!owner || !owner->MonitorActive(this))
         return;
 

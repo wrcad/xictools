@@ -137,6 +137,20 @@ GRfont::parse_freeform_font_string(const char *string, char **family,
         }
         break;
     }
+
+    stringlist *last = s0;
+    while (last && last->next)
+        last = last->next;
+    // If the last (actually first) token is quoted, take it as the
+    // face name, and any other tokens are taken as status words.
+    if (*last->string == '\"' || *last->string == '\'') {
+        while (s0 != last) {
+            stringlist *st = s0;
+            s0 = s0->next;
+            st->next = sx;
+            sx = st;
+        }
+    }
     if (style)
         *style = sx;
     else
@@ -145,6 +159,7 @@ GRfont::parse_freeform_font_string(const char *string, char **family,
     // Throw out the trash and reverse the remaining list.
     sx = 0;
     while (s0) {
+        lstring::unquote_in_place(s0->string);
         stringlist *st = s0;
         s0 = s0->next;
         st->next = sx;
@@ -178,6 +193,7 @@ namespace {
     const char *style_keywords[] =
     {
         // styles
+        "Regular",
         "Oblique",
         "Italic",
 
@@ -186,10 +202,14 @@ namespace {
 
         // weights
         "Ultra-Light",
+        "Ultra",
         "Light",
         "Medium",
-        "Semi-Bold",
         "Bold",
+        "Semi",
+        "Semi-Bold",
+        "Demi",
+        "Demi-Bold",
         "Ultra-Bold",
         "Heavy",
 

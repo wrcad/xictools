@@ -45,6 +45,7 @@
 #include "edit.h"
 #include "qtmain.h"
 
+
 class QMimeData;
 
 class QTprpBase : public QTbag

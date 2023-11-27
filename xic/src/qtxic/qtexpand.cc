@@ -58,6 +58,22 @@ QTexpandDlg::QTexpandDlg(QTbag *owner, const char *string, bool nopeek,
     p_cb_arg = arg;
     p_callback = 0;
 
+    b_label = 0;
+    b_edit = 0;
+    b_help = 0;
+    b_plus = 0;
+    b_minus = 0;
+    b_all = 0;
+    b_0 = 0;
+    b_1 = 0;
+    b_2 = 0;
+    b_3 = 0;
+    b_4 = 0;
+    b_5 = 0;
+    b_peek = 0;
+    b_apply = 0;
+    b_dismiss = 0;
+
     if (owner)
         owner->MonitorAdd(this);
 
@@ -80,8 +96,8 @@ QTexpandDlg::QTexpandDlg(QTbag *owner, const char *string, bool nopeek,
     QHBoxLayout *hb = new QHBoxLayout(gb);
     hb->setContentsMargins(qm);
     hb->setSpacing(2);
-    label = new QLabel(tr("Set Expansion Control String"));
-    hb->addWidget(label);
+    b_label = new QLabel(tr("Set Expansion Control String"));
+    hb->addWidget(b_label);
 
     b_help = new QPushButton(tr("Help"));
     hbox->addWidget(b_help);
@@ -94,10 +110,10 @@ QTexpandDlg::QTexpandDlg(QTbag *owner, const char *string, bool nopeek,
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     
-    edit = new QLineEdit();
-    edit->setText(string);
-    edit->setMaximumWidth(60);
-    hbox->addWidget(edit);
+    b_edit = new QLineEdit();
+    b_edit->setText(string);
+    b_edit->setMaximumWidth(60);
+    hbox->addWidget(b_edit);
 
     b_plus = new QToolButton();
     hbox->addWidget(b_plus);
@@ -215,7 +231,7 @@ QTexpandDlg::popdown()
 void
 QTexpandDlg::update(const char *string)
 {
-    edit->setText(QString(string));
+    b_edit->setText(QString(string));
 }
 
 
@@ -229,95 +245,95 @@ QTexpandDlg::help_slot()
 void
 QTexpandDlg::plus_slot()
 {
-    QString qs = edit->text();
+    QString qs = b_edit->text();
     if (!qs.isNull()) {
         const char *t = qs.toLatin1().constData();
         if (*t == '+') {
             qs = qs + QString("+");
-            edit->setText(qs);
+            b_edit->setText(qs);
             return;
         }
     }
-    edit->setText(QString("+"));
+    b_edit->setText(QString("+"));
 }
 
 
 void
 QTexpandDlg::minus_slot()
 {
-    QString qs = edit->text();
+    QString qs = b_edit->text();
     if (!qs.isNull()) {
         const char *t = qs.toLatin1().constData();
         if (*t == '-') {
             qs = qs + QString("-");
-            edit->setText(qs);
+            b_edit->setText(qs);
             return;
         }
     }
-    edit->setText(QString("-"));
+    b_edit->setText(QString("-"));
 }
 
 
 void
 QTexpandDlg::all_slot()
 {
-    edit->setText(QString(tr("all")));
+    b_edit->setText(QString(tr("all")));
 }
 
 
 void
 QTexpandDlg::b0_slot()
 {
-    edit->setText(QString("0"));
+    b_edit->setText(QString("0"));
 }
 
 
 void
 QTexpandDlg::b1_slot()
 {
-    edit->setText(QString("1"));
+    b_edit->setText(QString("1"));
 }
 
 
 void
 QTexpandDlg::b2_slot()
 {
-    edit->setText(QString("2"));
+    b_edit->setText(QString("2"));
 }
 
 
 void
 QTexpandDlg::b3_slot()
 {
-    edit->setText(QString("3"));
+    b_edit->setText(QString("3"));
 }
 
 
 void
 QTexpandDlg::b4_slot()
 {
-    edit->setText(QString("4"));
+    b_edit->setText(QString("4"));
 }
 
 
 void
 QTexpandDlg::b5_slot()
 {
-    edit->setText(QString("5"));
+    b_edit->setText(QString("5"));
 }
 
 
 void
 QTexpandDlg::peek_slot()
 {
-    edit->setText(QString("p"));
+    b_edit->setText(QString("p"));
 }
 
 
 void
 QTexpandDlg::apply_slot()
 {
-    char *string = lstring::copy(edit->text().toLatin1().constData());
+    char *string = lstring::copy(b_edit->text().toLatin1().constData());
     bool ret = false;
     if (p_callback)
         ret = (*p_callback)(string, p_cb_arg);

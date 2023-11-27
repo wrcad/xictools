@@ -127,8 +127,6 @@ QTconvOutFmt::fmt_menu QTconvOutFmt::fmt_label_formats[] = {
 
 QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
 {
-    fmt_cb = cb;
-
     fmt_level = 0;
     fmt_gdsmap = 0;
     fmt_gdscut = 0;
@@ -143,10 +141,15 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     fmt_oasadv = 0;
     fmt_gdsftlab = 0;
     fmt_gdsftopt = 0;
+    fmt_cifext = 0;
     fmt_cifflags = 0;
     fmt_cifcname = 0;
     fmt_ciflayer = 0;
     fmt_ciflabel = 0;
+    fmt_sb_gdsunit = 0;
+
+    fmt_cb = cb;
+    fmt_strip = FIO()->IsStripForExport();
 
     // GDSII page
     //
@@ -340,7 +343,6 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     fmt_cifflags = new QMenu();
     fmt_cifext->setMenu(fmt_cifflags);
 
-    fmt_strip = FIO()->IsStripForExport();
     unsigned int flgs = fmt_strip ?
         FIO()->CifStyle().flags_export() : FIO()->CifStyle().flags();
     fmt_cifflags->addAction(fmt_which_flags[(int)fmt_strip]);
@@ -401,12 +403,6 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     connect(fmt_cifcname, SIGNAL(currentIndexChanged(int)),
         this, SLOT(cifcname_menu_changed(int)));
 
-/*
-    g_signal_connect(G_OBJECT(entry), "changed",
-        G_CALLBACK(fmt_style_proc), (void*)(long)CNAME_STYLE);
-*/
-
-
     label = new QLabel(tr("Layer Specification"));
     col2->addWidget(label);
 
@@ -423,10 +419,6 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
         fmt_ciflayer->setCurrentIndex(ax);
     connect(fmt_ciflayer, SIGNAL(currentIndexChanged(int)),
         this, SLOT(ciflayer_menu_changed(int)));
-/*
-    g_signal_connect(G_OBJECT(entry), "changed",
-        G_CALLBACK(fmt_style_proc), (void*)(long)LAYER_STYLE);
-*/
 
     label = new QLabel(tr("Label Extension"));
     col3->addWidget(label);
@@ -445,11 +437,6 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     connect(fmt_ciflabel, SIGNAL(currentIndexChanged(int)),
         this, SLOT(ciflabel_menu_changed(int)));
         
-/*
-    g_signal_connect(G_OBJECT(entry), "changed",
-        G_CALLBACK(fmt_style_proc), (void*)(long)LABEL_STYLE);
-*/
-
     // CGX page
     //
     page = new QWidget();

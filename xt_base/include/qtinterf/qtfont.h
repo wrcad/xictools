@@ -166,6 +166,7 @@ public:
     char *current_style();
     int current_size();
     void add_choice(const QFont*, const char*);
+    void set_apply_btn_name(const char*);
 
 signals:
     void select_action(int, const char*, void*);

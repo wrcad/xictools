@@ -191,6 +191,27 @@ QTstdViaDlg::QTstdViaDlg(GRobject caller, CDc *cdesc)
     stv_apply = 0;
     stv_cdesc = 0;
 
+    stv_sb_wid = 0;
+    stv_sb_hei = 0;
+    stv_sb_rows = 0;
+    stv_sb_cols = 0;
+    stv_sb_spa_x = 0;
+    stv_sb_spa_y = 0;
+    stv_sb_enc1_x = 0;
+    stv_sb_enc1_y = 0;
+    stv_sb_off1_x = 0;
+    stv_sb_off1_y = 0;
+    stv_sb_enc2_x = 0;
+    stv_sb_enc2_y = 0;
+    stv_sb_off2_x = 0;
+    stv_sb_off2_y = 0;
+    stv_sb_org_x = 0;
+    stv_sb_org_y = 0;
+    stv_sb_imp1_x = 0;
+    stv_sb_imp1_y = 0;
+    stv_sb_imp2_x = 0;
+    stv_sb_imp2_y = 0;
+
     setWindowTitle(tr("Standard Via Parameters"));
     setAttribute(Qt::WA_DeleteOnClose);
 //    gtk_window_set_resizable(GTK_WINDOW(stv_popup), false);
@@ -532,10 +553,8 @@ QTstdViaDlg::update(GRobject caller, CDc *cd)
         stv_cdesc = 0;
         stv_caller = caller;
 
-//XXX
         QByteArray layerv_ba = stv_layerv->currentText().toLatin1();
-        const char *vlyr = layerv_ba.constData();
-        if (!vlyr) {
+        if (layerv_ba.isNull()) {
             // No cut layer, need to fill these in.  Only add those
             // that are used by an existing standard via.
 
@@ -562,7 +581,7 @@ QTstdViaDlg::update(GRobject caller, CDc *cd)
         // Rebuild the name menu, in case it has changed (hence the
         // reason for the update).
 
-        CDl *ldv = CDldb()->findLayer(vlyr, Physical);
+        CDl *ldv = CDldb()->findLayer(layerv_ba.constData(), Physical);
         if (!ldv)
             return;
 

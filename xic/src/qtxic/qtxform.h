@@ -88,10 +88,10 @@ private slots:
     void dismiss_btn_slot();
 
 private:
-    GRobject tf_caller;
-    QCheckBox *tf_rflx;
-    QCheckBox *tf_rfly;
-    QComboBox *tf_ang;
+    GRobject    tf_caller;
+    QCheckBox   *tf_rflx;
+    QCheckBox   *tf_rfly;
+    QComboBox   *tf_ang;
     QTdoubleSpinBox *tf_mag;
     QPushButton *tf_id;
     QPushButton *tf_last;

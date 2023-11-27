@@ -120,6 +120,9 @@ QTlayerExpDlg::QTlayerExpDlg(GRobject c)
     lx_recall = 0;
     lx_save_menu = 0;
     lx_recall_menu = 0;
+    lx_sb_part = 0;
+    lx_sb_thread = 0;
+
     lx_last_part_size = DEF_GRD_PART_SIZE;
 
     setWindowTitle(tr("Exaluate Layer Expression"));

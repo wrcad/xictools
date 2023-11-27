@@ -98,31 +98,13 @@ private:
     static void at_remove_cb(bool, void*);
     static void at_clear_cb(bool, void*);
 
-    /*
-    int button_hdlr(bool, GtkWidget*, GdkEvent*);
-    int motion_hdlr(GtkWidget*, GdkEvent*);
-    void action_hdlr(GtkWidget*, void*);
-    static void at_cancel(GtkWidget*, void*);
-    static void at_action_proc(GtkWidget*, void*);
-
-    static void at_drag_data_get(GtkWidget *widget, GdkDragContext*,
-        GtkSelectionData*, guint, guint, void*);
-    static void at_drag_data_received(GtkWidget*, GdkDragContext*,
-        gint, gint, GtkSelectionData*, guint, guint);
-    static int at_btn_hdlr(GtkWidget*, GdkEvent*, void*);
-    static int at_btn_release_hdlr(GtkWidget*, GdkEvent*, void*);
-    static int at_motion_hdlr(GtkWidget*, GdkEvent*, void*);
-    static void at_resize_hdlr(GtkWidget*, GtkAllocation*);
-    static void at_realize_hdlr(GtkWidget*, void*);
-    */
-
-    GRobject at_caller;
+    GRobject    at_caller;
     QPushButton *at_addbtn;
     QPushButton *at_rembtn;
     QPushButton *at_clearbtn;
     QRadioButton *at_over;
     QRadioButton *at_skip;
-    GRledPopup *at_add_pop;
+    GRledPopup  *at_add_pop;
     GRaffirmPopup *at_remove_pop;
     GRaffirmPopup *at_clear_pop;
 

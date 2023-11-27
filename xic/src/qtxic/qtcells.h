@@ -121,31 +121,14 @@ private:
     static ESret c_save_cb(const char*, void*);
     static int c_timeout(void*);
 
-    /*
-    static void c_page_proc(GtkWidget*, void*);
-    static void c_mode_proc(GtkWidget*, void*);
-    static int c_highlight_idle(void*);
-    static void c_drag_data_get(GtkWidget *widget, GdkDragContext*,
-        GtkSelectionData*, guint, guint, void*);
-    static int c_btn_hdlr(GtkWidget*, GdkEvent*, void*);
-    static int c_btn_release_hdlr(GtkWidget*, GdkEvent*, void*);
-    static int c_motion_hdlr(GtkWidget*, GdkEvent*, void*);
-    static void c_resize_hdlr(GtkWidget*, GtkAllocation*);
-    static void c_realize_hdlr(GtkWidget*, void*);
-    static void c_action_proc(GtkWidget*, void*);
-    static void c_help_proc(GtkWidget*, void*);
-    static void c_cancel(GtkWidget*, void*);
-    static void c_save_btn_hdlr(GtkWidget*, void*);
-    */
-
-    GRobject c_caller;
+    GRobject    c_caller;
     GRaffirmPopup *c_clear_pop;
     GRaffirmPopup *c_repl_pop;
-    GRledPopup *c_copy_pop;
-    GRledPopup *c_rename_pop;
-    QTledDlg *c_save_pop;
-    QTmsgDlg *c_msg_pop;
-    QLabel *c_label;
+    GRledPopup  *c_copy_pop;
+    GRledPopup  *c_rename_pop;
+    QTledDlg    *c_save_pop;
+    QTmsgDlg    *c_msg_pop;
+    QLabel      *c_label;
     QPushButton *c_clearbtn;
     QPushButton *c_treebtn;
     QPushButton *c_openbtn;
@@ -158,22 +141,23 @@ private:
     QPushButton *c_infobtn;
     QPushButton *c_showbtn;
     QPushButton *c_fltrbtn;
-    QComboBox *c_page_combo;
-    QComboBox *c_mode_combo;
-    cfilter_t *c_pfilter;
-    cfilter_t *c_efilter;
-    char *c_copyname;
-    char *c_replname;
-    char *c_newname;
-    bool c_no_select;
-    bool c_no_update;
-    bool c_dragging;
-    int c_drag_x, c_drag_y;
-    int c_cols;
-    int c_page;
+    QComboBox   *c_page_combo;
+    QComboBox   *c_mode_combo;
+    cfilter_t   *c_pfilter;
+    cfilter_t   *c_efilter;
+    char        *c_copyname;
+    char        *c_replname;
+    char        *c_newname;
+    bool        c_no_select;
+    bool        c_no_update;
+    bool        c_dragging;
+    int         c_drag_x;
+    int         c_drag_y;
+    int         c_cols;
+    int         c_page;
     DisplayMode c_mode;
-    int c_start;
-    int c_end;
+    int         c_start;
+    int         c_end;
 
     static QTcellsDlg *instPtr;
 };

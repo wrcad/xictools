@@ -108,7 +108,10 @@ QTconvertFmtDlg::QTconvertFmtDlg(GRobject c, int inp_type,
     instPtr = this;
     cv_caller = c;
     cv_label = 0;
+    cv_input = 0;
+    cv_fmt = 0;
     cv_nbook = 0;
+
     cv_strip = 0;
     cv_libsub = 0;
     cv_pcsub = 0;
@@ -118,14 +121,13 @@ QTconvertFmtDlg::QTconvertFmtDlg(GRobject c, int inp_type,
     cv_nofllbs = 0;
     cv_nolabels = 0;
     cv_keepbad = 0;
-    cv_input = 0;
+
+    cv_llist = 0;
+    cv_cnmap = 0;
+    cv_wnd = 0;
     cv_tx_label = 0;
     cv_callback = callback;
     cv_arg = arg;
-    cv_fmt = 0;
-    cv_cnmap = 0;
-    cv_llist = 0;
-    cv_wnd = 0;
 
     setWindowTitle(tr("File Format Conversion"));
     setAttribute(Qt::WA_DeleteOnClose);

@@ -46,12 +46,12 @@
 
 #include <QDialog>
 
+
 class QHBoxLayout;
 class QGroupBox;
 class QSpinBox;
 class QDragEnterEvent;
 class QDropEvent;
-
 
 class QTfillPatDlg : public QDialog, public QTbag, public QTdraw
 {
@@ -125,39 +125,47 @@ private:
     static void fp_drawghost(int, int, int, int, bool = false);
     static int fp_update_idle_proc(void*);
 
-    GRobject fp_caller;
+    GRobject    fp_caller;
     QPushButton *fp_outl;
     QPushButton *fp_fat;
     QPushButton *fp_cut;
-    QTcanvas *fp_editor;
-    QTcanvas *fp_sample;
-    QGroupBox *fp_editframe;
-    QWidget *fp_editctrl;
-    QGroupBox *fp_stoframe;
-    QWidget *fp_stoctrl;
-    QTcanvas *fp_stores[18];
-    QSpinBox *fp_spnx;
-    QSpinBox *fp_spny;
-    QSpinBox *fp_defpats;
+    QTcanvas    *fp_editor;
+    QTcanvas    *fp_sample;
+    QGroupBox   *fp_editframe;
+    QWidget     *fp_editctrl;
+    QGroupBox   *fp_stoframe;
+    QWidget     *fp_stoctrl;
+    QTcanvas    *fp_stores[18];
+    QSpinBox    *fp_spnx;
+    QSpinBox    *fp_spny;
+    QSpinBox    *fp_defpats;
 
-    GRfillType *fp_fp;
-    int fp_pattern_bank;
-    int fp_width, fp_height;
-    long fp_foreg, fp_pixbg;
+    GRfillType  *fp_fp;
+    int         fp_pattern_bank;
+    int         fp_width;
+    int         fp_height;
+    unsigned long fp_foreg;
+    unsigned long fp_pixbg;
     unsigned char fp_array[128];  // 32x32 max
-    int fp_nx, fp_ny;
-    int fp_margin;
-    int fp_def_box_w, fp_def_box_h;
-    int fp_pat_box_h;
-    int fp_edt_box_dim;
-    int fp_spa;
-    int fp_epsz;
-    int fp_ii, fp_jj;
-    int fp_drag_btn, fp_drag_x, fp_drag_y;
-    int fp_pm_w, fp_pm_h;
-    int fp_downbtn;
-    bool fp_dragging;
-    bool fp_editing;
+    int         fp_nx;
+    int         fp_ny;
+    int         fp_margin;
+    int         fp_def_box_w;
+    int         fp_def_box_h;
+    int         fp_pat_box_h;
+    int         fp_edt_box_dim;
+    int         fp_spa;
+    int         fp_epsz;
+    int         fp_ii;
+    int         fp_jj;
+    int         fp_drag_btn;
+    int         fp_drag_x;
+    int         fp_drag_y;
+    int         fp_pm_w;
+    int         fp_pm_h;
+    int         fp_downbtn;
+    bool        fp_dragging;
+    bool        fp_editing;
 
     static QTfillPatDlg *instPtr;
 };

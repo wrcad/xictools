@@ -57,6 +57,25 @@ QTwindowCfg::QTwindowCfg(WndSensMode(sens_test)(), WndFuncMode fmode)
     wnd_sens_test = sens_test;
     wnd_func_mode = fmode;
 
+    wnd_use_win = 0;
+    wnd_clip = 0;
+    wnd_flatten = 0;
+    wnd_ecf_label = 0;
+    wnd_ecf_pre = 0;
+    wnd_ecf_post = 0;
+    wnd_l_label = 0;
+    wnd_b_label = 0;
+    wnd_r_label = 0;
+    wnd_t_label = 0;
+    wnd_sbutton = 0;
+    wnd_rbutton = 0;
+    wnd_s_menu = 0;
+    wnd_r_menu = 0;
+    wnd_sb_left = 0;
+    wnd_sb_bottom = 0;
+    wnd_sb_right = 0;
+    wnd_sb_top = 0;
+
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);

@@ -81,7 +81,7 @@ QTparam::QTparam(QTmainwin *prnt) : QWidget(prnt), QTdraw(XW_TEXT)
     p_width = 0;
     p_height = 0;
 
-    gd_viewport = QTdrawIf::new_draw_interface(DrawNative, false, this);
+    gd_viewport = new QTcanvas();
     QHBoxLayout *hbox = new QHBoxLayout(this);
     hbox->setContentsMargins(0, 0, 0, 0);
     hbox->setSpacing(0);
@@ -319,34 +319,6 @@ QTparam::deselect()
 }
 
 
-/*XXX
-#ifdef WIN32
-// Static function.
-void
-QTparam::primary_get_cb(GtkClipboard*, GtkSelectionData *data,
-    unsigned int, void*)
-{
-    if (QTparam::self()) {
-        char *str = QTparam::self()->p_text.get_sel();
-        if (str) {
-            gtk_selection_data_set_text(data, str, -1);
-            delete [] str;
-        }
-    }
-}
-
-
-// Static function.
-void
-QTparam::primary_clear_cb(GtkClipboard*, void*)
-{
-    if (QTparam::self())
-        QTparam::self()->deselect();
-}
-#endif
-*/
-
-
 void
 QTparam::font_changed_slot(int fnum)
 {
@@ -357,6 +329,7 @@ QTparam::font_changed_slot(int fnum)
         print();
     }
 }
+
 
 void
 QTparam::resize_slot(QResizeEvent*)

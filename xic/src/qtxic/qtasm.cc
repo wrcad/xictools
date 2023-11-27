@@ -167,7 +167,6 @@ QTasmPathEdit::dropEvent(QDropEvent *ev)
 //-----------------------------------------------------------------------------
 // The QTasmDlg (main) class.
 
-
 const char *QTasmDlg::path_to_source_string =
     "Path to Source:  Layout File, CHD File, or CHD Name";
 const char *QTasmDlg::path_to_new_string = "Path to New Layout File";
@@ -420,7 +419,7 @@ namespace {
         return (true);
     }
 
-  /*
+  /*XXX
     // Strip leading and trailing white space.
     //
     char *
@@ -552,13 +551,14 @@ QTasmDlg::dump_file(FILE *fp, bool check)
             }
             if (tl->no_hier)
                 fprintf(fp, "NoHier\n");
+
         }
     }
     return (true);
 }
 
 
-/*
+/*XXX
 inline const char *
 cknull(const char *s)
 {
@@ -645,7 +645,7 @@ QTasmDlg::notebook_append()
     asm_sources[index] = src;
     snprintf(buf, sizeof(buf), "Source %d", index+1);
     asm_notebook->insertTab(index+1, src, buf);
-/*
+/*XXX
     src->pg_tablabel = gtk_label_new(buf);
     gtk_widget_show(src->pg_tablabel);
     gtk_notebook_insert_page(GTK_NOTEBOOK(asm_notebook), src->pg_form,
@@ -669,7 +669,7 @@ QTasmDlg::notebook_remove(int index)
     }
     asm_pages--;
     asm_sources[asm_pages] = 0;
-/*
+/*XXX
     delete src;
     // Have to do this after deleting src or tne signal handler removal
     // in the destructor will emit CRITICAL warnings.
@@ -784,7 +784,7 @@ QTasmDlg::top_level_cell()
 void
 QTasmDlg::set_status_message(const char *msg)
 {
-    /*
+    /*XXX
     if (Asm) {
         if (Asm->asm_timer_id)
             g_source_remove(Asm->asm_timer_id);
@@ -853,7 +853,7 @@ QTasmDlg::asm_save_cb(const char *fname, void*)
         }
         FILE *fp = fopen(fname, "w");
         if (!fp) {
-    /*
+    /*XXX
             const char *msg = "Can't open file, try again";
             GtkWidget *label = (GtkWidget*)g_object_get_data(
                 G_OBJECT(Asm->wb_input), "label");
@@ -895,7 +895,7 @@ QTasmDlg::asm_recall_cb(const char *fname, void*)
     if (fname && *fname) {
         FILE *fp = fopen(fname, "r");
         if (!fp) {
-         /*
+         /*XXX
             const char *msg = "Can't open file, try again";
             GtkWidget *label = (GtkWidget*)g_object_get_data(
                 G_OBJECT(Asm->wb_input), "label");
@@ -1164,7 +1164,7 @@ QTasmDlg::main_menu_slot(QAction *a)
             if (n >= 0) {
 
                 // Remove the nth row.
-             /*
+             /*XXX
                 GtkTreeModel *store = gtk_tree_view_get_model(
                     GTK_TREE_VIEW(src->pg_toplevels));
                 GtkTreePath *path = gtk_tree_path_new_from_indices(n, -1);
@@ -1183,7 +1183,7 @@ QTasmDlg::main_menu_slot(QAction *a)
                 src->upd_sens();
 
                 // Select the top row.
-              /*
+              /*XXX
                 path = gtk_tree_path_new_from_indices(
                     src->pg_numtlcells-1, -1);
                 GtkTreeSelection *sel = gtk_tree_view_get_selection(
@@ -1209,7 +1209,7 @@ QTasmDlg::tab_changed_slot(int page)
     if (page > 0) {
         QTasmPage *src = asm_sources[page-1];
         int n = src->pg_curtlcell;
-/*
+/*XXX
         GtkTreeSelection *sel =
             gtk_tree_view_get_selection(GTK_TREE_VIEW(src->pg_toplevels));
         if (n >= 0) {

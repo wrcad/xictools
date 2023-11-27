@@ -221,6 +221,7 @@ private:
     void refresh(bool, locType, bool = false);
     char *listing(bool);
     void monitor();
+    void open_file();
 
     static stringlist *db_mklist(const char*);
     static const char *var_prompt(const char*, const char*, bool*);
@@ -228,21 +229,6 @@ private:
     static ESret db_open_cb(const char*, void*);
     static int db_open_idle(void*);
     static void db_do_saveas_proc(const char*, void*);
-
-    /*
-    static void db_search_proc(GtkWidget*, void*);
-    static void db_font_proc(GtkWidget*, void*);
-    static void db_mode_proc(GtkWidget*, void*);
-    static void db_change_proc(GtkWidget*, void*);
-    static int db_key_dn_hdlr(GtkWidget*, GdkEvent*, void*);
-    static int db_text_btn_hdlr(GtkWidget*, GdkEvent*, void*);
-    static void db_drag_data_received(GtkWidget*, GdkDragContext*,
-        gint, gint, GtkSelectionData*, guint, guint, void*);
-    static void db_insert_text_proc(GtkTextBuffer*, GtkTextIter*,
-        char*, int, void*);
-    static void db_delete_range_proc(GtkTextBuffer*, GtkTextIter*,
-        GtkTextIter*, void*);
-    */
 
     GRobject    db_caller;
     QLabel      *db_modelabel;

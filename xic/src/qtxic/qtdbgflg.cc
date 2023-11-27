@@ -100,6 +100,7 @@ QTdbgFlagsDlg::QTdbgFlagsDlg(GRobject c)
     df_ldb3d = 0;
     df_rlsolv = 0;
     df_fname = 0;
+
     df_lisp = 0;
     df_connect = 0;
     df_rlsolvlog = 0;

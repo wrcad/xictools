@@ -148,12 +148,14 @@ QTfastCapDlg::QTfastCapDlg(GRobject c) : QTbag(this)
     fc_file = 0;
     fc_args = 0;
     fc_path = 0;
+
     fc_units = 0;
     fc_enab = 0;
     fc_sb_plane_bloat = 0;
     fc_sb_substrate_thickness = 0;
     fc_sb_substrate_eps = 0;
     fc_sb_panel_target = 0;
+
     fc_dbg_zoids = 0;
     fc_dbg_vrbo = 0;
     fc_dbg_nm = 0;
@@ -169,8 +171,10 @@ QTfastCapDlg::QTfastCapDlg(GRobject c) : QTbag(this)
     fc_dbg_dleft = 0;
     fc_dbg_cright = 0;
     fc_dbg_dright = 0;
+
     fc_jobs = 0;
     fc_kill = 0;
+
     fc_no_reset = false;
     fc_frozen = false;
     fc_start = 0;
@@ -394,10 +398,11 @@ QTfastCapDlg::QTfastCapDlg(GRobject c) : QTbag(this)
     page = new QWidget();
     nbook->addTab(page, tr("Debug"));
     grid = new QGridLayout(page);
-//XXX work needed here
 #if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
     nbook->setTabVisible(2, CDvdb()->getVariable(VA_FcDebug));
 #endif
+    // XXX Earlier releases will show the debug page.
+    // Check:  is CentOS 7 current >= 5.11 ?
 
     fc_dbg_zoids = new QCheckBox("Zoids");
     grid->addWidget(fc_dbg_zoids, 0, 0);
@@ -851,8 +856,8 @@ QTfastCapDlg::fc_dump_cb(const char *fname, void *client_data)
                 char tbuf[256];
                 snprintf(tbuf, sizeof(tbuf),
                     "Input is in file %s.  View file? ", fn);
-                QTfastCapDlg::self()->PopUpAffirm(0, GRloc(LW_UL), tbuf, fc_p_cb,
-                    lstring::copy(fname));
+                QTfastCapDlg::self()->PopUpAffirm(0, GRloc(LW_UL), tbuf,
+                    fc_p_cb, lstring::copy(fname));
             }
         }
         break;

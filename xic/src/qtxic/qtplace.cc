@@ -126,6 +126,13 @@ QTplaceDlg::QTplaceDlg(bool noprompt)
     pl_masterbtn = 0;
     pl_placebtn = 0;
     pl_menu_placebtn = 0;
+
+    pl_nx = 0;
+    pl_ny = 0;
+    pl_dx = 0;
+    pl_dy = 0;
+    pl_mmlen = 0;
+
     pl_str_editor = 0;
     pl_dropfile = 0;
 

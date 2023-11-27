@@ -313,7 +313,7 @@ QTcgdOpenDlg::QTcgdOpenDlg(GRobject caller,
 
 
     // Drop site.
-/*
+/*XXX
     gtk_drag_dest_set(cgo_p2_entry, DD, target_table, n_targets,
         GDK_ACTION_COPY);
     g_signal_connect_after(G_OBJECT(cgo_p2_entry), "drag-data-received",

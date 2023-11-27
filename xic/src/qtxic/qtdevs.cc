@@ -315,6 +315,11 @@ QTdevMenuDlg::QTdevMenuDlg(GRobject caller, stringlist *wl) :
     dv_pressed = 0;
     dv_px = 0;
     dv_py = 0;
+    dv_width = 0;
+    dv_foreg = 0;
+    dv_backg = 0;
+    dv_hlite = 0;
+    dv_selec = 0;
     dv_active = false;
 
     stringlist::sort(wl, comp_func);
@@ -630,7 +635,7 @@ QTdevMenuDlg::activate(bool active)
 
     if (active) {
         if (!dv_active) {
-            /*
+            /*XXX
             int x, y;
             gdk_window_get_root_origin(
                 gtk_widget_get_window(GTKmainwin::self()->Shell()), &x, &y);
@@ -642,7 +647,7 @@ QTdevMenuDlg::activate(bool active)
     }
     else {
         if (dv_active) {
-            /*
+            /*XXX
             gdk_window_get_root_origin(gtk_widget_get_window(wb_shell),
                 &dv_px, &dv_py);
             int x, y;

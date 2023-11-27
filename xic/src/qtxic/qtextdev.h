@@ -46,6 +46,7 @@
 
 #include <QDialog>
 
+
 //-------------------------------------------------------------------------
 // Dialog to control device highlighting and selection.
 //
@@ -99,14 +100,6 @@ private slots:
     void font_changed_slot(int);
 
 private:
-    /*
-    static void ed_cancel_proc(GtkWidget*, void*);
-    static void ed_action_proc(GtkWidget*, void*);
-    static int ed_selection_proc(GtkTreeSelection*, GtkTreeModel*,
-        GtkTreePath*, int, void*);
-    static bool ed_focus_proc(GtkWidget*, GdkEvent*, void*);
-    */
-
     GRobject    ed_caller;
     QPushButton *ed_update;
     QPushButton *ed_show;

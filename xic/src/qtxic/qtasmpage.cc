@@ -112,6 +112,72 @@ QTasmPagePathEdit::dropEvent(QDropEvent *ev)
     }
     ev->ignore();
 }
+// End of QTasmPagePathEdit functions
+
+
+class QTasmPageTreeWidget  : public QTreeWidget
+{
+public:
+    QTasmPageTreeWidget(QWidget *prnt = 0) : QTreeWidget(prnt) { }
+
+    void dragEnterEvent(QDragEnterEvent*);
+    void dropEvent(QDropEvent*);
+};
+
+
+void
+QTasmPageTreeWidget::dragEnterEvent(QDragEnterEvent *ev)
+{
+    if (ev->mimeData()->hasUrls()) {
+        ev->accept();
+        return;
+    }
+    if (ev->mimeData()->hasFormat("text/plain")) {
+        ev->accept();
+        return;
+    }
+    ev->ignore();
+}
+
+
+void
+QTasmPageTreeWidget::dropEvent(QDropEvent *ev)
+{
+    QTasmPage *pg = static_cast<QTasmPage*>(parent());
+    if (!pg) {
+        ev->ignore();
+        return;
+    }
+    if (ev->mimeData()->hasUrls()) {
+        QByteArray ba = ev->mimeData()->data("text/plain");
+        const char *str = ba.constData() + strlen("File://");
+        pg->add_instance(str);
+        ev->accept();
+        return;
+    }
+    if (ev->mimeData()->hasFormat("text/twostring")) {
+        // Drops from content lists may be in the form
+        // "fname_or_chd\ncellname".  Keep the cellname.
+        char *str = lstring::copy(ev->mimeData()->data("text/plain").constData());
+        char *t = strchr(str, '\n');
+        if (t)
+            *t = 0;
+        pg->add_instance(str);
+        delete [] str;
+        ev->accept();
+        return;
+    }
+    if (ev->mimeData()->hasFormat("text/plain")) {
+        // The default action will insert the text at the click location,
+        // instead here we replace any existing text.
+        QByteArray ba = ev->mimeData()->data("text/plain");
+        pg->add_instance(ba.constData());
+        ev->accept();
+        return;
+    }
+    ev->ignore();
+}
+// End of QTasmPageTreeWidget functions
 
 
 //-----------------------------------------------------------------------------
@@ -234,7 +300,7 @@ QTasmPage::QTasmPage(QTasmDlg *mt)
     label = new QLabel(tr("Top-Level Cells"));
     grid->addWidget(label, 5, 0);
 
-    pg_toplevels = new QTreeWidget();;
+    pg_toplevels = new QTasmPageTreeWidget();
     grid->addWidget(pg_toplevels, 6, 0);
     connect(pg_toplevels, SIGNAL(itemSelectionChanged()),
         this, SLOT(toplev_selection_changed_slot()));
@@ -244,41 +310,6 @@ QTasmPage::QTasmPage(QTasmDlg *mt)
         pg_toplevels->setFont(*fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
-
-/*
-    GtkWidget *swin = gtk_scrolled_window_new(0, 0);
-    gtk_widget_show(swin);
-    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(swin),
-        GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-    GtkListStore *store = gtk_list_store_new(1, G_TYPE_STRING);
-    pg_toplevels = gtk_tree_view_new_with_model(GTK_TREE_MODEL(store));
-    gtk_widget_show(pg_toplevels);
-    gtk_tree_view_set_enable_search(GTK_TREE_VIEW(pg_toplevels), false);
-    GtkTreeViewColumn *tvcol = gtk_tree_view_column_new();
-    gtk_tree_view_append_column(GTK_TREE_VIEW(pg_toplevels), tvcol);
-    GtkCellRenderer *rnd = gtk_cell_renderer_text_new();
-    gtk_tree_view_column_pack_start(tvcol, rnd, true);
-    gtk_tree_view_column_add_attribute(tvcol, rnd, "text", 0);
-
-    GtkTreeSelection *sel =
-        gtk_tree_view_get_selection(GTK_TREE_VIEW(pg_toplevels));
-    gtk_tree_selection_set_select_function(sel, pg_selection_proc, this, 0);
-    // TreeView bug hack, see note with handlers.   
-    g_signal_connect(G_OBJECT(pg_toplevels), "focus",
-        G_CALLBACK(pg_focus_proc), this);
-    gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(swin),
-        pg_toplevels);
-    gtk_box_pack_start(GTK_BOX(vbox), swin, true, true, 2);
-    gtk_table_attach(GTK_TABLE(table), vbox, 0, 1, 0, 1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL), 2, 2);
-
-    // drop site
-    gtk_drag_dest_set(pg_toplevels, GTK_DEST_DEFAULT_ALL,
-        QTasmDlg::target_table, QTasmDlg::n_targets, GDK_ACTION_COPY);
-    g_signal_connect_after(G_OBJECT(pg_toplevels), "drag-data-received",
-        G_CALLBACK(pg_drag_data_received), this);
-*/
 
     pg_tx = new QTasmTf(this);
     grid->addWidget(pg_tx, 5, 1, 2, 2);
@@ -346,18 +377,13 @@ QTasmPage::add_instance(const char *cname)
     }
     tlinfo *tl = new tlinfo(cname);
     pg_cellinfo[pg_numtlcells] = tl;
-/*
-    GtkListStore *store = GTK_LIST_STORE(gtk_tree_view_get_model(
-        GTK_TREE_VIEW(pg_toplevels)));
-    GtkTreeIter iter;
-    gtk_list_store_append(store, &iter);
-    gtk_list_store_set(store, &iter, 0, cname ? cname : ASM_TOPC, -1);
+
+    QTreeWidgetItem *itm = new QTreeWidgetItem();
     pg_numtlcells++;
     pg_curtlcell = -1;
-    GtkTreeSelection *sel = gtk_tree_view_get_selection(
-        GTK_TREE_VIEW(pg_toplevels));
-    gtk_tree_selection_select_iter(sel, &iter);
-*/
+    itm->setText(0, cname ? cname : ASM_TOPC);
+    pg_toplevels->addTopLevelItem(itm);
+    pg_toplevels->setCurrentItem(itm);
     upd_sens();
     return (tl);
 }
@@ -366,21 +392,18 @@ QTasmPage::add_instance(const char *cname)
 void
 QTasmPage::toplev_selection_changed_slot()
 {
-    /*
-    QTasmPage *src = static_cast<QTasmPage*>(srcp);
-    if (src->pg_no_select && !issel)
-        return (false);
-    if (!issel) {
-        src->pg_owner->store_tx_params();
-        int n = gtk_tree_path_get_indices(tp)[0];
-        src->pg_owner->show_tx_params(n);
+    QList<QTreeWidgetItem*> selected = pg_toplevels->selectedItems();
+    if (selected.size() > 0) {
+        pg_owner->store_tx_params();
+        QTreeWidgetItem *sel = selected[0];
+        int n = pg_toplevels->indexOfTopLevelItem(sel);
+        pg_owner->show_tx_params(n);
     }
     else {
-        src->pg_curtlcell = -1;
-        src->pg_tx->reset();
-        src->upd_sens();
+        pg_curtlcell = -1;
+        pg_tx->reset();
+        upd_sens();
     }
-    */
 }
 
 
@@ -391,86 +414,7 @@ QTasmPage::font_changed_slot(int fnum)
         QFont *fnt;
         if (FC.getFont(&fnt, FNT_PROP))
             pg_toplevels->setFont(*fnt);
-//XXX need to redraw
+//XXX need to redraw?
     }
 }
 
-
-#ifdef notdef
-
-//
-// Handler functions
-//
-
-// Static function.
-// Handle selection change in the "top-level" cell list.
-//
-int
-QTasmPage::pg_selection_proc(GtkTreeSelection*, GtkTreeModel*,
-    GtkTreePath *tp, int issel, void *srcp)
-{
-    QTasmPage *src = static_cast<QTasmPage*>(srcp);
-    if (src->pg_no_select && !issel)
-        return (false);
-    if (!issel) {
-        src->pg_owner->store_tx_params();
-        int n = gtk_tree_path_get_indices(tp)[0];
-        src->pg_owner->show_tx_params(n);
-    }
-    else {
-        src->pg_curtlcell = -1;
-        src->pg_tx->reset();
-        src->upd_sens();
-    }
-    return (true);
-}
-
-
-// Static function.
-// This handler is a hack to avoid a GtkTreeWidget defect:  when focus
-// is taken and there are no selections, the 0'th row will be
-// selected.  There seems to be no way to avoid this other than a hack
-// like this one.  We set a flag to lock out selection changes in this
-// case.
-//
-int
-QTasmPage::pg_focus_proc(GtkWidget*, GdkEvent*, void *srcp)
-{
-    QTasmPage *src = static_cast<QTasmPage*>(srcp);
-    GtkTreeSelection *sel =
-        gtk_tree_view_get_selection(GTK_TREE_VIEW(src->pg_toplevels));
-    // If nothing selected set the flag.
-    if (!gtk_tree_selection_get_selected(sel, 0, 0))
-        src->pg_no_select = true;
-    return (false);
-}
-
-
-// Static function.
-// Drag data received in entry window, grab it.
-//
-void
-QTasmPage::pg_drag_data_received(GtkWidget*, GdkDragContext *context,
-    gint, gint, GtkSelectionData *data, guint, guint time, void *srcp)
-{
-    QTasmPage *src = static_cast<QTasmPage*>(srcp);
-    if (gtk_selection_data_get_length(data) >= 0 &&
-            gtk_selection_data_get_format(data) == 8 &&
-            gtk_selection_data_get_data(data)) {
-        char *s = (char*)gtk_selection_data_get_data(data);
-        if (gtk_selection_data_get_target(data) ==
-                gdk_atom_intern("TWOSTRING", true)) {
-            // Drops from content lists may be in the form
-            // "fname_or_chd\ncellname".  Keep the cellname.
-            char *t = strchr(s, '\n');
-            if (t)
-                s = t+1;
-        }
-        src->add_instance(s);
-        gtk_drag_finish(context, true, false, time);
-        return;
-    }
-    gtk_drag_finish(context, false, false, time);
-}
-
-#endif
