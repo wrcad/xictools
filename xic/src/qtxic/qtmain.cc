@@ -1908,19 +1908,31 @@ QTsubwin::enter_slot(QEnterEvent *ev)
     gd_viewport->setFocus();
 
     if (grabstate.widget(Qt::LeftButton) == gd_viewport) {
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         if (!(ev->buttons() & Qt::LeftButton)) {
+#else
+        if (!(QApplication::mouseButtons() & Qt::LeftButton)) {
+#endif
             grabstate.clear(Qt::LeftButton);
             EV()->Button1ReleaseCallback(0, 0, 0, 0);
         }
     }
     if (grabstate.widget(Qt::MiddleButton) == gd_viewport) {
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         if (!(ev->buttons() & Qt::MiddleButton)) {
+#else
+        if (!(QApplication::mouseButtons() & Qt::MiddleButton)) {
+#endif
             grabstate.clear(Qt::MiddleButton);
             EV()->Button2ReleaseCallback(0, 0, 0, 0);
         }
     }
     if (grabstate.widget(Qt::RightButton) == gd_viewport) {
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         if (!(ev->buttons() & Qt::RightButton)) {
+#else
+        if (!(QApplication::mouseButtons() & Qt::RightButton)) {
+#endif
             grabstate.clear(Qt::RightButton);
             EV()->Button3ReleaseCallback(0, 0, 0, 0);
         }
