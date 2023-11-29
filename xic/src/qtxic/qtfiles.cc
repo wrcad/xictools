@@ -100,12 +100,14 @@ QTmainwin::files_panic()
 // cursor seems to never appear with the standard logic.  In order to
 // make the busy cursor appear, had to use a timeout as below.
 
-/*XXX
+#define FILES_TIMEOUT
+#ifdef FILES_TIMEOUT
 namespace {
     int msw_timeout(void *caller)
     {
         new QTfilesListDlg(caller);
 
+        QTfilesListDlg::self()->set_transient_for(QTmainwin::self());
         QTdev::self()->SetPopupLocation(GRloc(), QTfilesListDlg::self(),
             QTmainwin::self()->Viewport());
         QTfilesListDlg::self()->show();
@@ -114,7 +116,7 @@ namespace {
         return (0);
     }
 }
-*/
+#endif
 
 
 void
@@ -137,16 +139,18 @@ cConvert::PopUpFiles(GRobject caller, ShowMode mode)
         return;
 
     // This is needed to reliably show the busy cursor.
-//XXX
-//    QTpkg::self()->SetWorking(true);
-//    QTpkg::self()->RegisterTimeoutProc(500, msw_timeout, caller);
+#ifdef FILES_TIMEOUT
+    QTpkg::self()->SetWorking(true);
+    QTpkg::self()->RegisterTimeoutProc(500, msw_timeout, caller);
 
+#else
     new QTfilesListDlg(caller);
 
     QTfilesListDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(), QTfilesListDlg::self(),
         QTmainwin::self()->Viewport());
     QTfilesListDlg::self()->show();
+#endif
 }
 // End of cConvert functions.
 
@@ -315,7 +319,7 @@ QTfilesListDlg::update()
         nbtns = 4;
     }
     update(FIO()->PGetPath(), btns, nbtns);
-    fl_desel(0);
+    fl_desel();
 }
 
 
@@ -592,8 +596,7 @@ QTfilesListDlg::select_range(QTtextEdit *caller, int start, int end)
     caller->select_range(start, end);
     fl_start = start;
     fl_end = end;
-//    if (fl_desel)
-//        (*fl_desel)(this);
+    fl_desel();
 }
 
 
@@ -625,57 +628,27 @@ QTfilesListDlg::create_page(sDirList *dl)
         this, SLOT(resize_slot(QResizeEvent*)));
     connect(nbtext, SIGNAL(press_event(QMouseEvent*)),
         this, SLOT(mouse_press_slot(QMouseEvent*)));
+    connect(nbtext, SIGNAL(release_event(QMouseEvent*)),
+        this, SLOT(mouse_release_slot(QMouseEvent*)));
     connect(nbtext, SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(mouse_motion_slot(QMouseEvent*)));
     connect(nbtext, SIGNAL(mime_data_received(const QMimeData*)),
         this, SLOT(mime_data_received_slot(const QMimeData*)));
 
-/*XXX
-    if (fl_btn_hdlr) {
-        gtk_widget_add_events(nbtext, GDK_BUTTON_PRESS_MASK);
-        g_signal_connect(G_OBJECT(nbtext), "button-press-event",
-            G_CALLBACK(fl_btn_hdlr), this);
-    }
-    g_signal_connect(G_OBJECT(nbtext), "button-release-event",
-        G_CALLBACK(fl_btn_release_hdlr), this);
-    g_signal_connect(G_OBJECT(nbtext), "motion-notify-event",
-        G_CALLBACK(fl_motion), this);
-    g_signal_connect_after(G_OBJECT(nbtext), "realize",
-        G_CALLBACK(fl_realize_proc), this);
-
-    g_signal_connect(G_OBJECT(nbtext), "unrealize",
-        G_CALLBACK(fl_unrealize_proc), this);
-
-    // Gtk-2 is tricky to overcome internal selection handling.
-    // Must remove clipboard (in fl_realize_proc), and explicitly
-    // call gtk_selection_owner_set after selecting text.  Note
-    // also that explicit clear-event handling is needed.
-
-    gtk_selection_add_targets(nbtext, GDK_SELECTION_PRIMARY,
-        target_table, n_targets);
-    g_signal_connect(G_OBJECT(nbtext), "selection-clear-event",
-        G_CALLBACK(fl_selection_clear), 0);
-    g_signal_connect(G_OBJECT(nbtext), "selection-get",
-        G_CALLBACK(fl_selection_get), 0);
-
+/*XXX set selection color, etc
     GtkTextBuffer *textbuf =
         gtk_text_view_get_buffer(GTK_TEXT_VIEW(nbtext));
     const char *bclr = GRpkg::self()->GetAttrColor(GRattrColorLocSel);
     gtk_text_buffer_create_tag(textbuf, "primary",
         "background", bclr, NULL);
 
-    // drag source (starts explicitly)
-    g_signal_connect(G_OBJECT(nbtext), "drag-data-get",
-        G_CALLBACK(fl_source_drag_data_get), this);
+// Maybe use this to override internal mime data for Ctrl-C selection.
+// Would like to add full path to selection.
 
-    // drop site
-    gtk_drag_dest_set(nbtext, GTK_DEST_DEFAULT_ALL, target_table,
-        n_targets,
-        (GdkDragAction)(GDK_ACTION_COPY | GDK_ACTION_MOVE |
-         GDK_ACTION_LINK | GDK_ACTION_ASK));
-    g_signal_connect_after(G_OBJECT(nbtext), "drag-data-received",
-        G_CALLBACK(fl_drag_data_received), this);
+QMimeData * QTextEdit::createMimeDataFromSelection() const
+
 */
+
     return (page);
 }
 
@@ -887,10 +860,7 @@ QTfilesListDlg::fl_idle_proc(void*)
             if (instPtr) {
                 fl_update_text((QTtextEdit*)dl->dataptr(), dl->dirfiles());
                 if ((QTtextEdit*)dl->dataptr() == instPtr->wb_textarea) {
-                    /* XXX
-                    if (instPtr->fl_desel)
-                        (*instPtr->fl_desel)(instPtr);
-                        */
+                    fl_desel();
                 }
             }
         }
@@ -1176,7 +1146,7 @@ QTfilesListDlg::fl_down_cb(void*)
 
 // Static function.
 void
-QTfilesListDlg::fl_desel(void*)
+QTfilesListDlg::fl_desel()
 {
     if (!QTfilesListDlg::self())
         return;
@@ -1221,7 +1191,7 @@ QTfilesListDlg::button_slot(bool)
             if (QTfilesListDlg::self()) {
                 if (fl_noupdate > 1) {
                     update(FIO()->PGetPath(), 0, 0);
-                    fl_desel(0);
+                    fl_desel();
                 }
                 fl_noupdate = 0;
             }
@@ -1236,7 +1206,7 @@ QTfilesListDlg::button_slot(bool)
             if (QTfilesListDlg::self()) {
                 if (fl_noupdate > 1) {
                     update(FIO()->PGetPath(), 0, 0);
-                    fl_desel(0);
+                    fl_desel();
                 }
                 fl_noupdate = 0;
             }
@@ -1308,12 +1278,11 @@ QTfilesListDlg::resize_slot(QResizeEvent *ev)
 void
 QTfilesListDlg::mouse_press_slot(QMouseEvent *ev)
 {
-    if (ev->type() == QEvent::MouseButtonRelease) {
-        ev->accept();
-        fl_drag_start = false;
+    if (ev->type() != QEvent::MouseButtonPress) {
+        ev->ignore();
         return;
     }
-    if (ev->type() != QEvent::MouseButtonPress) {
+    if (ev->button() != Qt::LeftButton) {
         ev->ignore();
         return;
     }
@@ -1436,6 +1405,22 @@ QTfilesListDlg::mouse_press_slot(QMouseEvent *ev)
 
 
 void
+QTfilesListDlg::mouse_release_slot(QMouseEvent *ev)
+{
+    if (ev->type() != QEvent::MouseButtonRelease) {
+        ev->ignore();
+        return;
+    }
+    if (ev->button() != Qt::LeftButton) {
+        ev->ignore();
+        return;
+    }
+    ev->accept();
+    fl_drag_start = false;
+}
+
+
+void
 QTfilesListDlg::mouse_motion_slot(QMouseEvent *ev)
 {
     if (!fl_drag_start)
@@ -1491,14 +1476,4 @@ QTfilesListDlg::dismiss_btn_slot()
 {
     Cvt()->PopUpFiles(0, MODE_OFF);
 }
-
-
-/* XXX
-
-// Maybe use this to override internal mime data for Ctrl-C selection.
-// Would like to add full path to selection.
-
-QMimeData * QTextEdit::createMimeDataFromSelection() const
-
-*/
 

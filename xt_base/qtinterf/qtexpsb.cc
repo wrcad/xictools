@@ -40,6 +40,7 @@
 
 #include "spnumber/spnumber.h"
 #include "qtexpsb.h"
+#include <math.h>
 
 
 //----------------------------------------------------------------------------

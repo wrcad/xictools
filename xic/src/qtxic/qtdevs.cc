@@ -118,6 +118,7 @@ cSced::PopUpDevs(GRobject caller, ShowMode mode)
     }
 
     new QTdevMenuDlg(caller, wl);
+    stringlist::destroy(wl);
 
     QTdevMenuDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_UL), QTdevMenuDlg::self(),
@@ -300,9 +301,8 @@ namespace {
 QTdevMenuDlg *QTdevMenuDlg::instPtr;
 
 QTdevMenuDlg::QTdevMenuDlg(GRobject caller, stringlist *wl) :
-    QTdraw(XW_DEFAULT), QTbag(this)
+    QTbag(this), QTdraw(XW_DEFAULT)
 {
-    // wl is consumed
     instPtr = this;
     dv_caller = caller;
     dv_morebtn = 0;
@@ -359,18 +359,13 @@ QTdevMenuDlg::QTdevMenuDlg(GRobject caller, stringlist *wl) :
         dv_numdevs = i;
         dv_leftindx = 0;
         i = 0;
-        for (stringlist *wx = wl; wx; i++, wx = wl) {
-            wl = wx->next;
-            if (OIfailed(CD()->OpenExisting(wx->string, 0)) &&
+        for (stringlist *ww = wl; ww; i++, ww = ww->next) {
+            if (OIfailed(CD()->OpenExisting(ww->string, 0)) &&
                     OIfailed(FIO()->OpenLibCell(XM()->DeviceLibName(),
-                    wx->string, LIBdevice, 0))) {
-                delete [] wx->string;
-                delete wx;
+                    ww->string, LIBdevice, 0))) {
                 continue;
             }
-            dv_entries[i].name = wx->string;
-            wx->string = 0;
-            delete wx;
+            dv_entries[i].name = lstring::copy(ww->string);
         }
         dv_width = init_sizes();
 
@@ -461,7 +456,6 @@ QTdevMenuDlg::QTdevMenuDlg(GRobject caller, stringlist *wl) :
             menu->addAction(ww->string);
             lastc = c;
         }
-        stringlist::destroy(wl);
 
         QToolButton *btn = new QToolButton();
         btn->setIcon(QIcon(QPixmap(pict_xpm)));
@@ -588,13 +582,9 @@ QTdevMenuDlg::QTdevMenuDlg(GRobject caller, stringlist *wl) :
                 menu = menu_m;
                 break;
             }
-            if (menu) {
+            if (menu)
                 menu->addAction(ww->string);
-                //XXX ?
-                ww->string = 0;
-            }
         }
-        stringlist::destroy(wl);
 
         QToolButton *btn = new QToolButton();
         btn->setIcon(QIcon(QPixmap(dda_xpm)));
@@ -635,27 +625,18 @@ QTdevMenuDlg::activate(bool active)
 
     if (active) {
         if (!dv_active) {
-            /*XXX
-            int x, y;
-            gdk_window_get_root_origin(
-                gtk_widget_get_window(GTKmainwin::self()->Shell()), &x, &y);
-            gtk_window_move(GTK_WINDOW(wb_shell), dv_px + x, dv_py + y);
-            */
+            QPoint pmain = QTmainwin::self()->pos();
+            move(dv_px + pmain.x(), dv_py + pmain.y());
             show();
             dv_active = true;
         }
     }
     else {
         if (dv_active) {
-            /*XXX
-            gdk_window_get_root_origin(gtk_widget_get_window(wb_shell),
-                &dv_px, &dv_py);
-            int x, y;
-            gdk_window_get_root_origin(
-                gtk_widget_get_window(GTKmainwin::self()->Shell()), &x, &y);
-            dv_px -= x;
-            dv_py -= y;
-            */
+            QPoint pmain = QTmainwin::self()->pos();
+            QPoint px = pos();
+            dv_px = px.x() - pmain.x();
+            dv_py = px.y() - pmain.y();
             hide();
             dv_active = false;
             if (dv_caller)

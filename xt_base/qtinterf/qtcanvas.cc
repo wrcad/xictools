@@ -1144,7 +1144,15 @@ QTcanvas::resizeEvent(QResizeEvent *ev)
     delete da_pixmap;
     delete da_overlay_bg;
     da_overlay_bg = 0;
-    da_pixmap = new QPixmap(ev->size());
+
+    // If a dimension is 0, lots of "Painter not active" messages.
+    QSize sz = ev->size();
+    if (sz.width() < 1)
+        sz.setWidth(1);
+    if (sz.height() < 1)
+        sz.setHeight(1);
+
+    da_pixmap = new QPixmap(sz);
     da_painter = new QPainter(da_pixmap);
     da_painter->setFont(fnt);
     initialize();
@@ -1153,7 +1161,7 @@ QTcanvas::resizeEvent(QResizeEvent *ev)
         da_painter_bak->end();
         delete da_painter_bak;
         delete da_pixmap_bak;
-        da_pixmap_bak = new QPixmap(ev->size());
+        da_pixmap_bak = new QPixmap(sz);
         da_painter_bak = new QPainter(da_pixmap_bak);
         da_painter_bak->setFont(fnt);
     }
@@ -1162,7 +1170,7 @@ QTcanvas::resizeEvent(QResizeEvent *ev)
         da_painter2->end();
         delete da_painter2;
         delete da_pixmap2;
-        da_pixmap2 = new QPixmap(ev->size());
+        da_pixmap2 = new QPixmap(sz);
         da_painter2 = new QPainter(da_pixmap2);
         da_painter2->setFont(fnt);
     }

@@ -254,16 +254,6 @@ QTcflagsDlg::update(const stringlist *sl, int dmode)
         *t++ = ' ';
     strcpy(t, "Immut Libr");
     cf_label->setText(lab);
-
-    int ww = (cf_field + 12)*QTfont::stringWidth(0, wb_textarea);
-    if (ww < 200)
-        ww = 200;
-    else if (ww > 600)
-        ww = 600;
-    ww += 15;  // scrollbar
-//    int hh = 8*QTfont::lineHeight(wb_textarea);
-//XXX    gtk_widget_set_size_request(GTK_WIDGET(wb_textarea), ww, hh);
-
     refresh();
 }
 

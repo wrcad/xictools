@@ -73,6 +73,7 @@ public:
 
 private slots:
     void mouse_press_slot(QMouseEvent*);
+    void mouse_release_slot(QMouseEvent*);
     void mouse_motion_slot(QMouseEvent*);
     void mime_data_received_slot(const QMimeData*);
     void dismiss_btn_slot();

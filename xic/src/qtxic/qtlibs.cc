@@ -177,7 +177,7 @@ QTlibsDlg::QTlibsDlg(GRobject c) : QTbag(this)
     lb_contbtn = new QPushButton(tr("Contents"));
     hbox->addWidget(lb_contbtn);
     lb_contbtn->setAutoDefault(false);
-    connect(lb_openbtn, SIGNAL(clicked()), this, SLOT(cont_btn_slot()));
+    connect(lb_contbtn, SIGNAL(clicked()), this, SLOT(cont_btn_slot()));
 
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
@@ -197,12 +197,8 @@ QTlibsDlg::QTlibsDlg(GRobject c) : QTbag(this)
         SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
         this,
         SLOT(current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*)));
-    connect(lb_list, SIGNAL(itemActivated(QTreeWidgetItem*, int)),
-        this, SLOT(item_activated_slot(QTreeWidgetItem*, int)));
     connect(lb_list, SIGNAL(itemClicked(QTreeWidgetItem*, int)),
         this, SLOT(item_clicked_slot(QTreeWidgetItem*, int)));
-    connect(lb_list, SIGNAL(itemSelectionChanged()),
-        this, SLOT(item_selection_changed()));
 
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_PROP))
@@ -319,27 +315,11 @@ QTlibsDlg::update()
             lb_content_pop->set_button_sens(-1);
     }
     if (oldsel) {
-        /*XXX
         // This re-selects the previously selected library.
-        if (!gtk_tree_model_get_iter_first(GTK_TREE_MODEL(store), &iter)) {
-            delete [] oldsel;
-            return;
-        }
-        for (;;) {
-            char *text;
-            gtk_tree_model_get(GTK_TREE_MODEL(store), &iter, 1, &text, -1);
-            int sc = strcmp(text, oldsel);
-            free(text);
-            if (!sc) {
-                GtkTreeSelection *sel =
-                    gtk_tree_view_get_selection(GTK_TREE_VIEW(lb_list));
-                gtk_tree_selection_select_iter(sel, &iter);
-                break;
-            }
-            if (!gtk_tree_model_iter_next(GTK_TREE_MODEL(store), &iter))
-                break;
-        }
-        */
+        QList<QTreeWidgetItem*> list = lb_list->findItems(oldsel,
+            Qt::MatchFixedString | Qt::MatchCaseSensitive, 1);
+        if (list.size() > 0)
+            lb_list->setCurrentItem(list[0]);
     }
     delete [] oldsel;
 }
@@ -535,19 +515,33 @@ QTlibsDlg::help_btn_slot()
 
 
 void
-QTlibsDlg::current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*)
+QTlibsDlg::current_item_changed_slot(QTreeWidgetItem *itm, QTreeWidgetItem*)
 {
+    if (!itm) {
+        lb_openbtn->setEnabled(false);
+        lb_contbtn->setEnabled(false);
+        return;
+    }
+
+    QByteArray ba = itm->text(1).toLatin1();
+    const char *str = ba.constData();
+    if (!str || !strcmp(nolibmsg, str)) {
+        lb_openbtn->setEnabled(false);
+        lb_contbtn->setEnabled(false);
+        return;
+    }
+
+    if (!lb_selection || strcmp(str, lb_selection)) {
+        delete [] lb_selection;
+        lb_selection = lstring::copy(str);
+    }
+    lb_openbtn->setEnabled(true);
+    lb_contbtn->setEnabled((FIO()->FindLibrary(str) != 0));
 }
 
 
 void
-QTlibsDlg::item_activated_slot(QTreeWidgetItem*, int)
-{
-}
-
-
-void
-QTlibsDlg::item_clicked_slot(QTreeWidgetItem *item, int col)
+QTlibsDlg::item_clicked_slot(QTreeWidgetItem*, int col)
 {
     // Toggle closed/open by clicking on the icon in the selected row.
     //
@@ -562,69 +556,6 @@ QTlibsDlg::item_clicked_slot(QTreeWidgetItem *item, int col)
             delete [] tmp;
         }
     }
-    /*XXX
-    GtkTreePath *p;
-    GtkTreeViewColumn *col;
-    if (!gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(LB->lb_list),
-            (int)event->button.x, (int)event->button.y, &p,
-            &col, 0, 0))
-        return (false);
-    if (col != gtk_tree_view_get_column(GTK_TREE_VIEW(LB->lb_list), 0)) {
-        gtk_tree_path_free(p);
-        return (false);
-    }
-    GtkTreeModel *mod =
-        gtk_tree_view_get_model(GTK_TREE_VIEW(LB->lb_list));
-    GtkTreeIter iter;
-    gtk_tree_model_get_iter(mod, &iter, p);
-    gtk_tree_path_free(p);
-
-    GtkTreeSelection *sel =
-        gtk_tree_view_get_selection(GTK_TREE_VIEW(LB->lb_list));
-    if (!gtk_tree_selection_iter_is_selected(sel, &iter))
-        return (false);
-
-    */
-}
-
-
-void
-QTlibsDlg::item_selection_changed()
-{
-    /*XXX
-    char *text = 0;
-    GtkTreeIter iter;
-    if (gtk_tree_model_get_iter(store, &iter, path))
-        gtk_tree_model_get(store, &iter, 1, &text, -1);
-    if (!text || !strcmp(nolibmsg, text)) {
-        gtk_widget_set_sensitive(LB->lb_openbtn, false);
-        gtk_widget_set_sensitive(LB->lb_contbtn, false);
-        free(text);
-        return (false);
-    }
-    // Behavior is a bit strange.  When clicking on a new selection,
-    // we get called three times:
-    // 0  old  (initial click, integer is issel value)
-    // 0  new  (the second click an a new library gives these three)
-    // 1  old
-    // 0  new
-    // printf("%d %s\n", issel, text);
-
-    if (issel) {
-        gtk_widget_set_sensitive(LB->lb_openbtn, false);
-        gtk_widget_set_sensitive(LB->lb_contbtn, false);
-        free(text);
-        return (true);
-    }
-    if (!LB->lb_selection || strcmp(text, LB->lb_selection)) {
-        delete [] LB->lb_selection;
-        LB->lb_selection = lstring::copy(text);
-    }
-    gtk_widget_set_sensitive(LB->lb_openbtn, true);
-    gtk_widget_set_sensitive(LB->lb_contbtn, 
-        (FIO()->FindLibrary(text) != 0));
-    free(text);
-    */
 }
 
 

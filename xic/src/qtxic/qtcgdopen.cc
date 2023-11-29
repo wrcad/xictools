@@ -130,7 +130,8 @@ QTcgdOpenPathEdit::dropEvent(QDropEvent *ev)
     if (ev->mimeData()->hasFormat("text/twostring")) {
         // Drops from content lists may be in the form
         // "fname_or_chd\ncellname".  Keep the filename.
-        char *str = lstring::copy(ev->mimeData()->data("text/plain").constData());
+        char *str = lstring::copy(ev->mimeData()->data(
+            "text/plain").constData());
         char *t = strchr(str, '\n');
         if (t)
             *t = 0;
@@ -149,42 +150,6 @@ QTcgdOpenPathEdit::dropEvent(QDropEvent *ev)
     }
     ev->ignore();
 }
-
-
-/* XXX use in llist
-class QTcgdOpenLayerEdit : public QLineEdit
-{
-public:
-    QTcgdOpenLayerEdit(QWidget *prnt = 0) : QLineEdit(prnt) { }
-
-    void dragEnterEvent(QDragEnterEvent*);
-    void dropEvent(QDropEvent*);
-};
-
-
-void
-QTcgdOpenLayerEdit::dragEnterEvent(QDragEnterEvent *ev)
-{
-    if (ev->mimeData()->hasFormat(QTltab::mime_type())) {
-        ev->accept();
-        return;
-    }
-    QLineEdit::dragEnterEvent(ev);
-}
-
-
-void
-QTcgdOpenLayerEdit::dropEvent(QDropEvent *ev)
-{
-    if (ev->mimeData()->hasFormat(QTltab::mime_type())) {
-        ev->accept();
-    printf("here\n");
-        return;
-    }
-    QLineEdit::dropEvent(ev);
-
-}
-*/
 
 
 // When are the layer list and cell name mapping entries applicable?
@@ -310,17 +275,6 @@ QTcgdOpenDlg::QTcgdOpenDlg(GRobject caller,
     cgo_p2_entry->setAcceptDrops(true);
     pvbox->addWidget(cgo_p2_entry);
     pvbox->addStretch(1);
-
-
-    // Drop site.
-/*XXX
-    gtk_drag_dest_set(cgo_p2_entry, DD, target_table, n_targets,
-        GDK_ACTION_COPY);
-    g_signal_connect_after(G_OBJECT(cgo_p2_entry), "drag-data-received",
-        G_CALLBACK(cgo_drag_data_received), 0);
-
-    gtk_notebook_append_page(GTK_NOTEBOOK(cgo_nbook), tab_form, tab_label);
-*/
 
     // Remote reference page.
     //

@@ -162,7 +162,6 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTdraw(XW_TEXT),
 
     if (gd_win_num < 0) {
         // Bail out if we don't have a valid window.
-//XXX
         wb_shell = 0;
         return;
     }
@@ -706,10 +705,9 @@ QTgridDlg::redraw()
             Box(os + tw, 0, wid, hei);
         }
         clr = pal.color(QPalette::Normal, QPalette::Window);
-//XXX        SetColor(style->bg[GTK_STATE_ACTIVE].pixel);
-SetColor(clr.rgb());
+        SetColor(clr.rgb());
         Box(os, 0, xs, hei);
-Update();
+        Update();
 
         QTcanvas *tmp = gd_viewport;
         gd_viewport = gd_sample;

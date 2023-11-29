@@ -89,15 +89,15 @@ cMain::MenuItemLocation(int, int*, int*)
 // Menu Configuration
 //
 // Help system keywords used:
-//  xic:XXX  (XXX is command code)
+//  xic:xxx  (xxx is command code)
 //  xic:edit
 //  xic:open
 //  xic:width
 //  xic:end_flush
 //  xic:end_round
 //  xic:end_extend
-//  shapes:XXX (XXX is shape code)
-//  user:XXX (XXX is user code)
+//  shapes:xxx (xxx is shape code)
+//  user:xxx (xxx is user code)
 
 namespace {
     // Instantiate

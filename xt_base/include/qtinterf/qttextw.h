@@ -96,6 +96,7 @@ public:
 signals:
     void resize_event(QResizeEvent*);
     void press_event(QMouseEvent*);
+    void release_event(QMouseEvent*);
     void motion_event(QMouseEvent*);
     void mime_data_received(const QMimeData*);
     void key_press_event(QKeyEvent*);
@@ -110,6 +111,11 @@ protected:
     void mousePressEvent(QMouseEvent *ev)
     {
         emit press_event(ev);
+    }
+
+    void mouseReleaseEvent(QMouseEvent *ev)
+    {
+        emit release_event(ev);
     }
 
     void mouseMoveEvent(QMouseEvent *ev)

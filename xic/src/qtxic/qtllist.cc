@@ -42,17 +42,59 @@
 #include "main.h"
 #include "cvrt.h"
 #include "qtmain.h"
+#include "qtltab.h"
 
 #include <QLayout>
 #include <QLabel>
 #include <QCheckBox>
 #include <QPushButton>
 #include <QLineEdit>
+#include <QMimeData>
+#include <QDropEvent>
 
 
 //-------------------------------------------------------------------------
 // Subwidget group for layer list.
 
+
+// Line edit subclass that handles layer drops for use below.
+//
+class QTlayerEdit : public QLineEdit
+{
+public:
+    QTlayerEdit(QWidget *prnt = 0) : QLineEdit(prnt) { }
+
+    void dragEnterEvent(QDragEnterEvent*);
+    void dropEvent(QDropEvent*);
+};
+
+
+void
+QTlayerEdit::dragEnterEvent(QDragEnterEvent *ev)
+{
+    if (ev->mimeData()->hasFormat(QTltab::mime_type())) {
+        ev->accept();
+        return;
+    }
+    QLineEdit::dragEnterEvent(ev);
+}
+
+
+void
+QTlayerEdit::dropEvent(QDropEvent *ev)
+{
+    if (ev->mimeData()->hasFormat(QTltab::mime_type())) {
+        ev->accept();
+    printf("here\n");
+        return;
+    }
+    QLineEdit::dropEvent(ev);
+
+}
+
+
+// The exported widget collection.
+//
 QTlayerList::QTlayerList()
 {
     ll_luse = 0;
@@ -85,7 +127,7 @@ QTlayerList::QTlayerList()
     connect(ll_lskip, SIGNAL(stateChanged(int)),
         this, SLOT(lskip_btn_slot(int)));
 
-    ll_laylist = new QLineEdit();
+    ll_laylist = new QTlayerEdit();
     vbox->addWidget(ll_laylist);
     ll_laylist->setReadOnly(false);
 

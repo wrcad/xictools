@@ -77,7 +77,6 @@ public:
 
 private slots:
     void help_btn_slot();
-    void text_changed_slot(const QString&);
     void geom_btn_slot(int);
     void apply_btn_slot();
     void dismiss_btn_slot();

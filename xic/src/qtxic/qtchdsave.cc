@@ -200,9 +200,6 @@ QTchdSaveDlg::QTchdSaveDlg(GRobject caller,
     vbox->addWidget(cs_text);
     cs_text->setReadOnly(false);
     cs_text->setAcceptDrops(true);
-//XXX need this?
-//    connect(cs_text, SIGNAL(textChanged(const QString&)),
-//        this, SLOT(text_changed_slot(const QString&)));
 
     cs_geom = new QCheckBox(tr("Include geometry records in file"));
     vbox->addWidget(cs_geom);
@@ -257,12 +254,6 @@ void
 QTchdSaveDlg::help_btn_slot()
 {
     DSPmainWbag(PopUpHelp("xic:chdsav"))
-}
-
-
-void
-QTchdSaveDlg::text_changed_slot(const QString&)
-{
 }
 
 

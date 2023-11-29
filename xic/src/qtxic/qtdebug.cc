@@ -585,7 +585,8 @@ QTscriptDebuggerDlg::step()
         start();
         PL()->RestorePrompt();
 //XXX        QTdev::SetFocus(Dbg->wb_shell);
-//        gtk_window_set_focus(GTK_WINDOW(Dbg->wb_shell), Dbg->wb_textarea);
+        show();
+        wb_textarea->setFocus();
         return;
     }
     db_status = Eexecuting;
@@ -609,7 +610,8 @@ QTscriptDebuggerDlg::step()
     set_sens(true);
     update_variables();
 //XXX    GTKdev::SetFocus(Dbg->wb_shell);
-//    gtk_window_set_focus(GTK_WINDOW(Dbg->wb_shell), Dbg->wb_textarea);
+    show();
+    wb_textarea->setFocus();
 }
 
 
@@ -1386,6 +1388,11 @@ QTscriptDebuggerDlg::edit_menu_slot(QAction *a)
         histlist *h = db_undo_list;
         db_undo_list = db_undo_list->h_next;
         db_in_undo = true;
+
+        if (h->h_deletion)
+            wb_textarea->insert_chars_at_point(0, h->h_text, h->h_cpos, -1);
+        else
+            wb_textarea->delete_chars(h->h_cpos, h->h_cpos + strlen(h->h_text));
 /*XXX
         GtkTextBuffer *tbf =
             gtk_text_view_get_buffer(GTK_TEXT_VIEW(Dbg->wb_textarea));
@@ -1414,6 +1421,11 @@ QTscriptDebuggerDlg::edit_menu_slot(QAction *a)
         histlist *h = db_redo_list;
         db_redo_list = db_redo_list->h_next;
         db_in_undo = true;
+
+        if (!h->h_deletion)
+            wb_textarea->insert_chars_at_point(0, h->h_text, h->h_cpos, -1);
+        else
+            wb_textarea->delete_chars(h->h_cpos, h->h_cpos + strlen(h->h_text));
 /*XXX
         GtkTextBuffer *tbf =
             gtk_text_view_get_buffer(GTK_TEXT_VIEW(Dbg->wb_textarea));
@@ -1950,7 +1962,6 @@ QTdbgVarsDlg::font_changed_slot(int fnum)
         QFont *fnt;
         if (FC.getFont(&fnt, FNT_FIXED))
             dv_list->setFont(*fnt);
-//XXX needs redraw        update();
     }
 }
 

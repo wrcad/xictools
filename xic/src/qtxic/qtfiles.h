@@ -96,6 +96,7 @@ private slots:
     void font_changed_slot(int);
     void resize_slot(QResizeEvent*);
     void mouse_press_slot(QMouseEvent*);
+    void mouse_release_slot(QMouseEvent*);
     void mouse_motion_slot(QMouseEvent*);
     void mime_data_received_slot(const QMimeData*);
     void dismiss_btn_slot();
@@ -118,7 +119,7 @@ private:
     static char *fl_is_symfile(const char*);
     static void fl_content_cb(const char*, void*);
     static void fl_down_cb(void*);
-    static void fl_desel(void*);
+    static void fl_desel();
 
     GRobject    fl_caller;
     QPushButton *fl_buttons[MAX_BTNS];

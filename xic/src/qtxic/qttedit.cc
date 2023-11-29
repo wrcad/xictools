@@ -202,11 +202,6 @@ QTelecTermEditDlg::QTelecTermEditDlg(GRobject caller, TermEditInfo *tinfo,
 
     te_netex = new QLineEdit();
     hbox->addWidget(te_netex);;
-/*XXX
-    // Pressing Enter in the entry presses Apply.
-    gtk_window_set_focus(GTK_WINDOW(te_popup), te_name);
-    gtk_entry_set_activates_default(GTK_ENTRY(te_name), true);
-*/
 
     // Has Physical Term?
     //
@@ -348,18 +343,14 @@ QTelecTermEditDlg::QTelecTermEditDlg(GRobject caller, TermEditInfo *tinfo,
     btn = new QPushButton(tr("Apply"));
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
-
-/*XXX
-    // Pressing Enter in the entry presses Apply.
-    gtk_widget_set_can_default(button, true);
-    gtk_window_set_default(GTK_WINDOW(te_popup), button);
-*/
+    btn->setDefault(true);
 
     btn = new QPushButton(tr("Dismiss"));
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     update(tinfo, prp);
+    setTabOrder(te_name, te_sb_index);
 }
 
 

@@ -112,36 +112,19 @@ qtasm.cc:             /*XXX
 qtasm.cc:              /*XXX
 qtasm.cc:/*XXX
 qtasmpage.cc://XXX need to redraw?
-qtcflags.cc://XXX    gtk_widget_set_size_request(GTK_WIDGET(wb_textarea), ww, hh);
-qtcgdlist.cc:    /*XXX
-qtcgdopen.cc:/* XXX use in llist
-qtcgdopen.cc:/*XXX
 qtchdlist.cc:             /* XXX
 qtchdlist.cc:    /* XXX
 qtchdlist.cc:        /* XXX
 qtchdlist.cc:        /* XXX
-qtchdsave.cc://XXX need this?
-qtcmp.cc:/*XXX
-qtcmp.cc:/*XXX
-qtcmp.cc:/*XXX
 qtdebug.cc://XXX        QTdev::SetFocus(Dbg->wb_shell);
 qtdebug.cc://XXX    GTKdev::SetFocus(Dbg->wb_shell);
 qtdebug.cc:/*XXX
 qtdebug.cc:/*XXX
 qtdebug.cc:/*XXX
 qtdebug.cc://XXX needs redraw        update();
-qtdevs.cc:                //XXX ?
-qtdevs.cc:            /*XXX
-qtdevs.cc:            /*XXX
 qtdrcrun.cc://XXX    g_object_set_data(G_OBJECT(button), "abort", (void*)1);
 qtextfc.cc: // XXX Earlier releases will show the debug page.
-qtfiles.cc:/*XXX
-qtfiles.cc://XXX
-qtfiles.cc:/*XXX
-qtfiles.cc:                    /* XXX
-qtfiles.cc:/* XXX
-qtgrid.cc://XXX
-qtgrid.cc://XXX        SetColor(style->bg[GTK_STATE_ACTIVE].pixel);
+qtfiles.cc: /*XXX set selection color, etc
 qthtext.cc:    /*XXX
 qthtext.cc:    /*XXX
 qthtext.cc:        //XXX redraw
@@ -150,15 +133,8 @@ qthtext.cc:        //XXX probably need something here.
 qtkeymacro.cc:// XXX also one of these in subwin_d.cc
 qtkeymacro.cc:/*  XXX This doesn't work.  F'n QT doesn't seem to have a way to
 qtkeymap.cc:/* XXX how to get *numeric* +/-? */
-qtlibs.cc:        /*XXX
-qtlibs.cc:    /*XXX
-qtlibs.cc:    /*XXX
 qtlogo.cc:// XXX FIXME: handle multi lines, justification
 qtlogo.cc:// XXX FIXME: handle multi lines, justification
-qtlpal.cc://XXX    lp_recall_proc(0, 0);
-qtlpal.cc://XXX    lp_save_proc(0, 0);
-qtltab.cc://XXX fixme: pages of Painter not active messages.
-qtltab.cc:        //XXX redraw
 qtltalias.cc:// XXX Translation to buttons from original menu bar.
 qtltalias.cc://XXX need this?
 qtltalias.cc:/*XXX
@@ -173,9 +149,6 @@ qtmain.cc:/*XXX
 qtmain.cc://XXX fixme
 qtmain.cc:        //XXX
 qtmain.cc:/*XXX
-qtmenucfg.cc://  xic:XXX  (XXX is command code)
-qtmenucfg.cc://  shapes:XXX (XXX is shape code)
-qtmenucfg.cc://  user:XXX (XXX is user code)
 qtmenucfg.cc:        //XXX Are there other entries to keep sensitive?
 qtmenucfg.cc:    // XXX Old GTK message, don't know if it still applies.
 qtmenucfg.cc:/*XXX
@@ -186,8 +159,6 @@ qtoalibs.cc://XXX check this
 qtpcprms.cc://XXX Probably need to detect the need for and use exponential notation
 qtpcprms.cc:        /*XXX
 qtprpcedit.cc://XXX
-qttedit.cc:/*XXX
-qttedit.cc:/*XXX
 qttree.cc:    //XXX FIXME
 qttree.cc://XXX
 

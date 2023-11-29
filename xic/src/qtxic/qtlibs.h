@@ -83,9 +83,7 @@ private slots:
     void cont_btn_slot();
     void help_btn_slot();
     void current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*);
-    void item_activated_slot(QTreeWidgetItem*, int);
     void item_clicked_slot(QTreeWidgetItem*, int);
-    void item_selection_changed();
     void noovr_btn_slot(bool);
     void dismiss_btn_slot();
     void font_changed_slot(int);

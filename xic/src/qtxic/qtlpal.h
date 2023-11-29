@@ -118,6 +118,8 @@ private:
 
     GRobject lp_caller;
     QPushButton *lp_remove;
+    QMenu *lp_recall_menu;
+    QMenu *lp_save_menu;
 
     CDl *lp_history[LP_PALETTE_COLS];
     CDl *lp_user[LP_PALETTE_COLS * LP_PALETTE_ROWS];

@@ -337,13 +337,10 @@ QTltab::update_scrollbar()
 void
 QTltab::hide_layer_table(bool hidelt)
 {
-    if (hidelt) {
-        QTmainwin::self()->splitter()->widget(0)->hide();
-    }
-    else {
-//XXX fixme: pages of Painter not active messages.
-        QTmainwin::self()->splitter()->widget(0)->show();
-    }
+    if (hidelt)
+        QTmainwin::self()->splitter()->widget(0)->setVisible(false);
+    else
+        QTmainwin::self()->splitter()->widget(0)->setVisible(true);
 }
 
 
@@ -600,7 +597,7 @@ QTltab::font_changed(int fnum)
         QFont *fnt;
         if (FC.getFont(&fnt, FNT_SCREEN))
             gd_viewport->set_font(fnt);
-        //XXX redraw
+        init();
     }
 }
 

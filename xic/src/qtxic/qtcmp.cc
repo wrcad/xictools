@@ -937,17 +937,10 @@ QTcompareDlg::compose_arglist()
         lstr.add(" -d");
 
     int val = cmp_sb_max_errs->value();
-    lstr.add(" -r ");
-    lstr.add_i(val);
-/*XXX
-    if (tok) {
-        if (atoi(tok) > 0) {
-            lstr.add(" -r ");
-            lstr.add(tok);
-        }
-        delete [] tok;
+    if (val > 0) {
+        lstr.add(" -r ");
+        lstr.add_i(val);
     }
-*/
 
     int page = cmp_mode->currentIndex();
     if (page == 0) {
@@ -1039,15 +1032,18 @@ QTcompareDlg::compose_arglist()
     }
     else if (page == 2) {
         lstr.add(" -f");
-/*XXX
         if (QTdev::GetStatus(cmp_p3_aoi_use)) {
-            s = cmp_sb_p3_aoi_left.get_string();
+            QByteArray lba = cmp_sb_p3_aoi_left->text().toLatin1();
+            s = lba.constData();
             char *tokl = lstring::gettok(&s);
-            s = cmp_sb_p3_aoi_bottom.get_string();
+            QByteArray bba = cmp_sb_p3_aoi_bottom->text().toLatin1();
+            s = bba.constData();
             char *tokb = lstring::gettok(&s);
-            s = cmp_sb_p3_aoi_right.get_string();
+            QByteArray rba = cmp_sb_p3_aoi_right->text().toLatin1();
+            s = rba.constData();
             char *tokr = lstring::gettok(&s);
-            s = cmp_sb_p3_aoi_top.get_string();
+            QByteArray tba = cmp_sb_p3_aoi_top->text().toLatin1();
+            s = tba.constData();
             char *tokt = lstring::gettok(&s);
             if (tokl && tokb && tokr && tokt) {
                 lstr.add(" -a ");
@@ -1065,7 +1061,8 @@ QTcompareDlg::compose_arglist()
             delete [] tokt;
         }
 
-        s = sb_p3_fine_grid.get_string();
+        QByteArray fba = cmp_sb_p3_fine_grid->text().toLatin1();
+        s = fba.constData();
         tok = strip_sp(s);
         if (tok) {
             lstr.add(" -i ");
@@ -1073,14 +1070,14 @@ QTcompareDlg::compose_arglist()
             delete [] tok;
         }
 
-        s = sb_p3_coarse_mult.get_string();
+        QByteArray cba = cmp_sb_p3_coarse_mult->text().toLatin1();
+        s = cba.constData();
         tok = strip_sp(s);
         if (tok) {
             lstr.add(" -m ");
             lstr.add(tok);
             delete [] tok;
         }
-*/
     }
     return (lstr.string_trim());
 }
@@ -1095,16 +1092,7 @@ QTcompareDlg::get_bb(BBox *BB)
     double b = cmp_sb_p3_aoi_bottom->value();
     double r = cmp_sb_p3_aoi_right->value();
     double t = cmp_sb_p3_aoi_top->value();
-/*XXX
-    double l, b, r, t;
-    int i = 0;
-    i += sscanf(sb_p3_aoi_left.get_string(), "%lf", &l);
-    i += sscanf(sb_p3_aoi_bottom.get_string(), "%lf", &b);
-    i += sscanf(sb_p3_aoi_right.get_string(), "%lf", &r);
-    i += sscanf(sb_p3_aoi_top.get_string(), "%lf", &t);
-    if (i != 4)
-        return (false);
-*/
+
     BB->left = INTERNAL_UNITS(l);
     BB->bottom = INTERNAL_UNITS(b);
     BB->right = INTERNAL_UNITS(r);

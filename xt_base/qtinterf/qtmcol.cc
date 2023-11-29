@@ -145,6 +145,8 @@ QTmcolDlg::QTmcolDlg(QTbag *owner, stringlist *symlist,
         this, SLOT(resize_slot(QResizeEvent*)));
     connect(wb_textarea, SIGNAL(press_event(QMouseEvent*)),
         this, SLOT(mouse_press_slot(QMouseEvent*)));
+    connect(wb_textarea, SIGNAL(release_event(QMouseEvent*)),
+        this, SLOT(mouse_release_slot(QMouseEvent*)));
     connect(wb_textarea, SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(mouse_motion_slot(QMouseEvent*)));
 
@@ -561,6 +563,13 @@ QTmcolDlg::mouse_press_slot(QMouseEvent *ev)
 
 
 void
+QTmcolDlg::mouse_release_slot(QMouseEvent *ev)
+{
+    mc_dragging = false;
+}
+
+
+void
 QTmcolDlg::mouse_motion_slot(QMouseEvent *ev)
 {
     if (ev->type() != QEvent::MouseMove) {
@@ -604,7 +613,6 @@ QTmcolDlg::mouse_motion_slot(QMouseEvent *ev)
     QMimeData *mimedata = new QMimeData();
     QByteArray qdata(lstr.string(), strlen(lstr.string())+1);
     mimedata->setData("text/twostring", qdata);
-    delete [] sel;
     drag->setMimeData(mimedata);
     drag->exec(Qt::CopyAction);
 }

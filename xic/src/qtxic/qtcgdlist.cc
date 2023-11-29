@@ -273,17 +273,6 @@ QTcgdListDlg::update()
             delete [] strings[2];
         }
     }
-    // This resizes columns and the widget.
-    /*XXX
-    gtk_tree_view_columns_autosize(GTK_TREE_VIEW(cgl_list));
-    if (rowsel >= 0) {
-        GtkTreePath *p = gtk_tree_path_new_from_indices(rowsel, -1);
-        GtkTreeSelection *sel =
-            gtk_tree_view_get_selection(GTK_TREE_VIEW(cgl_list));
-        gtk_tree_selection_select_path(sel, p);
-        gtk_tree_path_free(p);
-    }
-    */
 
     stringlist::destroy(names);
 }

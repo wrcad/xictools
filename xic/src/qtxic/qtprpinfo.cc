@@ -131,6 +131,8 @@ QTprpInfoDlg::QTprpInfoDlg(CDo *odesc) : QTprpBase(this)
     vbox->addWidget(wb_textarea);
     connect(wb_textarea, SIGNAL(press_event(QMouseEvent*)),
         this, SLOT(mouse_press_slot(QMouseEvent*)));
+    connect(wb_textarea, SIGNAL(release_event(QMouseEvent*)),
+        this, SLOT(mouse_release_slot(QMouseEvent*)));
     connect(wb_textarea, SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(mouse_motion_slot(QMouseEvent*)));
     connect(wb_textarea, SIGNAL(mime_data_received(const QMimeData*)),
@@ -199,6 +201,13 @@ QTprpInfoDlg::mouse_press_slot(QMouseEvent *ev)
         handle_button_down(ev);
         return;
     }
+    ev->ignore();
+}
+
+
+void
+QTprpInfoDlg::mouse_release_slot(QMouseEvent *ev)
+{
     if (ev->type() == QEvent::MouseButtonRelease) {
         ev->accept();
         handle_button_up(ev);

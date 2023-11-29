@@ -70,7 +70,7 @@ QTtextEdit::QTtextEdit(QWidget *prnt) : QTextEdit(prnt)
 // Delete the characters from start to end, -1 indicates end of text.
 //
 void
-QTtextEdit::delete_chars(int start,int end)
+QTtextEdit::delete_chars(int start, int end)
 {
     if (start == end)
         return;
@@ -431,7 +431,7 @@ QTtextEdit::get_scroll_to_line_value(int line, int val)
 //XXX fix this, should return new scroll posn but not sctually scroll there?
 return (val);
 
-/*
+/*XXX
     GtkTextBuffer *tbf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));
     GtkTextIter inewpos;
     gtk_text_buffer_get_iter_at_line(tbf, &inewpos, line);
@@ -459,7 +459,7 @@ QTtextEdit::scroll_to_pos(int posn)
 {
     set_insertion_point(posn);  // scrolls there automatically?
 
-/*
+/*XXX
     GtkTextBuffer *tbf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));
     GtkTextIter ipos;
     gtk_text_buffer_get_iter_at_offset(tbf, &ipos, pos);

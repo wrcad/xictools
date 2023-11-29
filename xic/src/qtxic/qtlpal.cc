@@ -170,30 +170,30 @@ QTlayerPaletteDlg::QTlayerPaletteDlg(GRobject caller) : QTdraw(XW_LPAL)
     hbox->addWidget(recall_btn);
     recall_btn->setAutoDefault(false);
 
-    QMenu *recall_menu = new QMenu();
-    recall_btn->setMenu(recall_menu);
+    lp_recall_menu = new QMenu();
+    recall_btn->setMenu(lp_recall_menu);
     for (int i = 1; i < 8; i++) {
         char buf[16];
         snprintf(buf, sizeof(buf), "Reg %d", i);
-        QAction *a = recall_menu->addAction(buf);
+        QAction *a = lp_recall_menu->addAction(buf);
         a->setData(i);
     }
-    connect(recall_menu, SIGNAL(triggered(QAction*)),
+    connect(lp_recall_menu, SIGNAL(triggered(QAction*)),
         this, SLOT(recall_menu_slot(QAction*)));
 
     QPushButton *save_btn = new QPushButton(tr("Save"));
     hbox->addWidget(save_btn);
     save_btn->setAutoDefault(false);
 
-    QMenu *save_menu = new QMenu();
-    save_btn->setMenu(save_menu);
+    lp_save_menu = new QMenu();
+    save_btn->setMenu(lp_save_menu);
     for (int i = 1; i < 8; i++) {
         char buf[16];
         snprintf(buf, sizeof(buf), "Reg %d", i);
-        QAction *a = save_menu->addAction(buf);
+        QAction *a = lp_save_menu->addAction(buf);
         a->setData(i);
     }
-    connect(save_menu, SIGNAL(triggered(QAction*)),
+    connect(lp_save_menu, SIGNAL(triggered(QAction*)),
         this, SLOT(save_menu_slot(QAction*)));
 
     lp_remove = new QPushButton(tr("Remove"));
@@ -241,13 +241,13 @@ QTlayerPaletteDlg::QTlayerPaletteDlg(GRobject caller) : QTdraw(XW_LPAL)
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     init_size();
-//XXX    lp_recall_proc(0, 0);
+    recall_menu_slot(lp_recall_menu->actions().at(0));
 }
 
 
 QTlayerPaletteDlg::~QTlayerPaletteDlg()
 {
-//XXX    lp_save_proc(0, 0);
+    save_menu_slot(lp_save_menu->actions().at(0));
 
     instPtr = 0;
     SetGbag(0);
