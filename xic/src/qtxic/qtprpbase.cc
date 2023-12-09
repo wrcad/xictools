@@ -298,8 +298,17 @@ QTprpBase::handle_mouse_motion(QMouseEvent *ev)
 }
 
 
-void
-QTprpBase::handle_mime_data_received(const QMimeData *data)
+bool
+QTprpBase::is_mime_data_handled(const QMimeData *data) const
+{
+    if (data->hasFormat("text/property"))
+        return (true);
+    return (false);
+}
+
+
+bool
+QTprpBase::is_mime_data_delivered(const QMimeData *data)
 {
     if (data->hasFormat("text/property")) {
         if (!pb_odesc) {
@@ -357,7 +366,9 @@ QTprpBase::handle_mime_data_received(const QMimeData *data)
                     false, false, GRloc(LW_LR));
             }
         }
+        return (true);
     }
+    return (false);
 }
 
 

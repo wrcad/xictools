@@ -349,7 +349,7 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
     // This is black magic to allow button pressess/releases to be
     // dispatched when the busy flag is set.  Un-setting the Check
     // button will pause the DRC run.
-    // g_object_set_data(G_OBJECT(button), "abort", (void*)1);
+    // g_object_set_data(G_OBJECT(dc_check), "abort", (void*)1);
     // Tested inn the event dispatch loop in GTK.
 
     dc_checkbg = new QPushButton(tr("Check in\nBackground"));

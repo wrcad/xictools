@@ -121,10 +121,9 @@ namespace {
 CursorType
 cMain::GetCursor()
 {
-    return ((CursorType)0);
     if (!QTmainwin::self())
         return (CursorDefault);
-    return ((CursorType)QTmainwin::self()->Gbag()->get_cursor_type());
+    return ((CursorType)QTmainwin::self()->cursor_type());
 }
 
 
@@ -138,12 +137,11 @@ cMain::GetCursor()
 void
 cMain::UpdateCursor(WindowDesc *wd, CursorType t, bool force)
 {
-    if (!force && t ==
-            (CursorType)QTmainwin::self()->Gbag()->get_cursor_type() &&
+    if (!force && t == (CursorType)QTmainwin::self()->cursor_type() &&
             t != CursorCross)
         return;
     if (!wd && QTmainwin::self())
-        QTmainwin::self()->Gbag()->set_cursor_type(t);
+        QTmainwin::self()->set_cursor_type(t);
 
     // The cross cursor makes things complicated, as it requires
     // background and foreground colors per window, i.e., each window

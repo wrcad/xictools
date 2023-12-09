@@ -828,8 +828,6 @@ QTconvOutFmt::ciflabel_menu_changed(int i)
 void
 QTconvOutFmt::cif_flags_slot(QAction *a)
 {
-    QByteArray ba = a->text().toLatin1();
-    const char *s = ba.constData();
     if (a->data().toInt() == 0) {
         fmt_strip = !fmt_strip;
         unsigned int flgs = fmt_strip ?

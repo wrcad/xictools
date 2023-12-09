@@ -580,9 +580,12 @@ MenuMain::MatchEntry(const char *item, int nchars, int wnum, bool exact)
         for (MenuEnt *ent = l->menubox->menu; ent && ent->entry; ent++) {
             if (ent == l->menubox->menu) {
                 // First elt is a dummy containing the menubar item.
-                if (!ent->cmd.caller)
-                    Log()->ErrorLog(mh::Internal,
-                        "MatchEntry: foo! no caller!\n");
+                if (!ent->cmd.caller) {
+                    char buf[256];
+                    snprintf(buf, sizeof(buf), "MatchEntry: %s %s, no caller.\n",
+                        ent->entry, ent->description);
+                    Log()->ErrorLog(mh::Internal, buf);
+                }
                 else if (!IsSensitive(ent->cmd.caller))
                     break;
                 continue;

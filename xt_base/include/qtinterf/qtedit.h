@@ -50,7 +50,9 @@ class QMenu;
 class QMenuBar;
 class QToolBar;
 class QStatusBar;
+class QGroupBox;
 class QTextEdit;
+class QCloseEvent;
 
 namespace qtinterf {
     class QTsearchDlg;
@@ -68,9 +70,9 @@ public:
     enum EventType { QUIT, SAVE, SAVEAS, SOURCE, LOAD, TEXTMOD };
 
     // widget configuration
-    enum WidgetType { Editor, Browser, StringEditor, Mailer };
+    enum EditorType { Editor, Browser, StringEditor, Mailer };
 
-    QTeditDlg(QTbag*, QTeditDlg::WidgetType, const char*, bool,
+    QTeditDlg(QTbag*, QTeditDlg::EditorType, const char*, bool,
         void*);
     ~QTeditDlg();
 
@@ -98,7 +100,7 @@ public:
     }
 
     void set_caller(GRobject);
-    WidgetType get_widget_type()    { return (ed_widget_type); }
+    EditorType get_editor_type()    { return (ed_editor_type); }
     const char *get_file()          { return (ed_sourceFile); }
     void load_file(const char *f)   { load_file_slot(f, 0); }
 
@@ -107,7 +109,7 @@ public:
 
     QSize sizeHint() const
     {
-        if (ed_widget_type == Mailer)
+        if (ed_editor_type == Mailer)
             return (QSize(400, 350));
         return (QSize(500, 300));
     }
@@ -142,12 +144,13 @@ private slots:
     void font_changed_slot(int);
 
 private:
+    void closeEvent(QCloseEvent*);
     bool read_file(const char*, bool);
     bool write_file(const char*, int, int);
     void set_source(const char*);
     void set_sens(bool);
 
-    WidgetType  ed_widget_type;
+    EditorType  ed_editor_type;
     EventType   ed_lastEvent;
     char        *ed_savedAs;
     char        *ed_sourceFile;
@@ -163,6 +166,7 @@ private:
     QMenu       *ed_editmenu;
     QMenu       *ed_optmenu;
     QMenu       *ed_helpmenu;
+    QGroupBox   *ed_title;
     QLineEdit   *ed_to_entry;
     QLineEdit   *ed_subj_entry;
     QTextEdit   *ed_text_editor;

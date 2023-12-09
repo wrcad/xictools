@@ -57,6 +57,8 @@ qtlpedit.cc
 qtmain.cc
 qtmenucfg.cc
 
+11.  intercept the window close signal in editor windows if save needed.
+
 These use QDrag, may need update
 qtauxtab.cc     OK
 qtcells.cc      OK
@@ -101,6 +103,9 @@ What to do about X selections?
 // Need to detect need for and use exponential spin button.
 qtpcprms.cc
 
+// This is a mess, nothing here implemented.
+qtkeymacro.cc:
+
 qtasm.cc:  /*XXX
 qtasm.cc:/*XXX
 qtasm.cc:/*XXX
@@ -116,49 +121,25 @@ qtchdlist.cc:             /* XXX
 qtchdlist.cc:    /* XXX
 qtchdlist.cc:        /* XXX
 qtchdlist.cc:        /* XXX
-qtdebug.cc://XXX        QTdev::SetFocus(Dbg->wb_shell);
-qtdebug.cc://XXX    GTKdev::SetFocus(Dbg->wb_shell);
 qtdebug.cc:/*XXX
 qtdebug.cc:/*XXX
 qtdebug.cc:/*XXX
-qtdebug.cc://XXX needs redraw        update();
-qtdrcrun.cc://XXX    g_object_set_data(G_OBJECT(button), "abort", (void*)1);
-qtextfc.cc: // XXX Earlier releases will show the debug page.
-qtfiles.cc: /*XXX set selection color, etc
-qthtext.cc:    /*XXX
-qthtext.cc:    /*XXX
-qthtext.cc:        //XXX redraw
-qthtext.cc:    /*XXX
-qthtext.cc:        //XXX probably need something here.
-qtkeymacro.cc:// XXX also one of these in subwin_d.cc
-qtkeymacro.cc:/*  XXX This doesn't work.  F'n QT doesn't seem to have a way to
+qtdrcrun.cc:    // XXX set up event dispatch loop in QT
+qtextfc.cc:    // XXX Earlier releases will show the debug page.
+qtfiles.cc:/*XXX set selection color, etc
 qtkeymap.cc:/* XXX how to get *numeric* +/-? */
 qtlogo.cc:// XXX FIXME: handle multi lines, justification
 qtlogo.cc:// XXX FIXME: handle multi lines, justification
-qtltalias.cc:// XXX Translation to buttons from original menu bar.
-qtltalias.cc://XXX need this?
-qtltalias.cc:/*XXX
-qtltalias.cc:    /*XXX
-qtltalias.cc:        /*XXX
 qtmain.cc:    // XXX Fix this if possible.
 qtmain.cc:    /*XXX
-qtmain.cc:    /* XXX
-qtmain.cc:    //XXX
 qtmain.cc:/*XXX
-qtmain.cc:/*XXX
-qtmain.cc://XXX fixme
 qtmain.cc:        //XXX
 qtmain.cc:/*XXX
 qtmenucfg.cc:        //XXX Are there other entries to keep sensitive?
 qtmenucfg.cc:    // XXX Old GTK message, don't know if it still applies.
 qtmenucfg.cc:/*XXX
-qtnodmp.cc:        // XXX Check this.
-qtnodmp.cc:/*XXX
-qtoalibs.cc:/*XXX
-qtoalibs.cc://XXX check this
 qtpcprms.cc://XXX Probably need to detect the need for and use exponential notation
 qtpcprms.cc:        /*XXX
-qtprpcedit.cc://XXX
 qttree.cc:    //XXX FIXME
 qttree.cc://XXX
 

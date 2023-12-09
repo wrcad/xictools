@@ -355,12 +355,13 @@ QTdev::MainLoop(bool)
 {
     if (!dv_loop_level) {
         dv_loop_level = 1;
-        QApplication::instance()->exec();
+        QApplication::exec();
         return;
     }
     dv_loop_level++;
     dv_loop = new event_loop(dv_loop);
     dv_loop->exec();
+    // Blocks until new loop is exited.
     event_loop *tloop = dv_loop;
     dv_loop = dv_loop->next;
     delete tloop;
@@ -489,6 +490,8 @@ QTdev::ComputePopupLocation(GRloc loc, QWidget *widget, QWidget *shell,
 
     int xo = 0, yo = 0;
     int dx = 0, dy = 0;
+/*XXX
+// This messes up locations in qtltalias.cc, maybe in general?
     if (!shell->isAncestorOf(widget)) {
         QWidget *parent = shell->parentWidget();
         if (parent) {
@@ -503,10 +506,13 @@ QTdev::ComputePopupLocation(GRloc loc, QWidget *widget, QWidget *shell,
             // window manager probably has not added decorations yet,
             // so infer the size change from the parent.
 
-            dy = parent->frameGeometry().height() - parent->height();
-            dx = parent->frameGeometry().width() - parent->width();
+            if (!(widget->windowFlags() & Qt::FramelessWindowHint)) {
+                dy = parent->frameGeometry().height() - parent->height();
+                dx = parent->frameGeometry().width() - parent->width();
+            }
         }
     }
+*/
     if (loc.code == LW_LL) {
         *px = xo + shell->x();
         *py = yo + shell->y() + shell->height() - (widget->height() + dy);
@@ -1027,29 +1033,36 @@ QTbag::PopUpTextEditor(const char *fname,
 GReditPopup *
 QTbag::PopUpFileBrowser(const char *fname)
 {
-/*XXX what is this?
     // If we happen to already have this file open, reread it.
     // Called after something was appended to the file.
-    for (interface::svptr *s = widgets; s; s = s->nextItem()) {
-        if (s->itemType() == interface::svText) {
-            QWidget *w = ItemFromTicket(s->itemTicket());
-            QTeditDlg *tw = dynamic_cast<QTeditDlg*>(w);
-            if (tw && tw->get_widget_type() == QTeditPopup::Browser) {
-                const char *file = tw->get_file();
-                if (fname && file && !strcmp(fname, file)) {
-                    tw->load_file(fname);
-                    return (tw);
-                }
+    for (int i = 0; i < GR_NUM_SUBED; i++) {
+        if (Editors[i]) {
+            QTeditDlg *w = Editors[i];
+            if (w->get_editor_type() != QTeditDlg::Browser)
+                continue;
+            const char *string = w->get_file();
+            if (fname && string && !strcmp(fname, string)) {
+                w->load_file(fname);
+                return (w);
             }
         }
     }
-*/
-    QTeditDlg *text = new QTeditDlg(this, QTeditDlg::Browser, fname,
-        false, 0);
+    int i;
+    for (i = 0; i < GR_NUM_SUBED; i++) {
+        if (Editors[i] == 0)
+            break;
+    }
+    if (i == GR_NUM_SUBED) {
+        GRpkg::self()->ErrPrintf(ET_ERROR, "too many edit windows open.\n");
+        return (0);
+    }
+
+    Editors[i] = new QTeditDlg(this, QTeditDlg::Browser, fname, false, 0);
+    Editors[i]->register_usrptr((void**)&Editors[i]);
     if (wb_shell)
-        text->set_transient_for(wb_shell);
-    text->set_visible(true);
-    return (text);
+        Editors[i]->set_transient_for(wb_shell);
+    Editors[i]->set_visible(true);
+    return (Editors[i]);
 }
 
 
@@ -1063,28 +1076,36 @@ GReditPopup *
 QTbag::PopUpStringEditor(const char *string,
     bool (*callback)(const char*, void*, XEtype), void *arg)
 {
-/*
     if (!callback) {
         // pop down and destroy all string editor windows
-        for (interface::svptr *s = widgets; s; s = s->nextItem()) {
-            if (s->itemType() == interface::svText) {
-                QWidget *w = ItemFromTicket(s->itemTicket());
-                QTeditPopup *tw = dynamic_cast<QTeditPopup*>(w);
-                if (tw && tw->get_widget_type() == QTeditPopup::StringEditor)
-                    delete tw;
+        for (int i = 0; i < GR_NUM_SUBED; i++) {
+            if (Editors[i] &&
+                    Editors[i]->get_editor_type() == QTeditDlg::StringEditor) {
+                Editors[i]->call_callback(0, 0, XE_SAVE);
+                Editors[i]->popdown();
+                Editors[i] = 0;
             }
         }
-        return;
+        return (0);
     }
-*/
+    int i;
+    for (i = 0; i < GR_NUM_SUBED; i++) {
+        if (Editors[i] == 0)
+            break;
+    }
+    if (i == GR_NUM_SUBED) {
+        GRpkg::self()->ErrPrintf(ET_ERROR, "too many edit windows open.\n");
+        return (0);
+    }
 
-    QTeditDlg *text = new QTeditDlg(this, QTeditDlg::StringEditor,
-        string, false, arg);
+    Editors[i] = new QTeditDlg(this, QTeditDlg::StringEditor, string, false,
+        arg);
+    Editors[i]->register_usrptr((void**)&Editors[i]);
     if (wb_shell)
-        text->set_transient_for(wb_shell);
-    text->register_callback(callback);
-    text->set_visible(true);
-    return (text);
+        Editors[i]->set_transient_for(wb_shell);
+    Editors[i]->register_callback(callback);
+    Editors[i]->set_visible(true);
+    return (Editors[i]);
 }
 
 
@@ -1098,18 +1119,49 @@ GReditPopup *
 QTbag::PopUpMail(const char *subject, const char *mailaddr,
     void(*downproc)(GReditPopup*), GRloc loc)
 {
-    QTeditDlg *text = new QTeditDlg(this, QTeditDlg::Mailer, 0,
-        false, 0);
+    for (int i = 0; i < GR_NUM_SUBED; i++) {
+        if (Editors[i] && Editors[i]->get_editor_type() == QTeditDlg::Mailer)
+            // already active
+            return (Editors[i]);
+    }
+    int i;
+    for (i = 0; i < GR_NUM_SUBED; i++) {
+        if (Editors[i] == 0)
+            break;
+    }
+    if (i == GR_NUM_SUBED) {
+        GRpkg::self()->ErrPrintf(ET_ERROR, "too many edit windows open.\n");
+        return (0);
+    }
+
+    Editors[i] = new QTeditDlg(this, QTeditDlg::Mailer, 0, false, 0);
+    Editors[i]->register_usrptr((void**)&Editors[i]);
     if (wb_shell)
-        text->set_transient_for(wb_shell);
+        Editors[i]->set_transient_for(wb_shell);
     if (subject && *subject)
-        text->set_mailsubj(subject);
+        Editors[i]->set_mailsubj(subject);
     if (mailaddr && *mailaddr)
-        text->set_mailaddr(mailaddr);
-    text->register_quit_callback(downproc);
-    text->set_visible(true);
-    QTdev::self()->SetPopupLocation(loc, text, wb_shell);
-    return (text);
+        Editors[i]->set_mailaddr(mailaddr);
+    Editors[i]->register_quit_callback(downproc);
+    Editors[i]->set_visible(true);
+    QTdev::self()->SetPopupLocation(loc, Editors[i], wb_shell);
+    return (Editors[i]);
+}
+
+
+GRfilePopup *
+QTbag::PopUpFileSelector(FsMode mode, GRloc loc,
+    void(*cb)(const char*, void*), void(*down_cb)(GRfilePopup*, void*),
+    void *arg, const char *root_or_fname)
+{
+    QTfileDlg *fsel = new QTfileDlg(this, mode, arg, root_or_fname);
+    if (wb_shell)
+       fsel->set_transient_for(wb_shell);
+    fsel->register_callback(cb);
+    fsel->register_quit_callback(down_cb);
+    fsel->set_visible(true);
+    QTdev::self()->SetPopupLocation(loc, fsel, wb_shell);
+    return (fsel);
 }
 
 
@@ -1217,22 +1269,6 @@ QTbag::HcopyDisableMsgs()
 }
 
 
-GRfilePopup *
-QTbag::PopUpFileSelector(FsMode mode, GRloc loc,
-    void(*cb)(const char*, void*), void(*down_cb)(GRfilePopup*, void*),
-    void *arg, const char *root_or_fname)
-{
-    QTfileDlg *fsel = new QTfileDlg(this, mode, arg, root_or_fname);
-    if (wb_shell)
-       fsel->set_transient_for(wb_shell);
-    fsel->register_callback(cb);
-    fsel->register_quit_callback(down_cb);
-    fsel->set_visible(true);
-    QTdev::self()->SetPopupLocation(loc, fsel, wb_shell);
-    return (fsel);
-}
-
-
 //
 // Utilities
 //
@@ -1254,9 +1290,7 @@ QTbag::ClearPopups()
         wb_info2->popdown();
     if (wb_htinfo)
         wb_htinfo->popdown();
-    GRpopup *p;
-    while ((p = wb_monitor.first_object()) != 0)
-        p->popdown();
+    wb_monitor.clear();
 }
 
 

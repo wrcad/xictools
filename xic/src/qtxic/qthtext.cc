@@ -51,6 +51,7 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QLayout>
+#include <QLabel>
 #include <QToolButton>
 #include <QMenu>
 #include <QMouseEvent>
@@ -59,12 +60,10 @@
 #include <QDropEvent>
 #include <QMimeData>
 
+
 // Help keywords:
 //  promptline
 //
-
-
-//-------------------------------
 
 hyList *QTedit::pe_stores[PE_NUMSTORES];
 
@@ -167,7 +166,7 @@ QTedit::QTedit(bool nogr) : QTdraw(XW_TEXT)
     connect(Viewport(), SIGNAL(press_event(QMouseEvent*)),
         this, SLOT(press_slot(QMouseEvent*)));
     connect(Viewport(), SIGNAL(release_event(QMouseEvent*)),
-        this, SLOT(press_slot(QMouseEvent*)));
+        this, SLOT(release_slot(QMouseEvent*)));
     connect(Viewport(), SIGNAL(enter_event(QEnterEvent*)),
         this, SLOT(enter_slot(QEnterEvent*)));
     connect(Viewport(), SIGNAL(leave_event(QEvent*)),
@@ -200,6 +199,33 @@ QTedit::on_null_ptr()
 }
 
 
+namespace {
+    class QTflashPop : public QDialog
+    {
+    public:
+        QTflashPop(const char *msg, QWidget *prnt = 0) : QDialog(prnt)
+        {
+            setAttribute(Qt::WA_DeleteOnClose);
+            setWindowFlags(Qt::Popup | Qt::FramelessWindowHint);
+            QVBoxLayout *vbox = new QVBoxLayout(this);
+            vbox->setContentsMargins(0, 0, 0, 0);
+            vbox->setSpacing(2);
+            QLabel *label = new QLabel(msg);
+            vbox->addWidget(label);
+
+        }       
+
+        static int timeout(void *arg)
+        {
+            QTflashPop *fp = static_cast<QTflashPop*>(arg);
+            fp->deleteLater();
+            return (0);
+        }
+    };
+
+}
+
+
 // Flash a message just above the prompt line for a couple of seconds.
 //
 void
@@ -213,24 +239,11 @@ QTedit::flash_msg(const char *msg, ...)
     va_end(args);
     puts(buf);
 
-    /*XXX
-    GtkWidget *popup = gtk_window_new(GTK_WINDOW_POPUP);
-    if (!popup)
-        return;
-    GtkWidget *label = gtk_label_new(buf);
-    gtk_widget_show(label);
-    gtk_misc_set_padding(GTK_MISC(label), 2, 2);
-    gtk_container_add(GTK_CONTAINER(popup), label);
-
-    QTdev::self()->SetPopupLocation(GRloc(LW_LL), popup,
+    QTflashPop *pop = new QTflashPop(buf, QTmainwin::self());
+    QTdev::self()->SetPopupLocation(GRloc(LW_LL), pop,
         QTmainwin::self()->Viewport());
-    gtk_window_set_transient_for(GTK_WINDOW(popup),
-        GTK_WINDOW(QTmainwin::self()->Shell()));
-
-    gtk_widget_show(popup);
-
-    QTdev::self()->AddTimer(2000, fm_timeout, popup);
-    */
+    pop->show();
+    QTdev::self()->AddTimer(2000, &QTflashPop::timeout, pop);
 }
 
 
@@ -239,8 +252,6 @@ QTedit::flash_msg(const char *msg, ...)
 void
 QTedit::flash_msg_here(int xx, int yy, const char *msg, ...)
 {
-    (void)xx;
-    (void)yy;
     va_list args;
 
     char buf[256];
@@ -249,23 +260,11 @@ QTedit::flash_msg_here(int xx, int yy, const char *msg, ...)
     va_end(args);
     puts(buf);
 
-    /*XXX
-    GtkWidget *popup = gtk_window_new(GTK_WINDOW_POPUP);
-    if (!popup)
-        return;
-    GtkWidget *label = gtk_label_new(buf);
-    gtk_widget_show(label);
-    gtk_misc_set_padding(GTK_MISC(label), 2, 2);
-    gtk_container_add(GTK_CONTAINER(popup), label);
-
-    QTdev::self()->SetPopupLocation(GRloc(LW_XYA, x, y),
-        popup, QTmainwin::self()->Viewport());
-
-
-    gtk_widget_show(popup);
-
-    QTdev::self()->AddTimer(2000, fm_timeout, popup);
-    */
+    QTflashPop *pop = new QTflashPop(buf, QTmainwin::self());
+    QTdev::self()->SetPopupLocation(GRloc(LW_XYA, xx, yy),
+        pop, QTmainwin::self()->Viewport());
+    pop->show();
+    QTdev::self()->AddTimer(2000, &QTflashPop::timeout, pop);
 }
 
 
@@ -291,9 +290,7 @@ QTedit::win_width(bool)
 int
 QTedit::win_height()
 {
-//    if (!QTdev::exists() || !QTmainwin::exists())
-        return (14);
-//    return (pe_hei);
+    return (gd_viewport->height());
 }
 
 
@@ -302,7 +299,7 @@ QTedit::win_height()
 void
 QTedit::set_focus()
 {
-//    QTdev::self()->RevertFocus();
+    QTmainwin::self()->activateWindow();
 }
 
 
@@ -340,24 +337,36 @@ QTedit::show_lt_button(bool show_btn)
 
 
 void
-QTedit::get_selection(bool)
+QTedit::get_selection(bool pri)
 {
-    // called to stuff clipboard into editing line.
+    if (pri) {
+        // Insert the clipboard.
+        QByteArray ba = QApplication::clipboard()->text().toLatin1();
+        const char *sel = ba.constData();
+        if (sel && *sel && is_active()) {
+            CDs *cursd = CurCell(true);
+            hyList *hp = new hyList(cursd, sel, HYcvAscii);
+            insert(hp);
+            hyList::destroy(hp);
+        }
+    }
+    else {
+        // Insert the "primary" selection.
+        // X only
+    }
 }
 
 
 void *
-QTedit::setup_backing(bool use_pm)
+QTedit::setup_backing(bool)
 {
-    (void)use_pm;
     return (0);
 }
 
 
 void
-QTedit::restore_backing(void *tw)
+QTedit::restore_backing(void*)
 {
-    (void)tw;
 }
 
 
@@ -408,29 +417,10 @@ QTedit::font_changed_slot(int fnum)
         QFont *fnt;
         if (FC.getFont(&fnt, FNT_SCREEN)) {
             gd_viewport->set_font(fnt);
+            init();
+            redraw();
         }
-        //XXX redraw
-        init();
     }
-    /*XXX
-    if (ptr()) {
-#if GTK_CHECK_VERSION(3,0,0)
-        //XXX probably need something here.
-#else
-        if (ptr()->gd_viewport) {
-            int fw, fh;
-            ptr()->TextExtent(0, &fw, &fh);
-            GtkRequisition r;
-            gtk_widget_size_request(ptr()->pe_r_button, &r);
-            int ht = fh + 4;
-            if (ht < r.height)
-                ht = r.height;
-            gtk_widget_set_size_request(ptr()->gd_viewport, -1, ht);
-        }
-#endif
-        ptr()->init();
-    }
-    */
 }
 
 
@@ -526,41 +516,51 @@ QTedit::press_slot(QMouseEvent *ev)
         ev->accept();
         return;
     }
+    if (ev->type() != QEvent::MouseButtonPress) {
+        ev->ignore();
+        return;
+    }
 
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-    if (ev->type() == QEvent::MouseButtonPress) {
-        if (ev->button() == Qt::LeftButton)
-            button_press_handler(1, ev->position().x(), ev->position().y());
-        else if (ev->button() == Qt::MiddleButton)
-            button_press_handler(2, ev->position().x(), ev->position().y());
-        else if (ev->button() == Qt::RightButton)
-            button_press_handler(3, ev->position().x(), ev->position().y());
-    }
-    else if (ev->type() == QEvent::MouseButtonRelease) {
-        if (ev->button() == Qt::LeftButton)
-            button_release_handler(1, ev->position().x(), ev->position().y());
-        else if (ev->button() == Qt::MiddleButton)
-            button_release_handler(2, ev->position().x(), ev->position().y());
-        else if (ev->button() == Qt::RightButton)
-            button_release_handler(3, ev->position().x(), ev->position().y());
-    }
+    if (ev->button() == Qt::LeftButton)
+        button_press_handler(1, ev->position().x(), ev->position().y());
+    else if (ev->button() == Qt::MiddleButton)
+        button_press_handler(2, ev->position().x(), ev->position().y());
+    else if (ev->button() == Qt::RightButton)
+        button_press_handler(3, ev->position().x(), ev->position().y());
 #else
-    if (ev->type() == QEvent::MouseButtonPress) {
-        if (ev->button() == Qt::LeftButton)
-            button_press_handler(1, ev->x(), ev->y());
-        else if (ev->button() == Qt::MiddleButton)
-            button_press_handler(2, ev->x(), ev->y());
-        else if (ev->button() == Qt::RightButton)
-            button_press_handler(3, ev->x(), ev->y());
+    if (ev->button() == Qt::LeftButton)
+        button_press_handler(1, ev->x(), ev->y());
+    else if (ev->button() == Qt::MiddleButton)
+        button_press_handler(2, ev->x(), ev->y());
+    else if (ev->button() == Qt::RightButton)
+        button_press_handler(3, ev->x(), ev->y());
+#endif
+    ev->accept();
+}
+
+
+void
+QTedit::release_slot(QMouseEvent *ev)
+{
+    if (ev->type() != QEvent::MouseButtonRelease) {
+        ev->ignore();
+        return;
     }
-    else if (ev->type() == QEvent::MouseButtonRelease) {
-        if (ev->button() == Qt::LeftButton)
-            button_release_handler(1, ev->x(), ev->y());
-        else if (ev->button() == Qt::MiddleButton)
-            button_release_handler(2, ev->x(), ev->y());
-        else if (ev->button() == Qt::RightButton)
-            button_release_handler(3, ev->x(), ev->y());
-    }
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+    if (ev->button() == Qt::LeftButton)
+        button_release_handler(1, ev->position().x(), ev->position().y());
+    else if (ev->button() == Qt::MiddleButton)
+        button_release_handler(2, ev->position().x(), ev->position().y());
+    else if (ev->button() == Qt::RightButton)
+        button_release_handler(3, ev->position().x(), ev->position().y());
+#else
+    if (ev->button() == Qt::LeftButton)
+        button_release_handler(1, ev->x(), ev->y());
+    else if (ev->button() == Qt::MiddleButton)
+        button_release_handler(2, ev->x(), ev->y());
+    else if (ev->button() == Qt::RightButton)
+        button_release_handler(3, ev->x(), ev->y());
 #endif
     ev->accept();
 }
@@ -667,7 +667,8 @@ namespace {
 void
 QTedit::drag_enter_slot(QDragEnterEvent *ev)
 {
-    if (ev->mimeData()->hasUrls() || ev->mimeData()->hasFormat("text/property") ||
+    if (ev->mimeData()->hasUrls() ||
+            ev->mimeData()->hasFormat("text/property") ||
             ev->mimeData()->hasFormat("text/twostring") ||
             ev->mimeData()->hasFormat("text/cellname") ||
             ev->mimeData()->hasFormat("text/string") ||

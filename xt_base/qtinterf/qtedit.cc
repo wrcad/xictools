@@ -124,13 +124,13 @@ static const char * const attach_xpm[] = {
 "                                "};
 
 
-QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::WidgetType type,
+QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::EditorType type,
     const char *file_or_string, bool with_source, void *arg) :
     QDialog(owner ? owner->Shell() : 0), QTbag(this)
 {
     p_parent = owner;
     p_cb_arg = arg;
-    ed_widget_type = type;
+    ed_editor_type = type;
 
     ed_lastEvent = QUIT;
     ed_savedAs = 0;
@@ -146,6 +146,7 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::WidgetType type,
     ed_editmenu = 0;
     ed_optmenu = 0;
     ed_helpmenu = 0;
+    ed_title = 0;
     ed_to_entry = 0;
     ed_subj_entry = 0;
     ed_text_editor = 0;
@@ -170,7 +171,7 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::WidgetType type,
     ed_bar = menubar;
     ed_filemenu = new QMenu(this);
     ed_filemenu->setTitle(QString(tr("&File")));
-    if (ed_widget_type == Editor || ed_widget_type == Browser) {
+    if (ed_editor_type == Editor || ed_editor_type == Browser) {
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         ed_filemenu->addAction(QString(tr("&Open")), Qt::CTRL|Qt::Key_O,
             this, SLOT(open_slot()));
@@ -183,7 +184,7 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::WidgetType type,
             SLOT(load_slot()), Qt::CTRL|Qt::Key_L);
 #endif
     }
-    if (ed_widget_type != Browser) {
+    if (ed_editor_type != Browser) {
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         ed_Read = ed_filemenu->addAction(QString(tr("&Read")),
             Qt::CTRL|Qt::Key_R, this, SLOT(read_slot()));
@@ -192,7 +193,7 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::WidgetType type,
             SLOT(read_slot()), Qt::CTRL|Qt::Key_R);
 #endif
     }
-    if (ed_widget_type == Editor || ed_widget_type == StringEditor) {
+    if (ed_editor_type == Editor || ed_editor_type == StringEditor) {
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         ed_Save = ed_filemenu->addAction(QString(tr("&Save")),
             Qt::CTRL|Qt::Key_S, this, SLOT(save_slot()));
@@ -201,7 +202,7 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::WidgetType type,
             SLOT(save_slot()), Qt::CTRL|Qt::Key_S);
 #endif
     }
-    if (ed_widget_type != StringEditor) {
+    if (ed_editor_type != StringEditor) {
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         ed_SaveAs = ed_filemenu->addAction(QString(tr("Save &As")),
             Qt::CTRL|Qt::Key_A, this, SLOT(save_as_slot()));
@@ -215,7 +216,7 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::WidgetType type,
 #endif
     }
     ed_filemenu->addSeparator();
-    if (ed_widget_type == Mailer)  {
+    if (ed_editor_type == Mailer)  {
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         ed_filemenu->addAction(QString(tr("Send &Mail")), Qt::CTRL|Qt::Key_M,
             this, SLOT(send_slot()));
@@ -264,12 +265,12 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::WidgetType type,
     ed_optmenu->setTitle(QString(tr("&Options")));
     ed_optmenu->addAction(QString(tr("&Search")), this,
         SLOT(search_slot()));
-    if ((ed_widget_type == Editor || ed_widget_type == StringEditor) &&
+    if ((ed_editor_type == Editor || ed_editor_type == StringEditor) &&
             with_source) {
         ed_optmenu->addAction(QString(tr("&Source")), this,
             SLOT(source_slot()));
     }
-    if (ed_widget_type == Mailer) {
+    if (ed_editor_type == Mailer) {
         ed_optmenu->addAction(QString(tr("&Attach")), this,
             SLOT(attach_slot()));
     }
@@ -307,30 +308,33 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::WidgetType type,
     vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
 
-    if (ed_widget_type == Mailer) {
-        QGroupBox *gb = new QGroupBox(this);
-        gb->setTitle(QString(tr("To:")));
+    if (ed_editor_type == Mailer) {
+        QGroupBox *gb = new QGroupBox(tr("To:"));
         QVBoxLayout *vb = new QVBoxLayout(gb);
         vb->setContentsMargins(qmtop);
-        ed_to_entry = new QLineEdit(gb);
+        ed_to_entry = new QLineEdit();
         vb->addWidget(ed_to_entry);
         vbox->addWidget(gb);
-        ed_to_entry->setText(QString(mail_addr));
+        ed_to_entry->setText(mail_addr);
 
-        gb = new QGroupBox(this);
-        gb->setTitle(QString(tr("Subject:")));
+        gb = new QGroupBox(tr("Subject:"));
         vb = new QVBoxLayout(gb);
         vb->setContentsMargins(qmtop);
-        ed_subj_entry = new QLineEdit(gb);
+        ed_subj_entry = new QLineEdit();
         vb->addWidget(ed_subj_entry);
         vbox->addWidget(gb);
-        ed_subj_entry->setText(QString(mail_subject));
+        ed_subj_entry->setText(mail_subject);
     }
-    ed_text_editor = new QTextEdit(this);
-    vbox->addWidget(ed_text_editor);
+
+    ed_title = new QGroupBox();
+    vbox->addWidget(ed_title);
+    QVBoxLayout *vb = new QVBoxLayout(ed_title);
+    vb->setContentsMargins(qmtop);
+    ed_text_editor = new QTextEdit();
+    vb->addWidget(ed_text_editor);
     ed_text_editor->setLineWrapMode(QTextEdit::NoWrap);
 
-    ed_status_bar = new QStatusBar(this);
+    ed_status_bar = new QStatusBar();
     vbox->addWidget(ed_status_bar);
 
     static bool checked_env;
@@ -346,8 +350,8 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::WidgetType type,
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
 
-    if (ed_widget_type == Editor || ed_widget_type == Browser) {
-        if (ed_widget_type == Browser) {
+    if (ed_editor_type == Editor || ed_editor_type == Browser) {
+        if (ed_editor_type == Browser) {
             ed_text_editor->setReadOnly(true);
             ed_text_editor->viewport()->setCursor(Qt::ArrowCursor);
         }
@@ -356,29 +360,29 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::WidgetType type,
         check_t which = filestat::check_file(fname, R_OK);
         if (which == NOGO) {
             fname = filestat::make_temp("xe");
-            if (ed_widget_type == Browser)
-                ed_status_bar->showMessage(QString("Can't open file!"));
+            if (ed_editor_type == Browser)
+                ed_status_bar->showMessage("Can't open file!");
         }
         else if (which == READ_OK) {
             if (!read_file(fname, true))
-                ed_status_bar->showMessage(QString("Can't open file!"));
-            if (ed_widget_type == Browser)
-                ed_status_bar->showMessage(QString("Read-Only"));
+                ed_status_bar->showMessage("Can't open file!");
+            if (ed_editor_type == Browser)
+                ed_status_bar->showMessage("Read-Only");
         }
         else if (which == NO_EXIST) {
-            if (ed_widget_type == Browser)
-                ed_status_bar->showMessage(QString("Can't open file!"));
+            if (ed_editor_type == Browser)
+                ed_status_bar->showMessage("Can't open file!");
         }
         else {
-            ed_status_bar->showMessage(QString("Read-Only"));
+            ed_status_bar->showMessage("Read-Only");
             ed_text_editor->setReadOnly(true);
         }
         set_source(fname);
         delete [] fname;
     }
-    else if (ed_widget_type == Mailer) {
+    else if (ed_editor_type == Mailer) {
         ed_text_editor->setPlainText(file_or_string);
-        ed_status_bar->showMessage(QString("Please enter your comment"));
+        ed_status_bar->showMessage("Please enter your comment");
     }
     else
         ed_text_editor->setPlainText(file_or_string);
@@ -400,30 +404,21 @@ QTeditDlg::~QTeditDlg()
             owner->MonitorRemove(this);
     }
 
-    /*
     const char *fnamein = 0;
-    if (ed_widget_type != Mailer && ed_widget_type != StringEditor) {
+    if (ed_editor_type != Mailer && ed_editor_type != StringEditor) {
         if (ed_savedAs)
             fnamein = lstring::copy(ed_savedAs);
-        else if (ed_title)
-            fnamein = lstring::copy(ed_title->title().toLatin1().constData());
+        else
+            fnamein = lstring::copy(ed_sourceFile);
     }
-    */
     if (wb_fontsel)
         wb_fontsel->popdown();
-//XXX    register_edit(false);
 
     delete ed_searcher;
-/*
-    for (int k = 0; k < 4; k++) {
-        if (ed_fsels[k])
-            ed_fsels[k]->popdown();
-    }
-*/
-    if (ed_widget_type != Mailer) {
- //       if (p_callback)
- //           (*p_callback)(fnamein, p_cb_arg, XE_QUIT);
- //       delete [] fnamein;
+    if (ed_editor_type != Mailer) {
+        if (p_callback)
+            (*p_callback)(fnamein, p_cb_arg, XE_QUIT);
+        delete [] fnamein;
     }
     else if (p_cancel)
         (*p_cancel)(this);
@@ -553,7 +548,7 @@ QTeditDlg::load_file_slot(const char *fnamein, void*)
     ed_text_editor->setReadOnly(true);
 
     bool ok = read_file(fname, true);
-    if (ed_widget_type != Browser)
+    if (ed_editor_type != Browser)
         ed_text_editor->setReadOnly(false);
     if (wb_input)
         wb_input->popdown();
@@ -609,6 +604,14 @@ QTeditDlg::load_slot()
     PopUpInput(0, buf, "Load File", 0, 0);
     connect(wb_input, SIGNAL(action_call(const char*, void*)),
         this, SLOT(load_file_slot(const char*, void*)));
+}
+
+
+void
+QTeditDlg::closeEvent(QCloseEvent *ev)
+{
+    ev->ignore();
+    quit_slot();
 }
 
 
@@ -806,7 +809,7 @@ QTeditDlg::save_as_slot()
     int end = c.position();
     if (start == end) {
         const char *fname = ed_sourceFile;
-        if (ed_widget_type == Mailer)
+        if (ed_editor_type == Mailer)
             fname = "";
         PopUpInput(0, fname, "Save File", 0, 0);
         connect(wb_input, SIGNAL(action_call(const char*, void*)),
@@ -944,7 +947,7 @@ QTeditDlg::send_slot()
 void
 QTeditDlg::quit_slot()
 {
-    if ((ed_widget_type == Editor || ed_widget_type == StringEditor) &&
+    if ((ed_editor_type == Editor || ed_editor_type == StringEditor) &&
             ed_textChanged) {
         if (ed_lastEvent != QUIT) {
             ed_lastEvent = QUIT;
@@ -953,7 +956,8 @@ QTeditDlg::quit_slot()
             return;
         }
     }
-    deleteLater();
+//    deleteLater();
+delete this;
 }
 
 
@@ -1157,9 +1161,9 @@ QTeditDlg::help_slot()
 {
     if (GRpkg::self()->MainWbag())
         GRpkg::self()->MainWbag()->PopUpHelp(
-            ed_widget_type == Mailer ? "mailclient" : "xeditor");
+            ed_editor_type == Mailer ? "mailclient" : "xeditor");
     else
-        PopUpHelp(ed_widget_type == Mailer ? "mailclient" : "xeditor");
+        PopUpHelp(ed_editor_type == Mailer ? "mailclient" : "xeditor");
 }
 
 
@@ -1252,6 +1256,15 @@ QTeditDlg::set_source(const char *str)
 {
     delete [] ed_sourceFile;
     ed_sourceFile = lstring::copy(str);
+    if (str) {
+        char buf[80];
+        if (strlen(str) > 72) {
+            snprintf(buf, sizeof(buf), "...%s", str + strlen(str) - 72);
+            ed_title->setTitle(buf);
+            return;
+        }
+        ed_title->setTitle(str);
+    }
 }
 
 

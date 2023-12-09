@@ -86,7 +86,8 @@ private slots:
     void resize_slot(QResizeEvent*);
     void mouse_press_slot(QMouseEvent*);
     void mouse_motion_slot(QMouseEvent*);
-    void mime_data_received_slot(const QMimeData*);
+    void mime_data_handled_slot(const QMimeData*, bool*) const;
+    void mime_data_delivered_slot(const QMimeData*, bool*);
 //    void drag_enter_slot(QDragEnterEvent*);
 //    void drop_event_slot(QDropEvent*);
     void font_changed_slot(int);

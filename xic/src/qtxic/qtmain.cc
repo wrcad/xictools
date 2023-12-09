@@ -54,6 +54,7 @@
 #include "dsp_inlines.h"
 #include "ginterf/nulldev.h"
 #include "promptline.h"
+#include "fio.h"
 #include "sced.h"
 #include "tech.h"
 #include "events.h"
@@ -62,6 +63,7 @@
 #include "keymacro.h"
 #include "errorlog.h"
 #include "ghost.h"
+#include "cd.h"
 #include "miscutil/pathlist.h"
 #include "help/help_context.h"
 #include "qtinterf/qtidleproc.h"
@@ -96,7 +98,15 @@
 
 
 //-----------------------------------------------------------------------------
-// Main Window
+// Main Window and top-level functions.
+// This file has definitions for:
+// NULLwinApp/NULLwin
+// QTpkg
+// cMain
+// QTeventMonitor
+// cKeys
+// QTsubwin
+// QTmainwin
 //
 // Help system keywords used:
 //  button4
@@ -107,7 +117,6 @@
 
 // Create and export the graphics package.
 namespace { QTpkg _qt_; }
-
 
 class NULLwinApp : virtual public cAppWinFuncs
 {
@@ -143,190 +152,141 @@ public:
 
 // Main and subwindow class for null graphics.
 //
-struct NULLwin : public DSPwbag, public NULLwbag,  NULLwinApp,
+class NULLwin : public DSPwbag, public NULLwbag,  NULLwinApp,
     public NULLdraw
 {
 };
 
 
-#define GS_NBTNS 8
+//-----------------------------------------------------------------------------
+// QTpkg functions
 
 namespace {
-    // Struct to hold state for button press grab action.
+    // Callback for general purpose timer.  Set *set true when time limit
+    // reached.
     //
-    // XXX Fix this if possible.
-    // QT widgets grab events when a mouse button is pressed until
-    // released, which prevents continuity between drawing windows
-    // when dragging.  One can use the click-twice alternative to get
-    // around this in some cases.
-    //
-    struct grabstate_t
+    int timer_cb(void *client_data)
     {
-        grabstate_t()
-        {
-            for (int i = 0; i < GS_NBTNS; i++)
-                gs_caller[i] = 0;
-            gs_noopbtn = false;
-        }
-
-        void set(QWidget *w, QMouseEvent *ev)
-        {
-            if (ev->button() >= GS_NBTNS)
-                return;
-            gs_caller[ev->button()] = w;
-        }
-
-        bool is_armed(QMouseEvent *ev)
-        {
-            return (ev->button() < GS_NBTNS && gs_caller[ev->button()] != 0);
-        }
-
-        void clear(QMouseEvent *ev)
-        {
-            if (ev->button() >= GS_NBTNS)
-                return;
-            gs_caller[ev->button()] = 0;
-        }
-
-        void clear(unsigned int btn)
-        {
-            if (btn >= GS_NBTNS)
-                return;
-            gs_caller[btn] = 0;
-        }
-
-        bool check_noop(bool n)
-        {
-            bool x = gs_noopbtn;
-            gs_noopbtn = n;
-            return (x);
-        }
-
-        QWidget *widget(unsigned int n)
-        {
-            return (n <= GS_NBTNS ? gs_caller[n] : 0);
-        }
-
-    private:
-        QWidget *gs_caller[GS_NBTNS];     // target windows
-        bool gs_noopbtn;                  // true when simulating no-op button
-    };
-
-    grabstate_t grabstate;
-
-    /*XXX
-    // Event handling.  This contains the main event handler, plus a queue
-    // for saving events for later dispatch.
-    //
-    struct sEventHdlr
-    {
-        // Event list element
-        //
-        struct evl_t
-        {
-            evl_t(GdkEvent *e) { ev = e; next = 0; }
-            ~evl_t() { if (ev) gdk_event_free(ev); }
-
-            GdkEvent *ev;
-            evl_t *next;
-        };
-
-        sEventHdlr() { event_list = 0; }
-
-        bool has_saved_events() { return (event_list != 0); }
-
-        // Process and clear the event list.
-        //
-        void do_saved_events()
-            {
-                while (event_list) {
-                    evl_t *event = event_list;
-                    event_list = event->next;
-                    gtk_main_do_event(event->ev);
-                    delete event;
-                }
-            }
-
-        // Append an event to the list.
-        //
-        void save_event(GdkEvent *ev)
-            {
-                ev = gdk_event_copy(ev);
-                if (!event_list)
-                    event_list = new evl_t(ev);
-                else {
-                    evl_t *evl = event_list;
-                    while (evl->next)
-                        evl = evl->next;
-                    evl->next = new evl_t(ev);
-                }
-            }
-
-        static void main_event_handler(GdkEvent *event, void*);
-
-    private:
-        evl_t *event_list;
-    };
-
-    bool button_state[GS_NBTNS];
-    sEventHdlr event_hdlr;
-    */
-
-    namespace main_local {
-        void wait_cursor(bool);
-        int timer_cb(void*);
-#ifdef HAVE_MOZY
-        void quit_help(void*);
-        void form_submit_hdlr(void*);
-#endif
-    };
-
-    /* XXX
-    inline bool is_modifier_key(unsigned keysym)
-    {
-        return ((keysym >= GDK_KEY_Shift_L && keysym <= GDK_KEY_Hyper_R) ||
-            keysym == GDK_KEY_Mode_switch || keysym == GDK_KEY_Num_Lock);
-    }
-    */
-
-    // When the application is busy, all button presses and all key
-    // presses except for Ctrl-C are locked out, and upon receipt a
-    // pop-up appears telling the user to use Ctrl-C to abort.  The
-    // pop-up disappears in a few seconds.
-    //
-    // All other events are dispatched normally when busy.
-    //
-
-    // Timeout procedure for message pop-up.
-    //
-    int
-    busy_msg_timeout(void*)
-    {
-        if (QTpkg::self()->BusyPopup())
-            QTpkg::self()->BusyPopup()->popdown();
+        if (client_data)
+            *((bool*)client_data) = true;
         return (false);
     }
 
-    void
-    pop_busy()
-    {
-        const char *busy_msg =
-            "Working...\nPress Control-C in main window to abort.";
 
-        if (!QTpkg::self()->BusyPopup() && QTmainwin::exists()) {
-            QTpkg::self()->SetBusyPopup(
-                QTmainwin::self()->PopUpErrText(busy_msg, STY_NORM));
-            if (QTpkg::self()->BusyPopup())
-                QTpkg::self()->BusyPopup()->
-                    register_usrptr((void**)QTpkg::self()->BusyPopupHome());
-            QTpkg::self()->RegisterTimeoutProc(3000, busy_msg_timeout, 0);
-        }
+#ifdef HAVE_MOZY
+
+    void quit_help(void*)
+    {
+        XM()->QuitHelp();
     }
+
+
+    //
+    // This is the HTML form submission handler.  It sets the variables
+    // from the form, and calls a script for processing.
+    //
+
+    // The form of the action string is the following token followed by the
+    // name of the script (can be a path)
+    //
+#define ACTION_TOKEN "action_local_xic"
+
+    void form_submit_hdlr(void *data)
+    {
+        static bool lock;  // the script interpreter isn't reentrant
+        htmFormCallbackStruct *cbs = (htmFormCallbackStruct*)data;
+
+        const char *t = cbs->action;
+        char *tok = lstring::getqtok(&t);
+        if (strcmp(tok, ACTION_TOKEN)) {
+            QTpkg::self()->ErrPrintf(ET_ERROR,
+                "unknown action_local submission.\n");
+            delete [] tok;
+            return;
+        }
+        delete [] tok;
+        if (lock)
+            return;
+        lock = true;
+        char *script = lstring::getqtok(&t);
+
+        SIfile *sfp;
+        stringlist *wl;
+        XM()->OpenScript(script, &sfp, &wl);
+        if (!sfp && !wl) {
+            QTpkg::self()->ErrPrintf(ET_ERROR,
+                "can't find action_local script.\n");
+            delete [] script;
+            lock = false;
+            return;
+        }
+
+        siVariable *variables = 0;
+        int scnt = 0;
+        for (int i = 0; i < cbs->ncomponents; i++) {
+            siVariable *v = new siVariable;
+            v->name = lstring::copy(cbs->components[i].name);
+            switch (cbs->components[i].type) {
+            case FORM_NONE:
+                delete v;
+                continue;
+            case FORM_SELECT:
+                // deal with multiple selections
+                if (i && cbs->components[i-1].type == FORM_SELECT &&
+                        !strcmp(cbs->components[i-1].name,
+                        cbs->components[i].name)) {
+                    char buf[64];
+                    snprintf(buf, 64, "%s_extra%d", cbs->components[i].name,
+                        scnt);
+                    delete [] v->name;
+                    v->name = lstring::copy(buf);
+                    scnt++;
+                }
+                else
+                    scnt = 0;
+                // fall through
+            case FORM_OPTION:
+            case FORM_PASSWD:
+            case FORM_TEXT:
+            case FORM_FILE:
+            case FORM_TEXTAREA:
+            case FORM_CHECK:
+            case FORM_RADIO:
+            case FORM_IMAGE:
+            case FORM_HIDDEN:
+            case FORM_RESET:
+            case FORM_SUBMIT:
+                v->type = TYP_STRING;
+                v->content.string = lstring::copy(cbs->components[i].value);
+                v->flags |= VF_ORIGINAL;
+                break;
+            }
+            v->next = variables;
+            variables = v;
+        }
+
+        EV()->InitCallback();
+        CDs *cursd = CurCell();
+        if (cursd) {
+
+            // Preset "#define SUBMIT" when calling script.
+            SImacroHandler *mh = new SImacroHandler;
+            mh->parse_macro("SUBMIT", true);
+
+            EditIf()->ulListCheck(script, cursd, false);
+            SIparse()->presetVariables(variables);
+            SI()->PresetMacros(mh);
+            SI()->Interpret(sfp, wl, 0, 0);
+            if (sfp)
+                delete sfp;
+            EditIf()->ulCommitChanges(true);
+        }
+        lock = false;
+    }
+
+#endif // HAVE_MOZY
 }
 
-
-//-----------------------------------------------------------------------------
-// QTpkg functions
 
 // Create a new main_bag.  This will be passed to QTdev::New() for
 // registration, then on to Initialize().
@@ -418,8 +378,8 @@ QTpkg::Initialize(GRwbag *wcp)
 
 #ifdef HAVE_MOZY
     // callback to tell application when quitting help
-    HLP()->context()->registerQuitHelpProc(main_local::quit_help);
-    HLP()->context()->registerFormSubmitProc(main_local::form_submit_hdlr);
+    HLP()->context()->registerQuitHelpProc(quit_help);
+    HLP()->context()->registerFormSubmitProc(form_submit_hdlr);
 #endif
 
     PL()->Init();
@@ -483,7 +443,9 @@ QTpkg::AppLoop()
 {
     if (!MainDev() || MainDev()->ident != _devQT_)
         return;
-    RegisterEventHandler(0, 0);
+
+    QApplication::instance()->installEventFilter(&pkg_event_monitor);
+    RegisterEventHandler(0);
     pkg_in_main_loop = true;
     QTdev::self()->MainLoop(true);
 }
@@ -505,8 +467,7 @@ QTpkg::CheckForInterrupt()
         return (false);
     lasttime = cTimer::self()->elapsed_msec();
 
-//    while (gtk_events_pending())
-//        gtk_main_iteration();
+    QApplication::processEvents();
     if (DSP()->Interrupt())
         return (true);
     return (false);
@@ -520,8 +481,10 @@ QTpkg::CheckForInterrupt()
 int
 QTpkg::Iconify(int)
 {
-    //XXX
-    return (0);
+    if (!QTmainwin::self())
+        return (false);
+    QTmainwin::self()->showMinimized();
+    return (true);
 }
 
 
@@ -572,7 +535,7 @@ QTpkg::SetWorking(bool busy)
             DSP()->SetInterrupt(DSPinterNone);
             if (!app_override_busy) {
                 app_busy++;
-                main_local::wait_cursor(true);
+                SetWaitCursor(true);
                 return (ready);
             }
         }
@@ -583,12 +546,12 @@ QTpkg::SetWorking(bool busy)
     else {
         if (app_busy == 1) {
             app_busy--;
-            main_local::wait_cursor(false);
-            /*
-            if (event_hdlr.has_saved_events())
+            SetWaitCursor(false);
+            if (pkg_event_monitor.has_saved_events()) {
                 // dispatch saved events
-                RegisterIdleProc(saved_events_idle, 0);
-            */
+                RegisterIdleProc(QTeventMonitor::saved_events_idle,
+                    &pkg_event_monitor);
+            }
             return (ready);
         }
         if (app_busy)
@@ -605,12 +568,12 @@ QTpkg::SetOverrideBusy(bool ovr)
         return;
     if (ovr) {
         if (app_busy)
-            main_local::wait_cursor(false);
+            SetWaitCursor(false);
         app_override_busy = true;
     }
     else {
         if (app_busy)
-            main_local::wait_cursor(true);
+            SetWaitCursor(true);
         app_override_busy = false;
     }
 }
@@ -632,13 +595,11 @@ QTpkg::GetMainWinIdentifier(char *buf)
 bool
 QTpkg::UsingX11()
 {
-    /*
-#ifdef WITH_X11
+#ifdef Q_OS_X11
     return (true);
 #else
-    */
     return (false);
-//#endif
+#endif
 }
 
 
@@ -723,7 +684,7 @@ QTpkg::StartTimer(int time, bool *set)
     if (set)
         *set = false;
     if (time > 0)
-        id = QTdev::self()->AddTimer(time, main_local::timer_cb, set);
+        id = QTdev::self()->AddTimer(time, timer_cb, set);
     return (id);
 }
 
@@ -765,22 +726,373 @@ QTpkg::GetFontFmt()
 }
 
 
-// Register an event handler, which is called for each event received
-// by the application.
-//
 void
-QTpkg::RegisterEventHandler(void(*handler)(QEvent*, void*), void *arg)
+QTpkg::PopUpBusy()
 {
-    (void)handler;
-    (void)arg;
-/*XXX
-    if (handler)
-        gdk_event_handler_set(handler, arg, 0);
+    const char *busy_msg =
+        "Working...\nPress Control-C in main window to abort.";
+
+    if (!pkg_busy_popup && QTmainwin::exists()) {
+        pkg_busy_popup =
+            QTmainwin::self()->PopUpErrText(busy_msg, STY_NORM);
+        if (pkg_busy_popup)
+            pkg_busy_popup->register_usrptr((void**)&pkg_busy_popup);
+        RegisterTimeoutProc(3000, busy_msg_timeout, 0);
+    }
+}
+
+
+void
+QTpkg::SetWaitCursor(bool waiting)
+{
+    if (waiting)
+        QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
     else
-        gdk_event_handler_set(event_hdlr.main_event_handler, 0, 0);
-*/
+        QApplication::restoreOverrideCursor();
+    /*XXX
+    static CursorType cursor_type;
+    if (waiting) {
+        if (XM()->GetCursor() != CursorBusy) {
+            cursor_type = XM()->GetCursor();
+            XM()->UpdateCursor(0, CursorBusy);
+        }
+    }
+    else
+        XM()->UpdateCursor(0, cursor_type);
+    */
+}
+
+
+// Static function
+// Timeout procedure for message pop-up.
+//
+int
+QTpkg::busy_msg_timeout(void*)
+{
+    if (QTpkg::self()->pkg_busy_popup)
+        QTpkg::self()->pkg_busy_popup->popdown();
+    return (false);
 }
 // End of QTpkg functions
+
+
+//-----------------------------------------------------------------------------
+// cMain functions
+
+// Export the file/cell selected in the Files Selection, Cells Listing,
+// Files Listing, Libraries Listing, or Tree pop-ups.
+//
+char *
+cMain::GetCurFileSelection()
+{
+    if (!QTdev::exists())
+        return (0);
+    static char *tbuf;
+    delete [] tbuf;
+    tbuf = QTfileDlg::any_selection();
+    if (tbuf)
+        return (tbuf);
+
+    tbuf = QTmainwin::get_cell_selection();
+    if (tbuf)
+        return (tbuf);
+
+    tbuf = QTmainwin::get_file_selection();
+    if (tbuf)
+        return (tbuf);
+
+    tbuf = QTmainwin::get_lib_selection();
+    if (tbuf)
+        return (tbuf);
+
+    tbuf = QTmainwin::get_tree_selection();
+    if (tbuf)
+        return (tbuf);
+
+/*XXX
+    // look for selected text in an Info window
+    GdkWindow *window = gdk_selection_owner_get(GDK_SELECTION_PRIMARY);
+    if (window) {
+        GtkWidget *widget;
+        gdk_window_get_user_data(window, (void**)&widget);
+        if (widget &&
+                g_object_get_data(G_OBJECT(widget), "export")) {
+            tbuf = text_get_selection(widget);
+            if (tbuf && CDcdb()->findSymbol(tbuf))
+                return (tbuf);
+            delete [] tbuf;
+        }
+    }
+*/
+    return (0);
+}
+
+
+// Called when crashing, disable any updates
+//
+void
+cMain::DisableDialogs()
+{
+    QTmainwin::cells_panic();
+    QTmainwin::files_panic();
+    QTmainwin::libs_panic();
+    QTmainwin::tree_panic();
+}
+
+
+void
+cMain::SetNoToTop(bool)
+{
+}
+
+
+void
+cMain::SetLowerWinOffset(int)
+{
+}
+// End if cMain functions.
+
+
+//-----------------------------------------------------------------------------
+// QTeventMonitor functions
+
+bool
+QTeventMonitor::eventFilter(QObject *obj, QEvent *ev)
+{
+    // Handle events here, return true to indicate handled.
+    // printf("%p %x\n", obj, ev->type());
+
+    if (event_handler)
+        return (event_handler(obj, ev));
+
+    // When the application is busy, all button presses and all key
+    // presses except for Ctrl-C are locked out, and upon receipt a
+    // pop-up appears telling the user to use Ctrl-C to abort.  The
+    // pop-up disappears in a few seconds.
+    //
+    // All other events are dispatched normally when busy.
+    //
+    if (ev->type() == QEvent::KeyPress) {
+        log_event(obj, ev);
+        QKeyEvent *kev = static_cast<QKeyEvent*>(ev);
+        if (kev->key() == Qt::Key_C
+                && (kev->modifiers() & Qt::ControlModifier)) {
+            cMain::InterruptHandler();
+            return (true);
+        }
+        if (QTpkg::self()->IsBusy()) {
+            if (!is_modifier_key(kev->key()))
+                QTpkg::self()->PopUpBusy();
+            return (true);
+        }
+    }
+    else if (ev->type() == QEvent::KeyRelease) {
+        log_event(obj, ev);
+        QKeyEvent *kev = static_cast<QKeyEvent*>(ev);
+        if (kev->key() == Qt::Key_C 
+                && (kev->modifiers() & Qt::ControlModifier)) {
+            return (true);
+        }
+        // Always handle key-up events, otherwise if busy modifier key
+        // state may not be correct after operation.
+    }
+    else if (ev->type() == QEvent::MouseButtonPress) {
+        log_event(obj, ev);
+        if (QTpkg::self()->IsBusy()) {
+            if (0 /*XXX g_object_get_data(obj, "abort")*/ )
+                return (QObject::eventFilter(obj, ev));
+            QMouseEvent *mev = static_cast<QMouseEvent*>(ev);
+            if (mev->button() < 4)
+                // Ignore mouse wheel events.
+                QTpkg::self()->PopUpBusy();
+            return (true);
+        }
+        if (QTmenu::self()->IsGlobalInsensitive()) {
+            if (0 /*XXX GTK_IS_DRAWING_AREA(obj)*/)
+                return (true);
+            QObject *top = obj;
+            while (top->parent())
+                top = top->parent();
+            if (!top || !QTmainwin::exists())
+                return (true);
+            if (top != QTmainwin::self() &&
+                    top != QTmenu::self()->GetModal())
+                return (true);
+        }
+    }
+    else if (ev->type() == QEvent::MouseButtonRelease) {
+        log_event(obj, ev);
+/*XXX
+        QMouseEvent *mev = static_cast<QMouseEvent*>(ev);
+        if (!gtk_grab_get_current()) {
+            if (QTpkg::self()->IsBusy()) {
+                GdkEventButton *bev = (GdkEventButton*)event;
+                if (button_state[bev->button]) {
+                    // If the button state is active, the mouse button must
+                    // have been down when busy mode was entered.  Save the
+                    // event for dispatch when leaving busy mode.
+                    event_hdlr.save_event(event);
+                    button_state[bev->button] = false;
+                    return;
+                }
+                QWidget *evw = gtk_get_event_widget(event);
+                if (g_object_get_data(G_OBJECT(evw), "abort"))
+                    gtk_main_do_event(event);
+                return;
+            }
+            if (QTmenu::self()->IsGlobalInsensitive()) {
+                QWidget *evw = gtk_get_event_widget(event);
+                if (GTK_IS_DRAWING_AREA(evw))
+                    return;
+                QWidget *top = gtk_widget_get_toplevel(evw);
+                if (!top || !QTmainwin::exists())
+                    return;
+                if (top != QTmainwin::self()->Shell() &&
+                        top != QTmenu::self()->GetModal())
+                    return;
+            }
+        }
+*/
+    }
+    else if (ev->type() == QEvent::MouseButtonDblClick) {
+        if (QTpkg::self()->IsBusy())
+            return (true);
+    }
+//    return (obj->event(ev));
+// Above prevents correct layout and text entry in editor and likely other
+// dialogs.
+    return (QObject::eventFilter(obj, ev));
+}
+
+
+//  Event history logging
+
+namespace {
+    // Print the first few lines of the run log file.
+    //
+    void
+    log_init(FILE *fp)
+    {
+        fprintf(fp, "# %s\n", XM()->IdString());
+
+        char buf[256];
+        if (FIO()->PGetCWD(buf, 256))
+            fprintf(fp, "Cwd(\"%s\")\n", buf);
+
+        fprintf(fp, "Techfile(\"%s\")\n",
+            Tech()->TechFilename() ? Tech()->TechFilename() : "<none>");
+        fprintf(fp, "Edit(\"%s\", 0)\n",
+            DSP()->CurCellName() ?
+                Tstring(DSP()->CurCellName()) : "<none>");
+        fprintf(fp, "Mode(%d)\n", DSP()->CurMode());
+        if (DSP()->CurMode() == Physical) {
+            fprintf(fp, "Window(%g, %g, %g, 0)\n",
+                (double)(DSP()->MainWdesc()->Window()->left +
+                    DSP()->MainWdesc()->Window()->right)/(2*CDphysResolution),
+                (double)(DSP()->MainWdesc()->Window()->bottom +
+                    DSP()->MainWdesc()->Window()->top)/(2*CDphysResolution),
+                (double)DSP()->MainWdesc()->Window()->width()/
+                    CDphysResolution);
+        }
+        else {
+            fprintf(fp, "Window(%g, %g, %g, 0)\n",
+                (double)(DSP()->MainWdesc()->Window()->left +
+                    DSP()->MainWdesc()->Window()->right)/(2*CDelecResolution),
+                (double)(DSP()->MainWdesc()->Window()->bottom +
+                    DSP()->MainWdesc()->Window()->top)/(2*CDelecResolution),
+                (double)DSP()->MainWdesc()->Window()->width()/
+                    CDelecResolution);
+        }
+    }
+}
+
+
+// Static function.
+// Print a line in the run log file describing the event.  The print format
+// is readable by the function parser.
+//
+void
+QTeventMonitor::log_event(const QObject *obj, const QEvent *ev)
+{
+    static int ccnt;
+    const char *msg = "Can't open %s file, history won't be logged.";
+    if (ccnt < 0)
+        return;
+
+    if (ev->type() == QEvent::KeyPress || ev->type() == QEvent::KeyRelease) {
+        FILE *fp = Log()->OpenLog(XM()->LogName(), ccnt ? "a" : "w", true);
+        if (fp) {
+            if (!ccnt)
+                log_init(fp);
+            const QKeyEvent *kev = static_cast<const QKeyEvent*>(ev);
+            QByteArray ba = kev->text().toLatin1();
+            QByteArray ba2 = QKeySequence(kev->key()).toString().toLatin1();
+            if (ba.constData() && *ba.constData())
+                fprintf(fp, "# %s\n", ba.constData());
+            else if (ba2.constData() && *ba2.constData())
+                fprintf(fp, "# %s\n", ba2.constData());
+            else
+                fprintf(fp, "# %s\n", "");
+/*XXX
+            if (ev->key.send_event) {
+                fprintf(fp, "# XSendEvent\n");
+                fprintf(fp, "# ");
+            }
+    */
+
+//            QWidget *widget = qobject_cast<QWidget*>(obj);
+//            char *wname = gtk_keyb::widget_path(widget);
+//            if (!wname)
+char*                wname = lstring::copy("unknown");
+            fprintf(fp, "%s(%d, %x, \"%s\")\n",
+                ev->type() == QEvent::KeyPress ? "KeyDown" : "KeyUp",
+                kev->key(), (unsigned int)kev->modifiers(), wname);
+            delete [] wname;
+            fclose(fp);
+        }
+        else if (!ccnt) {
+            Log()->WarningLogV(mh::Initialization, msg, XM()->LogName());
+            ccnt = -1;
+            return;
+        }
+        ccnt++;
+    }
+    else if (ev->type() == QEvent::MouseButtonPress ||
+            ev->type() == QEvent::MouseButtonRelease) {
+        FILE *fp = Log()->OpenLog(XM()->LogName(), ccnt ? "a" : "w", true);
+        if (fp) {
+            if (!ccnt)
+                log_init(fp);
+            const QMouseEvent *mev = static_cast<const QMouseEvent*>(ev);
+/*XXX
+            if (ev->button.send_event)
+                // suppress all send events
+                fprintf(fp, "# XSendEvent\n# ");
+            GtkWidget *widget = gtk_get_event_widget(ev);
+            char *wname = gtk_keyb::widget_path(widget);
+            if (!wname)
+    */
+char*                wname = lstring::copy("unknown");
+            fprintf(fp, "%s(%d, %d, %d, %d, \"%s\")\n",
+                ev->type() == QEvent::MouseButtonPress ? "BtnDown" : "BtnUp",
+                mev->button(), (unsigned int)mev->modifiers(),
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+                (int)mev->position().x(), (int)mev->position().y(), wname);
+#else
+                (int)mev->x(), (int)mev->y(), wname);
+#endif
+            delete [] wname;
+            fclose(fp);
+        }
+        else if (!ccnt) {
+            Log()->WarningLogV(mh::Initialization, msg, XM()->LogName());
+            ccnt = -1;
+            return;
+        }
+        ccnt++;
+    }
+}
+// End of QTeventMonigtor functions.
 
 
 //-----------------------------------------------------------------------------
@@ -926,6 +1238,8 @@ cKeys::font_changed(int fnum)
 //-----------------------------------------------------------------------------
 // QTsubwin functions
 
+#define GS_NBTNS 8
+
 namespace {
     // Share common ghost drawing parameters between similar drawing
     // windows.
@@ -933,7 +1247,71 @@ namespace {
 
     // Keep track of previous locations.
     QRect LastPos[DSP_NUMWINS];
+
+    // Struct to hold state for button press grab action.
+    //
+    // XXX Fix this if possible.
+    // QT widgets grab events when a mouse button is pressed until
+    // released, which prevents continuity between drawing windows
+    // when dragging.  One can use the click-twice alternative to get
+    // around this in some cases.
+    //
+    struct grabstate_t
+    {
+        grabstate_t()
+        {
+            for (int i = 0; i < GS_NBTNS; i++)
+                gs_caller[i] = 0;
+            gs_noopbtn = false;
+        }
+
+        void set(QWidget *w, QMouseEvent *ev)
+        {
+            if (ev->button() >= GS_NBTNS)
+                return;
+            gs_caller[ev->button()] = w;
+        }
+
+        bool is_armed(QMouseEvent *ev)
+        {
+            return (ev->button() < GS_NBTNS && gs_caller[ev->button()] != 0);
+        }
+
+        void clear(QMouseEvent *ev)
+        {
+            if (ev->button() >= GS_NBTNS)
+                return;
+            gs_caller[ev->button()] = 0;
+        }
+
+        void clear(unsigned int btn)
+        {
+            if (btn >= GS_NBTNS)
+                return;
+            gs_caller[btn] = 0;
+        }
+
+        bool check_noop(bool n)
+        {
+            bool x = gs_noopbtn;
+            gs_noopbtn = n;
+            return (x);
+        }
+
+        QWidget *widget(unsigned int n)
+        {
+            return (n <= GS_NBTNS ? gs_caller[n] : 0);
+        }
+
+    private:
+        QWidget *gs_caller[GS_NBTNS];     // target windows
+        bool gs_noopbtn;                  // true when simulating no-op button
+    };
+
+    grabstate_t grabstate;
+    bool button_state[GS_NBTNS];
 }
+
 
 QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
     QTdraw(XW_DRAWING)
@@ -946,6 +1324,7 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
     sw_gridpop = 0;
     sw_windesc = 0;
     sw_win_number = wnum < 0 ? -1 : wnum;
+    sw_cursor_type = 0;
 
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -1032,25 +1411,14 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
     connect(this, SIGNAL(update_coords(int, int)),
         QTmainwin::self(), SLOT(update_coords_slot(int, int)));
 
+    QPoint mposn = QTmainwin::self()->pos();
     if (LastPos[wnum].width()) {
-        move(LastPos[wnum].x(), LastPos[wnum].y());
+        move(LastPos[wnum].x() + mposn.x(), LastPos[wnum].y() + mposn.y());
     }
     else {
-        QSize sz = size();
-        QSize wsz = QTmainwin::self()->size();
-        move(wsz.width() - sz.width(), wnum*40 + 60);
+        QSize msz = QTmainwin::self()->size();
+        move(mposn.x() + msz.width() - sizeHint().width(), mposn.y() + wnum*40 + 60);
     }
-
-/*XXX
-    // Set up double-click cancel on label event box.
-    //
-    for (MenuEnt *mx = GTKmenuPtr->Msubwins[wnum]->menu; mx->entry; mx++) {
-        if (!strcmp(mx->entry, MenuCANCL)) {
-            QTdev::self()->SetDoubleClickExit(ebox, (GtkWidget*)mx->cmd.caller);
-            break;
-        }
-    }
-*/
 
     SetWindowBackground(0);
     Clear();
@@ -1067,8 +1435,7 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
     show();
     raise();
     activateWindow();
-    XM()->UpdateCursor(sw_windesc, (CursorType)Gbag()->get_cursor_type(),
-        true);
+    XM()->UpdateCursor(sw_windesc, (CursorType)cursor_type(), true);
 }
 
 
@@ -1091,14 +1458,14 @@ QTsubwin::~QTsubwin()
 
         QSize sz = size();
         QPoint posn = pos();
+        QPoint mposn = QTmainwin::self()->pos();
 
-//XXX fixme
         // Save relative to corner of main window.  Absolute coords can
         // change if the main window is moved to a different monitor in
         // multi-monitor setups.
 
-        LastPos[sw_win_number].setX(posn.x());
-        LastPos[sw_win_number].setY(posn.y());
+        LastPos[sw_win_number].setX(posn.x() - mposn.x());
+        LastPos[sw_win_number].setY(posn.y() - mposn.y());
         LastPos[sw_win_number].setWidth(sz.width());
         LastPos[sw_win_number].setHeight(sz.height());
     }
@@ -1434,12 +1801,21 @@ QTsubwin::keypress_handler(unsigned int keyval, unsigned int state,
     // area.  If so, we may want to handle some events differently.
     EV()->SetFromPromptLine(from_prline);
 
+    // QT doesn't have separate keycodes for the numeric keypad keys,
+    // instead there is a modifier.  Skip the numeric +/- recognition
+    // unless the modifier is set.
+
+    bool skipit = ((keyval == Qt::Key_Minus || keyval == Qt::Key_Plus) &&
+        !(state & GR_KEYPAD_MASK));
+
     int subcode = 0;
-    for (keymap *k = Kmap()->KeymapDown(); k->keyval; k++) {
-        if (k->keyval == keyval) {
-            code = k->code;
-            subcode = k->subcode;
-            break;
+    if (!skipit) {
+        for (keymap *k = Kmap()->KeymapDown(); k->keyval; k++) {
+            if (k->keyval == keyval) {
+                code = k->code;
+                subcode = k->subcode;
+                break;
+            }
         }
     }
 
@@ -2127,7 +2503,7 @@ QTsubwin::help_slot()
  
 
 //-----------------------------------------------------------------------------
-// GTKmainwin functions
+// QTmainwin functions
 
 namespace {
     bool is_shift_down()
@@ -2340,7 +2716,7 @@ void
 QTmainwin::closeEvent(QCloseEvent *ev)
 {
     if (QTpkg::self()->IsBusy()) {
-        pop_busy();
+        QTpkg::self()->PopUpBusy();
         ev->ignore();
     }
     if (!QTmenu::self()->IsGlobalInsensitive())
@@ -2378,234 +2754,4 @@ QTmainwin::revert_slot()
     activateWindow();
 }
 // End of QTmainwin functions.
-
-
-// Export the file/cell selected in the Files Selection, Cells Listing,
-// Files Listing, Libraries Listing, or Tree pop-ups.
-//
-char *
-cMain::GetCurFileSelection()
-{
-    if (!QTdev::exists())
-        return (0);
-    static char *tbuf;
-    delete [] tbuf;
-    tbuf = QTfileDlg::any_selection();
-    if (tbuf)
-        return (tbuf);
-
-    tbuf = QTmainwin::get_cell_selection();
-    if (tbuf)
-        return (tbuf);
-
-    tbuf = QTmainwin::get_file_selection();
-    if (tbuf)
-        return (tbuf);
-
-    tbuf = QTmainwin::get_lib_selection();
-    if (tbuf)
-        return (tbuf);
-
-    tbuf = QTmainwin::get_tree_selection();
-    if (tbuf)
-        return (tbuf);
-
-/*XXX
-    // look for selected text in an Info window
-    GdkWindow *window = gdk_selection_owner_get(GDK_SELECTION_PRIMARY);
-    if (window) {
-        GtkWidget *widget;
-        gdk_window_get_user_data(window, (void**)&widget);
-        if (widget &&
-                g_object_get_data(G_OBJECT(widget), "export")) {
-            tbuf = text_get_selection(widget);
-            if (tbuf && CDcdb()->findSymbol(tbuf))
-                return (tbuf);
-            delete [] tbuf;
-        }
-    }
-*/
-    return (0);
-}
-
-
-// Called when crashing, disable any updates
-//
-void
-cMain::DisableDialogs()
-{
-    QTmainwin::cells_panic();
-    QTmainwin::files_panic();
-    QTmainwin::libs_panic();
-    QTmainwin::tree_panic();
-}
-
-
-void
-cMain::SetNoToTop(bool)
-{
-}
-
-
-void
-cMain::SetLowerWinOffset(int)
-{
-}
-// End if cMain functions.
-
-
-//-----------------------------------------------------------------------
-// Local functions
-
-/*
-void
-main_local::wait_cursor(bool waiting)
-{
-    static CursorType cursor_type;
-    if (waiting) {
-        if (XM()->GetCursor() != CursorBusy) {
-            cursor_type = XM()->GetCursor();
-            XM()->UpdateCursor(0, CursorBusy);
-        }
-    }
-    else
-        XM()->UpdateCursor(0, cursor_type);
-}
-*/
-
-void
-main_local::wait_cursor(bool waiting)
-{
-    if (waiting)
-        QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-    else
-        QApplication::restoreOverrideCursor();
-}
-
-
-// Callback for general purpose timer.  Set *set true when time limit
-// reached.
-//
-int
-main_local::timer_cb(void *client_data)
-{
-    if (client_data)
-        *((bool*)client_data) = true;
-    return (false);
-}
-
-
-#ifdef HAVE_MOZY
-
-void
-main_local::quit_help(void*)
-{
-    XM()->QuitHelp();
-}
-
-
-//
-// This is the HTML form submission handler.  It sets the variables
-// from the form, and calls a script for processing.
-//
-
-// The form of the action string is the following token followed by the
-// name of the script (can be a path)
-//
-#define ACTION_TOKEN "action_local_xic"
-
-void
-main_local::form_submit_hdlr(void *data)
-{
-    static bool lock;  // the script interpreter isn't reentrant
-    htmFormCallbackStruct *cbs = (htmFormCallbackStruct*)data;
-
-    const char *t = cbs->action;
-    char *tok = lstring::getqtok(&t);
-    if (strcmp(tok, ACTION_TOKEN)) {
-        QTpkg::self()->ErrPrintf(ET_ERROR,
-            "unknown action_local submission.\n");
-        delete [] tok;
-        return;
-    }
-    delete [] tok;
-    if (lock)
-        return;
-    lock = true;
-    char *script = lstring::getqtok(&t);
-
-    SIfile *sfp;
-    stringlist *wl;
-    XM()->OpenScript(script, &sfp, &wl);
-    if (!sfp && !wl) {
-        QTpkg::self()->ErrPrintf(ET_ERROR,
-            "can't find action_local script.\n");
-        delete [] script;
-        lock = false;
-        return;
-    }
-
-    siVariable *variables = 0;
-    int scnt = 0;
-    for (int i = 0; i < cbs->ncomponents; i++) {
-        siVariable *v = new siVariable;
-        v->name = lstring::copy(cbs->components[i].name);
-        switch (cbs->components[i].type) {
-        case FORM_NONE:
-            delete v;
-            continue;
-        case FORM_SELECT:
-            // deal with multiple selections
-            if (i && cbs->components[i-1].type == FORM_SELECT &&
-                    !strcmp(cbs->components[i-1].name,
-                    cbs->components[i].name)) {
-                char buf[64];
-                snprintf(buf, 64, "%s_extra%d", cbs->components[i].name, scnt);
-                delete [] v->name;
-                v->name = lstring::copy(buf);
-                scnt++;
-            }
-            else
-                scnt = 0;
-            // fall through
-        case FORM_OPTION:
-        case FORM_PASSWD:
-        case FORM_TEXT:
-        case FORM_FILE:
-        case FORM_TEXTAREA:
-        case FORM_CHECK:
-        case FORM_RADIO:
-        case FORM_IMAGE:
-        case FORM_HIDDEN:
-        case FORM_RESET:
-        case FORM_SUBMIT:
-            v->type = TYP_STRING;
-            v->content.string = lstring::copy(cbs->components[i].value);
-            v->flags |= VF_ORIGINAL;
-            break;
-        }
-        v->next = variables;
-        variables = v;
-    }
-
-    EV()->InitCallback();
-    CDs *cursd = CurCell();
-    if (cursd) {
-
-        // Preset "#define SUBMIT" when calling script.
-        SImacroHandler *mh = new SImacroHandler;
-        mh->parse_macro("SUBMIT", true);
-
-        EditIf()->ulListCheck(script, cursd, false);
-        SIparse()->presetVariables(variables);
-        SI()->PresetMacros(mh);
-        SI()->Interpret(sfp, wl, 0, 0);
-        if (sfp)
-            delete sfp;
-        EditIf()->ulCommitChanges(true);
-    }
-    lock = false;
-}
-
-#endif // HAVE_MOZY
 

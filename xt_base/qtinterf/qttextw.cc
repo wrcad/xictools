@@ -147,7 +147,7 @@ QTtextEdit::set_editable(bool editable)
 //
 void
 QTtextEdit::insert_chars_at_point(const QColor *color, const char *string,
-    int posn, int nc)
+    int nc, int posn)
 {
     if (!string || nc == 0)
         return;
@@ -420,51 +420,99 @@ QTtextEdit::set_scroll_value(int val)
 }
 
 
-// Change the val to keep line visible.
-//
-int
-QTtextEdit::get_scroll_to_line_value(int line, int val)
+void
+QTtextEdit::resizeEvent(QResizeEvent *ev)
 {
-    QTextCursor cur(document()->findBlockByLineNumber(line));
-    moveCursor(QTextCursor::End);
-    setTextCursor(cur);
-//XXX fix this, should return new scroll posn but not sctually scroll there?
-return (val);
-
-/*XXX
-    GtkTextBuffer *tbf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));
-    GtkTextIter inewpos;
-    gtk_text_buffer_get_iter_at_line(tbf, &inewpos, line);
-    GdkRectangle rect;
-    gtk_text_view_get_visible_rect(GTK_TEXT_VIEW(widget), &rect);
-    int ly, lht;
-    gtk_text_view_get_line_yrange(GTK_TEXT_VIEW(widget), &inewpos,
-        &ly, &lht);
-    if (ly < rect.y + 2 || ly + lht > rect.y + rect.height - 2) {
-        int x, y;
-        gtk_text_view_buffer_to_window_coords(GTK_TEXT_VIEW(widget),
-            GTK_TEXT_WINDOW_WIDGET, 0, ly, &x, &y);
-        val = y;
-    }
-    return (val);
-*/
+    QTextEdit::resizeEvent(ev);
+    emit resize_event(ev);
 }
 
 
-// Scroll the window to make pos (character offset, -1 indicates end)
-// visible.
-//
 void
-QTtextEdit::scroll_to_pos(int posn)
+QTtextEdit::mousePressEvent(QMouseEvent *ev)
 {
-    set_insertion_point(posn);  // scrolls there automatically?
+    emit press_event(ev);
+    if (!ev->isAccepted())
+        QTextEdit::mousePressEvent(ev);
+}
 
-/*XXX
-    GtkTextBuffer *tbf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));
-    GtkTextIter ipos;
-    gtk_text_buffer_get_iter_at_offset(tbf, &ipos, pos);
-    gtk_text_view_scroll_to_iter(GTK_TEXT_VIEW(widget), &ipos, .05, false,
-        0, 0);
-*/
+
+void
+QTtextEdit::mouseReleaseEvent(QMouseEvent *ev)
+{
+    emit release_event(ev);
+    if (!ev->isAccepted())
+        QTextEdit::mouseReleaseEvent(ev);
+}
+
+
+void
+QTtextEdit::mouseMoveEvent(QMouseEvent *ev)
+{
+    // Event starts out as accepted, reverse this.  Then below,
+    // accepted events, accepted in the receiver for custom drag, will
+    // be ignored.
+
+    ev->ignore();
+    emit motion_event(ev);
+    if (!ev->isAccepted())
+        QTextEdit::mouseMoveEvent(ev);
+}
+
+
+// Tricky stuff here to allow window to handle drag/drop while
+// in read-only mode.
+
+void
+QTtextEdit::dragEnterEvent(QDragEnterEvent *ev)
+{
+    if (canInsertFromMimeData(ev->mimeData()))
+        ev->acceptProposedAction();
+}
+
+
+void
+QTtextEdit::dragMoveEvent(QDragMoveEvent *ev)
+{
+    if (canInsertFromMimeData(ev->mimeData()))
+        ev->acceptProposedAction();
+}
+
+
+void
+QTtextEdit::dropEvent(QDropEvent *ev)
+{
+    insertFromMimeData(ev->mimeData());
+    ev->acceptProposedAction();
+}
+
+
+bool
+QTtextEdit::canInsertFromMimeData(const QMimeData *source) const
+{
+    bool handled = false;
+    emit mime_data_handled(source, &handled);
+    if (handled)
+        return (true);
+    return (QTextEdit::canInsertFromMimeData(source));
+}
+
+
+void
+QTtextEdit::insertFromMimeData(const QMimeData *source)
+{
+    bool handled = false;
+    emit mime_data_delivered(source, &handled);
+    if (!handled)
+        QTextEdit::insertFromMimeData(source);
+}
+
+
+void
+QTtextEdit::keyPressEvent(QKeyEvent *ev)
+{
+    emit key_press_event(ev);
+    if (ev->isAccepted())
+        QTextEdit::keyPressEvent(ev);
 }
 

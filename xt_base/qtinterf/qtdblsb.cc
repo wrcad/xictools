@@ -66,6 +66,5 @@ QTdoubleSpinBox::cursor_moved_slot(int, int posn)
     int n = posn - (pd - str) - 1;
     if (n >= 0)
         setSingleStep(pow(10.0, -n));
-//XXX printf("%s %d %g\n", str, n, singleStep());
 }
 

@@ -126,7 +126,7 @@ QTlayerAliasDlg::QTlayerAliasDlg(GRobject c) : QTbag(this)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-// XXX Translation to buttons from original menu bar.
+    // Translation to buttons from original menu bar.
     // _Open, <control>O, la_action_proc, OpenCode, 0
     la_open = new QPushButton(tr("Open"));
     hbox->addWidget(la_open);
@@ -146,7 +146,7 @@ QTlayerAliasDlg::QTlayerAliasDlg(GRobject c) : QTbag(this)
     connect(la_new, SIGNAL(clicked()), this, SLOT(new_btn_slot()));
 
     // _Delete, <control>D, la_action_proc, DeleteCode, 0
-    la_del = new QPushButton(tr("Edit"));
+    la_del = new QPushButton(tr("Delete"));
     la_del->setEnabled(false);
     hbox->addWidget(la_del);
     la_del->setAutoDefault(false);
@@ -217,15 +217,7 @@ QTlayerAliasDlg::update()
     char *s0 = latab.toString(la_show_dec);
     const char *str = s0;
 
-//XXX need this?
-    // We need to deselect before clearing, so that the deselection
-    // signal is generated.
-//    GtkTreeSelection *sel =
-//        gtk_tree_view_get_selection(GTK_TREE_VIEW(la_list));
-//    gtk_tree_selection_unselect_all(sel);
-
     la_list->clear();
-
     char *stok;
     while ((stok = lstring::gettok(&str)) != 0) {
         char *t = strchr(stok, '=');
@@ -321,35 +313,29 @@ QTlayerAliasDlg::str_cb(const char *str, void *arg)
 void
 QTlayerAliasDlg::yn_cb(bool yn, void*)
 {
-    if (yn && QTlayerAliasDlg::self()->la_row >= 0) {
-/*XXX
-        GtkTreePath *p = gtk_tree_path_new_from_indices(QTlayerAliasDlg::self()->la_row, -1);
-        GtkTreeModel *store = 
-            gtk_tree_view_get_model(GTK_TREE_VIEW(QTlayerAliasDlg::self()->la_list));
-        GtkTreeIter iter;
-        gtk_tree_model_get_iter(store, &iter, p);
-        char *text;
-        gtk_tree_model_get(store, &iter, 0, &text, -1);
-        gtk_tree_path_free(p);
-*/
-char *text = 0;
+    if (!yn || !instPtr || instPtr->la_row < 0)
+        return;
+    QTreeWidgetItem *itm = instPtr->la_list->takeTopLevelItem(instPtr->la_row);
+    if (!itm)
+        return;
+    QByteArray ba = itm->text(0).toLatin1();
+    const char *text = ba.constData();
 
-        if (text) {
-            FIOlayerAliasTab latab;
-            latab.parse(CDvdb()->getVariable(VA_LayerAlias));
-            latab.remove(text);
-            free(text);
-            char *t = latab.toString(false);
-            if (t && *t)
-                CDvdb()->setVariable(VA_LayerAlias, t);
-            else {
-                CDvdb()->clearVariable(VA_LayerAlias);
-                CDvdb()->clearVariable(VA_UseLayerAlias);
-            }
-            delete [] t;
-            QTlayerAliasDlg::self()->update();
+    if (text) {
+        FIOlayerAliasTab latab;
+        latab.parse(CDvdb()->getVariable(VA_LayerAlias));
+        latab.remove(text);
+        char *t = latab.toString(false);
+        if (t && *t)
+            CDvdb()->setVariable(VA_LayerAlias, t);
+        else {
+            CDvdb()->clearVariable(VA_LayerAlias);
+            CDvdb()->clearVariable(VA_UseLayerAlias);
         }
+        delete [] t;
+        QTlayerAliasDlg::self()->update();
     }
+    delete itm;
 }
 
 
@@ -411,35 +397,30 @@ QTlayerAliasDlg::del_btn_slot()
 void
 QTlayerAliasDlg::edit_btn_slot()
 {
-    /*XXX
-    if (la_row >= 0) {
-        GtkTreePath *p = gtk_tree_path_new_from_indices(la_row, -1);
-        GtkTreeModel *store = 
-            gtk_tree_view_get_model(GTK_TREE_VIEW(la_list));
-        GtkTreeIter iter;
-        gtk_tree_model_get_iter(store, &iter, p);
-        char *n, *a;
-        gtk_tree_model_get(store, &iter, 0, &n, 1, &a, -1);
-        gtk_tree_path_free(p);
+    if (la_row < 0)
+        return;
+    QTreeWidgetItem *itm = la_list->topLevelItem(la_row);
+    if (!itm)
+        return;
+    QByteArray ba0 = itm->text(0).toLatin1();
+    QByteArray ba1 = itm->text(1).toLatin1();
+    const char *n = ba0.constData();
+    const char *a = ba1.constData();
 
-        if (n && a) {
-            char buf[128];
-            snprintf(buf, sizeof(buf), "%s %s", n, a);
-            if (la_line_edit)
-                la_line_edit->popdown();
-    GRloc loc(LW_XYR, width() + 4, 0);
-            la_line_edit = PopUpEditString(0, loc,
-                "Enter layer name and alias", buf,
-                str_cb, (void*)EditCode, 200, 0, false, 0);
-            if (la_line_edit) {
-                la_line_edit->register_usrptr(
-                    (void**)&la_line_edit);
-            }
+    if (n && a) {
+        char buf[128];
+        snprintf(buf, sizeof(buf), "%s %s", n, a);
+        if (la_line_edit)
+            la_line_edit->popdown();
+        GRloc loc(LW_XYR, width() + 4, 0);
+        la_line_edit = PopUpEditString(0, loc,
+            "Enter layer name and alias", buf,
+            str_cb, (void*)EditCode, 200, 0, false, 0);
+        if (la_line_edit) {
+            la_line_edit->register_usrptr(
+                (void**)&la_line_edit);
         }
-        free(n);
-        free(a);
     }
-    */
 }
 
 
@@ -462,10 +443,7 @@ QTlayerAliasDlg::current_item_changed_slot(QTreeWidgetItem *cur,
             la_edit->setEnabled(false);
         return;
     }
-        /*XXX
-    if (indices)
-        la_row = *indices;
-        */
+    la_row = la_list->indexFromItem(cur).row();
     if (la_del)
         la_del->setEnabled(true);
     if (la_edit)

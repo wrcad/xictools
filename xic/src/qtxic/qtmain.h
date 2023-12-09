@@ -52,6 +52,7 @@
 #include "dsp_tkif.h"
 
 #include <QDialog>
+#include <QEvent>
 #include <QFontMetrics>
 
 
@@ -83,6 +84,86 @@ enum XIC_WINDOW_CLASS
     XW_DRAWING, // Main drawing area and viewports.
     XW_LPAL,    // The layer palette.
     XW_LTAB     // The layer table.
+};
+
+
+typedef bool(*EventHandlerFunc)(QObject*, QEvent*);
+
+class QTeventMonitor : public QObject
+{
+    Q_OBJECT
+
+public:
+    // Event list element
+    //
+    struct evl_t
+    {
+        evl_t(QObject *o, QEvent *e) : obj(o), ev(e), next(0) { }
+        ~evl_t()    { delete ev; }
+
+        QObject     *obj;
+        QEvent      *ev;
+        evl_t       *next;
+    };
+
+    QTeventMonitor()
+    {
+        event_list = 0;
+        event_handler = 0;
+    }
+
+    bool has_saved_events() const   { return (event_list != 0); }
+
+    // Process and clear the event list.
+    //
+    void do_saved_events()
+    {
+        while (event_list) {
+            evl_t *evtmp = event_list;
+            event_list = evtmp->next;
+            evtmp->obj->event(evtmp->ev);
+            delete evtmp;
+        }
+    }
+
+    // Append an event to the list.
+    //
+    void save_event(QObject *obj, const QEvent *evp)
+    {
+        QEvent *ev = evp->clone();
+        if (!event_list)
+            event_list = new evl_t(obj, ev);
+        else {
+            evl_t *evl = event_list;
+            while (evl->next)
+                evl = evl->next;
+            evl->next = new evl_t(obj, ev);
+        }
+    }
+
+    EventHandlerFunc set_event_handler(EventHandlerFunc func)
+    {
+        EventHandlerFunc f = event_handler;
+        event_handler = func;
+        return (f);
+    }
+
+    static int saved_events_idle(void *arg)
+    {
+        QTeventMonitor *evmon = static_cast<QTeventMonitor*>(arg);
+        if (evmon)
+            evmon->do_saved_events();
+        return (0);
+    }
+
+    static void  log_event(const QObject*, const QEvent*);
+
+private:
+    evl_t *event_list;
+    EventHandlerFunc event_handler;
+
+protected:
+    bool eventFilter(QObject*, QEvent*) override;
 };
 
 
@@ -127,16 +208,20 @@ public:
     FNT_FMT GetFontFmt();
     // end of overrides
 
-    void RegisterEventHandler(void(*)(QEvent*, void*), void*);
+    void PopUpBusy();
+    void SetWaitCursor(bool);
+
+    void RegisterEventHandler(EventHandlerFunc f)
+                                { pkg_event_monitor.set_event_handler(f); }
     bool NotMapped()                    { return (pkg_not_mapped); }
-    GRpopup *BusyPopup()                { return (pkg_busy_popup); }
-    void SetBusyPopup(GRpopup *w)       { pkg_busy_popup = w; }
-    void *BusyPopupHome()               { return (&pkg_busy_popup); }
 
 private:
+    static int busy_msg_timeout(void*);
+
     GRpopup     *pkg_busy_popup;        // busy indicator
     bool        pkg_in_main_loop;       // gtk_main called
     bool        pkg_not_mapped;         // true when iconic
+    QTeventMonitor pkg_event_monitor;   // event dispatch control
 };
 
 
@@ -224,10 +309,12 @@ public:
     //
     // End of cAppWinFuncs interface
 
-    QToolBar *ToolBar()             { return (sw_toolbar); }
-    cKeys *Keys()                   { return (sw_keys_pressed); }
+    QToolBar *ToolBar()             const { return (sw_toolbar); }
+    cKeys *Keys()                   const { return (sw_keys_pressed); }
     void clear_expand()             { sw_expand = 0; }
-    int win_number()                { return (sw_win_number); }
+    int win_number()                const { return (sw_win_number); }
+    int cursor_type()               const { return (sw_cursor_type); }
+    void set_cursor_type(int c)     { sw_cursor_type = c; }
 
     QSize sizeHint()                const { return (QSize(500, 400)); }
     QSize minimumSizeHint()         const { return (QSize(250, 200)); }
@@ -266,6 +353,7 @@ protected:
     QTgridDlg   *sw_gridpop;
     WindowDesc  *sw_windesc;
     int         sw_win_number;
+    int         sw_cursor_type;
 };
 
 
@@ -360,6 +448,8 @@ mod_state(int qtstate)
         state |= GR_CONTROL_MASK;
     if (qtstate & Qt::AltModifier)
         state |= GR_ALT_MASK;
+    if (qtstate & Qt::KeypadModifier)
+        state |= GR_KEYPAD_MASK;
     return (state);
 }
 

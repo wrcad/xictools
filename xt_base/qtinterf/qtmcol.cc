@@ -563,7 +563,7 @@ QTmcolDlg::mouse_press_slot(QMouseEvent *ev)
 
 
 void
-QTmcolDlg::mouse_release_slot(QMouseEvent *ev)
+QTmcolDlg::mouse_release_slot(QMouseEvent*)
 {
     mc_dragging = false;
 }

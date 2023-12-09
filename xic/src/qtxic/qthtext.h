@@ -100,6 +100,7 @@ private slots:
     void long_text_slot();
     void resize_slot(QResizeEvent*);
     void press_slot(QMouseEvent*);
+    void release_slot(QMouseEvent*);
     void enter_slot(QEnterEvent*);
     void leave_slot(QEvent*);
     void motion_slot(QMouseEvent*);

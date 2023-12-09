@@ -250,7 +250,6 @@ QTlayerPaletteDlg::~QTlayerPaletteDlg()
     save_menu_slot(lp_save_menu->actions().at(0));
 
     instPtr = 0;
-    SetGbag(0);
     if (lp_caller)
         QTdev::Deselect(lp_caller);
 }

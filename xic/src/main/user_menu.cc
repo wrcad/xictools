@@ -109,10 +109,12 @@ namespace {
                 i++;
             }
         }
-        delete [] mbox->menu;
+MenuEnt *omenu = mbox->menu;
+//        delete [] mbox->menu;
 
         mbox->menu = new MenuEnt[umenusize];
 
+/*XXX
         mbox->menu[userMenu] =
             MenuEnt(&M_NoOp,     "",        ME_MENU,     CMD_SAFE,
             0);
@@ -127,6 +129,12 @@ namespace {
             mbox->menu[i].cmd.wdesc = DSP()->MainWdesc();
             mbox->menu[i].cmd.caller = 0;
         }
+*/
+for (int i = 0; i < nstatic; i++) {
+    mbox->menu[i] = omenu[i];
+}
+delete [] omenu;
+
         fill_menu(u0, &mbox->menu[nstatic], "/User", 0);
         umenu::destroy(u0);
     }

@@ -763,6 +763,7 @@ struct stringlist;
 #define GR_SHIFT_MASK   1
 #define GR_CONTROL_MASK 4
 #define GR_ALT_MASK     8
+#define GR_KEYPAD_MASK  128
 
 // Values for dev_flags below:
 // The (hard copy only) driver has a text renderer which can be used for
@@ -1052,7 +1053,49 @@ namespace ginterf
         void FreeRegion(GRobject)                               { }
     };
 
-    struct GRpopup;
+    // Base class for generic pop-ups.
+    //
+    struct GRpopup
+    {
+        GRpopup()
+            {
+                p_caller = 0;
+                p_caller_data = 0;
+                p_usrptr = 0;
+                p_parent = 0;
+                p_no_desel = false;
+            }
+
+        virtual ~GRpopup() { }
+
+        virtual void register_caller(GRobject c, bool = false,
+                bool = false)                       { p_caller = c; }
+            // Register initiating toggle button.
+            // First bool: don't deselect caller on popdown.
+            // Second bool: destroy popup when caller deselected.
+            // Note true, false will do nothing.
+
+        void set_no_desel(bool b)                   { p_no_desel = b; }
+            // Set/inhibit caller desel on popdown.
+
+        virtual void register_usrptr(void **u)      { p_usrptr = u; }
+            // Register an arbitrary pointer address, which will
+            // be zeroed when the widget is destroyed.
+
+        virtual void set_visible(bool) = 0;
+            // Show or hide the widget.
+
+        virtual void popdown() = 0;
+            // Destroy the widget.
+
+    protected:
+        GRobject p_caller;      // calling button
+        void *p_caller_data;    // toolkit-specific, for intercepting
+                                // caller press
+        void **p_usrptr;        // user's memory loc for object
+        GRwbag *p_parent;       // owning container
+        bool p_no_desel;        // don't deselect caller on exit
+    };
 
     // A simple monitor for keeping track of active pop-ups.
     //
@@ -1106,52 +1149,18 @@ namespace ginterf
             return (0);
         }
 
+        void clear()
+        {
+            while (list) {
+                elt *lx = list;
+                list = list->next;
+                lx->obj->popdown();
+                delete lx;
+            }
+        }
+
     protected:
         elt *list;
-    };
-
-    // Base class for generic pop-ups.
-    //
-    struct GRpopup
-    {
-        GRpopup()
-            {
-                p_caller = 0;
-                p_caller_data = 0;
-                p_usrptr = 0;
-                p_parent = 0;
-                p_no_desel = false;
-            }
-
-        virtual ~GRpopup() { }
-
-        virtual void register_caller(GRobject c, bool = false,
-                bool = false)                       { p_caller = c; }
-            // Register initiating toggle button.
-            // First bool: don't deselect caller on popdown.
-            // Second bool: destroy popup when caller deselected.
-            // Note true, false will do nothing.
-
-        void set_no_desel(bool b)                   { p_no_desel = b; }
-            // Set/inhibit caller desel on popdown.
-
-        virtual void register_usrptr(void **u)      { p_usrptr = u; }
-            // Register an arbitrary pointer address, which will
-            // be zeroed when the widget is destroyed.
-
-        virtual void set_visible(bool) = 0;
-            // Show or hide the widget.
-
-        virtual void popdown() = 0;
-            // Destroy the widget.
-
-    protected:
-        GRobject p_caller;      // calling button
-        void *p_caller_data;    // toolkit-specific, for intercepting
-                                // caller press
-        void **p_usrptr;        // user's memory loc for object
-        GRwbag *p_parent;       // owning container
-        bool p_no_desel;        // don't deselect caller on exit
     };
 
     // Generic affirmation pop-up.

@@ -91,13 +91,6 @@ namespace {
         return (lstring::copy(st.toLatin1().constData()));
     }
 
-    void list_move_to(QTreeWidget *list, int row)
-    {
-        // Scroll to make the row visible if necessary.  QT probably
-        // does this automatically?
-        // XXX Check this.
-    }
-
     void list_select_row(QTreeWidget *list, int row)
     {
         list->setCurrentItem(list->topLevelItem(row));
@@ -298,7 +291,6 @@ QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node) : QTbag(this)
         SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
         this, SLOT(termsel_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*)));
 
-    int wd1 = 0.75*width();
     spl->setSizes(QList<int>() << 0.8*width() << 0.2*width());
 
     QFont *fnt;
@@ -519,26 +511,6 @@ QTnodeMapDlg::update_map()
     // this updates the node map
     SCD()->connect(cbin.elec());
 
-    int last_row = 0;
-    int vis_rows = 10;
-    {
-/*XXX
-        GtkTreePath *p = gtk_tree_path_new_from_indices(0, -1);
-        GdkRectangle r;
-        gtk_tree_view_get_background_area(GTK_TREE_VIEW(nm_node_list),
-            p, 0, &r);
-        gtk_tree_path_free(p);
-        if (r.height > 0) {
-            GtkAdjustment *adj =
-                gtk_tree_view_get_vadjustment(GTK_TREE_VIEW(nm_node_list));
-            if (adj) {
-                last_row = (int)(gtk_adjustment_get_value(adj)/r.height);
-                vis_rows = (int)(gtk_adjustment_get_page_size(adj)/r.height);
-            }
-        }
-*/
-    }
-
     nm_rename->setEnabled(false);
     nm_remove->setEnabled(false);
 
@@ -617,14 +589,9 @@ QTnodeMapDlg::update_map()
                 break;
             if (node == nm_showing_node) {
                 list_select_row(nm_node_list, row);
-                // Make sure selection is visible.
-                if (row < last_row || row >= last_row + vis_rows)
-                    last_row = row;
                 break;
             }
         }
-
-        list_move_to(nm_node_list, last_row);
     }
 }
 
@@ -683,7 +650,6 @@ QTnodeMapDlg::set_name(const char *name)
     int indx = find_row(name);
     if (indx >= 0) {
         list_select_row(nm_node_list, indx);
-        list_move_to(nm_node_list, indx);
         // Row-select causes the input widget to pop-down.
         char buf[256];
         snprintf(buf, 256,
@@ -1037,14 +1003,10 @@ QTnodeMapDlg::srch_btn_slot()
 {
     int indx, tindx;
     do_search(&indx, &tindx);
-    if (indx >= 0) {
+    if (indx >= 0)
         list_select_row(nm_node_list, indx);
-        list_move_to(nm_node_list, indx);
-    }
-    if (tindx >= 0) {
+    if (tindx >= 0)
         list_select_row(nm_term_list, tindx);
-        list_move_to(nm_term_list, tindx);
-    }
 }
 
 

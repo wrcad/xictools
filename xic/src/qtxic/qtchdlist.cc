@@ -401,12 +401,6 @@ QTchdListDlg::update()
 
                 delete [] strings[1];
                 delete [] strings[2];
-             /* XXX
-                if (chl_selection && rowsel < 0 &&
-                        !strcmp(chl_selection, l->string))
-                    rowsel = rowcnt;
-                rowcnt++;
-              */
             }
             else {
                 Errs()->get_error();
@@ -418,17 +412,6 @@ QTchdListDlg::update()
             }
         }
     }
-    // This resizes columns and the widget.
-    /* XXX
-    gtk_tree_view_columns_autosize(GTK_TREE_VIEW(chl_list));
-    if (rowsel >= 0) {
-        GtkTreePath *p = gtk_tree_path_new_from_indices(rowsel, -1);
-        GtkTreeSelection *sel =
-            gtk_tree_view_get_selection(GTK_TREE_VIEW(chl_list));
-        gtk_tree_selection_select_path(sel, p);
-        gtk_tree_path_free(p);
-    }
-    */
 
     stringlist::destroy(names);
     recolor();
@@ -442,43 +425,29 @@ QTchdListDlg::recolor()
 {
     const char *sclr = QTpkg::self()->GetAttrColor(GRattrColorLocSel);
     if (DSP()->MainWdesc()->DbType() == WDchd) {
-        /* XXX
-        GtkTreeIter iter;
-        GtkListStore *store =
-            GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(chl_list)));
-        if (!store)
-            return;
-        if (!gtk_tree_model_get_iter_first(GTK_TREE_MODEL(store), &iter))
-            return;
         for (int i = 0; ; i++) {
-            char *name;
-            gtk_tree_model_get(GTK_TREE_MODEL(store), &iter, 0, &name, -1);
-            int sc = strcmp(name, DSP()->MainWdesc()->DbName());
-            free(name);
-            if (!sc) {
-                gtk_list_store_set(store, &iter, 3, sclr, 4, "black", -1);
+            QTreeWidgetItem *itm = chl_list->topLevelItem(i);
+            if (!itm)
+                break;
+            QByteArray ba = itm->text(0).toLatin1();
+            const char *nm = ba.constData();
+            if (!nm)
+                break;
+            if (!DSP()->MainWdesc()->DbName())
+                break;
+            if (!strcmp(nm, DSP()->MainWdesc()->DbName())) {
+                itm->setBackground(2, QBrush(QColor(sclr)));
                 break;
             }
-            if (!gtk_tree_model_iter_next(GTK_TREE_MODEL(store), &iter))
-                break;
         }
-        */
     }
     else {
-        /* XXX
-        GtkTreeIter iter;
-        GtkListStore *store =
-            GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(chl_list)));
-        if (!store)
-            return;
-        if (!gtk_tree_model_get_iter_first(GTK_TREE_MODEL(store), &iter))
-            return;
         for (int i = 0; ; i++) {
-            gtk_list_store_set(store, &iter, 3, NULL, 4, NULL, -1);
-            if (!gtk_tree_model_iter_next(GTK_TREE_MODEL(store), &iter))
+            QTreeWidgetItem *itm = chl_list->topLevelItem(i);
+            if (!itm)
                 break;
+            itm->setBackground(2, QBrush());
         }
-        */
     }
     if (chl_cnt_pop) {
         if (DSP()->MainWdesc()->DbType() == WDchd)

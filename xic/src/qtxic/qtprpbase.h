@@ -76,7 +76,8 @@ protected:
     void handle_button_down(QMouseEvent*);
     void handle_button_up(QMouseEvent*);
     void handle_mouse_motion(QMouseEvent*);
-    void handle_mime_data_received(const QMimeData*);
+    bool is_mime_data_handled(const QMimeData*) const;
+    bool is_mime_data_delivered(const QMimeData*);
 
     static int pb_bad_cb(void*);
 

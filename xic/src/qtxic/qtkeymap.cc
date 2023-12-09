@@ -71,16 +71,16 @@ static keymap kmap_dn[] = {
     { Qt::Key_Shift,        SHIFTDN_KEY,    0 },
     { Qt::Key_Control,      CTRLDN_KEY,     0 },
     { Qt::Key_Home,         HOME_KEY,       0 },
-/* XXX how to get *numeric* +/-? */
+#ifdef __APPLE__
+    // Mappings for MacBook Pro keyboard: fn-Enter and fn-Right.
+    { Qt::Key_Enter,        NUPLUS_KEY,     0 },
+    { Qt::Key_End,          NUMINUS_KEY,    0 },
+#else
+    // In QT, these are special-cased so as to be recognized only when
+    // the KeypadModifier is set.
     { Qt::Key_Plus,         NUPLUS_KEY,     0 },
     { Qt::Key_Minus,        NUMINUS_KEY,    0 },
-/*
-#ifdef __APPLE__
-        // Mappings for MacBook Pro keyboard: fn-Enter and fn-Right.
-        { GDK_KEY_KP_Enter,     NUPLUS_KEY,     0 },
-        { GDK_KEY_End,          NUMINUS_KEY,    0 },
 #endif
-*/
 
     { Qt::Key_PageDown,     PAGEDN_KEY,     0 },
     { Qt::Key_PageUp,       PAGEUP_KEY,     0 },
@@ -205,18 +205,15 @@ cKsMap::SetMap(int code, unsigned keyval)
 char *
 cKsMap::KeyvalToString(unsigned int keyval)
 {
-//    return (gdk_keyval_name(keyval));
-(void)keyval;
-return (0);
+    QByteArray ba = QKeySequence(keyval).toString().toLatin1();
+    return (lstring::copy(ba.constData()));
 }
 
 
 unsigned int
 cKsMap::StringToKeyval(const char *string)
 {
-//    return (gdk_keyval_from_name(string));
-(void)string;
-return (0);
+    return (QKeySequence::fromString(string)[0].key());
 }
 
 

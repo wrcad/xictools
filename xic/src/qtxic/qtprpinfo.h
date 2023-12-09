@@ -75,7 +75,8 @@ private slots:
     void mouse_press_slot(QMouseEvent*);
     void mouse_release_slot(QMouseEvent*);
     void mouse_motion_slot(QMouseEvent*);
-    void mime_data_received_slot(const QMimeData*);
+    void mime_data_handled_slot(const QMimeData*, bool*) const;
+    void mime_data_delivered_slot(const QMimeData*, bool*);
     void dismiss_btn_slot();
     void font_changed_slot(int);
 

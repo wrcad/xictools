@@ -117,8 +117,8 @@ QTsubwin::PopUpGrid(GRobject caller, ShowMode mode)
 
 QTgridDlg *QTgridDlg::grid_pops[DSP_NUMWINS];
 
-QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTdraw(XW_TEXT),
-    QTbag(this)
+QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTbag(this),
+    QTdraw(XW_TEXT)
 {
     p_parent = owner;
     gd_snapbox = 0;

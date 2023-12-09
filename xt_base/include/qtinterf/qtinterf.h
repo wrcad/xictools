@@ -67,6 +67,7 @@ namespace qtinterf {
     class QTmsgDlg;
     class QTprintDlg;
     class QTtextDlg;
+    class QTeditDlg;
     class QTtextEdit;
     class QTbag;
     class QTdev;
@@ -110,7 +111,6 @@ public:
     //
     void Title(const char*, const char*);
 
-    // qtedit.cc
     GReditPopup *PopUpTextEditor(const char*,
         bool(*)(const char*, void*, XEtype), void*, bool);
     GReditPopup *PopUpFileBrowser(const char*);
@@ -119,17 +119,14 @@ public:
     GReditPopup *PopUpMail(const char*, const char*,
         void(*)(GReditPopup*) = 0, GRloc = GRloc());
 
-    // qtfile.cc
     GRfilePopup *PopUpFileSelector(FsMode, GRloc,
         void(*)(const char*, void*),
         void(*)(GRfilePopup*, void*), void*, const char*);
 
-    // qtfont.cc
     void PopUpFontSel(GRobject, GRloc, ShowMode,
         void(*)(const char*, const char*, void*),
         void*, int, const char** = 0, const char* = 0);
 
-    // qthcopy.cc
     void PopUpPrint(GRobject, HCcb*, HCmode, GRdraw* = 0);
     void HCupdate(HCcb*, GRobject);
     void HCsetFormat(int);
@@ -218,6 +215,9 @@ protected:
     int             wb_info_cnt;
     int             wb_info2_cnt;
     int             wb_htinfo_cnt;
+
+#define GR_NUM_SUBED 5
+    QTeditDlg       *Editors[GR_NUM_SUBED];
 
     // These are used in a lot of places.
     static const char *wb_closed_folder_xpm[];

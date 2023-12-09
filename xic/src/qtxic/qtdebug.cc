@@ -72,6 +72,7 @@
 #include <QHeaderView>
 #include <QMouseEvent>
 #include <QMimeData>
+#include <QTextBlock>
 
 
 #ifdef __APPLE__
@@ -236,7 +237,7 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c) : QTbag(this)
     a->setData(PrintCode);
     a->setShortcut(QKeySequence("Ctrl+P"));
     // _Save As, <alt>A, db_action_proc, SaveAsCode, 0
-    a = db_filemenu->addAction(tr("_Save As"));
+    a = db_filemenu->addAction(tr("&Save As"));
     a->setData(SaveAsCode);
     a->setShortcut(QKeySequence("Alt+A"));
     db_saveas = a;
@@ -312,7 +313,7 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c) : QTbag(this)
     a->setData(RunCode);
     a->setShortcut(QKeySequence("Ctrl+R"));
     // S_tep, <control>T, db_action_proc, StepCode, 0
-    a = db_execmenu->addAction(tr("S_tep"));
+    a = db_execmenu->addAction(tr("S&tep"));
     a->setData(StepCode);
     a->setShortcut(QKeySequence("Ctrl+T"));
     // R_eset, <control>E, db_action_proc, StartCode, 0
@@ -396,10 +397,15 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c) : QTbag(this)
     vbox->addWidget(wb_textarea);
     connect(wb_textarea, SIGNAL(press_event(QMouseEvent*)),
         this, SLOT(mouse_press_slot(QMouseEvent*)));
+    connect(wb_textarea, SIGNAL(release_event(QMouseEvent*)),
+        this, SLOT(mouse_release_slot(QMouseEvent*)));
     connect(wb_textarea, SIGNAL(textChanged()),
         this, SLOT(text_changed_slot()));
-    connect(wb_textarea, SIGNAL(mime_data_received(const QMimeData*)),
-        this, SLOT(mime_data_received_slot(const QMimeData*)));
+    connect(wb_textarea,
+        SIGNAL(mime_data_handled(const QMimeData*, bool*) const),
+        this, SLOT(mime_data_delivered_slot(const QMimeData*, bool*) const));
+    connect(wb_textarea, SIGNAL(mime_data_delivered(const QMimeData*, bool*)),
+        this, SLOT(mime_data_delivered_slot(const QMimeData*, bool*)));
     connect(wb_textarea, SIGNAL(key_press_event(QKeyEvent*)),
         this, SLOT(key_press_slot(QKeyEvent*)));
 
@@ -584,8 +590,10 @@ QTscriptDebuggerDlg::step()
         PL()->SavePrompt();
         start();
         PL()->RestorePrompt();
-//XXX        QTdev::SetFocus(Dbg->wb_shell);
+        // Get focus back in case it was lost.
         show();
+        activateWindow();
+        raise();
         wb_textarea->setFocus();
         return;
     }
@@ -609,8 +617,10 @@ QTscriptDebuggerDlg::step()
     db_status = Equiescent;
     set_sens(true);
     update_variables();
-//XXX    GTKdev::SetFocus(Dbg->wb_shell);
+    // Get focus back in case it was lost.
     show();
+    activateWindow();
+    raise();
     wb_textarea->setFocus();
 }
 
@@ -873,10 +883,6 @@ QTscriptDebuggerDlg::refresh(bool mode_switch, locType loc, bool clear)
             wb_textarea->set_scroll_value(val);
     }
     else {
-        if (loc == locStart)
-            val = 0.0;
-        else if (loc == locFollowCurrent)
-            val = wb_textarea->get_scroll_to_line_value(db_line, val);
         db_in_undo = true;
         if (mode_switch || clear) {
             wb_textarea->clear();
@@ -914,8 +920,15 @@ QTscriptDebuggerDlg::refresh(bool mode_switch, locType loc, bool clear)
             delete [] str;
         }
         db_in_undo = false;
-        double vt = wb_textarea->get_scroll_value();
-        if (fabs(vt - val) > 1.0)
+        if (loc == locStart)
+            wb_textarea->set_scroll_value(0);
+        else if (loc == locFollowCurrent) {
+            QTextCursor cur(wb_textarea->document()->findBlockByLineNumber(
+                db_line));
+            wb_textarea->moveCursor(QTextCursor::End);
+            wb_textarea->setTextCursor(cur);
+        }
+        else
             wb_textarea->set_scroll_value(val);
     }
     delete [] s;
@@ -1578,6 +1591,7 @@ QTscriptDebuggerDlg::mouse_press_slot(QMouseEvent *ev)
     }
 
     if (db_mode == DBedit) {
+        //wb_textarea->QTextEdit::mousePressEvent(ev);
         ev->ignore();
         return;
     }
@@ -1653,19 +1667,29 @@ QTscriptDebuggerDlg::mouse_press_slot(QMouseEvent *ev)
 
 
 void
+QTscriptDebuggerDlg::mouse_release_slot(QMouseEvent *ev)
+{
+    if (ev->type() != QEvent::MouseButtonRelease) {
+        ev->ignore();
+        return;
+    }
+
+    if (db_mode == DBedit) {
+        //wb_textarea->QTextEdit::mouseReleaseEvent(ev);
+        ev->ignore();
+        return;
+    }
+    ev->accept();
+}
+
+
+void
 QTscriptDebuggerDlg::key_press_slot(QKeyEvent *ev)
 {
     // Handle key presses in the debugger window.  This provides
     // additional accelerators for start/run/reset.
 
-    if (db_mode == DBedit) {
-        // Eat the spacebar press, so that it doesn't "press" the mode
-        // button.
-
-        if (ev->key() == Qt::Key_Space)
-            ev->ignore();
-    }
-    else if (db_mode == DBrun) {
+    if (db_mode == DBrun) {
         switch (ev->key()) {
         case Qt::Key_Space:
         case Qt::Key_T:
@@ -1750,7 +1774,16 @@ QTscriptDebuggerDlg::text_change_slot(int strt, int nch_rm, int nch_add)
 
 
 void
-QTscriptDebuggerDlg::mime_data_received_slot(const QMimeData *dta)
+QTscriptDebuggerDlg::mime_data_handled_slot(const QMimeData *dta, bool *accpt)
+const
+{
+    if (dta->hasFormat("text/twostring") || dta->hasFormat("text/plain"))
+        *accpt = true;
+}
+
+
+void
+QTscriptDebuggerDlg::mime_data_delivered_slot(const QMimeData *dta, bool *accpt)
 {
     // Receive drop data (a path name).
 
@@ -1761,6 +1794,7 @@ QTscriptDebuggerDlg::mime_data_received_slot(const QMimeData *dta)
         data_ba = dta->data("text/plain");
     else
         return;
+    *accpt = true;
     char *src = lstring::copy(data_ba.constData());
     if (!src)
         return;

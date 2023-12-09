@@ -80,19 +80,6 @@ QTcanvas::QTcanvas(QWidget *prnt) : QWidget(prnt)
     // Ghost drawing.
     da_ghost_overlay_bg = 0;
     da_ghost_draw_ptr = &da_local;
-/*XXX
-    da_local.gd_ghost_draw_func = 0;
-    da_local.gd_linedb = 0;
-    da_local.gd_ref_x = 0;
-    da_local.gd_ref_y = 0;
-    da_local.gd_last_x = 0;
-    da_local.gd_last_y = 0;
-    da_local.gd_ghost_cx_cnt = 0;
-    da_local.gd_first_ghost = false;
-    da_local.gd_show_ghost = false;
-    da_local.gd_undraw = false;
-    da_local.gd_xor_mode = false;
-*/
 
     da_bg.setNamedColor(QString("white"));
     da_fg.setNamedColor(QString("black"));

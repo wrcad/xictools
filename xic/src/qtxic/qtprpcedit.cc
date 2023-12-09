@@ -93,6 +93,9 @@ cEdit::PopUpCellProperties(ShowMode mode)
 }
 // End of cEdit functions.
 
+// For possible future drag/drop support.  The definitions will need to
+// be added to the heqder file.
+//#define PRPC_DD
 
 QTcellPrpDlg::sAddEnt QTcellPrpDlg::pc_elec_addmenu[] = {
     sAddEnt("param", P_PARAM),
@@ -178,6 +181,8 @@ QTcellPrpDlg::QTcellPrpDlg() : QTbag(this)
     vbox->addWidget(wb_textarea);
     connect(wb_textarea, SIGNAL(press_event(QMouseEvent*)),
         this, SLOT(mouse_press_slot(QMouseEvent*)));
+    connect(wb_textarea, SIGNAL(release_event(QMouseEvent*)),
+        this, SLOT(mouse_release_slot(QMouseEvent*)));
 
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_FIXED))
@@ -340,187 +345,6 @@ QTcellPrpDlg::select_range(int start, int end)
 
 
 void
-QTcellPrpDlg::handle_button_down(QMouseEvent *ev)
-{
-// Drag support disabled, this provides selection support only.
-//    pc_dragging = false;
-    QByteArray qba = wb_textarea->toPlainText().toLatin1();
-#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-    int xx = ev->position().x();
-    int yy = ev->position().y();
-#else
-    int xx = ev->x();
-    int yy = ev->y();
-#endif
-    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(xx, yy));
-    int posn = cur.position();
-    const char *str = lstring::copy((const char*)qba.constData());
-    const char *line_start = str;
-    int linesel = 0;
-    for (int i = 0; i <= posn; i++) {
-        if (str[i] == '\n') {
-            if (i == posn) {
-                // Clicked to  right of line.
-                delete [] str;
-                return;
-            }
-            linesel++;
-            line_start = str + i+1;
-        }
-    }
-    if (line_start && *line_start != '\n') {
-        PrptyText *p = pc_list;
-        posn = line_start - str;
-        for ( ; p; p = p->next()) {
-            if (posn >= p->start() && posn < p->end())
-                break;
-        }
-        if (p && pc_line_selected != linesel) {
-            pc_line_selected = linesel;
-            select_range(p->start() + strlen(p->head()), p->end());
-//XXX
-//            if (pc_btn_callback)
-//                (*pc_btn_callback)(p);
-            delete [] str;
-//            pc_drag_x = xx;
-//            pc_drag_y = yy;
-//            pc_dragging = true;
-            return;
-        }
-    }
-    pc_line_selected = -1;
-    delete [] str;
-    select_range(0, 0);
-}
-
-
-void
-QTcellPrpDlg::handle_button_up(QMouseEvent*)
-{
-//    pc_dragging = false;
-}
-
-
-/**** Not used at present, support for drag.
-void
-QTcellPrpDlg::handle_mouse_motion(QMouseEvent *ev)
-{
-    if (!pc_dragging)
-        return;
-    if (abs(ev->x() - pc_drag_x) < 5 && abs(ev->y() - pc_drag_y) < 5)
-        return;
-    PrptyText *p = get_selection();
-    if (!p)
-        return;
-    pc_dragging = false;
-
-    int sz = 0;
-    char *bf = 0;
-    if (p->prpty()) {
-        CDs *cursd =  CurCell(true);
-        if (cursd) {
-            hyList *hp = cursd->hyPrpList(pc_odesc, p->prpty());
-            char *s = hyList::string(hp, HYcvAscii, true);
-            hyList::destroy(hp);
-            sz = sizeof(int) + strlen(s) + 1;
-            bf = new char[sz];
-            *(int*)bf = p->prpty()->value();
-            strcpy(bf + sizeof(int), s);
-            delete [] s;
-        }
-    }
-    else {
-        QString qs = wb_textarea->toPlainText();
-        QByteArray qba = qs.toLatin1();
-        sz = p->end() - (p->start() + strlen(p->head())) + sizeof(int) + 1;
-        bf = new char[sz];
-        const char *q = p->head();
-        if (!isdigit(*q))
-            q++;
-        *(int*)bf = atoi(q);
-        int i = sizeof(int);
-        for (int j = p->start() + strlen(p->head()); j < p->end(); j++)
-            bf[i++] = qba[j];
-        bf[i] = 0;
-    }
-
-    QDrag *drag = new QDrag(wb_textarea);
-    QMimeData *mimedata = new QMimeData();
-    QByteArray qdata((const char*)bf, sz);
-    mimedata->setData("text/property", qdata);
-    delete [] bf;
-    drag->setMimeData(mimedata);
-    drag->exec(Qt::CopyAction);
-}
-****/
-
-
-/**** Not used at present, support for drops.
-void
-cPrpBase::handle_mime_data_received(const QMimeData *data)
-{
-    if (data->hasFormat("text/property")) {
-        if (!pc_odesc) {
-            QTpkg::self()->RegisterTimeoutProc(3000, pc_bad_cb, this);
-            PopUpMessage("Can't add property, no object selected.", false,
-                false, false, GRloc(LW_LR));
-        }
-        else {
-            QByteArray bary = data->data("text/property");
-            int num = *(int*)bary.data();
-            const char *val = (const char*)bary.data() + sizeof(int);
-            bool accept = false;
-            // Note: the window text is updated by call to PrptyRelist() in
-            // CommitChangges()
-            if (DSP()->CurMode() == Electrical) {
-                if (pc_odesc->type() == CDINSTANCE) {
-                    if (num == P_MODEL || num == P_VALUE || num == P_PARAM ||
-                            num == P_OTHER || num == P_NOPHYS ||
-                            num == P_FLATTEN || num == P_SYMBLC ||
-                            num == P_RANGE || num == P_DEVREF) {
-                        CDs *cursde = CurCell(Electrical, true);
-                        if (cursde) {
-                            Ulist()->ListCheck("addprp", cursde, false);
-                            CDp *pdesc =
-                                num != P_OTHER ? OCALL(pc_odesc)->prpty(num)
-                                : 0;
-                            hyList *hp = new hyList(cursde, (char*)val,
-                                HYcvAscii);
-                            ED()->prptyModify(OCALL(pc_odesc), pdesc, num,
-                                0, hp);
-                            hyList::destroy(hp);
-                            Ulist()->CommitChanges(true);
-                            accept = true;
-                        }
-                    }
-                }
-            }
-            else {
-                CDs *cursdp = CurCell(Physical);
-                if (cursdp) {
-                    Ulist()->ListCheck("ddprp", cursdp, false);
-                    DSP()->ShowOdescPhysProperties(pc_odesc, ERASE);
-
-                    CDp *newp = new CDp((char*)val, num);
-                    Ulist()->RecordPrptyChange(cursdp, pc_odesc, 0, newp);
-
-                    Ulist()->CommitChanges(true);
-                    DSP()->ShowOdescPhysProperties(pc_odesc, DISPLAY);
-                    accept = true;
-                }
-            }
-            if (!accept) {
-                QTpkg::self()->RegisterTimeoutProc(3000, pc_bad_cb, this);
-                PopUpMessage("Can't add property, incorrect type.", false,
-                    false, false, GRloc(LW_LR));
-            }
-        }
-    }
-}
-****/
-
-
-void
 QTcellPrpDlg::edit_btn_slot(bool state)
 {
     if (!state) {
@@ -579,21 +403,77 @@ QTcellPrpDlg::help_btn_slot()
 void
 QTcellPrpDlg::mouse_press_slot(QMouseEvent *ev)
 {
-    if (ev->type() == QEvent::MouseButtonPress) {
-        ev->accept();
-        handle_button_down(ev);
+    if (ev->type() != QEvent::MouseButtonPress) {
+        ev->ignore();
         return;
     }
-    if (ev->type() == QEvent::MouseButtonRelease) {
-        ev->accept();
-        handle_button_up(ev);
-        return;
+    ev->accept();
+
+#ifdef PRPC_DD
+    pc_dragging = false;
+#endif
+    QByteArray qba = wb_textarea->toPlainText().toLatin1();
+    const char *str = qba.constData();
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+    int xx = ev->position().x();
+    int yy = ev->position().y();
+#else
+    int xx = ev->x();
+    int yy = ev->y();
+#endif
+    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(xx, yy));
+    int posn = cur.position();
+    const char *line_start = str;
+    int linesel = 0;
+    for (int i = 0; i <= posn; i++) {
+        if (str[i] == '\n') {
+            if (i == posn) {
+                // Clicked to  right of line.
+                return;
+            }
+            linesel++;
+            line_start = str + i+1;
+        }
     }
-    ev->ignore();
+    if (line_start && *line_start != '\n') {
+        PrptyText *p = pc_list;
+        posn = line_start - str;
+        for ( ; p; p = p->next()) {
+            if (posn >= p->start() && posn < p->end())
+                break;
+        }
+        if (p && pc_line_selected != linesel) {
+            pc_line_selected = linesel;
+            select_range(p->start() + strlen(p->head()), p->end());
+#ifdef PRPC_DD
+            pc_drag_x = xx;
+            pc_drag_y = yy;
+            pc_dragging = true;
+#endif
+            return;
+        }
+    }
+    pc_line_selected = -1;
+    select_range(0, 0);
 }
 
 
-/**** Drag/drop support for possible future use.
+void
+QTcellPrpDlg::mouse_release_slot(QMouseEvent *ev)
+{
+    if (ev->type() != QEvent::MouseButtonRelease) {
+        ev->ignore();
+        return;
+    }
+    ev->accept();
+#ifdef PRPC_DD
+    pc_dragging = false;
+#endif
+}
+
+
+#ifdef PRPC_DD
+
 void
 QTcellPrpDlg::mouse_motion_slot(QMouseEvent *ev)
 {
@@ -602,16 +482,128 @@ QTcellPrpDlg::mouse_motion_slot(QMouseEvent *ev)
         return;
     }
     ev->accept();
-    handle_mouse_motion(ev);
+
+    if (!pc_dragging)
+        return;
+    if (abs(ev->x() - pc_drag_x) < 5 && abs(ev->y() - pc_drag_y) < 5)
+        return;
+    PrptyText *p = get_selection();
+    if (!p)
+        return;
+    pc_dragging = false;
+
+    int sz = 0;
+    char *bf = 0;
+    if (p->prpty()) {
+        CDs *cursd =  CurCell(true);
+        if (cursd) {
+            hyList *hp = cursd->hyPrpList(pc_odesc, p->prpty());
+            char *s = hyList::string(hp, HYcvAscii, true);
+            hyList::destroy(hp);
+            sz = sizeof(int) + strlen(s) + 1;
+            bf = new char[sz];
+            *(int*)bf = p->prpty()->value();
+            strcpy(bf + sizeof(int), s);
+            delete [] s;
+        }
+    }
+    else {
+        QString qs = wb_textarea->toPlainText();
+        QByteArray qba = qs.toLatin1();
+        sz = p->end() - (p->start() + strlen(p->head())) + sizeof(int) + 1;
+        bf = new char[sz];
+        const char *q = p->head();
+        if (!isdigit(*q))
+            q++;
+        *(int*)bf = atoi(q);
+        int i = sizeof(int);
+        for (int j = p->start() + strlen(p->head()); j < p->end(); j++)
+            bf[i++] = qba[j];
+        bf[i] = 0;
+    }
+
+    QDrag *drag = new QDrag(wb_textarea);
+    QMimeData *mimedata = new QMimeData();
+    QByteArray qdata((const char*)bf, sz);
+    mimedata->setData("text/property", qdata);
+    delete [] bf;
+    drag->setMimeData(mimedata);
+    drag->exec(Qt::CopyAction);
 }
 
 
 void
-QTcellPrpDlg::mime_data_received_slot(const QMimeData *d)
+QTcellPrpDlg::mime_data_handled_slot(const QMimeData *dta, bool *accpt) const
 {
-    handle_mime_data_received(d);
+    if (dta->hasFormat("text/property"))
+        *accpt = true;
 }
-****/
+
+
+void
+QTcellPrpDlg::mime_data_delivered_slot(const QMimeData *dta, bool *accpt)
+{
+    if (dta->hasFormat("text/property")) {
+        *accpt = true;
+        if (!pc_odesc) {
+            QTpkg::self()->RegisterTimeoutProc(3000, pc_bad_cb, this);
+            PopUpMessage("Can't add property, no object selected.", false,
+                false, false, GRloc(LW_LR));
+        }
+        else {
+            QByteArray bary = dta->data("text/property");
+            int num = *(int*)bary.data();
+            const char *val = (const char*)bary.data() + sizeof(int);
+            bool accept = false;
+            // Note: the window text is updated by call to PrptyRelist() in
+            // CommitChangges()
+            if (DSP()->CurMode() == Electrical) {
+                if (pc_odesc->type() == CDINSTANCE) {
+                    if (num == P_MODEL || num == P_VALUE || num == P_PARAM ||
+                            num == P_OTHER || num == P_NOPHYS ||
+                            num == P_FLATTEN || num == P_SYMBLC ||
+                            num == P_RANGE || num == P_DEVREF) {
+                        CDs *cursde = CurCell(Electrical, true);
+                        if (cursde) {
+                            Ulist()->ListCheck("addprp", cursde, false);
+                            CDp *pdesc =
+                                num != P_OTHER ? OCALL(pc_odesc)->prpty(num)
+                                : 0;
+                            hyList *hp = new hyList(cursde, (char*)val,
+                                HYcvAscii);
+                            ED()->prptyModify(OCALL(pc_odesc), pdesc, num,
+                                0, hp);
+                            hyList::destroy(hp);
+                            Ulist()->CommitChanges(true);
+                            accept = true;
+                        }
+                    }
+                }
+            }
+            else {
+                CDs *cursdp = CurCell(Physical);
+                if (cursdp) {
+                    Ulist()->ListCheck("ddprp", cursdp, false);
+                    DSP()->ShowOdescPhysProperties(pc_odesc, ERASE);
+
+                    CDp *newp = new CDp((char*)val, num);
+                    Ulist()->RecordPrptyChange(cursdp, pc_odesc, 0, newp);
+
+                    Ulist()->CommitChanges(true);
+                    DSP()->ShowOdescPhysProperties(pc_odesc, DISPLAY);
+                    accept = true;
+                }
+            }
+            if (!accept) {
+                QTpkg::self()->RegisterTimeoutProc(3000, pc_bad_cb, this);
+                PopUpMessage("Can't add property, incorrect type.", false,
+                    false, false, GRloc(LW_LR));
+            }
+        }
+    }
+}
+
+#endif
 
 
 void

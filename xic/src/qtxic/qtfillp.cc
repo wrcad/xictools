@@ -114,7 +114,7 @@ cMain::FillLoadCallback(LayerFillData *dd, CDl *ld)
 
 QTfillPatDlg *QTfillPatDlg::instPtr;
 
-QTfillPatDlg::QTfillPatDlg(GRobject c) : QTdraw(XW_DRAWING), QTbag(this)
+QTfillPatDlg::QTfillPatDlg(GRobject c) : QTbag(this), QTdraw(XW_DRAWING)
 {
     instPtr = this;
     fp_caller = c;

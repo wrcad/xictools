@@ -88,23 +88,24 @@ cMain::SendButtonEvent(const char *widget_name, int state, int num, int x,
         up ? BUTTON_RELEASE : BUTTON_PRESS, num, x, y);
     return (ev.exec());
 }
+// End of cMain functions.
 
 
-// Convert the state flags to the Xic representation
-//
-inline unsigned
-convert_state(unsigned qtstate)
-{
-    int state = 0;
-    if (qtstate & Qt::ShiftModifier)
-        state |= GR_SHIFT_MASK;
-    if (qtstate & Qt::ControlModifier)
-        state |= GR_CONTROL_MASK;
-    if (qtstate & Qt::AltModifier)
-        state |= GR_ALT_MASK;
-    return (state);
+namespace {
+    // Convert the state flags to the Xic representation
+    //
+    inline unsigned convert_state(unsigned qtstate)
+    {
+        int state = 0;
+        if (qtstate & Qt::ShiftModifier)
+            state |= GR_SHIFT_MASK;
+        if (qtstate & Qt::ControlModifier)
+            state |= GR_CONTROL_MASK;
+        if (qtstate & Qt::AltModifier)
+            state |= GR_ALT_MASK;
+        return (state);
+    }
 }
-// XXX also one of these in subwin_d.cc
 
 
 // Main function to obtain a macro mapping for a keypress.
@@ -190,7 +191,6 @@ cKbMacro::isModifier(unsigned key)
         key == Qt::Key_Alt      ||
         key == Qt::Key_CapsLock);
 }
-// also one of these in subwin_d.cc
 
 
 bool
@@ -220,9 +220,6 @@ cKbMacro::keyText(unsigned key, unsigned state)
     static char text[4];
     text[0] = 0;
 
-    (void)state;
-/*  XXX This doesn't work.  F'n QT doesn't seem to have a way to
- * do this.
     Qt::KeyboardModifiers mod = Qt::NoModifier;
     if (state & GR_SHIFT_MASK)
         mod |= Qt::ShiftModifier;
@@ -231,10 +228,13 @@ cKbMacro::keyText(unsigned key, unsigned state)
     if (state & GR_ALT_MASK)
         mod |= Qt::AltModifier;
 
-    QKeySequence ks(key + mod);
-    const char *tt = ks.toString().toAscii().constFata();
- printf("*%s*\n", tt);
-*/
+    QKeySequence ks(QKeyCombination(mod, (Qt::Key)key));
+    QByteArray ba = ks.toString().toLatin1();
+    if (ba.size() > 0) {
+        const char *tt = ba.constData();
+        strncpy(text, tt, 4);
+// printf("*%s*\n", tt);
+    }
 
     if (key == Qt::Key_Return) {
         text[0] = '\n';
@@ -677,112 +677,6 @@ name_to_widget(const char *path)
         w0 = wx;
     }
     return (wfound);
-}
-*/
-
-
-/*========================================================================
-  Event History Logging
- ========================================================================*/
-
-
-/*
-// Print the first few lines of the run log file.
-//
-static void
-log_init(FILE *fp)
-{
-    fprintf(fp, "# %s\n", Global.IdString());
-
-    char buf[256];
-    if (CD()->PGetCWD(buf, 256))
-        fprintf(fp, "Cwd(\"%s\")\n", buf);
-
-    fprintf(fp, "Techfile(\"%s\")\n",
-        Global.TechFile ? Global.TechFile : "<none>");
-    fprintf(fp, "Edit(\"%s\", 0)\n",
-        GetCurSymbol() ? GetCurSymbol()->cellname() : "<none>");
-    fprintf(fp, "Mode(%d)\n", GetCurMode());
-    fprintf(fp, "Window(%g, %g, %g, 0)\n",
-        (double)(XM()->main_win->w_window.left +
-            XM()->main_win->w_window.right)/(2*CDresolution),
-        (double)(XM()->main_win->w_window.bottom +
-            XM()->main_win->w_window.top)/(2*CDresolution),
-        (double)(XM()->main_win->w_window.right -
-            XM()->main_win->w_window.left)/CDresolution);
-}
-*/
-
-
-/*
-// Print a line in the run log file describing the event.  The print format
-// is readable by the function parser.
-//
-void
-LogEvent(GdkEvent *ev)
-{
-    static int ccnt;
-    char *msg = "Warning: can't open %s file, history won't be logged.";
-    if (ccnt < 0)
-        return;
-
-    if (ev->type == GDK_KEY_PRESS || ev->type == GDK_KEY_RELEASE) {
-        FILE *fp = fopen_log(Global.LogName, ccnt ? "a" : "w", true);
-        if (fp) {
-            if (!ccnt)
-                log_init(fp);
-            if (ev->key.string && isprint(*ev->key.string))
-                fprintf(fp, "# %s\n", ev->key.string);
-            else
-                fprintf(fp, "# %s\n", gdk_keyval_name(ev->key.keyval));
-            if (ev->key.send_event) {
-                fprintf(fp, "# XSendEvent\n");
-                fprintf(fp, "# ");
-            }
-
-            GtkWidget *widget = gtk_get_event_widget(ev);
-            char *wname = widget_path(widget);
-            if (!wname)
-                wname = copy("unknown");
-            fprintf(fp, "%s(%d, %d, \"%s\")\n",
-                ev->type == GDK_KEY_PRESS ? "KeyDown" : "KeyUp",
-                ev->key.keyval, ev->key.state, wname);
-            delete [] wname;
-            fclose(fp);
-        }
-        else if (!ccnt) {
-            XM()->WarningLogV(mh::Initialization, msg, Global.LogName);
-            ccnt = -1;
-            return;
-        }
-        ccnt++;
-    }
-    else if (ev->type == GDK_BUTTON_PRESS || ev->type == GDK_BUTTON_RELEASE) {
-        FILE *fp = fopen_log(Global.LogName, ccnt ? "a" : "w", true);
-        if (fp) {
-            if (!ccnt)
-                log_init(fp);
-            if (ev->button.send_event)
-                // suppress all send events
-                fprintf(fp, "# XSendEvent\n# ");
-            GtkWidget *widget = gtk_get_event_widget(ev);
-            char *wname = widget_path(widget);
-            if (!wname)
-                wname = copy("unknown");
-            fprintf(fp, "%s(%d, %d, %d, %d, \"%s\")\n",
-                ev->type == GDK_BUTTON_PRESS ? "BtnDown" : "BtnUp",
-                ev->button.button, ev->button.state, (int)ev->button.x,
-                (int)ev->button.y, wname);
-            delete [] wname;
-            fclose(fp);
-        }
-        else if (!ccnt) {
-            XM()->WarningLogV(mh::Initialization, msg, Global.LogName);
-            ccnt = -1;
-            return;
-        }
-        ccnt++;
-    }
 }
 */
 

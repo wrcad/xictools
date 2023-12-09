@@ -289,7 +289,7 @@ QTparam::select(int x1, int x2)
 void
 QTparam::select_word(int xx)
 {
-    bool was_sel = deselect();
+    deselect();
     if (p_text.select_word(xx)) {
         unsigned int xstart, xend;
         if (p_text.has_sel(&xstart, &xend)) {

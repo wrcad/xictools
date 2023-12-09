@@ -86,7 +86,7 @@ cEdit::PopUpLogo(GRobject caller, ShowMode mode)
 // parts of Xic.
 //
 void
-cEdit::PopUpPolytextFont(GRobject caller, ShowMode mode)
+cEdit::PopUpPolytextFont(GRobject, ShowMode mode)
 {
     if (mode == MODE_OFF) {
         if (QTlogoDlg::self() && QTlogoDlg::self()->fontsel())

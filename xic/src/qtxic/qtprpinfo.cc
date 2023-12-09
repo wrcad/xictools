@@ -135,8 +135,11 @@ QTprpInfoDlg::QTprpInfoDlg(CDo *odesc) : QTprpBase(this)
         this, SLOT(mouse_release_slot(QMouseEvent*)));
     connect(wb_textarea, SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(mouse_motion_slot(QMouseEvent*)));
-    connect(wb_textarea, SIGNAL(mime_data_received(const QMimeData*)),
-        this, SLOT(mime_data_received_slot(const QMimeData*)));
+    connect(wb_textarea,
+        SIGNAL(mime_data_handled(const QMimeData*, bool*) const),
+        this, SLOT(mime_data_habdled_slot(const QMimeData*) const));
+    connect(wb_textarea, SIGNAL(mime_data_delivered(const QMimeData*, bool*)),
+        this, SLOT(mime_data_delivered_slot(const QMimeData*, bool*)));
 
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_FIXED))
@@ -230,9 +233,16 @@ QTprpInfoDlg::mouse_motion_slot(QMouseEvent *ev)
 
 
 void
-QTprpInfoDlg::mime_data_received_slot(const QMimeData *d)
+QTprpInfoDlg::mime_data_handled_slot(const QMimeData *d, bool *accpt) const
 {
-    handle_mime_data_received(d);
+    *accpt = is_mime_data_handled(d);
+}
+
+
+void
+QTprpInfoDlg::mime_data_delivered_slot(const QMimeData *d, bool *accpt)
+{
+    *accpt = is_mime_data_delivered(d);
 }
 
 

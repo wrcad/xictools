@@ -262,8 +262,11 @@ QTprpEditorDlg::QTprpEditorDlg(CDo *odesc, PRPmode activ) : QTprpBase(this)
         this, SLOT(mouse_release_slot(QMouseEvent*)));
     connect(wb_textarea, SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(mouse_motion_slot(QMouseEvent*)));
-    connect(wb_textarea, SIGNAL(mime_data_received(const QMimeData*)),
-        this, SLOT(mime_data_received_slot(const QMimeData*)));
+    connect(wb_textarea,
+        SIGNAL(mime_data_handled(const QMimeData*, bool*) const),
+        this, SLOT(mime_data_handled_slot(const QMimeData*, bool*) const));
+    connect(wb_textarea, SIGNAL(mime_data_delivered(const QMimeData*, bool*)),
+        this, SLOT(mime_data_delivered_slot(const QMimeData*, bool*)));
 
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_FIXED))
@@ -642,12 +645,19 @@ QTprpEditorDlg::mouse_motion_slot(QMouseEvent *ev)
     ev->accept();
     handle_mouse_motion(ev);
 }
+ 
+
+void
+QTprpEditorDlg::mime_data_handled_slot(const QMimeData *d, bool *accpt) const
+{
+    *accpt = is_mime_data_handled(d);
+}
 
 
 void
-QTprpEditorDlg::mime_data_received_slot(const QMimeData *d)
+QTprpEditorDlg::mime_data_delivered_slot(const QMimeData *d, bool *accpt)
 {
-    handle_mime_data_received(d);
+    *accpt = is_mime_data_delivered(d);
 }
 
 

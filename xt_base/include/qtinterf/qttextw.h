@@ -90,79 +90,27 @@ public:
     // scrolling
     int get_scroll_value();
     void set_scroll_value(int);
-    int get_scroll_to_line_value(int, int);
-    void scroll_to_pos(int);
 
 signals:
     void resize_event(QResizeEvent*);
     void press_event(QMouseEvent*);
     void release_event(QMouseEvent*);
     void motion_event(QMouseEvent*);
-    void mime_data_received(const QMimeData*);
+    void mime_data_handled(const QMimeData*, bool*) const;
+    void mime_data_delivered(const QMimeData*, bool*);
     void key_press_event(QKeyEvent*);
 
 protected:
-    void resizeEvent(QResizeEvent *ev)
-    {
-        QTextEdit::resizeEvent(ev);
-        emit resize_event(ev);
-    }
-
-    void mousePressEvent(QMouseEvent *ev)
-    {
-        emit press_event(ev);
-    }
-
-    void mouseReleaseEvent(QMouseEvent *ev)
-    {
-        emit release_event(ev);
-    }
-
-    void mouseMoveEvent(QMouseEvent *ev)
-    {
-        emit motion_event(ev);
-    }
-
-    // Tricky stuff here to allow window to handle drag/drop while
-    // in read-only mode.
-
-    void dragEnterEvent(QDragEnterEvent *ev)
-    {
-        if (canInsertFromMimeData(ev->mimeData()))
-            ev->acceptProposedAction();
-    }
-
-    void dragMoveEvent(QDragMoveEvent *ev)
-    {
-        if (canInsertFromMimeData(ev->mimeData()))
-            ev->acceptProposedAction();
-    }
-
-    void dropEvent(QDropEvent *ev)
-    {
-        insertFromMimeData(ev->mimeData());
-        ev->acceptProposedAction();
-    }
-
-    bool canInsertFromMimeData(const QMimeData *source) const
-    {
-        // Extend mime types as needed.
-        if (source->hasFormat("text/property"))
-            return (true);
-        return (QTextEdit::canInsertFromMimeData(source));
-    }
-
-    void insertFromMimeData(const QMimeData *source)
-    {
-        emit mime_data_received(source);
-    }
-
-    void keyPressEvent(QKeyEvent *ev)
-    {
-        emit key_press_event(ev);
-        if (ev->isAccepted())
-            QTextEdit::keyPressEvent(ev);
-    }
+    void resizeEvent(QResizeEvent*);
+    void mousePressEvent(QMouseEvent*);
+    void mouseReleaseEvent(QMouseEvent*);
+    void mouseMoveEvent(QMouseEvent*);
+    void dragEnterEvent(QDragEnterEvent*);
+    void dragMoveEvent(QDragMoveEvent*);
+    void dropEvent(QDropEvent*);
+    bool canInsertFromMimeData(const QMimeData*) const;
+    void insertFromMimeData(const QMimeData*);
+    void keyPressEvent(QKeyEvent*);
 };
 
 #endif

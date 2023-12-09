@@ -60,28 +60,6 @@ namespace qtinterf {
 
 using namespace qtinterf;
 
-// This is crap from X/GTK, used to hold the GCs.
-// XXX rid this entirely in QT
-struct qtinterf::sGbag
-{
-    sGbag()
-    {
-        gb_cursor_type = 0;
-    }
-
-    void set_cursor_type(unsigned int t)    { gb_cursor_type = t; }
-    unsigned int get_cursor_type()          { return (gb_cursor_type); }
-//    GRlineDb *linedb()                      { return (gb_gdraw.linedb()); }
-
-    static sGbag *default_gbag(int = 0);
-
-#define NUMGCS 10
-    static sGbag *app_gbags[NUMGCS];
-
-    unsigned int gb_cursor_type;
-};
-
-
 class qtinterf::QTdraw : virtual public GRdraw
 {
 public:
@@ -175,13 +153,10 @@ public:
         { if (gd_viewport) gd_viewport->draw_image(im, x, y, w, h); }
     double Resolution()     { return (1.0); }
 
-    sGbag *Gbag()           { return (gd_gbag); }
-    void SetGbag(sGbag *b)  { gd_gbag = b; }
     qtinterf::QTcanvas *Viewport() { return (gd_viewport); }
 
 protected:
     qtinterf::QTcanvas *gd_viewport;
-    sGbag   *gd_gbag;       // graphics rendering context
 };
 
 #endif

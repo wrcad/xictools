@@ -194,10 +194,12 @@ private slots:
     void help_slot();
     void mode_btn_slot();
     void mouse_press_slot(QMouseEvent*);
+    void mouse_release_slot(QMouseEvent*);
     void key_press_slot(QKeyEvent*);
     void text_changed_slot();
     void text_change_slot(int, int, int);
-    void mime_data_received_slot(const QMimeData*);
+    void mime_data_handled_slot(const QMimeData*, bool*) const;
+    void mime_data_delivered_slot(const QMimeData*, bool*);
     void font_changed_slot(int);
 
 private:

@@ -117,20 +117,20 @@ QTdisplayWinDlg::QTdisplayWinDlg(GRobject caller, const BBox *BB,
     QLabel *label = new QLabel(tr("Set area to display"));
     hb->addWidget(label);
 
-    QHBoxLayout *hbox = new QHBoxLayout(0);
+    QHBoxLayout *hbox = new QHBoxLayout();
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    QVBoxLayout *col1 = new QVBoxLayout(this);
+    QVBoxLayout *col1 = new QVBoxLayout();
     hbox->addLayout(col1);
     col1->setContentsMargins(qm);
     col1->setSpacing(2);
-    QVBoxLayout *col2 = new QVBoxLayout(this);
+    QVBoxLayout *col2 = new QVBoxLayout();
     hbox->addLayout(col2);
     col2->setContentsMargins(qm);
     col2->setSpacing(2);
-    QVBoxLayout *col3 = new QVBoxLayout(this);
+    QVBoxLayout *col3 = new QVBoxLayout();
     hbox->addLayout(col3);
     col3->setContentsMargins(qm);
     col3->setSpacing(2);
@@ -140,34 +140,25 @@ QTdisplayWinDlg::QTdisplayWinDlg(GRobject caller, const BBox *BB,
 
     int ndgt = CD()->numDigits();
     dw_sb_x = new QTdoubleSpinBox();
-    dw_sb_x->setMinimum(-1e6);
-    dw_sb_x->setMaximum(1e6);
+    dw_sb_x->setRange(-1e6, 1e6);
     dw_sb_x->setDecimals(ndgt);
     dw_sb_x->setValue(0.0);
     col2->addWidget(dw_sb_x);
-    connect(dw_sb_x, SIGNAL(valueChanged(double)),
-        this, SLOT(x_value_changed(double)));
 
     dw_sb_y = new QTdoubleSpinBox();
-    dw_sb_y->setMinimum(-1e6);
-    dw_sb_y->setMaximum(1e6);
+    dw_sb_y->setRange(-1e6, 1e6);
     dw_sb_y->setDecimals(ndgt);
     dw_sb_y->setValue(0.0);
     col3->addWidget(dw_sb_y);
-    connect(dw_sb_y, SIGNAL(valueChanged(double)),
-        this, SLOT(y_value_changed(double)));
 
     label = new QLabel(tr("Window Width"));
     col1->addWidget(label);
 
     dw_sb_wid = new QTdoubleSpinBox();
-    dw_sb_wid->setMinimum(0.1);
-    dw_sb_wid->setMaximum(1e6);
+    dw_sb_wid->setRange(0.1, 1e6);
     dw_sb_wid->setDecimals(2);
     dw_sb_wid->setValue(100.0);
     col2->addWidget(dw_sb_wid);
-    connect(dw_sb_wid, SIGNAL(valueChanged(double)),
-        this, SLOT(wid_value_changed(double)));
 
     dw_apply = new QPushButton(tr("Apply"));
     col3->addWidget(dw_apply);
@@ -214,6 +205,7 @@ QTdisplayWinDlg::update(const BBox *BB)
     dw_sb_y->setValue(MICRONS(yy));
     dw_sb_wid->setValue(MICRONS(w));
 }
+
 
 void
 QTdisplayWinDlg::apply_btn_slot()

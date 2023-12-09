@@ -632,8 +632,10 @@ QTfilesListDlg::create_page(sDirList *dl)
         this, SLOT(mouse_release_slot(QMouseEvent*)));
     connect(nbtext, SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(mouse_motion_slot(QMouseEvent*)));
-    connect(nbtext, SIGNAL(mime_data_received(const QMimeData*)),
-        this, SLOT(mime_data_received_slot(const QMimeData*)));
+    connect(nbtext, SIGNAL(mime_data_handled(const QMimeData*, bool*) const),
+        this, SLOT(mime_data_handled_slot(const QMimeData*, bool*) const));
+    connect(nbtext, SIGNAL(mime_data_delivered(const QMimeData*, bool*)),
+        this, SLOT(mime_data_delivered_slot(const QMimeData*, bool*)));
 
 /*XXX set selection color, etc
     GtkTextBuffer *textbuf =
@@ -1449,24 +1451,35 @@ QTfilesListDlg::mouse_motion_slot(QMouseEvent *ev)
 
 
 void
-QTfilesListDlg::mime_data_received_slot(const QMimeData *dta)
+QTfilesListDlg::mime_data_handled_slot(const QMimeData *dta, bool *accpt) const
 {
-    // Handles URLs, text/twostring, and regular strings.
-    QByteArray bary = dta->data("text/plain");
-    const char *src = bary.constData();
-    if (src && *src && instPtr->wb_textarea) {
-        if (!strncmp(src, "File://", 7))
-            src += 7;
-        char *pth = lstring::copy(src);
-        char *t = strchr(pth, '\n');
-        if (t) {
-            // text/twostring, keep the first token only.
-            *t = 0;
+    if (dta->hasFormat("text/twostring") || dta->hasFormat("text/plain"))
+        *accpt = true;
+}
+
+
+void
+QTfilesListDlg::mime_data_delivered_slot(const QMimeData *dta, bool *accpt)
+{
+    if (dta->hasFormat("text/twostring") || dta->hasFormat("text/plain")) {
+        *accpt = true;
+        // Handles URLs, text/twostring, and regular strings.
+        QByteArray bary = dta->data("text/plain");
+        const char *src = bary.constData();
+        if (src && *src && instPtr->wb_textarea) {
+            if (!strncmp(src, "File://", 7))
+                src += 7;
+            char *pth = lstring::copy(src);
+            char *t = strchr(pth, '\n');
+            if (t) {
+                // text/twostring, keep the first token only.
+                *t = 0;
+            }
+            const char *dst = fl_directory;
+            if (dst && *dst && strcmp(pth, dst))
+                QTfileDlg::DoFileAction(this, pth, dst, QTfileDlg::A_NOOP);
+            delete [] pth;
         }
-        const char *dst = fl_directory;
-        if (dst && *dst && strcmp(pth, dst))
-            QTfileDlg::DoFileAction(this, pth, dst, QTfileDlg::A_NOOP);
-        delete [] pth;
     }
 }
 

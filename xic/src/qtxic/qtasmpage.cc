@@ -331,6 +331,7 @@ QTasmPage::upd_sens()
 {
     const char *topc = pg_owner->top_level_cell();
     pg_tx->set_sens((pg_curtlcell >= 0), (topc && *topc));
+    delete [] topc;
 }
 
 

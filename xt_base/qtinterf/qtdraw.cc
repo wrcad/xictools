@@ -43,37 +43,14 @@
 
 #include <QApplication>
 
+
 using namespace qtinterf;
-
-
-// Graphics context storage.  The 0 element is the default.
-//
-sGbag *sGbag::app_gbags[NUMGCS];
-
-
-// Static method to create/return the default graphics context.
-//
-sGbag *
-sGbag::default_gbag(int type)
-{
-    (void)type; //XXX
-    return (new sGbag);
-    /* XXX  The common graphical context is an X-Windows thing.
-    if (type < 0 || type >= NUMGCS)
-        type = 0;
-    if (!app_gbags[type])
-        app_gbags[type] = new sGbag;
-    return (app_gbags[type]);
-    */
-}
-
 
 //-----------------------------------------------------------------------------
 // QTdraw functions
 
-QTdraw::QTdraw(int type)
+QTdraw::QTdraw(int)
 {
-    gd_gbag = sGbag::default_gbag(type);
     gd_viewport = 0;
 }
 

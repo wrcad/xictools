@@ -89,6 +89,7 @@ private slots:
     void add_menu_slot(QAction*);
     void help_btn_slot();
     void mouse_press_slot(QMouseEvent*);
+    void mouse_release_slot(QMouseEvent*);
     void dismiss_btn_slot();
     void font_changed_slot(int);
 
@@ -96,8 +97,6 @@ private:
     PrptyText *get_selection();
     void update_display();
     void select_range(int, int);
-    void handle_button_down(QMouseEvent*);
-    void handle_button_up(QMouseEvent*);
 
     QPushButton *pc_edit;
     QPushButton *pc_del;

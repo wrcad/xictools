@@ -405,27 +405,10 @@ QToaLibsDlg::update()
     }
     if (oldsel) {
         // This re-selects the previously selected library.
-/*XXX
-        for (int i = 0; ; i++) {
-            GtkTreePath *p = gtk_tree_path_new_from_indices(i, -1);
-            if (!gtk_tree_model_get_iter(GTK_TREE_MODEL(store), &iter, p)) {
-                gtk_tree_path_free(p);
-                break;
-            }
-            char *text;
-            gtk_tree_model_get(GTK_TREE_MODEL(store), &iter, 2, &text, -1);
-            int sc = strcmp(text, oldsel);
-            free(text);
-            if (!sc) {
-                GtkTreeSelection *sel =
-                    gtk_tree_view_get_selection(GTK_TREE_VIEW(lb_list));
-                gtk_tree_selection_select_path(sel, p);
-                gtk_tree_path_free(p);
-                break;
-            }
-            gtk_tree_path_free(p);
-        }
-*/
+        QList<QTreeWidgetItem*> list = lb_list->findItems(oldsel,
+            Qt::MatchFixedString | Qt::MatchCaseSensitive, 2);
+        if (list.size() > 0)
+            lb_list->setCurrentItem(list[0]);
     }
     delete [] oldsel;
 
@@ -837,11 +820,6 @@ QToaLibsDlg::item_clicked_slot(QTreeWidgetItem *itm, int col)
 void
 QToaLibsDlg::item_selection_changed_slot()
 {
-//XXX check this
-// Selection callback for the list.  This is called when a new selection
-// is made, but not when the selection disappears, which happens when the
-// list is updated.
-
     QTreeWidget *w = dynamic_cast<QTreeWidget*>(sender());
     if (!w)
         return;

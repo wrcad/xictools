@@ -63,6 +63,8 @@
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QMimeData>
+#include <QTreeWidget>
+#include <QTreeWidgetItem>
 
 
 #ifdef __APPLE__
@@ -418,26 +420,6 @@ namespace {
         }
         return (true);
     }
-
-  /*XXX
-    // Strip leading and trailing white space.
-    //
-    char *
-    strip_sp(const char *str)
-    {
-        if (!str)
-            return (0);
-        while (isspace(*str))
-            str++;
-        if (!*str)
-            return (0);
-        char *sstr = lstring::copy(str);
-        char *t = sstr + strlen(sstr) - 1;
-        while (t >= sstr && isspace(*t))
-            *t-- = 0;
-        return (sstr);
-    }
-    */
 }
 
 
@@ -558,15 +540,6 @@ QTasmDlg::dump_file(FILE *fp, bool check)
 }
 
 
-/*XXX
-inline const char *
-cknull(const char *s)
-{
-    return (s ? s : "");
-}
-*/
-
-
 bool
 QTasmDlg::read_file(FILE *fp)
 {
@@ -645,12 +618,6 @@ QTasmDlg::notebook_append()
     asm_sources[index] = src;
     snprintf(buf, sizeof(buf), "Source %d", index+1);
     asm_notebook->insertTab(index+1, src, buf);
-/*XXX
-    src->pg_tablabel = gtk_label_new(buf);
-    gtk_widget_show(src->pg_tablabel);
-    gtk_notebook_insert_page(GTK_NOTEBOOK(asm_notebook), src->pg_form,
-        src->pg_tablabel, index + 1);
-*/
 }
 
 
@@ -665,17 +632,14 @@ QTasmDlg::notebook_remove(int index)
     for (unsigned int i = index; i < asm_pages-1; i++) {
         asm_sources[i] = asm_sources[i+1];
         snprintf(buf, sizeof(buf), "source %d", i+1);
-//        gtk_label_set_text(GTK_LABEL(asm_sources[i]->pg_tablabel), buf);
+        asm_notebook->setTabText(i, buf);
     }
     asm_pages--;
     asm_sources[asm_pages] = 0;
-/*XXX
     delete src;
-    // Have to do this after deleting src or tne signal handler removal
-    // in the destructor will emit CRITICAL warnings.
-    gtk_notebook_remove_page(GTK_NOTEBOOK(asm_notebook), index + 1);
-*/
-    asm_notebook->removeTab(index+1);
+    QWidget *page = asm_notebook->widget(index + 1);
+    asm_notebook->removeTab(index + 1);
+    delete page;
 }
 
 
@@ -775,8 +739,6 @@ const char *
 QTasmDlg::top_level_cell()
 {
     return (lstring::copy(asm_topcell->text().toLatin1().constData()));
-//    return (gtk_entry_get_text(GTK_ENTRY(asm_topcell)));
-// copy?
 }
 
 
@@ -784,14 +746,13 @@ QTasmDlg::top_level_cell()
 void
 QTasmDlg::set_status_message(const char *msg)
 {
-    /*XXX
-    if (Asm) {
-        if (Asm->asm_timer_id)
-            g_source_remove(Asm->asm_timer_id);
-        Asm->asm_timer_id = g_timeout_add(10000, asm_timer_callback, 0);
-        gtk_label_set_text(GTK_LABEL(Asm->asm_status), msg);
+    if (instPtr) {
+        if (instPtr->asm_timer_id)
+            QTpkg::self()->RemoveTimeoutProc(instPtr->asm_timer_id);
+        instPtr->asm_timer_id = QTpkg::self()->RegisterTimeoutProc(10000,
+            asm_timer_callback, 0);
+        instPtr->asm_status->setText(msg);
     }
-    */
 }
 
 
@@ -853,15 +814,8 @@ QTasmDlg::asm_save_cb(const char *fname, void*)
         }
         FILE *fp = fopen(fname, "w");
         if (!fp) {
-    /*XXX
             const char *msg = "Can't open file, try again";
-            GtkWidget *label = (GtkWidget*)g_object_get_data(
-                G_OBJECT(Asm->wb_input), "label");
-            if (label)
-                gtk_label_set_text(GTK_LABEL(label), msg);
-            else
-                set_status_message(msg);
-     */
+            instPtr->wb_input->set_message(msg);
             return;
         }
         Errs()->init_error();
@@ -895,15 +849,8 @@ QTasmDlg::asm_recall_cb(const char *fname, void*)
     if (fname && *fname) {
         FILE *fp = fopen(fname, "r");
         if (!fp) {
-         /*XXX
             const char *msg = "Can't open file, try again";
-            GtkWidget *label = (GtkWidget*)g_object_get_data(
-                G_OBJECT(Asm->wb_input), "label");
-            if (label)
-                gtk_label_set_text(GTK_LABEL(label), msg);
-            else
-                set_status_message(msg);
-         */
+            instPtr->wb_input->set_message(msg);
             return;
         }
         Errs()->init_error();
@@ -1164,15 +1111,8 @@ QTasmDlg::main_menu_slot(QAction *a)
             if (n >= 0) {
 
                 // Remove the nth row.
-             /*XXX
-                GtkTreeModel *store = gtk_tree_view_get_model(
-                    GTK_TREE_VIEW(src->pg_toplevels));
-                GtkTreePath *path = gtk_tree_path_new_from_indices(n, -1);
-                GtkTreeIter iter;
-                gtk_tree_model_get_iter(store, &iter, path);
-                gtk_list_store_remove(GTK_LIST_STORE(store), &iter);
-                gtk_tree_path_free(path);
-             */
+                QTreeWidgetItem *itm = src->pg_toplevels->takeTopLevelItem(n);
+                delete itm;
 
                 delete src->pg_cellinfo[n];
                 src->pg_numtlcells--;
@@ -1183,14 +1123,8 @@ QTasmDlg::main_menu_slot(QAction *a)
                 src->upd_sens();
 
                 // Select the top row.
-              /*XXX
-                path = gtk_tree_path_new_from_indices(
-                    src->pg_numtlcells-1, -1);
-                GtkTreeSelection *sel = gtk_tree_view_get_selection(
-                    GTK_TREE_VIEW(src->pg_toplevels));
-                gtk_tree_selection_select_path(sel, path);
-                gtk_tree_path_free(path);
-              */
+                itm = src->pg_toplevels->topLevelItem(src->pg_numtlcells-1);
+                src->pg_toplevels->setCurrentItem(itm);
             }
         }
     }
@@ -1209,20 +1143,15 @@ QTasmDlg::tab_changed_slot(int page)
     if (page > 0) {
         QTasmPage *src = asm_sources[page-1];
         int n = src->pg_curtlcell;
-/*XXX
-        GtkTreeSelection *sel =
-            gtk_tree_view_get_selection(GTK_TREE_VIEW(src->pg_toplevels));
         if (n >= 0) {
             // Select the nth row.
-            GtkTreePath *path = gtk_tree_path_new_from_indices(n, -1);
-            gtk_tree_selection_select_path(sel, path);
-            gtk_tree_path_free(path);
+            QTreeWidgetItem *itm = src->pg_toplevels->topLevelItem(n);
+            src->pg_toplevels->setCurrentItem(itm);
         }
         else {
             // Clear selections.
-            gtk_tree_selection_unselect_all(sel);
+            src->pg_toplevels->setCurrentItem(0);
         }
-*/
         src->upd_sens();
     }
 }

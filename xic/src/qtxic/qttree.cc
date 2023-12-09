@@ -59,7 +59,7 @@
 #include <QTreeWidget>
 #include <QClipboard>
 #include <QMouseEvent>
-#include <QDrag>>
+#include <QDrag>
 #include <QMimeData>
 
 
