@@ -213,7 +213,11 @@ cKsMap::KeyvalToString(unsigned int keyval)
 unsigned int
 cKsMap::StringToKeyval(const char *string)
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     return (QKeySequence::fromString(string)[0].key());
+#else
+    return (QKeySequence::fromString(string)[0]);
+#endif
 }
 
 

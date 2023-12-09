@@ -443,7 +443,11 @@ QTlayerAliasDlg::current_item_changed_slot(QTreeWidgetItem *cur,
             la_edit->setEnabled(false);
         return;
     }
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     la_row = la_list->indexFromItem(cur).row();
+#else
+    la_row = la_list->indexOfTopLevelItem(cur);
+#endif
     if (la_del)
         la_del->setEnabled(true);
     if (la_edit)

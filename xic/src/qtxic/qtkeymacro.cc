@@ -228,7 +228,12 @@ cKbMacro::keyText(unsigned key, unsigned state)
     if (state & GR_ALT_MASK)
         mod |= Qt::AltModifier;
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     QKeySequence ks(QKeyCombination(mod, (Qt::Key)key));
+#else
+    // No QKeyCombination in QT5.
+    QKeySequence ks(mod | key);
+#endif
     QByteArray ba = ks.toString().toLatin1();
     if (ba.size() > 0) {
         const char *tt = ba.constData();

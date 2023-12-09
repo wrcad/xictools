@@ -130,7 +130,13 @@ public:
     //
     void save_event(QObject *obj, const QEvent *evp)
     {
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         QEvent *ev = evp->clone();
+#else
+        //XXX no clone function in QT5.
+        (void)evp;
+        QEvent *ev = 0;
+#endif
         if (!event_list)
             event_list = new evl_t(obj, ev);
         else {
