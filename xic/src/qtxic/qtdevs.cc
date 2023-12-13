@@ -93,8 +93,7 @@ cSced::PopUpDevs(GRobject caller, ShowMode mode)
         }
     }
     else if (mode == MODE_OFF) {
-        if (QTdevMenuDlg::self())
-            QTdevMenuDlg::self()->deleteLater();
+        delete QTdevMenuDlg::self();
         SCD()->setShowDevs(false);
         return;
     }
@@ -103,7 +102,7 @@ cSced::PopUpDevs(GRobject caller, ShowMode mode)
             return;
         bool wasactive = QTdevMenuDlg::self()->is_active();
         caller = QTdevMenuDlg::self()->get_caller();
-        delete QTdevMenuDlg::self();  // Can't use deleteLater here.
+        delete QTdevMenuDlg::self();
         if (!wasactive)
             return;
     }

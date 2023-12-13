@@ -85,8 +85,7 @@ cConvert::PopUpAssemble(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTasmDlg::self())
-            QTasmDlg::self()->deleteLater();
+        delete QTasmDlg::self();
         return;
     }
     if (mode == MODE_UPD) {
@@ -763,8 +762,7 @@ void
 QTasmDlg::pop_up_monitor(int mode, const char *msg, ASMcode code)
 {
     if (mode == MODE_OFF) {
-        if (QTasmPrgDlg::self())
-            QTasmPrgDlg::self()->deleteLater();
+        delete QTasmPrgDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

@@ -83,8 +83,7 @@ cMain::PopUpLayerPalette(GRobject caller, ShowMode mode, bool showinfo,
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTlayerPaletteDlg::self())
-            QTlayerPaletteDlg::self()->deleteLater();
+        delete QTlayerPaletteDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

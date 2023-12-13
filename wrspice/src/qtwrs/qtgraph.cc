@@ -57,6 +57,8 @@ Authors: 1988 Jeffrey M. Hsu
 #include "miscutil/filestat.h"
 #include "spnumber/spnumber.h"
 
+#include <QApplication>
+
 //
 // The graphics-package (QT) dependent part of the sGraph class.
 //
@@ -125,19 +127,13 @@ sGraph::gr_init_btns()
 bool
 sGraph::gr_check_plot_events()
 {
-    /*XXX can QT do this?
-    GdkEvent *ev;
-    while ((ev = gdk_event_peek()) != 0) {
-        if (QTplotDlg::check_event(ev, this)) {
-            gdk_event_free(ev);
-            return (true);
-        }
-        gdk_event_free(ev);
-        if ((ev = gdk_event_get()) != 0)
-            gtk_main_do_event(ev);
-    }
-    */
-    return (false);
+    QTplotDlg *w = dynamic_cast<QTplotDlg*>(dev());
+    if (!w)
+        return (false);
+    w->enable_event_test(true);
+    QApplication::processEvents();
+    w->enable_event_test(false);
+    return (w->event_deferred());
 }
 
 

@@ -63,8 +63,7 @@ cOAif::PopUpOAtech(GRobject caller, ShowMode mode, int x, int y)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QToaTechAttachDlg::self())
-            QToaTechAttachDlg::self()->deleteLater();
+        delete QToaTechAttachDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

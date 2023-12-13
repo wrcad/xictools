@@ -186,7 +186,7 @@ QTnumDlg::popdown()
         if (!owner || !owner->MonitorActive(this))
             return;
     }
-    deleteLater();
+    delete this;
 }
 
 
@@ -195,13 +195,13 @@ QTnumDlg::action_slot()
 {
     nu_affirmed = true;
     emit affirm(nu_spinbtn->value(), p_cb_arg);
-    deleteLater();
+    delete this;
 }
 
 
 void
 QTnumDlg::dismiss_btn_slot()
 {
-    deleteLater();
+    delete this;
 }
 

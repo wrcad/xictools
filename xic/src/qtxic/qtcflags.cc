@@ -67,8 +67,7 @@ cMain::PopUpCellFlags(GRobject caller, ShowMode mode, const stringlist *list,
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTcflagsDlg::self())
-            QTcflagsDlg::self()->deleteLater();
+        delete QTcflagsDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

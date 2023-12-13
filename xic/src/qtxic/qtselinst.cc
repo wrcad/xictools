@@ -467,7 +467,7 @@ QTcellInstSelectDlg::mouse_press_slot(QMouseEvent *ev)
 void
 QTcellInstSelectDlg::dismiss_btn_slot()
 {
-    deleteLater();
+    delete this;
 }
 
 

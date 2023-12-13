@@ -60,8 +60,7 @@ cEdit::PopUpLogo(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTlogoDlg::self())
-            QTlogoDlg::self()->deleteLater();
+        delete QTlogoDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

@@ -38,12 +38,6 @@
  $Id:$
  *========================================================================*/
 
-/**************************************************************************
- *
- * Plot defaults popup
- *
- **************************************************************************/
-
 #include "config.h"
 #include "qtpldef.h"
 #include "graph.h"
@@ -71,8 +65,7 @@ void
 QTtoolbar::PopUpPlotDefs(ShowMode mode, int x, int y)
 {
     if (mode == MODE_OFF) {
-        if (QTplotParamDlg::self())
-            QTplotParamDlg::self()->deleteLater();
+        delete QTplotParamDlg::self();
         return;
     }
     if (QTplotParamDlg::self())
@@ -240,14 +233,14 @@ QTplotParamDlg::QTplotParamDlg(int xx, int yy)
 
     entry = KWGET(kw_xlimit);
     if (entry) {
-        entry->ent = new QTkwent(KW_REAL_2, QTkwent::ke_real_func, entry, 0);
+        entry->ent = new QTkwent(KW_REAL_2, QTkwent::ke_real2_func, entry, 0);
         grid->addWidget(entry->qtent(), 1, 0);
         entry->qtent()->setup(0.0, 0.0, 0.0, 0.0, 2);
     }
 
     entry = KWGET(kw_ylimit);
     if (entry) {
-        entry->ent = new QTkwent(KW_REAL_2, QTkwent::ke_real_func, entry, 0);
+        entry->ent = new QTkwent(KW_REAL_2, QTkwent::ke_real2_func, entry, 0);
         grid->addWidget(entry->qtent(), 1, 1);
         entry->qtent()->setup(0.0, 0.0, 0.0, 0.0, 2);
     }
@@ -261,7 +254,7 @@ QTplotParamDlg::QTplotParamDlg(int xx, int yy)
 
     entry = KWGET(kw_xindices);
     if (entry) {
-        entry->ent = new QTkwent(KW_INT_2, QTkwent::ke_int_func, entry, "0");
+        entry->ent = new QTkwent(KW_INT_2, QTkwent::ke_int2_func, entry, "0 0");
         grid->addWidget(entry->qtent(), 2, 1);
         entry->qtent()->setup(0.0, 1.0, 0.0, 0.0, 0);
     }
@@ -513,135 +506,3 @@ QTplotParamDlg::help_btn_slot(bool state)
         TB()->PopUpTBhelp(MODE_OFF, 0, 0, TBH_PD);
 }
 
-#ifdef notdef
-
-
-namespace {
-    //
-    // Callbacks to process the button selections
-    //
-
-    int
-    pl_choice_hdlr(GtkWidget *caller, GdkEvent*, void *client_data)
-    {
-        xKWent *entry = static_cast<xKWent*>(client_data);
-        if (GTKdev::GetStatus(entry->ent->active))
-            return (true);
-        int i;
-        if (!strcmp(entry->word, kw_plotstyle)) {
-            const char *string =
-                gtk_entry_get_text(GTK_ENTRY(entry->ent->entry));
-            for (i = 0; KW.pstyles(i)->word; i++)
-                if (!strcmp(string, KW.pstyles(i)->word))
-                    break;
-            if (!KW.pstyles(i)->word) {
-                GRpkg::self()->ErrPrintf(ET_ERROR,
-                    "bad plotstyle found: %s.\n", string);
-                i = 0;
-            }
-            else {
-                if (g_object_get_data(G_OBJECT(caller), "down")) {
-                    i--;
-                    if (i < 0) {
-                        i = 0;
-                        while (KW.pstyles(i)->word && KW.pstyles(i+1)->word)
-                            i++;
-                    }
-                }
-                else {
-                    i++;
-                    if (!KW.pstyles(i)->word)
-                        i = 0;
-                }
-            }
-            gtk_entry_set_text(GTK_ENTRY(entry->ent->entry),
-                KW.pstyles(i)->word);
-        }
-        else if (!strcmp(entry->word, kw_gridstyle)) {
-            const char *string =
-                gtk_entry_get_text(GTK_ENTRY(entry->ent->entry));
-            for (i = 0; KW.gstyles(i)->word; i++)
-                if (!strcmp(string, KW.gstyles(i)->word))
-                    break;
-            if (!KW.gstyles(i)->word) {
-                GRpkg::self()->ErrPrintf(ET_ERROR,
-                    "bad gridstyle found: %s.\n", string);
-                i = 0;
-            }
-            else {
-                if (g_object_get_data(G_OBJECT(caller), "down")) {
-                    i--;
-                    if (i < 0) {
-                        i = 0;
-                        while (KW.gstyles(i)->word && KW.gstyles(i+1)->word)
-                            i++;
-                    }
-                }
-                else {
-                    i++;
-                    if (!KW.gstyles(i)->word)
-                        i = 0;
-                }
-            }
-            gtk_entry_set_text(GTK_ENTRY(entry->ent->entry),
-                KW.gstyles(i)->word);
-        }
-        else if (!strcmp(entry->word, kw_scaletype)) {
-            const char *string =
-                gtk_entry_get_text(GTK_ENTRY(entry->ent->entry));
-            for (i = 0; KW.scale(i)->word; i++)
-                if (!strcmp(string, KW.scale(i)->word))
-                    break;
-            if (!KW.scale(i)->word) {
-                GRpkg::self()->ErrPrintf(ET_ERROR,
-                    "bad scaletype found: %s.\n", string);
-                i = 0;
-            }
-            else {
-                if (g_object_get_data(G_OBJECT(caller), "down")) {
-                    i--;
-                    if (i < 0) {
-                        i = 0;
-                        while (KW.scale(i)->word && KW.scale(i+1)->word)
-                            i++;
-                    }
-                }
-                else {
-                    i++;
-                    if (!KW.scale(i)->word)
-                        i = 0;
-                }
-            }
-            gtk_entry_set_text(GTK_ENTRY(entry->ent->entry),KW.scale(i)->word);
-        }
-        else if (!strcmp(entry->word, kw_hcopydriver)) {
-            const char *string =
-                gtk_entry_get_text(GTK_ENTRY(entry->ent->entry));
-            i = GRpkg::self()->FindHCindex(string);
-            if (i < 0)
-                i = wrsHCcb.format;
-            else {
-                if (g_object_get_data(G_OBJECT(caller), "down")) {
-                    i--;
-                    if (i < 0) {
-                        i = 0;
-                        while (GRpkg::self()->HCof(i) &&
-                                GRpkg::self()->HCof(i+1))
-                            i++;
-                    }
-                }
-                else {
-                    i++;
-                    if (!GRpkg::self()->HCof(i))
-                       i = 0;
-                }
-            }
-            gtk_entry_set_text(GTK_ENTRY(entry->ent->entry),
-                GRpkg::self()->HCof(i)->keyword);
-        }
-        return (true);
-    }
-
-}
-
-#endif

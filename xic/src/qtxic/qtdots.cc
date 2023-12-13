@@ -57,8 +57,7 @@ cSced::PopUpDots(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTdotsDlg::self())
-            QTdotsDlg::self()->deleteLater();
+        delete QTdotsDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

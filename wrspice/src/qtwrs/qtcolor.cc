@@ -80,8 +80,7 @@ void
 QTtoolbar::PopUpColors(ShowMode mode, int x, int y)
 {
     if (mode == MODE_OFF) {
-        if (QTcolorParamDlg::self())
-            QTcolorParamDlg::self()->deleteLater();
+        delete QTcolorParamDlg::self();
         return;
     }
     if (QTcolorParamDlg::self())
@@ -294,9 +293,8 @@ QTcolorParamDlg::QTcolorParamDlg(int xx, int yy)
 
     btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
-    btn->setCheckable(true);
     btn->setAutoDefault(false);
-    connect(btn, SIGNAL(toggled(bool)), this, SLOT(help_btn_slot(bool)));
+    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     QGridLayout *grid = new QGridLayout();
     grid->setContentsMargins(qmtop);
@@ -345,9 +343,8 @@ QTcolorParamDlg::dismiss_btn_slot()
 
 
 void
-QTcolorParamDlg::help_btn_slot(bool state)
+QTcolorParamDlg::help_btn_slot()
 {
-    //XXX boolean?
 #ifdef HAVE_MOZY
     HLP()->word("color");
 #endif

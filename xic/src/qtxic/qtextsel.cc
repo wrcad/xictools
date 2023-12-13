@@ -68,8 +68,7 @@ cExt::PopUpSelections(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTextNetSelDlg::self())
-            QTextNetSelDlg::self()->deleteLater();
+        delete QTextNetSelDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

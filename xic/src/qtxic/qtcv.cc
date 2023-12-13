@@ -76,8 +76,7 @@ cConvert::PopUpConvert(GRobject caller, ShowMode mode, int inp_type,
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTconvertFmtDlg::self())
-           QTconvertFmtDlg::self()->deleteLater();
+        delete QTconvertFmtDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

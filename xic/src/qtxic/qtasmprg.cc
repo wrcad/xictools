@@ -162,6 +162,6 @@ QTasmPrgDlg::abort_btn_slot()
 void
 QTasmPrgDlg::dismiss_btn_slot()
 {
-    deleteLater();
+    delete this;
 }
 

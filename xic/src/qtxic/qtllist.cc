@@ -41,6 +41,8 @@
 #include "qtllist.h"
 #include "main.h"
 #include "cvrt.h"
+#include "dsp.h"
+#include "dsp_inlines.h"
 #include "qtmain.h"
 #include "qtltab.h"
 
@@ -55,19 +57,6 @@
 
 //-------------------------------------------------------------------------
 // Subwidget group for layer list.
-
-
-// Line edit subclass that handles layer drops for use below.
-//
-class QTlayerEdit : public QLineEdit
-{
-public:
-    QTlayerEdit(QWidget *prnt = 0) : QLineEdit(prnt) { }
-
-    void dragEnterEvent(QDragEnterEvent*);
-    void dropEvent(QDropEvent*);
-};
-
 
 void
 QTlayerEdit::dragEnterEvent(QDragEnterEvent *ev)
@@ -84,13 +73,26 @@ void
 QTlayerEdit::dropEvent(QDropEvent *ev)
 {
     if (ev->mimeData()->hasFormat(QTltab::mime_type())) {
-        ev->accept();
-    printf("here\n");
-        return;
+        QByteArray ba = ev->mimeData()->data(QTltab::mime_type());
+        LayerFillData lfd;
+        void *d = (void*)&lfd;
+        memcpy(d, ba.constData(), ba.size());
+        if (lfd.d_from_layer) {
+            ev->accept();
+            int lnum = lfd.d_layernum;
+            CDl *ld = CDldb()->layer(lnum, DSP()->CurMode());
+            sLstr lstr;
+            lstr.add(text().toLatin1().constData());
+            if (lstr.string() && *lstr.string())
+                lstr.add_c(' ');
+            lstr.add(ld->name());
+            setText(lstr.string());
+            return;
+        }
     }
-    QLineEdit::dropEvent(ev);
-
+    ev->ignore();
 }
+// End of QTlayerEdit definitions.
 
 
 // The exported widget collection.

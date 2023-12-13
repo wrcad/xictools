@@ -86,6 +86,7 @@ enum XIC_WINDOW_CLASS
     XW_LTAB     // The layer table.
 };
 
+#define GS_NBTNS 8
 
 typedef bool(*EventHandlerFunc)(QObject*, QEvent*);
 
@@ -94,7 +95,7 @@ class QTeventMonitor : public QObject
     Q_OBJECT
 
 public:
-    // Event list element
+    // Event list element.
     //
     struct evl_t
     {
@@ -106,22 +107,35 @@ public:
         evl_t       *next;
     };
 
+    // Object list element.
+    //
+    struct ol_t
+    {
+        ol_t(const QObject *o, ol_t *n) : obj(o), next(n) { }
+
+        const QObject *obj;
+        ol_t        *next;
+    };
+
     QTeventMonitor()
     {
-        event_list = 0;
-        event_handler = 0;
+        em_event_list = 0;
+        em_busy_allow_list = 0;
+        em_event_handler = 0;
+        for (int i = 0; i < GS_NBTNS; i++)
+            em_button_state[i] = false;
     }
 
-    bool has_saved_events() const   { return (event_list != 0); }
+    bool has_saved_events() const   { return (em_event_list != 0); }
 
     // Process and clear the event list.
     //
     void do_saved_events()
     {
-        while (event_list) {
-            evl_t *evtmp = event_list;
-            event_list = evtmp->next;
-            evtmp->obj->event(evtmp->ev);
+        while (em_event_list) {
+            evl_t *evtmp = em_event_list;
+            em_event_list = evtmp->next;
+            QObject::eventFilter(evtmp->obj, evtmp->ev);
             delete evtmp;
         }
     }
@@ -137,20 +151,59 @@ public:
         (void)evp;
         QEvent *ev = 0;
 #endif
-        if (!event_list)
-            event_list = new evl_t(obj, ev);
+        if (!em_event_list)
+            em_event_list = new evl_t(obj, ev);
         else {
-            evl_t *evl = event_list;
+            evl_t *evl = em_event_list;
             while (evl->next)
                 evl = evl->next;
             evl->next = new evl_t(obj, ev);
         }
     }
 
+    // Return true if obj is in the busy_allow list.
+    //
+    bool is_busy_allow(const QObject *obj)
+    {
+        for (ol_t *e = em_busy_allow_list; e; e = e->next) {
+            if (e->obj == obj)
+                return (true);
+        }
+        return (false);
+    }
+
+    // Add an object whose events will be processed when the Busy flag
+    // is on.  These would have an "abort" data item in the GTK version.
+    //
+    void add_busy_allow(const QObject *obj)
+    {
+        if (!is_busy_allow(obj)) {
+            em_busy_allow_list = new ol_t(obj, em_busy_allow_list);
+        }
+    }
+
+    // Remove obj from the busy_allow list if present.
+    //
+    void remove_busy_allow(const QObject *obj)
+    {
+        ol_t *ep = 0;
+        for (ol_t *e = em_busy_allow_list; e; e = e->next) {
+            if (e->obj == obj) {
+                if (ep)
+                    ep->next = e->next;
+                else
+                    em_busy_allow_list = e->next;
+                delete e;
+                return;
+            }
+            ep = e;
+        }
+    }
+
     EventHandlerFunc set_event_handler(EventHandlerFunc func)
     {
-        EventHandlerFunc f = event_handler;
-        event_handler = func;
+        EventHandlerFunc f = em_event_handler;
+        em_event_handler = func;
         return (f);
     }
 
@@ -165,8 +218,10 @@ public:
     static void  log_event(const QObject*, const QEvent*);
 
 private:
-    evl_t *event_list;
-    EventHandlerFunc event_handler;
+    evl_t       *em_event_list;
+    ol_t        *em_busy_allow_list;
+    EventHandlerFunc em_event_handler;
+    bool        em_button_state[GS_NBTNS];
 
 protected:
     bool eventFilter(QObject*, QEvent*) override;
@@ -217,6 +272,7 @@ public:
     void PopUpBusy();
     void SetWaitCursor(bool);
 
+    QTeventMonitor *EventMonitor()      { return (&pkg_event_monitor); }
     void RegisterEventHandler(EventHandlerFunc f)
                                 { pkg_event_monitor.set_event_handler(f); }
     bool NotMapped()                    { return (pkg_not_mapped); }
@@ -469,6 +525,26 @@ is_modifier_key(int key)
         key == Qt::Key_Meta     ||
         key == Qt::Key_Alt      ||
         key == Qt::Key_CapsLock);
+}
+
+
+namespace qt_keyb {
+
+    // List element for widget name matches.
+    //
+    struct wlist
+    {
+        wlist(const QObject *o, wlist *n) : obj(o), next(n) { }
+
+        const QObject *obj;
+        wlist *next;
+    };
+
+    void macro_event_handler(QObject*, QEvent*, void*);
+    const QObject *find_wname(const QObject*, const char**);
+    char *object_path(const QObject*);
+    wlist *find_object(const QObject*, const char*);
+    QObject *name_to_object(const char*);
 }
 
 #endif

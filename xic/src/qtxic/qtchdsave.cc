@@ -68,8 +68,7 @@ cConvert::PopUpChdSave(GRobject caller, ShowMode mode,
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTchdSaveDlg::self())
-            QTchdSaveDlg::self()->deleteLater();
+        delete QTchdSaveDlg::self();
         return;
     }
     if (mode == MODE_UPD) {
@@ -276,7 +275,7 @@ QTchdSaveDlg::apply_btn_slot()
         delete [] string;
     }
     if (ret)
-        QTchdSaveDlg::self()->deleteLater();
+        delete this;
 }
 
 

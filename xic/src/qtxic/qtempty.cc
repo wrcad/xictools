@@ -205,7 +205,7 @@ QTemptyDlg::update(stringlist *sl)
         s0 = sl;
     }
     if (!sl) {
-        deleteLater();
+        delete this;
         return;
     }
     delete [] ec_list;
@@ -230,7 +230,7 @@ QTemptyDlg::update(stringlist *sl)
 
     if (itm == ec_list) {
         // No new items.
-        deleteLater();
+        delete this;
         return;
     }
 
@@ -312,14 +312,14 @@ QTemptyDlg::apply_btn_slot()
     if (didone && !leftone)
         update(0);
     else
-        deleteLater();
+        delete this;
 }
 
 
 void
 QTemptyDlg::dismiss_btn_slot()
 {
-    deleteLater();
+    delete this;
 }
 
 

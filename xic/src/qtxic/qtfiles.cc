@@ -53,8 +53,10 @@
 #include "qtinterf/qtfile.h"
 #include "qtinterf/qttextw.h"
 #include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
 #include <sys/stat.h>
 
+#include <QApplication>
 #include <QLayout>
 #include <QStackedWidget>
 #include <QLabel>
@@ -125,8 +127,7 @@ cConvert::PopUpFiles(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTfilesListDlg::self())
-            QTfilesListDlg::self()->deleteLater();
+        delete QTfilesListDlg::self();
         return;
     }
     if (mode == MODE_UPD) {
@@ -349,7 +350,7 @@ QTfilesListDlg::update(const char *path, const char **buttons, int numbuttons)
 
         for (int i = 0; fl_buttons[i]; i++) {
             fl_button_box->removeWidget(fl_buttons[i]);
-            fl_buttons[i]->deleteLater();
+            delete fl_buttons[i];
             fl_buttons[i] = 0;
         }
         for (int i = 0; i < numbuttons; i++) {
@@ -605,8 +606,7 @@ QTfilesListDlg::create_page(sDirList *dl)
 {
     QWidget *page = new QWidget();
     QVBoxLayout *vbox = new QVBoxLayout(page);
-    QMargins qmtop(2, 2, 2, 2);
-    vbox->setContentsMargins(qmtop);
+    vbox->setContentsMargins(2, 2, 2, 2);
     vbox->setSpacing(2);
 
     // scrolled text area
@@ -616,6 +616,7 @@ QTfilesListDlg::create_page(sDirList *dl)
     dl->set_dataptr(nbtext);
     nbtext->setReadOnly(true);
     nbtext->setMouseTracking(true);
+    nbtext->setAcceptDrops(true);
     nbtext->set_chars(dl->dirfiles());
 
     QFont *tfont;
@@ -632,8 +633,8 @@ QTfilesListDlg::create_page(sDirList *dl)
         this, SLOT(mouse_release_slot(QMouseEvent*)));
     connect(nbtext, SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(mouse_motion_slot(QMouseEvent*)));
-    connect(nbtext, SIGNAL(mime_data_handled(const QMimeData*, bool*) const),
-        this, SLOT(mime_data_handled_slot(const QMimeData*, bool*) const));
+    connect(nbtext, SIGNAL(mime_data_handled(const QMimeData*, bool*)),
+        this, SLOT(mime_data_handled_slot(const QMimeData*, bool*)));
     connect(nbtext, SIGNAL(mime_data_delivered(const QMimeData*, bool*)),
         this, SLOT(mime_data_delivered_slot(const QMimeData*, bool*)));
 
@@ -877,7 +878,7 @@ QTfilesListDlg::fl_idle_proc(void*)
 int
 QTfilesListDlg::fl_timer(void*)
 {
-    // If the cwd changes, update everything
+    // If the cwd changes, update everything.
     char *cwd = getcwd(0, 0);
     if (cwd) {
         if (!fl_cwd || strcmp(fl_cwd, cwd)) {
@@ -1140,7 +1141,7 @@ QTfilesListDlg::fl_content_cb(const char *cellname, void*)
 
 // Static function.
 void
-QTfilesListDlg::fl_down_cb(void*)
+QTfilesListDlg::fl_down_cb()
 {
     Cvt()->PopUpFiles(0, MODE_OFF);
 }
@@ -1439,14 +1440,52 @@ QTfilesListDlg::mouse_motion_slot(QMouseEvent *ev)
     char *s = get_selection();
     if (!s)
         return;
-    int sz = strlen(s) + 1;
+    GFTtype ft = filestat::get_file_type(s);
     QDrag *drag = new QDrag(wb_textarea);
     QMimeData *mimedata = new QMimeData();
-    QByteArray qdata(s, sz);
-    mimedata->setData("text/plain", qdata);
+    QList<QUrl> ulst;
+    ulst << QUrl(QString("File://") + s);
+    mimedata->setUrls(ulst);
     delete [] s;
     drag->setMimeData(mimedata);
-    drag->exec(Qt::CopyAction);
+    if (ft == GFT_DIR) {
+        QIcon dicon = QApplication::style()->standardIcon(QStyle::SP_DirIcon);
+        drag->setPixmap(dicon.pixmap(32, 32));
+    }
+    else {
+        QIcon ficon = QApplication::style()->standardIcon(QStyle::SP_FileIcon);
+        drag->setPixmap(ficon.pixmap(32, 32));
+    }
+
+    Qt::KeyboardModifiers m = QGuiApplication::queryKeyboardModifiers();
+#ifdef __APPLE__
+    // alt == option on Apple's planet
+    if ((m & Qt::ShiftModifier) && (m & Qt::AltModifier)) {
+        drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction,
+            Qt::LinkAction);
+    }
+    else if (m & Qt::ShiftModifier) {
+        drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction,
+            Qt::CopyAction);
+    }
+    else {
+        drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction,
+            Qt::MoveAction);
+    }
+#else
+    if ((m & Qt::ShiftModifier) && (m & Qt::ControlModifier)) {
+        drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction,
+            Qt::LinkAction);
+    }
+    else if (m & Qt::ShiftModifier) {
+        drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction,
+            Qt::CopyAction);
+    }
+    else {
+        drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction,
+            Qt::MoveAction);
+    }
+#endif
 }
 
 

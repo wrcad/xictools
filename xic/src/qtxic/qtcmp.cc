@@ -75,8 +75,7 @@ cConvert::PopUpCompare(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTcompareDlg::self())
-            QTcompareDlg::self()->deleteLater();
+        delete QTcompareDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

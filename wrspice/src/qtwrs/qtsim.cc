@@ -64,8 +64,7 @@ void
 QTtoolbar::PopUpSimDefs(ShowMode mode, int x, int y)
 {
     if (mode == MODE_OFF) {
-        if (QTsimParamDlg::self())
-            QTsimParamDlg::self()->deleteLater();
+        delete QTsimParamDlg::self();
         return;
     }
     if (QTsimParamDlg::self())
@@ -306,16 +305,21 @@ QTsimParamDlg::QTsimParamDlg(int xx, int yy)
         entry->qtent()->setup(DEF_dphiMax, .01, 0.0, 0.0, 3);
     }
 
+    hb = new QHBoxLayout();
+    grid->addLayout(hb, 6, 1);
+    hb->setContentsMargins(qm);
+    hb->setSpacing(2);
+
     entry = KWGET(spkw_jjaccel);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_bool_func, entry, 0);
-        grid->addWidget(entry->qtent(), 6, 1);
+        hb->addWidget(entry->qtent());
     }
 
     entry = KWGET(spkw_nojjtp);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_bool_func, entry, 0);
-        grid->addWidget(entry->qtent(), 6, 2);
+        hb->addWidget(entry->qtent());
     }
 
     entry = KWGET(spkw_delmin);
@@ -586,16 +590,21 @@ QTsimParamDlg::QTsimParamDlg(int xx, int yy)
         entry->qtent()->setup(1.0, 1.0, 0.0, 0.0, 0);
     }
 
+    hb = new QHBoxLayout();
+    grid->addLayout(hb, 3, 1);
+    hb->setContentsMargins(qm);
+    hb->setSpacing(2);
+
     entry = KWGET(spkw_oldlimit);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_bool_func, entry, 0);
-        grid->addWidget(entry->qtent(), 3, 1);
+        hb->addWidget(entry->qtent());
     }
 
     entry = KWGET(spkw_trytocompact);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_bool_func, entry, 0);
-        grid->addWidget(entry->qtent(), 3, 2);
+        hb->addWidget(entry->qtent());
     }
 
     entry = KWGET(spkw_resmin);

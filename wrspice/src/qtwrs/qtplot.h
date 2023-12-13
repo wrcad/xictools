@@ -88,7 +88,7 @@ public:
         pbtn_NUMBTNS
     };
 
-    QTplotDlg(int type) : QTdraw(type), QTbag(this)
+    QTplotDlg(int type) : QTbag(this), QTdraw(type)
     {
         pb_graph = 0;
         pb_gbox = 0;
@@ -97,6 +97,8 @@ public:
         pb_id = 0;
         pb_x = pb_y = 0;
         pb_rdid = 0;
+        pb_event_test = false;
+        pb_event_deferred = false;
         setAttribute(Qt::WA_DeleteOnClose);
     }
 
@@ -111,21 +113,26 @@ public:
     bool init(sGraph*);
     bool init_gbuttons();
 
+    bool event(QEvent*);
+
+    void enable_event_test(bool b)
+    {
+        pb_event_test = b;
+        if (b)
+            pb_event_deferred = false;
+    }
+
+    bool event_deferred()               { return (pb_event_deferred); }
+
 private slots:
     void font_changed_slot(int);
     void resize_slot(QResizeEvent*);
-    void paint_slot(QPaintEvent*);
     void button_down_slot(QMouseEvent*);
     void button_up_slot(QMouseEvent*);
     void motion_slot(QMouseEvent*);
     void key_down_slot(QKeyEvent*);
-    void key_up_slot(QKeyEvent*);
     void enter_slot(QEnterEvent*);
     void leave_slot(QEvent*);
-    void focus_in_slot(QFocusEvent*);
-    void focus_out_slot(QFocusEvent*);
-    void drag_enter_slot(QDragEnterEvent*);
-    void drop_slot(QDropEvent*);
     void dismiss_btn_slot();
     void help_btn_slot();
     void redraw_btn_slot();
@@ -141,8 +148,9 @@ private slots:
     void group_btn_slot(bool);
 
 private:
+    bool check_event(QEvent*);
+
     static void sens_set(QTbag*, bool, int);
-//    static bool check_event(GdkEvent*, sGraph*);
     static int redraw_timeout(void*);
     static int motion_idle(void*);
     static void do_save_plot(const char*, void*);
@@ -156,6 +164,8 @@ private:
     int         pb_id;                          // motion idle id
     int         pb_x, pb_y;                     // motion coords
     int         pb_rdid;                        // redisplay timeout id
+    bool        pb_event_test;
+    bool        pb_event_deferred;
 };
 
 #endif

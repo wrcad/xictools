@@ -70,8 +70,7 @@ cSced::PopUpTermEdit(GRobject caller, ShowMode mode, TermEditInfo *tinfo,
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTelecTermEditDlg::self())
-            QTelecTermEditDlg::self()->deleteLater();
+        delete QTelecTermEditDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

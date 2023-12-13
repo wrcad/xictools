@@ -66,13 +66,20 @@
 #include <QDropEvent>
 #include <QMimeData>
 
+#ifdef WIN32
+#include <windows.h>
+#else
+#include "../../icons/wrspice_16x16.xpm"
+#include "../../icons/wrspice_32x32.xpm"
+#include "../../icons/wrspice_48x48.xpm"
+#endif
+
 
 void
 QTtoolbar::PopUpToolbar(ShowMode mode, int x, int y)
 {
     if (mode == MODE_OFF) {
-        if (QTtbDlg::self())
-            QTtbDlg::self()->deleteLater();
+        delete QTtbDlg::self();
         return;
     }
     if (mode == MODE_UPD) {
@@ -106,6 +113,12 @@ QTtbDlg::QTtbDlg(int xx, int yy) : QTdraw(0)
     tb_clr_2 = 0;
     tb_clr_3 = 0;
     tb_clr_4 = 0;
+
+    QIcon icon;
+    icon.addPixmap(QPixmap(wrs_16x16_xpm));
+    icon.addPixmap(QPixmap(wrs_32x32_xpm));
+    icon.addPixmap(QPixmap(wrs_48x48_xpm));
+    setWindowIcon(icon);
 
     char tbuf[28];
     snprintf(tbuf, sizeof(tbuf), "WRspice-%s", Global.Version());

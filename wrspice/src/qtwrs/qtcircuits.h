@@ -45,10 +45,10 @@
 
 #include <QDialog>
 
+
 //===========================================================================
 // Dialog that displays a list of the circuits that have been loaded.
 // Clicking on an entry will make it the 'current' circuit.
-
 
 class QTcircuitListDlg : public QDialog, public QTbag
 {
@@ -67,6 +67,7 @@ public:
 private slots:
     void help_btn_slot();
     void mouse_press_slot(QMouseEvent*);
+    void mouse_release_slot(QMouseEvent*);
     void mouse_motion_slot(QMouseEvent*);
     void font_changed_slot(int);
     void button_slot(bool);
@@ -75,6 +76,9 @@ private slots:
 
 private:
     GRaffirmPopup *cl_affirm;
+
+    int cl_x;
+    int cl_y;
 
     static const char *cl_btns[];
     static QTcircuitListDlg *instPtr;

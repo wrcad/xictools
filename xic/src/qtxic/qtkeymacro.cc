@@ -56,13 +56,6 @@
   Keyboard Macros
  ========================================================================*/
 
-/*
-static void macro_event_handler(GdkEvent*, void*);
-static GtkWidget *find_wname(GdkWindow*, char**);
-static char *widget_path(GtkWidget*);
-static GtkWidget *name_to_widget(const char*);
-*/
-
 
 // Global interface for the script reader
 //
@@ -302,9 +295,9 @@ cKbMacro::execKey(sKeyEvent *k)
         return (true);
     }
 
-    /*
+/*XXX
     QTpkg::self()->CheckForInterrupt();
-    GtkWidget *w = gtk_keyb::name_to_widget(k->widget_name);
+    QObject *w = qt_keyb::name_to_object(k->widget_name);
     if (w && !w->window)
         gtk_widget_realize(w);
     if (!w || !w->window)
@@ -321,21 +314,20 @@ cKbMacro::execKey(sKeyEvent *k)
     event.type = (k->type == KEY_PRESS ? GDK_KEY_PRESS : GDK_KEY_RELEASE);
 
     gtk_propagate_event(w, (GdkEvent*)&event);
-    return (true);
-    */
+*/
     return (true);
 }
 
 
-// Send a button event, return false if the window can't be found
+// Send a button event, return false if the window can't be found.
 //
 bool
 cKbMacro::execBtn(sBtnEvent *b)
 {
-    /*
+/*XXX
     if (b->type == BUTTON_PRESS)
         QTpkg::self()->CheckForInterrupt();
-    GtkWidget *w = gtk_keyb::name_to_widget(b->widget_name);
+    QObject *w = qt_keyb::name_to_object(b->widget_name);
     if (w && !w->window)
         gtk_widget_realize(w);
     if (!w || !w->window)
@@ -393,11 +385,11 @@ cKbMacro::execBtn(sBtnEvent *b)
         gtk_propagate_event(w, (GdkEvent*)&event);
     }
     return (true);
-    */
+*/
     (void)b;
     return (true);
 }
-// End of cKbMap functions
+// End of cKbMacro functions
 
 
 // Start recording events for macro definition
@@ -405,7 +397,7 @@ cKbMacro::execBtn(sBtnEvent *b)
 void
 sKeyMap::begin_recording(char *str)
 {
-    /*
+/*XXX
     forstr = copy(str);
     for (end = response; end && end->next; end = end->next) ;
     show();
@@ -413,18 +405,18 @@ sKeyMap::begin_recording(char *str)
     lastkey = 0;
     grabber = 0;
     GApp->RegisterEventHandler(macro_event_handler, this);
-    */
+*/
     (void)str;
 }
 // end of sKeyMap functions
 
 
-/*
 // Event handler in effect while processing macro definition input
 //
-static void
-macro_event_handler(GdkEvent *ev, void *arg)
+void
+qt_keyb::macro_event_handler(QObject *obj, QEvent *ev, void *arg)
 {
+/*XXX
     sKeyMap *km = (sKeyMap*)arg;
     if (ev->type == GDK_KEY_RELEASE) {
         // the string field of the key up event is empty
@@ -512,53 +504,44 @@ macro_event_handler(GdkEvent *ev, void *arg)
     if (ev->type == GDK_2BUTTON_PRESS || ev->type == GDK_3BUTTON_PRESS)
         return;
     gtk_main_do_event(ev);
-}
 */
+}
 
 
-/*
 // Return the widget and its name from the window.  Return 0 if the widget
 // isn't recognized
 //
-static GtkWidget *
-find_wname(GdkWindow *window, char **wname)
+const QObject *
+qt_keyb::find_wname(const QObject *obj, const char **wname)
 {
-    // this is the magic to get a widget from a window
-    GtkWidget *widget = 0;
-    gdk_window_get_user_data(window, (void**)&widget);
-
-    if (widget) {
-        char *name = widget_path(widget);
+    if (obj) {
+        char *name = object_path(obj);
         if (name) {
             *wname = name;
-            return (widget);
+            return (obj);
         }
     }
     return (0);
 }
-*/
 
 
-/*
-// Return the path name for the widget.  Yes, there is a gtk function that
-// does the same thing, but it has a massive core leak (2.4.6)
+// Return the path name for the object.
 //
-static char *
-widget_path(GtkWidget *widget)
+char *
+qt_keyb::object_path(const QObject *object)
 {
-    if (!widget || !GTK_IS_WIDGET(widget)
-#if GTK_CHECK_VERSION(1,3,15)
-            )
-#else
-            || GTK_OBJECT_DESTROYED(GTK_OBJECT(widget)))
-#endif
+    if (!object)
         return (0);
     char *aa[256];
     int cnt = 0, len = 0;
-    while (widget) {
-        aa[cnt] = (char*)gtk_widget_get_name(widget);
+    while (object) {
+        QByteArray ba = object->objectName().toLatin1();
+        const char *nm = ba.constData();
+        if (!nm || !*nm)
+            nm = "unknown";
+        aa[cnt] = lstring::copy(nm);
         len += strlen(aa[cnt]) + 1;
-        widget = widget->parent;
+        object = object->parent();
         cnt++;
     }
     cnt--;
@@ -566,6 +549,7 @@ widget_path(GtkWidget *widget)
     char *t = path;
     while (cnt >= 0) {
         strcpy(t, aa[cnt]);
+        delete [] aa[cnt];
         while (*t)
             t++;
         if (cnt)
@@ -575,29 +559,15 @@ widget_path(GtkWidget *widget)
     *t = 0;
     return (path);
 }
-*/
 
 
-/*
-// List element for widget name matches
-//
-struct wlist
-{
-    wlist(GtkWidget *w, wlist *n) { widget = w; next = n; }
-
-    GtkWidget *widget;
-    wlist *next;
-};
-*/
-
-
-/*
 // Return a list of widgets that match the path given, relative to w
 //
-static wlist *
-find_widget(GtkWidget *w, const char *path)
+qt_keyb::wlist *
+qt_keyb::find_object(const QObject *obj, const char *path)
 {
     wlist *w0 = 0;
+/*XXX
     const char *t = strchr(path, '.');
     if (!t)
         t = path + strlen(path);
@@ -624,20 +594,20 @@ find_widget(GtkWidget *w, const char *path)
     }
     if (g)
         g_list_free(g);
+*/
     return (w0);
 }
-*/
 
 
-/*
 // If the path identifies a widget uniquely, return it.  The path is rooted
 // in a top level (GtkWindow) widget
 //
-static GtkWidget *
-name_to_widget(const char *path)
+QObject *
+qt_keyb::name_to_object(const char *path)
 {
     if (!path)
         return (0);
+/*XXX
     wlist *w0 = 0;
     const char *t = strchr(path, '.');
     if (!t)
@@ -682,6 +652,7 @@ name_to_widget(const char *path)
         w0 = wx;
     }
     return (wfound);
-}
 */
+return (0);
+}
 

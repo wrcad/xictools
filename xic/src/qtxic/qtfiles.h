@@ -48,7 +48,7 @@
 
 
 //----------------------------------------------------------------------
-//  Files Listing Popup
+//  Files Listing Dialog
 //
 
 #define MAX_BTNS 5
@@ -119,7 +119,7 @@ private:
     static sPathList *fl_listing(int);
     static char *fl_is_symfile(const char*);
     static void fl_content_cb(const char*, void*);
-    static void fl_down_cb(void*);
+    static void fl_down_cb();
     static void fl_desel();
 
     GRobject    fl_caller;
@@ -130,11 +130,11 @@ private:
 
     int         fl_start;
     int         fl_end;
-    bool        fl_drag_start;      // used for drag/drop
-    int         fl_drag_btn;        // drag button
-    int         fl_drag_x;          // drag start location
+    bool        fl_drag_start;          // used for drag/drop
+    int         fl_drag_btn;            // drag button
+    int         fl_drag_x;              // drag start location
     int         fl_drag_y;
-    char        *fl_directory;      // visible directory
+    char        *fl_directory;          // visible directory
 
     char        *fl_selection;
     char        *fl_contlib;

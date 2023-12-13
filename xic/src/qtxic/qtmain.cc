@@ -96,6 +96,10 @@
 #include "view_menu.h"
 #include "attr_menu.h"
 
+#include "../../icons/xic_16x16.xpm"
+#include "../../icons/xic_32x32.xpm"
+#include "../../icons/xic_48x48.xpm"
+
 
 //-----------------------------------------------------------------------------
 // Main Window and top-level functions.
@@ -862,8 +866,8 @@ QTeventMonitor::eventFilter(QObject *obj, QEvent *ev)
     // Handle events here, return true to indicate handled.
     // printf("%p %x\n", obj, ev->type());
 
-    if (event_handler)
-        return (event_handler(obj, ev));
+    if (em_event_handler)
+        return (em_event_handler(obj, ev));
 
     // When the application is busy, all button presses and all key
     // presses except for Ctrl-C are locked out, and upon receipt a
@@ -899,8 +903,10 @@ QTeventMonitor::eventFilter(QObject *obj, QEvent *ev)
     else if (ev->type() == QEvent::MouseButtonPress) {
         log_event(obj, ev);
         if (QTpkg::self()->IsBusy()) {
-            if (0 /*XXX g_object_get_data(obj, "abort")*/ )
+            if (is_busy_allow(obj)) {
+                // if (g_object_get_data(obj, "abort"))
                 return (QObject::eventFilter(obj, ev));
+            }
             QMouseEvent *mev = static_cast<QMouseEvent*>(ev);
             if (mev->button() < 4)
                 // Ignore mouse wheel events.
@@ -908,13 +914,11 @@ QTeventMonitor::eventFilter(QObject *obj, QEvent *ev)
             return (true);
         }
         if (QTmenu::self()->IsGlobalInsensitive()) {
-            if (0 /*XXX GTK_IS_DRAWING_AREA(obj)*/)
+            if (dynamic_cast<QTcanvas*>(obj))
                 return (true);
             QObject *top = obj;
             while (top->parent())
                 top = top->parent();
-            if (!top || !QTmainwin::exists())
-                return (true);
             if (top != QTmainwin::self() &&
                     top != QTmenu::self()->GetModal())
                 return (true);
@@ -922,45 +926,38 @@ QTeventMonitor::eventFilter(QObject *obj, QEvent *ev)
     }
     else if (ev->type() == QEvent::MouseButtonRelease) {
         log_event(obj, ev);
-/*XXX
         QMouseEvent *mev = static_cast<QMouseEvent*>(ev);
-        if (!gtk_grab_get_current()) {
-            if (QTpkg::self()->IsBusy()) {
-                GdkEventButton *bev = (GdkEventButton*)event;
-                if (button_state[bev->button]) {
-                    // If the button state is active, the mouse button must
-                    // have been down when busy mode was entered.  Save the
-                    // event for dispatch when leaving busy mode.
-                    event_hdlr.save_event(event);
-                    button_state[bev->button] = false;
-                    return;
-                }
-                QWidget *evw = gtk_get_event_widget(event);
-                if (g_object_get_data(G_OBJECT(evw), "abort"))
-                    gtk_main_do_event(event);
-                return;
+        if (QTpkg::self()->IsBusy()) {
+            if (em_button_state[mev->button()]) {
+                // If the button state is active, the mouse button must
+                // have been down when busy mode was entered.  Save the
+                // event for dispatch when leaving busy mode.
+                save_event(obj, ev);
+                em_button_state[mev->button()] = false;
+                return (true);
             }
-            if (QTmenu::self()->IsGlobalInsensitive()) {
-                QWidget *evw = gtk_get_event_widget(event);
-                if (GTK_IS_DRAWING_AREA(evw))
-                    return;
-                QWidget *top = gtk_widget_get_toplevel(evw);
-                if (!top || !QTmainwin::exists())
-                    return;
-                if (top != QTmainwin::self()->Shell() &&
-                        top != QTmenu::self()->GetModal())
-                    return;
+            if (is_busy_allow(obj)) {
+                // Allow these.
+                // if (g_object_get_data(G_OBJECT(evw), "abort"))
+                return (QObject::eventFilter(obj, ev));
             }
+            return (true);
         }
-*/
+        if (QTmenu::self()->IsGlobalInsensitive()) {
+            if (dynamic_cast<QTcanvas*>(obj))
+                return (true);
+            QObject *top = obj;
+            while (top->parent())
+                top = top->parent();
+            if (top != QTmainwin::self() &&
+                    top != QTmenu::self()->GetModal())
+                return (true);
+        }
     }
     else if (ev->type() == QEvent::MouseButtonDblClick) {
         if (QTpkg::self()->IsBusy())
             return (true);
     }
-//    return (obj->event(ev));
-// Above prevents correct layout and text entry in editor and likely other
-// dialogs.
     return (QObject::eventFilter(obj, ev));
 }
 
@@ -1033,17 +1030,10 @@ QTeventMonitor::log_event(const QObject *obj, const QEvent *ev)
                 fprintf(fp, "# %s\n", ba2.constData());
             else
                 fprintf(fp, "# %s\n", "");
-/*XXX
-            if (ev->key.send_event) {
-                fprintf(fp, "# XSendEvent\n");
-                fprintf(fp, "# ");
-            }
-    */
 
-//            QWidget *widget = qobject_cast<QWidget*>(obj);
-//            char *wname = gtk_keyb::widget_path(widget);
-//            if (!wname)
-char*                wname = lstring::copy("unknown");
+            char *wname = qt_keyb::object_path(obj);
+            if (!wname)
+                wname = lstring::copy("unknown");
             fprintf(fp, "%s(%d, %x, \"%s\")\n",
                 ev->type() == QEvent::KeyPress ? "KeyDown" : "KeyUp",
                 kev->key(), (unsigned int)kev->modifiers(), wname);
@@ -1064,15 +1054,9 @@ char*                wname = lstring::copy("unknown");
             if (!ccnt)
                 log_init(fp);
             const QMouseEvent *mev = static_cast<const QMouseEvent*>(ev);
-/*XXX
-            if (ev->button.send_event)
-                // suppress all send events
-                fprintf(fp, "# XSendEvent\n# ");
-            GtkWidget *widget = gtk_get_event_widget(ev);
-            char *wname = gtk_keyb::widget_path(widget);
+            char *wname = qt_keyb::object_path(obj);
             if (!wname)
-    */
-char*                wname = lstring::copy("unknown");
+                wname = lstring::copy("unknown");
             fprintf(fp, "%s(%d, %d, %d, %d, \"%s\")\n",
                 ev->type() == QEvent::MouseButtonPress ? "BtnDown" : "BtnUp",
                 mev->button(), (unsigned int)mev->modifiers(),
@@ -1092,7 +1076,7 @@ char*                wname = lstring::copy("unknown");
         ccnt++;
     }
 }
-// End of QTeventMonigtor functions.
+// End of QTeventMonitor functions.
 
 
 //-----------------------------------------------------------------------------
@@ -1238,8 +1222,6 @@ cKeys::font_changed(int fnum)
 //-----------------------------------------------------------------------------
 // QTsubwin functions
 
-#define GS_NBTNS 8
-
 namespace {
     // Share common ghost drawing parameters between similar drawing
     // windows.
@@ -1309,7 +1291,6 @@ namespace {
     };
 
     grabstate_t grabstate;
-    bool button_state[GS_NBTNS];
 }
 
 
@@ -1327,6 +1308,12 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
     sw_cursor_type = 0;
 
     setAttribute(Qt::WA_DeleteOnClose);
+
+    QIcon icon;
+    icon.addPixmap(QPixmap(xic_16x16_xpm));
+    icon.addPixmap(QPixmap(xic_32x32_xpm));
+    icon.addPixmap(QPixmap(xic_48x48_xpm));
+    setWindowIcon(icon);
 
     gd_viewport = new QTcanvas();
     gd_viewport->set_ghost_common(&GhostDrawCommon);
@@ -2489,7 +2476,6 @@ QTsubwin::font_changed(int fnum)
         QFont *fnt;
         if (FC.getFont(&fnt, FNT_SCREEN))
             gd_viewport->set_font(fnt);
-        //XXX
     }
 }
 
@@ -2621,8 +2607,6 @@ QTmainwin::QTmainwin(QWidget *prnt) : QTsubwin(0, prnt)
 
     connect(this, SIGNAL(update_coords(int, int)),
         this, SLOT(update_coords_slot(int, int)));
-
-//    initialize();
 }
 
 
@@ -2664,6 +2648,9 @@ QTmainwin::minimumSizeHint() const
 void
 QTmainwin::initialize()
 {
+    // Deferred initialization, move this to constructor?
+    // Called in QTpkg::Initialize.
+
     DSP()->SetWindow(0, new WindowDesc);
     EV()->SetCurrentWin(DSP()->MainWdesc());
     sw_windesc = DSP()->MainWdesc();

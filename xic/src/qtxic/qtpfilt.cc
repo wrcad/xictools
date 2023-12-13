@@ -61,8 +61,7 @@ cConvert::PopUpPropertyFilter(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTcmpPrpFltDlg::self())
-            QTcmpPrpFltDlg::self()->deleteLater();
+        delete QTcmpPrpFltDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

@@ -111,8 +111,7 @@ cConvert::PopUpLibraries(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTlibsDlg::self())
-            QTlibsDlg::self()->deleteLater();
+        delete QTlibsDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

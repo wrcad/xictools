@@ -69,6 +69,7 @@ Authors: 1988 Jeffrey M. Hsu
 #include "../../icons/wrspice_48x48.xpm"
 #endif
 
+#include <QApplication>
 #include <QLayout>
 #include <QPushButton>
 #include <QGroupBox>
@@ -147,22 +148,11 @@ QTplotDlg::init(sGraph *gr)
     wb_sens_set = sens_set;
     pb_graph = gr;
 
-/*  icons in QT?
-#ifdef WIN32
-    // Icons are obtained from resources.
-#else
-    GList *g1 = new GList;
-    g1->data = gdk_pixbuf_new_from_xpm_data(wrs_48x48_xpm);
-    GList *g2 = new GList;
-    g2->data = gdk_pixbuf_new_from_xpm_data(wrs_32x32_xpm);
-    g1->next = g2; 
-    GList *g3 = new GList;
-    g3->data = gdk_pixbuf_new_from_xpm_data(wrs_16x16_xpm);
-    g3->next = 0;  
-    g2->next = g3;
-    gtk_window_set_icon_list(GTK_WINDOW(Shell()), g1);
-#endif
-*/
+    QIcon icon;
+    icon.addPixmap(QPixmap(wrs_16x16_xpm));
+    icon.addPixmap(QPixmap(wrs_32x32_xpm));
+    icon.addPixmap(QPixmap(wrs_48x48_xpm));
+    setWindowIcon(icon);
 
     char buf[128];
     const char *anam = "";
@@ -172,11 +162,6 @@ QTplotDlg::init(sGraph *gr)
         anam = GR_MPLTstr;
     snprintf(buf, sizeof(buf), "%s %s %d", CP.Program(), anam, gr->id());
     setWindowTitle(buf);
-
-/*
-    g_signal_connect(G_OBJECT(Shell()), "destroy",
-        G_CALLBACK(b_quit), gr);
-*/
 
     QHBoxLayout *hbox = new QHBoxLayout(this);
     hbox->setContentsMargins(2, 2, 2, 2);
@@ -195,8 +180,6 @@ QTplotDlg::init(sGraph *gr)
 
     connect(Viewport(), SIGNAL(resize_event(QResizeEvent*)),
         this, SLOT(resize_slot(QResizeEvent*)));
-    connect(Viewport(), SIGNAL(paint_event(QPaintEvent*)),
-        this, SLOT(paint_slot(QPaintEvent*)));
     connect(Viewport(), SIGNAL(press_event(QMouseEvent*)),
         this, SLOT(button_down_slot(QMouseEvent*)));
     connect(Viewport(), SIGNAL(release_event(QMouseEvent*)),
@@ -205,20 +188,10 @@ QTplotDlg::init(sGraph *gr)
         this, SLOT(motion_slot(QMouseEvent*)));
     connect(Viewport(), SIGNAL(key_press_event(QKeyEvent*)),
         this, SLOT(key_down_slot(QKeyEvent*)));
-    connect(Viewport(), SIGNAL(key_release_event(QKeyEvent*)),
-        this, SLOT(key_up_slot(QKeyEvent*)));
     connect(Viewport(), SIGNAL(enter_event(QEnterEvent*)),
         this, SLOT(enter_slot(QEnterEvent*)));
     connect(Viewport(), SIGNAL(leave_event(QEvent*)),
         this, SLOT(leave_slot(QEvent*)));
-    connect(Viewport(), SIGNAL(focus_in_event(QFocusEvent*)),
-        this, SLOT(focus_in_slot(QFocusEvent*)));
-    connect(Viewport(), SIGNAL(focus_out_event(QFocusEvent*)),
-        this, SLOT(focus_out_slot(QFocusEvent*)));
-    connect(Viewport(), SIGNAL(drag_enter_event(QDragEnterEvent*)),
-        this, SLOT(drag_enter_slot(QDragEnterEvent*)));
-    connect(Viewport(), SIGNAL(drop_event(QDropEvent*)),
-        this, SLOT(drop_slot(QDropEvent*)));
 
     pb_gbox = new QGroupBox();
     hbox->addWidget(pb_gbox);
@@ -471,37 +444,32 @@ QTplotDlg::init_gbuttons()
 }
 
 
-// Static function.
-// Callback for PopUpInput() sensitivity set.
-//
-void
-QTplotDlg::sens_set(QTbag *w, bool set, int)
+bool
+QTplotDlg::event(QEvent *ev)
 {
-    if (w->ActiveInput()) {
-        QTledDlg *qw = static_cast<QTledDlg*>(w->ActiveInput());
-        if (qw)
-            qw->setEnabled(set);
+    if (pb_event_test && check_event(ev)) {
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+        QApplication::postEvent(this, ev->clone());
+#else
+        // XXX fixme, no clone in QT5
+#endif
+        pb_event_deferred = true;
+        return (true);
     }
+    return (QWidget::event(ev));
 }
 
 
-/*  XXX QT events?
-// Static function.
-// Core test for gr_check_plot_events.
+// Core event test.
 //
 bool
-QTplotDlg::check_event(GdkEvent *ev, sGraph *graph)
+QTplotDlg::check_event(QEvent *ev)
 {
-    if (!graph)
-        return (false);
-    QTplotDlg *w = dynamic_cast<QTplotDlg*>(graph->dev());
-    if (!w)
-        return (false);
-    if (ev->type == GDK_EXPOSE) {
-        if (ev->expose.window == gtk_widget_get_window(w->Shell()))
-            return (true);
+    if (ev->type() == QEvent::Resize) {
+        return (true);
     }
-    else if (ev->type == GDK_BUTTON_PRESS) {
+    else if (ev->type() == QEvent::MouseButtonPress) {
+/*XXX
         // This is the magic to get a widget from a window.
         GtkWidget *widget = 0;
         gdk_window_get_user_data(ev->button.window, (void**)&widget);
@@ -523,10 +491,24 @@ QTplotDlg::check_event(GdkEvent *ev, sGraph *graph)
             if (widget == w->pb_checkwins[pbtn_group])
                 return (true);
         }
+*/
     }
     return (false);
 }
-*/
+
+
+// Static function.
+// Callback for PopUpInput() sensitivity set.
+//
+void
+QTplotDlg::sens_set(QTbag *w, bool set, int)
+{
+    if (w->ActiveInput()) {
+        QTledDlg *qw = static_cast<QTledDlg*>(w->ActiveInput());
+        if (qw)
+            qw->setEnabled(set);
+    }
+}
 
 
 // Static function.
@@ -730,13 +712,6 @@ QTplotDlg::resize_slot(QResizeEvent*)
 
 
 void
-QTplotDlg::paint_slot(QPaintEvent*)
-{
-    // XXX not needed
-}
-
-
-void
 QTplotDlg::button_down_slot(QMouseEvent *ev)
 {
     if (GRpkg::self()->CurDev()->devtype == GRhardcopy) {
@@ -894,13 +869,6 @@ QTplotDlg::key_down_slot(QKeyEvent *ev)
 
 
 void
-QTplotDlg::key_up_slot(QKeyEvent*)
-{
-    // XXX not needed
-}
-
-
-void
 QTplotDlg::enter_slot(QEnterEvent*)
 {
     // Pointer entered a drawing window.
@@ -919,37 +887,13 @@ QTplotDlg::leave_slot(QEvent*)
     // Pointer left the drawing window.
     if (Viewport()->has_ghost()) {
         GP.PushGraphContext(pb_graph);
-//        ShowGhost(false);
+//XXX        ShowGhost(false);
         GP.PopGraphContext();
     }
     if (GP.SourceGraph() && pb_graph != GP.SourceGraph()) {
         // remove hacked ghost
-//        Viewport()->set_ghost_func(0);
+//XXX        Viewport()->set_ghost_func(0);
     }
-}
-
-//XXX unneeded slots?
-void
-QTplotDlg::focus_in_slot(QFocusEvent*)
-{
-}
-
-
-void
-QTplotDlg::focus_out_slot(QFocusEvent*)
-{
-}
-
-
-void
-QTplotDlg::drag_enter_slot(QDragEnterEvent*)
-{
-}
-
-
-void
-QTplotDlg::drop_slot(QDropEvent*)
-{
 }
 
 

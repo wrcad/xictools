@@ -79,8 +79,7 @@ cEdit::PopUpStdVia(GRobject caller, ShowMode mode, CDc *cdvia)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTstdViaDlg::self())
-            QTstdViaDlg::self()->deleteLater();
+        delete QTstdViaDlg::self();
         return;
     }
     if (cdvia && !cdvia->prpty(XICP_STDVIA)) {

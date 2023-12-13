@@ -78,8 +78,7 @@ cOAif::PopUpOAlibraries(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QToaLibsDlg::self())
-            QToaLibsDlg::self()->deleteLater();
+        delete QToaLibsDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

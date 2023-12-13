@@ -62,7 +62,7 @@ public:
 
 private slots:
     void dismiss_btn_slot();
-    void help_btn_slot(bool);
+    void help_btn_slot();
 
 private:
     static QTcolorParamDlg *instPtr;

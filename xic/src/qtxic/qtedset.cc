@@ -65,8 +65,7 @@ cEdit::PopUpEditSetup(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTeditSetupDlg::self())
-            QTeditSetupDlg::self()->deleteLater();
+        delete QTeditSetupDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

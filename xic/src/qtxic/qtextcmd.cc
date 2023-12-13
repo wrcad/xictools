@@ -83,8 +83,7 @@ cExt::PopUpExtCmd(GRobject caller, ShowMode mode, sExtCmd *cmd,
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTextCmdDlg::self())
-            QTextCmdDlg::self()->deleteLater();
+        delete QTextCmdDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

@@ -67,8 +67,7 @@ cEdit::PopUpPCellCtrl(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTpcellCtrlDlg::self())
-            QTpcellCtrlDlg::self()->deleteLater();
+        delete QTpcellCtrlDlg::self();
         return;
     }
     if (mode == MODE_UPD) {
@@ -150,7 +149,7 @@ QTpcellCtrlDlg::QTpcellCtrlDlg(GRobject c)
     hbox->addWidget(pcc_abut);
     for (int i = 0; pcc_abutvals[i]; i++)
         pcc_abut->addItem(tr(pcc_abutvals[i]));
-    connect(pcc_abut, SIGNAL(currrentIndexChanged(int)),
+    connect(pcc_abut, SIGNAL(currentIndexChanged(int)),
         this, SLOT(abut_mode_slot(int)));
 
     pcc_hidestr = new QCheckBox(tr("Hide and disable stretch handles"));

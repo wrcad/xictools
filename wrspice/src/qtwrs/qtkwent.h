@@ -46,16 +46,12 @@
 #include "variable.h"
 #include "keywords.h"
 
-
-//----------------------------------------------------------------------------
-// A string Spin Box that is used for keyword choice selection.
-
 #include <QGroupBox>
 #include <QSpinBox>
+#include <QLineEdit>
 
 class QCheckBox;
 class QPushButton;
-class QLineEdit;
 class QTkwent;
 namespace qtinterf {
     class QTdoubleSpinBox;
@@ -63,10 +59,17 @@ namespace qtinterf {
 }
 using namespace qtinterf;
 
+
+//----------------------------------------------------------------------------
+// A string Spin Box that is used for keyword choice selection.
+
 class QTchoiceSpinBox : public QSpinBox
 {
 public:
-    explicit QTchoiceSpinBox(QWidget *prnt = nullptr) : QSpinBox(prnt) { }
+    explicit QTchoiceSpinBox(QWidget *prnt = nullptr) : QSpinBox(prnt)
+    {
+        lineEdit()->setReadOnly(true);
+    }
     ~QTchoiceSpinBox() { }
 
     // Overrides
@@ -125,7 +128,9 @@ public:
     // Global callback functions for generic data.
     static void ke_bool_func(bool, variable*, void*);
     static void ke_int_func(bool, variable*, void*);
+    static void ke_int2_func(bool, variable*, void*);
     static void ke_real_func(bool, variable*, void*);
+    static void ke_real2_func(bool, variable*, void*);
     static void ke_string_func(bool, variable*, void*);
     static void ke_float_hdlr(xKWent*, bool, bool);
 

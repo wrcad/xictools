@@ -68,8 +68,7 @@ cConvert::PopUpExport(GRobject caller, ShowMode mode,
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTconvertOutDlg::self())
-            QTconvertOutDlg::self()->deleteLater();
+        delete QTconvertOutDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

@@ -98,8 +98,7 @@ cConvert::PopUpMergeControl(ShowMode mode, mitem_t *mi)
                 QTdev::self()->BreakLoop();
             end_modal();
         }
-        if (QTmergeDlg::self())
-            QTmergeDlg::self()->deleteLater();
+        delete QTmergeDlg::self();
         return (true);
     }
     if (mode == MODE_UPD) {

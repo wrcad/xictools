@@ -209,7 +209,7 @@ QTltabEditDlg::desel_rem()
 void
 QTltabEditDlg::popdown()
 {
-    deleteLater();
+    delete this;
 }
 
 

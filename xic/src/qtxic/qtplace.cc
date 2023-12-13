@@ -81,8 +81,7 @@ cEdit::PopUpPlace(ShowMode mode, bool noprompt)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTplaceDlg::self())
-            QTplaceDlg::self()->deleteLater();
+        delete QTplaceDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

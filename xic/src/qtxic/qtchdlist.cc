@@ -77,8 +77,7 @@ cConvert::PopUpHierarchies(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTchdListDlg::self())
-            QTchdListDlg::self()->deleteLater();
+        delete QTchdListDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

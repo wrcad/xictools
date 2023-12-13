@@ -65,14 +65,6 @@
 #include "miscutil/filestat.h"
 #include <signal.h>
 
-#ifdef WIN32
-#include <windows.h>
-#else
-#include "../../icons/wrspice_16x16.xpm"
-#include "../../icons/wrspice_32x32.xpm"
-#include "../../icons/wrspice_48x48.xpm"
-#endif
-
 #include <QLayout>
 #include <QMenuBar>
 #include <QMenu>
@@ -406,10 +398,6 @@ QTtoolbar::Toolbar()
     if (!CP.Display())
         return;
 
-/* XXX App Icons?
-gtk_window_set_default_icon_name("wrspice");
-*/
-
     // Launch the application windows that start realized.
     for (tbent_t *tb = tb_entries; tb && tb->name(); tb++) {
         int id = tb->id();
@@ -521,8 +509,48 @@ QTtoolbar::PopUpFont(ShowMode mode, int x, int y)
     SetActiveDlg(tid_font, tb_fontsel);
 }
 
-//XXX
-void QTtoolbar::PopUpNotes()       { /* notes_proc(0, 0); */ }
+
+// Pop up a file browser loaded with the release notes.
+//
+void QTtoolbar::PopUpNotes()
+{
+    const char *docspath = 0;
+    VTvalue vv;
+    if (Sp.GetVar("docsdir", VTYP_STRING, &vv))
+        docspath = vv.get_string();
+    else {
+        docspath = getenv("SPICE_DOCS_DIR");
+        if (!docspath)
+            docspath = Global.DocsDir();
+    }
+    if (!docspath || !*docspath) {
+        PopUpMessage("No path to release notes (set docsdir).", true);
+        return;
+    }
+
+    char buf[256];
+    snprintf(buf, sizeof(buf), "%s/wrs%s", docspath, Global.Version());
+
+    // Remove last component of version, file name is like "wrs3.0".
+    char *t = strrchr(buf, '.');
+    if (t)
+        *t = 0;
+
+    check_t ret = filestat::check_file(buf, R_OK);
+    if (ret == NOGO) {
+        PopUpMessage(filestat::error_msg(), true);
+        return;
+    }
+    if (ret == NO_EXIST) {
+        int len = strlen(buf) + 64;
+        char *tt = new char[len];
+        snprintf(tt, len, "Can't find file %s.", buf);
+        PopUpMessage(tt, true);
+        delete [] tt;
+        return;
+    }
+    PopUpFileBrowser(buf);
+}
 
 
 void QTtoolbar::PopUpSpiceInfo(const char *msg)

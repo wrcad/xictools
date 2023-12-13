@@ -66,6 +66,7 @@ public:
 private slots:
     void help_btn_slot();
     void mouse_press_slot(QMouseEvent*);
+    void mouse_release_slot(QMouseEvent*);
     void mouse_motion_slot(QMouseEvent*);
     void font_changed_slot(int);
     void button_slot(bool);
@@ -74,6 +75,9 @@ private slots:
 
 private:
     GRaffirmPopup *pl_affirm;
+
+    int pl_x;
+    int pl_y;
 
     static const char *pl_btns[];
     static QTplotListDlg *instPtr;

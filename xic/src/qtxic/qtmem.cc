@@ -76,8 +76,7 @@ cMain::PopUpMemory(ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTmemMonDlg::self())
-            QTmemMonDlg::self()->deleteLater();
+        delete QTmemMonDlg::self();
         return;
     }
     if (QTmemMonDlg::self()) {
@@ -145,7 +144,6 @@ QTmemMonDlg::QTmemMonDlg() : QTbag(this), QTdraw(XW_TEXT)
 
 QTmemMonDlg::~QTmemMonDlg()
 {
-printf("destr\n");
     instPtr = 0;
     MainMenu()->MenuButtonSet(0, MenuALLOC, false);
 }

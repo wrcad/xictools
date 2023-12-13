@@ -65,8 +65,7 @@ cSced::PopUpSpiceIf(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTspiceIfDlg::self())
-            QTspiceIfDlg::self()->deleteLater();
+        delete QTspiceIfDlg::self();
         return;
     }
     if (mode == MODE_UPD) {
@@ -230,13 +229,14 @@ QTspiceIfDlg::QTspiceIfDlg(GRobject c)
         this, SLOT(catmode_btn_slot(int)));
 
     sc_catmode = new QComboBox();
+    grid->addWidget(sc_catmode, 10, 1);
     sc_catmode->addItem("WRspice");
     sc_catmode->addItem("Spice3");
 
     // Dismiss button
     //
     btn = new QPushButton(tr("Dismiss"));
-    grid->addWidget(btn, 10, 0, 1, 2);
+    grid->addWidget(btn, 11, 0, 1, 2);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     update();

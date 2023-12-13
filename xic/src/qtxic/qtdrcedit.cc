@@ -76,8 +76,7 @@ cDRC::PopUpRules(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTdrcRuleEditDlg::self())
-            QTdrcRuleEditDlg::self()->deleteLater();
+        delete QTdrcRuleEditDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

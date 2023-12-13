@@ -79,8 +79,7 @@ void
 QTtoolbar::PopUpVectors(ShowMode mode, int x, int y)
 {
     if (mode == MODE_OFF) {
-        if (QTvectorListDlg::self())
-            QTvectorListDlg::self()->deleteLater();
+        delete QTvectorListDlg::self();
         return;
     }
     if (QTvectorListDlg::self())
@@ -133,6 +132,8 @@ QTvectorListDlg *QTvectorListDlg::instPtr;
 QTvectorListDlg::QTvectorListDlg(int xx, int yy, const char *s) : QTbag(this)
 {
     instPtr = this;
+    vl_x = 0;
+    vl_y = 0;
     vl_affirm = 0;
 
     setWindowTitle(tr("Vectors"));
@@ -170,14 +171,12 @@ QTvectorListDlg::QTvectorListDlg(int xx, int yy, const char *s) : QTbag(this)
     wb_textarea = new QTtextEdit();
     vbox->addWidget(wb_textarea);
     wb_textarea->setReadOnly(true);
-    wb_textarea->setMouseTracking(true);
-    wb_textarea->setAcceptDrops(false);
     connect(wb_textarea, SIGNAL(press_event(QMouseEvent*)),
         this, SLOT(mouse_press_slot(QMouseEvent*)));
+    connect(wb_textarea, SIGNAL(release_event(QMouseEvent*)),
+        this, SLOT(mouse_release_slot(QMouseEvent*)));
     connect(wb_textarea, SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(mouse_motion_slot(QMouseEvent*)));
-//    connect(wb_textarea, SIGNAL(mime_data_recieved(const QMimeData*)),
-//        this, SLOT(mime_data_received_slot(const QMimeData*)));
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_FIXED))
         wb_textarea->setFont(*fnt);
@@ -325,20 +324,27 @@ QTvectorListDlg::recolor()
 }
 
 
+// Clicking wil select/deselect a line (red caret in leftmost column
+// when selected).  Dragging will select text, then initiate drag/drop
+// the next time.
+
 void
 QTvectorListDlg::mouse_press_slot(QMouseEvent *ev)
 {
-    if (ev->type() != QEvent::MouseButtonPress) {
-        ev->ignore();
-        return;
-    }
-    ev->accept();
+    ev->ignore();
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+    vl_x = ev->position().x();
+    vl_y = ev->position().y();
+#else
+    vl_x = ev->x();
+    vl_y = ev->y();
+#endif
+}
 
-    if (!instPtr)
-        return;
 
-    QByteArray ba = wb_textarea->toPlainText().toLatin1();
-    const char *str = ba.constData();
+void
+QTvectorListDlg::mouse_release_slot(QMouseEvent *ev)
+{
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     int xx = ev->position().x();
     int yy = ev->position().y();
@@ -346,57 +352,66 @@ QTvectorListDlg::mouse_press_slot(QMouseEvent *ev)
     int xx = ev->x();
     int yy = ev->y();
 #endif
-    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(xx, yy));
-    int posn = cur.position();
+    if (fabs(xx - vl_x) < 5 && fabs(yy - vl_y) < 5) {
+        // Clicked, accept to prevent selection or drag/drop.
+        ev->accept();
+        QByteArray ba = wb_textarea->toPlainText().toLatin1();
+        const char *str = ba.constData();
+        QTextCursor cur = wb_textarea->cursorForPosition(QPoint(xx, yy));
+        int posn = cur.position();
 
-    const char *lineptr = str;
-    int line = 0;
-    for (int i = 0; i <= posn; i++) {
-        if (str[i] == '\n') {
-            line++;
-            if (i == posn) {
-                // Clicked to  right of line.
-                break;
+        const char *lineptr = str;
+        int line = 0;
+        for (int i = 0; i <= posn; i++) {
+            if (str[i] == '\n') {
+                line++;
+                if (i == posn) {
+                    // Clicked to  right of line.
+                    break;
+                }
+                lineptr = str + i+1;
             }
-            lineptr = str + i+1;
         }
+        if (line <= 3)
+            return;
+
+        // is it selected? set to opposite
+        bool select = (*lineptr == ' ');
+        const char *t = lineptr + 1;
+        // get vector's name
+        while (isspace(*t))
+            t++;
+        char buf[128];
+        char *s = buf;
+        while (*t && !isspace(*t))
+            *s++ = *t++;
+        *s = '\0';
+
+        // grab the dvec from storage
+        sDataVec *dv = (sDataVec*)OP.curPlot()->get_perm_vec(buf);
+        if (!dv)
+            return;
+        // The flags save the selected status persistently.
+        if (select)
+            dv->set_flags(dv->flags() | VF_SELECTED);
+        else
+            dv->set_flags(dv->flags() & ~VF_SELECTED);
+
+        int pn = lineptr - str;
+        QColor red("red");
+        wb_textarea->set_editable(true);
+        wb_textarea->replace_chars(&red, select ? ">" : " ", pn, pn+1);
+        wb_textarea->set_editable(false);
+        return;
     }
-    if (line <= 3)
-        return;
-
-    // is it selected? set to opposite
-    bool select = (*lineptr == ' ');
-    const char *t = lineptr + 1;
-    // get vector's name
-    while (isspace(*t))
-        t++;
-    char buf[128];
-    char *s = buf;
-    while (*t && !isspace(*t))
-        *s++ = *t++;
-    *s = '\0';
-
-    // grab the dvec from storage
-    sDataVec *dv = (sDataVec*)OP.curPlot()->get_perm_vec(buf);
-    if (!dv)
-        return;
-    // The flags save the selected status persistently.
-    if (select)
-        dv->set_flags(dv->flags() | VF_SELECTED);
-    else
-        dv->set_flags(dv->flags() & ~VF_SELECTED);
-
-    int pn = lineptr - str;
-    QColor red("red");
-    wb_textarea->set_editable(true);
-    wb_textarea->replace_chars(&red, select ? ">" : " ", pn, pn+1);
-    wb_textarea->set_editable(false);
+    ev->ignore();
 }
 
 
 void
-QTvectorListDlg::mouse_motion_slot(QMouseEvent*)
+QTvectorListDlg::mouse_motion_slot(QMouseEvent *ev)
 {
+    ev->ignore();
 }
 
 

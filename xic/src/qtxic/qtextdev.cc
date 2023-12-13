@@ -67,8 +67,7 @@ cExt::PopUpDevices(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTextDevDlg::self())
-            QTextDevDlg::self()->deleteLater();
+        delete QTextDevDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

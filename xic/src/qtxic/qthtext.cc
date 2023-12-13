@@ -218,7 +218,7 @@ namespace {
         static int timeout(void *arg)
         {
             QTflashPop *fp = static_cast<QTflashPop*>(arg);
-            fp->deleteLater();
+            delete fp;
             return (0);
         }
     };

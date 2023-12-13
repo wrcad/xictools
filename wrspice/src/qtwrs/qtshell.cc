@@ -65,8 +65,7 @@ void
 QTtoolbar::PopUpShellDefs(ShowMode mode, int x, int y)
 {
     if (mode == MODE_OFF) {
-        if (QTshellParamDlg::self())
-            QTshellParamDlg::self()->deleteLater();
+        delete QTshellParamDlg::self();
         return;
     }
     if (QTshellParamDlg::self())

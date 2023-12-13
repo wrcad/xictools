@@ -68,6 +68,7 @@ public:
 private slots:
     void help_btn_slot();
     void mouse_press_slot(QMouseEvent*);
+    void mouse_release_slot(QMouseEvent*);
     void mouse_motion_slot(QMouseEvent*);
     void font_changed_slot(int);
     void button_slot(bool);
@@ -77,6 +78,8 @@ private slots:
 private:
     void recolor();
 
+    int vl_x;
+    int vl_y;
     GRaffirmPopup *vl_affirm;
 
     static const char *vl_btns[];

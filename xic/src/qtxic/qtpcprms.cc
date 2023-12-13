@@ -121,8 +121,7 @@ cEdit::PopUpPCellParams(GRobject caller, ShowMode mode, PCellParam *p,
     if (!QTdev::exists() || !QTmainwin::exists())
         return (false);
     if (mode == MODE_OFF) {
-        if (QTpcellParamsDlg::self())
-            QTpcellParamsDlg::self()->deleteLater();
+        delete QTpcellParamsDlg::self();
         return (false);
     }
     if (mode == MODE_UPD) {

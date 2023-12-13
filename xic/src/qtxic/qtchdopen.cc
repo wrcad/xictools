@@ -74,8 +74,7 @@ cConvert::PopUpChdOpen(GRobject caller, ShowMode mode,
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTchdOpenDlg::self())
-            QTchdOpenDlg::self()->deleteLater();
+        delete QTchdOpenDlg::self();
         return;
     }
     if (mode == MODE_UPD) {
@@ -444,13 +443,13 @@ QTchdOpenDlg::apply_btn_slot()
         delete [] idn;
     }
     if (ret)
-        deleteLater();
+        delete this;
 }
 
 
 void
 QTchdOpenDlg::dismiss_btn_slot()
 {
-    QTchdOpenDlg::self()->deleteLater();
+    delete this;
 }
 

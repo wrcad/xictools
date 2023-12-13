@@ -92,8 +92,7 @@ QTsubwin::PopUpGrid(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (sw_gridpop)
-            sw_gridpop->deleteLater();
+        delete sw_gridpop;
         return;
     }
     if (mode == MODE_UPD) {
@@ -559,7 +558,7 @@ QTgridDlg::popdown()
     QTbag *owner = dynamic_cast<QTbag*>(p_parent);
     if (!owner || !owner->MonitorActive(this))
         return;
-    deleteLater();
+    delete this;
 }
 
 

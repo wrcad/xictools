@@ -66,8 +66,7 @@ cMain::PopUpCellFilt(GRobject caller, ShowMode mode, DisplayMode dm,
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTcfiltDlg::self())
-            QTcfiltDlg::self()->deleteLater();
+        delete QTcfiltDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

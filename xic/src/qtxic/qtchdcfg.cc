@@ -78,8 +78,7 @@ cConvert::PopUpChdConfig(GRobject caller, ShowMode mode,
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTchdCfgDlg::self())
-            QTchdCfgDlg::self()->deleteLater();
+        delete QTchdCfgDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

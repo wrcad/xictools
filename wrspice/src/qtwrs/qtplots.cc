@@ -78,8 +78,7 @@ void
 QTtoolbar::PopUpPlots(ShowMode mode, int x, int y)
 {
     if (mode == MODE_OFF) {
-        if (QTplotListDlg::self())
-            QTplotListDlg::self()->deleteLater();
+        delete QTplotListDlg::self();
         return;
     }
     if (QTplotListDlg::self())
@@ -151,6 +150,8 @@ QTplotListDlg *QTplotListDlg::instPtr;
 QTplotListDlg::QTplotListDlg(int xx, int yy, const char *s) : QTbag(this)
 {
     instPtr = this;
+    pl_x = 0;
+    pl_y = 0;
     pl_affirm = 0;
 
     setWindowTitle(tr("Plots"));
@@ -188,14 +189,12 @@ QTplotListDlg::QTplotListDlg(int xx, int yy, const char *s) : QTbag(this)
     wb_textarea = new QTtextEdit();
     vbox->addWidget(wb_textarea);
     wb_textarea->setReadOnly(true);
-    wb_textarea->setMouseTracking(true);
-    wb_textarea->setAcceptDrops(false);
     connect(wb_textarea, SIGNAL(press_event(QMouseEvent*)),
         this, SLOT(mouse_press_slot(QMouseEvent*)));
+    connect(wb_textarea, SIGNAL(release_event(QMouseEvent*)),
+        this, SLOT(mouse_release_slot(QMouseEvent*)));
     connect(wb_textarea, SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(mouse_motion_slot(QMouseEvent*)));
-//    connect(wb_textarea, SIGNAL(mime_data_recieved(const QMimeData*)),
-//        this, SLOT(mime_data_received_slot(const QMimeData*)));
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_FIXED))
         wb_textarea->setFont(*fnt);
@@ -269,17 +268,20 @@ QTplotListDlg::update(const char *s)
 void
 QTplotListDlg::mouse_press_slot(QMouseEvent *ev)
 {
-    if (ev->type() != QEvent::MouseButtonPress) {
-        ev->ignore();
-        return;
-    }
-    ev->accept();
+    ev->ignore();
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+    pl_x = ev->position().x();
+    pl_y = ev->position().y();
+#else
+    pl_x = ev->x();
+    pl_y = ev->y();
+#endif
+}
 
-    if (!instPtr)
-        return;
 
-    QByteArray ba = wb_textarea->toPlainText().toLatin1();
-    const char *str = ba.constData();
+void
+QTplotListDlg::mouse_release_slot(QMouseEvent *ev)
+{
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     int xx = ev->position().x();
     int yy = ev->position().y();
@@ -287,43 +289,50 @@ QTplotListDlg::mouse_press_slot(QMouseEvent *ev)
     int xx = ev->x();
     int yy = ev->y();
 #endif
-    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(xx, yy));
-    int posn = cur.position();
+    if (fabs(xx - pl_x) < 5 && fabs(yy - pl_y) < 5) {
+        // Clicked, accept to prevent selection or drag/drop.
+        ev->accept();
+        QByteArray ba = wb_textarea->toPlainText().toLatin1();
+        const char *str = ba.constData();
+        QTextCursor cur = wb_textarea->cursorForPosition(QPoint(xx, yy));
+        int posn = cur.position();
 
-//    const char *lineptr = str;
-    int line = 0;
-    for (int i = 0; i <= posn; i++) {
-        if (str[i] == '\n') {
-            line++;
-            if (i == posn) {
-                // Clicked to  right of line.
-                break;
+        int line = 0;
+        for (int i = 0; i <= posn; i++) {
+            if (str[i] == '\n') {
+                line++;
+                if (i == posn) {
+                    // Clicked to  right of line.
+                    break;
+                }
             }
-//            lineptr = str + i+1;
         }
-    }
 
-    sPlot *p;
-    int i;
-    for (i = 0, p = OP.plotList(); p; i++, p = p->next_plot()) {
-        if (i == line)
-            break;
-    }
-    if (p) {
-        OP.setCurPlot(p);
-        OP.curPlot()->run_commands();
-        TB()->UpdatePlots(0);
-        if (p->circuit()) {
-            Sp.OptUpdate();
-            Sp.SetCircuit(p->circuit());
+        sPlot *p;
+        int i;
+        for (i = 0, p = OP.plotList(); p; i++, p = p->next_plot()) {
+            if (i == line)
+                break;
         }
+        if (p) {
+            OP.setCurPlot(p);
+            OP.curPlot()->run_commands();
+            TB()->UpdatePlots(0);
+            if (p->circuit()) {
+                Sp.OptUpdate();
+                Sp.SetCircuit(p->circuit());
+            }
+        }
+        return;
     }
+    ev->ignore();
 }
 
 
 void
-QTplotListDlg::mouse_motion_slot(QMouseEvent*)
+QTplotListDlg::mouse_motion_slot(QMouseEvent *ev)
 {
+    ev->ignore();
 }
 
 

@@ -69,8 +69,7 @@ cConvert::PopUpOasAdv(GRobject caller, ShowMode mode, int x, int y)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QToasisDlg::self())
-            QToasisDlg::self()->deleteLater();
+        delete QToasisDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

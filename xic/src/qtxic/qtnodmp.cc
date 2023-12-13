@@ -128,8 +128,7 @@ cSced::PopUpNodeMap(GRobject caller, ShowMode mode, int node)
     if (!QTdev::exists() || !QTmainwin::exists())
         return (false);
     if (mode == MODE_OFF) {
-        if (QTnodeMapDlg::self())
-            QTnodeMapDlg::self()->deleteLater();
+        delete QTnodeMapDlg::self();
         return (false);
     }
     if (mode == MODE_UPD) {

@@ -77,8 +77,7 @@ void
 QTtoolbar::PopUpCircuits(ShowMode mode, int x, int y)
 {
     if (mode == MODE_OFF) {
-        if (QTcircuitListDlg::self())
-            QTcircuitListDlg::self()->deleteLater();
+        delete QTcircuitListDlg::self();
         return;
     }
     if (QTcircuitListDlg::self())
@@ -115,6 +114,8 @@ QTcircuitListDlg::QTcircuitListDlg(int xx, int yy, const char *s)
     : QTbag(this)
 {
     instPtr = this;
+    cl_x = 0;
+    cl_y = 0;
     cl_affirm = 0;
 
     setWindowTitle(tr("Circuits"));
@@ -152,14 +153,12 @@ QTcircuitListDlg::QTcircuitListDlg(int xx, int yy, const char *s)
     wb_textarea = new QTtextEdit();
     vbox->addWidget(wb_textarea);
     wb_textarea->setReadOnly(true);
-    wb_textarea->setMouseTracking(true);
-    wb_textarea->setAcceptDrops(false);
     connect(wb_textarea, SIGNAL(press_event(QMouseEvent*)),
         this, SLOT(mouse_press_slot(QMouseEvent*)));
+    connect(wb_textarea, SIGNAL(release_event(QMouseEvent*)),
+        this, SLOT(mouse_release_slot(QMouseEvent*)));
     connect(wb_textarea, SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(mouse_motion_slot(QMouseEvent*)));
-//    connect(wb_textarea, SIGNAL(mime_data_recieved(const QMimeData*)),
-//        this, SLOT(mime_data_received_slot(const QMimeData*)));
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_FIXED))
         wb_textarea->setFont(*fnt);
@@ -259,17 +258,20 @@ QTcircuitListDlg::circuit_list()
 void
 QTcircuitListDlg::mouse_press_slot(QMouseEvent *ev)
 {
-    if (ev->type() != QEvent::MouseButtonPress) {
-        ev->ignore();
-        return;
-    }
-    ev->accept();
+    ev->ignore();
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+    cl_x = ev->position().x();
+    cl_y = ev->position().y();
+#else
+    cl_x = ev->x();
+    cl_y = ev->y();
+#endif
+}
 
-    if (!instPtr)
-        return;
 
-    QByteArray ba = wb_textarea->toPlainText().toLatin1();
-    const char *str = ba.constData();
+void
+QTcircuitListDlg::mouse_release_slot(QMouseEvent *ev)
+{
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     int xx = ev->position().x();
     int yy = ev->position().y();
@@ -277,36 +279,42 @@ QTcircuitListDlg::mouse_press_slot(QMouseEvent *ev)
     int xx = ev->x();
     int yy = ev->y();
 #endif
-    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(xx, yy));
-    int posn = cur.position();
+    if (fabs(xx - cl_x) < 5 && fabs(yy - cl_y) < 5) {
+        // Clicked, accept to prevent selection or drag/drop.
+        ev->accept();
+        QByteArray ba = wb_textarea->toPlainText().toLatin1();
+        const char *str = ba.constData();
+        QTextCursor cur = wb_textarea->cursorForPosition(QPoint(xx, yy));
+        int posn = cur.position();
 
-//    const char *lineptr = str;
-    int line = 0;
-    for (int i = 0; i <= posn; i++) {
-        if (str[i] == '\n') {
-            if (i == posn) {
-                // Clicked to  right of line.
-                break;
+        int line = 0;
+        for (int i = 0; i <= posn; i++) {
+            if (str[i] == '\n') {
+                if (i == posn) {
+                    // Clicked to  right of line.
+                    break;
+                }
+                line++;
             }
-            line++;
-//            lineptr = str + i+1;
         }
+        sFtCirc *p;
+        int i = 0;
+        for (p = Sp.CircuitList(); p; i++, p = p->next()) {
+            if (i == line)
+                break;
+        }
+        if (p)
+            Sp.SetCircuit(p->name());
+        return;
     }
-    sFtCirc *p;
-    int i = 0;
-    for (p = Sp.CircuitList(); p; i++, p = p->next()) {
-        if (i == line)
-            break;
-    }
-    if (p)
-        Sp.SetCircuit(p->name());
-         
+    ev->ignore();
 }
 
 
 void
-QTcircuitListDlg::mouse_motion_slot(QMouseEvent*)
+QTcircuitListDlg::mouse_motion_slot(QMouseEvent *ev)
 {
+    ev->ignore();
 }
 
 

@@ -41,6 +41,7 @@
 #include "qtdrclim.h"
 #include "drc.h"
 #include "dsp_inlines.h"
+#include "qtllist.h"
 
 #include <QLayout>
 #include <QGroupBox>
@@ -67,8 +68,7 @@ cDRC::PopUpDrcLimits(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTdrcLimitsDlg::self())
-            QTdrcLimitsDlg::self()->deleteLater();
+        delete QTdrcLimitsDlg::self();
         return;
     }
     if (mode == MODE_UPD) {
@@ -157,7 +157,7 @@ QTdrcLimitsDlg::QTdrcLimitsDlg(GRobject c)
     connect(dl_lskip, SIGNAL(stateChanged(int)),
         this, SLOT(lskip_btn_slot(int)));
 
-    dl_llist = new QLineEdit();
+    dl_llist = new QTlayerEdit();
     grid->addWidget(dl_llist, 1, 0, 1, 3);
 
     // Rule list.

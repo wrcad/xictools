@@ -94,8 +94,7 @@ cMain::PopUpDebug(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTscriptDebuggerDlg::self())
-            QTscriptDebuggerDlg::self()->deleteLater();
+        delete QTscriptDebuggerDlg::self();
         return;
     }
 
@@ -402,8 +401,8 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c) : QTbag(this)
     connect(wb_textarea, SIGNAL(textChanged()),
         this, SLOT(text_changed_slot()));
     connect(wb_textarea,
-        SIGNAL(mime_data_handled(const QMimeData*, bool*) const),
-        this, SLOT(mime_data_delivered_slot(const QMimeData*, bool*) const));
+        SIGNAL(mime_data_handled(const QMimeData*, bool*)),
+        this, SLOT(mime_data_handled_slot(const QMimeData*, bool*)));
     connect(wb_textarea, SIGNAL(mime_data_delivered(const QMimeData*, bool*)),
         this, SLOT(mime_data_delivered_slot(const QMimeData*, bool*)));
     connect(wb_textarea, SIGNAL(key_press_event(QKeyEvent*)),

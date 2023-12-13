@@ -80,8 +80,7 @@ cFC::PopUpExtIf(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTfastCapDlg::self())
-            QTfastCapDlg::self()->deleteLater();
+        delete QTfastCapDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

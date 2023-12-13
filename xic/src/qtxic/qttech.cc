@@ -65,8 +65,7 @@ cMain::PopUpTechWrite(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTwriteTechDlg::self())
-            QTwriteTechDlg::self()->deleteLater();
+        delete QTwriteTechDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

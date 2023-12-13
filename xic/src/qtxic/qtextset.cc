@@ -85,8 +85,7 @@ cExt::PopUpExtSetup(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTextSetupDlg::self())
-            QTextSetupDlg::self()->deleteLater();
+        delete QTextSetupDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

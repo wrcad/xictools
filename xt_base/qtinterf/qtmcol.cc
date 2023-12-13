@@ -222,7 +222,7 @@ QTmcolDlg::popdown()
         if (!owner || !owner->MonitorActive(this))
             return;
     }
-    deleteLater();
+    delete this;
 }
 
 

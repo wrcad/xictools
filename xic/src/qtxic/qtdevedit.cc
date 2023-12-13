@@ -75,8 +75,7 @@ cSced::PopUpDevEdit(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTdeviceDlg::self())
-            QTdeviceDlg::self()->deleteLater();
+        delete QTdeviceDlg::self();
         return;
     }
     if (QTdeviceDlg::self())

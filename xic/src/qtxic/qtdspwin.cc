@@ -59,8 +59,7 @@ cConvert::PopUpDisplayWindow(GRobject caller, ShowMode mode, const BBox *BB,
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTdisplayWinDlg::self())
-            QTdisplayWinDlg::self()->deleteLater();
+        delete QTdisplayWinDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

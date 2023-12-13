@@ -42,6 +42,19 @@
 #define QTLLIST_H
 
 #include <QGroupBox>
+#include <QLineEdit>
+
+
+// Line edit subclass that handles layer drops for use below.
+//
+class QTlayerEdit : public QLineEdit
+{
+public:
+    QTlayerEdit(QWidget *prnt = 0) : QLineEdit(prnt) { }
+
+    void dragEnterEvent(QDragEnterEvent*);
+    void dropEvent(QDropEvent*);
+};
 
 
 //-------------------------------------------------------------------------
@@ -49,7 +62,6 @@
 //
 
 class QCheckBox;
-class QLineEdit;
 class QPushButton;
 
 class QTlayerList : public QGroupBox

@@ -76,8 +76,7 @@ cMain::PopUpFillEditor(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTfillPatDlg::self())
-            QTfillPatDlg::self()->deleteLater();
+        delete QTfillPatDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

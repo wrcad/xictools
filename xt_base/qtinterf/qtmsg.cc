@@ -122,7 +122,7 @@ QTmsgDlg::popdown()
         if (!owner || !owner->MonitorActive(this))
             return;
     }
-    deleteLater();
+    delete this;
 }
 
 
@@ -146,6 +146,6 @@ QTmsgDlg::setText(const char *message_str)
 void
 QTmsgDlg::dismiss_btn_slot()
 {
-    deleteLater();
+    delete this;
 }
 

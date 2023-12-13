@@ -277,7 +277,6 @@ QTtbHelpDlg::font_changed_slot(int fnum)
         QFont *fnt;
         if (FC.getFont(&fnt, fnum)) {
             th_text->setFont(*fnt);
-            //XXX redraw
         }
     }
 }

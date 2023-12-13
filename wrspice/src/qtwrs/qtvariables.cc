@@ -74,8 +74,7 @@ void
 QTtoolbar::PopUpVariables(ShowMode mode, int x, int y)
 {
     if (mode == MODE_OFF) {
-        if (QTvarListDlg::self())
-            QTvarListDlg::self()->deleteLater();
+        delete QTvarListDlg::self();
         return;
     }
     if (QTvarListDlg::self())
@@ -150,10 +149,10 @@ QTvarListDlg::QTvarListDlg(int xx, int yy, const char *s) : QTbag(this)
     wb_textarea->setAcceptDrops(false);
     connect(wb_textarea, SIGNAL(press_event(QMouseEvent*)),
         this, SLOT(mouse_press_slot(QMouseEvent*)));
+    connect(wb_textarea, SIGNAL(release_event(QMouseEvent*)),
+        this, SLOT(mouse_release_slot(QMouseEvent*)));
     connect(wb_textarea, SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(mouse_motion_slot(QMouseEvent*)));
-//    connect(wb_textarea, SIGNAL(mime_data_recieved(const QMimeData*)),
-//        this, SLOT(mime_data_received_slot(const QMimeData*)));
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_FIXED))
         wb_textarea->setFont(*fnt);
@@ -168,17 +167,6 @@ QTvarListDlg::QTvarListDlg(int xx, int yy, const char *s) : QTbag(this)
     vbox->addLayout(hbox);
     hbox->setContentsMargins(qm);
     hbox->setSpacing(0);
-
-    /*
-    for (int n = 0; vl_btns[n]; n++) {
-        btn = new QPushButton(tr(pl_btns[n]));
-        btn->setCheckable(true);
-        btn->setAutoDefault(false);
-        hbox->addWidget(btn);
-        connect(btn, SIGNAL(toggled(bool)),
-            this, SLOT(button_slot(bool)));
-    }
-    */
 
     btn = new QPushButton(tr("Dismiss"));
     hbox->addWidget(btn);
@@ -226,46 +214,27 @@ QTvarListDlg::update(const char *s)
 }
 
 
+// The default selection and drag/drop behavior is obtained by catching
+// and explicitly ignoring the mouse press, release, and motion signals.
+
 void
 QTvarListDlg::mouse_press_slot(QMouseEvent *ev)
 {
-    if (ev->type() != QEvent::MouseButtonPress) {
-        ev->ignore();
-        return;
-    }
-    ev->accept();
-
-    if (!instPtr)
-        return;
-
-//XXX this is all dead code.
-/* what is this supposed to do?
-    QByteArray ba = wb_textarea->toPlainText().toLatin1();
-    const char *str = ba.constData();
-    int x = ev->position().x();
-    int y = ev->position().y();
-    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(x, y));
-    int pos = cur.position();
-
-    const char *lineptr = str;
-    int line = 0;
-    for (int i = 0; i <= pos; i++) {
-        if (str[i] == '\n') {
-            line++;
-            if (i == pos) {
-                // Clicked to  right of line.
-                break;
-            }
-            lineptr = str + i+1;
-        }
-    }
-    */
+    ev->ignore();
 }
 
 
 void
-QTvarListDlg::mouse_motion_slot(QMouseEvent*)
+QTvarListDlg::mouse_release_slot(QMouseEvent *ev)
 {
+    ev->ignore();
+}
+
+
+void
+QTvarListDlg::mouse_motion_slot(QMouseEvent *ev)
+{
+    ev->ignore();
 }
 
 
@@ -278,19 +247,6 @@ QTvarListDlg::font_changed_slot(int fnum)
             wb_textarea->setFont(*fnt);
     }
 }
-
-
-/*
-void
-QTvarListDlg::button_slot(bool state)
-{
-    QPushButton *btn = dynamic_cast<QPushButton*>(sender());
-    if (!btn)
-        return;
-    QString btxt = btn->text();
-
-}
-*/
 
 
 void

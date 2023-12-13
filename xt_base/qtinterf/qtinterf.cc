@@ -490,14 +490,24 @@ QTdev::ComputePopupLocation(GRloc loc, QWidget *widget, QWidget *shell,
 
     int xo = 0, yo = 0;
     int dx = 0, dy = 0;
-/*XXX
-// This messes up locations in qtltalias.cc, maybe in general?
-    if (!shell->isAncestorOf(widget)) {
+
+    // The isAncestorOf function doesn't work here!  Windows have to
+    // overlap?
+    bool ancestor = false;
+    QWidget *p = widget;
+    while (p) {
+        p = p->parentWidget();
+        if (p == shell) {
+            ancestor = true;
+            break;
+        }
+    }
+    if (!ancestor) {
         QWidget *parent = shell->parentWidget();
         if (parent) {
-                QPoint pt = parent->mapToGlobal(QPoint(0, 0));
-                xo = pt.x();
-                yo = pt.y();
+            QPoint pt = parent->mapToGlobal(QPoint(0, 0));
+            xo = pt.x();
+            yo = pt.y();
             while (parent->parentWidget())
                 parent = parent->parentWidget();
 
@@ -512,7 +522,7 @@ QTdev::ComputePopupLocation(GRloc loc, QWidget *widget, QWidget *shell,
             }
         }
     }
-*/
+
     if (loc.code == LW_LL) {
         *px = xo + shell->x();
         *py = yo + shell->y() + shell->height() - (widget->height() + dy);
@@ -857,12 +867,12 @@ QTdev::DestroyButton(GRobject obj)
     if (o->isWidgetType()) {
         QAbstractButton *btn = dynamic_cast<QAbstractButton*>(o);
         if (btn) {
-            btn->deleteLater();
+            delete btn;
             return;
         }
         QMenu *menu = dynamic_cast<QMenu*>(o);
         if (menu) {
-            menu->deleteLater();
+            delete menu;
             return;
         }
     }
@@ -1489,10 +1499,8 @@ QTbag::PopUpWarn(ShowMode mode, const char *message_str, STYtype style,
             return (wb_warn_cnt);
         return (0);
     }
-    if (wb_warning) {
+    if (wb_warning)
         wb_warning->setText(message_str);
-        wb_warning->set_visible(true);
-    }
     else {
         wb_warning = new QTtextDlg(this, message_str, QTtextDlg::PuWarn,
             style);
@@ -1518,10 +1526,8 @@ QTbag::PopUpErr(ShowMode mode, const char *message_str, STYtype style,
             return (wb_err_cnt);
         return (0);
     }
-    if (wb_error) {
+    if (wb_error)
         wb_error->setText(message_str);
-        wb_error->set_visible(true);
-    }
     else {
         wb_error = new QTtextDlg(this, message_str, QTtextDlg::PuErr, style);
         if (wb_shell)
@@ -1558,10 +1564,8 @@ QTbag::PopUpInfo(ShowMode mode, const char *msg, STYtype style, GRloc loc)
             return (wb_info_cnt);
         return (0);
     }
-    if (wb_info) {
+    if (wb_info)
         wb_info->setText(msg);
-        wb_info->set_visible(true);
-    }
     else {
         wb_info = new QTtextDlg(this, msg, QTtextDlg::PuInfo, style);
         if (wb_shell)
@@ -1588,10 +1592,8 @@ QTbag::PopUpInfo2(ShowMode mode, const char *msg, bool(*cb)(bool, void*),
             return (wb_info2_cnt);
         return (0);
     }
-    if (wb_info2) {
+    if (wb_info2)
         wb_info2->setText(msg);
-        wb_info2->set_visible(true);
-    }
     else {
         wb_info2 = new QTtextDlg(this, msg, QTtextDlg::PuInfo2, style);
         if (wb_shell)
@@ -1617,10 +1619,8 @@ QTbag::PopUpHTMLinfo(ShowMode mode, const char *msg, GRloc loc)
             return (wb_htinfo_cnt);
         return (0);
     }
-    if (wb_htinfo) {
+    if (wb_htinfo)
         wb_htinfo->setText(msg);
-        wb_htinfo->set_visible(true);
-    }
     else {
         wb_htinfo = new QTtextDlg(this, msg, QTtextDlg::PuHTML, STY_HTML);
         if (wb_shell)

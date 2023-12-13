@@ -103,8 +103,7 @@ cMain::PopUpCells(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTcellsDlg::self())
-            QTcellsDlg::self()->deleteLater();
+        delete QTcellsDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

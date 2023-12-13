@@ -68,8 +68,7 @@ cMain::PopUpDebugFlags(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTdbgFlagsDlg::self())
-            QTdbgFlagsDlg::self()->deleteLater();
+        delete QTdbgFlagsDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

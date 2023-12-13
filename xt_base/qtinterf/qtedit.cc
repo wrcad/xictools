@@ -956,8 +956,7 @@ QTeditDlg::quit_slot()
             return;
         }
     }
-//    deleteLater();
-delete this;
+    delete this;
 }
 
 

@@ -100,11 +100,11 @@ cEdit::PopUpModified(stringlist *list, bool(*saveproc)(const char*))
 
     new QTmodifDlg(list, saveproc);
     if (QTmodifDlg::self()->is_empty()) {
-        QTmodifDlg::self()->deleteLater();
+        delete QTmodifDlg::self();
         return (PMok);
     }
     if (!QTmodifDlg::self()->Shell()) {
-        QTmodifDlg::self()->deleteLater();
+        delete QTmodifDlg::self();
         return (PMerr);
     }
     QTmodifDlg::self()->set_transient_for(QTmainwin::self());
@@ -389,7 +389,7 @@ QTmodifDlg::apply_slot()
     }
     if (QTdev::self()->LoopLevel() > 1)
         QTdev::self()->BreakLoop();
-    instPtr->deleteLater();
+    delete this;
 }
 
 
@@ -399,7 +399,7 @@ QTmodifDlg::abort_slot()
     m_retval = PMabort;
     if (QTdev::self()->LoopLevel() > 1)
         QTdev::self()->BreakLoop();
-    instPtr->deleteLater();
+    delete this;
 }
 
 

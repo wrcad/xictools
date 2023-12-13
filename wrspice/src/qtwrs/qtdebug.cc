@@ -46,6 +46,9 @@
 #include "simulator.h"
 #include "qttoolb.h"
 
+typedef void ParseNode;
+#include "spnumber/spparse.h"
+
 #include <QLayout>
 #include <QTabWidget>
 #include <QLabel>
@@ -59,15 +62,13 @@
  * Debug parameter setting dialog.
  **************************************************************************/
 
-
 // The debug parameter setting dialog, initiated from the Tools menu.
 //
 void
 QTtoolbar::PopUpDebugDefs(ShowMode mode, int x, int y)
 {
     if (mode == MODE_OFF) {
-        if (QTdebugParamDlg::self())
-            QTdebugParamDlg::self()->deleteLater();
+        delete QTdebugParamDlg::self();
         return;
     }
     if (QTdebugParamDlg::self())
@@ -79,21 +80,7 @@ QTtoolbar::PopUpDebugDefs(ShowMode mode, int x, int y)
 // End of QTtoolbar functions.
 
 
-typedef void ParseNode;
-#include "spnumber/spparse.h"
-
-
 #define KWGET(string) (xKWent*)sHtab::get(Sp.Options(), string)
-
-/*
-namespace {
-    void dbg_cancel_proc(GtkWidget*, void*);
-    void dbg_help_proc(GtkWidget*, void*);
-    void dbg_debug_proc(GtkWidget*, void*);
-    void dbg_upd_proc(GtkWidget*, void*);
-}
-*/
-
 
 QTdebugParamDlg *QTdebugParamDlg::instPtr;
 
@@ -316,12 +303,11 @@ QTdebugParamDlg::set_btn_slot(int state)
 {
     QTkwent *ent = static_cast<QTkwent*>(sender()->parent());
     if (ent->kwstruct() != db_dbent) {
-        // Not from the "debug" kwyword.
-//XXX fix state
-        bool state = QTdev::GetStatus(db_dbent->qtent()->active());
-        if (!state) {
-            state = QTdev::GetStatus(sender());
-            if (state)
+        // Not from the "debug" keyword.
+        bool dbstate = QTdev::GetStatus(db_dbent->qtent()->active());
+        if (!dbstate) {
+            dbstate = state;
+            if (dbstate)
                 QTdev::SetStatus(db_dbent->qtent()->active(), true);
         }
         else {

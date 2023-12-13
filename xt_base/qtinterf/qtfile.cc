@@ -1349,7 +1349,7 @@ QTfileDlg::filter_change_slot(const QString &qs)
 void
 QTfileDlg::quit_slot()
 {
-    deleteLater();
+    delete this;
 }
 
 
@@ -2291,7 +2291,7 @@ QTfileActionDlg::link_btn_slot()
 void
 QTfileActionDlg::cancel_btn_slot()
 {
-    deleteLater();
+    delete this;
 }
 
 */

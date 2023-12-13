@@ -64,8 +64,7 @@ cMain::PopUpSelectControl(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTselectDlg::self())
-            QTselectDlg::self()->deleteLater();
+        delete QTselectDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

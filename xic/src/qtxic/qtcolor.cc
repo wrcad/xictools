@@ -70,8 +70,7 @@ cMain::PopUpColor(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTcolorDlg::self())
-            QTcolorDlg::self()->deleteLater();
+        delete QTcolorDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

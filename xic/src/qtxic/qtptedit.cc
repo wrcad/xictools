@@ -71,8 +71,7 @@ cExt::PopUpPhysTermEdit(GRobject caller, ShowMode mode, TermEditInfo *tinfo,
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTphysTermDlg::self())
-            QTphysTermDlg::self()->deleteLater();
+        delete QTphysTermDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

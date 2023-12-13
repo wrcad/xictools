@@ -75,8 +75,7 @@ cEdit::PopUpPropertyInfo(CDo *odesc, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTprpInfoDlg::self())
-            QTprpInfoDlg::self()->deleteLater();
+        delete QTprpInfoDlg::self();
         return;
     }
     if (QTprpInfoDlg::self()) {
@@ -136,8 +135,8 @@ QTprpInfoDlg::QTprpInfoDlg(CDo *odesc) : QTprpBase(this)
     connect(wb_textarea, SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(mouse_motion_slot(QMouseEvent*)));
     connect(wb_textarea,
-        SIGNAL(mime_data_handled(const QMimeData*, bool*) const),
-        this, SLOT(mime_data_habdled_slot(const QMimeData*) const));
+        SIGNAL(mime_data_handled(const QMimeData*, bool*)),
+        this, SLOT(mime_data_habdled_slot(const QMimeData*)));
     connect(wb_textarea, SIGNAL(mime_data_delivered(const QMimeData*, bool*)),
         this, SLOT(mime_data_delivered_slot(const QMimeData*, bool*)));
 

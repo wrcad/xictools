@@ -63,8 +63,7 @@ cOAif::PopUpOAdefs(GRobject caller, ShowMode mode, int x, int y)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QToaDefsDlg::self())
-            QToaDefsDlg::self()->deleteLater();
+        delete QToaDefsDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

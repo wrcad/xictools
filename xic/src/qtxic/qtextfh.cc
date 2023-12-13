@@ -77,8 +77,7 @@ cFH::PopUpExtIf(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTfastHenryDlg::self())
-            QTfastHenryDlg::self()->deleteLater();
+        delete QTfastHenryDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

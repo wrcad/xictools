@@ -66,8 +66,7 @@ cMain::PopUpSymTabs(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTstabDlg::self())
-            QTstabDlg::self()->deleteLater();
+        delete QTstabDlg::self();
         return;
     }
     if (mode == MODE_UPD) {

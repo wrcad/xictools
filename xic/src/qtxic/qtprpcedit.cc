@@ -73,8 +73,7 @@ cEdit::PopUpCellProperties(ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTcellPrpDlg::self())
-            QTcellPrpDlg::self()->deleteLater();
+        delete QTcellPrpDlg::self();
         return;
     }
     if (QTcellPrpDlg::self()) {

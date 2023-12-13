@@ -224,7 +224,7 @@ QTexpandDlg::popdown()
     if (!owner || !owner->MonitorActive(this))
         return;
 
-    deleteLater();
+    delete this;
 }
 
 
@@ -346,6 +346,6 @@ QTexpandDlg::apply_slot()
 void
 QTexpandDlg::dismiss_slot()
 {
-    deleteLater();
+    delete this;
 }
 

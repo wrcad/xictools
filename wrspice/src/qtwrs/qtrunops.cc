@@ -76,8 +76,7 @@ void
 QTtoolbar::PopUpRunops(ShowMode mode, int x, int y)
 {
     if (mode == MODE_OFF) {
-        if (QTrunopListDlg::self())
-            QTrunopListDlg::self()->deleteLater();
+        delete QTrunopListDlg::self();
         return;
     }
     if (QTrunopListDlg::self())
@@ -113,6 +112,8 @@ QTrunopListDlg *QTrunopListDlg::instPtr;
 QTrunopListDlg::QTrunopListDlg(int xx, int yy, const char *s) : QTbag(this)
 {
     instPtr = this;
+    tl_x = 0;
+    tl_y = 0;
     tl_affirm = 0;
 
     setWindowTitle(tr("Runops"));
@@ -150,14 +151,12 @@ QTrunopListDlg::QTrunopListDlg(int xx, int yy, const char *s) : QTbag(this)
     wb_textarea = new QTtextEdit();
     vbox->addWidget(wb_textarea);
     wb_textarea->setReadOnly(true);
-    wb_textarea->setMouseTracking(true);
-    wb_textarea->setAcceptDrops(false);
     connect(wb_textarea, SIGNAL(press_event(QMouseEvent*)),
         this, SLOT(mouse_press_slot(QMouseEvent*)));
+    connect(wb_textarea, SIGNAL(release_event(QMouseEvent*)),
+        this, SLOT(mouse_release_slot(QMouseEvent*)));
     connect(wb_textarea, SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(mouse_motion_slot(QMouseEvent*)));
-//    connect(wb_textarea, SIGNAL(mime_data_recieved(const QMimeData*)),
-//        this, SLOT(mime_data_received_slot(const QMimeData*)));
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_FIXED))
         wb_textarea->setFont(*fnt);
@@ -258,17 +257,20 @@ QTrunopListDlg::recolor()
 void
 QTrunopListDlg::mouse_press_slot(QMouseEvent *ev)
 {
-    if (ev->type() != QEvent::MouseButtonPress) {
-        ev->ignore();
-        return;
-    }
-    ev->accept();
+    ev->ignore();
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+    tl_x = ev->position().x();
+    tl_y = ev->position().y();
+#else
+    tl_x = ev->x();
+    tl_y = ev->y();
+#endif
+}
 
-    if (!instPtr)
-        return;
 
-    QByteArray ba = wb_textarea->toPlainText().toLatin1();
-    const char *str = ba.constData();
+void
+QTrunopListDlg::mouse_release_slot(QMouseEvent *ev)
+{
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     int xx = ev->position().x();
     int yy = ev->position().y();
@@ -276,40 +278,48 @@ QTrunopListDlg::mouse_press_slot(QMouseEvent *ev)
     int xx = ev->x();
     int yy = ev->y();
 #endif
-    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(xx, yy));
-    int posn = cur.position();
+    if (fabs(xx - tl_x) < 5 && fabs(yy - tl_y) < 5) {
+        // Clicked, accept to prevent selection or drag/drop.
+        ev->accept();
+        QByteArray ba = wb_textarea->toPlainText().toLatin1();
+        const char *str = ba.constData();
+        QTextCursor cur = wb_textarea->cursorForPosition(QPoint(xx, yy));
+        int posn = cur.position();
 
-    const char *lineptr = str;
-    for (int i = 0; i <= posn; i++) {
-        if (str[i] == '\n') {
-            if (i == posn) {
-                // Clicked to  right of line.
-                break;
+        const char *lineptr = str;
+        for (int i = 0; i <= posn; i++) {
+            if (str[i] == '\n') {
+                if (i == posn) {
+                    // Clicked to  right of line.
+                    break;
+                }
+                lineptr = str + i+1;
             }
-            lineptr = str + i+1;
         }
+
+        // The first column should start with ' ' for active debugs, 'I'
+        // for inactive ones.  Anything else is a 'no debugs in effect'
+        // message.
+        //
+        if (*lineptr != ' ' && *lineptr != 'I')
+            return;
+
+        // Is it active? Set to opposite.
+        bool active = (*lineptr == ' ') ? false : true;
+
+        int dnum;
+        if (sscanf(lineptr+2, "%d", &dnum) != 1)
+            return;
+        OP.setRunopActive(dnum, active);
+
+        QColor red("red");
+        int psn = lineptr - str;
+        wb_textarea->set_editable(true);
+        wb_textarea->replace_chars(&red, active ? " " : "I", psn, psn+1);
+        wb_textarea->set_editable(false);
+        return;
     }
-
-    // The first column should start with ' ' for active debugs, 'I'
-    // for inactive ones.  Anything else is a 'no debugs in effect'
-    // message.
-    //
-    if (*lineptr != ' ' && *lineptr != 'I')
-        return;
-
-    // Is it active? Set to opposite.
-    bool active = (*lineptr == ' ') ? false : true;
-
-    int dnum;
-    if (sscanf(lineptr+2, "%d", &dnum) != 1)
-        return;
-    OP.setRunopActive(dnum, active);
-
-    QColor red("red");
-    int psn = lineptr - str;
-    wb_textarea->set_editable(true);
-    wb_textarea->replace_chars(&red, active ? " " : "I", psn, psn+1);
-    wb_textarea->set_editable(false);
+    ev->ignore();
 }
 
 

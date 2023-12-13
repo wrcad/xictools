@@ -236,8 +236,7 @@ cMain::PopUpAttributes(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTattributesDlg::self())
-            QTattributesDlg::self()->deleteLater();
+        delete QTattributesDlg::self();
         return;
     }
     if (mode == MODE_UPD) {
@@ -437,6 +436,7 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     hb->addWidget(label);
 
     at_ebterms = new QComboBox();
+    hb->addWidget(at_ebterms);
 
     at_ebterms->addItem("Don't erase");
     at_ebterms->addItem("Cell terminals only");

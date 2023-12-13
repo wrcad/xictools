@@ -371,50 +371,6 @@ QTkwent::ke_bool_func(bool isset, variable*, void *entp)
 }
 
 
-/*
-    void
-    int2_func(bool isset, variable *v, xEnt *ent)
-    {
-        ent->set_state(isset);
-        if (ent->entry) {
-            if (isset) {
-                int val1=0, val2=0;
-                if (v->type() == VTYP_STRING) {
-                    const char *string = v->string();
-                    double *d = SPnum.parse(&string, false);
-                    val1 = (int)*d;
-                    while (*string && !isdigit(*string) &&
-                        *string != '-' && *string != '+') string++;
-                    d = SPnum.parse(&string, true);
-                    val2 = (int)*d;
-                }
-                else if (v->type() == VTYP_LIST) {
-                    variable *vx = v->list();
-                    val1 = vx->integer();
-                    vx = vx->next();
-                    val2 = vx->integer();
-                }
-                char buf[64];
-                snprintf(buf, sizeof(buf), "%d", val1);
-                gtk_entry_set_text(GTK_ENTRY(ent->entry), buf);
-
-                if (ent->entry2) {
-                    snprintf(buf, sizeof(buf), "%d", val2);
-                    gtk_entry_set_text(GTK_ENTRY(ent->entry2), buf);
-                    gtk_editable_set_editable(GTK_EDITABLE(ent->entry2), false);
-                    gtk_widget_set_sensitive(ent->entry2, false);
-                }
-            }
-            else {
-                if (ent->entry2) {
-                    gtk_editable_set_editable(GTK_EDITABLE(ent->entry2), true);
-                    gtk_widget_set_sensitive(ent->entry2, true);
-                }
-            }
-        }
-    }
-*/
-
 // Static function.
 // Integer data.
 //
@@ -439,49 +395,61 @@ QTkwent::ke_int_func(bool isset, variable *v, void *entp)
 }
 
 
-/*
-    void
-    real2_func(bool isset, variable *v, xEnt *ent)
-    {
-        ent->set_state(isset);
-        if (ent->entry) {
-            if (isset) {
-                double dval1=0.0, dval2=0.0;
-                if (v->type() == VTYP_STRING) {
-                    const char *string = v->string();
-                    double *d = SPnum.parse(&string, false);
-                    dval1 = *d;
-                    while (*string && !isdigit(*string) &&
-                        *string != '-' && *string != '+') string++;
-                    d = SPnum.parse(&string, true);
-                    dval2 = *d;
-                }
-                else if (v->type() == VTYP_LIST) {
-                    variable *vx = v->list();
-                    dval1 = vx->real();
-                    vx = vx->next();
-                    dval2 = vx->real();
-                }
-                char buf[64];
-                snprintf(buf, sizeof(buf), "%g", dval1);
-                gtk_entry_set_text(GTK_ENTRY(ent->entry), buf);
-
-                if (ent->entry2) {
-                    snprintf(buf, sizeof(buf), "%g", dval2);
-                    gtk_entry_set_text(GTK_ENTRY(ent->entry2), buf);
-                    gtk_editable_set_editable(GTK_EDITABLE(ent->entry2), false);
-                    gtk_widget_set_sensitive(ent->entry2, false);
-                }
+// Static function.
+// Integer data, 2 items.
+//
+void
+QTkwent::ke_int2_func(bool isset, variable *v, void *entp)
+{
+    QTkwent *ent = static_cast<QTkwent*>(entp);
+    ent->set_state(isset);
+    if (isset) {
+        int val1=0, val2=0;
+        if (v->type() == VTYP_STRING) {
+            const char *string = v->string();
+            double *d = SPnum.parse(&string, false);
+            val1 = (int)*d;
+            while (*string && !isdigit(*string) &&
+                *string != '-' && *string != '+') string++;
+            d = SPnum.parse(&string, true);
+            val2 = (int)*d;
+        }
+        else if (v->type() == VTYP_LIST) {
+            variable *vx = v->list();
+            val1 = vx->integer();
+            vx = vx->next();
+            val2 = vx->integer();
+        }
+        if (ent->ke_spbox) {
+            ent->ke_spbox->setValue(val1);
+            if (ent->ke_spbox2) {
+                ent->ke_spbox2->setValue(val2);
+                ent->ke_spbox2->setEnabled(false);
             }
-            else {
-                if (ent->entry2) {
-                    gtk_editable_set_editable(GTK_EDITABLE(ent->entry2), true);
-                    gtk_widget_set_sensitive(ent->entry2, true);
-                }
+        }
+        else if (ent->ke_entry) {
+            char buf[64];
+            snprintf(buf, sizeof(buf), "%d", val1);
+            ent->ke_entry->setText(buf);
+            if (ent->ke_entry2) {
+                snprintf(buf, sizeof(buf), "%d", val2);
+                ent->ke_entry2->setText(buf);
+                ent->ke_entry2->setReadOnly(true);
+                ent->ke_entry2->setEnabled(false);
             }
         }
     }
-*/
+    else {
+        if (ent->ke_spbox2) {
+            ent->ke_spbox2->setEnabled(true);
+        }
+        else if (ent->ke_entry2) {
+            ent->ke_entry2->setReadOnly(false);
+            ent->ke_entry2->setEnabled(true);
+        }
+    }
+}
+
 
 // Static function.
 // Real valued data.
@@ -507,6 +475,62 @@ QTkwent::ke_real_func(bool isset, variable *v, void *entp)
             else
                 snprintf(buf, sizeof(buf), "%.*f", ent->ke_numd, v->real());
             ent->ke_entry->setText(buf);
+        }
+    }
+}
+
+
+// Static function.
+// Real valued data, 2 items.
+//
+void
+QTkwent::ke_real2_func(bool isset, variable *v, void *entp)
+{
+    QTkwent *ent = static_cast<QTkwent*>(entp);
+    ent->set_state(isset);
+    if (isset) {
+        double dval1=0.0, dval2=0.0;
+        if (v->type() == VTYP_STRING) {
+            const char *string = v->string();
+            double *d = SPnum.parse(&string, false);
+            dval1 = *d;
+            while (*string && !isdigit(*string) &&
+                *string != '-' && *string != '+') string++;
+            d = SPnum.parse(&string, true);
+            dval2 = *d;
+        }
+        else if (v->type() == VTYP_LIST) {
+            variable *vx = v->list();
+            dval1 = vx->real();
+            vx = vx->next();
+            dval2 = vx->real();
+        }
+        if (ent->ke_spbox) {
+            ent->ke_spbox->setValue(dval1);
+            if (ent->ke_spbox2) {
+                ent->ke_spbox2->setValue(dval2);
+                ent->ke_spbox2->setEnabled(false);
+            }
+        }
+        else if (ent->ke_entry) {
+            char buf[64];
+            snprintf(buf, sizeof(buf), "%g", dval1);
+            ent->ke_entry->setText(buf);
+            if (ent->ke_entry2) {
+                snprintf(buf, sizeof(buf), "%g", dval2);
+                ent->ke_entry2->setText(buf);
+                ent->ke_entry2->setReadOnly(true);
+                ent->ke_entry2->setEnabled(false);
+            }
+        }
+    }
+    else {
+        if (ent->ke_spbox2) {
+            ent->ke_spbox2->setEnabled(true);
+        }
+        else if (ent->ke_entry2) {
+            ent->ke_entry2->setReadOnly(false);
+            ent->ke_entry2->setEnabled(true);
         }
     }
 }
@@ -666,19 +690,49 @@ QTkwent::def_btn_slot()
             ke_active->setChecked(false);
     }
     if (ke_defstr) {
-        if (ke_entry)
-            ke_entry->setText(ke_defstr);
-        else if (ke_spbox)
+        if (ke_entry) {
+            if (ke_entry2) {
+                const char *t = ke_defstr;
+                char *t1 = lstring::gettok(&t);
+                char *t2 = lstring::gettok(&t);
+                ke_entry->setText(t1 ? t1 : "");
+                ke_entry2->setText(t2 ? t2 : "");
+                delete [] t1;
+                delete [] t2;
+            }
+            else
+                ke_entry->setText(ke_defstr);
+        }
+        else if (ke_spbox) {
+            if (ke_spbox2) {
+                double d1, d2;
+                int n = sscanf(ke_defstr, "%lg %lg", &d1, &d2);
+                ke_spbox->setValue(n > 0 ? d1 : 0);
+                ke_spbox2->setValue(n > 1 ? d2 : 0);
+            }
             ke_spbox->setValue(atof(ke_defstr));
+        }
         else if (ke_expsb)
             ke_expsb->setValue(atof(ke_defstr));
+        else if (ke_choice)
+            ke_choice->setValue(ke_choice->valueFromText(ke_defstr));
     }
-    else if (ke_spbox)
-        ke_spbox->setValue(ke_val);
-    else if (ke_expsb)
-        ke_expsb->setValue(ke_val);
-    if (ke_entry2)
-        ke_entry2->setText(ke_defstr ? ke_defstr : "");
+    else {
+        if (ke_entry) {
+            ke_entry->setText("");
+            if (ke_entry2)
+                ke_entry2->setText("");
+        }
+        else if (ke_spbox) {
+            ke_spbox->setValue(ke_val);
+            if (ke_spbox2)
+                ke_spbox2->setValue(ke_val);
+        }
+        else if (ke_expsb)
+            ke_expsb->setValue(ke_val);
+        else if (ke_choice)
+            ke_choice->setValue(0);
+    }
 }
 
 

@@ -163,8 +163,7 @@ cMain::PopUpTree(GRobject caller, ShowMode mode, const char *root,
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTtreeDlg::self())
-            QTtreeDlg::self()->deleteLater();
+        delete QTtreeDlg::self();
         return;
     }
 

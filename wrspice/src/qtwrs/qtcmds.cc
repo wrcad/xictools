@@ -71,8 +71,7 @@ void
 QTtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
 {
     if (mode == MODE_OFF) {
-        if (QTcmdParamDlg::self())
-            QTcmdParamDlg::self()->deleteLater();
+        delete QTcmdParamDlg::self();
         return;
     }
     if (QTcmdParamDlg::self())

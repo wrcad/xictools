@@ -80,8 +80,7 @@ cDRC::PopUpDrcRun(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTdrcRunDlg::self())
-            QTdrcRunDlg::self()->deleteLater();
+        delete QTdrcRunDlg::self();
         return;
     }
     if (mode == MODE_UPD) {
@@ -345,12 +344,12 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
     dc_check->setAutoDefault(false);
     connect(dc_check, SIGNAL(toggled(bool)), this, SLOT(check_btn_slot(bool)));
 
-    // XXX set up event dispatch loop in QT
-    // This is black magic to allow button pressess/releases to be
+    // This is to allow button pressess/releases to be
     // dispatched when the busy flag is set.  Un-setting the Check
     // button will pause the DRC run.
-    // g_object_set_data(G_OBJECT(dc_check), "abort", (void*)1);
-    // Tested inn the event dispatch loop in GTK.
+    // In GTK:  g_object_set_data(G_OBJECT(dc_check), "abort", (void*)1);
+    // Tested in the event dispatch loop.
+    QTpkg::self()->EventMonitor()->add_busy_allow(dc_check);
 
     dc_checkbg = new QPushButton(tr("Check in\nBackground"));
     grid->addWidget(dc_checkbg, 3, 2, 1, 2);
@@ -398,6 +397,7 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
 QTdrcRunDlg::~QTdrcRunDlg()
 {
     instPtr = 0;
+    QTpkg::self()->EventMonitor()->remove_busy_allow(dc_check);
     dc_region_quit();
     if (dc_caller)
         QTdev::Deselect(dc_caller);

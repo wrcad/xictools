@@ -64,8 +64,7 @@ cEdit::PopUpJoin(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        if (QTjoinDlg::self())
-            QTjoinDlg::self()->deleteLater();
+        delete QTjoinDlg::self();
         return;
     }
     if (mode == MODE_UPD) {
