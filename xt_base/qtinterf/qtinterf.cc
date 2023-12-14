@@ -1046,8 +1046,8 @@ QTbag::PopUpFileBrowser(const char *fname)
     // If we happen to already have this file open, reread it.
     // Called after something was appended to the file.
     for (int i = 0; i < GR_NUM_SUBED; i++) {
-        if (Editors[i]) {
-            QTeditDlg *w = Editors[i];
+        if (wb_editors[i]) {
+            QTeditDlg *w = wb_editors[i];
             if (w->get_editor_type() != QTeditDlg::Browser)
                 continue;
             const char *string = w->get_file();
@@ -1059,7 +1059,7 @@ QTbag::PopUpFileBrowser(const char *fname)
     }
     int i;
     for (i = 0; i < GR_NUM_SUBED; i++) {
-        if (Editors[i] == 0)
+        if (wb_editors[i] == 0)
             break;
     }
     if (i == GR_NUM_SUBED) {
@@ -1067,12 +1067,12 @@ QTbag::PopUpFileBrowser(const char *fname)
         return (0);
     }
 
-    Editors[i] = new QTeditDlg(this, QTeditDlg::Browser, fname, false, 0);
-    Editors[i]->register_usrptr((void**)&Editors[i]);
+    wb_editors[i] = new QTeditDlg(this, QTeditDlg::Browser, fname, false, 0);
+    wb_editors[i]->register_usrptr((void**)&wb_editors[i]);
     if (wb_shell)
-        Editors[i]->set_transient_for(wb_shell);
-    Editors[i]->set_visible(true);
-    return (Editors[i]);
+        wb_editors[i]->set_transient_for(wb_shell);
+    wb_editors[i]->set_visible(true);
+    return (wb_editors[i]);
 }
 
 
@@ -1089,18 +1089,19 @@ QTbag::PopUpStringEditor(const char *string,
     if (!callback) {
         // pop down and destroy all string editor windows
         for (int i = 0; i < GR_NUM_SUBED; i++) {
-            if (Editors[i] &&
-                    Editors[i]->get_editor_type() == QTeditDlg::StringEditor) {
-                Editors[i]->call_callback(0, 0, XE_SAVE);
-                Editors[i]->popdown();
-                Editors[i] = 0;
+            if (wb_editors[i] &&
+                    wb_editors[i]->get_editor_type() ==
+                    QTeditDlg::StringEditor) {
+                wb_editors[i]->call_callback(0, 0, XE_SAVE);
+                wb_editors[i]->popdown();
+                wb_editors[i] = 0;
             }
         }
         return (0);
     }
     int i;
     for (i = 0; i < GR_NUM_SUBED; i++) {
-        if (Editors[i] == 0)
+        if (wb_editors[i] == 0)
             break;
     }
     if (i == GR_NUM_SUBED) {
@@ -1108,14 +1109,14 @@ QTbag::PopUpStringEditor(const char *string,
         return (0);
     }
 
-    Editors[i] = new QTeditDlg(this, QTeditDlg::StringEditor, string, false,
+    wb_editors[i] = new QTeditDlg(this, QTeditDlg::StringEditor, string, false,
         arg);
-    Editors[i]->register_usrptr((void**)&Editors[i]);
+    wb_editors[i]->register_usrptr((void**)&wb_editors[i]);
     if (wb_shell)
-        Editors[i]->set_transient_for(wb_shell);
-    Editors[i]->register_callback(callback);
-    Editors[i]->set_visible(true);
-    return (Editors[i]);
+        wb_editors[i]->set_transient_for(wb_shell);
+    wb_editors[i]->register_callback(callback);
+    wb_editors[i]->set_visible(true);
+    return (wb_editors[i]);
 }
 
 
@@ -1130,13 +1131,14 @@ QTbag::PopUpMail(const char *subject, const char *mailaddr,
     void(*downproc)(GReditPopup*), GRloc loc)
 {
     for (int i = 0; i < GR_NUM_SUBED; i++) {
-        if (Editors[i] && Editors[i]->get_editor_type() == QTeditDlg::Mailer)
+        if (wb_editors[i] &&
+                wb_editors[i]->get_editor_type() == QTeditDlg::Mailer)
             // already active
-            return (Editors[i]);
+            return (wb_editors[i]);
     }
     int i;
     for (i = 0; i < GR_NUM_SUBED; i++) {
-        if (Editors[i] == 0)
+        if (wb_editors[i] == 0)
             break;
     }
     if (i == GR_NUM_SUBED) {
@@ -1144,18 +1146,18 @@ QTbag::PopUpMail(const char *subject, const char *mailaddr,
         return (0);
     }
 
-    Editors[i] = new QTeditDlg(this, QTeditDlg::Mailer, 0, false, 0);
-    Editors[i]->register_usrptr((void**)&Editors[i]);
+    wb_editors[i] = new QTeditDlg(this, QTeditDlg::Mailer, 0, false, 0);
+    wb_editors[i]->register_usrptr((void**)&wb_editors[i]);
     if (wb_shell)
-        Editors[i]->set_transient_for(wb_shell);
+        wb_editors[i]->set_transient_for(wb_shell);
     if (subject && *subject)
-        Editors[i]->set_mailsubj(subject);
+        wb_editors[i]->set_mailsubj(subject);
     if (mailaddr && *mailaddr)
-        Editors[i]->set_mailaddr(mailaddr);
-    Editors[i]->register_quit_callback(downproc);
-    Editors[i]->set_visible(true);
-    QTdev::self()->SetPopupLocation(loc, Editors[i], wb_shell);
-    return (Editors[i]);
+        wb_editors[i]->set_mailaddr(mailaddr);
+    wb_editors[i]->register_quit_callback(downproc);
+    wb_editors[i]->set_visible(true);
+    QTdev::self()->SetPopupLocation(loc, wb_editors[i], wb_shell);
+    return (wb_editors[i]);
 }
 
 

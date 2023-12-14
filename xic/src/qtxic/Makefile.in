@@ -372,7 +372,7 @@ moc_debug.cpp: $(MOC) qtdebug.o
 	$(MOC) qtdebug.h -o moc_debug.cpp
 moc_devedit.cpp: $(MOC) qtdevedit.o
 	$(MOC) qtdevedit.h -o moc_devedit.cpp
-moc_devs.cpp: $(MOC) qtdevs.h
+moc_devs.cpp: $(MOC) qtdevs.o
 	$(MOC) qtdevs.h -o moc_devs.cpp
 moc_dots.cpp: $(MOC) qtdots.o
 	$(MOC) qtdots.h -o moc_dots.cpp

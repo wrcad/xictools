@@ -217,7 +217,7 @@ protected:
     int             wb_htinfo_cnt;
 
 #define GR_NUM_SUBED 5
-    QTeditDlg       *Editors[GR_NUM_SUBED];
+    QTeditDlg       *wb_editors[GR_NUM_SUBED];
 
     // These are used in a lot of places.
     static const char *wb_closed_folder_xpm[];
