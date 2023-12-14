@@ -992,6 +992,8 @@ QTbag::QTbag(QWidget *w)
     wb_info_cnt = 1;
     wb_info2_cnt = 1;
     wb_htinfo_cnt = 1;
+    for (int i = 0; i < GR_NUM_SUBED; i++)
+        wb_editors[i] = 0;
 }
 
 QTbag::~QTbag()
