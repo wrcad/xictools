@@ -1230,11 +1230,13 @@ namespace ginterf
     struct GRledPopup : public GRpopup
     {
         typedef ESret(*GRledCallback)(const char*, void*);
+        typedef void(*GRledCallback_nr)(const char*, void*);
         typedef void(*GRledQuitFunc)(bool);
 
         GRledPopup()
         {
             p_callback = 0;
+            p_callback_nr = 0;
             p_cancel = 0;
             p_cb_arg = 0;
         }
@@ -1243,6 +1245,13 @@ namespace ginterf
         {
             GRledCallback ctmp = p_callback;
             p_callback = cb;
+            return (ctmp);
+        }
+
+        GRledCallback_nr register_callback_nr(GRledCallback_nr cb)
+        {
+            GRledCallback_nr ctmp = p_callback_nr;
+            p_callback_nr = cb;
             return (ctmp);
         }
 
@@ -1264,6 +1273,7 @@ namespace ginterf
 
     protected:
         GRledCallback p_callback;
+        GRledCallback_nr p_callback_nr;
         GRledQuitFunc p_cancel;
         void *p_cb_arg;
     };
@@ -1562,7 +1572,7 @@ namespace ginterf
 
         // hard copy
         virtual void PopUpPrint(GRobject, HCcb*, HCmode, GRdraw* = 0)   = 0;
-        virtual void HCupdate(HCcb*, GRobject)                          = 0;
+        virtual void HCupdate(HCcb*)                                    = 0;
         virtual void HCsetFormat(int)                                   = 0;
 
         // help

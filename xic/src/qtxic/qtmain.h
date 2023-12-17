@@ -390,8 +390,6 @@ signals:
 
 protected slots:
     void resize_slot(QResizeEvent*);
-    void new_painter_slot(QPainter*);
-    void paint_slot(QPaintEvent*);
     void button_down_slot(QMouseEvent*);
     void button_up_slot(QMouseEvent*);
     void motion_slot(QMouseEvent*);
@@ -500,8 +498,7 @@ private:
 // Utilities
 
 
-inline unsigned int
-mod_state(int qtstate)
+inline unsigned int mod_state(int qtstate)
 {
     int state = 0;
     if (qtstate & Qt::ShiftModifier)
@@ -516,8 +513,7 @@ mod_state(int qtstate)
 }
 
 
-inline bool
-is_modifier_key(int key)
+inline bool is_modifier_key(int key)
 {
     return (
         key == Qt::Key_Shift    ||
@@ -544,7 +540,7 @@ namespace qt_keyb {
     const QObject *find_wname(const QObject*, const char**);
     char *object_path(const QObject*);
     wlist *find_object(const QObject*, const char*);
-    QObject *name_to_object(const char*);
+    const QObject *name_to_object(const char*);
 }
 
 #endif

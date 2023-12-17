@@ -56,7 +56,6 @@
   Keyboard Macros
  ========================================================================*/
 
-
 // Global interface for the script reader
 //
 bool
@@ -84,23 +83,6 @@ cMain::SendButtonEvent(const char *widget_name, int state, int num, int x,
 // End of cMain functions.
 
 
-namespace {
-    // Convert the state flags to the Xic representation
-    //
-    inline unsigned convert_state(unsigned qtstate)
-    {
-        int state = 0;
-        if (qtstate & Qt::ShiftModifier)
-            state |= GR_SHIFT_MASK;
-        if (qtstate & Qt::ControlModifier)
-            state |= GR_CONTROL_MASK;
-        if (qtstate & Qt::AltModifier)
-            state |= GR_ALT_MASK;
-        return (state);
-    }
-}
-
-
 // Main function to obtain a macro mapping for a keypress.
 //
 sKeyMap *
@@ -112,46 +94,49 @@ cKbMacro::getKeyToMap()
     int prcnt = 0;
     XM()->ShowPrompt("Enter keypress to map: ");
     for (;;) {
-        GdkEvent *ev = gdk_event_get();
+        QEvent *ev = gdk_event_get();
         if (!ev)
             continue;
-        if (ev->type == GDK_KEY_PRESS) {
+        if (ev->type() == QEvent::KeyPress) {
             prcnt++;
-            if (ev->key.keyval == 0) {
+            QKeyEvent *kev = static_cast<QKeyEvent*>(ev);
+            if (kev->key() == 0) {
                 // may happen if key is unknown, e.g. the Microsoft Windows
                 // key
                 gdk_event_free(ev);
                 continue;
             }
-            if (Kmap.isModifier(ev->key.keyval)) {
+            if (Kmap.isModifier(kev->key())) {
                 gdk_event_free(ev);
                 continue;
             }
-            if ((ev->key.string && ev->key.string[1] == 0 &&
-                    (*ev->key.string == 27 || *ev->key.string == 13)) &&
-                    !(ev->key.state & (GDK_CONTROL_MASK | GDK_MOD1_MASK))) {
+            QByteArray ba = kev->text().toLatin1();
+            const char *kstr = ba.constData();
+            if ((kstr && kstr[1] == 0 &&
+                    (*kstr == 27 || *kstr == 13)) &&
+                    !(kev->modifiers & (Qt::ControlModifier | Qt::Mod1Modifier))) {
                 // Esc or CR
                 XM()->ErasePrompt();
                 gdk_event_free(ev);
                 return (0);
             }
             if (!done) {
-                if (not_mappable(ev->key.keyval, ev->key.state)) {
+                if (not_mappable(kev->key(), mod_state(kev->modifiers()))) {
                     XM()->ShowPrompt("Not mappable, try another: ");
                     gdk_event_free(ev);
                     continue;
                 }
-                nkey = already_mapped(ev->key.keyval,
-                    convert_state(ev->key.state));
+                nkey = already_mapped(kev->key(),
+                    mod_state(kev->modifiers()));
                 if (!nkey)
-                    nkey = new sKeyMap(ev->key.keyval,
-                        convert_state(ev->key.state), ev->key.string);
+                    nkey = new sKeyMap(kev->key(),
+                        mod_state(kev->modifiers()), kstr);
                 done = true;
             }
             gdk_event_free(ev);
             continue;
         }
-        if (ev->type == GDK_KEY_RELEASE) {
+        if (ev->type() == QEvent::KeyRelease) {
             if (prcnt)
                 prcnt--;
             if (!prcnt && done)
@@ -159,9 +144,8 @@ cKbMacro::getKeyToMap()
             gdk_event_free(ev);
             continue;
         }
-        if (ev->type == GDK_BUTTON_PRESS ||
-                ev->type == GDK_2BUTTON_PRESS ||
-                ev->type == GDK_3BUTTON_PRESS) {
+        if (ev->type() == QEvent::MouseButtonPress ||
+                ev->type == GDK_2BUTTON_PRESS) {
             gdk_event_free(ev);
             return (0);
         }
@@ -295,23 +279,18 @@ cKbMacro::execKey(sKeyEvent *k)
         return (true);
     }
 
-/*XXX
     QTpkg::self()->CheckForInterrupt();
-    QObject *w = qt_keyb::name_to_object(k->widget_name);
-    if (w && !w->window)
-        gtk_widget_realize(w);
-    if (!w || !w->window)
+    const QObject *w = qt_keyb::name_to_object(k->widget_name);
+    if (!w)
         return (false);
 
-    GdkEventKey event;
-    event.window = w->window;
-    event.send_event = true;
-    event.time = GDK_CURRENT_TIME;
+/*XXX
+    QKeyEvent event;
     event.state = k->state;
     event.keyval = k->key;
     event.string = k->text;
     event.length = strlen(k->text);
-    event.type = (k->type == KEY_PRESS ? GDK_KEY_PRESS : GDK_KEY_RELEASE);
+    event.type = (k->type == KEY_PRESS ? QEvent::KeyPress : QEvent::KeyRelease);
 
     gtk_propagate_event(w, (GdkEvent*)&event);
 */
@@ -324,15 +303,13 @@ cKbMacro::execKey(sKeyEvent *k)
 bool
 cKbMacro::execBtn(sBtnEvent *b)
 {
-/*XXX
     if (b->type == BUTTON_PRESS)
         QTpkg::self()->CheckForInterrupt();
-    QObject *w = qt_keyb::name_to_object(b->widget_name);
-    if (w && !w->window)
-        gtk_widget_realize(w);
-    if (!w || !w->window)
+    const QObject *w = qt_keyb::name_to_object(b->widget_name);
+    if (!w)
         return (false);
 
+/*XXX
     if (GTK_IS_BUTTON(w)) {
         if (b->type == BUTTON_RELEASE) {
             if (w == (GtkWidget*)kmLastBtn)
@@ -361,10 +338,7 @@ cKbMacro::execBtn(sBtnEvent *b)
         int xo, yo;
         gdk_window_get_root_origin(w->window, &xo, &yo);
 
-        GdkEventButton event;
-        event.window = w->window;
-        event.send_event = true;
-        event.time = GDK_CURRENT_TIME;
+        eQMouseEvent event;
         event.x = b->x;
         event.y = b->y;
         event.x_root = xo + b->x;
@@ -384,21 +358,19 @@ cKbMacro::execBtn(sBtnEvent *b)
             GDK_BUTTON_PRESS : GDK_BUTTON_RELEASE);
         gtk_propagate_event(w, (GdkEvent*)&event);
     }
-    return (true);
 */
-    (void)b;
     return (true);
 }
 // End of cKbMacro functions
 
 
-// Start recording events for macro definition
+// Start recording events for macro definition.
 //
 void
 sKeyMap::begin_recording(char *str)
 {
 /*XXX
-    forstr = copy(str);
+    forstr = lstring::copy(str);
     for (end = response; end && end->next; end = end->next) ;
     show();
 
@@ -434,7 +406,7 @@ qt_keyb::macro_event_handler(QObject *obj, QEvent *ev, void *arg)
         char *wname;
         if (find_wname(ev->key.window, &wname)) {
             sEvent *nev = new sKeyEvent(wname,
-                convert_state(ev->key.state), KEY_RELEASE, ev->key.keyval);
+                mod_state(ev->key.state), KEY_RELEASE, ev->key.keyval);
             if (ev->key.string && ev->key.string[1] == 0)
                 *((sKeyEvent*)nev)->text = *ev->key.string;
             km->add_response(nev);
@@ -466,7 +438,7 @@ qt_keyb::macro_event_handler(QObject *obj, QEvent *ev, void *arg)
         char *wname;
         if (find_wname(ev->key.window, &wname)) {
             sEvent *nev = new sKeyEvent(wname,
-                convert_state(ev->key.state), KEY_PRESS, ev->key.keyval);
+                mod_state(ev->key.state), KEY_PRESS, ev->key.keyval);
             if (ev->key.string && ev->key.string[1] == 0)
                 *((sKeyEvent*)nev)->text = *ev->key.string;
             km->add_response(nev);
@@ -485,7 +457,7 @@ qt_keyb::macro_event_handler(QObject *obj, QEvent *ev, void *arg)
         GtkWidget *widg = find_wname(ev->button.window, &wname);
         if (widg) {
             sEvent *nev = new sBtnEvent(wname,
-                convert_state(ev->button.state),
+                mod_state(ev->button.state),
                 ev->button.type == GDK_BUTTON_PRESS ?
                 BUTTON_PRESS : BUTTON_RELEASE, ev->button.button,
                 (int)ev->button.x, (int)ev->button.y);
@@ -567,19 +539,18 @@ qt_keyb::wlist *
 qt_keyb::find_object(const QObject *obj, const char *path)
 {
     wlist *w0 = 0;
-/*XXX
     const char *t = strchr(path, '.');
     if (!t)
         t = path + strlen(path);
     char name[128];
     strncpy(name, path, t-path);
     name[t-path] = 0;
-    GList *g = gtk_container_children(GTK_CONTAINER(w));
-    for (GList *gt = g; gt; gt = gt->next) {
-        GtkWidget *ww = GTK_WIDGET(gt->data);
-        if (!strcmp(name, gtk_widget_get_name(ww))) {
+    QList<QObject*> chl = obj->children();
+    for (int i = 0; chl[i]; i++) {
+        QObject *ww = chl[i];
+        if (ww->objectName() == name) {
             if (*t == '.') {
-                wlist *wx = find_widget(ww, t+1);
+                wlist *wx = find_object(ww, t+1);
                 if (wx) {
                     wlist *wn = wx;
                     while (wn->next)
@@ -592,22 +563,18 @@ qt_keyb::find_object(const QObject *obj, const char *path)
                 w0 = new wlist(ww, w0);
         }
     }
-    if (g)
-        g_list_free(g);
-*/
     return (w0);
 }
 
 
 // If the path identifies a widget uniquely, return it.  The path is rooted
-// in a top level (GtkWindow) widget
+// in a top level widget.
 //
-QObject *
+const QObject *
 qt_keyb::name_to_object(const char *path)
 {
     if (!path)
         return (0);
-/*XXX
     wlist *w0 = 0;
     const char *t = strchr(path, '.');
     if (!t)
@@ -615,19 +582,12 @@ qt_keyb::name_to_object(const char *path)
     char name[128];
     strncpy(name, path, t-path);
     name[t-path] = 0;
-#if GTK_CHECK_VERSION(1,3,15)
-    GList *g = gtk_window_list_toplevels();
-#else
-    GList *g = gtk_container_get_toplevels();
-#endif
-    for ( ; g; g = g->next) {
-        GtkWidget *ww = GTK_WIDGET(g->data);
-#if GTK_CHECK_VERSION(1,3,15)
-        gtk_widget_unref(ww);
-#endif
-        if (!strcmp(name, gtk_widget_get_name(ww))) {
+    QList<QWidget*> qwl = QApplication::topLevelWidgets();
+    for (int i = 0; qwl[i]; i++) {
+        QWidget *ww = qwl[i];
+        if (ww->objectName() == name) {
             if (*t == '.') {
-                wlist *wx = find_widget(ww, t+1);
+                wlist *wx = find_object(ww, t+1);
                 if (wx) {
                     wlist *wn = wx;
                     while (wn->next)
@@ -640,19 +600,14 @@ qt_keyb::name_to_object(const char *path)
                 w0 = new wlist(ww, w0);
         }
     }
-#if GTK_CHECK_VERSION(1,3,15)
-    g_list_free(g);
-#endif
-    GtkWidget *wfound = 0;
+    const QObject *wfound = 0;
     if (w0 && !w0->next)
-        wfound = w0->widget;
+        wfound = w0->obj;
     while (w0) {
         wlist *wx = w0->next;
         delete w0;
         w0 = wx;
     }
     return (wfound);
-*/
-return (0);
 }
 

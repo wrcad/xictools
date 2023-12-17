@@ -237,7 +237,7 @@ namespace {
             void esc();
             void action(WindowDesc*, int, int);
 
-            unsigned InitId;
+            unsigned long InitId;
             bool DidMark;
             bool GhostSet;
             int Refx, Refy;

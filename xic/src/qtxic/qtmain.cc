@@ -48,6 +48,8 @@
 #include "qtzoom.h"
 #include "qtmenucfg.h"
 #include "qtinterf/qtfile.h"
+#include "qtinterf/qttext.h"
+#include "qtinterf/qttextw.h"
 #include "qtinterf/qtmsg.h"
 #include "extif.h"
 #include "dsp_color.h"
@@ -64,6 +66,7 @@
 #include "errorlog.h"
 #include "ghost.h"
 #include "cd.h"
+#include "cd_celldb.h"
 #include "miscutil/pathlist.h"
 #include "help/help_context.h"
 #include "qtinterf/qtidleproc.h"
@@ -813,21 +816,15 @@ cMain::GetCurFileSelection()
     if (tbuf)
         return (tbuf);
 
-/*XXX
-    // look for selected text in an Info window
-    GdkWindow *window = gdk_selection_owner_get(GDK_SELECTION_PRIMARY);
-    if (window) {
-        GtkWidget *widget;
-        gdk_window_get_user_data(window, (void**)&widget);
-        if (widget &&
-                g_object_get_data(G_OBJECT(widget), "export")) {
-            tbuf = text_get_selection(widget);
-            if (tbuf && CDcdb()->findSymbol(tbuf))
-                return (tbuf);
-            delete [] tbuf;
-        }
+    // Look for selected text in the Info window.
+    QTtextDlg *tx =  dynamic_cast<QTtextDlg*>(
+        QTmainwin::self()->ActiveInfo2());
+    if (tx) {
+        tbuf = tx->editor()->get_selection();
+        if (tbuf && CDcdb()->findSymbol(tbuf))
+            return (tbuf);
+        delete [] tbuf;
     }
-*/
     return (0);
 }
 
@@ -1330,10 +1327,6 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
 
     connect(gd_viewport, SIGNAL(resize_event(QResizeEvent*)),
         this, SLOT(resize_slot(QResizeEvent*)));
-    connect(gd_viewport, SIGNAL(new_painter(QPainter*)),
-        this, SLOT(new_painter_slot(QPainter*)));
-    connect(gd_viewport, SIGNAL(paint_event(QPaintEvent*)),
-        this, SLOT(paint_slot(QPaintEvent*)));
     connect(gd_viewport, SIGNAL(press_event(QMouseEvent*)),
         this, SLOT(button_down_slot(QMouseEvent*)));
     connect(gd_viewport, SIGNAL(release_event(QMouseEvent*)),
@@ -1471,7 +1464,8 @@ QTsubwin::~QTsubwin()
 void
 QTsubwin::SwitchToPixmap()
 {
-    // Switch to second pixmap.
+    // Switch to second pixmap.  Using a second pixmap gets around
+    // rendering problems with the cell bounding box indicator.
     gd_viewport->switch_to_pixmap2();
 }
 
@@ -1506,8 +1500,6 @@ QTsubwin::CopyPixmap(const BBox *BB)
 {
     gd_viewport->refresh(BB->left, BB->top, BB->right - BB->left + 1,
         BB->bottom - BB->top + 1);
-//    gd_viewport->repaint(BB->left, BB->top, BB->right - BB->left + 1,
-//        BB->bottom - BB->top + 1);
 }
 
 
@@ -1897,20 +1889,6 @@ QTsubwin::resize_slot(QResizeEvent *ev)
 }
 
 
-void
-QTsubwin::new_painter_slot(QPainter *p)
-{
-    (void)p;
-}
-
-
-void
-QTsubwin::paint_slot(QPaintEvent *ev)
-{
-    (void)ev;
-}
-
-
 // Dispatch button press events to the application callbacks.
 //
 void
@@ -2065,6 +2043,7 @@ QTsubwin::button_up_slot(QMouseEvent *ev)
 
     // this finishes processing the button up event at the server,
     // otherwise motions are frozen until this function returns
+//XXX
 //    while (gtk_events_pending())
 //        gtk_main_iteration();
 
@@ -2665,7 +2644,7 @@ QTmainwin::initialize()
     // This is done again in AppInit(), but it is needed for the menus.
     DSP()->SetCurMode(XM()->InitialMode());
 
-//    xrm_load_colors();
+//XXX    xrm_load_colors();
     DSP()->ColorTab()->init();
 
     QTmenu::self()->InitMainMenu();

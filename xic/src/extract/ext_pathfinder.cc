@@ -449,7 +449,6 @@ pathfinder::extract_subpath(const BBox *BB1, const BBox *BB2)
         return (0);
     }
 
-    int depth = 1;
     CDol *trash = 0;
 
     // Check if this is also the terminal element.
@@ -512,7 +511,6 @@ again:
 
                     stack->ent = h;
                     stack = new pf_stack_elt(pf_tab, od, stack);
-                    depth++;
 
                     // If this one is the terminal element, create the
                     // path table from the stack, and return.
@@ -548,7 +546,6 @@ again:
         pf_stack_elt *tst = stack;
         stack = stack->next;
         delete tst;
-        depth--;
     }
 
     // Failed to find a connecting subpath.  Put the trash back.

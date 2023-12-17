@@ -66,7 +66,7 @@ class qtinterf::QTlistDlg : public QDialog, public GRlistPopup,
     Q_OBJECT
 
 public:
-    QTlistDlg(QTbag*, stringlist*, const char*, const char*, bool);
+    QTlistDlg(QTbag*, stringlist*, const char*, const char*, bool, bool);
     ~QTlistDlg();
 
     // GRpopup overrides
@@ -104,15 +104,16 @@ signals:
 
 private slots:
     void action_slot();
+    void apply_btn_slot();
     void dismiss_btn_slot();
 
 private:
     QLabel      *li_label;
     list_list_widget *li_lbox;
-    QPushButton *li_cancel;
     QPixmap     *li_open_pm;
     QPixmap     *li_close_pm;
     bool        li_use_pix;
+    bool        li_use_apply;
 };
 
 #endif

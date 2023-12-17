@@ -116,7 +116,7 @@ QTfont::initFonts()
     if (app_fonts[0].default_fontname != 0)
         return;
 
-    //XXX do better than this?
+    // Do better than this?
     int def_size = DEF_SIZE;
 
     char buf[80];
@@ -135,7 +135,6 @@ QTfont::initFonts()
 }
 
 
-//XXX is this used?
 GRfontType
 QTfont::getType()
 {

@@ -62,6 +62,8 @@ QTtextEdit::QTtextEdit(QWidget *prnt) : QTextEdit(prnt)
     // Default to no wrapping, horizontal scroll bar should appear
     // insted.
     setLineWrapMode(QTextEdit::NoWrap);
+
+    tw_drop_action = Qt::IgnoreAction;
 }
 
 
@@ -255,63 +257,6 @@ QTtextEdit::get_length()
 }
 
 
-// Clipboard.
-
-// Cut selected text to the clipboard.
-//
-void
-QTtextEdit::cut_clipboard()
-{
-    cut();
-    /*
-    if (!has_selection())
-        return;
-    char *sel = get_selection();
-    QClipboard *cb = QGuiApplication::clipboard();
-    cb->setText(sel);
-    delete [] sel;
-    QTextCursor c = textCursor();
-    c.removeSelectedText();
-    setTextCursor(c);
-    */
-}
-
-
-// Copy selected text to the clipboard.
-//
-void
-QTtextEdit::copy_clipboard()
-{
-    copy();
-    /*
-    if (!has_selection())
-        return;
-    char *sel = get_selection();
-    QClipboard *cb = QGuiApplication::clipboard();
-    cb->setText(sel);
-    delete [] sel;
-    */
-}
-
-
-// Paste clipboard contents into text window.
-//
-void
-QTtextEdit::paste_clipboard()
-{
-    paste();
-    /*
-    QClipboard *cb = QGuiApplication::clipboard();
-    QString qs = cb->text();
-    if (qs.isNull() || qs.isEmpty())
-        return;
-    QTextCursor c = textCursor();
-    c.insertText(qs);
-    setTextCursor(c);
-    */
-}
-
-
 // Selection.
 
 // Return true if the text window has a selection.
@@ -431,6 +376,7 @@ QTtextEdit::resizeEvent(QResizeEvent *ev)
 void
 QTtextEdit::mousePressEvent(QMouseEvent *ev)
 {
+    ev->ignore();
     emit press_event(ev);
     if (!ev->isAccepted())
         QTextEdit::mousePressEvent(ev);
@@ -440,6 +386,7 @@ QTtextEdit::mousePressEvent(QMouseEvent *ev)
 void
 QTtextEdit::mouseReleaseEvent(QMouseEvent *ev)
 {
+    ev->ignore();
     emit release_event(ev);
     if (!ev->isAccepted())
         QTextEdit::mouseReleaseEvent(ev);
@@ -449,10 +396,6 @@ QTtextEdit::mouseReleaseEvent(QMouseEvent *ev)
 void
 QTtextEdit::mouseMoveEvent(QMouseEvent *ev)
 {
-    // Event starts out as accepted, reverse this.  Then below,
-    // accepted events, accepted in the receiver for custom drag, will
-    // be ignored.
-
     ev->ignore();
     emit motion_event(ev);
     if (!ev->isAccepted())
@@ -484,6 +427,7 @@ QTtextEdit::dropEvent(QDropEvent *ev)
 {
     insertFromMimeData(ev->mimeData());
     ev->acceptProposedAction();
+    tw_drop_action = ev->proposedAction();
 }
 
 

@@ -222,11 +222,8 @@ cExt::showTerminals(WindowDesc *wdesc, bool d_or_e)
         wdesc->Wdraw()->SetColor(
             DSP()->Color(HighlightingColor, Physical));
     else {
-        int tnum = 0;
-        for (Blist *t = ext_terminals; t; t = t->next) {
+        for (Blist *t = ext_terminals; t; t = t->next)
             wdesc->Redisplay(&t->BB);
-            tnum++;
-        }
         return;
     }
 

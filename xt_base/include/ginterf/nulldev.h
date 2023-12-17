@@ -101,7 +101,7 @@ namespace ginterf
             void*, int, const char** = 0, const char* = 0)      { }
 
         void PopUpPrint(GRobject, HCcb*, HCmode, GRdraw* = 0)   { }
-        void HCupdate(HCcb*, GRobject)                          { }
+        void HCupdate(HCcb*)                                    { }
         void HCsetFormat(int)                                   { }
 
         bool PopUpHelp(const char*)                         { return (false); }

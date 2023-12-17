@@ -175,7 +175,7 @@ QTcanvas::switch_from_pixmap2(int xd, int yd, int xs, int ys, int w, int h)
 
 
 // Reset to the main pixmap if necessary, then destroy and clear the
-// second pixmap and its painter.  There is no pixmap copy nere.
+// second pixmap and its painter.  There is no pixmap copy here.
 //
 void
 QTcanvas::clear_pixmap2()
@@ -904,7 +904,7 @@ QTcanvas::draw_image(const GRimage *im, int xx, int yy, int w, int h)
 {
     QImage qimg((const unsigned char*)im->data(), im->width(), im->height(),
         QImage::Format_RGB32);
-    da_painter->drawImage(QPoint(0, 0), qimg, QRect(xx, yy, w, h));
+    da_painter->drawImage(QPoint(xx, yy), qimg, QRect(xx, yy, w, h));
 }
 
 

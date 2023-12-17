@@ -76,11 +76,6 @@ public:
     char *get_chars(int = 0, int = -1);
     int get_length();
 
-    // clipboard
-    void cut_clipboard();
-    void copy_clipboard();
-    void paste_clipboard();
-
     // selection
     bool has_selection();
     char *get_selection();
@@ -90,6 +85,8 @@ public:
     // scrolling
     int get_scroll_value();
     void set_scroll_value(int);
+
+    Qt::DropAction drop_action()    const { return (tw_drop_action); }
 
 signals:
     void resize_event(QResizeEvent*);
@@ -111,6 +108,9 @@ protected:
     bool canInsertFromMimeData(const QMimeData*) const;
     void insertFromMimeData(const QMimeData*);
     void keyPressEvent(QKeyEvent*);
+
+private:
+    Qt::DropAction tw_drop_action;
 };
 
 #endif

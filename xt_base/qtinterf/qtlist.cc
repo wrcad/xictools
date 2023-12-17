@@ -67,11 +67,8 @@ QTbag::PopUpList(stringlist *symlist, const char *title,
     const char *header, void(*callback)(const char*, void*), void *arg,
     bool usepix, bool use_apply)
 {
-    //XXX implement me
-    (void)use_apply;
-
     QTlistDlg *list = new QTlistDlg(this, symlist, title, header,
-        usepix);
+        usepix, use_apply);
     if (wb_shell)
        list->set_transient_for(wb_shell);
     list->register_callback(callback);
@@ -136,12 +133,14 @@ list_delegate::sizeHint(const QStyleOptionViewItem&,
 
 
 QTlistDlg::QTlistDlg(QTbag *owner, stringlist *symlist, const char *title,
-    const char *header, bool usepix) : QTbag(this)
+    const char *header, bool usepix, bool useapply) : QTbag(this)
 {
     p_parent = owner;
-    li_use_pix = usepix;
+    li_label = 0;
     li_open_pm = 0;
     li_close_pm = 0;
+    li_use_pix = usepix;
+    li_use_apply = useapply;
 
     if (owner)
         owner->MonitorAdd(this);
@@ -175,9 +174,20 @@ QTlistDlg::QTlistDlg(QTbag *owner, stringlist *symlist, const char *title,
         SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)),
         this, SLOT(action_slot()));
 
-    li_cancel = new QPushButton(tr("Dismiss"), this);
-    vbox->addWidget(li_cancel);
-    connect(li_cancel, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    QHBoxLayout *hbox = new QHBoxLayout();
+    vbox->addLayout(hbox);
+    hbox->setContentsMargins(2, 2, 2, 2);
+    hbox->setSpacing(2);
+
+    if (li_use_apply) {
+        QPushButton *btn = new QPushButton(tr("Apply"));
+        hbox->addWidget(btn);
+        connect(btn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
+    }
+
+    QPushButton *btn = new QPushButton(tr("Dismiss"), this);
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 }
 
 
@@ -299,12 +309,25 @@ QTlistDlg::get_items()
 void
 QTlistDlg::action_slot()
 {
-    if (li_lbox) {
-        QByteArray ba = li_lbox->currentItem()->text().toLatin1();
-        if (p_callback)
-            (*p_callback)(ba, p_cb_arg);
-        emit action_call(ba, p_cb_arg);
-    }
+    if (li_use_apply)
+        return;
+    QByteArray ba = li_lbox->currentItem()->text().toLatin1();
+    if (p_callback)
+        (*p_callback)(ba.constData(), p_cb_arg);
+    emit action_call(ba.constData(), p_cb_arg);
+}
+
+
+void
+QTlistDlg::apply_btn_slot()
+{
+    if (!li_lbox->currentItem())
+        return;
+    QByteArray ba = li_lbox->currentItem()->text().toLatin1();
+    if (p_callback)
+        (*p_callback)(ba.constData(), p_cb_arg);
+    emit action_call(ba.constData(), p_cb_arg);
+    delete this;
 }
 
 

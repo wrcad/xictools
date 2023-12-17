@@ -1970,39 +1970,39 @@ QTfileDlg::DoFileAction(QTbag *bg, const char *src, const char *dst,
 // time of any directory changes, update the directory and file
 // listings.
 
-static stringlist *list_node_children(QTreeWidgetItem*);
-static stringlist *list_subdirs(const char*);
-static void stringdiff(stringlist**, stringlist**);
+namespace {
+    stringlist *list_node_children(QTreeWidgetItem*);
+    stringlist *list_subdirs(const char*);
+    void stringdiff(stringlist**, stringlist**);
 
 
-// Return the modification time for dir.
-//
-inline unsigned int
-dirtime(const char *dir)
-{
-    struct stat st;
-    if (!stat(dir, &st))
-        return (st.st_mtime);
-    return (0);
-}
-
-
-// Return the child node of node with the given name.
-//
-inline QTreeWidgetItem *
-find_child(QTreeWidgetItem *node, char *name)
-{
-    int n = node->childCount();
-    for (int i = 0; i < n; i++) {
-        QTreeWidgetItem *child = node->child(i);
-        char *t = lstring::copy(child->text(0).toLatin1().constData());
-        if (!strcmp(name, t)) {
-            delete [] t;
-            return (child);
-        }
-        delete [] t;
+    // Return the modification time for dir.
+    //
+    unsigned int dirtime(const char *dir)
+    {
+        struct stat st;
+        if (!stat(dir, &st))
+            return (st.st_mtime);
+        return (0);
     }
-    return (0);
+
+
+    // Return the child node of node with the given name.
+    //
+    QTreeWidgetItem *find_child(QTreeWidgetItem *node, char *name)
+    {
+        int n = node->childCount();
+        for (int i = 0; i < n; i++) {
+            QTreeWidgetItem *child = node->child(i);
+            char *t = lstring::copy(child->text(0).toLatin1().constData());
+            if (!strcmp(name, t)) {
+                delete [] t;
+                return (child);
+            }
+            delete [] t;
+        }
+        return (0);
+    }
 }
 
 
@@ -2083,115 +2083,116 @@ QTfileDlg::check_slot()
 }
 
 
-// Return a list of the names associated with the children of node.
-//
-static stringlist *
-list_node_children(QTreeWidgetItem *node)
-{
-    stringlist *s0 = 0;
-    int n = node->childCount();
-    for (int i = 0; i < n; i++) {
-        QTreeWidgetItem *child = node->child(i);
-        char *t = lstring::copy(child->text(0).toLatin1().constData());
-        s0 = new stringlist(t, s0);
-    }
-    return (s0);
-}
-
-
-// Return a list of subdirs under dir.
-//
-static stringlist *
-list_subdirs(const char *dir)
-{
-    stringlist *s0 = 0;
-    DIR *wdir = opendir(dir);
-    if (wdir) {
-        char *p = new char[strlen(dir) + 64];
-        strcpy(p, dir);
-        char *dt = p + strlen(p) - 1;
-        if (!lstring::is_dirsep(*dt)) {
-            *++dt = '/';
-            *++dt = 0;
+namespace {
+    // Return a list of the names associated with the children of node.
+    //
+    stringlist *list_node_children(QTreeWidgetItem *node)
+    {
+        stringlist *s0 = 0;
+        int n = node->childCount();
+        for (int i = 0; i < n; i++) {
+            QTreeWidgetItem *child = node->child(i);
+            char *t = lstring::copy(child->text(0).toLatin1().constData());
+            s0 = new stringlist(t, s0);
         }
-        else
-            dt++;
-        struct dirent *de;
-        while ((de = readdir(wdir)) != 0) {
-            if (!strcmp(de->d_name, "."))
-                continue;
-            if (!strcmp(de->d_name, ".."))
-                continue;
-#ifdef DT_DIR
-            if (de->d_type != DT_UNKNOWN) {
-                // Linux glibc returns DT_UNKNOWN for everything
-                if (de->d_type == DT_DIR)
-                    s0 = new stringlist(lstring::copy(de->d_name), s0);
-                if (de->d_type != DT_LNK)
-                    continue;
+        return (s0);
+    }
+
+
+    // Return a list of subdirs under dir.
+    //
+    stringlist *list_subdirs(const char *dir)
+    {
+        stringlist *s0 = 0;
+        DIR *wdir = opendir(dir);
+        if (wdir) {
+            char *p = new char[strlen(dir) + 64];
+            strcpy(p, dir);
+            char *dt = p + strlen(p) - 1;
+            if (!lstring::is_dirsep(*dt)) {
+                *++dt = '/';
+                *++dt = 0;
             }
+            else
+                dt++;
+            struct dirent *de;
+            while ((de = readdir(wdir)) != 0) {
+                if (!strcmp(de->d_name, "."))
+                    continue;
+                if (!strcmp(de->d_name, ".."))
+                    continue;
+#ifdef DT_DIR
+                if (de->d_type != DT_UNKNOWN) {
+                    // Linux glibc returns DT_UNKNOWN for everything
+                    if (de->d_type == DT_DIR)
+                        s0 = new stringlist(lstring::copy(de->d_name), s0);
+                    if (de->d_type != DT_LNK)
+                        continue;
+                }
 #endif
-            strcpy(dt, de->d_name);
-            if (filestat::is_directory(p))
-                s0 = new stringlist(lstring::copy(de->d_name), s0);
+                strcpy(dt, de->d_name);
+                if (filestat::is_directory(p))
+                    s0 = new stringlist(lstring::copy(de->d_name), s0);
+            }
+            delete [] p;
+            closedir(wdir);
         }
-        delete [] p;
-        closedir(wdir);
+        return (s0);
     }
-    return (s0);
+
+
+    // Remove the entries that appear in both lists from both lists.
+    //
+    void stringdiff(stringlist **s1p, stringlist **s2p)
+    {
+        stringlist *s1 = *s1p;
+        stringlist *s2 = *s2p;
+        for (stringlist *s = s1; s; s = s->next) {
+            for (stringlist *ss = s2; ss; ss = ss->next) {
+                if (!ss->string)
+                    continue;
+                if (!strcmp(s->string, ss->string)) {
+                    delete [] ss->string;
+                    ss->string = 0;
+                    delete [] s->string;
+                    s->string = 0;
+                    break;
+                }
+            }
+        }
+        stringlist *s = s1;
+        s1 = 0;
+        while (s) {
+            stringlist *sn = s->next;
+            if (s->string) {
+                s->next = s1;
+                s1 = s;
+            }
+            else
+                delete s;
+            s = sn;
+        }
+        s = s2;
+        s2 = 0;
+        while (s) {
+            stringlist *sn = s->next;
+            if (s->string) {
+                s->next = s2;
+                s2 = s;
+            }
+            else
+                delete s;
+            s = sn;
+        }
+        *s1p = s1;
+        *s2p = s2;
+    }
 }
 
 
-// Remove the entries that appear in both lists from both lists.
-//
-static void
-stringdiff(stringlist **s1p, stringlist **s2p)
-{
-	stringlist *s1 = *s1p;
-	stringlist *s2 = *s2p;
-	for (stringlist *s = s1; s; s = s->next) {
-		for (stringlist *ss = s2; ss; ss = ss->next) {
-			if (!ss->string)
-			    continue;
-		    if (!strcmp(s->string, ss->string)) {
-				delete [] ss->string;
-				ss->string = 0;
-				delete [] s->string;
-				s->string = 0;
-				break;
-			}
-		}
-	}
-	stringlist *s = s1;
-	s1 = 0;
-	while (s) {
-		stringlist *sn = s->next;
-		if (s->string) {
-			s->next = s1;
-			s1 = s;
-		}
-		else
-		    delete s;
-		s = sn;
-	}
-	s = s2;
-	s2 = 0;
-	while (s) {
-		stringlist *sn = s->next;
-		if (s->string) {
-			s->next = s2;
-			s2 = s;
-		}
-		else
-		    delete s;
-		s = sn;
-	}
-	*s1p = s1;
-	*s2p = s2;
-}
-
-
-/* XXX
+/*
+// File transfer dialog, choowe what to do with a dropped file.
+// Not used.
 
 class QTfileActionDlg : public QDialog
 {

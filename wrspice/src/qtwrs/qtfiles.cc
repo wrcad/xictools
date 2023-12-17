@@ -1149,22 +1149,48 @@ QTfilesListDlg::mime_data_delivered_slot(const QMimeData *dta, bool *accpt)
 {
     if (dta->hasFormat("text/twostring") || dta->hasFormat("text/plain")) {
         *accpt = true;
+        const char *dst = fl_directory;
+        if (!dst || !*dst)
+            return;  // sanity
+        int proposed_action = wb_textarea->drop_action();
+        QTfileDlg::ActionType a = QTfileDlg::A_NOOP;
+        if (proposed_action & Qt::CopyAction)
+            a = QTfileDlg::A_COPY;
+        else if (proposed_action & Qt::MoveAction)
+            a = QTfileDlg::A_MOVE;
+        else if (proposed_action & Qt::LinkAction)
+            a = QTfileDlg::A_LINK;
+        else
+            return;
+
         // Handles URLs, text/twostring, and regular strings.
-        QByteArray bary = dta->data("text/plain");
-        const char *src = bary.constData();
-        if (src && *src && instPtr->wb_textarea) {
-            if (!strncmp(src, "File://", 7))
-                src += 7;
-            char *pth = lstring::copy(src);
-            char *t = strchr(pth, '\n');
-            if (t) {
-                // text/twostring, keep the first token only.
-                *t = 0;
+        if (dta->hasUrls()) {
+            foreach (const QUrl &url, dta->urls()) {
+                QByteArray fnba = url.toLocalFile().toLatin1();
+                const char *src = fnba.constData();
+                if (!src || !*src)
+                    continue;
+                if (!strcmp(src, dst))
+                    continue;
+                QTfileDlg::DoFileAction(this, src, dst, a);
             }
-            const char *dst = fl_directory;
-            if (dst && *dst && strcmp(pth, dst))
-                QTfileDlg::DoFileAction(this, pth, dst, QTfileDlg::A_NOOP);
-            delete [] pth;
+        }
+        else {
+            QByteArray bary = dta->data("text/plain");
+            const char *src = bary.constData();
+            if (src && *src) {
+                if (!strncmp(src, "File://", 7))
+                    src += 7;
+                char *pth = lstring::copy(src);
+                char *t = strchr(pth, '\n');
+                if (t) {
+                    // text/twostring, keep the first token only.
+                    *t = 0;
+                }
+                if (strcmp(pth, dst))
+                    QTfileDlg::DoFileAction(this, pth, dst, a);
+                delete [] pth;
+            }
         }
     }
 }

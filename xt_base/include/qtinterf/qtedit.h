@@ -101,7 +101,7 @@ public:
 
     void set_caller(GRobject);
     EditorType get_editor_type()    { return (ed_editor_type); }
-    const char *get_file()          { return (ed_sourceFile); }
+    const char *get_file()          { return (ed_source_file); }
     void load_file(const char *f)   { load_file_slot(f, 0); }
 
     void set_mailaddr(const char*);
@@ -124,9 +124,16 @@ private slots:
     void save_slot();
     void save_file_as_slot(const char*, void*);
     void save_as_slot();
+#ifdef WIN32
+    void write_crlf_slot(bool);
+#endif
     void print_slot();
     void send_slot();
     void quit_slot();
+    void undo_slot();
+    void undo_available_slot(bool);
+    void redo_slot();
+    void redo_available_slot(bool);
     void cut_slot();
     void copy_slot();
     void paste_slot();
@@ -149,19 +156,23 @@ private:
     bool write_file(const char*, int, int);
     void set_source(const char*);
     void set_sens(bool);
+    bool text_changed();
 
     EditorType  ed_editor_type;
-    EventType   ed_lastEvent;
-    char        *ed_savedAs;
-    char        *ed_sourceFile;
-    char        *ed_dropFile;
-    char        *ed_lastSearch;
-    bool        ed_textChanged;
-    bool        ed_ignCase;
-    bool        ed_ignChange;
-    QTsearchDlg *ed_searcher;
+    EventType   ed_last_event;
+    char        *ed_saved_as;
+    char        *ed_source_file;
+    char        *ed_drop_file;
+    char        *ed_last_search;
+    bool        ed_text_changed;
+    bool        ed_have_source;
+    bool        ed_ign_case;
+    bool        ed_ign_change;
+    unsigned int ed_len;
+    unsigned int ed_chksum;
 
     QWidget     *ed_bar;
+    QTsearchDlg *ed_searcher;
     QMenu       *ed_filemenu;
     QMenu       *ed_editmenu;
     QMenu       *ed_optmenu;
@@ -169,13 +180,19 @@ private:
     QGroupBox   *ed_title;
     QLineEdit   *ed_to_entry;
     QLineEdit   *ed_subj_entry;
-    QTextEdit   *ed_text_editor;
+    QTtextEdit  *ed_text_editor;
     QStatusBar  *ed_status_bar;
 
-    QAction     *ed_Load;
-    QAction     *ed_Read;
-    QAction     *ed_Save;
-    QAction     *ed_SaveAs;
+    QAction     *ed_File_Load;
+    QAction     *ed_File_Read;
+    QAction     *ed_File_Save;
+    QAction     *ed_File_SaveAs;
+#ifdef WIN32
+    QAction     *ed_File_CRLF;
+#endif
+    QAction     *ed_Edit_Undo;;
+    QAction     *ed_Edit_Redo;;
+    QAction     *ed_Options_Attach;
     QAction     *ed_HelpMenu;
 };
 

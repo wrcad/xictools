@@ -100,6 +100,7 @@ private slots:
     void subwin_view_view_menu_slot(QAction*);
     void subwin_attr_menu_slot(QAction*);
     void subwin_help_menu_slot(QAction*);
+    void subwin_help_slot();
 
     void idle_exec_slot(MenuEnt*);
     void exec_slot(MenuEnt*);

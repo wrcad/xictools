@@ -426,7 +426,7 @@ QTprintDlg::QTprintDlg(GRobject caller, HCcb *cb, HCmode textmode, QTbag *wbag) 
         }
         pd_fmtmenu->setCurrentIndex(pd_fmt);
         vb->addWidget(pd_fmtmenu);
-        connect(pd_fmtmenu, SIGNAL(activated(int)),
+        connect(pd_fmtmenu, SIGNAL(currentIndexChanged(int)),
             this, SLOT(format_slot(int)));
         hbox->addLayout(vb);
 
@@ -671,6 +671,14 @@ void
 QTprintDlg::disable_progress()
 {
     delete pd_progress;
+}
+
+
+void
+QTprintDlg::set_format(int fmt)
+{
+    if (fmt >= 0 && fmt < 32 && !(pd_drvrmask & (1 << fmt)))
+        pd_fmtmenu->setCurrentIndex(fmt);
 }
 
 

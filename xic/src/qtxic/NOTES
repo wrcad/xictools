@@ -140,8 +140,6 @@ qtmenucfg.cc:    // XXX Old GTK message, don't know if it still applies.
 qtmenucfg.cc:/*XXX
 qtpcprms.cc://XXX Probably need to detect the need for and use exponential notation
 qtpcprms.cc:        /*XXX
-qttree.cc:    //XXX FIXME
-qttree.cc://XXX
 
 These use QTcanvas
 qtdevs.cc

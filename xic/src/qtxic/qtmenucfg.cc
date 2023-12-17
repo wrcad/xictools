@@ -1079,9 +1079,10 @@ QTmenuConfig::instantiateSubwMenus(int wnum)
 #ifdef USE_QTOOLBAR
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         menubar->addAction(tr("&Help"), Qt::CTRL|Qt::Key_H,
-            sub_win, SLOT(help_slot()));
+            this, SLOT(subwin_help_slot()));
 #else
-        QAction *a = menubar->addAction(tr("&Help"), this, SLOT(help_slot()));
+        QAction *a = menubar->addAction(tr("&Help"),
+            this, SLOT(subwin_help_slot()));
         a->setShortcut(QKeySequence("Ctrl+H"));
 #endif
 #else
@@ -1646,6 +1647,15 @@ QTmenuConfig::subwin_help_menu_slot(QAction *a)
 }
 
 
+#ifdef USE_QTOOLBAR
+void
+QTmenuConfig::subwin_help_slot()
+{
+    DSPmainWbag(PopUpHelp("xic:vport"))
+}
+#endif
+
+
 void
 QTmenuConfig::idle_exec_slot(MenuEnt *ent)
 {
@@ -1721,21 +1731,12 @@ QTmenuConfig::exec_slot(MenuEnt *ent)
     if (ent->alt_caller) {
         // Spurious call from menu pop-up.  This handler should only
         // be called through the alt_caller.
-printf("exec_slot alt_caller\n");
+        printf("Warning: exec_slot alt_caller\n");
         return;
     }
 
     if (!ent->cmd.wdesc)
         ent->cmd.wdesc = DSP()->MainWdesc();
-
-/*XXX
-    // If a modifier key is down, the key will be grabbed, and if text
-    // editing mode is entered somehow the up event is lost.  E.g,
-    // press Shift and click logo.  Windows can't be moved until Shift
-    // is pressed and released.  Call gtk_keyboard_ungrab to avoid
-    // this.
-    gdk_keyboard_ungrab(0);
-*/
 
     if (XM()->IsDoingHelp()) {
         int mstate = QApplication::keyboardModifiers();

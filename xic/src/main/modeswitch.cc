@@ -96,7 +96,7 @@ cMain::SetMode(DisplayMode mode, int wnum)
         return;
 
     PL()->ErasePrompt();
-    DSPmainWbag(HCupdate(&Tech()->HC(), 0))
+    DSPmainWbag(HCupdate(&Tech()->HC()))
 
     // If in hardcopy mode, switch back temporarily, transient=false
     // to reset colors in ldescs.

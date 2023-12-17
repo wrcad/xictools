@@ -220,9 +220,8 @@ QTledDlg::action_slot()
         text = lstring::copy(dynamic_cast<QLineEdit*>(ed_edit)->
             text().toLatin1().constData());
 
-    if (ed_ign_ret) {
-        if (p_callback)
-            (*p_callback)(text, p_cb_arg);
+    if (p_callback_nr) {
+        (*p_callback_nr)(text, p_cb_arg);
         emit action_call(text, p_cb_arg);
         delete [] text;
     }

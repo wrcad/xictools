@@ -1299,7 +1299,6 @@ sElecNetList::purge_terminals(SymTab *ttab, SymTab *ntab)
 {
     if (!ntab || !ttab || !ttab->allocated())
         return;
-    unsigned int dcnt = 0;
     SymTabGen gen(ntab);
     SymTabEnt *ent;
     while ((ent = gen.next()) != 0) {
@@ -1317,7 +1316,6 @@ sElecNetList::purge_terminals(SymTab *ttab, SymTab *ntab)
                     else
                         et_list[node].conts = tn;
                     delete t;
-                    dcnt++;
                     continue;
                 }
             }

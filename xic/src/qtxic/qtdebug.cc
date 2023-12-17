@@ -289,12 +289,14 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c) : QTbag(this)
     a = db_filemenu->addAction(tr("Paste from Clipboard"));
     a->setData(3);
     a->setShortcut(QKeySequence("Ctrl+V"));
+/*
     // Paste Primary, <alt>P, db_paste_prim_proc, 0, 0
     a = db_editmenu->addAction(tr("Paste Primary"));
     a->setData(4);
     a->setShortcut(QKeySequence("Alt+P"));
     connect(db_editmenu, SIGNAL(triggered(QAction*)),
         this, SLOT(edit_menu_slot(QAction*)));
+*/
 
     // Execute menu.
 #ifdef USE_QTOOLBAR
@@ -1405,21 +1407,6 @@ QTscriptDebuggerDlg::edit_menu_slot(QAction *a)
             wb_textarea->insert_chars_at_point(0, h->h_text, h->h_cpos, -1);
         else
             wb_textarea->delete_chars(h->h_cpos, h->h_cpos + strlen(h->h_text));
-/*XXX
-        GtkTextBuffer *tbf =
-            gtk_text_view_get_buffer(GTK_TEXT_VIEW(Dbg->wb_textarea));
-        GtkTextIter istart;
-        gtk_text_buffer_get_iter_at_offset(tbf, &istart, h->h_cpos);
-        gtk_text_buffer_place_cursor(tbf, &istart);
-        if (h->h_deletion)
-            gtk_text_buffer_insert(tbf, &istart, h->h_text, -1);
-        else {
-            GtkTextIter iend;
-            gtk_text_buffer_get_iter_at_offset(tbf, &iend,
-                h->h_cpos + strlen(h->h_text));
-            gtk_text_buffer_delete(tbf, &istart, &iend);
-        }
-*/
         db_in_undo = false;
         h->h_next = db_redo_list;
         db_redo_list = h;
@@ -1438,46 +1425,25 @@ QTscriptDebuggerDlg::edit_menu_slot(QAction *a)
             wb_textarea->insert_chars_at_point(0, h->h_text, h->h_cpos, -1);
         else
             wb_textarea->delete_chars(h->h_cpos, h->h_cpos + strlen(h->h_text));
-/*XXX
-        GtkTextBuffer *tbf =
-            gtk_text_view_get_buffer(GTK_TEXT_VIEW(Dbg->wb_textarea));
-        GtkTextIter istart;
-        gtk_text_buffer_get_iter_at_offset(tbf, &istart, h->h_cpos);
-        gtk_text_buffer_place_cursor(tbf, &istart);
-        if (!h->h_deletion)
-            gtk_text_buffer_insert(tbf, &istart, h->h_text, -1);
-        else {
-            GtkTextIter iend;
-            gtk_text_buffer_get_iter_at_offset(tbf, &iend,
-                h->h_cpos + strlen(h->h_text));
-            gtk_text_buffer_delete(tbf, &istart, &iend);
-        }
-*/
         db_in_undo = false;
         h->h_next = db_undo_list;
         db_undo_list = h;
         check_sens();
     }
     if (a->data().toInt() == 1) {
-        wb_textarea->cut_clipboard();
+        wb_textarea->cut();
         return;
     }
     if (a->data().toInt() == 2) {
-        wb_textarea->copy_clipboard();
+        wb_textarea->copy();
         return;
     }
     if (a->data().toInt() == 3) {
-        wb_textarea->paste_clipboard();
+        wb_textarea->paste();
         return;
     }
     if (a->data().toInt() == 4) {
-/*XXX
-        GtkTextBuffer *tbf =
-            gtk_text_view_get_buffer(GTK_TEXT_VIEW(Dbg->wb_textarea));
-        GtkClipboard *cb = gtk_clipboard_get_for_display(
-            gdk_display_get_default(), GDK_SELECTION_PRIMARY);
-        gtk_text_buffer_paste_clipboard(tbf, cb, 0, true);
-*/
+        // Paste primary selection, X-Windows thing not supported.
     }
 }
 

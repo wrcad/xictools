@@ -1233,7 +1233,7 @@ QTbag::PopUpPrint(GRobject caller, HCcb *cb, HCmode mode, GRdraw*)
     }
 
     if (bstate) {
-        // This will set this->hc if successful.
+        // This will set this->wb_hc if successful.
         QTprintDlg *pd = new QTprintDlg(caller, cb, mode, this);
         if (wb_shell)
            pd->set_transient_for(wb_shell);
@@ -1246,26 +1246,24 @@ QTbag::PopUpPrint(GRobject caller, HCcb *cb, HCmode mode, GRdraw*)
 }
 
 
-// Function to query values for command text, resolution, etc.
-// The HCcb struct is filled in with the present values.
+// Function to query values for print command settings.  The HCcb
+// struct is filled in with the present values.
 //
 void
-QTbag::HCupdate(HCcb *cb, GRobject)
+QTbag::HCupdate(HCcb *cb)
 {
     if (wb_hc)
         wb_hc->update(cb);
-//XXX gtk impl has long block of code, equiv?
 }
 
 
 // Change the format selection of the Print panel.
 //
 void
-QTbag::HCsetFormat(int)
+QTbag::HCsetFormat(int fmt)
 {
-    //XXX fixme
-// gtk impl has one line
-//XXX    GTKprintPopup::hc_set_format(this, fmt, true);
+    if (wb_hc)
+        wb_hc->set_format(fmt);
 }
 
 
@@ -1275,9 +1273,6 @@ QTbag::HCsetFormat(int)
 void
 QTbag::HcopyDisableMsgs()
 {
-    /* gtk impl equiv?
-    Mlist.remove(this);
-    */
     if (wb_hc)
         wb_hc->disable_progress();
 }
@@ -1411,7 +1406,7 @@ QTbag::PopUpEditString(GRobject caller, GRloc loc, const char *prompt_string,
     if (wb_shell)
        inp->set_transient_for(wb_shell);
     inp->register_caller(caller, false, true);
-    inp->register_callback((GRledPopup::GRledCallback)action_callback);
+    inp->register_callback(action_callback);
     inp->set_callback_arg(action_arg);
     inp->register_quit_callback(downproc);
     if (textwidth < 150)
@@ -1437,9 +1432,8 @@ QTbag::PopUpInput(const char *label_str, const char *initial_str,
     wb_input = new QTledDlg(this, label_str, initial_str, action_str, false);
     if (wb_shell)
        wb_input->set_transient_for(wb_shell);
-    wb_input->register_callback((GRledPopup::GRledCallback)action_callback);
+    wb_input->register_callback_nr(action_callback);
     wb_input->set_callback_arg(arg);
-    wb_input->set_ignore_return(true);
     if (textwidth < 150)
         textwidth = 150;
     wb_input->setMinimumWidth(textwidth);

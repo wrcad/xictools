@@ -50,7 +50,7 @@ namespace gtkinterf {
     // Struct to record parameters for hard copy generation
     struct GTKprintPopup
     {
-        friend void GTKbag::HCupdate(HCcb*, GRobject);
+        friend void GTKbag::HCupdate(HCcb*);
 
         GTKprintPopup();
         ~GTKprintPopup();

@@ -291,7 +291,7 @@ namespace gtkinterf {
 
         // gtkhcopy.cc
         void PopUpPrint(GRobject, HCcb*, HCmode, GRdraw* = 0);
-        void HCupdate(HCcb*, GRobject);
+        void HCupdate(HCcb*);
         void HCsetFormat(int);
         void HcopyDisableMsgs();
 

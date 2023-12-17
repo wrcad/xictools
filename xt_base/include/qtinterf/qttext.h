@@ -49,12 +49,12 @@
 
 class QGroupBox;
 class QPushButton;
-class QTextEdit;
 namespace qtinterf {
     class QTbag;
     class QTtextDlg;
     class QTmsgDlg;
     class QTledDlg;
+    class QTtextEdit;
 }
 
 
@@ -112,6 +112,8 @@ public:
     void set_btn2_state(bool);
     bool update(const char*);
 
+    QTtextEdit *editor()        { return (tx_tbox); }
+
 private slots:
     void save_btn_slot(bool);
     void showlog_btn_slot();
@@ -123,7 +125,7 @@ private:
     static ESret tx_save_cb(const char*, void*);
     static int tx_timeout(void*);
 
-    QTextEdit   *tx_tbox;
+    QTtextEdit  *tx_tbox;
     QPushButton *tx_save;
     QPushButton *tx_activate;
     QTledDlg    *tx_save_pop;

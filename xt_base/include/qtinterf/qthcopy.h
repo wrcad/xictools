@@ -83,6 +83,7 @@ public:
     void set_message(const char*);
     void disable_progress();
 
+    void set_format(int);
     void set_active(bool);
     bool is_active()                { return (pd_active); }
     int format_index()              { return (pd_fmt); }

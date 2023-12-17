@@ -67,7 +67,7 @@ public:
     virtual ~QTdraw() { }
 
     // GRdraw virtual overrides
-    void *WindowID()                { return (0); }
+    void *WindowID()                { return (this); }
     void Halt();
     void Clear()
         { if (gd_viewport) gd_viewport->clear(); }

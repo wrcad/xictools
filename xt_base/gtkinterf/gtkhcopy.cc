@@ -321,16 +321,12 @@ GTKbag::PopUpPrint(GRobject caller, HCcb *cb, HCmode mode, GRdraw *context)
 
 // Function to query values for command text, resolution, etc.
 // The sHCcb struct is filled in with the present values.
-// If caller is given, it replaces the internal value, allowing the
-// popup to be attached to a new button.
 //
 void
-GTKbag::HCupdate(HCcb *cb, GRobject caller)
+GTKbag::HCupdate(HCcb *cb)
 {
     if (!wb_hc)
         return;
-    if (caller)
-        wb_hc->hc_caller = caller;
     if (!cb)
         return;
     cb->hcsetup = wb_hc->hc_cb ? wb_hc->hc_cb->hcsetup : 0;

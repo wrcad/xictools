@@ -40,6 +40,7 @@
 
 #include "qtinterf.h"
 #include "qttext.h"
+#include "qttextw.h"
 #include "qtfont.h"
 #include "qtinput.h"
 #include "qtmsg.h"
@@ -96,7 +97,7 @@ QTtextDlg::QTtextDlg(QTbag *owner, const char *message_str, PuType which,
     vb->setContentsMargins(qmtop);;
     vb->setSpacing(2);
 
-    tx_tbox = new QTextEdit();
+    tx_tbox = new QTtextEdit();
     tx_tbox->setReadOnly(true);
     vb->addWidget(tx_tbox);
 

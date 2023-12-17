@@ -799,9 +799,23 @@ QTtreeDlg::user_btn_slot()
 void
 QTtreeDlg::item_collapsed_slot(QTreeWidgetItem*)
 {
-    //XXX FIXME
-// If the selected row is collapsed, deselect.  This does not happen
-// automatically.
+    // If the selected row is hidden by collapse, deselect.  This does
+    // not happen automatically.
+
+    QTreeWidget *w = dynamic_cast<QTreeWidget*>(sender());
+    if (!w)
+        return;
+    QList<QTreeWidgetItem*> lst = w->selectedItems();
+    if (!lst.isEmpty()) {
+        QTreeWidgetItem *itm = lst[0];
+        while (itm) {
+            if (!itm->isExpanded()) {
+                lst[0]->setSelected(false);
+                break;
+            }
+            itm = itm->parent();
+        }
+    }
 }
 
 
@@ -818,8 +832,7 @@ QTtreeDlg::item_selection_changed_slot()
         t_selection = lstring::copy(lst[0]->text(0).toLatin1().constData());
         // User can press Ctrl-C (Command-C in Apple) to put selection
         // into global clipboard.
-//XXX
-//        QApplication::clipboard()->setText(t_selection);
+        // QApplication::clipboard()->setText(t_selection);
     }
     check_sens();
 }

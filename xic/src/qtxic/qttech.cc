@@ -255,8 +255,7 @@ QTwriteTechDlg::write_btn_slot()
         delete [] string;
         return;
     }
-    HCcb &cb = Tech()->HC();
-    DSPmainWbag(HCupdate(&cb, 0))
+    DSPmainWbag(HCupdate(&Tech()->HC()))
     // If in hardcopy mode, switch back temporarily.
     int save_drvr = Tech()->HcopyDriver();
     if (DSP()->DoingHcopy())

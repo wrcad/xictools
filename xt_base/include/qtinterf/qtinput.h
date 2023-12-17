@@ -89,7 +89,6 @@ public:
         setWindowFlags(f);
     }
 
-    void set_ignore_return(bool set)    { ed_ign_ret = set; }
     void set_message(const char*);
     void set_text(const char*);
 
@@ -105,7 +104,6 @@ private:
     QWidget *ed_edit;           // QLineEdit or QTextEdit
     bool    ed_multiline;       // true when multiline
     bool    ed_quit_flag;       // set true if Apply pressed
-    bool    ed_ign_ret;         // true if ignoring callback return
 };
 
 #endif
