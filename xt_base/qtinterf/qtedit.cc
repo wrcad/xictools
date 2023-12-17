@@ -303,12 +303,22 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::EditorType type,
         ed_Edit_Redo->setEnabled(false);
     }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     ed_editmenu->addAction(tr("&Copy to Clipboard"), Qt::CTRL|Qt::Key_C,
         this, SLOT(copy_slot()));
     if (ed_editor_type != Browser) {
         ed_editmenu->addAction(tr("&Paste from Clipboard"),
             Qt::CTRL|Qt::Key_V, this, SLOT(paste_slot()));
     }
+#else
+    ed_editmenu->addAction(tr("&Copy to Clipboard"), this, SLOT(copy_slot()),
+        Qt::CTRL|Qt::Key_C);
+    if (ed_editor_type != Browser) {
+        ed_editmenu->addAction(tr("&Paste from Clipboard"), this,
+            SLOT(paste_slot()), Qt::CTRL|Qt::Key_V);
+    }
+#endif
+
 #ifdef USE_QTOOLBAR
     a = menubar->addAction("Edit");
     a->setMenu(ed_editmenu);
@@ -766,7 +776,11 @@ QTeditDlg::save_slot()
     QByteArray ba = ed_text_editor->toPlainText().toLatin1();
     if (ed_editor_type == Editor) {
         ed_len = ba.size();
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         ed_chksum = qChecksum(QByteArrayView(ba));
+#else
+        ed_chksum = qChecksum(ba.constData(), ed_len);
+#endif
     }
 
     ed_status_bar->showMessage(tr("Text saved"));
@@ -1318,7 +1332,11 @@ QTeditDlg::read_file(const char *fname, bool clear)
             QByteArray ba = ed_text_editor->toPlainText().toLatin1();
             if (ed_editor_type == Editor) {
                 ed_len = ba.size();
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
                 ed_chksum = qChecksum(QByteArrayView(ba));
+#else
+                ed_chksum = qChecksum(ba.constData(), ed_len);
+#endif
             }
         }
         return (true);
@@ -1401,9 +1419,13 @@ QTeditDlg::text_changed()
     if (ed_editor_type == Browser || ed_editor_type == Mailer)
         return (false);
     QByteArray ba = ed_text_editor->toPlainText().toLatin1();
-    if (ba.size() != ed_len)
+    if ((unsigned int)ba.size() != ed_len)
         return (true);
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     if (qChecksum(QByteArrayView(ba)) != ed_chksum)
+#else
+    if (qChecksum(ba.constData(), ed_len) != ed_chksum)
+#endif
         return (true);
     return (false);
 }

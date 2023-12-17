@@ -324,7 +324,7 @@ sTc::tc_action(GtkWidget *caller, void*)
             return;
         }
         HCcb &cb = Tech()->HC();
-        DSPmainWbag(HCupdate(&cb, 0))
+        DSPmainWbag(HCupdate(&cb))
         // If in hardcopy mode, switch back temporarily.
         int save_drvr = Tech()->HcopyDriver();
         if (DSP()->DoingHcopy())
