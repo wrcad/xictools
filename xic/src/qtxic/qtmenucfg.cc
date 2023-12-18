@@ -1302,6 +1302,11 @@ QTmenuConfig::switch_menu_mode(DisplayMode mode, int wnum)
 void
 QTmenuConfig::set_main_global_sens(const MenuList *list, bool sens)
 {
+    // When busy, virtually all c0mmands are locked out. However, we let
+    // pass any that are completely benign.
+    //
+    // The View/Allocation button qualifies, are there others?
+
     mc_menu_disabled = !sens;
     for (const MenuList *ml = list; ml; ml = ml->next) {
         if (!ml->menubox || !ml->menubox->menu)
@@ -1318,7 +1323,6 @@ QTmenuConfig::set_main_global_sens(const MenuList *list, bool sens)
                     action(ent)->setEnabled(sens);
             }
         }
-        //XXX Are there other entries to keep sensitive?
         else
             topmenu->setEnabled(sens);
     }
@@ -1659,17 +1663,6 @@ QTmenuConfig::subwin_help_slot()
 void
 QTmenuConfig::idle_exec_slot(MenuEnt *ent)
 {
-    // XXX Old GTK message, don't know if it still applies.
-    // The two functions below initiate commands.  They are called
-    // from a timeout rather than an idle loop to avoid problems like
-    // the following:  Assume that the previous command's esc
-    // procedure calls redisplay, so there is a redisplay idle
-    // pending.  The new command would add a second idle proc.  During
-    // the redisplay, the CheckForInterrupt calls will start the
-    // second idle proc, before drawing is complete.  If the second
-    // idle proc starts a command like Edit, which blocks, then we are
-    // stuck in "busy" mode with no way out.
-    //
     // Below, we wait until the drawing is complete ("not busy")
     // before allowing the command to be launched.
 
@@ -1731,7 +1724,7 @@ QTmenuConfig::exec_slot(MenuEnt *ent)
     if (ent->alt_caller) {
         // Spurious call from menu pop-up.  This handler should only
         // be called through the alt_caller.
-        printf("Warning: exec_slot alt_caller\n");
+        printf("Warning: (internal inconsistency) exec_slot alt_caller\n");
         return;
     }
 

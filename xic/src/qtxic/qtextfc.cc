@@ -397,11 +397,16 @@ QTfastCapDlg::QTfastCapDlg(GRobject c) : QTbag(this)
     page = new QWidget();
     nbook->addTab(page, tr("Debug"));
     grid = new QGridLayout(page);
-#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
+#if QT_VERSION >= QT_VERSION_CHECK(5,15,0)
     nbook->setTabVisible(2, CDvdb()->getVariable(VA_FcDebug));
+#else
+     if (!CDvdb()->getVariable(VA_FcDebug)) {
+        nbook->setTabEnabled(2, false);
+        // Change disabled to appear invisible throught the style sheet.
+        nbook->setStyleSheet("QTabBar::tab::disabled "
+            "{width: 0; height: 0; margin: 0; padding: 0; border: none;} ");
+     }
 #endif
-    // XXX Earlier releases will show the debug page.
-    // Check:  is CentOS 7 current >= 5.11 ?
 
     fc_dbg_zoids = new QCheckBox("Zoids");
     grid->addWidget(fc_dbg_zoids, 0, 0);

@@ -605,7 +605,12 @@ QTconvOutFmt::configure(cvofmt_mode mode)
         fmt_gdsftopt->show();
         fmt_oasmap->hide();
         for (int i = 0; i < count(); i++)
+#if QT_VERSION >= QT_VERSION_CHECK(5,15,0)
             setTabVisible(i, true);
+#else
+            setTabEnabled(i, true);
+#endif
+
     }
     else if (mode == cvofmt_native) {
         // Converting native cell files.
@@ -615,7 +620,12 @@ QTconvOutFmt::configure(cvofmt_mode mode)
         fmt_oasmap->hide();
         // hide 4 (XIC) and larger
         for (int i = 0; i < count(); i++)
+
+#if QT_VERSION >= QT_VERSION_CHECK(5,15,0)
             setTabVisible(i, (i < 4));
+#else
+            setTabEnabled(i, (i < 4));
+#endif
     }
     else if (mode == cvofmt_chd) {
         // Converting using CHD.
@@ -625,7 +635,11 @@ QTconvOutFmt::configure(cvofmt_mode mode)
         fmt_oasmap->hide();
         // hide 4 (XIC) and larger but keep 7 (CGD)
         for (int i = 0; i < count(); i++)
+#if QT_VERSION >= QT_VERSION_CHECK(5,15,0)
             setTabVisible(i, (i < 4) || i == 7);
+#else
+            setTabEnabled(i, (i < 4) || i == 7);
+#endif
     }
     else if (mode == cvofmt_chdfile) {
         // Converting using CHD file.
@@ -635,7 +649,11 @@ QTconvOutFmt::configure(cvofmt_mode mode)
         fmt_oasmap->hide();
         // hide 4 (XIC) and larger but keep 6 and 7 (CHD and CGD)
         for (int i = 0; i < count(); i++)
+#if QT_VERSION >= QT_VERSION_CHECK(5,15,0)
             setTabVisible(i, (i < 4) || i == 6 || i == 7);
+#else
+            setTabEnabled(i, (i < 4) || i == 6 || i == 7);
+#endif
     }
     else if (mode == cvofmt_asm) {
         // Assembling.
@@ -645,7 +663,11 @@ QTconvOutFmt::configure(cvofmt_mode mode)
         fmt_oasmap->show();
         // hide 5 (Text) and larger
         for (int i = 0; i < count(); i++)
+#if QT_VERSION >= QT_VERSION_CHECK(5,15,0)
             setTabVisible(i, (i < 5));
+#else
+            setTabEnabled(i, (i < 5));
+#endif
     }
     else if (mode == cvofmt_db) {
         // Setting options (export control).
@@ -655,7 +677,11 @@ QTconvOutFmt::configure(cvofmt_mode mode)
         fmt_oasmap->show();
         // hide 4 (XIC) and larger
         for (int i = 0; i < count(); i++)
+#if QT_VERSION >= QT_VERSION_CHECK(5,15,0)
             setTabVisible(i, (i < 4));
+#else
+            setTabEnabled(i, (i < 4));
+#endif
     }
 }
 
