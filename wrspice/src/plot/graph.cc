@@ -702,7 +702,6 @@ sGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
             if (k->inspos < (int)strlen(k->text)) {
                 gr_show_sel_text(false);
                 k->inspos++;
-                int xl, yb, xr, yt;
 #if defined (WITH_QT5) || defined (WITH_QT6)
                 int x, y;
                 gr_get_keyed_posn(k, &x, &y);
@@ -710,6 +709,7 @@ sGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
                 gr_dev->SetColor(gr_colors[k->colorindex].pixel);
                 gr_dev->Text(k->text, x, y, k->xform);
 #else
+                int xl, yb, xr, yt;
                 if (gr_get_keyed_bb(k, &xl, &yb, &xr, &yt)) {
                     gr_refresh(xl, yinv(yb)+1, xr, yinv(yt));
                 }

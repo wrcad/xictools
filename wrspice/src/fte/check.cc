@@ -2170,7 +2170,7 @@ sCHECKprms::df_open(int c, char **rdname, FILE **rdfp, sNames *tnames)
     for (i = 1; ; i++) {
         if (access(buf1, 0))
             break;
-        snprintf(s, 4, "%02d", i);
+        snprintf(s, 14, "%02d", i);
     }
     FILE *fp = fopen(buf1, "w");
     if (!fp) {

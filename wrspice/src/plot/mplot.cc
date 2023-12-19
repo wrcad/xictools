@@ -644,7 +644,7 @@ sGraph::mp_writeg(double d, int x, int y, int j)
                 return;
             }       
         }
-        snprintf(tt, 2, "%02d", xp);
+        snprintf(tt, 14, "%02d", xp);
     }           
     if (j == 'r')
         gr_dev->Text(t, x - (int)strlen(t)*gr_fontwid, yinv(y), 0);

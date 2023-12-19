@@ -1027,7 +1027,7 @@ cUdf::new_unique_name(const char **namep)
     char *t = lstring::stpcpy(buf, *namep);
     *t++ = UNIQUE_SEP;
     for (int i = 1; ; i++) {
-        snprintf(t, 6, "%d", i);
+        snprintf(t, 12, "%d", i);
         if (!sHtab::get(ud_tab, buf))
             break;
     }

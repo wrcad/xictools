@@ -191,7 +191,7 @@ QTparam::print()
     }
     int clev = PP()->Level();
     if (clev) {
-        snprintf(textbuf, 10, "%d", clev);
+        snprintf(textbuf, 12, "%d", clev);
         p_text.append_string("Push: ", c1);
         p_text.append_string(textbuf, c2);
         p_text.append_string("  ", c2);

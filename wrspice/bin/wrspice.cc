@@ -756,7 +756,7 @@ namespace {
                 delete [] fpath;
                 fpath = tt;
             }
-            snprintf(t, 6, "%d", cnt);
+            snprintf(t, 12, "%d", cnt);
             cnt++;
         }
         int ret = mkfifo(fpath, 0666);
