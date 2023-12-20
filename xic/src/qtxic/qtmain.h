@@ -381,6 +381,10 @@ public:
     QSize sizeHint()                const { return (QSize(500, 400)); }
     QSize minimumSizeHint()         const { return (QSize(250, 200)); }
 
+    // Override Tab/Shift-Tab focus change, these are used for Unde/Redo
+    // in Xic.
+    bool focusNextPrevChild(bool);
+
     void wheelEvent(QWheelEvent*);
 
     bool keypress_handler(unsigned int, unsigned int, const char*, bool, bool);
@@ -475,7 +479,6 @@ signals:
 private slots:
     void wr_btn_slot();
     void update_coords_slot(int, int);
-    void revert_slot();
 
 private:
     // QWidget virtual overrides

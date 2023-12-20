@@ -257,7 +257,7 @@ QTmenuConfig::instantiateMainMenus()
     if (mbox && mbox->menu) {
         QMenu *edit_menu = new QMenu(main_win);
         edit_menu->setTitle(tr(mbox->name));
-        menubar->addMenu(edit_menu);
+        QAction *ae = menubar->addMenu(edit_menu);
 
         set(mbox->menu[editMenu], "&Edit", 0);
         set(mbox->menu[editMenuCedit], "&Enable Editing", 0);

@@ -1317,12 +1317,16 @@ QTeditDlg::read_file(const char *fname, bool clear)
         if (clear)
             ed_text_editor->clear();
         char buf[1024];
+        QByteArray tba;
         for (;;) {
             int n = fread(buf, 1, 1024, fp);
-            ed_text_editor->append(QByteArray(buf, n));
+            if (n > 0)
+                tba.append(buf, n);
             if (n < 1024)
                 break;
         }
+        ed_text_editor->append(tba);
+        tba.clear();
         fclose(fp);
         QTextCursor c = ed_text_editor->textCursor();
         c.setPosition(0);

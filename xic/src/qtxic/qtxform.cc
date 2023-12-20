@@ -84,8 +84,10 @@ cEdit::PopUpTransform(GRobject caller, ShowMode mode,
         return;
     }
     if (mode == MODE_UPD) {
-        if (QTxformDlg::self())
+        if (QTxformDlg::self()) {
             QTxformDlg::self()->update();
+            QTmainwin::self()->activateWindow();
+        }
         return;
     }
     if (QTxformDlg::self())
@@ -167,6 +169,7 @@ QTxformDlg::QTxformDlg(GRobject c,
     connect(tf_rflx, SIGNAL(stateChanged(int)),
         this, SLOT(reflect_x_slot(int)));
 
+    hbox->addSpacing(12);
     tf_rfly = new QCheckBox(tr("Reflect Y"));
     hbox->addWidget(tf_rfly);
     connect(tf_rfly, SIGNAL(stateChanged(int)),
@@ -295,12 +298,17 @@ QTxformDlg::update()
     int da = DSP()->CurMode() == Physical ? 45 : 90;
     int d = 0;
 
+    disconnect(tf_ang, SIGNAL(currentIndexChanged(int)),
+        this, SLOT(angle_change_slot(int)));
     tf_ang->clear();
     while (d < 360) {
         snprintf(buf, sizeof(buf), "%d", d);
         tf_ang->addItem(tr(buf));
         d += da;
     }
+    connect(tf_ang, SIGNAL(currentIndexChanged(int)),
+        this, SLOT(angle_change_slot(int)));
+    tf_ang->setCurrentIndex(0);
     tf_ang->setCurrentIndex(GEO()->curTx()->angle()/da);
 
     has_tf |= GEO()->curTx()->angle();
@@ -331,7 +339,8 @@ void
 QTxformDlg::angle_change_slot(int)
 {
     if (tf_callback) {
-        const char *t = (const char*)tf_ang->currentText().toLatin1();
+        QByteArray ba = tf_ang->currentText().toLatin1();
+        const char *t = ba.constData();
         if (t) {
             (*tf_callback)("ang", true, t, tf_arg);
         }

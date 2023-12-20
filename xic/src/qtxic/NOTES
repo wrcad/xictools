@@ -1,3 +1,12 @@
+XXXXXXX
+GTK issues:
+command-arrows don't change rotation angle. (Apple)
+
+Place panel, can't bring back text popup if deleted.
+XXXXXXX
+
+QT:  Shift-Tab not working
+
 Issues:
 1.  How to implement "tranisent-for" behavior in pop-up windows.  Than is,
 how to keep them on top of the main window, without making them modal or

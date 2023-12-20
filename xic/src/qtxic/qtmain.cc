@@ -1690,6 +1690,16 @@ QTsubwin::PopUpZoom(GRobject caller, ShowMode mode)
 // End of cAppWinFuncs interface
 
 
+// Prevent focus change with Tab/Shift-Tab, instead send the event on
+// to the drawing window for Undo/Redo.
+//
+bool
+QTsubwin::focusNextPrevChild(bool)
+{
+    return (false);
+}
+
+
 void
 QTsubwin::wheelEvent(QWheelEvent *ev)
 {
@@ -1758,6 +1768,16 @@ QTsubwin::keypress_handler(unsigned int keyval, unsigned int state,
 {
     if (!sw_windesc)
         return (false);
+
+//XXX Check this, might not be just Apple.
+#ifdef __APPLE__
+    // Apple keyboard returns a Backtab code for Shift-Tab, map that
+    // back to Tab here so that Shift-Tab will perform the Redo
+    // operation as in other systems.
+
+    if (keyval == Qt::Key_Backtab && (state & GR_SHIFT_MASK))
+        keyval = Qt::Key_Tab;
+#endif
 
     // The code: 0x00 - 0x16 are the KEYcode enum values.
     //           0x17 - 0x1f unused
@@ -2579,6 +2599,10 @@ QTmainwin::QTmainwin(QWidget *prnt) : QTsubwin(0, prnt)
     sw_keys_pressed = QTedit::self()->keys();
     hbox->addWidget(QTedit::self());
 
+    QFrame *f = new QFrame();
+    vbox->addWidget(f);
+    f->setFrameShape(QFrame::HLine);
+
     mw_status = new QTparam(this);
     mw_status->setMinimumHeight(h);
     mw_status->setMaximumHeight(h);
@@ -2711,13 +2735,6 @@ void
 QTmainwin::update_coords_slot(int xx, int yy)
 {
     mw_coords->print(xx, yy, QTcoord::COOR_MOTION);
-}
-
-
-void
-QTmainwin::revert_slot()
-{
-    activateWindow();
 }
 // End of QTmainwin functions.
 
