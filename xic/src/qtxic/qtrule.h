@@ -49,7 +49,7 @@
 
 
 //--------------------------------------------------------------------
-// Pop-up to control input parameters
+// Pop-up to control DRC input parameters
 //
 
 class QLabel;
@@ -72,14 +72,14 @@ public:
     void update(DRCtype, const char*, const DRCtestDesc*);
 
     void set_transient_for(QWidget *prnt)
-    {
-        Qt::WindowFlags f = windowFlags();
-        setParent(prnt);
+        {
+            Qt::WindowFlags f = windowFlags();
+            setParent(prnt);
 #ifdef __APPLE__
-        f |= Qt::Tool;
+            f |= Qt::Tool;
 #endif
-        setWindowFlags(f);
-    }
+            setWindowFlags(f);
+        }
 
     static QTruleDlg *self()            { return (instPtr); }
 

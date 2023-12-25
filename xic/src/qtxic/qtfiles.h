@@ -76,14 +76,14 @@ public:
     char *get_selection();
 
     void set_transient_for(QWidget *prnt)
-    {
-        Qt::WindowFlags f = windowFlags();
-        setParent(prnt);
+        {
+            Qt::WindowFlags f = windowFlags();
+            setParent(prnt);
 #ifdef __APPLE__
-        f |= Qt::Tool;
+            f |= Qt::Tool;
 #endif
-        setWindowFlags(f);
-    }
+            setWindowFlags(f);
+        }
 
     const char *get_directory()         { return (fl_directory); }
     static void panic()                 { instPtr = 0; }

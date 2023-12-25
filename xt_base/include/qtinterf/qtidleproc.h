@@ -43,6 +43,7 @@
 
 #include <QTimer>
 
+
 namespace qtinterf {
     class QTidleproc;
 }
@@ -54,12 +55,7 @@ class qtinterf::QTidleproc : public QTimer
 public:
     struct idle_procs
     {
-        idle_procs(int(*c)(void*), void *a)
-        {
-            proc = c;
-            arg = a;
-            next = 0;
-        }
+        idle_procs(int(*c)(void*), void *a) : proc(c), arg(a), next(0) { }
 
         int (*proc)(void*);
         void *arg;

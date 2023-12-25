@@ -64,12 +64,12 @@ public:
     struct ci_item
     {
         ci_item()
-        {
-            cdesc = 0;
-            name = 0;
-            index = 0;
-            sel = false;
-        }
+            {
+                cdesc = 0;
+                name = 0;
+                index = 0;
+                sel = false;
+            }
 
         CDc *cdesc;                         // instance desc
         const char *name;                   // master cell name
@@ -84,14 +84,14 @@ public:
     void update(CDol*);
 
     void set_transient_for(QWidget *prnt)
-    {
-        Qt::WindowFlags f = windowFlags();
-        setParent(prnt);
+        {
+            Qt::WindowFlags f = windowFlags();
+            setParent(prnt);
 #ifdef __APPLE__
-        f |= Qt::Tool;
+            f |= Qt::Tool;
 #endif
-        setWindowFlags(f);
-    }
+            setWindowFlags(f);
+        }
 
     static CDol *instances()                    { return (ci_return); }
     static QTcellInstSelectDlg *self()          { return (instPtr); }

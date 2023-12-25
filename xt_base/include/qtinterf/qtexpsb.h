@@ -56,10 +56,10 @@ class qtinterf::QTexpDoubleSpinBox : public QDoubleSpinBox
 public:
     explicit QTexpDoubleSpinBox(QWidget *prnt = nullptr) :
         QDoubleSpinBox(prnt)
-    {
-        QDoubleSpinBox::setDecimals(400);
-        d_decimals = 5;
-    }
+        {
+            QDoubleSpinBox::setDecimals(400);
+            d_decimals = 5;
+        }
     ~QTexpDoubleSpinBox() { }
 
     // This is subtle:  there is a hard-coded round function in
@@ -69,7 +69,7 @@ public:
     // (see source code).  We implement our own decimals for
     // significant figs display.
 
-    int decimals() const        { return (d_decimals); }
+    int decimals() const        const { return (d_decimals); }
     void setDecimals(int d)     { d_decimals = d; }
 
     // Virtual overrides.

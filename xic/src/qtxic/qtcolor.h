@@ -44,8 +44,8 @@
 #include "main.h"
 #include "qtmain.h"
 
-//#include <QColorDialog>
 #include <QDialog>
+
 
 class QColorDialog;
 class QComboBox;
@@ -68,14 +68,14 @@ public:
     void update();
 
     void set_transient_for(QWidget *prnt)
-    {
-        Qt::WindowFlags f = windowFlags();
-        setParent(prnt);
+        {
+            Qt::WindowFlags f = windowFlags();
+            setParent(prnt);
 #ifdef __APPLE__
-        f |= Qt::Tool;
+            f |= Qt::Tool;
 #endif
-        setWindowFlags(f);
-    }
+            setWindowFlags(f);
+        }
 
     static QTcolorDlg *self()           { return (instPtr); }
 

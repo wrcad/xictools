@@ -68,14 +68,14 @@ public:
     static const char *font(bool init=false);
 
     void set_transient_for(QWidget *prnt)
-    {
-        Qt::WindowFlags f = windowFlags();
-        setParent(prnt);
+        {
+            Qt::WindowFlags f = windowFlags();
+            setParent(prnt);
 #ifdef __APPLE__
-        f |= Qt::Tool;
+            f |= Qt::Tool;
 #endif
-        setWindowFlags(f);
-    }
+            setWindowFlags(f);
+        }
 
     QTfontDlg *fontsel()            { return (lgo_fontsel); }
     static QTlogoDlg *self()        { return (instPtr); }

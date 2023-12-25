@@ -74,22 +74,22 @@ public:
 
     // GRpopup override
     void set_visible(bool visib)
-    {
-        if (visib)
-            show();
-        else
-            hide();
-    }
+        {
+            if (visib)
+                show();
+            else
+                hide();
+        }
 
     void set_transient_for(QWidget *prnt)
-    {
-        Qt::WindowFlags f = windowFlags();
-        setParent(prnt);
+        {
+            Qt::WindowFlags f = windowFlags();
+            setParent(prnt);
 #ifdef __APPLE__
-        f |= Qt::Tool;
+            f |= Qt::Tool;
 #endif
-        setWindowFlags(f);
-    }
+            setWindowFlags(f);
+        }
 
     void popdown();
     void update(bool = false);

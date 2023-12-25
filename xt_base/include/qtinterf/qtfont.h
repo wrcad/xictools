@@ -47,6 +47,7 @@
 #include <QVariant>
 #include <QDialog>
 
+
 //
 // Font handling
 //
@@ -91,11 +92,11 @@ public:
     static int lineHeight(const QWidget*);
 
     static QTfont *self()
-    {
-        if (!instancePtr)
-            on_null_ptr();
-        return (instancePtr);
-    }
+        {
+            if (!instancePtr)
+                on_null_ptr();
+            return (instancePtr);
+        }
 
 signals:
     void fontChanged(int);
@@ -133,26 +134,26 @@ public:
     ~QTfontDlg();
 
     void set_transient_for(QWidget *prnt)
-    {
-        Qt::WindowFlags f = windowFlags();
-        setParent(prnt);
+        {
+            Qt::WindowFlags f = windowFlags();
+            setParent(prnt);
 #ifdef __APPLE__
-        f |= Qt::Tool;
+            f |= Qt::Tool;
 #endif
-        setWindowFlags(f);
-    }
+            setWindowFlags(f);
+        }
 
     // GRpopup overrides
     void set_visible(bool visib)
-    {
-        if (visib) {
-            show();
-            raise();
-            activateWindow();
+        {
+            if (visib) {
+                show();
+                raise();
+                activateWindow();
+            }
+            else
+                hide();
         }
-        else
-            hide();
-    }
     void register_caller(GRobject, bool=false, bool=false);
     void popdown();
 

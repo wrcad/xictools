@@ -131,89 +131,89 @@ public:
     // Process and clear the event list.
     //
     void do_saved_events()
-    {
-        while (em_event_list) {
-            evl_t *evtmp = em_event_list;
-            em_event_list = evtmp->next;
-            QObject::eventFilter(evtmp->obj, evtmp->ev);
-            delete evtmp;
+        {
+            while (em_event_list) {
+                evl_t *evtmp = em_event_list;
+                em_event_list = evtmp->next;
+                QObject::eventFilter(evtmp->obj, evtmp->ev);
+                delete evtmp;
+            }
         }
-    }
 
     // Append an event to the list.
     //
     void save_event(QObject *obj, const QEvent *evp)
-    {
+        {
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-        QEvent *ev = evp->clone();
+            QEvent *ev = evp->clone();
 #else
-        //XXX no clone function in QT5.
-        (void)evp;
-        QEvent *ev = 0;
+            //XXX no clone function in QT5.
+            (void)evp;
+            QEvent *ev = 0;
 #endif
-        if (!em_event_list)
-            em_event_list = new evl_t(obj, ev);
-        else {
-            evl_t *evl = em_event_list;
-            while (evl->next)
-                evl = evl->next;
-            evl->next = new evl_t(obj, ev);
+            if (!em_event_list)
+                em_event_list = new evl_t(obj, ev);
+            else {
+                evl_t *evl = em_event_list;
+                while (evl->next)
+                    evl = evl->next;
+                evl->next = new evl_t(obj, ev);
+            }
         }
-    }
 
     // Return true if obj is in the busy_allow list.
     //
     bool is_busy_allow(const QObject *obj)
-    {
-        for (ol_t *e = em_busy_allow_list; e; e = e->next) {
-            if (e->obj == obj)
-                return (true);
+        {
+            for (ol_t *e = em_busy_allow_list; e; e = e->next) {
+                if (e->obj == obj)
+                    return (true);
+            }
+            return (false);
         }
-        return (false);
-    }
 
     // Add an object whose events will be processed when the Busy flag
     // is on.  These would have an "abort" data item in the GTK version.
     //
     void add_busy_allow(const QObject *obj)
-    {
-        if (!is_busy_allow(obj)) {
-            em_busy_allow_list = new ol_t(obj, em_busy_allow_list);
+        {
+            if (!is_busy_allow(obj)) {
+                em_busy_allow_list = new ol_t(obj, em_busy_allow_list);
+            }
         }
-    }
 
     // Remove obj from the busy_allow list if present.
     //
     void remove_busy_allow(const QObject *obj)
-    {
-        ol_t *ep = 0;
-        for (ol_t *e = em_busy_allow_list; e; e = e->next) {
-            if (e->obj == obj) {
-                if (ep)
-                    ep->next = e->next;
-                else
-                    em_busy_allow_list = e->next;
-                delete e;
-                return;
+        {
+            ol_t *ep = 0;
+            for (ol_t *e = em_busy_allow_list; e; e = e->next) {
+                if (e->obj == obj) {
+                    if (ep)
+                        ep->next = e->next;
+                    else
+                        em_busy_allow_list = e->next;
+                    delete e;
+                    return;
+                }
+                ep = e;
             }
-            ep = e;
         }
-    }
 
     EventHandlerFunc set_event_handler(EventHandlerFunc func)
-    {
-        EventHandlerFunc f = em_event_handler;
-        em_event_handler = func;
-        return (f);
-    }
+        {
+            EventHandlerFunc f = em_event_handler;
+            em_event_handler = func;
+            return (f);
+        }
 
     static int saved_events_idle(void *arg)
-    {
-        QTeventMonitor *evmon = static_cast<QTeventMonitor*>(arg);
-        if (evmon)
-            evmon->do_saved_events();
-        return (0);
-    }
+        {
+            QTeventMonitor *evmon = static_cast<QTeventMonitor*>(arg);
+            if (evmon)
+                evmon->do_saved_events();
+            return (0);
+        }
 
     static void  log_event(const QObject*, const QEvent*);
 
@@ -232,11 +232,11 @@ class QTpkg : public DSPpkg
 {
 public:
     QTpkg()
-    {
-        pkg_busy_popup      = 0;
-        pkg_in_main_loop    = false;
-        pkg_not_mapped      = false;
-    }
+        {
+            pkg_busy_popup      = 0;
+            pkg_in_main_loop    = false;
+            pkg_not_mapped      = false;
+        }
 
     static QTpkg *self() { return (dynamic_cast<QTpkg*>(DSPpkg::self())); }
 
@@ -328,14 +328,14 @@ public:
     ~QTsubwin();
 
     void set_transient_for(QWidget *prnt)
-    {
-        Qt::WindowFlags f = windowFlags();
-        setParent(prnt);
+        {
+            Qt::WindowFlags f = windowFlags();
+            setParent(prnt);
 #ifdef __APPLE__
-        f |= Qt::Tool;
+            f |= Qt::Tool;
 #endif
-        setWindowFlags(f);
-    }
+            setWindowFlags(f);
+        }
 
     // cAppWinFuncs interface
     //
@@ -427,18 +427,20 @@ class QTmainwin : public QTsubwin
 
 public:
     static QTmainwin *self()
-    {
-        if (DSP()->MainWdesc())
-            return (dynamic_cast<QTmainwin*>(DSP()->MainWdesc()->Wbag()));
-        return (0);
-    }
+        {
+            if (DSP()->MainWdesc())
+                return (dynamic_cast<QTmainwin*>(DSP()->MainWdesc()->Wbag()));
+            return (0);
+        }
 
     static bool exists()
-    {
-        if (DSP()->MainWdesc())
-            return (dynamic_cast<QTmainwin*>(DSP()->MainWdesc()->Wbag()) != 0);
-        return (false);
-    }
+        {
+            if (DSP()->MainWdesc()) {
+                return (dynamic_cast<QTmainwin*>(
+                    DSP()->MainWdesc()->Wbag()) != 0);
+            }
+            return (false);
+        }
 
     QMenuBar *MenuBar()         { return (mw_menubar); }
     QWidget *PromptLine()       { return (mw_promptline); }

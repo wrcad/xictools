@@ -45,6 +45,7 @@
 #include <QMimeData>
 #include <QDragEnterEvent>
 
+
 class QResizeEvent;
 class QMouseEvent;
 class QDropEvent;

@@ -46,8 +46,9 @@
 #include <QEventLoop>
 #include "qtinterf/qtdraw.h"
 
+
 //
-//  Main header for the QT-5 library
+//  Main header for the QT library.
 //
 
 class QCursor;
@@ -273,16 +274,13 @@ public:
 #endif
 
     static QTdev *self()
-    {
-        if (!instancePtr)
-            on_null_ptr();
-        return (instancePtr);
-    }
+        {
+            if (!instancePtr)
+                on_null_ptr();
+            return (instancePtr);
+        }
 
-    static bool exists()
-    {
-        return (instancePtr != 0);
-    }
+    static bool exists()                { return (instancePtr != 0); }
 
     // qtinterf.cc
     void Location(GRobject, int*, int*);

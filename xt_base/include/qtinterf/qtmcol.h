@@ -45,6 +45,7 @@
 
 #include <QDialog>
 
+
 class QComboBox;
 class QLabel;
 class QPushButton;
@@ -56,9 +57,7 @@ namespace qtinterf {
     class QTmcolDlg;
 }
 
-class qtinterf::QTmcolDlg : public QDialog, public GRmcolPopup,
-    public QTbag
-
+class qtinterf::QTmcolDlg : public QDialog, public GRmcolPopup, public QTbag
 {
     Q_OBJECT
 
@@ -68,12 +67,12 @@ public:
 
     // GRpopup overrides
     void set_visible(bool visib)
-    {
-        if (visib)
-            show();
-        else
-            hide();
-    }
+        {
+            if (visib)
+                show();
+            else
+                hide();
+        }
     void popdown();
 
     // GRmcolPopup override
@@ -82,14 +81,14 @@ public:
     void set_button_sens(int);
 
     void set_transient_for(QWidget *prnt)
-    {
-        Qt::WindowFlags f = windowFlags();
-        setParent(prnt);
+        {
+            Qt::WindowFlags f = windowFlags();
+            setParent(prnt);
 #ifdef __APPLE__
-        f |= Qt::Tool;
+            f |= Qt::Tool;
 #endif
-        setWindowFlags(f);
-    }
+            setWindowFlags(f);
+        }
 
 private slots:
     void save_btn_slot(bool);

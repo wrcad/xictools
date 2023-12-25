@@ -46,6 +46,7 @@
 #include <QVariant>
 #include <QDialog>
 
+
 class QGroupBox;
 class QPushButton;
 class QTextEdit;
@@ -67,15 +68,15 @@ public:
 
     // GRpopup overrides
     void set_visible(bool visib)
-    {
-        if (visib) {
-            show();
-            raise();
-            activateWindow();
+        {
+            if (visib) {
+                show();
+                raise();
+                activateWindow();
+            }
+            else
+                hide();
         }
-        else
-            hide();
-    }
     void set_desens()               { tx_desens = true; }
     bool is_desens()                { return (tx_desens); }
 
@@ -84,14 +85,14 @@ public:
     void set_btn2_state(bool)       { }
 
     void set_transient_for(QWidget *prnt)
-    {
-        Qt::WindowFlags f = windowFlags();
-        setParent(prnt);
+        {
+            Qt::WindowFlags f = windowFlags();
+            setParent(prnt);
 #ifdef __APPLE__
-        f |= Qt::Tool;
+            f |= Qt::Tool;
 #endif
-        setWindowFlags(f);
-    }
+            setWindowFlags(f);
+        }
 
     void popdown();
     void setTitle(const char*);

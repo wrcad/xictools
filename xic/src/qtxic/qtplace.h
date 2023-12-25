@@ -75,22 +75,22 @@ public:
     bool smash_mode();
 
     void set_transient_for(QWidget *prnt)
-    {
-        Qt::WindowFlags f = windowFlags();
-        setParent(prnt);
+        {
+            Qt::WindowFlags f = windowFlags();
+            setParent(prnt);
 #ifdef __APPLE__
-        f |= Qt::Tool;
+            f |= Qt::Tool;
 #endif
-        setWindowFlags(f);
-    }
+            setWindowFlags(f);
+        }
 
     static QTplaceDlg *self()           { return (instPtr); }
 
     static void update_params()
-    {
-        if (DSP()->CurMode() == Physical)
-            pl_iap = ED()->arrayParams();
-    }
+        {
+            if (DSP()->CurMode() == Physical)
+                pl_iap = ED()->arrayParams();
+        }
 
 private slots:
     void array_btn_slot(bool);

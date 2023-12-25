@@ -46,6 +46,7 @@
 
 #include <QDialog>
 
+
 //-----------------------------------------------------------------------------
 // Pop-up panel and supporting functions for script debugger.
 //
@@ -93,14 +94,14 @@ public:
     void update(stringlist*);
 
     void set_transient_for(QWidget *prnt)
-    {
-        Qt::WindowFlags f = windowFlags();
-        setParent(prnt);
+        {
+            Qt::WindowFlags f = windowFlags();
+            setParent(prnt);
 #ifdef __APPLE__
-        f |= Qt::Tool;
+            f |= Qt::Tool;
 #endif
-        setWindowFlags(f);
-    }
+            setWindowFlags(f);
+        }
 
     void popdown()                  { deleteLater(); }
 
@@ -134,26 +135,26 @@ public:
     struct histlist
     {
         histlist(char *t, int p, bool d, histlist *n)
-        {
-            h_next = n;
-            h_text = t;
-            h_cpos = p;
-            h_deletion = d;
-        }
+            {
+                h_next = n;
+                h_text = t;
+                h_cpos = p;
+                h_deletion = d;
+            }
 
         ~histlist()
-        {
-            delete [] h_text;
-        }
+            {
+                delete [] h_text;
+            }
 
         static void destroy(const histlist *l)
-        {
-            while (l) {
-                const histlist *x = l;
-                l = l->h_next;
-                delete x;
+            {
+                while (l) {
+                    const histlist *x = l;
+                    l = l->h_next;
+                    delete x;
+                }
             }
-        }
 
         histlist    *h_next;
         char        *h_text;
@@ -178,11 +179,11 @@ public:
     bool load_from_menu(MenuEnt*);
 
     void set_transient_for(QWidget *prnt)
-    {
-        Qt::WindowFlags f = windowFlags();
-        setParent(prnt);
-        setWindowFlags(f);
-    }
+        {
+            Qt::WindowFlags f = windowFlags();
+            setParent(prnt);
+            setWindowFlags(f);
+        }
 
     static QTscriptDebuggerDlg *self()          { return (instPtr); }
 
@@ -204,10 +205,10 @@ private slots:
 
 private:
     void update_variables()
-    {
-        if (db_vars_pop)
-            db_vars_pop->update(db_vlist);
-    }
+        {
+            if (db_vars_pop)
+                db_vars_pop->update(db_vlist);
+        }
 
     void check_sens();
     void set_mode(DBmode);

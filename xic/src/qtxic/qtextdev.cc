@@ -162,8 +162,10 @@ QTextDevDlg::QTextDevDlg(GRobject caller)
     btn->setAutoDefault(false);
     connect(ed_erase, SIGNAL(clicked()), this, SLOT(erase_btn_slot()));
 
+    hbox->addSpacing(4);
     QLabel *label = new QLabel(tr("Indices"));
     hbox->addWidget(label);
+    hbox->addSpacing(4);
 
     ed_indices = new QLineEdit();
     hbox->addWidget(ed_indices);

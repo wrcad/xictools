@@ -38,10 +38,6 @@
  $Id:$
  *========================================================================*/
 
-//
-// Header for the "hypertext" editor and related.
-//
-
 #ifndef QTHTEXT_H
 #define QTHTEXT_H
 
@@ -51,6 +47,10 @@
 #include "qtinterf/qtinterf.h"
 #include <QWidget>
 
+
+//
+// Header for the "hypertext" editor and related.
+//
 
 class QEnterEvent;
 class QToolButton;
@@ -87,11 +87,11 @@ public:
     int xpos()              { return (pe_colmin*pe_fntwid); }
 
     static QTedit *self()
-    {
-        if (!instancePtr)
-            on_null_ptr();
-        return (instancePtr);
-    }
+        {
+            if (!instancePtr)
+                on_null_ptr();
+            return (instancePtr);
+        }
 
 private slots:
     void font_changed_slot(int);

@@ -58,7 +58,7 @@ class QTprpEditorDlg : public QDialog, public QTprpBase
 public:
     struct sAddEnt
     {
-        sAddEnt(const char *n, int v)   { name = n; value = v; }
+        sAddEnt(const char *n, int v) : name(n), value(v) { }
 
         const char *name;
         int value;
@@ -74,14 +74,14 @@ public:
     void set_btn_callback(int(*)(PrptyText*));
 
     void set_transient_for(QWidget *prnt)
-    {
-        Qt::WindowFlags f = windowFlags();
-        setParent(prnt);
+        {
+            Qt::WindowFlags f = windowFlags();
+            setParent(prnt);
 #ifdef __APPLE__
-        f |= Qt::Tool;
+            f |= Qt::Tool;
 #endif
-        setWindowFlags(f);
-    }
+            setWindowFlags(f);
+        }
 
     static QTprpEditorDlg *self()           { return (instPtr); }
 

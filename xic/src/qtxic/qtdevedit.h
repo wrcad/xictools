@@ -68,24 +68,24 @@ public:
     struct entries_t
     {
         entries_t()
-        {
-            cname = 0;
-            prefix = 0;
-            model = 0;
-            value = 0;
-            param = 0;
-            branch = 0;
-        }
+            {
+                cname = 0;
+                prefix = 0;
+                model = 0;
+                value = 0;
+                param = 0;
+                branch = 0;
+            }
 
         ~entries_t()
-        {
-            delete [] cname;
-            delete [] prefix;
-            delete [] model;
-            delete [] value;
-            delete [] param;
-            delete [] branch;
-        }
+            {
+                delete [] cname;
+                delete [] prefix;
+                delete [] model;
+                delete [] value;
+                delete [] param;
+                delete [] branch;
+            }
 
         char *cname;
         char *prefix;
@@ -101,14 +101,14 @@ public:
     void set_ref(int, int);
 
     void set_transient_for(QWidget *prnt)
-    {
-        Qt::WindowFlags f = windowFlags();
-        setParent(prnt);
+        {
+            Qt::WindowFlags f = windowFlags();
+            setParent(prnt);
 #ifdef __APPLE__
-        f |= Qt::Tool;
+            f |= Qt::Tool;
 #endif
-        setWindowFlags(f);
-    }
+            setWindowFlags(f);
+        }
 
     static QTdeviceDlg *self()          { return (instPtr); }
 

@@ -63,7 +63,7 @@ namespace qtinterf
     {
         bool join_above(zoid_t*);
 
-        bool is_rect() { return (xll == xlr && xul == xur); }
+        bool is_rect()  const { return (xll == xlr && xul == xur); }
 
         zoid_t *next;
         int xll, xlr, yl;
@@ -74,7 +74,7 @@ namespace qtinterf
     //
     struct zblk_t
     {
-        zblk_t(zblk_t *n = 0) { next = n; }
+        zblk_t(zblk_t *n = 0) : next(n) { }
 
         zoid_t zoids[PS_ZBLKSZ];
         zblk_t *next;

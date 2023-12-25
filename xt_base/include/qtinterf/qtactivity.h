@@ -44,6 +44,7 @@
 #include <QWidget>
 #include <QTimer>
 
+
 class QPaintEvent;
 class QPixmap;
 
@@ -78,3 +79,4 @@ private:
 };
 
 #endif
+

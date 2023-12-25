@@ -43,8 +43,8 @@
 
 #include <QComboBox>
 
-struct htmForm;
 
+struct htmForm;
 namespace qtinterf {
     class QTform_combo;
 }

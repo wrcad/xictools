@@ -179,10 +179,8 @@ QThttpmon::widget_print(const char *buf)
         }
         delete [] str;
     }
-    if (qApp) {
-//XXX        while (qApp->hasPendingEvents())
-            qApp->processEvents();
-    }
+    if (qApp)
+        qApp->processEvents();
     return (true);
 }
 

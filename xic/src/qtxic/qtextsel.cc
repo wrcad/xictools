@@ -162,7 +162,7 @@ QTextNetSelDlg::QTextNetSelDlg(GRobject caller) : QTbag(this)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    QLabel *label = new QLabel(tr("\"Quick\" Path gound plane handling"));
+    QLabel *label = new QLabel(tr("\"Quick\" Path ground plane handling"));
     hbox->addWidget(label);
 
     es_gpmnu = new QComboBox();
@@ -200,6 +200,7 @@ QTextNetSelDlg::QTextNetSelDlg(GRobject caller) : QTbag(this)
     btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(allbtn_slot()));
 
+    hbox->addSpacing(4);
     es_qpconn = new QCheckBox(tr("\"Quick\" Path use Conductor"));
     hbox->addWidget(es_qpconn);
     connect(es_qpconn, SIGNAL(toggled(bool)),

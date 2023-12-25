@@ -47,8 +47,8 @@
 #include "htm/htm_widget.h"
 
 #include <QVariant>
-//XXX#include <QMainWindow>
 #include <QDialog>
+
 
 // This implements a help/html viewer dialog, providing menus and
 // interfaces to the QTviewer viewing area.  This derives from QDialog
@@ -58,9 +58,6 @@ class QStatusBar;
 class QMenu;
 class QMenuBar;
 class QResizeEvent;
-
-#define HLP_DEF_WIDTH 730
-#define HLP_DEF_HEIGHT 400
 
 struct htmAnchorCallbackStruct;
 struct htmFormCallbackStruct;
@@ -77,6 +74,9 @@ namespace qtinterf {
     class QTviewer;
     class QThelpDlg;
 }
+
+#define HLP_DEF_WIDTH 730
+#define HLP_DEF_HEIGHT 400
 
 class qtinterf::QThelpDlg : public QDialog, public HelpWidget,
     public htmDataInterface, public QTbag

@@ -561,7 +561,7 @@ void
 QTcompareDlg::per_cell_obj_page()
 {
     QWidget *page = new QWidget;
-    cmp_mode->addTab(page, tr("Per-Cell Objrcts"));
+    cmp_mode->addTab(page, tr("Per-Cell Objects"));
     QGridLayout *grid = new QGridLayout(page);
     QMargins qmtop(2, 2, 2, 2);
 

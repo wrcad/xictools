@@ -45,6 +45,7 @@
 #include <QVariant>
 #include <QDialog>
 
+
 class QLineEdit;
 class QMenu;
 class QMenuBar;
@@ -59,7 +60,6 @@ namespace qtinterf {
     class QTeditDlg;
 }
 
-
 class qtinterf::QTeditDlg : public QDialog, public GReditPopup,
     public QTbag
 {
@@ -72,47 +72,46 @@ public:
     // widget configuration
     enum EditorType { Editor, Browser, StringEditor, Mailer };
 
-    QTeditDlg(QTbag*, QTeditDlg::EditorType, const char*, bool,
-        void*);
+    QTeditDlg(QTbag*, QTeditDlg::EditorType, const char*, bool, void*);
     ~QTeditDlg();
 
     // GRpopup overrides
     void set_visible(bool visib)
-    {
-        if (visib) {
-            show();
-            raise();
-            activateWindow();
+        {
+            if (visib) {
+                show();
+                raise();
+                activateWindow();
+            }
+            else
+                hide();
         }
-        else
-            hide();
-    }
     void popdown();
 
     void set_transient_for(QWidget *prnt)
-    {
-        Qt::WindowFlags f = windowFlags();
-        setParent(prnt);
+        {
+            Qt::WindowFlags f = windowFlags();
+            setParent(prnt);
 #ifdef __APPLE__
-        f |= Qt::Tool;
+            f |= Qt::Tool;
 #endif
-        setWindowFlags(f);
-    }
+            setWindowFlags(f);
+        }
 
     void set_caller(GRobject);
-    EditorType get_editor_type()    { return (ed_editor_type); }
-    const char *get_file()          { return (ed_source_file); }
+    EditorType get_editor_type()    const { return (ed_editor_type); }
+    const char *get_file()          const { return (ed_source_file); }
     void load_file(const char *f)   { load_file_slot(f, 0); }
 
     void set_mailaddr(const char*);
     void set_mailsubj(const char*);
 
     QSize sizeHint() const
-    {
-        if (ed_editor_type == Mailer)
-            return (QSize(400, 350));
-        return (QSize(500, 300));
-    }
+        {
+            if (ed_editor_type == Mailer)
+                return (QSize(400, 350));
+            return (QSize(500, 300));
+        }
 
 private slots:
     void file_selection_slot(const char*, void*);

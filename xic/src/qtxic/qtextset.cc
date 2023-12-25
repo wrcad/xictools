@@ -316,6 +316,7 @@ QTextSetupDlg::views_and_ops_page()
     btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(p1_rssubs_btn_slot()));
 
+    hb->addSpacing(12);
     es_p1_recurs = new QCheckBox(tr("Recursive"));
     hb->addWidget(es_p1_recurs);
     connect(es_p1_recurs, SIGNAL(stateChanged(int)),

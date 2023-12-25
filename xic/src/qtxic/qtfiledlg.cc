@@ -178,6 +178,7 @@ QTsaveFileDlg::OpenFileDlg(const char *prompt, const char *fnamein)
     if (!QTmainwin::exists())
         return (0);
     char *fname = pathlist::expand_path(fnamein, true, true);
+    /*XXX
 
     QTfileDlg *fs = new QTfileDlg(QTmainwin::self(), fsOPEN, 0, fname);
     fs->set_transient_for(QTmainwin::self());
@@ -189,6 +190,7 @@ QTsaveFileDlg::OpenFileDlg(const char *prompt, const char *fnamein)
     QTdev::self()->SetPopupLocation(GRloc(LW_LL), fs,
         QTmainwin::self()->Viewport());
     fs->show();
+    */
 
     char *in = PL()->EditPrompt(prompt, fname);
     pathlist::path_canon(in);

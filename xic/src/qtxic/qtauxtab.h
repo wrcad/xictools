@@ -64,14 +64,14 @@ public:
     void update();
 
     void set_transient_for(QWidget *prnt)
-    {
-        Qt::WindowFlags f = windowFlags();
-        setParent(prnt);
+        {
+            Qt::WindowFlags f = windowFlags();
+            setParent(prnt);
 #ifdef __APPLE__
-        f |= Qt::Tool;
+            f |= Qt::Tool;
 #endif
-        setWindowFlags(f);
-    }
+            setWindowFlags(f);
+        }
 
     static QTauxTabDlg *self()          { return (instPtr); }
 
@@ -88,8 +88,6 @@ private slots:
     void mouse_motion_slot(QMouseEvent*);
     void mime_data_handled_slot(const QMimeData*, bool*) const;
     void mime_data_delivered_slot(const QMimeData*, bool*);
-//    void drag_enter_slot(QDragEnterEvent*);
-//    void drop_event_slot(QDropEvent*);
     void font_changed_slot(int);
 
 private:

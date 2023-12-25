@@ -65,73 +65,73 @@ struct pchar_t
 struct ptext_t
 {
     ptext_t()
-    {
-        pt_end = 0;
-        pt_sel_start = 0;
-        pt_sel_end = 0;
-        pt_set = false;
-    }
+        {
+            pt_end = 0;
+            pt_sel_start = 0;
+            pt_sel_end = 0;
+            pt_set = false;
+        }
 
     void append_string(const char *str, unsigned int clr)
-    {
-        if (str) {
-            while (*str) {
-                append_char(*str, clr);
-                str++;
+        {
+            if (str) {
+                while (*str) {
+                    append_char(*str, clr);
+                    str++;
+                }
             }
         }
-    }
 
     void append_char(char c, unsigned int clr)
-    {
-        if (pt_end < 255) {
-            pchar_t *pc = pt_chars + pt_end++;
-            pc->pc_char = c;
-            pc->pc_width = 0;
-            pc->pc_posn = 0;
-            pc->pc_color = clr;
+        {
+            if (pt_end < 255) {
+                pchar_t *pc = pt_chars + pt_end++;
+                pc->pc_char = c;
+                pc->pc_width = 0;
+                pc->pc_posn = 0;
+                pc->pc_color = clr;
+            }
         }
-    }
 
     void reset()
-    {
-        pt_end = 0;
-        pt_set = false;
-    }
+        {
+            pt_end = 0;
+            pt_set = false;
+        }
 
     char *get_sel()
-    {
-        if (pt_sel_end > pt_sel_start) {
-            char *str = new char[pt_sel_end - pt_sel_start + 1];
-            char *s = str;
-            unsigned int i = pt_sel_start;
-            while (i < pt_sel_end)
-                *s++ = pt_chars[i++].pc_char;
-            *s = 0;
-            return (str);
+        {
+            if (pt_sel_end > pt_sel_start) {
+                char *str = new char[pt_sel_end - pt_sel_start + 1];
+                char *s = str;
+                unsigned int i = pt_sel_start;
+                while (i < pt_sel_end)
+                    *s++ = pt_chars[i++].pc_char;
+                *s = 0;
+                return (str);
+            }
+            return (0);
         }
-        return (0);
-    }
 
     bool has_sel(unsigned int *xmin, unsigned int *xmax)
-    {
-        if (pt_sel_end > pt_sel_start) {
-            if (xmin)
-                *xmin = pt_sel_start;
-            if (xmax)
-                *xmax = pt_sel_end;
-            return (true);
+        {
+            if (pt_sel_end > pt_sel_start) {
+                if (xmin)
+                    *xmin = pt_sel_start;
+                if (xmax)
+                    *xmax = pt_sel_end;
+                return (true);
+            }
+            return (false);
         }
-        return (false);
-    }
 
     void set_sel(unsigned int s, unsigned int e)
-    {
-        if (s < 256 && e < 256 && e >= s) {
-            pt_sel_start = s;
-            pt_sel_end = e;
+        {
+            if (s < 256 && e < 256 && e >= s) {
+                pt_sel_start = s;
+                pt_sel_end = e;
+            }
         }
-    }
 
     void setup(QTparam*);
     void display(QTparam*, unsigned int, unsigned int);

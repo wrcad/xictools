@@ -67,18 +67,18 @@ public:
     void print(int, int, int);
 
     void set_mode(int xx, int yy, bool relative, bool snap)
-    {
-        co_x = xx;
-        co_y = yy;
-        co_rel = relative;
-        co_snap = snap;
-        print(0, 0, COOR_REL);
-    }
+        {
+            co_x = xx;
+            co_y = yy;
+            co_rel = relative;
+            co_snap = snap;
+            print(0, 0, COOR_REL);
+        }
 
     void redraw()
-    {
-        redraw_slot();
-    }
+        {
+            redraw_slot();
+        }
 
 private slots:
     void redraw_slot();

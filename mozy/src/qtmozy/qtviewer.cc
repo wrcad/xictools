@@ -346,13 +346,8 @@ QTviewer::set_source(const char *string)
     set_scroll_position(y, false);
     if (!htm_in_layout && htm_initialized)
         trySync();
-
-        /* old
-    delete v_rband;
-    v_rband = 0;
-    setSource(string);
-    */
 }
+
 
 // Set the proportional font used.  The name is in the form
 // "face [style keywords] [size]".  The style keywords are ignored. 
@@ -396,83 +391,32 @@ QTviewer::hide_drawing_area(bool hd)
 }
 
 
-/*
-// Add a widget to the viewing area, exported for forms support.
-//
-void
-QTviewer::add_widget(GtkWidget *w)
-{
-}
-*/
-
-
 int
 QTviewer::scroll_position(bool horiz)
 {
-    /*
-    if (horiz) {
-        if (gtk_widget_get_mapped(v_hsb) && v_hsba)
-            return ((int)gtk_adjustment_get_value(GTK_ADJUSTMENT(v_hsba)));
-    }
-    else {
-        if (gtk_widget_get_mapped(v_vsb) && v_vsba)
-            return ((int)gtk_adjustment_get_value(GTK_ADJUSTMENT(v_vsba)));
-    }
-    */
-    return (0);
+    QScrollBar *sb;
+    if (horiz)
+        sb = horizontalScrollBar();
+    else
+        sb = verticalScrollBar();
+    if (!sb)
+        return (0);
+    return (sb->value());
 }
 
 
 void
 QTviewer::set_scroll_position(int value, bool horiz)
 {
-    /*
-    if (horiz) {
-        if (gtk_widget_get_mapped(v_hsb) && v_hsba) {
-            if (value < 0)
-                value = 0;
-            int v = (int)(gtk_adjustment_get_upper(v_hsba) -
-                gtk_adjustment_get_page_size(v_hsba));
-            if (value > v)
-                value = v;
-            int oldv = (int)gtk_adjustment_get_value(v_hsba);
-            if (value == oldv && value != htm_viewarea.x) {
-                // Make sure handler is called after (e.g.) font change.
-                hsb_change_handler(value);
-                return;
-            }
-            gtk_adjustment_set_value(v_hsba, value);
-        }
-    }
-    else {
-        if (gtk_widget_get_mapped(v_vsb) && v_vsba) {
-            if (value < 0)
-                value = 0;
-            int v = (int)(gtk_adjustment_get_upper(v_vsba) -
-                gtk_adjustment_get_page_size(v_vsba));
-            if (value > v)
-                value = v;
-            int oldv = (int)gtk_adjustment_get_value(v_vsba);
-            if (value == oldv && value != htm_viewarea.y) {
-                // Make sure handler is called after (e.g.) font change.
-                vsb_change_handler(value);
-                return;
-            }
-            gtk_adjustment_set_value(v_vsba, value);
-        }
-    }
-    */
+    QScrollBar *sb;
+    if (horiz)
+        sb = horizontalScrollBar();
+    else
+        sb = verticalScrollBar();
+    if (!sb)
+        return;
+    sb->setValue(value);
 }
-
-
-/*
-void
-QTviewer::set_scroll_policy(GtkPolicyType hpolicy, GtkPolicyType vpolicy)
-{
-    v_hpolicy = hpolicy;
-    v_vpolicy = vpolicy;
-}
-*/
 
 
 // Return the Y coordinate of the named anchor.
@@ -489,18 +433,21 @@ QTviewer::anchor_position(const char *name)
 void
 QTviewer::scroll_visible(int l, int t, int r, int b)
 {
-    /*
-    if (gtk_widget_get_mapped(v_hsb) && v_hsba) {
-        int xmin = l < r ? l : r - 50;
-        int xmax = l > r ? l : r + 50;
-        gtk_adjustment_clamp_page(GTK_ADJUSTMENT(v_hsba), xmin, xmax);
-    }
-    if (gtk_widget_get_mapped(v_vsb) && v_vsba) {
-        int ymin = t < b ? t : b - 50;
-        int ymax = t > b ? t : b + 50;
-        gtk_adjustment_clamp_page(GTK_ADJUSTMENT(v_vsba), ymin, ymax);
-    }
-    */
+    int xmin = (l < r ? l : r) - 50;
+    int xmax = (l > r ? l : r) + 50;
+    int ymin = (t < b ? t : b) - 50;
+    int ymax = (t > b ? t : b) + 50;
+
+    int spy = scroll_position(false);
+    if (spy < ymin)
+        set_scroll_position(ymin, false);
+    else if (spy > ymax)
+        set_scroll_position(ymax, false);
+    int spx = scroll_position(true);
+    if (spx < xmin)
+        set_scroll_position(xmin, true);
+    else if (spx > xmax)
+        set_scroll_position(xmax, true);
 }
 
 
@@ -882,18 +829,19 @@ QTviewer::tk_set_background(unsigned int pix)
 // QColor::setNamedColor fails to resolve the color.
 //
 static void
-messageOutput(QtMsgType type, const char *msg)
+messageOutput(QtMsgType type, const QMessageLogContext&, const QString &msg)
 {
+    QByteArray ba = msg.toLatin1();
     switch (type) {
     case QtInfoMsg:
     case QtDebugMsg:
     case QtWarningMsg:
         break;
     case QtCriticalMsg:
-        fprintf(stderr, "Critical: %s\n", msg);
+        fprintf(stderr, "Critical: %s\n", (const char*)msg.constData());
         break;
     case QtFatalMsg:
-        fprintf(stderr, "Fatal: %s\n", msg);
+        fprintf(stderr, "Fatal: %s\n", (const char*)msg.constData());
         abort();
     }
 }
@@ -906,10 +854,9 @@ bool
 QTviewer::tk_parse_color(const char *name, htmColor *c)
 {
     QColor q;
-// Update from qInstallMsgHandler
-//XXX    qInstallMessageHandler(messageOutput);
+    QtMessageHandler h = qInstallMessageHandler(messageOutput);
     q.setNamedColor(name);
-//XXX    qInstallMessageHandler(0);
+    qInstallMessageHandler(h);
     if (!q.isValid())
         return (false);
     c->red = q.red();
@@ -1039,10 +986,13 @@ QTviewer::tk_draw_pixmap(int xw, int yw, htmPixmap *pmap,
 
 void
 QTviewer::tk_tile_draw_pixmap(int org_x, int org_y, htmPixmap *pm,
-    int x, int y, int w, int h)
+    int xx, int yy, int w, int h)
 {
-    //XXX fixme
+    if (!pm)
+        return;
+    v_darea->tile_draw_pixmap(org_x, org_y, (QPixmap*)pm, xx, yy, w, h);
 }
+
 
 // Draw a solid or open rectangle, or pixmap tiles.
 //
@@ -1467,7 +1417,6 @@ QTviewer::font_changed_slot(int fnum)
 {
     if (fnum == FNT_MOZY) {
         const char *fn = FC.getName(FNT_MOZY);
-printf("font  %s\n", fn);
         if (fn)
             set_font(fn);
     }

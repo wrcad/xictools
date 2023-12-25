@@ -55,10 +55,7 @@ class QTmenu : public MenuMain
 public:
     friend class QTmenuConfig;
 
-    QTmenu()
-    {
-        modalShell = 0;
-    }
+    QTmenu() : modalShell(0) { }
 
     void InitMainMenu();
     void InitTopButtonMenu();

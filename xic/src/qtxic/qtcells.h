@@ -66,14 +66,14 @@ public:
     char *get_selection();
 
     void set_transient_for(QWidget *prnt)
-    {
-        Qt::WindowFlags f = windowFlags();
-        setParent(prnt);
+        {
+            Qt::WindowFlags f = windowFlags();
+            setParent(prnt);
 #ifdef __APPLE__
-        f |= Qt::Tool;
+            f |= Qt::Tool;
 #endif
-        setWindowFlags(f);
-    }
+            setWindowFlags(f);
+        }
 
     void end_search()               { QTdev::Deselect(c_searchbtn); }
     static QTcellsDlg *self()       { return (instPtr); }

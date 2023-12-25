@@ -1769,15 +1769,10 @@ QTsubwin::keypress_handler(unsigned int keyval, unsigned int state,
     if (!sw_windesc)
         return (false);
 
-//XXX Check this, might not be just Apple.
-#ifdef __APPLE__
-    // Apple keyboard returns a Backtab code for Shift-Tab, map that
-    // back to Tab here so that Shift-Tab will perform the Redo
-    // operation as in other systems.
-
+    // QT returns a Backtab code for Shift-Tab, map that back to Tab
+    // here so that Shift-Tab will perform the Redo operation.
     if (keyval == Qt::Key_Backtab && (state & GR_SHIFT_MASK))
         keyval = Qt::Key_Tab;
-#endif
 
     // The code: 0x00 - 0x16 are the KEYcode enum values.
     //           0x17 - 0x1f unused
@@ -2648,6 +2643,57 @@ QTmainwin::minimumSizeHint() const
 }
 
 
+//#ifdef QT_OS_X11
+#if 0
+namespace {
+    // Load colors using the X resource mechanism.
+    //
+    void xrm_load_colors()
+    {
+        // load string resource color names
+        static bool doneit;
+        if (!doneit) {
+            // obtain the database
+            doneit = true;
+            passwd *pw = getpwuid(getuid());
+            if (pw) {
+                char buf[512];
+                snprintf(buf, 512, "%s/%s", pw->pw_dir, XM()->Product());
+                if (access(buf, R_OK))
+                    return;
+                XrmDatabase rdb = XrmGetFileDatabase(buf);
+                XrmSetDatabase(gr_x_display(), rdb);
+            }
+        }
+        char name[64], clss[64];
+        snprintf(name, 64, "%s.", XM()->Product());
+        lstring::strtolower(name);
+        char *tn = name + strlen(name);
+        snprintf(clss, 64, "%s.", XM()->Product());
+        char *tc = clss + strlen(clss);
+        XrmDatabase db = XrmGetDatabase(gr_x_display());
+        for (int i = 0; i < GRattrColorEnd; i++) {
+            const char *keyword = DSP()->ColorTab()->gui_color_name(i);
+            if (!keyword)
+                break;
+            strcpy(tn, keyword);
+            strcpy(tc, keyword);
+            if (isupper(tn[0]))
+                tn[0] = tolower(tn[0]);
+            if (islower(tc[0]))
+                tc[0] = toupper(tc[0]);
+            char *ss;
+            XrmValue v;
+            if (XrmGetResource(db, name, clss, &ss, &v)) {
+                if (v.addr && *v.addr)
+                    QTpkg::self()->SetAttrColor((GRattrColor)i, v.addr);
+            }
+        }
+    }
+}
+#endif
+
+
 void
 QTmainwin::initialize()
 {
@@ -2668,7 +2714,9 @@ QTmainwin::initialize()
     // This is done again in AppInit(), but it is needed for the menus.
     DSP()->SetCurMode(XM()->InitialMode());
 
-//XXX    xrm_load_colors();
+#ifdef QT_OS_X11
+    xrm_load_colors();
+#endif
     DSP()->ColorTab()->init();
 
     QTmenu::self()->InitMainMenu();

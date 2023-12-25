@@ -5,14 +5,12 @@ command-arrows don't change rotation angle. (Apple)
 Place panel, can't bring back text popup if deleted.
 XXXXXXX
 
-QT:  Shift-Tab not working
-
 Issues:
-1.  How to implement "tranisent-for" behavior in pop-up windows.  Than is,
+1.  How to implement "tranisent-for" behavior in pop-up windows.  That is,
 how to keep them on top of the main window, without making them modal or
 setting the flag to keep them on top of everything.
 Solution:  Set the dialog parent to the associated transient parent. 
-This works for Linux and Windows, but not for Apple.  On Apple, st the
+This works for Linux and Windows, but not for Apple.  On Apple, set the
 Qt::Flag, which enforces desired behavior, but changes the appearance
 of the dialogs, which is ok.
 
@@ -36,9 +34,9 @@ buttons other than Apply/Dismiss have auto default turned off.
 6.  TODO:  An event dispatch queue system like GTK version, implement
 a BUSY mode and lock out most events when busy, etc.
 
-7.  TODO Key mapping for Apple.  Need to implement Home, Num +/-, others?
+7.  DONE Key mapping for Apple.  Need to implement Home, Num +/-, others?
 
-8.  TODO Add X-button 2 pasteing when under X.
+8.  TODO Add X-button 2 pasting when under X.
 ---
 QClipboard* clipboard = QApplication::clipboard();
 
@@ -67,6 +65,7 @@ qtmain.cc
 qtmenucfg.cc
 
 11.  intercept the window close signal in editor windows if save needed.
+DONE
 
 These use QDrag, may need update
 qtauxtab.cc     OK
@@ -115,38 +114,18 @@ qtpcprms.cc
 // This is a mess, nothing here implemented.
 qtkeymacro.cc:
 
-qtasm.cc:  /*XXX
-qtasm.cc:/*XXX
-qtasm.cc:/*XXX
-qtasm.cc:/*XXX
-qtasm.cc:    /*XXX
-qtasm.cc:    /*XXX
-qtasm.cc:         /*XXX
-qtasm.cc:             /*XXX
-qtasm.cc:              /*XXX
-qtasm.cc:/*XXX
 qtasmpage.cc://XXX need to redraw?
-qtchdlist.cc:             /* XXX
-qtchdlist.cc:    /* XXX
-qtchdlist.cc:        /* XXX
-qtchdlist.cc:        /* XXX
-qtdebug.cc:/*XXX
-qtdebug.cc:/*XXX
-qtdebug.cc:/*XXX
-qtdrcrun.cc:    // XXX set up event dispatch loop in QT
-qtextfc.cc:    // XXX Earlier releases will show the debug page.
+qtfiledlg.cc:    /*XXX
 qtfiles.cc:/*XXX set selection color, etc
-qtkeymap.cc:/* XXX how to get *numeric* +/-? */
+qtkeymacro.cc:/*XXX
+qtkeymacro.cc:/*XXX
+qtkeymacro.cc:/*XXX
+qtkeymacro.cc:/*XXX
 qtlogo.cc:// XXX FIXME: handle multi lines, justification
 qtlogo.cc:// XXX FIXME: handle multi lines, justification
-qtmain.cc:    // XXX Fix this if possible.
 qtmain.cc:    /*XXX
-qtmain.cc:/*XXX
-qtmain.cc:        //XXX
-qtmain.cc:/*XXX
-qtmenucfg.cc:        //XXX Are there other entries to keep sensitive?
-qtmenucfg.cc:    // XXX Old GTK message, don't know if it still applies.
-qtmenucfg.cc:/*XXX
+qtmain.cc:    // XXX Fix this if possible.
+qtmain.cc://XXX
 qtpcprms.cc://XXX Probably need to detect the need for and use exponential notation
 qtpcprms.cc:        /*XXX
 

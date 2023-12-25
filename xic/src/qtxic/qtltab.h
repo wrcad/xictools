@@ -93,11 +93,11 @@ public:
     static const char **fillpattern_xpm()   { return (ltab_fillpattern_xpm); }
 
     static QTltab *self()
-    {
-        if (!instancePtr)
-            on_null_ptr();
-        return (instancePtr);
-    }
+        {
+            if (!instancePtr)
+                on_null_ptr();
+            return (instancePtr);
+        }
 
     QSize sizeHint()            const { return (QSize(160, -1)); }
 

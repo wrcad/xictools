@@ -48,7 +48,7 @@
 
 
 //--------------------------------------------------------------------
-// Pop-up to control the WRspice interface.
+// Dialog to control the WRspice interface.
 //
 
 class QCheckBox;
@@ -67,14 +67,14 @@ public:
     void update();
 
     void set_transient_for(QWidget *prnt)
-    {
-        Qt::WindowFlags f = windowFlags();
-        setParent(prnt);
+        {
+            Qt::WindowFlags f = windowFlags();
+            setParent(prnt);
 #ifdef __APPLE__
-        f |= Qt::Tool;
+            f |= Qt::Tool;
 #endif
-        setWindowFlags(f);
-    }
+            setWindowFlags(f);
+        }
 
     static QTspiceIfDlg *self()         { return (instPtr); }
 

@@ -148,10 +148,11 @@ QTdrcLimitsDlg::QTdrcLimitsDlg(GRobject c)
     label = new QLabel(tr("Layer list"));
     grid->addWidget(label, 0, 0);
 
-    dl_luse = new QCheckBox(tr("Check listed layers only"));
+    dl_luse = new QCheckBox(tr("Check listed layers only  "));
     grid->addWidget(dl_luse, 0, 1);
     connect(dl_luse, SIGNAL(stateChanged(int)),
         this, SLOT(luse_btn_slot(int)));
+
     dl_lskip = new QCheckBox(tr("Skip listed layers"));
     grid->addWidget(dl_lskip, 0, 2);
     connect(dl_lskip, SIGNAL(stateChanged(int)),

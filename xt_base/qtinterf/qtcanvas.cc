@@ -76,6 +76,7 @@ QTcanvas::QTcanvas(QWidget *prnt) : QWidget(prnt)
     da_oly = 0;
     da_olw = 0;
     da_olh = 0;
+    da_call_count = 0;
 
     // Ghost drawing.
     da_ghost_overlay_bg = 0;
@@ -290,7 +291,7 @@ QTcanvas::set_overlay_mode(bool set)
         if (!da_overlay_count)
             return;
 
-        // Switch out of overlay mode and reepaint the area modified
+        // Switch out of overlay mode and repaint the area modified
         // while in overlay mode.
 
         da_overlay_count--;
@@ -601,6 +602,7 @@ QTcanvas::draw_line(int x1, int y1, int x2, int y2)
         bb_add(x1, y1);
         bb_add(x2, y2);
     }
+    da_call_count++;
     if (da_line_mode)
         da_pen.setStyle((Qt::PenStyle)(da_line_mode + 1));
     else if (!da_line_style || da_line_style->length <= 1)
@@ -636,6 +638,7 @@ QTcanvas::draw_polyline(GRmultiPt *p, int n)
             p->data_ptr_inc();
         }
     }
+    da_call_count++;
 
     if (da_line_mode)
         da_pen.setStyle((Qt::PenStyle)(da_line_mode + 1));
@@ -685,6 +688,7 @@ QTcanvas::draw_lines(GRmultiPt *p, int n)
             p->data_ptr_inc();
         }
     }
+    da_call_count++;
 
     if (da_line_mode)
         da_pen.setStyle((Qt::PenStyle)(da_line_mode + 1));
@@ -962,6 +966,7 @@ QTcanvas::text_extent(const char *str, int *w, int *h)
 void
 QTcanvas::draw_text(int x0, int y0, const char *str, int len)
 {
+    da_call_count++;
     QString qs(str);
     if (len >= 0)
         qs.truncate(len);
@@ -1066,6 +1071,18 @@ QTcanvas::set_tile_origin(int x0, int y0)
 }
 
 
+// Draw a tiled pixmap, self contained, overrides present settings.
+//
+void
+QTcanvas::tile_draw_pixmap(int o_x, int o_y, QPixmap *pm, int xx, int yy,
+    int w, int h)
+{
+    if (!pm)
+        return;
+    da_painter->drawTiledPixmap(xx, yy, w, h, *pm, o_x, o_y);
+}
+
+
 // Draw a filled or open rectangle, or pixmap tiles.
 //
 void
@@ -1073,9 +1090,10 @@ QTcanvas::draw_rectangle(bool filled, int x0, int y0, int w, int h)
 {
     if (filled) {
         if (da_fill_mode) {
-            if (da_tile_pixmap)
+            if (da_tile_pixmap) {
                 da_painter->drawTiledPixmap(x0, y0, w, h, *da_tile_pixmap,
                     da_tile_x, da_tile_y);
+            }
         }
         else
             da_painter->drawRect(x0, y0, w, h);
@@ -1464,16 +1482,27 @@ cGhostDrawCommon::draw_ghost(int xx, int yy)
         }
         else {
             for (int i = 0; i < 5; i++) {
-                if (gd_windows[i]) {
-                    gd_windows[i]->set_overlay_mode(true);
-                    gd_windows[i]->drw_beg();
+                QTcanvas *cv = gd_windows[i];
+                if (cv) {
+                    cv->set_overlay_mode(true);
+                    cv->drw_beg();
+                    // Need to update the overlay_backg here after
+                    // drawing a mark (such as a plot mark) otherwise
+                    // erasing the ghose will eat the mark.  The call
+                    // count will be nonzero if a mark was just drawn,
+                    // and is reset in the block below.
+
+                    if (cv->call_count())
+                        cv->create_overlay_backg();
                 }
             }
             (*gd_ghost_draw_func)(xx, yy, gd_ref_x, gd_ref_y, gd_undraw);
             for (int i = 0; i < 5; i++) {
-                if (gd_windows[i]) {
-                    gd_windows[i]->drw_end();
-                    gd_windows[i]->set_overlay_mode(false);
+                QTcanvas *cv = gd_windows[i];
+                if (cv) {
+                    cv->drw_end();
+                    cv->set_overlay_mode(false);
+                    cv->set_call_count(0);
                 }
             }
         }

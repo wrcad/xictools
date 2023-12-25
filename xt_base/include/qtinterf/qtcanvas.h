@@ -51,6 +51,7 @@
 #include <QPaintEngine>
 #include <math.h>
 
+
 class QEvent;
 class QMouseEvent;
 class QResizeEvent;
@@ -99,9 +100,9 @@ public:
     ~QTcanvas();
 
     QPixmap *pixmap()           
-    {
-        return (da_pixmap_bak ? da_pixmap_bak : da_pixmap);
-    }
+        {
+            return (da_pixmap_bak ? da_pixmap_bak : da_pixmap);
+        }
 
     void switch_to_pixmap2(QPixmap* = 0);
     void switch_from_pixmap2(int, int, int, int, int, int);
@@ -152,6 +153,7 @@ public:
     void set_fill(bool);
     void set_tile(QPixmap*);
     void set_tile_origin(int, int);
+    void tile_draw_pixmap(int, int, QPixmap*, int, int, int, int);
     void draw_rectangle(bool, int, int, int, int);
     void draw_arc(bool, int, int, int, int, int, int);
     void draw_polygon(bool, QPoint*, int);
@@ -163,112 +165,102 @@ public:
     //
 
     void set_ghost_common(cGhostDrawCommon *c)
-    {
-        if (c)
-            da_ghost_draw_ptr = c;
-        else
-            da_ghost_draw_ptr = &da_local;
-    }
-
+        {
+            if (c)
+                da_ghost_draw_ptr = c;
+            else
+                da_ghost_draw_ptr = &da_local;
+        }
     void set_ghost(GhostDrawFunc dfunc, int xx, int yy)
-    {
-        da_ghost_draw_ptr->set_ghost(dfunc, xx, yy);
-    }
-
+        {
+            da_ghost_draw_ptr->set_ghost(dfunc, xx, yy);
+        }
     void show_ghost(bool showit)
-    {
-        da_ghost_draw_ptr->show_ghost(showit);
-    }
-
+        {
+            da_ghost_draw_ptr->show_ghost(showit);
+        }
     void undraw_ghost(bool reset)
-    {
-        da_ghost_draw_ptr->undraw_ghost(reset);
-    }
-
+        {
+            da_ghost_draw_ptr->undraw_ghost(reset);
+        }
     void draw_ghost(int xx, int yy)
-    {
-        da_ghost_draw_ptr->draw_ghost(xx, yy);
-    }
-
+        {
+            da_ghost_draw_ptr->draw_ghost(xx, yy);
+        }
     void xordrw_beg()
-    {
-        da_painter->setCompositionMode(
-            QPainter::RasterOp_SourceXorDestination);
-        set_color(da_ghost_fg);
-    }
-
+        {
+            da_painter->setCompositionMode(
+                QPainter::RasterOp_SourceXorDestination);
+            set_color(da_ghost_fg);
+        }
     void xordrw_end()
-    {
-        set_color(da_fg);
-        da_painter->setCompositionMode(
-            QPainter::CompositionMode_SourceOver);
-    }
+        {
+            set_color(da_fg);
+            da_painter->setCompositionMode(
+                QPainter::CompositionMode_SourceOver);
+        }
 
     void drw_beg()      { set_color(da_ghost_fg); }
     void drw_end()      { set_color(da_fg); }
 
     void gdrw_setbg()
-    {
-        if (!da_ghost_bg_set) {
-            QPixmap *tmp = da_overlay_bg;
-            da_overlay_bg = da_ghost_overlay_bg;
-            da_ghost_overlay_bg = tmp;
-            da_ghost_bg_set = true;
+        {
+            if (!da_ghost_bg_set) {
+                QPixmap *tmp = da_overlay_bg;
+                da_overlay_bg = da_ghost_overlay_bg;
+                da_ghost_overlay_bg = tmp;
+                da_ghost_bg_set = true;
+            }
         }
-    }
-
     void gdrw_unsetbg()
-    {
-        if (da_ghost_bg_set) {
-            QPixmap *tmp = da_overlay_bg;
-            da_overlay_bg = da_ghost_overlay_bg;
-            da_ghost_overlay_bg = tmp;
-            da_ghost_bg_set = false;
+        {
+            if (da_ghost_bg_set) {
+                QPixmap *tmp = da_overlay_bg;
+                da_overlay_bg = da_ghost_overlay_bg;
+                da_ghost_overlay_bg = tmp;
+                da_ghost_bg_set = false;
+            }
         }
-    }
 
     void set_ghost_mode(bool xor_mode)
-    {
-        da_ghost_draw_ptr->gd_xor_mode = xor_mode;
-    }
-
+        {
+            da_ghost_draw_ptr->gd_xor_mode = xor_mode;
+        }
     void set_ghost_color(unsigned int pixel)
-    {
-        if (da_ghost_draw_ptr->gd_xor_mode) {
-            da_ghost.setRgb(pixel);
-            da_ghost_fg.setRgb(pixel ^ da_bg.rgb());
+        {
+            if (da_ghost_draw_ptr->gd_xor_mode) {
+                da_ghost.setRgb(pixel);
+                da_ghost_fg.setRgb(pixel ^ da_bg.rgb());
+            }
+            else {
+                set_foreground(pixel);
+                da_ghost_fg.setRgb(pixel);
+            }
         }
-        else {
-            set_foreground(pixel);
-            da_ghost_fg.setRgb(pixel);
-        }
-    }
-
     bool has_ghost()
-    {
-        return (da_ghost_draw_ptr->gd_ghost_draw_func != 0);
-    }
-
+        {
+            return (da_ghost_draw_ptr->gd_ghost_draw_func != 0);
+        }
     bool showing_ghost()
-    {
-        return (da_ghost_draw_ptr->gd_show_ghost && has_ghost());
-    }
-
+        {
+            return (da_ghost_draw_ptr->gd_show_ghost && has_ghost());
+        }
     GRlineDb *linedb()
-    {
-        return (da_ghost_draw_ptr->gd_linedb);
-    }
-
+        {
+            return (da_ghost_draw_ptr->gd_linedb);
+        }
     GhostDrawFunc get_ghost_func()
-    {
-        return (da_ghost_draw_ptr->gd_ghost_draw_func);
-    }
-
+        {
+            return (da_ghost_draw_ptr->gd_ghost_draw_func);
+        }
     void set_ghost_func(GhostDrawFunc f)
-    {
-        da_ghost_draw_ptr->gd_ghost_draw_func = f;
-        da_ghost_draw_ptr->gd_first_ghost = true;
-    }
+        {
+            da_ghost_draw_ptr->gd_ghost_draw_func = f;
+            da_ghost_draw_ptr->gd_first_ghost = true;
+        }
+
+    int call_count()                { return (da_call_count); }
+    void set_call_count(int c)      { da_call_count = c; }
 
 signals:
     void resize_event(QResizeEvent*);
@@ -307,34 +299,34 @@ protected:
 
 private:
     void set_color(const QColor &qc)
-    {
-        da_brush.setColor(qc);
-        da_pen.setColor(qc);
-        da_painter->setPen(da_pen);
-        da_painter->setBrush(da_brush);
-    }
+        {
+            da_brush.setColor(qc);
+            da_pen.setColor(qc);
+            da_painter->setPen(da_pen);
+            da_painter->setBrush(da_brush);
+        }
 
     // Init a bounding box for refreshing.                                 
     void bb_init()
-    {
-        da_xb1 = size().width();
-        da_yb1 = size().height();
-        da_xb2 = 0;
-        da_yb2 = 0;
-    }
+        {
+            da_xb1 = size().width();
+            da_yb1 = size().height();
+            da_xb2 = 0;
+            da_yb2 = 0;
+        }
 
     // Add a vertex to the bounding box.
     void bb_add(int xx, int yy)
-    {
-        if (xx < da_xb1)
-            da_xb1 = xx;
-        if (yy < da_yb1)
-            da_yb1 = yy;
-        if (xx > da_xb2)
-            da_xb2 = xx;
-        if (yy > da_yb2)
-            da_yb2 = yy;
-    }
+        {
+            if (xx < da_xb1)
+                da_xb1 = xx;
+            if (yy < da_yb1)
+                da_yb1 = yy;
+            if (xx > da_xb2)
+                da_xb2 = xx;
+            if (yy > da_yb2)
+                da_yb2 = yy;
+        }
 
     void draw_line_prv(int, int, int, int);
     void initialize();
@@ -370,6 +362,7 @@ private:
     GRlineType *da_line_style;      // Set for user-defined texture,
                                     //  da_line_mode = 0 in this case.
 
+    int         da_call_count;      // Operation count.
     int         da_xb1, da_yb1;     // Accumulated bounding box for
     int         da_xb2, da_yb2;     //  drawing overlay.
 

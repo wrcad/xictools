@@ -43,6 +43,7 @@
 
 #include <QTimer>
 
+
 namespace qtinterf {
     class QTtimer;
 }
@@ -95,3 +96,4 @@ private:
 };
 
 #endif
+

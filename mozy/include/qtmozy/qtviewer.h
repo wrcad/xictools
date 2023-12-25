@@ -58,6 +58,7 @@
 #include "htm/htm_font.h"
 #include "help/help_context.h"
 
+
 // This widget implements a scrollable html viewer window, deriving
 // from QScrollArea and htmWidget.
 
@@ -86,16 +87,16 @@ public:
     image_t(int wid, int hei) :
         QImage((unsigned char*)(new unsigned int[wid*hei]),
         wid, hei, QImage::Format_ARGB32)
-    {
-        data = bits();
-    }
+        {
+            data = bits();
+        }
 
     unsigned int *image_data()  { return (unsigned int*)data; }
 
     ~image_t()
-    {
-        delete [] data;
-    }
+        {
+            delete [] data;
+        }
 
 private:
     unsigned char *data;
@@ -152,9 +153,8 @@ public:
     void set_mime_type(const char *mime_type)
         { setMimeType(mime_type); }
     char *get_postscript_text(int fontfamily, const char *url,
-        const char *title, bool use_header, bool a4)
-        { return (getPostscriptText(fontfamily, url, title,
-        use_header, a4)); }
+            const char *title, bool use_header, bool a4)
+        { return (getPostscriptText(fontfamily, url, title, use_header, a4)); }
     char *get_plain_text()
         { return (getPlainText()); }
     char *get_html_text()
@@ -197,10 +197,8 @@ public:
     void set_font(const char*);
     void set_fixed_font(const char*);
     void hide_drawing_area(bool);
-//        void add_widget(GtkWidget*);
     int scroll_position(bool);
     void set_scroll_position(int, bool);
-//        void set_scroll_policy(GtkPolicyType, GtkPolicyType);
     int anchor_position(const char*);
     void scroll_visible(int, int, int, int);
 
@@ -235,8 +233,7 @@ public:
     htmBitmap *tk_bitmap_from_data(int, int, unsigned char*);
     void tk_release_bitmap(htmBitmap*);
     htmXImage *tk_new_image(int, int);
-    void tk_fill_image(htmXImage*, unsigned char*, unsigned int*, int,
-        int);
+    void tk_fill_image(htmXImage*, unsigned char*, unsigned int*, int, int);
     void tk_draw_image(int, int, htmXImage*, int, int, int, int);
     void tk_release_image(htmXImage*);
 

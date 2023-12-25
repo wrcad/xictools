@@ -46,6 +46,7 @@
 #include <QVariant>
 #include <QDialog>
 
+
 class QTextEdit;
 class QPushButton;
 class QDoubleSpinBox;
@@ -65,27 +66,27 @@ public:
 
     // GRpopup overrides
     void set_visible(bool visib)
-    {
-        if (visib) {
-            show();
-            raise();
-            activateWindow();
+        {
+            if (visib) {
+                show();
+                raise();
+                activateWindow();
+            }
+            else
+                hide();
         }
-        else
-            hide();
-    }
     void register_caller(GRobject, bool=false, bool=false);
     void popdown();
 
     void set_transient_for(QWidget *prnt)
-    {
-        Qt::WindowFlags f = windowFlags();
-        setParent(prnt);
+        {
+            Qt::WindowFlags f = windowFlags();
+            setParent(prnt);
 #ifdef __APPLE__
-        f |= Qt::Tool;
+            f |= Qt::Tool;
 #endif
-        setWindowFlags(f);
-    }
+            setWindowFlags(f);
+        }
 
     QSize sizeHint()        const { return (QSize(300, 150)); }
 

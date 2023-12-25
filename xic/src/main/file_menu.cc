@@ -228,9 +228,11 @@ cMain::ReplaceOpenCellName(const char *newname, const char *oldname)
 // The OPEN command.
 //
 
+#if defined(WITH_GTK2) || defined(WITH_GTK3)
 namespace {
     // Not sure whether it is necessary to enclose the EditCell call
     // in an idle proc, but it doesn't hurt.
+    // Nope, it f's up event handling in QT.
     //
     int
     edit_idle_proc(void*)
@@ -239,6 +241,7 @@ namespace {
         return (false);
     }
 }
+#endif
 
 
 // Callback to handle button presses in the Open pop-up menu.  The arg
@@ -253,11 +256,15 @@ cMain::HandleOpenCellMenu(const char *entry, bool shift)
     if (!strcmp(entry, menu_list[0])) {
         // new
         // Prompt to open a new cell.
+#if defined(WITH_GTK2) || defined(WITH_GTK3)
         DSPpkg::self()->RegisterIdleProc(&edit_idle_proc, 0);
+#else
+        XM()->EditCell(0, false);
+#endif
     }
     else if (!strcmp(entry, menu_list[1])) {
         // temporary
-        // Opan a unique new cell.
+        // Open a unique new cell.
         char *s = XM()->NewCellName();
         EditCell(s, false);
         delete [] s;

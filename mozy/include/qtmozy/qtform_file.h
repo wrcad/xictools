@@ -43,11 +43,10 @@
 
 #include <QWidget>
 
+
 class QLineEdit;
 class QPushButton;
-
 struct htmForm;
-
 namespace qtinterf {
     class QTfileDlg;
     class QTform_file;

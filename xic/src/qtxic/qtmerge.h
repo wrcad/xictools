@@ -63,14 +63,14 @@ public:
     ~QTmergeDlg();
 
     void set_transient_for(QWidget *prnt)
-    {
-        Qt::WindowFlags f = windowFlags();
-        setParent(prnt);
+        {
+            Qt::WindowFlags f = windowFlags();
+            setParent(prnt);
 #ifdef __APPLE__
-        f |= Qt::Tool;
+            f |= Qt::Tool;
 #endif
-        setWindowFlags(f);
-    }
+            setWindowFlags(f);
+        }
 
     bool is_hidden()                    { return (mc_allflag); }
     static QTmergeDlg *self()           { return (instPtr); }

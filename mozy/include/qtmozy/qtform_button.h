@@ -43,8 +43,8 @@
 
 #include <QPushButton>
 
-struct htmForm;
 
+struct htmForm;
 namespace qtinterf {
     class QTform_button;
 }

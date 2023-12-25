@@ -46,6 +46,7 @@
 
 #include <QTabWidget>
 
+
 class QComboBox;
 class QCheckBox;
 class QPushButton;
@@ -55,7 +56,6 @@ class QMenu;
 namespace qtinterf {
     class QTdoubleSpinBox;
 }
-
 
 //-------------------------------------------------------------------------
 // Subwidget for output format selection and control.
@@ -92,10 +92,10 @@ public:
 
     // This is set from the OASIS-Advanced pop-up.
     static void set_rep_string(char *s)
-    {
-        delete [] fmt_oas_rep_string;
-        fmt_oas_rep_string = s;
-    }
+        {
+            delete [] fmt_oas_rep_string;
+            fmt_oas_rep_string = s;
+        }
     static char *rep_string()   { return (fmt_oas_rep_string); }
 
 private slots:

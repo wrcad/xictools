@@ -73,14 +73,14 @@ public:
     void update(TermEditInfo*, CDp*);
 
     void set_transient_for(QWidget *prnt)
-    {
-        Qt::WindowFlags f = windowFlags();
-        setParent(prnt);
+        {
+            Qt::WindowFlags f = windowFlags();
+            setParent(prnt);
 #ifdef __APPLE__
-        f |= Qt::Tool;
+            f |= Qt::Tool;
 #endif
-        setWindowFlags(f);
-    }
+            setWindowFlags(f);
+        }
 
     static QTelecTermEditDlg *self()            { return (instPtr); }
 
@@ -103,11 +103,11 @@ private slots:
 
 private:
     void set_layername(const char *n)
-    {
-        const char *nn = lstring::copy(n);
-        delete [] te_lname;
-        te_lname = nn;
-    }
+        {
+            const char *nn = lstring::copy(n);
+            delete [] te_lname;
+            te_lname = nn;
+        }
 
     GRobject    te_caller;
     QLabel      *te_lab_top;

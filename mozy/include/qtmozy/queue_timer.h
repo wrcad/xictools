@@ -45,11 +45,12 @@
 #include "help/help_context.h"
 #include <QObject>
 
-class QTimer;
 
 //
 // Idle timer for delayed image processing.
 //
+
+class QTimer;
 
 namespace qtinterf {
     class queue_timer;

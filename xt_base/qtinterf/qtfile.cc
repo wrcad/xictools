@@ -961,8 +961,6 @@ QTfileDlg::QTfileDlg(QTbag *owner, FsMode mode, void *arg,
             SIGNAL(itemDoubleClicked(QListWidgetItem*)),
             this, SLOT(list_double_clicked_slot(QListWidgetItem*)));
     }
-    if (f_config == fsSAVE || f_config == fsOPEN)
-        connect(this, SIGNAL(revert()), parent(), SLOT(revert_slot()));
     init();
 
     f_timer = new QTimer(this);
@@ -2076,8 +2074,10 @@ QTfileDlg::check_slot()
 
     if (!f_reverted) {
         // Give the focus back to the parent if it uses a prompt.
-        if (f_config == fsSAVE || f_config == fsOPEN)
-            emit revert();
+        if (f_config == fsSAVE || f_config == fsOPEN) {
+            if (parentWidget())
+                parentWidget()->activateWindow();
+        }
         f_reverted = true;
     }
 }

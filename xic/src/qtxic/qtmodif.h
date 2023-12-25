@@ -75,14 +75,14 @@ public:
     QSize sizeHint() const;
 
     void set_transient_for(QWidget *prnt)
-    {
-        Qt::WindowFlags f = windowFlags();
-        setParent(prnt);
+        {
+            Qt::WindowFlags f = windowFlags();
+            setParent(prnt);
 #ifdef __APPLE__
-        f |= Qt::Tool;
+            f |= Qt::Tool;
 #endif
-        setWindowFlags(f);
-    }
+            setWindowFlags(f);
+        }
 
     bool is_empty()                 { return (!m_field || !m_width); }
     static PMretType retval()       { return (m_retval); }

@@ -47,6 +47,7 @@
 #include <QVariant>
 #include <QDialog>
 
+
 class QGroupBox;
 class QPushButton;
 namespace qtinterf {
@@ -56,7 +57,6 @@ namespace qtinterf {
     class QTledDlg;
     class QTtextEdit;
 }
-
 
 class qtinterf::QTtextDlg : public QDialog, public GRtextPopup
 {
@@ -73,37 +73,37 @@ public:
 
     // GRpopup overrides
     void set_visible(bool visib)
-    {
-        if (visib) {
-            show();
-            raise();
-            activateWindow();
+        {
+            if (visib) {
+                show();
+                raise();
+                activateWindow();
+            }
+            else
+                hide();
         }
-        else
-            hide();
-    }
     void set_desens()               { tx_desens = true; }
     bool is_desens()                { return (tx_desens); }
 
     void set_transient_for(QWidget *prnt)
-    {
-        Qt::WindowFlags f = windowFlags();
-        setParent(prnt);
+        {
+            Qt::WindowFlags f = windowFlags();
+            setParent(prnt);
 #ifdef __APPLE__
-        f |= Qt::Tool;
+            f |= Qt::Tool;
 #endif
-        setWindowFlags(f);
-    }
+            setWindowFlags(f);
+        }
 
     // When set, error pop-ups have a "Show Error Log" button that
     // pops up a file browser on this file.
     //
     static void set_error_log(const char *s)
-    {
-        char *t = lstring::copy(s);
-        delete [] tx_errlog;
-        tx_errlog = t;
-    }
+        {
+            char *t = lstring::copy(s);
+            delete [] tx_errlog;
+            tx_errlog = t;
+        }
 
     void popdown();
     void setTitle(const char*);

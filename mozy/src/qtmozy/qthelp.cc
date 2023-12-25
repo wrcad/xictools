@@ -1128,25 +1128,7 @@ QThelpDlg::get_topic_keys(char **pkw, char **ptitle)
 void
 QThelpDlg::scroll_visible(int l, int t, int r, int b)
 {
-/*XXX
-    const int slop = 20;
-    int spy = htmlview->get_scroll_pos(false);
-    int spx = htmlview->get_scroll_pos(true);
-    htmRect r;
-    htmlview->client_area(&r);
-    if (y < spy + slop || y > spy + (int)r.height - slop) {
-        y -= slop;
-        if (y < 0)
-            y = 0;
-        htmlview->set_scroll_pos(y, false);
-    }
-    if (x < spx || x > spx + (int)r.width)
-        htmlview->set_scroll_pos(x, true);
-*/
-(void)l;
-(void)t;
-(void)r;
-(void)b;
+    h_viewer->scroll_visible(l, t, r, b);
 }
 
 
@@ -1197,6 +1179,8 @@ QThelpDlg::get_scroll_pos(bool horiz)
 void
 QThelpDlg::set_scroll_pos(int posn, bool horiz)
 {
+    h_viewer->set_scroll_position(posn, horiz);
+    /*
     QScrollBar *sb;
     if (horiz)
         sb = h_viewer->horizontalScrollBar();
@@ -1205,6 +1189,7 @@ QThelpDlg::set_scroll_pos(int posn, bool horiz)
     if (!sb)
         return;
     sb->setValue(posn);
+    */
 }
 
 

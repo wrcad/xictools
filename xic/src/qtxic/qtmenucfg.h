@@ -70,11 +70,11 @@ public:
     bool menu_disabled() const  { return (mc_menu_disabled); }
 
     static QTmenuConfig *self()
-    {
-        if (!instancePtr)
-            on_null_ptr();
-        return (instancePtr);
-    }
+        {
+            if (!instancePtr)
+                on_null_ptr();
+            return (instancePtr);
+        }
 
 signals:
     void exec_idle(MenuEnt*);

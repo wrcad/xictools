@@ -85,21 +85,21 @@ public:
     void esc();
 
     GRobject get_caller()
-    {
-        GRobject tc = dv_caller;
-        dv_caller = 0;
-        return (tc);
-    }
+        {
+            GRobject tc = dv_caller;
+            dv_caller = 0;
+            return (tc);
+        }
 
     void set_transient_for(QWidget *prnt)
-    {
-        Qt::WindowFlags f = windowFlags();
-        setParent(prnt);
+        {
+            Qt::WindowFlags f = windowFlags();
+            setParent(prnt);
 #ifdef __APPLE__
-        f |= Qt::Tool;
+            f |= Qt::Tool;
 #endif
-        setWindowFlags(f);
-    }
+            setWindowFlags(f);
+        }
 
     bool is_active()                    { return (dv_active); }
     static QTdevMenuDlg *self()         { return (instPtr); }

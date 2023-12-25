@@ -52,17 +52,17 @@ class QTprpBase : public QTbag
 {
 public:
     QTprpBase(QWidget *me) : QTbag(me)
-    {
-        pb_line_selected = -1;
-        pb_list = 0;
-        pb_odesc = 0;
-        pb_btn_callback = 0;
-        pb_start = 0;
-        pb_end = 0;
-        pb_drag_x = 0;
-        pb_drag_y = 0;
-        pb_dragging = false;
-    }
+        {
+            pb_line_selected = -1;
+            pb_list = 0;
+            pb_odesc = 0;
+            pb_btn_callback = 0;
+            pb_start = 0;
+            pb_end = 0;
+            pb_drag_x = 0;
+            pb_drag_y = 0;
+            pb_dragging = false;
+        }
     virtual ~QTprpBase()         { PrptyText::destroy(pb_list); }
 
     PrptyText *resolve(int, CDo**);
