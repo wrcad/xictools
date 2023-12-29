@@ -67,15 +67,16 @@
 #include <QTreeWidgetItem>
 
 
-#ifdef __APPLE__
-#define USE_QTOOLBAR
-#endif
-
 //-----------------------------------------------------------------------------
-// Pop-up to merge layout sources into a single file.
+// QTasmDlg: Dialog to merge layout sources into a single file.
+// Called from main menu: Convert/Assemble Layout.
 //
 // Help system keywords used:
 //  xic:assem
+
+#ifdef __APPLE__
+#define USE_QTOOLBAR
+#endif
 
 // Exported function to pop up/down the tool.
 //
@@ -201,7 +202,6 @@ QTasmDlg::QTasmDlg(GRobject c) : QTbag(this)
 
     setWindowTitle(tr("Layout File Merge Tool"));
     setAttribute(Qt::WA_DeleteOnClose);
-//    gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);
     QTpkg::self()->RegisterMainWbag(this);
 
     QMargins qmtop(2, 2, 2, 2);
@@ -232,7 +232,7 @@ QTasmDlg::QTasmDlg(GRobject c) : QTbag(this)
     QMenu *menu = menubar->addMenu(tr("&File"));
 #endif
     // _File Select, <control>O, asm_action_proc, OpenCode, CheckItem>
-    a = menu->addAction(tr("_File Select"));
+    a = menu->addAction(tr("&File Select"));
     a->setCheckable(true);
     a->setData(OpenCode);
     a->setShortcut(QKeySequence("Ctrl+O"));
@@ -784,7 +784,6 @@ QTasmDlg::pop_up_monitor(int mode, const char *msg, ASMcode code)
         return;
 
     new QTasmPrgDlg();
-//    instPtr->set_refptr((void**)&instPtr);
     if (instPtr) {
         QTdev::self()->SetPopupLocation(GRloc(), QTasmPrgDlg::self(),
             instPtr);
@@ -1156,8 +1155,7 @@ QTasmDlg::tab_changed_slot(int page)
 
 
 namespace {
-    int
-    run_idle(void*)
+    int run_idle(void*)
     {
         if (QTasmDlg::self())
             QTasmDlg::self()->run();

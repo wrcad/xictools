@@ -47,6 +47,9 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTstabDlg:  Dialog to set current symbol table.
+
 class QComboBox;
 class QPushButton;
 

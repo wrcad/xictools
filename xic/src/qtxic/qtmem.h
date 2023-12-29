@@ -47,6 +47,9 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTmemMonDlg:  Memory Monitor dialog. Prints current memory use.
+
 class QResizeEvent;
 
 class QTmemMonDlg : public QDialog, public QTbag, public QTdraw
@@ -79,6 +82,7 @@ private slots:
 
 private:
     double chk_val(double, char*);
+    static int mem_proc(void*);
 
     static QTmemMonDlg *instPtr;
 };

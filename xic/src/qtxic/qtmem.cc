@@ -67,8 +67,8 @@
 
 
 //-----------------------------------------------------------------------------
-// Memory Monitor pop-up
-//
+// QTmemMonDlg:  Memory Monitor dialog. Prints current memory use.
+// Called from main menu: View/Allocation.
 
 void
 cMain::PopUpMemory(ShowMode mode)
@@ -107,7 +107,6 @@ QTmemMonDlg::QTmemMonDlg() : QTbag(this), QTdraw(XW_TEXT)
 
     setWindowTitle(tr("Memory Monitor"));
     setAttribute(Qt::WA_DeleteOnClose);
-//    gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);
 
     QMargins qmtop(2, 2, 2, 2);
     QVBoxLayout *vbox = new QVBoxLayout(this);
@@ -134,11 +133,12 @@ QTmemMonDlg::QTmemMonDlg() : QTbag(this), QTdraw(XW_TEXT)
     if (FC.getFont(&fnt, FNT_FIXED)) {
         gd_viewport->setFont(*fnt);
     }
+    setMinimumWidth(sizeHint().width());
+    setMinimumHeight(sizeHint().height());
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
 
-//    GTKpkg::self()->RegisterTimeoutProc(5000, mem_proc, 0);
-    update();
+    QTpkg::self()->RegisterTimeoutProc(5000, mem_proc, 0);
 }
 
 
@@ -154,7 +154,7 @@ QTmemMonDlg::sizeHint() const
 {
     int fw = QTfont::stringWidth(0, gd_viewport);
     int fh = QTfont::lineHeight(gd_viewport);
-    int ww = 34*fw + 4;
+    int ww = 40*fw + 4;
     if (ww < MEM_MINWIDTH)
         ww = MEM_MINWIDTH;
     int wh = 5*fh + 50;
@@ -344,5 +344,13 @@ QTmemMonDlg::chk_val(double val, char *m)
         *m = 'M';
     }
     return (val);
+}
+
+
+int
+QTmemMonDlg::mem_proc(void*)
+{
+    XM()->PopUpMemory(MODE_UPD);
+    return (instPtr != 0);
 }
 

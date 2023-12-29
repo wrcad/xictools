@@ -56,8 +56,9 @@
 #include <QCheckBox>
 
 
-//-------------------------------------------------------------------------
-// Pop-up to control group/node/path selections
+//-----------------------------------------------------------------------------
+// QTextNetSelDlg:  Dialog to control group/node/path selections.
+// Called from main menu: Extract/Net Selections.
 //
 // Help system keywords used:
 //  xic:exsel
@@ -113,13 +114,13 @@ QTextNetSelDlg::QTextNetSelDlg(GRobject caller) : QTbag(this)
 
     setWindowTitle(tr("Path Selection Control"));
     setAttribute(Qt::WA_DeleteOnClose);
-//    gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
+    vbox->setSizeConstraint(QLayout::SetFixedSize);
 
     QHBoxLayout *hbox = new QHBoxLayout();
     hbox->setContentsMargins(qm);

@@ -57,9 +57,11 @@
 #include <QSpinBox>
 #include <QLineEdit>
 
-//-------------------------------------------------------------------------
-// Pop-up to edit a perhaps long list of parameters, probably for a
-// pcell.
+
+//-----------------------------------------------------------------------------
+// QTpcellParamsDlg:  Dialog to edit a perhaps long list of parameters
+// for a PCell.
+// Called during PCell placement/instantiation.
 //
 // Help system keywords used:
 //  xic:pcparams
@@ -207,8 +209,6 @@ QTpcellParamsDlg::QTpcellParamsDlg(GRobject c, PCellParam *prm,
     hbox->addWidget(btn);
     btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
-
-//    gtk_widget_set_size_request(pcp_popup, 300, 400);
 
     pcp_swin = new QScrollArea();
     vbox->addWidget(pcp_swin);
@@ -778,7 +778,6 @@ QTpcellParamsDlg::dismiss_btn_slot()
 {
     ED()->PopUpPCellParams(0, MODE_OFF, 0, 0, pcpNone);
 }
-
 
 
 void

@@ -63,8 +63,9 @@
 #include <QLabel>
 
 
-//--------------------------------------------------------------------
-// Tech parameter editor dialog.
+//-----------------------------------------------------------------------------
+// QTlayerParamDlg:  Layer and tech parameter editor dialog.
+// Called from main menu: Attributes/Edit Tech Params.
 //
 // Help system keywords used:
 //  xic:lpedt

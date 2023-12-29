@@ -48,6 +48,9 @@
 #include <QAction>
 
 
+//-----------------------------------------------------------------------------
+// QTmenuConfig:  Menu Configuration.
+
 struct MenuEnt;
 struct MenuList;
 

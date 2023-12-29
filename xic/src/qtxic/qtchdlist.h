@@ -47,9 +47,8 @@
 #include <QDialog>
 
 
-//----------------------------------------------------------------------
-//  Cell Hierarchy Digests Listing.
-//
+//-----------------------------------------------------------------------------
+// QTchdListDlg:   Cell Hierarchy Digests Listing dialog.
 
 class QPushButton;
 class QTreeWidget;

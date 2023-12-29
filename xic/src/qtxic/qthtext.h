@@ -48,9 +48,8 @@
 #include <QWidget>
 
 
-//
-// Header for the "hypertext" editor and related.
-//
+// QTedit:  The QT-specific prompt line functions, used in the main
+// window.
 
 class QEnterEvent;
 class QToolButton;

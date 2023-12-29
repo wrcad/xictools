@@ -47,6 +47,9 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTselectDlg:  Selection Control panel, dialog to control selections.
+
 class QRadioButton;
 class QCheckBox;
 class QPushButton;

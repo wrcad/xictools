@@ -50,8 +50,8 @@
 
 
 //-----------------------------------------------------------------------------
-// Pop up to display a listing of design rules for the current layer.
-//
+// QTdrcRuleEditDlg:  Dialog to display a listing of design rules for
+// the current layer for editing.
 
 class QAction;
 class QMouseEvent;

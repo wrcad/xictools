@@ -57,6 +57,10 @@
 #include <QTextCursor>
 
 
+//-----------------------------------------------------------------------------
+// QTprpBase:  Base class methods for property listing dialogs.
+// Used in QTprpEditorDlg and QTprpInfoDlg.
+
 PrptyText *
 QTprpBase::resolve(int offset, CDo **odp)
 {

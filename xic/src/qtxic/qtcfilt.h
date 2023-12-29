@@ -47,6 +47,10 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTcfiltDlg:  Panel for setting up cell name filtering for the Cells
+// Listing panel (QTcellsDlg).
+
 class QCheckBox;
 class QLineEdit;
 

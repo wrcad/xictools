@@ -57,8 +57,9 @@
 #include <QComboBox>
 
 
-//--------------------------------------------------------------------
-// Pop-up to set input parameters and read cell files.
+//-----------------------------------------------------------------------------
+// QTconvertInDlg: Dialog to set input parameters and read cell files.
+// Called from main menu: Convert/Import Cell Data.
 //
 // Help system keywords used:
 //  xic:imprt
@@ -133,8 +134,8 @@ QTconvertInDlg::fmt_menu QTconvertInDlg::cvi_forcevals[] =
 int QTconvertInDlg::cvi_merg_val = 0;
 QTconvertInDlg *QTconvertInDlg::instPtr;
 
-
-QTconvertInDlg::QTconvertInDlg(GRobject c, bool (*callback)(int, void*), void *arg)
+QTconvertInDlg::QTconvertInDlg(GRobject c,
+    bool (*callback)(int, void*), void *arg)
 {
     instPtr = this;
     cvi_caller = c;
@@ -169,7 +170,6 @@ QTconvertInDlg::QTconvertInDlg(GRobject c, bool (*callback)(int, void*), void *a
 
     setWindowTitle(tr("Import Control"));
     setAttribute(Qt::WA_DeleteOnClose);
-//    gtk_window_set_resizable(GTK_WINDOW(cvi_popup), false);
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;

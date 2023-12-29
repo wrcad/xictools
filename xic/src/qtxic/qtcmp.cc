@@ -64,7 +64,9 @@
 
 
 //-----------------------------------------------------------------------------
-// The Compare Layers dialog.
+// QTcompareDlg:  The Compare Layouts dialog, initiates comparison between
+// layouts.
+// Called from main menu: Convert/Compare Layouts.
 //
 // Help system keywords used:
 //  xic:diff
@@ -194,7 +196,8 @@ QTcompareCellEdit::dropEvent(QDropEvent *ev)
     if (ev->mimeData()->hasFormat("text/twostring")) {
         // Drops from content lists may be in the form
         // "fname_or_chd\ncellname".  Keep the cellname.
-        char *str = lstring::copy(ev->mimeData()->data("text/plain").constData());
+        char *str = lstring::copy(
+            ev->mimeData()->data("text/plain").constData());
         const char *t = strchr(str, '\n');
         if (t)
             t = t+1;

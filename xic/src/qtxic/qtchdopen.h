@@ -47,6 +47,9 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTchdOpenDlg:  Dialog to create a cell hierarchy digest (CHD).
+
 class QTabWidget;
 class QLineEdit;
 class QComboBox;

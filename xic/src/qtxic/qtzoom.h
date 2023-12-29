@@ -47,10 +47,7 @@
 
 
 //-----------------------------------------------------------------------------
-//  Pop-up for the Zoom command
-//
-// Help system keywords used:
-//  xic:zoom
+// QTzoomDlg:  Dialog for the Zoom command.
 
 class QLayout;
 class QLabel;

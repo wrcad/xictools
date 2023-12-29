@@ -56,12 +56,14 @@
 #include <QGroupBox>
 #include <QLabel>
 
-//-------------------------------------------------------------------------
-// Pop-up for advanced/obscure OASIS writing features.
+
+//-----------------------------------------------------------------------------
+// QToasisDlg:  Dialog for advanced/obscure OASIS writing features.
+// Called from the Advanced button on the OASIS tab of the output
+// format widget (QTconvOutFmt).
 //
 // Help system keywords used:
 //  xic:oasadv
-
 
 void
 cConvert::PopUpOasAdv(GRobject caller, ShowMode mode, int x, int y)
@@ -135,13 +137,13 @@ QToasisDlg::QToasisDlg(GRobject c)
 
     setWindowTitle(tr("Advanced OASIS Export Parameters"));
     setAttribute(Qt::WA_DeleteOnClose);
-//    gtk_window_set_resizable(GTK_WINDOW(oas_popup), false);
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
+    vbox->setSizeConstraint(QLayout::SetFixedSize);
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
     hbox->setContentsMargins(qm);

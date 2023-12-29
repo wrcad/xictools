@@ -55,8 +55,9 @@
 #include <QCheckBox>
 
 
-//--------------------------------------------------------------------
-// Pop-up to write cell data files.
+//-----------------------------------------------------------------------------
+// QTconvertOutDlg:  Dialog to write cell data files.
+// Called from main menu: Convert/Export Cell Data.
 //
 // Help system keywords used:
 //  xic:exprt
@@ -137,7 +138,6 @@ QTconvertOutDlg::QTconvertOutDlg(GRobject c, CvoCallback callback, void *arg)
 
     setWindowTitle(tr("Export Control"));
     setAttribute(Qt::WA_DeleteOnClose);
-//    gtk_window_set_resizable(GTK_WINDOW(cvo_popup), false);
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;

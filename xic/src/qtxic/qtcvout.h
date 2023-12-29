@@ -47,6 +47,9 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTconvertOutDlg:  Dialog to write cell data files.
+
 class QLabel;
 class QTabWidget;
 class QCheckBox;

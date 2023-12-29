@@ -47,6 +47,9 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTfillPatDlg:  Fill pattern editing dialog.
+
 class QHBoxLayout;
 class QGroupBox;
 class QSpinBox;

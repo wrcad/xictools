@@ -48,8 +48,7 @@
 
 
 //-----------------------------------------------------------------------------
-// Pop-up to control FasterCap/FastCap-WR interface
-//
+// QTfastCapDlg:  Dialog to control FasterCap/FastCap-WR interface.
 
 class QLabel;
 class QPushButton;

@@ -47,9 +47,8 @@
 #include <QDialog>
 
 
-//-------------------------------------------------------------------------
-// Pop-up to control group/node/path selections
-//
+//-----------------------------------------------------------------------------
+// QTextNetSelDlg:  Dialog to control group/node/path selections.
 
 class QPushButton;
 class QComboBox;

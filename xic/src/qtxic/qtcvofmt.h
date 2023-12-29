@@ -47,6 +47,9 @@
 #include <QTabWidget>
 
 
+//-----------------------------------------------------------------------------
+// QTconvOutFmt;  Widget to specify an output file format.
+
 class QComboBox;
 class QCheckBox;
 class QPushButton;
@@ -56,10 +59,6 @@ class QMenu;
 namespace qtinterf {
     class QTdoubleSpinBox;
 }
-
-//-------------------------------------------------------------------------
-// Subwidget for output format selection and control.
-//
 
 class QTconvOutFmt : public QTabWidget
 {

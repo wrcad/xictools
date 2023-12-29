@@ -47,6 +47,10 @@
 #include <QHBoxLayout>
 
 
+//-----------------------------------------------------------------------------
+// QTcoord:  Widget to display coordinates of the mouse pointer in the
+// main drawing window.  Updated from motion events in the drawing windows.
+
 // Application interface to set abs/rel and redraw after color change.
 // The optional rx,ry are the reference in relative mode.
 //

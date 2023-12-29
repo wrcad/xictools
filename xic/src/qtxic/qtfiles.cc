@@ -69,12 +69,13 @@
 #include <QMimeData>
 
 
-//----------------------------------------------------------------------
-//  Files Listing Dialog
+//-----------------------------------------------------------------------------
+// QTfilesListDlg::  Files Listing dialog, list files found in
+// directories in the search path.
+// Called from main menu: File/Files List.
 //
 // Help system keywords used:
 //  filespanel
-
 
 // Static function.
 //

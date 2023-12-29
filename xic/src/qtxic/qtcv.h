@@ -47,6 +47,10 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTconvertFmfDlg:  Dialog to control stand-alone layout file format
+// conversions.
+
 class QTlayerList;
 class QTconvOutFmt;
 class QTcnameMap;

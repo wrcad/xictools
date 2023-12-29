@@ -51,12 +51,13 @@
 #include <QCheckBox>
 #include <QPushButton>
 
+
 //-----------------------------------------------------------------------------
-// Pop-up to control selections
+// QTselectDlg:  Selection Control panel, dialog to control selections.
+// Called from the selcp button in the top button menu.
 //
 // help system keywords used:
 //  xic:layer
-
 
 void
 cMain::PopUpSelectControl(GRobject caller, ShowMode mode)
@@ -116,6 +117,7 @@ QTselectDlg::QTselectDlg(GRobject c) : QTbag(this)
     QGridLayout *grid = new QGridLayout(this);
     grid->setContentsMargins(qm);
     grid->setSpacing(2);
+    grid->setSizeConstraint(QLayout::SetFixedSize);
 
     // pointer mode radio group
     //

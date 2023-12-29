@@ -65,8 +65,9 @@
 #include <QComboBox>
 
 
-//----------------------------------------------------------------------
-//  Cell Hierarchy Digests Listing.
+//-----------------------------------------------------------------------------
+// QTchdListDlg:   Cell Hierarchy Digests Listing dialog.
+// Called from the main menu: File/Hierarchy Digests.
 //
 // Help system keywords used:
 //  xic:hier
@@ -133,7 +134,6 @@ QTchdListDlg::QTchdListDlg(GRobject c) : QTbag(this)
 
     setWindowTitle(tr("Cell Hierarchy Digests"));
     setAttribute(Qt::WA_DeleteOnClose);
-//    gtk_window_set_default_size(QT_WINDOW(wb_shell), 350, 150);
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;

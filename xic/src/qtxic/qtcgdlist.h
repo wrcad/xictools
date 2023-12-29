@@ -47,6 +47,9 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTcgdListDlg::  Cell Geometry Digests list dialog.
+
 class QPushButton;
 class QTreeWidget;
 class QTreeWidgetItem;

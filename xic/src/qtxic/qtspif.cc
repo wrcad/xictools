@@ -53,8 +53,10 @@
 #include <QComboBox>
 
 
-//--------------------------------------------------------------------
-// Pop-up to control SPICE interface.
+//-----------------------------------------------------------------------------
+// QTspiceIfDlg:  Dialog to control SPICE interface.
+// Called from the spcmd button in the Electrical side menu if the user
+// does not give a command at the prompt.
 //
 // Help system keywords used:
 //  xic:spif
@@ -114,7 +116,6 @@ QTspiceIfDlg::QTspiceIfDlg(GRobject c)
 
     setWindowTitle(tr("WRspice Interface Control Panel"));
     setAttribute(Qt::WA_DeleteOnClose);
-//    gtk_window_set_resizable(GTK_WINDOW(sc_popup), false);
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;

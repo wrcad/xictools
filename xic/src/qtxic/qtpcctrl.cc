@@ -54,12 +54,12 @@
 #include <QSpinBox>
 
 
-//--------------------------------------------------------------------
-// Pop-up to control pcell abutment and similar.
+//-----------------------------------------------------------------------------
+// QTpcellCtrlDlg:  Dialog to control PCell abutment and similar.
+// Called from main menu: Edit/PCell Control.
 //
 // Help system keywords used:
 //  xic:pcctl
-
 
 void
 cEdit::PopUpPCellCtrl(GRobject caller, ShowMode mode)
@@ -109,13 +109,13 @@ QTpcellCtrlDlg::QTpcellCtrlDlg(GRobject c)
 
     setWindowTitle(tr("PCell Control"));
     setAttribute(Qt::WA_DeleteOnClose);
-//    gtk_window_set_resizable(GTK_WINDOW(pcc_popup), false);
 
-    QMargins qmtop(2, 2, 2, 2);
+    QMargins qmtop(8, 2, 2, 2);
     QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
+    vbox->setSizeConstraint(QLayout::SetFixedSize);
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
     hbox->setContentsMargins(qm);
@@ -162,7 +162,7 @@ QTpcellCtrlDlg::QTpcellCtrlDlg(GRobject c)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    label = new QLabel(tr("Instance min. pixel size for stretch handles"));
+    label = new QLabel(tr("Instance min. pixel size for stretch handles "));
     hbox->addWidget(label);
 
     pcc_sb_psz = new QSpinBox();
@@ -186,6 +186,7 @@ QTpcellCtrlDlg::QTpcellCtrlDlg(GRobject c)
     // Dismiss button
     //
     btn = new QPushButton(tr("Dismiss"));
+    vbox->addSpacing(4);
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 

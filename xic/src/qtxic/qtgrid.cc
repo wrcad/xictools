@@ -64,11 +64,13 @@
 #include <QKeyEvent>
 
 
-// The Grid Setup panel, used to control the grid in each drawing
-// window.
+//-----------------------------------------------------------------------------
+// QTgridDlg:  The Grid Setup panel, used to control the grid in each
+// drawing window.
+// Called from main menu: Attributes/Main Window/Set Grid and subwindow
+// menu Attributes/Set Grid.
 //
 // Help keyword used: xic:grid
-
 
 namespace {
     enum { LstSolid, LstDots, LstStip };
@@ -172,13 +174,13 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTbag(this),
 
     setWindowTitle(tr("Grid Setup"));
     setAttribute(Qt::WA_DeleteOnClose);
-//    gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
+    vbox->setSizeConstraint(QLayout::SetFixedSize);
 
     QHBoxLayout *hbox = new QHBoxLayout();
     hbox->setContentsMargins(qm);
@@ -225,6 +227,7 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTbag(this),
     vb->setSpacing(2);
 
     gd_resol = new QTdoubleSpinBox();
+    vb->addSpacing(18);
     vb->addWidget(gd_resol);
     gd_resol->setRange(0.0, 10000.0);
     gd_resol->setDecimals(4);

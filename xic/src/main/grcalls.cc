@@ -450,10 +450,6 @@ cMain::FillStyle(int id, int lnum, int *opt1, int *opt2)
     return (0);
 }
 
-// In the graphical application menu configuration code, needed for
-// Windows only.
-//
-// bool cMain::MenuItemLocation(int menu_id, int *x, int *y);
 
 // XDraw interface function.  These are in the graphical application code.
 //

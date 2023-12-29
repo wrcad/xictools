@@ -48,6 +48,9 @@
 #include <QToolButton>
 
 
+//-----------------------------------------------------------------------------
+// QTmenu:  High-level menu containers and utilities.
+
 class QAction;
 
 class QTmenu : public MenuMain

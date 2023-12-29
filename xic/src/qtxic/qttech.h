@@ -47,6 +47,9 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTwriteTechDlg:  Dialog to control writing of a technology file.
+
 class QRadioButton;
 class QPushButton;
 class QLineEdit;

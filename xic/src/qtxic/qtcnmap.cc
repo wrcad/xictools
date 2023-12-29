@@ -49,8 +49,8 @@
 #include <QLineEdit>
 
 
-//-------------------------------------------------------------------------
-// Subwidget group for cell name mapping
+//-----------------------------------------------------------------------------
+// QTcnameMap: Subwidget group for cell name mapping.
 
 QTcnameMap::QTcnameMap(bool outp)
 {

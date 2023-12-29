@@ -47,6 +47,9 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTchdCfgDlg:  Dialog to configure a cell hierarchy digest (CHD).
+
 class QLabel;
 class QPushButton;
 class QLineEdit;

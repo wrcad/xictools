@@ -56,9 +56,11 @@
 #include <QComboBox>
 #include <QCheckBox>
 
-//---------------------------------------------------------------------------
-// Pop-up interface for terminal/property editing.  This handles
-// electrical mode (SUBCT command).
+
+//-----------------------------------------------------------------------------
+// QTelecTermEditDlg:  Dialog interface for terminal/property editing.
+// This handles electrical mode (SUBCT command).
+// Called from the subct button in the Electrical side menu.
 //
 // Help system keywords used:
 //  xic:edtrm

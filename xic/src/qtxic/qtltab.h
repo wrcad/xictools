@@ -38,10 +38,6 @@
  $Id:$
  *========================================================================*/
 
-//
-// Header for the layer table composite.
-//
-
 #ifndef QTLTAB_H
 #define QTLTAB_H
 
@@ -54,6 +50,9 @@
 
 #include <QWidget>
 
+
+//-----------------------------------------------------------------------------
+// QTltab:  The Layer Table composite, used in the main window.
 
 class QToolButton;
 class QScrollBar;

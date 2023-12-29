@@ -58,8 +58,9 @@
 #include <QAction>
 
 
-//--------------------------------------------------------------------
-// Pop-up to control layer expression evaluation.
+//-----------------------------------------------------------------------------
+// QTlayerExpDlg:  Dialog to control layer expression evaluation.
+// Called from main menu: Edit/Layer Expression.
 //
 // Help system keywords used:
 //  xic:lexpr
@@ -126,7 +127,6 @@ QTlayerExpDlg::QTlayerExpDlg(GRobject c)
 
     setWindowTitle(tr("Exaluate Layer Expression"));
     setAttribute(Qt::WA_DeleteOnClose);
-//    gtk_window_set_resizable(GTK_WINDOW(lx_popup), false);
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;
@@ -189,7 +189,7 @@ QTlayerExpDlg::QTlayerExpDlg(GRobject c)
     //
     hbox = new QHBoxLayout(0);
     hbox->setContentsMargins(qm);
-    hbox->setSpacing(2);
+    hbox->setSpacing(4);
     vbox->addLayout(hbox);
 
     label = new QLabel(tr("To layer"));
@@ -200,6 +200,7 @@ QTlayerExpDlg::QTlayerExpDlg(GRobject c)
 
     // partition size entry
     label = new QLabel(tr("Partition size"));
+    hbox->addSpacing(8);
     hbox->addWidget(label);
 
     lx_none = new QPushButton(tr("None"));
@@ -330,6 +331,7 @@ QTlayerExpDlg::QTlayerExpDlg(GRobject c)
     // evaluate and dismiss buttons
     //
     hbox = new QHBoxLayout;
+    vbox->addSpacing(8);
     vbox->addLayout(hbox);
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);

@@ -48,6 +48,10 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTcompareDlg:  The Compare Layouts dialog, initiates comparison between
+// layouts.
+
 class QTabWidget;
 class QLineEdit;
 class QCheckBox;

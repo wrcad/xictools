@@ -48,8 +48,7 @@
 
 
 //-----------------------------------------------------------------------------
-// Pop-up panel and supporting functions for script debugger.
-//
+// QTscriptDebuggerDlg:  Dialog and supporting functions for script debugging.
 
 // function codes
 enum { NoCode, CancelCode, NewCode, LoadCode, PrintCode, SaveAsCode,

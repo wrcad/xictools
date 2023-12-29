@@ -54,10 +54,10 @@
 #include <QMouseEvent>
 
 
-//--------------------------------------------------------------------------
-//
-// Pop up to allow the user to delete empty cells from a hierarchy.
-//
+//-----------------------------------------------------------------------------
+// QTemptyDlg:  Dialog to allow the user to delete empty cells from a
+// hierarchy.
+// This appears after a new hierarchy is opened.
 
 void
 cConvert::PopUpEmpties(stringlist *list)
@@ -101,6 +101,7 @@ QTemptyDlg::QTemptyDlg(stringlist *l) : QTbag(this)
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
+    vbox->setSizeConstraint(QLayout::SetFixedSize);
 
     QHBoxLayout *hbox = new QHBoxLayout();
     vbox->addLayout(hbox);

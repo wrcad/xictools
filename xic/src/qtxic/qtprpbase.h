@@ -46,6 +46,9 @@
 #include "qtmain.h"
 
 
+//-----------------------------------------------------------------------------
+// QTprpBase:  Base class methods for property listing dialogs.
+
 class QMimeData;
 
 class QTprpBase : public QTbag

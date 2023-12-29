@@ -52,8 +52,9 @@
 #include <QSpinBox>
 
 
-//--------------------------------------------------------------------
-// Pop-up to control box/poly join operations.
+//-----------------------------------------------------------------------------
+// QTjoinDlg:  Dialog to control box/poly join/split operations.
+// Called from the main menu: Edit/Join and Split.
 //
 // Help system keywords used:
 //  xic:join
@@ -113,13 +114,13 @@ QTjoinDlg::QTjoinDlg(GRobject c)
 
     setWindowTitle(tr("Join or Split Objects"));
     setAttribute(Qt::WA_DeleteOnClose);
-//    gtk_window_set_resizable(GTK_WINDOW(jn_popup), false);
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
+    vbox->setSizeConstraint(QLayout::SetFixedSize);
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
     hbox->setContentsMargins(qm);
@@ -225,6 +226,7 @@ QTjoinDlg::QTjoinDlg(GRobject c)
     hbox = new QHBoxLayout();
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
+    vbox->addSpacing(8);
     vbox->addLayout(hbox);
 
     jn_join = new QPushButton(tr("Join"));

@@ -47,6 +47,9 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTlibsDlg:  Libraries Listing dialog.
+
 class QPushButton;
 class QTreeWidget;
 class QTreeWidgetItem;

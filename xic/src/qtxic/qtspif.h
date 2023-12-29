@@ -47,9 +47,8 @@
 #include <QDialog>
 
 
-//--------------------------------------------------------------------
-// Dialog to control the WRspice interface.
-//
+//-----------------------------------------------------------------------------
+// QTspiceIfDlg:  Dialog to control SPICE interface.
 
 class QCheckBox;
 class QLineEdit;

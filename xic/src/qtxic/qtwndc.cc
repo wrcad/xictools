@@ -49,8 +49,9 @@
 #include <QMenu>
 
 
-//-------------------------------------------------------------------------
-// Subwidget group for window control.
+//-----------------------------------------------------------------------------
+// QTwindowCfg:  Subwidget group for windowing control.
+// Used in Convert menu panels to read and write cells.
 
 QTwindowCfg::QTwindowCfg(WndSensMode(sens_test)(), WndFuncMode fmode)
 {

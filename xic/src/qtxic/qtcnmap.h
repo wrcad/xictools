@@ -47,9 +47,9 @@ class QLineEdit;
 class QCheckBox;
 
 
-//-------------------------------------------------------------------------
-// Subwidget group for cell name mapping.
-//
+//-----------------------------------------------------------------------------
+// QTcnameMap: Subwidget group for cell name mapping.
+
 class QTcnameMap : public QGroupBox
 {
     Q_OBJECT

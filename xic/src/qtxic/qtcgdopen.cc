@@ -57,7 +57,8 @@
 
 
 //-----------------------------------------------------------------------------
-// Pop up to obtain CGD creation info.
+// QTcgdOpenDlg:  Dialog to creatte cell geometry digests (CGDs).
+// Called from the Cell Geometry Digests dialog QTcgdListDlg).
 //
 // Help system keywords used:
 //  xic:cgdopen

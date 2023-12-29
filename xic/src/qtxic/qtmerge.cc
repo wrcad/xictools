@@ -54,15 +54,18 @@
 #include <QGroupBox>
 #include <QLabel>
 
-//--------------------------------------------------------------------------
-// This variation handles the cells one at a time.  The return value
-// is 1<<Physical | 1<<Electrical where a set flag indicates overwrite.
-// Call with mode = MODE_OFF after all processing to finish up.
+//-----------------------------------------------------------------------------
+// QTmergeDlg:  Controls whether newly read cells will overwrite
+// existing cells with the same name already in memory.  This appears
+// whenever a potential conflict is detected, when reading in a new
+// cell or hierarchy.
 //
+// This handles the cells one at a time.  The return value is
+// 1<<Physical | 1<<Electrical where a set flag indicates overwrite. 
+// Call with mode = MODE_OFF after all processing to finish up.
 
 namespace {
-    void
-    start_modal(QDialog *w)
+    void start_modal(QDialog *w)
     {
         QTmenu::self()->SetSensGlobal(false);
         QTmenu::self()->SetModal(w);
@@ -71,8 +74,7 @@ namespace {
     }
 
 
-    void
-    end_modal()
+    void end_modal()
     {
         QTmenu::self()->SetModal(0);
         QTmenu::self()->SetSensGlobal(true);
@@ -154,7 +156,6 @@ QTmergeDlg::QTmergeDlg(mitem_t *mi)
 
     setWindowTitle(tr("Symbol Merge"));
     setAttribute(Qt::WA_DeleteOnClose);
-//    gtk_window_set_resizable(GTK_WINDOW(mc_popup), false);
 
     mc_names->add(lstring::copy(mi->name), (void*)1, false);
 
@@ -172,6 +173,7 @@ QTmergeDlg::QTmergeDlg(mitem_t *mi)
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
+    vbox->setSizeConstraint(QLayout::SetFixedSize);
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
     hbox->setContentsMargins(qm);

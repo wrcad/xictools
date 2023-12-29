@@ -55,8 +55,9 @@
 #include <QDropEvent>
 
 
-//-------------------------------------------------------------------------
-// Subwidget group for layer list.
+//-----------------------------------------------------------------------------
+// QTlayerEdit:  Subwidget group for layer list.
+// Used in Convert/Format Conversion and elsewhere.
 
 void
 QTlayerEdit::dragEnterEvent(QDragEnterEvent *ev)

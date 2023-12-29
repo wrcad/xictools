@@ -48,8 +48,7 @@
 
 
 //-----------------------------------------------------------------------------
-// Pop-up to control FastHenry interface.
-//
+// QTfastHenryDlg:  Dialog to control FastHenry interface.
 
 class QLabel;
 class QCheckBox;

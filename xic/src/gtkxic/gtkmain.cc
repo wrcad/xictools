@@ -1768,6 +1768,13 @@ GTKsubwin::keypress_handler(unsigned keyval, unsigned state, char *keystring,
 {
     if (!wib_windesc)
         return (false);
+#ifdef __APPLE__
+    // With arrow keys, map the command key to ctrl.
+    if (keyval >= 0xff51 && keyval <= 0xff54) {
+        if (state == 0x10000010)
+            state = GR_CONTROL_MASK;
+    }
+#endif
 
     // The code: 0x00 - 0x16 are the eKeyCode enum values.
     //           0x17 - 0x1f unused

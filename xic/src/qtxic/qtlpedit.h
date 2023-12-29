@@ -51,9 +51,8 @@
 #include <QDialog>
 
 
-//--------------------------------------------------------------------
-// Tech parameter editor dialog.
-//
+//-----------------------------------------------------------------------------
+// QTlayerParamDlg:  Layer and tech parameter editor dialog.
 
 class QLabel;
 class QMenu;

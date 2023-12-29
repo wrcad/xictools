@@ -52,8 +52,9 @@
 #include <QAction>
 
 
-//--------------------------------------------------------------------------
-// Pop up for the Flatten command
+//-----------------------------------------------------------------------------
+// QTflattenDlg:  Dialog for the Flatten command.
+// Called from main menu: Edit/Flatten.
 //
 // Help system keywords used:
 //  xic:flatn
@@ -116,6 +117,7 @@ QTflattenDlg::QTflattenDlg(
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
+    vbox->setSizeConstraint(QLayout::SetFixedSize);
 
     QHBoxLayout *hbox = new QHBoxLayout();
     hbox->setContentsMargins(qm);
@@ -201,6 +203,7 @@ QTflattenDlg::QTflattenDlg(
     hbox = new QHBoxLayout();
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
+    vbox->addSpacing(10);
     vbox->addLayout(hbox);
 
     fl_go = new QPushButton(tr("Flatten"));

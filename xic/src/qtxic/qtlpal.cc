@@ -66,12 +66,13 @@
 
 
 //-----------------------------------------------------------------------------
-// The Layer Palette.  The top third is a text field that displays
-// information about a layer under the pointer, or the current layer.
-// The middle third contains icons for the last few current layer
-// choices.  The bottom third is a user-configurable palette.  The
-// user can drag their favorite layers into this area.  Clicking on
-// any of the layer icons will set the current layer.
+// QTlayerPaletteDlg:  The Layer Palette.  The top third is a text
+// field that displays information about a layer under the pointer, or
+// the current layer.  The middle third contains icons for the last
+// few current layer choices.  The bottom third is a user-configurable
+// palette.  The user can drag their favorite layers into this area. 
+// Clicking on any of the layer icons will set the current layer.
+// Called from the lpal button in the top button menu.
 //
 // Help system keywords used:
 //  xic:ltpal

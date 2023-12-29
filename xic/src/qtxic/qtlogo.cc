@@ -54,6 +54,13 @@
 #include <QPushButton>
 
 
+//-----------------------------------------------------------------------------
+// QTlogoDlg:  Panel to control generation of physical text in layouts.
+// Called from the logo button in the Physical side menu.
+//
+// Help keywords used in this file:
+//   xic:logo
+
 void
 cEdit::PopUpLogo(GRobject caller, ShowMode mode)
 {
@@ -238,13 +245,13 @@ QTlogoDlg::QTlogoDlg(GRobject c) : QTbag(this)
 
     setWindowTitle(tr("Logo Font Setup"));
     setAttribute(Qt::WA_DeleteOnClose);
-//    gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
+    vbox->setSizeConstraint(QLayout::SetFixedSize);
 
     // Font selection radio buttons
     //
@@ -270,6 +277,11 @@ QTlogoDlg::QTlogoDlg(GRobject c) : QTbag(this)
     hbox->addWidget(lgo_pretty);
     connect(lgo_pretty, SIGNAL(toggled(bool)),
         this, SLOT(pretty_btn_slot(bool)));
+
+    QPushButton *btn = new QPushButton(tr("help"));
+    hbox->addWidget(btn);
+    btn->setAutoDefault(false);
+    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // second row
     hbox = new QHBoxLayout(0);
@@ -302,7 +314,7 @@ QTlogoDlg::QTlogoDlg(GRobject c) : QTbag(this)
         this, SLOT(value_changed_slot(double)));
 
     // third row
-    label = new QLabel(tr("Vector end style"));
+    label = new QLabel(tr("     Vector end style"));
     col1->addWidget(label);
 
     lgo_endstyle = new QComboBox();
@@ -313,7 +325,7 @@ QTlogoDlg::QTlogoDlg(GRobject c) : QTbag(this)
         this, SLOT(endstyle_change_slot(int)));
 
     // fourth row
-    label = new QLabel(tr("Vector path width"));
+    label = new QLabel(tr("     Vector path width"));
     col1->addWidget(label);
 
     lgo_pwidth = new QComboBox();
@@ -338,13 +350,15 @@ QTlogoDlg::QTlogoDlg(GRobject c) : QTbag(this)
 
     // bottom row
     lgo_sel = new QPushButton(tr("Select Pretty Font"));
+    col1->addSpacing(4);
     col1->addWidget(lgo_sel);
     lgo_sel->setCheckable(true);
     lgo_sel->setAutoDefault(false);
     connect(lgo_sel, SIGNAL(toggled(bool)),
         this, SLOT(sel_btn_slot(bool)));
 
-    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn = new QPushButton(tr("Dismiss"));
+    col2->addSpacing(4);
     col2->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -523,6 +537,13 @@ QTlogoDlg::pretty_btn_slot(bool state)
 {
     if (state)
         CDvdb()->setVariable(VA_LogoAltFont, "1");
+}
+
+
+void
+QTlogoDlg::help_btn_slot()
+{
+    DSPmainWbag(PopUpHelp("xic:logo"))
 }
 
 

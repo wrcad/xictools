@@ -58,8 +58,9 @@
 #include <QLabel>
 
 
-//----------------------------------------------------------------------
-//  OpenAccess Libraries Popup
+//-----------------------------------------------------------------------------
+// QToaLibsDlg:  OpenAccess Libraries List dialog.
+// Called from main menu when OA is enabled: /File/OpenAcess Libs.
 //
 // Help system keywords used:
 //  xic:oalib

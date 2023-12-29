@@ -48,6 +48,9 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTltabEditDlg:  Layer Editor dialog.
+
 class QPushButton;
 class QComboBox;
 class QLabel;

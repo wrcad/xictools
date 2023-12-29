@@ -50,9 +50,9 @@
 #include <QLineEdit>
 
 
-//--------------------------------------------------------------------
-// Layer Editor pop-up
-//
+//-----------------------------------------------------------------------------
+// QTltabEditDlg:  Layer Editor dialog.
+// Called from main menu: Attributes/Edit Layers.
 
 // Pop up the Layer editor.  The editor has buttons to add a layer, remove
 // layers, and a combo box for layer name entry.  The combo contains a
@@ -86,7 +86,6 @@ QTltabEditDlg::QTltabEditDlg(GRobject c)
 
     setWindowTitle(tr("Layer Editor"));
     setAttribute(Qt::WA_DeleteOnClose);
-//    gtk_window_set_resizable(GTK_WINDOW(le_shell), false);
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;

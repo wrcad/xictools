@@ -53,8 +53,9 @@
 #include <QLineEdit>
 
 
-//-------------------------------------------------------------------------
-// Pop-up to control writing of a technology file.
+//-----------------------------------------------------------------------------
+// QTwriteTechDlg:  Dialog to control writing of a technology file.
+// Called from the main menu: Attributes/Save Tech.
 //
 // Help system keywords used:
 //  xic:updat
@@ -100,7 +101,6 @@ QTwriteTechDlg::QTwriteTechDlg(GRobject caller)
 
     setWindowTitle(tr("Write Tech File"));
     setAttribute(Qt::WA_DeleteOnClose);
-//    gtk_window_set_resizable(GTK_WINDOW(tc_popup), false);
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;

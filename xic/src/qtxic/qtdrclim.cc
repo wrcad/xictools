@@ -52,15 +52,14 @@
 #include <QSpinBox>
 #include <QRadioButton>
 
-//------------------------------------------------------------------------
-// DRC Limits Pop-Up
-//
-// This provides entry fields for the various limit parameters and
-// the error recording level.
+
+//-----------------------------------------------------------------------------
+// QTdrcSetupDlg:  DRC Setup dialog, provides entry fields for the
+// various limit parameters and the error recording level.
+// Called from main menu: DRC/DRC Setup.
 //
 // Help system keywords used:
 //  xic:limit
-
 
 void
 cDRC::PopUpDrcLimits(GRobject caller, ShowMode mode)
@@ -68,30 +67,30 @@ cDRC::PopUpDrcLimits(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        delete QTdrcLimitsDlg::self();
+        delete QTdrcSetupDlg::self();
         return;
     }
     if (mode == MODE_UPD) {
-        if (QTdrcLimitsDlg::self())
-            QTdrcLimitsDlg::self()->update();
+        if (QTdrcSetupDlg::self())
+            QTdrcSetupDlg::self()->update();
         return;
     }
-    if (QTdrcLimitsDlg::self())
+    if (QTdrcSetupDlg::self())
         return;
 
-    new QTdrcLimitsDlg(caller);
+    new QTdrcSetupDlg(caller);
 
-    QTdrcLimitsDlg::self()->set_transient_for(QTmainwin::self());
-    QTdev::self()->SetPopupLocation(GRloc(LW_UR), QTdrcLimitsDlg::self(),
+    QTdrcSetupDlg::self()->set_transient_for(QTmainwin::self());
+    QTdev::self()->SetPopupLocation(GRloc(LW_UR), QTdrcSetupDlg::self(),
         QTmainwin::self()->Viewport());
-    QTdrcLimitsDlg::self()->show();
+    QTdrcSetupDlg::self()->show();
 }
 // End of cDRC functions.
 
 
-QTdrcLimitsDlg *QTdrcLimitsDlg::instPtr;
+QTdrcSetupDlg *QTdrcSetupDlg::instPtr;
 
-QTdrcLimitsDlg::QTdrcLimitsDlg(GRobject c)
+QTdrcSetupDlg::QTdrcSetupDlg(GRobject c)
 {
     instPtr = this;
     dl_caller = c;
@@ -112,7 +111,6 @@ QTdrcLimitsDlg::QTdrcLimitsDlg(GRobject c)
 
     setWindowTitle(tr("DRC Parameter Setup"));
     setAttribute(Qt::WA_DeleteOnClose);
-//    gtk_window_set_resizable(GTK_WINDOW(dl_popup), false);
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;
@@ -281,7 +279,7 @@ QTdrcLimitsDlg::QTdrcLimitsDlg(GRobject c)
 }
 
 
-QTdrcLimitsDlg::~QTdrcLimitsDlg()
+QTdrcSetupDlg::~QTdrcSetupDlg()
 {
     instPtr = 0;
     if (dl_caller)
@@ -290,7 +288,7 @@ QTdrcLimitsDlg::~QTdrcLimitsDlg()
 
 
 void
-QTdrcLimitsDlg::update()
+QTdrcSetupDlg::update()
 {
     const char *s = CDvdb()->getVariable(VA_DrcUseLayerList);
     if (s) {
@@ -383,14 +381,14 @@ QTdrcLimitsDlg::update()
 
 
 void
-QTdrcLimitsDlg::help_btn_slot()
+QTdrcSetupDlg::help_btn_slot()
 {
     DSPmainWbag(PopUpHelp("xic:limit"))
 }
 
 
 void
-QTdrcLimitsDlg::luse_btn_slot(int state)
+QTdrcSetupDlg::luse_btn_slot(int state)
 {
     if (state) {
         CDvdb()->setVariable(VA_DrcUseLayerList, 0);
@@ -403,7 +401,7 @@ QTdrcLimitsDlg::luse_btn_slot(int state)
 
 
 void
-QTdrcLimitsDlg::lskip_btn_slot(int state)
+QTdrcSetupDlg::lskip_btn_slot(int state)
 {
     if (state) {
         CDvdb()->setVariable(VA_DrcUseLayerList, "n");
@@ -416,7 +414,7 @@ QTdrcLimitsDlg::lskip_btn_slot(int state)
 
 
 void
-QTdrcLimitsDlg::ruse_btn_slot(int state)
+QTdrcSetupDlg::ruse_btn_slot(int state)
 {
     if (state) {
         CDvdb()->setVariable(VA_DrcUseRuleList, 0);
@@ -429,7 +427,7 @@ QTdrcLimitsDlg::ruse_btn_slot(int state)
 
 
 void
-QTdrcLimitsDlg::rskip_btn_slot(int state)
+QTdrcSetupDlg::rskip_btn_slot(int state)
 {
     if (state) {
         CDvdb()->setVariable(VA_DrcUseRuleList, "n");
@@ -442,7 +440,7 @@ QTdrcLimitsDlg::rskip_btn_slot(int state)
 
 
 void
-QTdrcLimitsDlg::max_errs_changed_slot(int i)
+QTdrcSetupDlg::max_errs_changed_slot(int i)
 {
     if (i == DRC_MAX_ERRS_DEF)
         CDvdb()->clearVariable(VA_DrcMaxErrors);
@@ -455,7 +453,7 @@ QTdrcLimitsDlg::max_errs_changed_slot(int i)
 
 
 void
-QTdrcLimitsDlg::imax_objs_changed_slot(int i)
+QTdrcSetupDlg::imax_objs_changed_slot(int i)
 {
     if (i == DRC_INTR_MAX_OBJS_DEF)
         CDvdb()->clearVariable(VA_DrcInterMaxObjs);
@@ -468,7 +466,7 @@ QTdrcLimitsDlg::imax_objs_changed_slot(int i)
 
 
 void
-QTdrcLimitsDlg::imax_time_changed_slot(int i)
+QTdrcSetupDlg::imax_time_changed_slot(int i)
 {
     if (i == DRC_INTR_MAX_TIME_DEF)
         CDvdb()->clearVariable(VA_DrcInterMaxTime);
@@ -481,7 +479,7 @@ QTdrcLimitsDlg::imax_time_changed_slot(int i)
 
 
 void
-QTdrcLimitsDlg::imax_errs_changed_slot(int i)
+QTdrcSetupDlg::imax_errs_changed_slot(int i)
 {
     if (i == DRC_INTR_MAX_ERRS_DEF)
         CDvdb()->clearVariable(VA_DrcInterMaxErrors);
@@ -494,7 +492,7 @@ QTdrcLimitsDlg::imax_errs_changed_slot(int i)
 
 
 void
-QTdrcLimitsDlg::skip_btn_slot(int state)
+QTdrcSetupDlg::skip_btn_slot(int state)
 {
     if (state)
         CDvdb()->setVariable(VA_DrcInterSkipInst, "");
@@ -504,7 +502,7 @@ QTdrcLimitsDlg::skip_btn_slot(int state)
 
 
 void
-QTdrcLimitsDlg::b1_btn_slot(bool state)
+QTdrcSetupDlg::b1_btn_slot(bool state)
 {
     if (state)
         CDvdb()->clearVariable(VA_DrcLevel);
@@ -512,7 +510,7 @@ QTdrcLimitsDlg::b1_btn_slot(bool state)
 
 
 void
-QTdrcLimitsDlg::b2_btn_slot(bool state)
+QTdrcSetupDlg::b2_btn_slot(bool state)
 {
     if (state)
         CDvdb()->setVariable(VA_DrcLevel, "1");
@@ -520,7 +518,7 @@ QTdrcLimitsDlg::b2_btn_slot(bool state)
 
 
 void
-QTdrcLimitsDlg::b3_btn_slot(bool state)
+QTdrcSetupDlg::b3_btn_slot(bool state)
 {
     if (state)
         CDvdb()->setVariable(VA_DrcLevel, "2");
@@ -528,14 +526,14 @@ QTdrcLimitsDlg::b3_btn_slot(bool state)
 
 
 void
-QTdrcLimitsDlg::dismiss_btn_slot()
+QTdrcSetupDlg::dismiss_btn_slot()
 {
     DRC()->PopUpDrcLimits(0, MODE_OFF);
 }
 
 
 void
-QTdrcLimitsDlg::llist_changed_slot(const QString &qs)
+QTdrcSetupDlg::llist_changed_slot(const QString &qs)
 {
     const char *s = lstring::copy(qs.toLatin1().constData());
     const char *ss = CDvdb()->getVariable(VA_DrcLayerList);
@@ -550,7 +548,7 @@ QTdrcLimitsDlg::llist_changed_slot(const QString &qs)
 
 
 void
-QTdrcLimitsDlg::rlist_changed_slot(const QString &qs)
+QTdrcSetupDlg::rlist_changed_slot(const QString &qs)
 {
     const char *s = lstring::copy(qs.toLatin1().constData());
     const char *ss = CDvdb()->getVariable(VA_DrcRuleList);

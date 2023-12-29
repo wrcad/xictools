@@ -58,8 +58,10 @@
 #include <QScrollBar>
 
 
-//--------------------------------------------------------------------------
-// Pop up to question user about saving modified cells
+//-----------------------------------------------------------------------------
+// QTmodifDlg:  Dialog to question the user about saving modified
+// cells.  This appears when exiting the program if there is unsaved
+// work.
 //
 // Help system keywords used:
 //  xic:sv

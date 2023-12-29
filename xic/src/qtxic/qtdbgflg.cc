@@ -56,8 +56,9 @@
 #include <QLineEdit>
 
 
-//--------------------------------------------------------------------
-// Pop-up to control program logging and debugging flags.
+//-----------------------------------------------------------------------------
+// QTdbgFlagsDlg:  Dialog to control program logging and debugging flags.
+// Called from main menu: Help/Logging.
 //
 // Help system keywords used:
 // xic:dblog
@@ -171,6 +172,7 @@ QTdbgFlagsDlg::QTdbgFlagsDlg(GRobject c)
         connect(df_rlsolv, SIGNAL(stateChanged(int)),
             this, SLOT(rlsolv_btn_slot(int)));
     }
+    vbox->addSpacing(10);
 
     // file name entry
     //
@@ -179,7 +181,7 @@ QTdbgFlagsDlg::QTdbgFlagsDlg(GRobject c)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    label = new QLabel(tr("Message file:"));
+    label = new QLabel(tr("Message file: "));
     hbox->addWidget(label);
 
     df_fname = new QLineEdit();
@@ -187,11 +189,11 @@ QTdbgFlagsDlg::QTdbgFlagsDlg(GRobject c)
     connect(df_fname, SIGNAL(editingFinished()),
         this, SLOT(editing_finished_slot()));
 
-
     // Log file creation
     //
     label = new QLabel(tr("Enable optional log files"));
-    label->setAlignment(Qt::AlignCenter);
+    label->setAlignment(Qt::AlignLeft);
+    vbox->addSpacing(10);
     vbox->addWidget(label);
 
     df_lisp = new QCheckBox(tr("Lisp parser (lisp.log)"));

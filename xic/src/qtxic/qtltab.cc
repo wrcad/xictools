@@ -68,16 +68,13 @@
 #include <QLineEdit>
 #include <QSplitter>
 
+
+//-----------------------------------------------------------------------------
+// QTltab:  The Layer Table composite, used in the main window.
+//
 // help keywords used:
 //  layertab
 //  layerchange
-
-
-//--------------------------------------------------------------------
-//
-// The Layer Table
-//
-//--------------------------------------------------------------------
 
 // Drag and draw things exported for the fill pattern editor.
 const char *QTltab::ltab_mime_type = "application/xic-fillpattern";

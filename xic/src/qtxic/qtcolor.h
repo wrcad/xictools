@@ -47,6 +47,9 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTcolorDlg:  Dialog used to set colors for attributes and layers.
+
 class QColorDialog;
 class QComboBox;
 

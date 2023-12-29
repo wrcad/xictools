@@ -60,15 +60,18 @@
 #include <QAction>
 #include <QMouseEvent>
 
-#ifdef __APPLE__
-#define USE_QTOOLBAR
-#endif
 
 //-----------------------------------------------------------------------------
-// Pop up to display a listing of design rules for the current layer.
+// QTdrcRuleEditDlg:  Dialog to display a listing of design rules for
+// the current layer for editing.
+// Called from main menu: DRC/Edit Rules.
 //
 // Help system keywords used:
 //  xic:dredt
+
+#ifdef __APPLE__
+#define USE_QTOOLBAR
+#endif
 
 void
 cDRC::PopUpRules(GRobject caller, ShowMode mode)
@@ -172,7 +175,7 @@ QTdrcRuleEditDlg::QTdrcRuleEditDlg(GRobject c)
     dim_del->setShortcut(QKeySequence("Ctrl+U"));
     menu->addSeparator();
     // _Quit, <control>Q, dim_cancel_proc, 0, 0
-    a = menu->addAction(tr("_Quit"));
+    a = menu->addAction(tr("&Quit"));
     a->setShortcut(QKeySequence("Ctrl+Q"));
     connect(menu, SIGNAL(triggered(QAction*)),
         this, SLOT(edit_menu_slot(QAction*)));

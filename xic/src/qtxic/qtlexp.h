@@ -47,6 +47,9 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTlayerExpDlg:  Dialog to control layer expression evaluation.
+
 class QRadioButton;
 class QComboBox;
 class QCheckBox;

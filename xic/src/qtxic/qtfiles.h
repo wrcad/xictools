@@ -47,9 +47,9 @@
 #include <QDialog>
 
 
-//----------------------------------------------------------------------
-//  Files Listing Dialog
-//
+//-----------------------------------------------------------------------------
+// QTfilesListDlg::  Files Listing dialog, list files found in
+// directories in the search path.
 
 #define MAX_BTNS 5
 

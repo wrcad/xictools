@@ -51,8 +51,10 @@
 #include <QCheckBox>
 
 
-//
-// Panel for setting misc OA interface parameters.
+//-----------------------------------------------------------------------------
+// QToaDefsDlg:  Panel for setting misc. OpenAccess interface parameters.
+// Called from the OpenAccess Libraries panel (QToaLibsDlg) Defaults
+// button.
 //
 // Help keyword:
 // xic:oadefs
@@ -83,7 +85,7 @@ cOAif::PopUpOAdefs(GRobject caller, ShowMode mode, int x, int y)
         QToaDefsDlg::self(), QTmainwin::self()->Viewport());
     QToaDefsDlg::self()->show();
 }
-// End of cOSif functions.
+// End of cOAif functions.
 
 
 QToaDefsDlg *QToaDefsDlg::instPtr;

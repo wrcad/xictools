@@ -45,6 +45,9 @@
 #include <QLineEdit>
 
 
+//-----------------------------------------------------------------------------
+// QTlayerEdit:  Subwidget group for layer list.
+
 // Line edit subclass that handles layer drops for use below.
 //
 class QTlayerEdit : public QLineEdit
@@ -56,10 +59,6 @@ public:
     void dropEvent(QDropEvent*);
 };
 
-
-//-------------------------------------------------------------------------
-// Subwidget group for layer list
-//
 
 class QCheckBox;
 class QPushButton;

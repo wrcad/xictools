@@ -57,9 +57,11 @@
 #include <QSpinBox>
 
 
-//---------------------------------------------------------------------------
-// Pop-up interface for terminal/property editing.  This handles
-// physical mode (TEDIT command).
+//-----------------------------------------------------------------------------
+// QTphysTermDlg:  Dialog interface for terminal/property editing.  This
+// handles physical mode (TEDIT command).
+// Called from the Extraction Setup panel (QTextSetup) from the main
+// menu Extract/Extract Setup, Edit Terminals button.
 //
 // Help system keywords used:
 //  xic:edtrm

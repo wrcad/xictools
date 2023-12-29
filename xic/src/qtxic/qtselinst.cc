@@ -53,10 +53,10 @@
 #include <QLabel>
 
 
-//--------------------------------------------------------------------------
-//
-// Pop up to allow the user to select/deselect cell instances.
-//
+//-----------------------------------------------------------------------------
+// QTselInstSelectDlg:  Dialog to allow the user to select/deselect cell
+// instances.
+// Called when multiple instances are selected in a drawing window.
 
 namespace {
     void start_modal(QDialog *w)

@@ -47,6 +47,9 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QToasisDlg:  Dialog for advanced/obscure OASIS writing features.
+
 class QCheckBox;
 class QComboBox;
 class QPushButton;

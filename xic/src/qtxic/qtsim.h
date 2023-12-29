@@ -49,6 +49,9 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTsimRunDlg:  Dialog for monitoring asynchronous SPICE simulation runs.
+
 class QLabel;
 
 class QTsimRunDlg : public QDialog

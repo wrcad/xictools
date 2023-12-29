@@ -47,9 +47,8 @@
 #include <QDialog>
 
 
-//-------------------------------------------------------------------------
-// Dialog to control device highlighting and selection.
-//
+//-----------------------------------------------------------------------------
+// QTextDevDlg:  Dialog to control device highlighting and selection.
 
 class QTreeWidgetItem;
 class QTreeWidget;

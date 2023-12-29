@@ -53,8 +53,10 @@
 #include <QPushButton>
 #include <QToolButton>
 
-//--------------------------------------------------------------------------
-// Pop up for setting the current transform.
+
+//-----------------------------------------------------------------------------
+// QTxformDlg:  Dialog for setting the current transform.
+// Called from the xform button in the side menu.
 //
 // Help system keywords used:
 //  xic:xform
@@ -65,7 +67,6 @@
 #define TFM_MIND CDMAGMIN
 #define TFM_MAXD CDMAGMAX
 #define TFM_DEL  CDMAGMIN
-
 
 // Pop-up to allow setting the mirror, rotation angle, and
 // magnification parameters.  Also provides five storage registers for
@@ -121,7 +122,6 @@ QTxformDlg::QTxformDlg(GRobject c,
 
     setWindowTitle(tr("Current Transform"));
     setAttribute(Qt::WA_DeleteOnClose);
-//    gtk_window_set_resizable(GTK_WINDOW(tf_popup), false);
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;
@@ -131,6 +131,7 @@ QTxformDlg::QTxformDlg(GRobject c,
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
+    vbox->setSizeConstraint(QLayout::SetFixedSize);
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
     hbox->setContentsMargins(qm);

@@ -47,9 +47,8 @@
 #include <QDialog>
 
 
-//--------------------------------------------------------------------
-// Pop-up to control misc. extraction variables.
-//
+//-----------------------------------------------------------------------------
+// QTextSetupDlg:  Dialog to control misc. extraction variables.
 
 class QTabWidget;
 class QPushButton;

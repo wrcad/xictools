@@ -52,12 +52,12 @@
 #include <QLineEdit>
 
 
-//
-// Panel for setting cell name filtering for the Cells Listing panel.
+//-----------------------------------------------------------------------------
+// QTcfiltDlg:  Panel for setting up cell name filtering for the Cells
+// Listing panel (QTcellsDlg).
 //
 // Help keyword:
 // xic:cfilt
-
 
 void
 cMain::PopUpCellFilt(GRobject caller, ShowMode mode, DisplayMode dm,

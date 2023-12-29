@@ -59,7 +59,10 @@
 
 
 //-----------------------------------------------------------------------------
-// Pop up to configure a CHD.  The CHD can be configured with
+// QTchdCfgDlg:  Dialog to configure a cell hierarchy digest (CHD).
+// Called from the Cell Hierarchy Digests listing dialog (QTchdListDlg).
+//
+// The CHD can be configured with
 // 1.  a default top cell.
 // 2.  an associated geometry database.
 //
@@ -138,7 +141,8 @@ QTchdCfgCellEdit::dropEvent(QDropEvent *ev)
     if (ev->mimeData()->hasFormat("text/twostring")) {
         // Drops from content lists may be in the form
         // "fname_or_chd\ncellname".  Keep the cellname.
-        char *str = lstring::copy(ev->mimeData()->data("text/plain").constData());
+        char *str = lstring::copy(
+            ev->mimeData()->data("text/plain").constData());
         const char *t = strchr(str, '\n');
         if (t)
             t = t+1;

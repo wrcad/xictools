@@ -52,9 +52,9 @@
 #include <QGroupBox>
 
 
-//--------------------------------------------------------------------------
-// Pop-up to set cell flags (immutable, library).
-//
+//-----------------------------------------------------------------------------
+// QTcflagsDlg:  Dialog to set cell flags (immutable, library).
+// Called from the Cells Listing dialog (QTcellsDlg).
 
 // Pop up a list of cell names, and enable changing the Immutable and
 // Library flags.  The dmode specifies the display mode:  Physical or

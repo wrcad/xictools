@@ -47,6 +47,10 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTemptyDlg:  Dialog to allow the user to delete empty cells from a
+// hierarchy.
+
 class QLabel;
 class QMouseEvent;
 

@@ -66,18 +66,19 @@
 #include <QMouseEvent>
 
 
-#ifdef __APPLE__
-#define USE_QTOOLBAR
-#endif
-
 //-----------------------------------------------------------------------------
-// This implements a menu of devices from the device library, in three
-// styles.  The drop-down menu styles take less screen space and the
-// categories variation (vs.  alphabetic) is the default.  The
-// graphical palette might be more useful to beginners.
+// QTdevMenuDlg::This implements a menu of devices from the device
+// library, in three styles.  The drop-down menu styles take less
+// screen space and the categories variation (vs.  alphabetic) is the
+// default.  The graphical palette might be more useful to beginners.
+// Called from the Electrical side menu devs button.
 //
 // Help system keywords used:
 //  dev:xxxxx   (device name)
+
+#ifdef __APPLE__
+#define USE_QTOOLBAR
+#endif
 
 // The Device Menu popup control function.
 //

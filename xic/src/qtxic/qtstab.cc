@@ -53,12 +53,12 @@
 #include <QPushButton>
 
 
-//--------------------------------------------------------------------
-// Pop-up to set current symbol table
+//-----------------------------------------------------------------------------
+// QTstabDlg:  Dialog to set current symbol table.
+// Called from the main menu: Cell/Symbol Tables.
 //
 // Help system keywords used:
 //  xic:stabs
-
 
 void
 cMain::PopUpSymTabs(GRobject caller, ShowMode mode)
@@ -104,13 +104,13 @@ QTstabDlg::QTstabDlg(GRobject c) : QTbag(this)
 
     setWindowTitle(tr("Symbol Tables"));
     setAttribute(Qt::WA_DeleteOnClose);
-//    gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
+    vbox->setSizeConstraint(QLayout::SetFixedSize);
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
     hbox->setContentsMargins(qm);
@@ -239,7 +239,7 @@ QTstabDlg::table_change_slot(int)
 
 
 void
-QTstabDlg::add_btn_slot(bool)
+QTstabDlg::add_btn_slot(bool state)
 {
     if (tb_del_pop)
         tb_del_pop->popdown();
@@ -247,11 +247,13 @@ QTstabDlg::add_btn_slot(bool)
         tb_clr_pop->popdown();
     if (tb_add_pop)
         tb_add_pop->popdown();
-    tb_add_pop = PopUpEditString((GRobject)tb_add,
-        GRloc(), "Enter name for new symbol table", 0, tb_add_cb, 0,
-        250, 0, false, 0);
-    if (tb_add_pop)
-        tb_add_pop->register_usrptr((void**)&tb_add_pop);
+    if (state) {
+        tb_add_pop = PopUpEditString((GRobject)tb_add,
+            GRloc(), "Enter name for new symbol table", 0, tb_add_cb, 0,
+            250, 0, false, 0);
+        if (tb_add_pop)
+            tb_add_pop->register_usrptr((void**)&tb_add_pop);
+    }
 }
 
 

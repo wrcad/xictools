@@ -47,6 +47,9 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTflattenDlg:  Dialog for the Flatten command.
+
 class QCheckBox;
 class QPushButton;
 class QAction;

@@ -64,7 +64,8 @@
 
 
 //-----------------------------------------------------------------------------
-// Pop-up to control FastHenry interface.
+// QTfastHenryDlg:  Dialog to control FastHenry interface.
+// Called from main menu: Extract/ExtrCT RL.
 //
 // Help system keywords used:
 //  fhpanel

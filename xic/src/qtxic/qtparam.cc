@@ -56,6 +56,9 @@
 #include <QClipboard>
 
 
+//-----------------------------------------------------------------------------
+// QTparam:  Parameter/status display area of the main window.
+
 // Display the parameter text in the parameter readout area.
 //
 void
@@ -184,7 +187,8 @@ QTparam::print()
         p_text.append_string(textbuf, c2);
         CDc *cd = (CDc*)Selections.firstObject(CurCell(), "c");
         if (cd) {
-            snprintf(textbuf, sizeof(textbuf), " (%s)", Tstring(cd->cellname()));
+            snprintf(textbuf, sizeof(textbuf), " (%s)",
+                Tstring(cd->cellname()));
             p_text.append_string(textbuf, c2);
         }
         p_text.append_string("  ", c2);

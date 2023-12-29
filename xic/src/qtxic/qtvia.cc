@@ -61,8 +61,9 @@
 #include <QSpinBox>
 
 
-//--------------------------------------------------------------------
-// Dialog to create a standard via.
+//-----------------------------------------------------------------------------
+// QTstdViaDlg:  Dialog to create a standard via.
+// Called from the main menu: Edit/Create Via.
 //
 // Help system keywords used:
 //  xic:stvia
@@ -213,13 +214,13 @@ QTstdViaDlg::QTstdViaDlg(GRobject caller, CDc *cdesc)
 
     setWindowTitle(tr("Standard Via Parameters"));
     setAttribute(Qt::WA_DeleteOnClose);
-//    gtk_window_set_resizable(GTK_WINDOW(stv_popup), false);
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
+    vbox->setSizeConstraint(QLayout::SetFixedSize);
 
     QHBoxLayout *hbox = new QHBoxLayout();
     hbox->setContentsMargins(qm);

@@ -47,9 +47,8 @@
 #include <QGroupBox>
 
 
-//-------------------------------------------------------------------------
-// Subwidget group for window control
-//
+//-----------------------------------------------------------------------------
+// QTwindowCfg:  Subwidget group for windowing control.
 
 class QCheckBox;
 class QLabel;

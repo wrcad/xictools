@@ -38,10 +38,6 @@
  $Id:$
  *========================================================================*/
 
-//
-// Main Xic application-specific header
-//
-
 #ifndef QTMAIN_H
 #define QTMAIN_H
 
@@ -55,6 +51,9 @@
 #include <QEvent>
 #include <QFontMetrics>
 
+
+//-----------------------------------------------------------------------------
+// Main Window and top-level functions.
 
 struct sKeyEvent;
 class QTcoord;

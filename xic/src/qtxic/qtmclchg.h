@@ -47,6 +47,9 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTmclChangeDlg:  Dialog to control the layer change option in move/copy.
+
 class QRadioButton;
 
 class QTmclChangeDlg : public QDialog

@@ -48,9 +48,10 @@
 #include <QPushButton>
 #include <QLineEdit>
 
+
 //-----------------------------------------------------------------------------
-// The Custom Property Filter Setup pop-up, called from the Compare
-// Layouts panel.
+// QTcmpPrpFltDlg:  The Custom Property Filter Setup dialog, called
+// from the Compare Layouts dialog (QTcmpDlg).
 //
 // Help system keywords used:
 //  xic:prpfilt
@@ -99,8 +100,10 @@ QTcmpPrpFltDlg::QTcmpPrpFltDlg(GRobject c)
     setAttribute(Qt::WA_DeleteOnClose);
 
     QGridLayout *grid = new QGridLayout(this);
+    grid->setContentsMargins(4, 4, 4, 4);
+    grid->setSpacing(4);
     QHBoxLayout *hbox = new QHBoxLayout();
-    grid->addLayout(hbox, 0, 1);
+    grid->addLayout(hbox, 0, 0, 1, 2);
     hbox->setContentsMargins(0, 0, 0, 0);
     hbox->setSpacing(2);
 
@@ -228,6 +231,7 @@ QTcmpPrpFltDlg::update()
         pf_elec_obj->setText("");
     delete [] s2;
 }
+
 
 void
 QTcmpPrpFltDlg::help_btn_slot()

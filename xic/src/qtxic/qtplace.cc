@@ -57,7 +57,8 @@
 
 
 //-----------------------------------------------------------------------------
-// Popup Form for managing the placing of subcells.
+// QTplaceDlg:  Dialog for managing the placing of subcells.
+// Called from the place button in the side menu.
 //
 // Help system keywords used:
 //  placepanel
@@ -69,8 +70,6 @@
 #define DEF_WIDTH 292
 
 #define PL_NEW_CODE "_new$$entry_"
-
-
 
 // Main function to bring up the Placement Control pop-up.  If
 // noprompt it true, don't prompt for a master if none is defined
@@ -100,8 +99,7 @@ cEdit::PopUpPlace(ShowMode mode, bool noprompt)
         QTmainwin::self()->Viewport());
     QTplaceDlg::self()->show();
 
-    // Give focus to main window.
-//    QTdev::SetFocus(QTmainwin::self()->Shell());
+    QTmainwin::self()->setFocus();
 }
 // End of cEdit functions.
 
@@ -117,10 +115,8 @@ QTplaceDlg::QTplaceDlg(bool noprompt)
     pl_smashbtn = 0;
     pl_refmenu = 0;
 
-    pl_label_nx = 0;
-    pl_label_ny = 0;
-    pl_label_dx = 0;
-    pl_label_dy = 0;
+    pl_label_nxdx = 0;
+    pl_label_nydy = 0;
 
     pl_masterbtn = 0;
     pl_placebtn = 0;
@@ -139,13 +135,13 @@ QTplaceDlg::QTplaceDlg(bool noprompt)
 
     setWindowTitle(tr("Cell Placement Control"));
     setAttribute(Qt::WA_DeleteOnClose);
-//    gtk_window_set_resizable(GTK_WINDOW(pl_popup), false);
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
+    vbox->setSizeConstraint(QLayout::SetFixedSize);
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
     hbox->setContentsMargins(qm);
@@ -184,11 +180,6 @@ QTplaceDlg::QTplaceDlg(bool noprompt)
     connect(pl_refmenu, SIGNAL(currentIndexChanged(int)),
         this, SLOT(refmenu_slot(int)));
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
-
     // Array set labels and entries.
     //
     hbox = new QHBoxLayout(0);
@@ -196,60 +187,59 @@ QTplaceDlg::QTplaceDlg(bool noprompt)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    QVBoxLayout *vb = new QVBoxLayout();
-    hbox->addLayout(vb);
-
-    pl_label_nx = new QLabel(tr("Nx"));
-    vb->addWidget(pl_label_nx);
+    int ndgt = CD()->numDigits();
+    pl_label_nxdx = new QLabel(tr("Nx,Dx: "));
+    pl_label_nxdx->setAlignment(Qt::AlignCenter);
+    hbox->addWidget(pl_label_nxdx);
     pl_nx = new QSpinBox();
-    vb->addWidget(pl_nx);
+    hbox->addWidget(pl_nx);
+    pl_nx->setRange(1, MAX_ARRAY);
     pl_nx->setValue(1);
-    pl_nx->setMaximum(MAX_ARRAY);
-    pl_nx->setMinimum(1);
     connect(pl_nx, SIGNAL(valueChanged(int)),
         this, SLOT(nx_change_slot(int)));
-
-    pl_label_ny = new QLabel(tr("Ny"));
-    vb->addWidget(pl_label_ny);
-    pl_ny = new QSpinBox();
-    vb->addWidget(pl_ny);
-    pl_ny->setValue(1);
-    pl_ny->setMaximum(MAX_ARRAY);
-    pl_ny->setMinimum(1);
-    connect(pl_ny, SIGNAL(valueChanged(int)),
-        this, SLOT(ny_change_slot(int)));
-
-    vb = new QVBoxLayout();
-    hbox->addLayout(vb);
-    int ndgt = CD()->numDigits();
-
-    pl_label_dx = new QLabel(tr("Dx"));
-    vb->addWidget(pl_label_dx);;
     pl_dx = new QTdoubleSpinBox();
-    vb->addWidget(pl_dx);;
-    pl_dx->setMaximum(1e6);
-    pl_dx->setMinimum(-1e6);
+    hbox->addSpacing(4);
+    hbox->addWidget(pl_dx);;
+    pl_dx->setRange(-1e6, 1e6);
     pl_dx->setValue(0.0);
     pl_dx->setDecimals(ndgt);
     connect(pl_dx, SIGNAL(valueChanged(double)),
         this, SLOT(dx_change_slot(double)));
+    hbox->addSpacing(60);
 
-    pl_label_dy = new QLabel(tr("Dy"));
-    vb->addWidget(pl_label_dy);;
+    hbox = new QHBoxLayout(0);
+    hbox->setContentsMargins(qm);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
+
+    pl_label_nydy = new QLabel(tr("Ny,Dy: "));
+    pl_label_nydy->setAlignment(Qt::AlignCenter);
+    hbox->addWidget(pl_label_nydy);
+    pl_ny = new QSpinBox();
+    hbox->addWidget(pl_ny);
+    pl_ny->setRange(1, MAX_ARRAY);
+    pl_ny->setValue(1);
+    connect(pl_ny, SIGNAL(valueChanged(int)),
+        this, SLOT(ny_change_slot(int)));
     pl_dy = new QTdoubleSpinBox();
-    vb->addWidget(pl_dy);
-    pl_dy->setMaximum(1e6);
-    pl_dy->setMinimum(-1e6);
+    hbox->addSpacing(4);
+    hbox->addWidget(pl_dy);
+    pl_dy->setRange(-1e6, 1e6);
     pl_dy->setValue(0.0);
     pl_dy->setDecimals(ndgt);
     connect(pl_dy, SIGNAL(valueChanged(double)),
         this, SLOT(dy_change_slot(double)));
+    hbox->addSpacing(60);
 
     // Master selection option menu.
     //
     pl_masterbtn = new QComboBox();
     vbox->addWidget(pl_masterbtn);
     rebuild_menu();
+
+    // Only prompt if we don't already have a cell.
+    if (pl_masterbtn->currentIndex() > 0)
+        noprompt = true;
 
     // Label and entry area for max menu length.
     //
@@ -259,6 +249,7 @@ QTplaceDlg::QTplaceDlg(bool noprompt)
     vbox->addLayout(hbox);
 
     QLabel *label = new QLabel(tr("Maximum menu length"));
+    label->setAlignment(Qt::AlignCenter);
     hbox->addWidget(label);
     pl_mmlen = new QSpinBox();
     hbox->addWidget(pl_mmlen);
@@ -272,6 +263,11 @@ QTplaceDlg::QTplaceDlg(bool noprompt)
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
+
+    QPushButton *btn = new QPushButton(tr("Help"));
+    hbox->addWidget(btn);
+    btn->setAutoDefault(false);
+    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     MenuEnt *m = MainMenu()->FindEntry(MMside, MenuPLACE);
     if (m)
@@ -494,13 +490,11 @@ QTplaceDlg::dropEvent(QDropEvent *ev)
 void
 QTplaceDlg::set_sens(bool set)
 {
-    pl_label_nx->setEnabled(set);
+    pl_label_nxdx->setEnabled(set);
     pl_nx->setEnabled(set);
-    pl_label_ny->setEnabled(set);
-    pl_ny->setEnabled(set);
-    pl_label_dx->setEnabled(set);
     pl_dx->setEnabled(set);
-    pl_label_dy->setEnabled(set);
+    pl_label_nydy->setEnabled(set);
+    pl_ny->setEnabled(set);
     pl_dy->setEnabled(set);
 }
 

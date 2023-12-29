@@ -47,6 +47,10 @@
 #include <QMenu>
 
 
+//-----------------------------------------------------------------------------
+// QTmenu:  High-level menu containers and utilities.
+// Used in the main window and subwindows.
+
 namespace {
     // Instantiate the menus.
     QTmenu _qt_menu_;
@@ -77,8 +81,12 @@ QTmenu::InitSideButtonMenus()
 // Virtual function overrides.
 
 void
-QTmenu::SetSensGlobal(bool)
+QTmenu::SetSensGlobal(bool sens)
 {
+    mm_insensitive = !sens;
+    QTmenuConfig::self()->set_main_global_sens(mm_menus, sens);
+    if (sens)
+        QTpkg::self()->CheckForInterrupt();
 }
 
 

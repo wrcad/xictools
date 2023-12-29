@@ -55,10 +55,11 @@
 #include <QMimeData>
 
 
-//---------------------------------------------------------------------------
-// Pop-up interface for the following extraction commands:
-//  PNET, ENET, SOURC, EXSET
-//
+//-----------------------------------------------------------------------------
+// QTextCmdDlg:  Configurable dialog interface for the following
+// extraction commands: PNET, ENET, SOURC, EXSET.
+// These are called from the main menu: Extract/Dump Phys Netlist,
+// Extract/Dump Elec Netlist, Extract/Source SPICE, Extract/Source Physical.
 
 // Pop up/down the interface.  Only one pop-up can exist at a given time.
 // Args are:
@@ -258,7 +259,6 @@ QTextCmdDlg::QTextCmdDlg(GRobject c, sExtCmd *cmd,
         if (!cmd_excmd->button(i)->name())
             continue;
         cmd_bx[i] = new QCheckBox(tr(cmd_excmd->button(i)->name()));
-//        gtk_widget_set_name(button, cmd_excmd->button(i)->name());
 
         int col = cmd_excmd->button(i)->col();
         int row = cmd_excmd->button(i)->row();

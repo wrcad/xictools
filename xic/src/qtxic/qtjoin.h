@@ -47,6 +47,9 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTjoinDlg:  Dialog to control box/poly join/split operations.
+
 class QCheckBox;
 class QPushButton;
 class QLabel;

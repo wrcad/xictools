@@ -47,8 +47,9 @@
 #include <QLabel>
 #include <QPushButton>
 
+
 //-----------------------------------------------------------------------------
-// Progress Monitor Pop-Up.
+// QTasmPrgDlg:: Progress monitor dialog for the QTasmDlg.
 
 QTasmPrgDlg *QTasmPrgDlg::instPtr;
 

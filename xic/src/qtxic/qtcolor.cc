@@ -59,6 +59,10 @@
 #include <QPushButton>
 
 
+//-----------------------------------------------------------------------------
+// QTcolorDlg:  Dialog used to set colors for attributes and layers.
+// Called from main menu: Attributes/Set Color.
+
 #define CLR_CURLYR  -1
 
 // Menu function to display, update, or destroy the color popup.
@@ -297,7 +301,6 @@ QTcolorDlg::update_color()
     c_get_rgb(c_mode, &r, &g, &b);
     QColor rgb(r, g, b);
     c_clrd->setCurrentColor(rgb);
-//    set_sample_bg();
 }
 
 
@@ -410,10 +413,6 @@ QTcolorDlg::c_list_callback(const char *string, void*)
             return;
         if (QTcolorDlg::self()) {
             QColor rgb(r, g, b);
-            /*
-            gtk_color_selection_set_current_color(
-                GTK_COLOR_SELECTION(Clr->c_sel), &rgb);
-            */
             QTcolorDlg::c_set_rgb(r, g, b);
         }
     }

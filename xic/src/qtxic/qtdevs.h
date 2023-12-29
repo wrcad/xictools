@@ -48,11 +48,8 @@
 
 
 //-----------------------------------------------------------------------------
-// This implements a menu of devices from the device library, in three
-// styles.  The drop-down menu styles take less screen space and the
-// categories variation (vs.  alphabetic) is the default.  The
-// graphical palette might be more useful to beginners.
-//
+// QTdevMenuDlg::This implements a menu of devices from the device
+// library, in three styles.
 
 class QPushButton;
 class QToolButton;

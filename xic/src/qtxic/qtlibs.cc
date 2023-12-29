@@ -72,8 +72,9 @@
 #include <QHeaderView>
 
 
-//----------------------------------------------------------------------
-//  Libraries Popup
+//-----------------------------------------------------------------------------
+// QTlibsDlg:  Libraries Listing dialog.
+// Called from main menu: File/Libraries List.
 //
 // Help system keywords used:
 //  libspanel

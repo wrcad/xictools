@@ -47,6 +47,9 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTconvertInDlg: Dialog to set input parameters and read cell files.
+
 class QLabel;
 class QTabWidget;
 class QCheckBox;

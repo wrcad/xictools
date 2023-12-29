@@ -51,6 +51,10 @@
 #include "qtmenu.h"
 
 
+//-----------------------------------------------------------------------------
+// QTmergeDlg:  Controls whether newly read cells will overwrite
+// existing cells with the same name already in memory.
+
 class QLabel;
 class QCheckBox;
 

@@ -47,9 +47,9 @@
 #include <QDialog>
 
 
-//-------------------------------------------------------------------------
-// Node (Net) Name Mapping
-//
+//-----------------------------------------------------------------------------
+// QTnodeMapDlg::  Dialog which lists nodes in the current cell and
+// the associated net names, and allows the ned names to be defined.
 
 namespace ns_nodmp {
     struct NmpState;

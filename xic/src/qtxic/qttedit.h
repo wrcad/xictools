@@ -47,10 +47,8 @@
 #include <QDialog>
 
 
-//---------------------------------------------------------------------------
-// Pop-up interface for terminal/property editing.  This handles
-// electrical mode (SUBCT command).
-//
+//-----------------------------------------------------------------------------
+// QTelecTermEditDlg:  Dialog interface for terminal/property editing.
 
 class QLabel;
 class QSpinBox;

@@ -47,6 +47,9 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTpcellCtrlDlg:  Dialog to control PCell abutment and similar.
+
 class QComboBox;
 class QCheckBox;
 class QSpinBox;

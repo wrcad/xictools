@@ -59,8 +59,9 @@
 #include <QScrollBar>
 
 
-//--------------------------------------------------------------------------
-// Pop up to modify proerties of the current cell
+//-----------------------------------------------------------------------------
+// QTcellPrpDlg:  Dialog to modify proerties of the current cell.
+// Called from the main menu: Edit/Cell Properties.
 //
 // Help system keywords used:
 //  xic:cprop
@@ -92,8 +93,9 @@ cEdit::PopUpCellProperties(ShowMode mode)
 }
 // End of cEdit functions.
 
+
 // For possible future drag/drop support.  The definitions will need to
-// be added to the heqder file.
+// be added to the header file.
 //#define PRPC_DD
 
 QTcellPrpDlg::sAddEnt QTcellPrpDlg::pc_elec_addmenu[] = {
@@ -623,5 +625,4 @@ QTcellPrpDlg::font_changed_slot(int fnum)
         }
     }
 }
-// End of QTcellPrpDlg functions.
 

@@ -47,10 +47,9 @@
 #include <QDialog>
 
 
-//--------------------------------------------------------------------------
-//
-// Pop up to allow the user to select/deselect cell instances.
-//
+//-----------------------------------------------------------------------------
+// QTselInstSelectDlg:  Dialog to allow the user to select/deselect cell
+// instances.
 
 class QLabel;
 

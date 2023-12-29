@@ -47,6 +47,9 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTeditSetupDlg:  Dialog to set edit defaults.
+
 class QCheckBox;
 class QComboBox;
 class QSpinBox;

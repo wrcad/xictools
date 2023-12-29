@@ -47,9 +47,8 @@
 #include <QDialog>
 
 
-//
-// Panel for setting misc OA interface parameters.
-//
+//-----------------------------------------------------------------------------
+// QToaDefsDlg:  Panel for setting misc. OpenAccess interface parameters.
 
 class QLineEdit;
 class QCheckBox;

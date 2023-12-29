@@ -74,12 +74,6 @@
 
 #include <gdk/gdkkeysyms.h>
 
-bool
-cMain::MenuItemLocation(int, int*, int*)
-{
-    return (0);
-}
-
 
 //-----------------------------------------------------------------------------
 // Menu Configuration
@@ -995,7 +989,7 @@ GTKmenuConfig::instantiateEditMenu()
     check_separator(ent, submenu);
 
     ent = &mbox->menu[editMenuJoin];
-    item = miset(ent, "_Join\\/Split", 0);
+    item = miset(ent, "_Join and Split", 0);
     g_object_set_data(G_OBJECT(item), MIDX, voidptr editMenuJoin);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",

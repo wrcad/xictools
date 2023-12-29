@@ -491,11 +491,6 @@ namespace ginterf
             void*)                                      = 0;
             // Layer table manipulator for xdraw package.
 
-        virtual bool MenuItemLocation(int, int*,
-            int*)                                   = 0;
-            // Windows-only menu location function, returns top-right
-            // coordinate.
-
     private:
         static GRappCalls *instancePtr;
     };

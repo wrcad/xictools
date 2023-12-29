@@ -67,8 +67,9 @@
 #include <QHeaderView>
 
 
-//----------------------------------------------------------------------
-//  Geometry Digests Popup
+//-----------------------------------------------------------------------------
+// QTcgdListDlg::  Cell Geometry Digests list dialog.
+// Called from main menu: File/Geometry Digests. 
 //
 // Help system keywords used:
 //  xic:geom

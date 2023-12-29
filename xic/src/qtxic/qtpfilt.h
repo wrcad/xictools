@@ -48,9 +48,8 @@
 
 
 //-----------------------------------------------------------------------------
-// The Custom Property Filter Setup pop-up, called from the Compare
-// Layouts panel.
-//
+// QTcmpPrpFltDlg:  The Custom Property Filter Setup dialog, called
+// from the Compare Layouts dialog (QTcmpDlg).
 
 class QLineEdit;
 

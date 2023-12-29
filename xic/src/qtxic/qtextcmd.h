@@ -47,10 +47,9 @@
 #include <QDialog>
 
 
-//---------------------------------------------------------------------------
-// Pop-up interface for the following extraction commands:
-//  PNET, ENET, SOURC, EXSET
-//
+//-----------------------------------------------------------------------------
+// QTextCmdDlg:  Configurable dialog interface for the following
+// extraction commands: PNET, ENET, SOURC, EXSET.
 
 struct sExtCmd;
 class QComboBox;

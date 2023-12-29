@@ -57,8 +57,10 @@
 #include <QComboBox>
 
 
-//-------------------------------------------------------------------------
-// Pop-up to control stand-alone format conversions
+//-----------------------------------------------------------------------------
+// QTconvertFmfDlg:  Dialog to control stand-alone layout file format
+// conversions.
+// Called from main menu: Convert/Format Conversion.
 //
 // Help system keywords used:
 //  xic:convt
@@ -130,7 +132,6 @@ QTconvertFmtDlg::QTconvertFmtDlg(GRobject c, int inp_type,
 
     setWindowTitle(tr("File Format Conversion"));
     setAttribute(Qt::WA_DeleteOnClose);
-//    gtk_window_set_resizable(GTK_WINDOW(cv_popup), false);
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;

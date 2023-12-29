@@ -47,6 +47,9 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTcellPrpDlg:  Dialog to modify proerties of the current cell.
+
 class QAction;
 class QMouseEvent;
 class QMimeData;

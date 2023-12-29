@@ -69,15 +69,17 @@
 #include <QSpinBox>
 #include <QLineEdit>
 
-#ifdef __APPLE__
-#define USE_QTOOLBAR
-#endif
 
-//--------------------------------------------------------------------
-// Pop-up to control misc. extraction variables.
+//-----------------------------------------------------------------------------
+// QTextSetupDlg:  Dialog to control misc. extraction variables.
+// Called from main menu: Extract/Extraction Setup.
 //
 // Help system keywords used:
 //  xic:excfg
+
+#ifdef __APPLE__
+#define USE_QTOOLBAR
+#endif
 
 void
 cExt::PopUpExtSetup(GRobject caller, ShowMode mode)
@@ -176,13 +178,13 @@ QTextSetupDlg::QTextSetupDlg(GRobject c)
 
     setWindowTitle(tr("Extraction Setup"));
     setAttribute(Qt::WA_DeleteOnClose);
-//    gtk_window_set_resizable(GTK_WINDOW(es_popup), false);
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
+    vbox->setSizeConstraint(QLayout::SetFixedSize);
 
     QHBoxLayout *hbox = new QHBoxLayout();
     hbox->setContentsMargins(qm);

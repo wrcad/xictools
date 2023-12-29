@@ -47,6 +47,9 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTtreeDlg:  Tree Dialog, displays a cell hierarchy.
+
 class QTreeWidget;
 class QTreeWidgetItem;
 class QPushButton;

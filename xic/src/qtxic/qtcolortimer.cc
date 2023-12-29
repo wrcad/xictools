@@ -45,6 +45,7 @@
 #include "qtmain.h"
 
 
+//-----------------------------------------------------------------------------
 // The following functions periodically alter the colormap to implement
 // blinking layers and selection boundary.
 
@@ -88,7 +89,7 @@ encode(int r, int g, int b)
 void
 cMain::FixupColors(void *dp)
 {
-/*
+/*XXX X-specific fixme
     if (XM()->RunMode == ModeNormal)
         return;
     static enum { enc_none, enc_x, enc_triples } encoding;
@@ -181,8 +182,7 @@ namespace {
 
     // Idle function to redraw highlighting.
     //
-    int
-    idlefunc(void*)
+    int idlefunc(void*)
     {
         static int on;
         if (!QTpkg::self()->IsBusy()) {
@@ -222,8 +222,7 @@ namespace {
     // switches the colors of all flashing layers and the selection
     // boundary.
     //
-    int
-    colortimer(void*)
+    int colortimer(void*)
     {
         if (!idle_id)
             idle_id = QTpkg::self()->RegisterIdleProc(idlefunc, 0);

@@ -47,6 +47,9 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTcflagsDlg:  Dialog to set cell flags (immutable, library).
+
 class QLabel;
 
 struct QTcflagsDlg : public QDialog, public QTbag

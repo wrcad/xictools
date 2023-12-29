@@ -47,6 +47,9 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTlogoDlg:  Panel to control generation of physical text in layouts.
+
 class QRadioButton;
 class QCheckBox;
 class QComboBox;
@@ -84,6 +87,7 @@ private slots:
     void vector_btn_slot(bool);
     void manh_btn_slot(bool);
     void pretty_btn_slot(bool);
+    void help_btn_slot();
     void pixel_btn_slot(int);
     void value_changed_slot(double);
     void endstyle_change_slot(int);

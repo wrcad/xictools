@@ -48,10 +48,7 @@
 
 
 //-----------------------------------------------------------------------------
-// The Device Parameters pop-up.  This panel allows addition of
-// properties to library devices, and initiates saving the devices in
-// the device library file or a cell file.
-//
+// QTdeviceDlg:  The Device Parameters dialog.
 
 class QLineEdit;
 class QPushButton;

@@ -46,6 +46,9 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTprpEditorDlg:  Dialog to modify proerties of objects.
+
 class QPushButton;
 class QMenu;
 class QAction;

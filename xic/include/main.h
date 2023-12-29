@@ -353,7 +353,6 @@ public:
     // These are defined in the graphics package.
     bool DrawCallback(void*, GRdraw*, int, int, int, int, int, int);
     void *SetupLayers(void*, GRdraw*, void*);
-    bool MenuItemLocation(int, int*, int*);
 
     // hardcopy.cc
     void HCswitchMode(bool, bool, int);

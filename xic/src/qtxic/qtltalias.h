@@ -47,6 +47,9 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTlayerAliasDlg:  Layer Alias Table editor dialog.
+
 class QTreeWidget;
 class QTreeWidgetItem;
 class QPushButton;

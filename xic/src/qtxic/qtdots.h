@@ -47,6 +47,9 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTdotsDlg:  Dialog to control electrical connection point display.
+
 class QRadioButton;
 
 class QTdotsDlg : public QDialog

@@ -59,9 +59,10 @@
 
 
 //-----------------------------------------------------------------------------
-// The Device Parameters pop-up.  This panel allows addition of
-// properties to library devices, and initiates saving the devices in
-// the device library file or a cell file.
+// QTdeviceDlg:  The Device Parameters dialog.  This panel allows
+// addition of properties to library devices, and initiates saving the
+// devices in the device library file or a cell file.
+// Called from main menu Electrical mode: File/Save As Device.
 //
 // Help system keywords used:
 //  devedit

@@ -99,6 +99,7 @@ signals:
 private slots:
     void action_slot();
     void cancel_btn_slot();
+    void cancel_action_slot(bool);
 
 private:
     QLabel  *ed_label;

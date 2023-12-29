@@ -61,12 +61,13 @@
 #include <QDragEnterEvent>
 #include <QDropEvent>
 
+
 //-----------------------------------------------------------------------------
-// Fill pattern editing widget.
+// QTfillPatDlg:  Fill pattern editing dialog.
+// Called from main menu: Attributes/Set Fill.
 //
 // Help system keywords used:
 //  fillpanel
-
 
 // Menu callback for fill editor popup.
 //
@@ -154,7 +155,6 @@ QTfillPatDlg::QTfillPatDlg(GRobject c) : QTbag(this), QTdraw(XW_DRAWING)
 
     setWindowTitle(tr("Fill Pattern Editor"));
     setAttribute(Qt::WA_DeleteOnClose);
-//    gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);
 
     fp_width = 466;
     fp_height = 264;
@@ -175,6 +175,7 @@ QTfillPatDlg::QTfillPatDlg(GRobject c) : QTbag(this), QTdraw(XW_DRAWING)
     QVBoxLayout *top_vbox = new QVBoxLayout(this);
     top_vbox->setContentsMargins(qm);
     top_vbox->setSpacing(2);
+    top_vbox->setSizeConstraint(QLayout::SetFixedSize);
 
     // Leftcol + pixel editor + stores
     //

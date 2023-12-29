@@ -47,6 +47,10 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTcellsDlg::  Cells Listing Panels, lists cells in memory and provides
+// various modes and operations.
+
 class QLabel;
 class QPushButton;
 class QComboBox;

@@ -50,6 +50,10 @@
 #include <QPushButton>
 #include <QToolButton>
 
+//-----------------------------------------------------------------------------
+// QTexpandDlg:  Dialog to set the subcell expansion level used in a
+// drawing window.
+// Called from the main or subwindow menu: View/Expand.
 
 QTexpandDlg::QTexpandDlg(QTbag *owner, const char *string, bool nopeek,
     void *arg) : QDialog(owner ? owner->Shell() : 0)
@@ -85,6 +89,7 @@ QTexpandDlg::QTexpandDlg(QTbag *owner, const char *string, bool nopeek,
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
+    vbox->setSizeConstraint(QLayout::SetFixedSize);
 
     QHBoxLayout *hbox = new QHBoxLayout();
     vbox->addLayout(hbox);

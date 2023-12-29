@@ -50,8 +50,7 @@
 
 
 //-----------------------------------------------------------------------------
-// Pop-up to merge layout sources into a single file.
-//
+// QTasmDlg: Dialog to merge layout sources into a single file.
 
 enum ASMcode { ASM_INIT, ASM_INFO, ASM_READ, ASM_WRITE, ASM_CNAME };
 

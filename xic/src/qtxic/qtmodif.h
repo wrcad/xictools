@@ -47,6 +47,10 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTmodifDlg:  Dialog to question the user about saving modified
+// cells.
+
 class QLabel;
 class QMouseEvent;
 

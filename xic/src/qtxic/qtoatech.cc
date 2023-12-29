@@ -51,8 +51,11 @@
 #include <QLineEdit>
 
 
-//
-// Dialog for setting the tech attachment for an OA library.
+//-----------------------------------------------------------------------------
+// QToaTechAttachDlg:  Dialog for setting the tech attachment for an
+// OpenAccess library.
+// Called from the OpenAccess Libraries list (QTodLibsDlg) Tech
+// button.
 //
 // Help keyword:
 // xic:oatech

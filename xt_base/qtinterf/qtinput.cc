@@ -141,15 +141,27 @@ QTledDlg::register_caller(GRobject c, bool no_dsl, bool handle_popdn)
             if (o->isWidgetType()) {
                 QPushButton *btn = dynamic_cast<QPushButton*>(o);
                 if (btn) {
-                    connect(btn, SIGNAL(clicked()),
-                        this, SLOT(cancel_btn_slot()));
+                    if (btn->isCheckable()) {
+                        connect(btn, SIGNAL(toggled(bool)),
+                            this, SLOT(cancel_action_slot(bool)));
+                    }
+                    else {
+                        connect(btn, SIGNAL(clicked()),
+                            this, SLOT(cancel_btn_slot()));
+                    }
                 }
             }
             else {
                 QAction *a = dynamic_cast<QAction*>(o);
                 if (a) {
-                    connect(a, SIGNAL(triggered()),
-                        this, SLOT(cancel_btn_slot()));
+                    if (a->isCheckable()) {
+                        connect(a, SIGNAL(triggered(bool)),
+                            this, SLOT(cancel_action_slot(bool)));
+                    }
+                    else {
+                        connect(a, SIGNAL(triggered()),
+                            this, SLOT(cancel_btn_slot()));
+                    }
                 }
             }
         }
@@ -245,5 +257,13 @@ void
 QTledDlg::cancel_btn_slot()
 {
     delete this;
+}
+
+
+void
+QTledDlg::cancel_action_slot(bool state)
+{
+    if (!state)
+        delete this;
 }
 

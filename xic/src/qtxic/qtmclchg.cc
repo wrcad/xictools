@@ -52,12 +52,12 @@
 #include <QPushButton>
 
 
-//-------------------------------------------------------------------------
-// Pop-up to control the layer change option in move/copy.
+//-----------------------------------------------------------------------------
+// QTmclChangeDlg:  Dialog to control the layer change option in move/copy.
+// Called from main menu: Modify/Set Lyr Chg Mode.
 //
 // Help system keywords used:
 //  xic:mclcg
-
 
 void
 cEdit::PopUpLayerChangeMode(ShowMode mode)
@@ -98,13 +98,13 @@ QTmclChangeDlg::QTmclChangeDlg()
 
     setWindowTitle(tr("Layer Change Mode"));
     setAttribute(Qt::WA_DeleteOnClose);
-//    gtk_window_set_resizable(GTK_WINDOW(lcg_popup), false);
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setContentsMargins(qmtop);
     vbox->setSpacing(4);
+    vbox->setSizeConstraint(QLayout::SetFixedSize);
 
     QHBoxLayout *hbox = new QHBoxLayout();
     hbox->setContentsMargins(qm);
@@ -144,6 +144,7 @@ QTmclChangeDlg::QTmclChangeDlg()
         this, SLOT(all_btn_slot(bool)));
 
     btn = new QPushButton(tr("Dismiss"));
+    vbox->addSpacing(4);
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 

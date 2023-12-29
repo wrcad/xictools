@@ -64,7 +64,7 @@
 
 
 //-----------------------------------------------------------------------------
-// Memory Monitor pop-up
+// Memory Monitor dialog.
 //
 
 namespace {

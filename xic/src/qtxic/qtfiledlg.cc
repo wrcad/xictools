@@ -45,16 +45,19 @@
 #include "miscutil/pathlist.h"
 
 
-// Save File Dialog - pop up a selectable directory tree, use the prompt
-// line for text input.
-//
-class QTsaveFileDlg
+//-----------------------------------------------------------------------------
+// QTpromptFileDlg:  display file selector variations for use with the
+// prompt line when opening and saving files.  Also a cMain function
+// to display the generic file selector.
+// Called from main menu: File/File Select, File/Open/new, File/Save As.
+
+class QTpromptFileDlg
 {
 public:
-    QTsaveFileDlg()
+    QTpromptFileDlg()
     {
-        sfd_fsel = 0;
-        sfd_dir_only = false;
+        pfd_fsel = 0;
+        pfd_dir_only = false;
     }
 
     char *SaveFileDlg(const char*, const char*);
@@ -65,11 +68,11 @@ private:
     static void path_set(const char*);
     static void go_cb(const char*, void*);
 
-    QTfileDlg *sfd_fsel;
-    bool sfd_dir_only;
+    QTfileDlg *pfd_fsel;
+    bool pfd_dir_only;
 };
 
-namespace { QTsaveFileDlg SFD; }
+namespace { QTpromptFileDlg pfd; }
 
 
 // Open a save-file selection window.
@@ -80,7 +83,7 @@ cMain::SaveFileDlg(const char *prompt, const char *fnamein)
     if (!QTdev::exists())
         return (0);
     xm_htext_cnames_only = true;
-    char *ret = SFD.SaveFileDlg(prompt, fnamein);
+    char *ret = pfd.SaveFileDlg(prompt, fnamein);
     xm_htext_cnames_only = false;
     return (ret);
 }
@@ -94,7 +97,7 @@ cMain::OpenFileDlg(const char *prompt, const char *fnamein)
     if (!QTdev::exists())
         return (0);
     xm_htext_cnames_only = true;
-    char *ret = SFD.OpenFileDlg(prompt, fnamein);
+    char *ret = pfd.OpenFileDlg(prompt, fnamein);
     xm_htext_cnames_only = false;
     return (ret);
 }
@@ -133,24 +136,24 @@ cMain::PopUpFileSel(const char *root, void(*cb)(const char*, void*), void *arg)
 // directory path
 //
 char *
-QTsaveFileDlg::SaveFileDlg(const char *prompt, const char *fnamein)
+QTpromptFileDlg::SaveFileDlg(const char *prompt, const char *fnamein)
 {
-    if (sfd_fsel)
+    if (pfd_fsel)
         return (0);
     if (!QTmainwin::exists())
         return (0);
-    sfd_dir_only = true;
+    pfd_dir_only = true;
     char *fname = pathlist::expand_path(fnamein, true, true);
     if (fname)
-        sfd_dir_only = false;
+        pfd_dir_only = false;
 
     QTfileDlg *fs = new QTfileDlg(QTmainwin::self(), fsSAVE, 0, fname);
     fs->set_transient_for(QTmainwin::self());
     fs->register_callback(go_cb);
     fs->register_get_callback(path_get);
     fs->register_set_callback(path_set);
-    sfd_fsel = fs;
-    fs->register_usrptr((void**)&sfd_fsel);
+    pfd_fsel = fs;
+    fs->register_usrptr((void**)&pfd_fsel);
 
     QTdev::self()->SetPopupLocation(GRloc(LW_LL), fs,
         QTmainwin::self()->Viewport());
@@ -158,9 +161,9 @@ QTsaveFileDlg::SaveFileDlg(const char *prompt, const char *fnamein)
 
     char *in = PL()->EditPrompt(prompt, fname);
     pathlist::path_canon(in);
-    if (sfd_fsel) {
-        sfd_fsel->popdown();
-        sfd_fsel = 0;
+    if (pfd_fsel) {
+        pfd_fsel->popdown();
+        pfd_fsel = 0;
     }
     delete [] fname;
     return (in);
@@ -171,32 +174,30 @@ QTsaveFileDlg::SaveFileDlg(const char *prompt, const char *fnamein)
 // string from the hypertext editor.
 //
 char *
-QTsaveFileDlg::OpenFileDlg(const char *prompt, const char *fnamein)
+QTpromptFileDlg::OpenFileDlg(const char *prompt, const char *fnamein)
 {
-    if (sfd_fsel)
+    if (pfd_fsel)
         return (0);
     if (!QTmainwin::exists())
         return (0);
     char *fname = pathlist::expand_path(fnamein, true, true);
-    /*XXX
 
     QTfileDlg *fs = new QTfileDlg(QTmainwin::self(), fsOPEN, 0, fname);
     fs->set_transient_for(QTmainwin::self());
     fs->register_callback(go_cb);
     fs->register_set_callback(path_set);
-    sfd_fsel = fs;
-    fs->register_usrptr((void**)&sfd_fsel);
+    pfd_fsel = fs;
+    fs->register_usrptr((void**)&pfd_fsel);
 
     QTdev::self()->SetPopupLocation(GRloc(LW_LL), fs,
         QTmainwin::self()->Viewport());
     fs->show();
-    */
 
     char *in = PL()->EditPrompt(prompt, fname);
     pathlist::path_canon(in);
-    if (sfd_fsel) {
-        sfd_fsel->popdown();
-        sfd_fsel = 0;
+    if (pfd_fsel) {
+        pfd_fsel->popdown();
+        pfd_fsel = 0;
     }
     delete [] fname;
     return (in);
@@ -205,9 +206,9 @@ QTsaveFileDlg::OpenFileDlg(const char *prompt, const char *fnamein)
 
 // Static function.
 char *
-QTsaveFileDlg::path_get()
+QTpromptFileDlg::path_get()
 {
-    if (SFD.sfd_dir_only)
+    if (pfd.pfd_dir_only)
         return (0);
     hyList *hp = PL()->List();
     if (!hp)
@@ -224,11 +225,11 @@ QTsaveFileDlg::path_get()
 
 // Static function.
 void
-QTsaveFileDlg::path_set(const char *path)
+QTpromptFileDlg::path_set(const char *path)
 {
     if (!path)
     {
-        SFD.sfd_fsel = 0;
+        pfd.pfd_fsel = 0;
     }
     else {
         // quote if white space
@@ -251,11 +252,11 @@ QTsaveFileDlg::path_set(const char *path)
 
 // Static function.
 void
-QTsaveFileDlg::go_cb(const char*, void*)
+QTpromptFileDlg::go_cb(const char*, void*)
 {
     // Simulate a Return press
     XM()->SendKeyEvent(0, Qt::Key_Return, 0, false);
     XM()->SendKeyEvent(0, Qt::Key_Return, 0, true);
 }
-// End of QTsaveFileDlg functions.
+// End of QTpromptFileDlg functions.
 

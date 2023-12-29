@@ -47,6 +47,10 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTgridDlg:  The Grid Setup panel, used to control the grid in each
+// drawing window.
+
 class QAction;
 class QGroupBox;
 class QLabel;

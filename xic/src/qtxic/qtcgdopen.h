@@ -47,6 +47,9 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTcgdOpenDlg:  Dialog to creatte cell geometry digests (CGDs).
+
 class QLineEdit;
 class QPushButton;
 class QTabWidget;

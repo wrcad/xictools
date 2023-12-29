@@ -46,6 +46,10 @@
 
 #include <QDialog>
 
+
+//-----------------------------------------------------------------------------
+// QTchdSaveDlg: Dialog to save a cell hierarchy digest (CHD) file.
+
 class QLabel;
 class QLineEdit;
 class QCheckBox;

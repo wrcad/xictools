@@ -47,24 +47,22 @@
 #include <QDialog>
 
 
-//------------------------------------------------------------------------
-// DRC Limits Pop-Up
-//
-// This provides entry fields for the various limit parameters and
-// the error recording level.
+//-----------------------------------------------------------------------------
+// QTdrcSetupDlg:  DRC Setup dialog, provides entry fields for the
+// various limit parameters and the error recording level.
 
 class QCheckBox;
 class QLineEdit;
 class QRadioButton;
 class QSpinBox;
 
-class QTdrcLimitsDlg : public QDialog
+class QTdrcSetupDlg : public QDialog
 {
     Q_OBJECT
 
 public:
-    QTdrcLimitsDlg(GRobject);
-    ~QTdrcLimitsDlg();
+    QTdrcSetupDlg(GRobject);
+    ~QTdrcSetupDlg();
 
     void update();
 
@@ -78,7 +76,7 @@ public:
             setWindowFlags(f);
         }
 
-    static QTdrcLimitsDlg *self()           { return (instPtr); }
+    static QTdrcSetupDlg *self()            { return (instPtr); }
 
 private slots:
     void help_btn_slot();
@@ -115,7 +113,7 @@ private:
     QSpinBox    *dl_sb_imax_time;
     QSpinBox    *dl_sb_imax_errs;
 
-    static QTdrcLimitsDlg *instPtr;
+    static QTdrcSetupDlg *instPtr;
 };
 
 #endif

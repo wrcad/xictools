@@ -66,7 +66,8 @@
 
 
 //-----------------------------------------------------------------------------
-// Pop-up to control FasterCap/FastCap-WR interface
+// QTfastCapDlg:  Dialog to control FasterCap/FastCap-WR interface.
+// Called from main menu: Extract/Extract C.
 //
 // Help system keywords used:
 //  fcpanel

@@ -51,13 +51,13 @@
 #include <QCheckBox>
 #include <QGroupBox>
 
+
 //-----------------------------------------------------------------------------
-//  Pop-up for the Zoom command
+// QTzoomDlg:  Dialog for the Zoom command.
+// Called from the main menu: View/Zoom.
 //
 // Help system keywords used:
 //  xic:zoom
-
-
 
 QTzoomDlg::QTzoomDlg(QTbag *owner, WindowDesc *w)
 {

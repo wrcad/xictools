@@ -55,6 +55,9 @@
 #include <QMimeData>
 
 
+//-----------------------------------------------------------------------------
+// QTasmPage:  Tab pages used in the QTasmDlg.
+
 class QTasmPagePathEdit : public QLineEdit
 {
 public:
@@ -415,7 +418,6 @@ QTasmPage::font_changed_slot(int fnum)
         QFont *fnt;
         if (FC.getFont(&fnt, FNT_PROP))
             pg_toplevels->setFont(*fnt);
-//XXX need to redraw?
     }
 }
 

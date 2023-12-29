@@ -66,10 +66,10 @@
 #include <QMouseEvent>
 
 
-//------------------------------------------------------------------------
-// DRC Run dialog.
-//
-// Allowe initiation and control of batch DRC runs.
+//-----------------------------------------------------------------------------
+// QTdrcRunDlg:  DRC Run dialog, allows initiation and control of
+// batch DRC runs.
+// Called from main menu: DRC/Batch Check.
 //
 // Help system keywords used:
 //  xic:check
@@ -168,7 +168,6 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
 
     setWindowTitle(tr("DRC Run Control"));
     setAttribute(Qt::WA_DeleteOnClose);
-//    gtk_window_set_resizable(GTK_WINDOW(dc_popup), false);
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;
@@ -229,6 +228,7 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
     connect(dc_use, SIGNAL(toggled(bool)), this, SLOT(use_btn_slot(bool)));
 
     dc_chdname = new QLineEdit();
+    hb->addSpacing(8);
     hb->addWidget(dc_chdname);
     connect(dc_chdname, SIGNAL(textChanged(const QString&)),
         this, SLOT(chd_name_slot(const QString&)));
@@ -282,10 +282,17 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
     connect(dc_flat, SIGNAL(stateChanged(int)),
         this, SLOT(flat_btn_slot(int)));
 
+    hb = new QHBoxLayout();
+    grid->addLayout(hb, 0, 3);
+    hb->setContentsMargins(qm);
+    hb->setSpacing(2);
+
     dc_set = new QPushButton(tr("Set"));
-    grid->addWidget(dc_set, 0, 3);
+    hb->addSpacing(20);
+    hb->addWidget(dc_set);
     dc_set->setCheckable(true);
     dc_set->setAutoDefault(false);
+    dc_set->setMaximumWidth(60);
     connect(dc_set, SIGNAL(toggled(bool)), this, SLOT(set_btn_slot(bool)));
 
     // Window LBRT

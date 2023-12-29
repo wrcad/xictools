@@ -45,11 +45,15 @@
 #include "qtmain.h"
 #include <QDialog>
 
+
+//-----------------------------------------------------------------------------
+// QTexpandDlg:  Dialog to set the subcell expansion level used in a
+// drawing window.
+
 class QLabel;
 class QLineEdit;
 class QPushButton;
 class QToolButton;
-
 
 class QTexpandDlg : public QDialog, public GRpopup
 {

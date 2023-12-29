@@ -47,6 +47,9 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTdisplayWinDlg:  Dialog for the CHD Display command.
+
 class QPushButton;
 namespace qtinterf {
     class QTdoubleSpinBox;

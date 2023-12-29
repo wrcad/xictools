@@ -51,11 +51,10 @@
 #include <QApplication>
 
 
-//
-// Functions for keyboard mapping and macros
-//
+//-----------------------------------------------------------------------------
+// Definitions for keyboard mapping and macros.
 
-//  Mapping for key-down
+//  Mapping for key-down.
 //
 static keymap kmap_dn[] = {
     { Qt::Key_Return,       RETURN_KEY,     0 },
@@ -98,7 +97,7 @@ static keymap kmap_dn[] = {
     { 0,                    NO_KEY,         0 }
 };
 
-//  Mapping for key-up
+//  Mapping for key-up.
 //
 static keymap kmap_up[] = {
     { Qt::Key_Shift,        SHIFTUP_KEY,    0 },
@@ -106,7 +105,7 @@ static keymap kmap_up[] = {
     { 0,                    NO_KEY,         0 }
 };
 
-// Actions done before passing the keypress to the current command
+// Actions done before passing the keypress to the current command.
 //
 static keyaction actions_pre[] = {
     { ESCAPE_KEY,  0,                               Escape_action },
@@ -123,7 +122,7 @@ static keyaction actions_pre[] = {
     { 0,           0,                               No_action }
 };
 
-// Actions performed if keypress was not handled by current command
+// Actions performed if keypress was not handled by current command.
 //
 static keyaction actions_post[] = {
     { BSP_KEY,     0,                               Bsp_action },
@@ -221,9 +220,9 @@ cKsMap::StringToKeyval(const char *string)
 }
 
 
-/*========================================================================
-  Keyboard Mapping
- ========================================================================*/
+//
+//  Keyboard Mapping.
+//
 
 void
 cKsMap::init()

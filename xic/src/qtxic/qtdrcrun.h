@@ -47,11 +47,9 @@
 #include <QDialog>
 
 
-//------------------------------------------------------------------------
-// DRC Run dialog.
-//
-// Allowe initiation and control of batch DRC runs.
-//
+//-----------------------------------------------------------------------------
+// QTdrcRunDlg:  DRC Run dialog, allows initiation and control of
+// batch DRC runs.
 
 class QPushButon;
 class QLineEdit;

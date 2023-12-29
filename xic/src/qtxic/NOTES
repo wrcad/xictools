@@ -1,9 +1,14 @@
 XXXXXXX
 GTK issues:
-command-arrows don't change rotation angle. (Apple)
+command-arrows don't change rotation angle. (Apple) FIXES
 
 Place panel, can't bring back text popup if deleted.
+Known problem, no signal available for this case from combo button.
 XXXXXXX
+!!!  Modified cells pop-up is unresponsive!!!
+No tooltips from main menu.
+Added a Help button to logo panel.
+XXX How to avoid white pushbuttons?
 
 Issues:
 1.  How to implement "tranisent-for" behavior in pop-up windows.  That is,
@@ -24,7 +29,7 @@ elsewhere?
 Regular double spin box has a way for user to set step size.
 There is an exponential spin box presently.
 TODO
-Allow the user to sert step size in exponential spin box.
+Allow the user to set step size in exponential spin box.
 
 4.  Button defaulting.  button state indication.  FIXED, all of the
 buttons other than Apply/Dismiss have auto default turned off.
@@ -66,6 +71,12 @@ qtmenucfg.cc
 
 11.  intercept the window close signal in editor windows if save needed.
 DONE
+
+Modal dialogs:
+qtmerge.cc
+qtmodif.cc
+qtpcprms.cc
+qtselinst.cc
 
 These use QDrag, may need update
 qtauxtab.cc     OK
@@ -167,7 +178,7 @@ qtprpedit.cc
 qtprpinfo.cc
 qtselinst.cc
 
-MonitorGeom was used in this (replaced)
+MonitorGeom was used in these (replaced)
 qtcgdopen.cc
 qtchdcfg.cc
 qtchdopen.cc
@@ -179,107 +190,3 @@ qtoatech.cc
 qtptedit.cc
 qttedit.cc
 
-
-Conversion Status
------------------
-1. unconverted code, unimplemented features, problems
-2. fairly clean but something needs work
-3. all code looks clean
-4. all functionality checked, working
-
-qtasm.cc        1
-qtasmpage.cc    1
-qtasmprg.cc     1
-qtasmtf.cc      1
-qtattri.cc      3
-qtauxtab.cc     3
-qtcells.cc      3
-qtcfilt.cc
-qtcflags.cc     3
-qtcgdlist.cc
-qtcgdopen.cc
-qtchdcfg.cc
-qtchdlist.cc
-qtchdopen.cc
-qtchdsave.cc
-qtcmp.cc
-qtcnmap.cc
-qtcolor.cc
-qtcolortimer.cc
-qtcoord.cc
-qtcv.cc
-qtcvin.cc
-qtcvofmt.cc
-qtcvout.cc
-qtdbgflg.cc
-qtdebug.cc      2
-qtdevedit.cc
-qtdevs.cc
-qtdots.cc
-qtdrcedit.cc    3
-qtdrclim.cc
-qtdrcrun.cc     3
-qtdspwin.cc
-qtedset.cc
-qtempty.cc      3
-qtexpand.cc
-qtextcmd.cc
-qtextdev.cc
-qtextfc.cc      2
-qtextfh.cc      3
-qtextsel.cc
-qtextset.cc
-qtfiledlg.cc
-qtfiles.cc      2
-qtfillp.cc
-qtflatten.cc
-qtgrid.cc
-qthtext.cc
-qtjoin.cc
-qtkeymacro.cc
-qtkeymap.cc
-qtlexp.cc
-qtlibs.cc
-qtllist.cc
-qtlogo.cc
-qtlpal.cc
-qtlpedit.cc     3
-qtltab.cc
-qtltalias.cc
-qtltedit.cc
-qtmain.cc
-qtmclchg.cc
-qtmem.cc
-qtmenu.cc
-qtmenucfg.cc
-qtmerge.cc
-qtmodif.cc      3
-qtnodmp.cc
-qtoadefs.cc
-qtoalibs.cc
-qtoasis.cc
-qtoatech.cc
-qtparam.cc
-qtpcctrl.cc
-qtpcprms.cc
-qtpfilt.cc
-qtplace.cc      3
-qtprpbase.cc
-qtprpcedit.cc   2
-qtprpedit.cc    3
-qtprpinfo.cc    3
-qtptedit.cc
-qtrule.cc
-qtsel.cc
-qtselinst.cc    3
-qtsim.cc
-qtspif.cc
-qtstab.cc
-qttech.cc
-qttedit.cc
-qttree.cc
-qtvia.cc
-qtwndc.cc
-qtxdraw.cc
-qtxform.cc
-qtzoom.cc

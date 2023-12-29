@@ -55,9 +55,10 @@
 #include <QMimeData>
 
 
-//--------------------------------------------------------------------------
-// Pop up to view object properties
-//
+//-----------------------------------------------------------------------------
+// QTprpInfoDlg:  Dialog to view object properties.
+// Called when the Property Editor (QTprpEditorDlg) is active and the user
+// clicks on an object.  This allows copy/paste of properties.
 
 // Static function.
 QTprpBase *

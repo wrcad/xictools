@@ -57,7 +57,9 @@
 
 
 //-----------------------------------------------------------------------------
-// Pop-up to manage Override Cell Table
+// QTauxTabDlg:  Dialog to manage Override Cell Table.
+// Called from the Edit Cell Table pushbutton in the Cell Hierarchy Digests
+// list panel (QTchdListDlg).
 //
 // Help system keywords used:
 //  xic:overtab

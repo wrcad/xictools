@@ -63,8 +63,9 @@
 #include <QMimeData>
 
 
-//----------------------------------------------------------------------
-//  Tree Popup
+//-----------------------------------------------------------------------------
+// QTtreeDlg:  Tree Dialog, displays a cell hierarchy.
+// Called from the main menu: Cell/Show Tree.
 //
 // Help system keywords used:
 //  xic:tree
@@ -149,7 +150,7 @@ QTmainwin::tree_panic()
 {
     QTtreeDlg::set_panic();
 }
-// Wnd of QTmainwin functions.
+// End of QTmainwin functions.
 
 
 // Pop up a window displaying a tree diagram of the hierarchy of the
@@ -323,13 +324,6 @@ QTtreeDlg::QTtreeDlg(GRobject c, const char *root, TreeUpdMode dmode)
         hbox->addWidget(btn);
     }
 
-/*
-    if (t_caller) {
-        g_signal_connect(G_OBJECT(t_caller), "toggled",
-            G_CALLBACK(t_cancel), 0);
-    }
-*/
-
     update(0, 0, dmode);
 }
 
@@ -379,8 +373,6 @@ QTtreeDlg::update(const char *root, const char *oldroot, TreeUpdMode dmode)
         QTdev::Select(t_caller);
     delete [] t_selection;
     t_selection = 0;
-//    if (Tree->t_curnode)
-//        gtk_tree_path_free(Tree->t_curnode);
     t_curnode = 0;
 
     if (dmode == TU_PHYS)
@@ -470,12 +462,6 @@ QTtreeDlg::build_tree(CDs *sdesc)
     t_ucount = 0;
     t_udel = (1 << 10) - 1;
     t_mdepth = 0;
-
-    /*
-    GtkTreeStore *store =
-        GTK_TREE_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(t_tree)));
-    gtk_tree_store_clear(store);
-    */
     t_tree->clear();
 
     bool ret = build_tree_rc(sdesc, 0, 0);
@@ -487,11 +473,6 @@ QTtreeDlg::build_tree(CDs *sdesc)
         else
             strcpy(buf, "Aborted, content incomplete.");
         t_info->setText(buf);
-/*
-        GtkTreePath *p = gtk_tree_path_new_from_indices(0, -1);
-        gtk_tree_view_expand_row(GTK_TREE_VIEW(t_tree), p, false);
-        gtk_tree_path_free(p);
-*/
     }
     QTpkg::self()->SetWorking(false);
 }
@@ -506,12 +487,6 @@ QTtreeDlg::build_tree(cCHD *chd, symref_t *p)
     t_ucount = 0;
     t_udel = (1 << 10) - 1;
     t_mdepth = 0;
-
-    /*
-    GtkTreeStore *store =
-        GTK_TREE_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(t_tree)));
-    gtk_tree_store_clear(store);
-    */
     t_tree->clear();
 
     bool ret = build_tree_rc(chd, p, 0, 0);
@@ -547,13 +522,6 @@ QTtreeDlg::build_tree_rc(CDs *sdesc, QTreeWidgetItem *prnt, int dpt)
     if (!sdesc || !instPtr)
         return (false);
 
-/*
-    GtkTreeStore *store =
-        GTK_TREE_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(t_tree)));
-    GtkTreeIter iter;
-    gtk_tree_store_append(store, &iter, prnt);
-    gtk_tree_store_set(store, &iter, 0, Tstring(sdesc->cellname()), -1);
-*/
     QTreeWidgetItem *item = new QTreeWidgetItem(prnt);
     item->setText(0, Tstring(sdesc->cellname()));
     if (!prnt)
@@ -626,13 +594,6 @@ QTtreeDlg::build_tree_rc(cCHD *chd, symref_t *p, QTreeWidgetItem *prnt, int dpt)
     if (!p || !instPtr)
         return (false);
 
-    /*
-    GtkTreeStore *store =
-        GTK_TREE_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(t_tree)));
-    GtkTreeIter iter;
-    gtk_tree_store_append(store, &iter, prnt);
-    gtk_tree_store_set(store, &iter, 0, Tstring(p->get_name()), -1);
-    */
     QTreeWidgetItem *item = new QTreeWidgetItem(prnt);
     item->setText(0, Tstring(p->get_name()));
     if (!prnt)

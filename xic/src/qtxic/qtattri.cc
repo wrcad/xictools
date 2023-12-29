@@ -53,8 +53,10 @@
 #include <QBitmap>
 
 
-//--------------------------------------------------------------------
-// Pop-up to control cursor modes and other window attributes.
+//-----------------------------------------------------------------------------
+// QTattributesDlg:  Dialog to control cursor modes and other window
+// attributes.
+// Called from main menu: Attributes/Set Attributes.
 //
 // Help system keywords used:
 //  xic:attr
@@ -288,13 +290,15 @@ QTattributesDlg::QTattributesDlg(GRobject c)
 
     setWindowTitle(tr("Window Attributes"));
     setAttribute(Qt::WA_DeleteOnClose);
-//    gtk_window_set_resizable(GTK_WINDOW(at_popup), false);
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
+
+    // Fixed size window.
+    vbox->setSizeConstraint(QLayout::SetFixedSize);
 
     QHBoxLayout *hbox = new QHBoxLayout();
     hbox->setContentsMargins(qm);

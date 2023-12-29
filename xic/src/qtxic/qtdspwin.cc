@@ -49,8 +49,8 @@
 
 
 //-----------------------------------------------------------------------------
-//  Pop-up for the CHD Display command
-//
+// QTdisplayWinDlg:  Dialog for the CHD Display command.
+// Called from the Cell Hierarchies listing dialog (QTchdListDlg).
 
 void
 cConvert::PopUpDisplayWindow(GRobject caller, ShowMode mode, const BBox *BB,
@@ -98,13 +98,13 @@ QTdisplayWinDlg::QTdisplayWinDlg(GRobject caller, const BBox *BB,
 
     setWindowTitle(tr("Set Display Window"));
     setAttribute(Qt::WA_DeleteOnClose);
-//    gtk_window_set_resizable(GTK_WINDOW(dw_popup), false);
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
+    vbox->setSizeConstraint(QLayout::SetFixedSize);
 
     // label in frame
     //

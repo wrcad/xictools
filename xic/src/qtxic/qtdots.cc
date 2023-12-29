@@ -48,8 +48,9 @@
 #include <QPushButton>
 
 
-//-------------------------------------------------------------------------
-// Pop-up to control electrical connection point display.
+//-----------------------------------------------------------------------------
+// QTdotsDlg:  Dialog to control electrical connection point display.
+// Called from main menu: Attributes/Connection Dots.
 
 void
 cSced::PopUpDots(GRobject caller, ShowMode mode)
@@ -90,12 +91,12 @@ QTdotsDlg::QTdotsDlg(GRobject caller)
 
     setWindowTitle(tr("Connection Points"));
     setAttribute(Qt::WA_DeleteOnClose);
-//    gtk_window_set_resizable(GTK_WINDOW(dt_popup), false);
 
     QMargins qmtop(2, 2, 2, 2);
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
+    vbox->setSizeConstraint(QLayout::SetFixedSize);
 
     dt_none = new QRadioButton(tr("Don't show dots"));
     vbox->addWidget(dt_none);

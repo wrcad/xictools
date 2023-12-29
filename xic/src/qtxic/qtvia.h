@@ -47,9 +47,8 @@
 #include <QDialog>
 
 
-//--------------------------------------------------------------------
-// Dialog to create a standard via.
-//
+//-----------------------------------------------------------------------------
+// QTstdViaDlg:  Dialog to create a standard via.
 
 class QComboBox;
 class QLineEdit;

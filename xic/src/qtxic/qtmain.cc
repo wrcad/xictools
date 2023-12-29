@@ -857,6 +857,33 @@ cMain::SetLowerWinOffset(int)
 //-----------------------------------------------------------------------------
 // QTeventMonitor functions
 
+namespace {
+    bool handle_event(const QObject *obj)
+    {
+        if (!obj)
+            return (false);
+        const QObject *w = QTmenu::self()->GetModal();
+        if (!w)
+            return (false);
+        // Here, obj can be two things.
+        // 1.  An object with no parent that has a name derived from
+        // the source top-level widget name, either
+        // "QTmainwinClassWindow" or similar for the modal window". 
+        // Accept the event if it is not from the main window.
+        // 2.  An object whose parent is a pointer to the modal
+        // widget.  Accept these.
+
+        if (!obj->parent()) {
+            QString str = obj->objectName();
+            if (str.isNull() || str == "QTmainwinClassWindow")
+                return (false);
+            return (true);
+        }
+        return (obj->parent() == w);
+    }
+}
+
+
 bool
 QTeventMonitor::eventFilter(QObject *obj, QEvent *ev)
 {
@@ -886,6 +913,11 @@ QTeventMonitor::eventFilter(QObject *obj, QEvent *ev)
                 QTpkg::self()->PopUpBusy();
             return (true);
         }
+        if (QTmenu::self()->IsGlobalInsensitive()) {
+            if (handle_event(obj))
+                return (QObject::eventFilter(obj, ev));
+            return (true);
+        }
     }
     else if (ev->type() == QEvent::KeyRelease) {
         log_event(obj, ev);
@@ -911,14 +943,8 @@ QTeventMonitor::eventFilter(QObject *obj, QEvent *ev)
             return (true);
         }
         if (QTmenu::self()->IsGlobalInsensitive()) {
-            if (dynamic_cast<QTcanvas*>(obj))
-                return (true);
-            QObject *top = obj;
-            while (top->parent())
-                top = top->parent();
-            if (top != QTmainwin::self() &&
-                    top != QTmenu::self()->GetModal())
-                return (true);
+            if (handle_event(obj))
+                return (QObject::eventFilter(obj, ev));
         }
     }
     else if (ev->type() == QEvent::MouseButtonRelease) {
@@ -941,19 +967,17 @@ QTeventMonitor::eventFilter(QObject *obj, QEvent *ev)
             return (true);
         }
         if (QTmenu::self()->IsGlobalInsensitive()) {
-            if (dynamic_cast<QTcanvas*>(obj))
-                return (true);
-            QObject *top = obj;
-            while (top->parent())
-                top = top->parent();
-            if (top != QTmainwin::self() &&
-                    top != QTmenu::self()->GetModal())
-                return (true);
+            if (handle_event(obj))
+                return (QObject::eventFilter(obj, ev));
         }
     }
     else if (ev->type() == QEvent::MouseButtonDblClick) {
         if (QTpkg::self()->IsBusy())
             return (true);
+        if (QTmenu::self()->IsGlobalInsensitive()) {
+            if (handle_event(obj))
+                return (QObject::eventFilter(obj, ev));
+        }
     }
     return (QObject::eventFilter(obj, ev));
 }

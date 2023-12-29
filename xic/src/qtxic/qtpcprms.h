@@ -49,9 +49,9 @@
 #include <QHash>
 
 
-//-------------------------------------------------------------------------
-// Pop-up to edit a perhaps long list of parameters, probably for a
-// pcell.
+//-----------------------------------------------------------------------------
+// QTpcellParamsDlg:  Dialog to edit a perhaps long list of parameters
+// for a PCell.
 
 class QLabel;
 class QScrollArea;

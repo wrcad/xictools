@@ -50,12 +50,13 @@
 #include <QCheckBox>
 
 
-//--------------------------------------------------------------------
-// Layer Alias Table Editor pop-up
+//-----------------------------------------------------------------------------
+// QTlayerAliasDlg:  Layer Alias Table editor dialog.
+// Called from the QTlayerList composite, used in Convert/Format
+// Conversion and elsewhere.
 //
 // Help system keywords used:
 //  layerchange
-
 
 void
 cMain::PopUpLayerAliases(GRobject caller, ShowMode mode)

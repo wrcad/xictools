@@ -45,6 +45,9 @@
 #include "qtinterf/qtinterf.h"
 
 
+//-----------------------------------------------------------------------------
+// QTparam:  Parameter/status display area of the main window.
+
 class QTmainwin;
 class QTparam;
 class QMouseEvent;

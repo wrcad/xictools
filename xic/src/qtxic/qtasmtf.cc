@@ -50,7 +50,7 @@
 
 
 //-----------------------------------------------------------------------------
-// The QTasmTf (instance transform entry) class.
+// QTasmTf: Instance transform entry class for the QTasmDlg.
 
 QTasmTf::QTasmTf(QTasmPage *src)
 {

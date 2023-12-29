@@ -54,6 +54,9 @@
 #include <QAction>
 
 
+//-----------------------------------------------------------------------------
+// QTconvOutFmt;  Widget to specify an output file format.
+
 #define FMT_MAX_ID 5
 
 int QTconvOutFmt::fmt_gds_inp = 0;

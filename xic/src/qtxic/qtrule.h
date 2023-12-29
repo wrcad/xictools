@@ -48,9 +48,8 @@
 #include <QDialog>
 
 
-//--------------------------------------------------------------------
-// Pop-up to control DRC input parameters
-//
+//-----------------------------------------------------------------------------
+// QTruleDlg:  Dialog to edit design rule input parameters.
 
 class QLabel;
 class QLineEdit;

@@ -61,7 +61,8 @@
 
 
 //-----------------------------------------------------------------------------
-// Pop up to obtain CHD creation info.
+// QTchdOpenDlg:  Dialog to create a cell hierarchy digest (CHD).
+// Called from the Cell Hierarchy Digests list dialog (QRchdListDlg).
 //
 // Help system keywords used:
 //  xic:chdadd
@@ -204,9 +205,6 @@ QTchdOpenDlg::QTchdOpenDlg(GRobject caller,
     hbox->addWidget(btn);
     btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
-
-    // This allows user to change label text.
-//    g_object_set_data(G_OBJECT(wb_shell), "label", label);
 
     co_nbook = new QTabWidget();
     vbox->addWidget(co_nbook);

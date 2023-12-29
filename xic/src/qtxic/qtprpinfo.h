@@ -46,6 +46,9 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTprpInfoDlg:  Dialog to view object properties.
+
 class QMimeData;
 
 class QTprpInfoDlg : public QDialog, public QTprpBase

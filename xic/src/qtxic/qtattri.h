@@ -47,9 +47,9 @@
 #include <QDialog>
 
 
-//--------------------------------------------------------------------
-// Pop-up to control cursor modes and other window attributes.
-//
+//-----------------------------------------------------------------------------
+// QTattributesDlg:  Dialog to control cursor modes and other window
+// attributes.
 
 class QWidget;
 class QSpinBox;

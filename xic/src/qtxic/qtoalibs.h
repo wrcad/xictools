@@ -47,9 +47,8 @@
 #include <QDialog>
 
 
-//----------------------------------------------------------------------
-//  OpenAccess Libraries Popup
-//
+//-----------------------------------------------------------------------------
+// QToaLibsDlg:  OpenAccess Libraries List dialog.
 
 class QPushButton;
 class QRadioButton;

@@ -60,8 +60,9 @@
 #include <QMimeData>
 
 
-//--------------------------------------------------------------------------
-// Pop up to modify proerties of objects
+//-----------------------------------------------------------------------------
+// QTprpEditorDlg:  Dialog to modify proerties of objects.
+// Called from the main menu: Edit/Properties.
 //
 // Help system keywords used:
 //  prppanel

@@ -48,9 +48,9 @@
 #include <QDialog>
 
 
-//---------------------------------------------------------------------------
-// Pop-up interface for terminal/property editing.  This handles
-// physical mode (TEDIT command).
+//-----------------------------------------------------------------------------
+// QTphysTermDlg:  Dialog interface for terminal/property editing.  This
+// handles physical mode (TEDIT command).
 
 class QLabel;
 class QGroupBox;

@@ -47,6 +47,9 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTdbgFlagsDlg:  Dialog to control program logging and debugging flags.
+
 class QCheckBox;
 class QLineEdit;
 

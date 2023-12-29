@@ -61,9 +61,11 @@
 #include <QMimeData>
 
 
+// QTedit:  The QT-specific prompt line functions, used in the main
+// window.
+//
 // Help keywords:
 //  promptline
-//
 
 hyList *QTedit::pe_stores[PE_NUMSTORES];
 

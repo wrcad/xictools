@@ -48,8 +48,9 @@
 
 
 //-----------------------------------------------------------------------------
-// Popup for monitoring asynchronous simulation runs
-//
+// QTsimRunDlg:  Dialog for monitoring asynchronous SPICE simulation runs.
+// Appears when a SPICE run is started with the run button in the side
+// menu.
 
 void
 cSced::PopUpSim(SpType status)
@@ -71,13 +72,13 @@ QTsimRunDlg::QTsimRunDlg(const char *msg)
 
     setWindowTitle(tr("SPICE Run"));
     setAttribute(Qt::WA_DeleteOnClose);
-//    gtk_window_set_resizable(GTK_WINDOW(popup), false);
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
+    vbox->setSizeConstraint(QLayout::SetFixedSize);
     
     QGroupBox *gb = new QGroupBox();
     vbox->addWidget(gb);

@@ -53,8 +53,9 @@
 #include <QComboBox>
 
 
-//--------------------------------------------------------------------
-// Pop-up to set edit defaults.
+//-----------------------------------------------------------------------------
+// QTeditSetupDlg:  Dialog to set edit defaults.
+// Called from main menu: Edit/Editing Setup.
 //
 // Help system keywords used:
 //  xic:edset
@@ -125,6 +126,7 @@ QTeditSetupDlg::QTeditSetupDlg(GRobject c)
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
+    vbox->setSizeConstraint(QLayout::SetFixedSize);
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
     hbox->setContentsMargins(qm);
@@ -177,6 +179,7 @@ QTeditSetupDlg::QTeditSetupDlg(GRobject c)
     ed_crcovr = new QCheckBox(tr(
         "Allow Create Cell to overwrite existing cell"));
     vbox->addWidget(ed_crcovr);
+    vbox->addSpacing(10);
     connect(ed_crcovr, SIGNAL(stateChanged(int)),
         this, SLOT(crcovr_btn_slot(int)));
 

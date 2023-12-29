@@ -47,6 +47,9 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTauxTabDlg:  Dialog to manage Override Cell Table.
+
 class QPushButton;
 class QRadioButton;
 class QResizeEvent;

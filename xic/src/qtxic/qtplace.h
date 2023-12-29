@@ -49,6 +49,9 @@
 #include <QDialog>
 
 
+//-----------------------------------------------------------------------------
+// QTplaceDlg:  Dialog for managing the placing of subcells.
+
 class QLabel;
 class QPushButton;
 class QComboBox;
@@ -120,10 +123,8 @@ private:
     QPushButton *pl_smashbtn;
     QComboBox   *pl_refmenu;
 
-    QLabel      *pl_label_nx;
-    QLabel      *pl_label_ny;
-    QLabel      *pl_label_dx;
-    QLabel      *pl_label_dy;
+    QLabel      *pl_label_nxdx;
+    QLabel      *pl_label_nydy;
 
     QComboBox   *pl_masterbtn;
     QPushButton *pl_placebtn;

@@ -47,9 +47,9 @@
 #include <QDialog>
 
 
-//
-// Dialog for setting the tech attachment for an OA library.
-//
+//-----------------------------------------------------------------------------
+// QToaTechAttachDlg:  Dialog for setting the tech attachment for an
+// OpenAccess library.
 
 class QLabel;
 class QPushButton;

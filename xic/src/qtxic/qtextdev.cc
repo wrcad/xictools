@@ -55,8 +55,9 @@
 #include <QCheckBox>
 
 
-//-------------------------------------------------------------------------
-// Dialog to control device highlighting and selection
+//-----------------------------------------------------------------------------
+// QTextDevDlg:  Dialog to control device highlighting and selection.
+// Called from the main menu: Extract/Device Selections.
 //
 // Help system keywords used:
 //  xic:dvsel
@@ -114,7 +115,6 @@ QTextDevDlg::QTextDevDlg(GRobject caller)
 
     setWindowTitle(tr("Show/Select Devices"));
     setAttribute(Qt::WA_DeleteOnClose);
-//    gtk_window_set_resizable(GTK_WINDOW(ed_popup), false);
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;

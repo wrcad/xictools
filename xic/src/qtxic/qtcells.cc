@@ -69,12 +69,14 @@
 #include <QDrag>
 
 
-//----------------------------------------------------------------------
-//  Cells Listing Panel
+//-----------------------------------------------------------------------------
+// QTcellsDlg::  Cells Listing Panels, lists cells in memory and provides
+// various modes and operations.
+// Called from the main menu: Cell/Cells List.
+// 
 //
 // Help system keywords used:
 //  cellspanel
-
 
 // Static function.
 //
@@ -129,22 +131,20 @@ namespace {
     //
     struct ListState : public CmdState
     {
-        ListState(const char *nm, const char *hk) : CmdState(nm, hk)
-        {
-            lsAOI = CDinfiniteBB;
-        }
+        ListState(const char *nm, const char *hk) : CmdState(nm, hk),
+            lsAOI(CDinfiniteBB) { }
         virtual ~ListState();
 
         static void show_search(bool);
         char *label_text();
         stringlist *cell_list(bool);
 
-        void b1down() { cEventHdlr::sel_b1down(); }
+        void b1down()   { cEventHdlr::sel_b1down(); }
         void b1up();
         void esc();
-        void undo() { cEventHdlr::sel_undo(); }
-        void redo() { cEventHdlr::sel_redo(); }
-        void message() { PL()->ShowPrompt(info_msg); }
+        void undo()     { cEventHdlr::sel_undo(); }
+        void redo()     { cEventHdlr::sel_redo(); }
+        void message()  { PL()->ShowPrompt(info_msg); }
 
     private:
         BBox lsAOI;

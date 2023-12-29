@@ -45,6 +45,9 @@
 #include "qtmain.h"
 
 
+//-----------------------------------------------------------------------------
+// QTxformDlg:  Dialog for setting the current transform.
+
 class QCheckBox;
 class QComboBox;
 class QPushButton;

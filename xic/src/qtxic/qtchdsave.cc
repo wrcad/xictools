@@ -55,7 +55,8 @@
 
 
 //-----------------------------------------------------------------------------
-// Pop up to save CHD file.
+// QTchdSaveDlg: Dialog to save a cell hierarchy digest (CHD) file.
+// Called from the Cell Hierarchy Digests list dialog (QTchdListDlg).
 //
 // Help system keywords used:
 //  xic:chdsav

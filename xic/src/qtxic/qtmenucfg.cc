@@ -72,21 +72,16 @@
 #include <QToolBar>
 #include <QMenu>
 #include <QLayout>
+#include <QHelpEvent>
+#include <QToolTip>
 
 #include "bitmaps/style_e.xpm"
 #include "bitmaps/style_f.xpm"
 #include "bitmaps/style_r.xpm"
 
 
-bool
-cMain::MenuItemLocation(int, int*, int*)
-{
-    return (0);
-}
-
-
 //-----------------------------------------------------------------------------
-// Menu Configuration
+// QTmenuConfig:  Menu Configuration.
 //
 // Help system keywords used:
 //  xic:xxx  (xxx is command code)
@@ -103,6 +98,30 @@ namespace {
     // Instantiate
     QTmenuConfig _cfg_;
 }
+
+
+//XXX
+// This is supposed to allow tool tips to work in main menu, does not
+// work on Apple, check others (only installed for File menu now).
+class QTttMenu : public QMenu
+{
+public:
+    QTttMenu( QWidget *prnt = 0) : QMenu(prnt) {};
+
+    bool event(QEvent* e) {
+        if (e->type() == QEvent::ToolTip) {
+            QHelpEvent* he = dynamic_cast<QHelpEvent*>(e);
+            QAction* act = actionAt(he->pos());
+            if (act) {
+                QToolTip::showText(he->globalPos(), act->toolTip(), this);
+                return true;
+            }
+        }
+        else if (e->type() == QEvent::Paint && QToolTip::isVisible())
+            QToolTip::hideText();
+        return (QMenu::event(e));
+    }
+};
 
 
 QTmenuConfig *QTmenuConfig::instancePtr = 0;
@@ -165,8 +184,9 @@ QTmenuConfig::instantiateMainMenus()
     // File memu
     MenuBox *mbox = MainMenu()->FindMainMenu("file");
     if (mbox && mbox->menu) {
-        QMenu *file_menu = new QMenu(main_win);
+        QMenu *file_menu = new QTttMenu(main_win);
         file_menu->setTitle(tr(mbox->name));
+        file_menu->setToolTipsVisible(true);
         menubar->addMenu(file_menu);
 
         set(mbox->menu[fileMenu], "&File", 0);
@@ -221,6 +241,7 @@ QTmenuConfig::instantiateMainMenus()
     if (mbox && mbox->menu) {
         QMenu *cell_menu = new QMenu(main_win);
         cell_menu->setTitle(tr(mbox->name));
+        cell_menu->setToolTipsVisible(true);
         menubar->addMenu(cell_menu);
 
         set(mbox->menu[cellMenu], "&Cel", 0);
@@ -257,7 +278,8 @@ QTmenuConfig::instantiateMainMenus()
     if (mbox && mbox->menu) {
         QMenu *edit_menu = new QMenu(main_win);
         edit_menu->setTitle(tr(mbox->name));
-        QAction *ae = menubar->addMenu(edit_menu);
+        edit_menu->setToolTipsVisible(true);
+        menubar->addMenu(edit_menu);
 
         set(mbox->menu[editMenu], "&Edit", 0);
         set(mbox->menu[editMenuCedit], "&Enable Editing", 0);
@@ -266,7 +288,7 @@ QTmenuConfig::instantiateMainMenus()
         set(mbox->menu[editMenuCrcel], "Cre&ate Cell", 0);
         set(mbox->menu[editMenuCrvia], "Create &Via", 0);
         set(mbox->menu[editMenuFlatn], "&Flatten", 0);
-        set(mbox->menu[editMenuJoin], "&Join/Split", 0);
+        set(mbox->menu[editMenuJoin], "&Join and Split", 0);
         set(mbox->menu[editMenuLexpr], "&Layer Expression", 0);
         set(mbox->menu[editMenuPrpty], "Propert&ies", "Alt+P");
         set(mbox->menu[editMenuCprop], "&Cell Properties", 0);
@@ -298,6 +320,7 @@ QTmenuConfig::instantiateMainMenus()
     if (mbox && mbox->menu) {
         QMenu *modf_menu = new QMenu(main_win);
         modf_menu->setTitle(tr(mbox->name));
+        modf_menu->setToolTipsVisible(true);
         menubar->addMenu(modf_menu);
 
         set(mbox->menu[modfMenu], "&Modify", 0);
@@ -338,6 +361,7 @@ QTmenuConfig::instantiateMainMenus()
     if (mbox && mbox->menu) {
         QMenu *view_menu = new QMenu(main_win);
         view_menu->setTitle(tr(mbox->name));
+        view_menu->setToolTipsVisible(true);
         menubar->addMenu(view_menu);
 
         set(mbox->menu[viewMenu], "&View", 0);
@@ -395,6 +419,7 @@ QTmenuConfig::instantiateMainMenus()
     if (mbox && mbox->menu) {
         QMenu *attr_menu = new QMenu(main_win);
         attr_menu->setTitle(tr(mbox->name));
+        attr_menu->setToolTipsVisible(true);
         menubar->addMenu(attr_menu);
 
         set(mbox->menu[attrMenu], "&Attributes", 0);
@@ -535,6 +560,7 @@ QTmenuConfig::instantiateMainMenus()
     if (mbox && mbox->menu) {
         QMenu *cvrt_menu = new QMenu(main_win);
         cvrt_menu->setTitle(tr(mbox->name));
+        cvrt_menu->setToolTipsVisible(true);
         menubar->addMenu(cvrt_menu);
 
         set(mbox->menu[cvrtMenu], "C&onvert", 0);
@@ -573,6 +599,7 @@ QTmenuConfig::instantiateMainMenus()
     if (mbox && mbox->menu) {
         QMenu *drc_menu = new QMenu(main_win);
         drc_menu->setTitle(tr(mbox->name));
+        drc_menu->setToolTipsVisible(true);
         menubar->addMenu(drc_menu);
 
         set(mbox->menu[drcMenu], "&DRC", 0);
@@ -617,6 +644,7 @@ QTmenuConfig::instantiateMainMenus()
     if (mbox && mbox->menu) {
         QMenu *ext_menu = new QMenu(main_win);
         ext_menu->setTitle(tr(mbox->name));
+        ext_menu->setToolTipsVisible(true);
         menubar->addMenu(ext_menu);
 
         set(mbox->menu[extMenu], "E&xtract", 0);
@@ -658,6 +686,7 @@ QTmenuConfig::instantiateMainMenus()
     if (mbox && mbox->menu) {
         QMenu *user_menu = new QMenu(main_win);
         user_menu->setTitle(tr(mbox->name));
+        user_menu->setToolTipsVisible(true);
         menubar->addMenu(user_menu);
 
         set(mbox->menu[userMenu], "&User", 0);
@@ -692,6 +721,7 @@ QTmenuConfig::instantiateMainMenus()
         menubar->addSeparator();
         QMenu *help_menu = new QMenu(main_win);
         help_menu->setTitle(tr(mbox->name));
+        help_menu->setToolTipsVisible(true);
         menubar->addMenu(help_menu);
 
         set(mbox->menu[helpMenu], "&Help", 0);
@@ -1302,7 +1332,7 @@ QTmenuConfig::switch_menu_mode(DisplayMode mode, int wnum)
 void
 QTmenuConfig::set_main_global_sens(const MenuList *list, bool sens)
 {
-    // When busy, virtually all c0mmands are locked out. However, we let
+    // When busy, virtually all commands are locked out. However, we let
     // pass any that are completely benign.
     //
     // The View/Allocation button qualifies, are there others?

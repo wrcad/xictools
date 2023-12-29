@@ -74,6 +74,10 @@
 #include <QLabel>
 #include <QHeaderView>
 
+//-----------------------------------------------------------------------------
+// QTnodeMapDlg::  Dialog which lists nodes in the current cell and
+// the associated net names, and allows the ned names to be defined.
+// Called from the Electrical side menu nodmp button.
 
 namespace {
     // Some utilities for GtkTreeView.

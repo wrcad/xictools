@@ -69,7 +69,7 @@ public:
     // (see source code).  We implement our own decimals for
     // significant figs display.
 
-    int decimals() const        const { return (d_decimals); }
+    int decimals()              const { return (d_decimals); }
     void setDecimals(int d)     { d_decimals = d; }
 
     // Virtual overrides.
