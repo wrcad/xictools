@@ -99,6 +99,7 @@ enum
     PromptBackgroundColor,
     PromptEditBackgColor,
     PromptEditFocusBackgColor,
+    PromptSelectionBackgColor,
 
     Color2,
     Color3,

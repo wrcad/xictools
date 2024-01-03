@@ -96,6 +96,7 @@ signals:
 private slots:
     void action_slot();
     void dismiss_btn_slot();
+    void cancel_action_slot(bool);
 
 private:
     QTextEdit   *nu_label;

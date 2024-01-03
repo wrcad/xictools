@@ -95,6 +95,10 @@ signals:
 private slots:
     void affirm_btn_slot();
     void cancel_btn_slot();
+    void cancel_action_slot(bool);
+
+private:
+    bool af_affirmed;
 };
 
 #endif

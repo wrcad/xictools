@@ -290,16 +290,14 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c) : QTbag(this)
     a = db_filemenu->addAction(tr("Paste from Clipboard"));
     a->setData(3);
     a->setShortcut(QKeySequence("Ctrl+V"));
-/*XXX use me or rid me
 #ifdef QT_OS_LINUX
     // Paste Primary, <alt>P, db_paste_prim_proc, 0, 0
     a = db_editmenu->addAction(tr("Paste Primary"));
     a->setData(4);
     a->setShortcut(QKeySequence("Alt+P"));
+#endif
     connect(db_editmenu, SIGNAL(triggered(QAction*)),
         this, SLOT(edit_menu_slot(QAction*)));
-#endif
-*/
 
     // Execute menu.
 #ifdef USE_QTOOLBAR

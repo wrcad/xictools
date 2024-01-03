@@ -819,14 +819,15 @@ cPromptEdit::cPromptEdit()
 }
 
 
+#define YPOS ((win_height() + pe_fnthei)/2 - 2)
+
 void
 cPromptEdit::init()
 {
     init_window();
     TextExtent(0, &pe_fntwid, &pe_fnthei);
     pe_xpos = 2;
-//    pe_ypos = pe_fnthei + 2;
-    pe_ypos = (win_height() + pe_fnthei)/2;
+    pe_ypos = YPOS;
     Update();
 }
 
@@ -1692,7 +1693,7 @@ cPromptEdit::draw_text(bool draw, int ncols, bool use_pm)
 {
     if (pe_disabled)
         return;
-    pe_ypos = (win_height() + pe_fnthei)/2;
+    pe_ypos = YPOS;
     int realcol = 0, i;
     for (i = 0; i < pe_column; i++) {
         if (pe_buf.element(i)->type() == HLrefEnd)
@@ -1749,21 +1750,18 @@ again:
                 int xw = numchars(lstr.string());
                 if (draw) {
                     if (pe_active == hyOFF && pe_sel_end > pe_sel_start) {
-                        // Display selected text as inverse color.
+                        // Display selected text.
                         char tb[8];
                         for (int j = 0; j < xw; j++) {
                             if (nthchar(lstr.string(), tb, j)) {
                                 if (j + realcol >= pe_sel_start &&
                                         j + realcol < pe_sel_end) {
-                                    SetColor(bg_pixel() ^ -1);
-                                    Box(xpos, pe_ypos, xpos + pe_fntwid, 2);
-                                    SetColor(bg_pixel());
-                                    Text(tb, xpos, pe_ypos, 0);
+                                    SetColor(DSP()->Color(
+                                        PromptSelectionBackgColor));
+                                    Box(xpos, pe_ypos+2, xpos + pe_fntwid, 0);
                                 }
-                                else {
-                                    SetColor(fgpix);
-                                    Text(tb, xpos, pe_ypos, 0);
-                                }
+                                SetColor(fgpix);
+                                Text(tb, xpos, pe_ypos, 0);
                             }
                             xpos += pe_fntwid;
                         }
@@ -1842,7 +1840,7 @@ cPromptEdit::draw_cursor(bool draw)
 {
     if (pe_disabled)
         return;
-    pe_ypos = (win_height() + pe_fnthei)/2;
+    pe_ypos = YPOS;
     int realcol = 0;
     bool at_end = false;
     for (int i = 0; i < pe_column; i++) {
@@ -1872,7 +1870,7 @@ cPromptEdit::draw_cursor(bool draw)
             pe_cwid = numchars(pe_buf.element(i)->string());
     }
     int x = pe_xpos + realcol * pe_fntwid;
-    int y = pe_ypos + 1;
+    int y = pe_ypos + 2;
     int w = pe_cwid * pe_fntwid;
 
     if (x + pe_offset < 2) {
@@ -2771,8 +2769,8 @@ cPromptEdit::button_release_handler(int btn, int x, int)
     if (btn != 1)
         return;
 
-//    if (pe_has_drag && !pe_dragged)
-//        select_word(pe_drag_x);
+    if (pe_has_drag && !pe_dragged)
+        select_word(pe_drag_x);
     pe_has_drag = false;
 
     if (!pe_dragged) {
@@ -2878,6 +2876,43 @@ cPromptEdit::select(int x1, int x2)
     set_col_min(0);
     DSPmainDraw(Update())
     init_selection(true);
+}
+
+
+// Select the word at pixel coord x.
+//
+void
+cPromptEdit::select_word(int xx)
+{
+    if (pe_active != hyOFF)
+        return;
+    if (!pe_fntwid)
+        return;
+    deselect();
+    int start = (xx - pe_xpos)/pe_fntwid;
+    if (start >= pe_buf.endcol())
+        return;
+    if (spacechar(pe_buf.element(start)->chr()))
+        return;
+    int end = start;
+    while (start > 0) {
+        if (spacechar(pe_buf.element(start-1)->chr()))
+            break;
+        start--;
+    }
+    pe_sel_start = start;
+    while (end < pe_buf.endcol()) {
+        if (spacechar(pe_buf.element(end+1)->chr()))
+            break;
+        end++;
+    }
+    pe_sel_end = end+1;
+    set_col_min(-1); // Force text in prompt edit color.
+    draw_text(DISPLAY, TOEND, true);
+    set_col_min(0);
+    DSPmainDraw(Update())
+    init_selection(true);
+    pe_dragged = true;
 }
 
 

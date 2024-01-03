@@ -501,7 +501,7 @@ public:
     // gtkflatten.cc
     void PopUpFlatten(GRobject, ShowMode,
         bool(*)(const char*, bool, const char*, void*),
-        void*, int = 0, bool = false);
+        void*, int = 0, bool = false, bool = false);
 
     // gtkjoin.cc
     void PopUpJoin(GRobject, ShowMode);

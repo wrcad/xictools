@@ -5,10 +5,12 @@ command-arrows don't change rotation angle. (Apple) FIXES
 Place panel, can't bring back text popup if deleted.
 Known problem, no signal available for this case from combo button.
 XXXXXXX
-!!!  Modified cells pop-up is unresponsive!!!
-No tooltips from main menu.
+No tooltips from main menu in Apple.
 Added a Help button to logo panel.
-XXX How to avoid white pushbuttons?
+XXX How to avoid white pushbuttons in Apple?
+new: if XIC_NO_MAC_MENU is set, the main window will nave a local menu.
+The Files List now takes Ctrl-C as copy (prepends the path).
+Make sure that Busy mode/cursor works.
 
 Issues:
 1.  How to implement "tranisent-for" behavior in pop-up windows.  That is,
@@ -99,7 +101,7 @@ qtchdsave.cc:  OK hasUrls() text/twostring text/plain
 qtcmp.cc       OK hasUrls() text/twostring text/plain
 qtextcmd.cc    OK hasUrls() text/twostring text/plain
 qtfiles.cc     OK hasUrls() text/twostring text/plain, source text/plain
-qtfillp.cc:    OK QTltab::mime_type() (source and drip site)
+qtfillp.cc:    OK QTltab::mime_type() (source and drop site)
 qthtext.cc:    OK (promptline drop)
     hasUrls() text/property text/twostring text/cellname text/string text/plain
 qtlpal.cc:     OK QTltab::mime_type() hasColor()
@@ -107,6 +109,8 @@ qtltab.cc:     OK QTltab::mime_type() hasColor()
 qtmain.cc:     OK (drawing win drop)
     hasUrls() text/property text/twostring text/cellname text/string text/plain
 qtplace.cc:    OK hasUrls() text/twostring text/cellname text/string text/plain
+
+TODO: promptline Ctrl-V.
 
 // FIX THIS STUFF
 qtdebug.cc   selections

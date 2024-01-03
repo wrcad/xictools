@@ -107,7 +107,6 @@ cEdit::PopUpPolytextFont(GRobject, ShowMode mode)
 
 
 // Static function.
-// XXX FIXME: handle multi lines, justification
 // Associated text extent function, returns the size of the text field and
 // the number of lines.
 //
@@ -115,32 +114,58 @@ void
 cEdit::polytextExtent(const char *string, int *widp, int *heip, int *numlines)
 {
     if (XM()->RunMode() != ModeNormal || !QTmainwin::self()) {
-        *widp = 0;
-        *heip = 0;
-        *numlines = 1;
+        if (widp)
+            *widp = 0;
+        if (heip)
+            *heip = 0;
+        if (numlines)
+            *numlines = 1;
         return;
     }
     const char *fname = QTlogoDlg::font(true);
     QFont *font = QTfont::self()->new_font(fname, false);
     QFontMetrics fm(*font);
+    int lineht = fm.height();
+
     if (!string)
         string = "X";
-    QRect r = fm.boundingRect(string);
-    *widp = r.width();
-    *heip = r.height();
-
     int nl = 1;
-    for (const char *s = string; *s; s++) {
-        if (*s == '\n' && *(s+1))
-            nl++;
+    int txtwid = 0;
+    char *buf = lstring::copy(string);
+    const char *curstr = buf;
+    for (char *s = buf; ; s++) {
+        if (*s == '\n' || *s == 0) {
+            bool done = !*s;
+            if (!done) {
+                if (*(s+1))
+                    nl++;
+                *s = 0;
+            }
+#if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
+            int lw = fm.horizontalAdvance(curstr);
+#else
+            int lw = fm.width(curstr);
+#endif
+            if (lw > txtwid)
+                txtwid = lw;
+            if (!done)
+                curstr = s+1;
+            else
+                break;
+        }
     }
-    *numlines = nl;
+    delete [] buf;
+    if (widp)
+        *widp = txtwid;
+    if (heip)
+        *heip = nl*lineht;
+    if (numlines)
+        *numlines = nl;
     delete font;
 }
 
 
 // Static function.
-// XXX FIXME: handle multi lines, justification
 // Return a polygon list for rendering the string.  Argument psz is
 // the "pixel" size, x and y the position.
 //
@@ -154,12 +179,14 @@ cEdit::polytext(const char *string, int psz, int x, int y)
     if (!QTmainwin::self())
         return (0);
 
+    int wid, hei, nl;
+    polytextExtent(string, &wid, &hei, &nl);
+
     const char *fname = QTlogoDlg::font(true);
     QFont *font = QTfont::self()->new_font(fname, false);
     QFontMetrics fm(*font);
-    QRect br = fm.boundingRect(string);
 
-    QImage im(br.width()+4, br.height()+4, QImage::Format_RGB32);
+    QImage im(wid + 4, hei + 4, QImage::Format_RGB32);
     QPainter p(&im);
     p.setFont(*font);
     QBrush brush(QColor("white"));
@@ -167,21 +194,58 @@ cEdit::polytext(const char *string, int psz, int x, int y)
     QPen pen(QColor("black"));
     p.setPen(pen);
     p.setBrush(QBrush("white"));
-    p.drawRect(-1, -1, br.width()+2, br.height()+2);
-    p.drawText(0, -br.y(), string);
+    p.drawRect(-1, -1, wid + 2, hei + 2);
+
+    char *buf = lstring::copy(string);
+    const char *curstr = buf;
+    int lhei = hei/nl;
+    int lc = 1;
+    for (char *s = buf; ; s++) {
+        if (*s == '\n' || *s == 0) {
+            bool done = !*s;
+            if (!done)
+                *s = 0;
+            int tx = 2;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
+            int lw = fm.horizontalAdvance(curstr);
+#else
+            int lw = fm.width(curstr);
+#endif
+            switch (ED()->horzJustify()) {
+            case 1:
+                tx += (wid - lw)/2;
+                break;
+            case 2:
+                tx += wid - lw;
+                break;
+            }
+            int ty = -2 + lc*lhei;
+            p.drawText(tx, ty, curstr);
+
+            if (!done) {
+                lc++;
+                curstr = s+1;
+                if (!*curstr)
+                    break;
+            }
+            else
+                break;
+        }
+    }
+    delete [] buf;
     p.end();
 
     Zlist *z0 = 0;
-    for (int i = 0; i < br.height()-1; i++) {
-        for (int j = 0; j < br.width()-1;  j++) {
+    for (int i = 0; i < hei - 1; i++) {
+        for (int j = 0; j < wid - 1;  j++) {
             unsigned int px = im.pixel(j, i);
             // Many fonts are anti-aliased, the code below does a
             // semi-reasonable job of filtering the pixels.
             int r, g, b;
             QTdev::self()->RGBofPixel(px, &r, &g, &b);
             if (r + g + b <= 512) {
-                Zoid Z(x + j*psz, x + (j+1)*psz, y + (br.height()-i-1)*psz,
-                    x + j*psz, x + (j+1)*psz, y + (br.height()-i)*psz);
+                Zoid Z(x + j*psz, x + (j+1)*psz, y + (lhei - i - 1)*psz,
+                    x + j*psz, x + (j+1)*psz, y + (lhei - i)*psz);
                 z0 = new Zlist(&Z, z0);
             }
         }

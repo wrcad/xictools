@@ -67,7 +67,7 @@
 void
 cEdit::PopUpFlatten(GRobject caller, ShowMode mode,
     bool (*callback)(const char*, bool, const char*, void*),
-    void *arg, int depth, bool fmode)
+    void *arg, int depth, bool fmode, bool merge)
 {
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
@@ -83,7 +83,7 @@ cEdit::PopUpFlatten(GRobject caller, ShowMode mode,
     if (QTflattenDlg::self())
         return;
 
-    new QTflattenDlg(caller, callback, arg, depth, fmode);
+    new QTflattenDlg(caller, callback, arg, depth, fmode, merge);
 
     QTflattenDlg::self()->set_transient_for(QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(), QTflattenDlg::self(),
@@ -97,7 +97,7 @@ QTflattenDlg *QTflattenDlg::instPtr;
 
 QTflattenDlg::QTflattenDlg(
     GRobject c, bool(*callback)(const char*, bool, const char*, void*),
-    void *arg, int dep, bool fmode)
+    void *arg, int dep, bool fmode, bool merge)
 {
     instPtr = this;
     fl_caller = c;
@@ -195,6 +195,7 @@ QTflattenDlg::QTflattenDlg(
 
     fl_merge = new QCheckBox(tr("Use object merging when flattening"));
     vbox->addWidget(fl_merge);
+    QTdev::SetStatus(fl_merge, merge);
     connect(fl_merge, SIGNAL(stateChanged(int)),
         this, SLOT(merge_btn_slot(int)));
 

@@ -87,7 +87,7 @@ enum XIC_WINDOW_CLASS
 
 #define GS_NBTNS 8
 
-typedef bool(*EventHandlerFunc)(QObject*, QEvent*);
+typedef bool(*EventHandlerFunc)(QObject*, QEvent*, void*);
 
 class QTeventMonitor : public QObject
 {
@@ -199,7 +199,7 @@ public:
             }
         }
 
-    EventHandlerFunc set_event_handler(EventHandlerFunc func)
+    EventHandlerFunc set_event_handler(EventHandlerFunc func, void*)
         {
             EventHandlerFunc f = em_event_handler;
             em_event_handler = func;
@@ -272,8 +272,8 @@ public:
     void SetWaitCursor(bool);
 
     QTeventMonitor *EventMonitor()      { return (&pkg_event_monitor); }
-    void RegisterEventHandler(EventHandlerFunc f)
-                                { pkg_event_monitor.set_event_handler(f); }
+    void RegisterEventHandler(EventHandlerFunc f, void *a)
+                                { pkg_event_monitor.set_event_handler(f, a); }
     bool NotMapped()                    { return (pkg_not_mapped); }
 
 private:
@@ -534,17 +534,17 @@ namespace qt_keyb {
     //
     struct wlist
     {
-        wlist(const QObject *o, wlist *n) : obj(o), next(n) { }
+        wlist(QObject *o, wlist *n) : obj(o), next(n) { }
 
-        const QObject *obj;
+        QObject *obj;
         wlist *next;
     };
 
-    void macro_event_handler(QObject*, QEvent*, void*);
-    const QObject *find_wname(const QObject*, const char**);
+    bool macro_event_handler(QObject*, QEvent*, void*);
+    char *find_wname(const QObject*);
     char *object_path(const QObject*);
     wlist *find_object(const QObject*, const char*);
-    const QObject *name_to_object(const char*);
+    QObject *name_to_object(const char*);
 }
 
 #endif

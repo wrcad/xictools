@@ -72,8 +72,6 @@
 #include <QToolBar>
 #include <QMenu>
 #include <QLayout>
-#include <QHelpEvent>
-#include <QToolTip>
 
 #include "bitmaps/style_e.xpm"
 #include "bitmaps/style_f.xpm"
@@ -94,34 +92,15 @@
 //  shapes:xxx (xxx is shape code)
 //  user:xxx (xxx is user code)
 
+// Main menu ToolTips note.
+// ToolTips don't work in macOS main menus, unless XIC_NO_MAC_MENU is
+// set so as to use local menus.  Apple doesn't handle tooltips in its
+// menus.
+
 namespace {
     // Instantiate
     QTmenuConfig _cfg_;
 }
-
-
-//XXX
-// This is supposed to allow tool tips to work in main menu, does not
-// work on Apple, check others (only installed for File menu now).
-class QTttMenu : public QMenu
-{
-public:
-    QTttMenu( QWidget *prnt = 0) : QMenu(prnt) {};
-
-    bool event(QEvent* e) {
-        if (e->type() == QEvent::ToolTip) {
-            QHelpEvent* he = dynamic_cast<QHelpEvent*>(e);
-            QAction* act = actionAt(he->pos());
-            if (act) {
-                QToolTip::showText(he->globalPos(), act->toolTip(), this);
-                return true;
-            }
-        }
-        else if (e->type() == QEvent::Paint && QToolTip::isVisible())
-            QToolTip::hideText();
-        return (QMenu::event(e));
-    }
-};
 
 
 QTmenuConfig *QTmenuConfig::instancePtr = 0;
@@ -181,13 +160,18 @@ QTmenuConfig::instantiateMainMenus()
     if (!menubar)
         return;
 
+#ifdef __APPLE__
+    // By default, Xic will use the Apple-style menu, but this can be
+    // overridden by setting the environment variable.
+    if (getenv("XIC_NO_MAC_MENU"))
+        menubar->setNativeMenuBar(false);
+#endif
+
     // File memu
     MenuBox *mbox = MainMenu()->FindMainMenu("file");
     if (mbox && mbox->menu) {
-        QMenu *file_menu = new QTttMenu(main_win);
-        file_menu->setTitle(tr(mbox->name));
+        QMenu *file_menu = menubar->addMenu(tr(mbox->name));
         file_menu->setToolTipsVisible(true);
-        menubar->addMenu(file_menu);
 
         set(mbox->menu[fileMenu], "&File", 0);
         set(mbox->menu[fileMenuFsel], "F&ile Select", "Alt+O");
@@ -239,10 +223,8 @@ QTmenuConfig::instantiateMainMenus()
     // Cell menu
     mbox = MainMenu()->FindMainMenu("cell");
     if (mbox && mbox->menu) {
-        QMenu *cell_menu = new QMenu(main_win);
-        cell_menu->setTitle(tr(mbox->name));
+        QMenu *cell_menu = menubar->addMenu(tr(mbox->name));
         cell_menu->setToolTipsVisible(true);
-        menubar->addMenu(cell_menu);
 
         set(mbox->menu[cellMenu], "&Cel", 0);
         set(mbox->menu[cellMenuPush], "&Push", "Alt+G");
@@ -276,10 +258,8 @@ QTmenuConfig::instantiateMainMenus()
     // Edit menu
     mbox = MainMenu()->FindMainMenu("edit");
     if (mbox && mbox->menu) {
-        QMenu *edit_menu = new QMenu(main_win);
-        edit_menu->setTitle(tr(mbox->name));
+        QMenu *edit_menu = menubar->addMenu(tr(mbox->name));
         edit_menu->setToolTipsVisible(true);
-        menubar->addMenu(edit_menu);
 
         set(mbox->menu[editMenu], "&Edit", 0);
         set(mbox->menu[editMenuCedit], "&Enable Editing", 0);
@@ -318,10 +298,8 @@ QTmenuConfig::instantiateMainMenus()
     // Modify menu
     mbox = MainMenu()->FindMainMenu("mod");
     if (mbox && mbox->menu) {
-        QMenu *modf_menu = new QMenu(main_win);
-        modf_menu->setTitle(tr(mbox->name));
+        QMenu *modf_menu = menubar->addMenu(tr(mbox->name));
         modf_menu->setToolTipsVisible(true);
-        menubar->addMenu(modf_menu);
 
         set(mbox->menu[modfMenu], "&Modify", 0);
         set(mbox->menu[modfMenuUndo], "&Undo", 0);
@@ -359,10 +337,8 @@ QTmenuConfig::instantiateMainMenus()
     // View menu
     mbox = MainMenu()->FindMainMenu("view");
     if (mbox && mbox->menu) {
-        QMenu *view_menu = new QMenu(main_win);
-        view_menu->setTitle(tr(mbox->name));
+        QMenu *view_menu = menubar->addMenu(tr(mbox->name));
         view_menu->setToolTipsVisible(true);
-        menubar->addMenu(view_menu);
 
         set(mbox->menu[viewMenu], "&View", 0);
         set(mbox->menu[viewMenuView], "Vie&w", 0);
@@ -417,10 +393,8 @@ QTmenuConfig::instantiateMainMenus()
     QMenu *submenu = 0;
     mbox = MainMenu()->FindMainMenu("attr");
     if (mbox && mbox->menu) {
-        QMenu *attr_menu = new QMenu(main_win);
-        attr_menu->setTitle(tr(mbox->name));
+        QMenu *attr_menu = menubar->addMenu(tr(mbox->name));
         attr_menu->setToolTipsVisible(true);
-        menubar->addMenu(attr_menu);
 
         set(mbox->menu[attrMenu], "&Attributes", 0);
         set(mbox->menu[attrMenuUpdat], "Save &Tech", 0);
@@ -460,6 +434,7 @@ QTmenuConfig::instantiateMainMenus()
                 newsubm = a->menu();
                 if (!newsubm) {
                     newsubm = new QMenu();
+                    newsubm->setToolTipsVisible(true);
                     a->setMenu(newsubm);
                 }
                 newsubm->clear();
@@ -558,10 +533,8 @@ QTmenuConfig::instantiateMainMenus()
     // Convert menu
     mbox = MainMenu()->FindMainMenu("conv");
     if (mbox && mbox->menu) {
-        QMenu *cvrt_menu = new QMenu(main_win);
-        cvrt_menu->setTitle(tr(mbox->name));
+        QMenu *cvrt_menu = menubar->addMenu(tr(mbox->name));
         cvrt_menu->setToolTipsVisible(true);
-        menubar->addMenu(cvrt_menu);
 
         set(mbox->menu[cvrtMenu], "C&onvert", 0);
         set(mbox->menu[cvrtMenuExprt], "&Export Cell Data", 0);
@@ -597,10 +570,8 @@ QTmenuConfig::instantiateMainMenus()
     // Drc menu
     mbox = MainMenu()->FindMainMenu("drc");
     if (mbox && mbox->menu) {
-        QMenu *drc_menu = new QMenu(main_win);
-        drc_menu->setTitle(tr(mbox->name));
+        QMenu *drc_menu = menubar->addMenu(tr(mbox->name));
         drc_menu->setToolTipsVisible(true);
-        menubar->addMenu(drc_menu);
 
         set(mbox->menu[drcMenu], "&DRC", 0);
         set(mbox->menu[drcMenuLimit], "DRC &Setup", 0);
@@ -642,10 +613,8 @@ QTmenuConfig::instantiateMainMenus()
     // Extract menu
     mbox = MainMenu()->FindMainMenu("extr");
     if (mbox && mbox->menu) {
-        QMenu *ext_menu = new QMenu(main_win);
-        ext_menu->setTitle(tr(mbox->name));
+        QMenu *ext_menu = menubar->addMenu(tr(mbox->name));
         ext_menu->setToolTipsVisible(true);
-        menubar->addMenu(ext_menu);
 
         set(mbox->menu[extMenu], "E&xtract", 0);
         set(mbox->menu[extMenuExcfg], "Extraction Set&up", 0);
@@ -684,10 +653,8 @@ QTmenuConfig::instantiateMainMenus()
     // User menu
     mbox = MainMenu()->FindMainMenu("user");
     if (mbox && mbox->menu) {
-        QMenu *user_menu = new QMenu(main_win);
-        user_menu->setTitle(tr(mbox->name));
+        QMenu *user_menu = menubar->addMenu(tr(mbox->name));
         user_menu->setToolTipsVisible(true);
-        menubar->addMenu(user_menu);
 
         set(mbox->menu[userMenu], "&User", 0);
         set(mbox->menu[userMenuDebug], "&Debugger", 0);
@@ -719,10 +686,8 @@ QTmenuConfig::instantiateMainMenus()
     mbox = MainMenu()->FindMainMenu("help");
     if (mbox && mbox->menu) {
         menubar->addSeparator();
-        QMenu *help_menu = new QMenu(main_win);
-        help_menu->setTitle(tr(mbox->name));
+        QMenu *help_menu = menubar->addMenu(tr(mbox->name));
         help_menu->setToolTipsVisible(true);
-        menubar->addMenu(help_menu);
 
         set(mbox->menu[helpMenu], "&Help", 0);
         set(mbox->menu[helpMenuHelp], "&Help", "Ctrl+H");
@@ -986,6 +951,7 @@ QTmenuConfig::instantiateSubwMenus(int wnum)
 
         QMenu *subwin_view_menu = new QMenu(sub_win);
         subwin_view_menu->setTitle(tr(mbox->name));
+        subwin_view_menu->setToolTipsVisible(true);
 #ifdef USE_QTOOLBAR
         QAction *a = menubar->addAction("View");
         a->setMenu(subwin_view_menu);
@@ -1061,6 +1027,7 @@ QTmenuConfig::instantiateSubwMenus(int wnum)
 
         QMenu *subwin_attr_menu = new QMenu(sub_win);
         subwin_attr_menu->setTitle(tr(mbox->name));
+        subwin_attr_menu->setToolTipsVisible(true);
 #ifdef USE_QTOOLBAR
         QAction *a = menubar->addAction("Attributes");
         a->setMenu(subwin_attr_menu);

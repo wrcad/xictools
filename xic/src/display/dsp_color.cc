@@ -148,6 +148,8 @@ sColorTab::sColorTab()
         0, "gray96",            0, 0, 0, 0, false);
     new(c + PromptEditFocusBackgColor) sColorTabEnt(this, "PromptEditFocusBackgColor",
         0, "gray100",           0, 0, 0, 0, false);
+    new(c + PromptSelectionBackgColor) sColorTabEnt(this, "PromptSelectionBackgColor",
+        0, "skyblue",           0, 0, 0, 0, false);
 
     // WRspice plot colors (electrical only)
     new(c + Color2) sColorTabEnt(this, "Color2",
@@ -234,6 +236,7 @@ sColorTab::init()
     colors[PromptEditBackgColor].add_alias("PromptEditBackground");
     colors[PromptEditFocusBackgColor].add_alias("PromptEditFocusBackg");
     colors[PromptEditFocusBackgColor].add_alias("PromptEditFocusBackground");
+    colors[PromptSelectionBackgColor].add_alias("PromptSelectionBackground");
     colors[BackgroundColor].add_alias("Background");
     colors[ElecBackgroundColor].add_alias("ElecBackground");
     colors[PhysBackgroundColor].add_alias("PhysBackground");

@@ -296,13 +296,11 @@ QTpcellParamsDlg::update(const char *dbname, PCellParam *p0)
         QWidget *entry = setup_entry(p, lstr, &ltext);
         grid->addWidget(entry, rcnt, 1);
 
-        /*XXX
         if (ltext) {
             label = new QLabel(ltext);
-            grid->addWidget(rcnt, 2);
+            grid->addWidget(label, rcnt, 2);
             delete [] ltext;
         }
-        */
         rcnt++;
     }
     if (lstr.string())

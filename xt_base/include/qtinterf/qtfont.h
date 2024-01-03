@@ -175,6 +175,7 @@ signals:
 private slots:
     void action_slot();
     void quit_slot();
+    void cancel_action_slot(bool);
     void face_changed_slot(QListWidgetItem*, QListWidgetItem*);
     void style_changed_slot(QListWidgetItem*, QListWidgetItem*);
     void size_changed_slot(QListWidgetItem*, QListWidgetItem*);

@@ -56,7 +56,7 @@ namespace {
         struct sFlt
         {
             sFlt (GRobject, bool(*)(const char*, bool, const char*, void*),
-                void*, int, bool);
+                void*, int, bool, bool);
             ~sFlt();
 
             GtkWidget *shell() { return (fl_popup); }
@@ -94,7 +94,7 @@ using namespace gtkflatten;
 void
 cEdit::PopUpFlatten(GRobject caller, ShowMode mode,
     bool (*callback)(const char*, bool, const char*, void*),
-    void *arg, int depth, bool fmode)
+    void *arg, int depth, bool fmode, bool merge)
 {
     if (!GTKdev::exists() || !GTKmainwin::exists())
         return;
@@ -110,7 +110,7 @@ cEdit::PopUpFlatten(GRobject caller, ShowMode mode,
     if (Flt)
         return;
 
-    new sFlt(caller, callback, arg, depth, fmode);
+    new sFlt(caller, callback, arg, depth, fmode, merge);
     if (!Flt->shell()) {
         delete Flt;
         return;
@@ -126,7 +126,7 @@ cEdit::PopUpFlatten(GRobject caller, ShowMode mode,
 
 
 sFlt::sFlt (GRobject c, bool(*callback)(const char*, bool, const char*, void*),
-    void *arg, int depth, bool fmode)
+    void *arg, int depth, bool fmode, bool merge)
 {
     Flt = this;
     fl_caller = c;
@@ -262,6 +262,7 @@ sFlt::sFlt (GRobject c, bool(*callback)(const char*, bool, const char*, void*),
         "Use object merging when flattening");
     gtk_widget_set_name(button, "Merge");
     gtk_widget_show(button);
+    GTKdev::SetStatus(button, merge);
     g_signal_connect(G_OBJECT(button), "clicked",
         G_CALLBACK(fl_action_proc), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,

@@ -39,6 +39,7 @@
  *========================================================================*/
 
 #include "qtlexp.h"
+#include "qtllist.h"
 #include "edit.h"
 #include "dsp_inlines.h"
 #include "geo_grid.h"
@@ -195,7 +196,8 @@ QTlayerExpDlg::QTlayerExpDlg(GRobject c)
     label = new QLabel(tr("To layer"));
     hbox->addWidget(label);
 
-    lx_tolayer = new QLineEdit();
+    // Use a line edit that accepts layer drops.
+    lx_tolayer = new QTlayerEdit();
     hbox->addWidget(lx_tolayer);
 
     // partition size entry

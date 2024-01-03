@@ -139,7 +139,7 @@ QTledDlg::register_caller(GRobject c, bool no_dsl, bool handle_popdn)
         QObject *o = (QObject*)c;
         if (o) {
             if (o->isWidgetType()) {
-                QPushButton *btn = dynamic_cast<QPushButton*>(o);
+                QAbstractButton *btn = dynamic_cast<QAbstractButton*>(o);
                 if (btn) {
                     if (btn->isCheckable()) {
                         connect(btn, SIGNAL(toggled(bool)),

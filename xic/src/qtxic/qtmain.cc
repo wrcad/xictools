@@ -452,7 +452,7 @@ QTpkg::AppLoop()
         return;
 
     QApplication::instance()->installEventFilter(&pkg_event_monitor);
-    RegisterEventHandler(0);
+    RegisterEventHandler(0, 0);
     pkg_in_main_loop = true;
     QTdev::self()->MainLoop(true);
 }
@@ -756,17 +756,6 @@ QTpkg::SetWaitCursor(bool waiting)
         QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
     else
         QApplication::restoreOverrideCursor();
-    /*XXX
-    static CursorType cursor_type;
-    if (waiting) {
-        if (XM()->GetCursor() != CursorBusy) {
-            cursor_type = XM()->GetCursor();
-            XM()->UpdateCursor(0, CursorBusy);
-        }
-    }
-    else
-        XM()->UpdateCursor(0, cursor_type);
-    */
 }
 
 
@@ -891,7 +880,7 @@ QTeventMonitor::eventFilter(QObject *obj, QEvent *ev)
     // printf("%p %x\n", obj, ev->type());
 
     if (em_event_handler)
-        return (em_event_handler(obj, ev));
+        return (em_event_handler(obj, ev, 0));
 
     // When the application is busy, all button presses and all key
     // presses except for Ctrl-C are locked out, and upon receipt a
@@ -2080,12 +2069,6 @@ QTsubwin::button_up_slot(QMouseEvent *ev)
     }
     grabstate.clear(ev);
 
-    // this finishes processing the button up event at the server,
-    // otherwise motions are frozen until this function returns
-//XXX
-//    while (gtk_events_pending())
-//        gtk_main_iteration();
-
     // The point can be outside of the viewport, due to the grab.
     // Check for this.
     const BBox *BB = &sw_windesc->Viewport();
@@ -2544,9 +2527,10 @@ QTmainwin::QTmainwin(QWidget *prnt) : QTsubwin(0, prnt)
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
-#ifndef __APPLE__
-    // By default, this does nothing in Apple, menus are set in the
-    // main display frame.
+#ifdef __APPLE__
+    if (getenv("XIC_NO_MAC_MENU"))
+        vbox->setMenuBar(mw_menubar);
+#else
     vbox->setMenuBar(mw_menubar);
 #endif
 

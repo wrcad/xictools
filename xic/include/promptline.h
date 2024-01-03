@@ -306,6 +306,7 @@ public:
     void lt_btn_press_handler();
 
     void select(int, int);
+    void select_word(int);
     void deselect(bool = false);
     char *get_sel();
 

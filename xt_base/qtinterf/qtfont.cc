@@ -662,15 +662,27 @@ QTfontDlg::register_caller(GRobject c, bool no_dsl, bool handle_popdn)
             if (o->isWidgetType()) {
                 QAbstractButton *btn = dynamic_cast<QAbstractButton*>(o);
                 if (btn) {
-                    connect(btn, SIGNAL(clicked()),
-                        this, SLOT(quit_slot()));
+                    if (btn->isCheckable()) {
+                        connect(btn, SIGNAL(toggled(bool)),
+                            this, SLOT(cancel_action_slot(bool)));
+                    }
+                    else {
+                        connect(btn, SIGNAL(clicked()),
+                            this, SLOT(quit_slot()));
+                    }
                 }
             }
             else {
                 QAction *a = dynamic_cast<QAction*>(o);
                 if (a) {
-                    connect(a, SIGNAL(triggered()),
-                        this, SLOT(quit_slot()));
+                    if (a->isCheckable()) {
+                        connect(a, SIGNAL(triggered(bool)),
+                            this, SLOT(cancel_action_slot(bool)));
+                    }
+                    else {
+                        connect(a, SIGNAL(triggered()),
+                            this, SLOT(quit_slot()));
+                    }
                 }
             }
         }
@@ -919,6 +931,14 @@ void
 QTfontDlg::quit_slot()
 {
     delete this;
+}
+
+
+void
+QTfontDlg::cancel_action_slot(bool state)
+{
+    if (!state)
+        delete this;
 }
 
 

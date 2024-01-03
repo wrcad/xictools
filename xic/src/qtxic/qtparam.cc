@@ -122,7 +122,7 @@ QTparam::print()
     TextExtent(0, &fwid, &fhei);
 
     p_xval = 2;
-    p_yval = fhei - 3;
+    p_yval = fhei - 1;
 
     unsigned int selectno;
     Selections.countQueue(CurCell(), &selectno, 0);
@@ -527,16 +527,12 @@ ptext_t::display(QTparam *prm, unsigned int fc, unsigned int lc)
     for (unsigned int i = fc; i < lc; i++) {
         bf[0] = pt_chars[i].pc_char;
         if (pt_sel_end > pt_sel_start && i >= pt_sel_start && i < pt_sel_end) {
-            prm->SetColor(DSP()->Color(PromptBackgroundColor) ^ -1);
+            prm->SetColor(DSP()->Color(PromptSelectionBackgColor));
             prm->Box(pt_chars[i].pc_posn, prm->height(),
                 pt_chars[i].pc_posn + pt_chars[i].pc_width - 1, 0);
-            prm->SetColor(DSP()->Color(PromptBackgroundColor));
-            prm->Text(bf, pt_chars[i].pc_posn, prm->yval(), 0);
         }
-        else {
-            prm->SetColor(pt_chars[i].pc_color);
-            prm->Text(bf, pt_chars[i].pc_posn, prm->yval(), 0);
-        }
+        prm->SetColor(pt_chars[i].pc_color);
+        prm->Text(bf, pt_chars[i].pc_posn, prm->yval(), 0);
     }
 }
 

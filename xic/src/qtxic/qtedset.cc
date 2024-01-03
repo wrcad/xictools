@@ -204,8 +204,7 @@ QTeditSetupDlg::QTeditSetupDlg(GRobject c)
     col1->addWidget(label);
 
     ed_sb_ulen = new QSpinBox();
-    ed_sb_ulen->setMinimum(0);
-    ed_sb_ulen->setMaximum(1000);
+    ed_sb_ulen->setRange(0, 1000);
     ed_sb_ulen->setValue(DEF_MAX_UNDO_LEN);
     col2->addWidget(ed_sb_ulen);
     connect(ed_sb_ulen, SIGNAL(valueChanged(int)),
@@ -215,8 +214,7 @@ QTeditSetupDlg::QTeditSetupDlg(GRobject c)
     col1->addWidget(label);
 
     ed_sb_maxgobjs = new QSpinBox();
-    ed_sb_maxgobjs->setMinimum(50);
-    ed_sb_maxgobjs->setMaximum(50000);
+    ed_sb_maxgobjs->setRange(50, 50000);
     ed_sb_maxgobjs->setValue(DEF_MAX_GHOST_OBJECTS);
     col2->addWidget(ed_sb_maxgobjs);
     connect(ed_sb_maxgobjs, SIGNAL(valueChanged(int)),
@@ -273,7 +271,7 @@ QTeditSetupDlg::update()
 
     n = ed_sb_maxgobjs->value();
     if ((unsigned int)n != EGst()->maxGhostObjects())
-        ed_sb_ulen->setValue(EGst()->maxGhostObjects());
+        ed_sb_maxgobjs->setValue(EGst()->maxGhostObjects());
 
     QTdev::SetStatus(ed_noww,
         CDvdb()->getVariable(VA_NoWireWidthMag));

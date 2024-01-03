@@ -109,6 +109,7 @@ protected:
     bool canInsertFromMimeData(const QMimeData*) const;
     void insertFromMimeData(const QMimeData*);
     void keyPressEvent(QKeyEvent*);
+    bool event(QEvent*);
 
 private:
     Qt::DropAction tw_drop_action;

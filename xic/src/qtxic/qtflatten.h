@@ -60,7 +60,7 @@ class QTflattenDlg : public QDialog
 
 public:
     QTflattenDlg(GRobject, bool(*)(const char*, bool, const char*, void*),
-        void*, int, bool);
+        void*, int, bool, bool);
     ~QTflattenDlg();
 
     void update();

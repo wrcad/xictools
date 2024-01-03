@@ -117,7 +117,7 @@ QTstabDlg::QTstabDlg(GRobject c) : QTbag(this)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    // label in frame plus help btn
+    // Label in frame plus help button.
     //
     QGroupBox *gb = new QGroupBox(this);
     QHBoxLayout *hb = new QHBoxLayout(gb);
@@ -131,20 +131,24 @@ QTstabDlg::QTstabDlg(GRobject c) : QTbag(this)
     btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
-    hbox = new QHBoxLayout(0);
-    hbox->setContentsMargins(qm);
-    hbox->setSpacing(2);
-    vbox->addLayout(hbox);
-
+    // Symbol tables list.
+    //
     tb_tables = new QComboBox();
-    hbox->addWidget(tb_tables);
+    vbox->addWidget(tb_tables);
     tb_namelist = CDcdb()->listTables();
     for (stringlist *s = tb_namelist; s; s = s->next)
         tb_tables->addItem((const char*)s->string);
     tb_tables->setCurrentIndex(0);
     connect(tb_tables, SIGNAL(currentIndexChanged(int)),
         this, SLOT(table_change_slot(int)));
-    
+
+    // Button row.
+    //
+    hbox = new QHBoxLayout(0);
+    hbox->setContentsMargins(qm);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
+
     tb_add = new QPushButton(tr("Add"));
     hbox->addWidget(tb_add);
     tb_add->setCheckable(true);
@@ -152,7 +156,7 @@ QTstabDlg::QTstabDlg(GRobject c) : QTbag(this)
     connect(tb_add, SIGNAL(toggled(bool)), this, SLOT(add_btn_slot(bool)));
 
     tb_clr = new QPushButton(tr("Clear"));
-    hbox->addWidget(tb_add);
+    hbox->addWidget(tb_clr);
     tb_clr->setCheckable(true);
     tb_clr->setAutoDefault(false);
     connect(tb_clr, SIGNAL(toggled(bool)), this, SLOT(clear_btn_slot(bool)));
@@ -165,13 +169,6 @@ QTstabDlg::QTstabDlg(GRobject c) : QTbag(this)
         tb_del->setEnabled(false);
     connect(tb_del, SIGNAL(toggled(bool)), this, SLOT(destroy_btn_slot(bool)));
 
-    // Dismiss button
-    //
-    hbox = new QHBoxLayout(0);
-    hbox->setContentsMargins(qm);
-    hbox->setSpacing(2);
-    vbox->addLayout(hbox);
-
     btn = new QPushButton(tr("Dismiss"));
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
@@ -181,6 +178,12 @@ QTstabDlg::QTstabDlg(GRobject c) : QTbag(this)
 QTstabDlg::~QTstabDlg()
 {
     instPtr = 0;
+    if (tb_del_pop)
+        tb_del_pop->popdown();
+    if (tb_clr_pop)
+        tb_clr_pop->popdown();
+    if (tb_add_pop)
+        tb_add_pop->popdown();
     stringlist::destroy(tb_namelist);
     if (tb_caller)
         QTdev::Deselect(tb_caller);
@@ -248,8 +251,9 @@ QTstabDlg::add_btn_slot(bool state)
     if (tb_add_pop)
         tb_add_pop->popdown();
     if (state) {
+        GRloc loc(LW_XYR, width() + 4, 0);
         tb_add_pop = PopUpEditString((GRobject)tb_add,
-            GRloc(), "Enter name for new symbol table", 0, tb_add_cb, 0,
+            loc, "Enter name for new symbol table", 0, tb_add_cb, 0,
             250, 0, false, 0);
         if (tb_add_pop)
             tb_add_pop->register_usrptr((void**)&tb_add_pop);
@@ -258,7 +262,7 @@ QTstabDlg::add_btn_slot(bool state)
 
 
 void
-QTstabDlg::clear_btn_slot(bool)
+QTstabDlg::clear_btn_slot(bool state)
 {
     if (tb_add_pop)
         tb_add_pop->popdown();
@@ -266,15 +270,18 @@ QTstabDlg::clear_btn_slot(bool)
         tb_clr_pop->popdown();
     if (tb_del_pop)
         tb_del_pop->popdown();
-    tb_clr_pop = PopUpAffirm(tb_clr, GRloc(),
-        "Delete contents of current table?", tb_clr_cb, 0);
-    if (tb_clr_pop)
-        tb_clr_pop->register_usrptr((void**)&tb_clr_pop);
+    if (state) {
+        GRloc loc(LW_XYR, width() + 4, 0);
+        tb_clr_pop = PopUpAffirm(tb_clr, loc,
+            "Delete contents of current table?", tb_clr_cb, 0);
+        if (tb_clr_pop)
+            tb_clr_pop->register_usrptr((void**)&tb_clr_pop);
+    }
 }
 
 
 void
-QTstabDlg::destroy_btn_slot(bool)
+QTstabDlg::destroy_btn_slot(bool state)
 {
     if (tb_add_pop)
         tb_add_pop->popdown();
@@ -282,10 +289,13 @@ QTstabDlg::destroy_btn_slot(bool)
         tb_clr_pop->popdown();
     if (tb_del_pop)
         tb_del_pop->popdown();
-    tb_del_pop = PopUpAffirm(tb_del, GRloc(),
-        "Delete current table and contents?", tb_del_cb, 0);
-    if (tb_del_pop)
-        tb_del_pop->register_usrptr((void**)&tb_del_pop);
+    if (state) {
+        GRloc loc(LW_XYR, width() + 4, 0);
+        tb_del_pop = PopUpAffirm(tb_del, loc,
+            "Delete current table and contents?", tb_del_cb, 0);
+        if (tb_del_pop)
+            tb_del_pop->register_usrptr((void**)&tb_del_pop);
+    }
 }
 
 

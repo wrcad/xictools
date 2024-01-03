@@ -68,6 +68,7 @@ namespace qtinterf
 QTaffirmDlg::QTaffirmDlg(QTbag *owner, const char *question_str)
 {
     p_parent = owner;
+    af_affirmed = false;
 
     if (owner)
         owner->MonitorAdd(this);
@@ -106,26 +107,17 @@ QTaffirmDlg::QTaffirmDlg(QTbag *owner, const char *question_str)
 
 QTaffirmDlg::~QTaffirmDlg()
 {
-    if (p_usrptr)
-        *p_usrptr = 0;
-    if (p_caller && !p_no_desel) {
-        QObject *o = (QObject*)p_caller;
-        if (o->isWidgetType()) {
-            QAbstractButton *btn = dynamic_cast<QAbstractButton*>(o);
-            if (btn)
-                btn->setChecked(false);
-        }
-        else {
-            QAction *a = dynamic_cast<QAction*>(o);
-            if (a)
-                a->setChecked(false);
-        }
-    }
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (owner)
             owner->MonitorRemove(this);
     }
+    if (p_usrptr)
+        *p_usrptr = 0;
+    if (p_callback)
+        (*p_callback)(af_affirmed, p_cb_arg);
+    if (p_caller && !p_no_desel)
+        QTdev::Deselect(p_caller);
 }
 
 
@@ -145,15 +137,27 @@ QTaffirmDlg::register_caller(GRobject c, bool no_dsl, bool handle_popdn)
             if (o->isWidgetType()) {
                 QAbstractButton *btn = dynamic_cast<QAbstractButton*>(o);
                 if (btn) {
-                    connect(btn, SIGNAL(clicked()),
-                        this, SLOT(cancel_btn_slot()));
+                    if (btn->isCheckable()) {
+                        connect(btn, SIGNAL(toggled(bool)),
+                            this, SLOT(cancel_action_slot(bool)));
+                    }
+                    else {
+                        connect(btn, SIGNAL(clicked()),
+                            this, SLOT(cancel_btn_slot()));
+                    }
                 }
             }
             else {
                 QAction *a = dynamic_cast<QAction*>(o);
                 if (a) {
-                    connect(a, SIGNAL(triggered()),
-                        this, SLOT(cancel_btn_slot()));
+                    if (a->isCheckable()) {
+                        connect(a, SIGNAL(triggered(bool)),
+                            this, SLOT(cancel_action_slot(bool)));
+                    }
+                    else {
+                        connect(a, SIGNAL(triggered()),
+                            this, SLOT(cancel_btn_slot()));
+                    }
                 }
             }
         }
@@ -178,15 +182,22 @@ QTaffirmDlg::popdown()
 void
 QTaffirmDlg::affirm_btn_slot()
 {
-    if (p_callback)
-        (*p_callback)(true, p_cb_arg);
+    af_affirmed = true;
+    delete this;
 }
 
 
 void
 QTaffirmDlg::cancel_btn_slot()
 {
-    if (p_callback)
-        (*p_callback)(false, p_cb_arg);
+    delete this;
+}
+
+
+void
+QTaffirmDlg::cancel_action_slot(bool state)
+{
+    if (!state)
+        delete this;
 }
 

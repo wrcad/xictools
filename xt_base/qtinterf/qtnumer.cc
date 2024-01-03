@@ -119,28 +119,17 @@ QTnumDlg::QTnumDlg(QTbag *owner, const char *prompt_str, double initd,
 
 QTnumDlg::~QTnumDlg()
 {
-    if (p_callback)
-        (*p_callback)(nu_spinbtn->value(), nu_affirmed, p_cb_arg);
-    if (p_usrptr)
-        *p_usrptr = 0;
-    if (p_caller && !p_no_desel) {
-        QObject *o = (QObject*)p_caller;
-        if (o->isWidgetType()) {
-            QPushButton *btn = dynamic_cast<QPushButton*>(o);
-            if (btn)
-                btn->setChecked(false);
-        }
-        else {
-            QAction *a = dynamic_cast<QAction*>(o);
-            if (a)
-                a->setChecked(false);
-        }
-    }
     if (p_parent) {
         QTbag *owner = dynamic_cast<QTbag*>(p_parent);
         if (owner)
             owner->MonitorRemove(this);
     }
+    if (p_usrptr)
+        *p_usrptr = 0;
+    if (p_callback)
+        (*p_callback)(nu_spinbtn->value(), nu_affirmed, p_cb_arg);
+    if (p_caller && !p_no_desel)
+        QTdev::Deselect(p_caller);
 }
 
 
@@ -158,17 +147,29 @@ QTnumDlg::register_caller(GRobject c, bool no_dsl, bool handle_popdn)
         QObject *o = (QObject*)c;
         if (o) {
             if (o->isWidgetType()) {
-                QPushButton *btn = dynamic_cast<QPushButton*>(o);
+                QAbstractButton *btn = dynamic_cast<QAbstractButton*>(o);
                 if (btn) {
-                    connect(btn, SIGNAL(clicked()),
-                        this, SLOT(dismiss_btn_slot()));
+                    if (btn->isCheckable()) {
+                        connect(btn, SIGNAL(toggled(bool)),
+                            this, SLOT(cancel_action_slot(bool)));
+                    }
+                    else {
+                        connect(btn, SIGNAL(clicked()),
+                            this, SLOT(dismiss_btn_slot()));
+                    }
                 }
             }
             else {
                 QAction *a = dynamic_cast<QAction*>(o);
                 if (a) {
-                    connect(a, SIGNAL(triggered()),
-                        this, SLOT(dismiss_btn_slot()));
+                    if (a->isCheckable()) {
+                        connect(a, SIGNAL(triggered(bool)),
+                            this, SLOT(cancel_action_slot(bool)));
+                    }
+                    else {
+                        connect(a, SIGNAL(triggered()),
+                            this, SLOT(dismiss_btn_slot()));
+                    }
                 }
             }
         }
@@ -203,5 +204,13 @@ void
 QTnumDlg::dismiss_btn_slot()
 {
     delete this;
+}
+
+
+void
+QTnumDlg::cancel_action_slot(bool state)
+{
+    if (!state)
+        delete this;
 }
 

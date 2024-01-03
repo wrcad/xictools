@@ -237,7 +237,7 @@ cEdit::flattenExec(CmdDesc *cmd)
     }
     if (cmd && MainMenu()->GetStatus(cmd->caller)) {
         PopUpFlatten(cmd->caller, MODE_ON, f_cb, &Fdata, Fdata.depth,
-            Fdata.mode);
+            Fdata.mode, Fdata.merge);
     }
     else
         PopUpFlatten(0, MODE_OFF, 0, 0);

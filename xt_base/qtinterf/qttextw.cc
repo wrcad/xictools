@@ -48,8 +48,8 @@
 #include <QClipboard>
 
 
-// A fixed text window class for general use, replaces the
-// "text_window" utilities in the GTK verssion.
+// A fixed text window class for general use, incorporates the
+// "text_window" utilities of the GTK verssion.
 
 using namespace qtinterf;
 
@@ -458,5 +458,25 @@ QTtextEdit::keyPressEvent(QKeyEvent *ev)
     emit key_press_event(ev);
     if (ev->isAccepted())
         QTextEdit::keyPressEvent(ev);
+}
+
+
+bool
+QTtextEdit::event(QEvent *ev)
+{
+    // Override Ctrl-C when read-only so this can be used for "copy".
+    // Ordinarily, this shortcut will be recognized but do nothing.
+    if (ev->type() == QEvent::ShortcutOverride) {
+        if (isReadOnly()) {
+            QKeyEvent *kev = dynamic_cast<QKeyEvent*>(ev);
+            if (kev && kev->key() == Qt::Key_C &&
+                    (kev->modifiers() & Qt::ControlModifier))
+            {
+                emit key_press_event(kev);
+                ev->accept();
+            }
+        }
+    }
+    return (QTextEdit::event(ev));
 }
 
