@@ -104,7 +104,7 @@ QTedit::QTedit(bool nogr) : QTdraw(XW_TEXT)
     pe_rcl_btn->setToolTip(tr("Recall edit string from a register."));
     hbox->addWidget(pe_rcl_btn);
 
-    // Prevent height change of row when buttons come ang go, to avoid main
+    // Prevent height change of row when buttons come and go, to avoid main
     // window resize/redraw.
     hbox->addStrut(pe_rcl_btn->sizeHint().height() + 2);
 
@@ -339,9 +339,9 @@ QTedit::show_lt_button(bool show_btn)
 
 
 void
-QTedit::get_selection(bool pri)
+QTedit::get_selection(bool cpb)
 {
-    if (pri) {
+    if (cpb) {
         // Insert the clipboard.
         QByteArray ba = QApplication::clipboard()->text().toLatin1();
         const char *sel = ba.constData();

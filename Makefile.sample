@@ -4,26 +4,32 @@
 
 # Configuration
 
-# The tools will be installed under /usr/local by default, but this
-# can be changed here.  If you want to install directly to a special
-# location (that may not require root permissions, for example), and
-# skip the packaging step, you can change this variable.  Most
-# packages are relocatable, meaning that the final destination can be
-# set when installing from packages (OX X and Debian/Ubuntu don't
-# allow relocation).
+# The tools will be installed under $(PREFIX)/$(TOOLROOT) where by
+# default PREFIX = /usr/local and TOOLROOT = xictools.  This can be
+# changed below.  If you want to install to a special location (that
+# may not require root permissions, for example), you can change this
+# variable.  Most packages are relocatable, meaning that the final
+# destination can be set when installing from packages (macOS and
+# Debian/Ubuntu don't allow relocation).
 #
 PREFIX = --prefix=/usr/local
 
-# The standard way to build and install xictools is to build a set of
-# packages, and then install the packages.  "make install" is actually
-# prevented from installing directory to the default installation
-# location, since typically packages and direct installation don't mix
-# well.  If this variable is set to "yes", installation to the
-# "PREFIX" location is allowed.  This is for users who wish to skip
-# the packaging step.  Package installers may require root permission
-# to run, so users can avoid this and keep all files in their local
-# space with the PREFIX variable set appropriately and this variable
-# set to "yes" instead of "no"..
+# This is the name of the top-level installation directory under
+# PREFIX.  You can change this if you want to have different builds
+# under PREFIX, for example QT and GTK,
+#
+TOOLROOT = --enable-toolroot=xictools
+
+# The traditional way to build and install xictools is to build a set
+# of packages, and then install the packages.  "make install" is
+# actually prevented from installing directly to the default
+# installation location, since typically packages and direct
+# installation don't mix well.  If this variable is set to "yes",
+# installation to the PREFIX/TOOLROOT location is allowed.  This is
+# for users who wish to skip the packaging step.  Package installers
+# may require root permission to run, so users can avoid this and keep
+# all files in their local space with the PREFIX variable set
+# appropriately and this variable set to "yes" instead of "no".
 #
 ITOPOK = --enable-itopok=no
 
@@ -118,8 +124,8 @@ endif
 SUBDIRS = xt_base $(SECURE) $(MOZY) $(WRSPICE) $(XIC) fastcap fasthenry
 
 #######################################################################
-CFARGS = $(PREFIX) $(ITOPOK) $(HVSECURE) $(NOMOZY) $(32BIT) $(OALOC) \
-  $(KITLOC) $(MINGW) $(GFXLOC)
+CFARGS = $(PREFIX) $(TOOLROOT) $(ITOPOK) $(HVSECURE) $(NOMOZY) $(32BIT) \
+  $(OALOC) $(KITLOC) $(MINGW) $(GFXLOC)
 
 FLAGFILE = .configured
 

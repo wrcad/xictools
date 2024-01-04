@@ -51,6 +51,7 @@
 #include <QKeyEvent>
 #include <QApplication>
 #include <QAbstractButton>
+#include <QAction>
 
 
 //-----------------------------------------------------------------------------
@@ -461,7 +462,11 @@ qt_keyb::macro_event_handler(QObject *obj, QEvent *ev, void *arg)
                 mod_state(mev->modifiers()),
                 ev->type() == QEvent::MouseButtonPress ?
                 BUTTON_PRESS : BUTTON_RELEASE, mev->button(),
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
                 (int)mev->position().x(), (int)mev->position().y());
+#else
+                (int)mev->x(), (int)mev->y());
+#endif
             /*
             if (ev->type() == QEvent::MouseButtonPress &&
                     GTK_IS_MENU_ITEM(widg) &&

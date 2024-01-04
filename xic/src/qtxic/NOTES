@@ -5,12 +5,18 @@ command-arrows don't change rotation angle. (Apple) FIXES
 Place panel, can't bring back text popup if deleted.
 Known problem, no signal available for this case from combo button.
 XXXXXXX
-No tooltips from main menu in Apple.
-Added a Help button to logo panel.
-XXX How to avoid white pushbuttons in Apple?
-new: if XIC_NO_MAC_MENU is set, the main window will nave a local menu.
-The Files List now takes Ctrl-C as copy (prepends the path).
-Make sure that Busy mode/cursor works.
+
+* No tooltips from main menu in Apple.
+* Added a Help button to logo panel.
+* XXX How to avoid white pushbuttons in Apple?
+* new: if XIC_NO_MAC_MENU is set, the main window will nave a local menu.
+* The Files List now takes Ctrl-C as copy (prepends the path).
+* On Apple, ctrl-V, A, P etc into the main wihdie are not mapped to cmd.
+
+To Do
+* Make sure that Busy mode/cursor works.
+* Apple code to get rid of crap in Edit menu
+* qtkeymacro stuff.
 
 Issues:
 1.  How to implement "tranisent-for" behavior in pop-up windows.  That is,
@@ -18,7 +24,7 @@ how to keep them on top of the main window, without making them modal or
 setting the flag to keep them on top of everything.
 Solution:  Set the dialog parent to the associated transient parent. 
 This works for Linux and Windows, but not for Apple.  On Apple, set the
-Qt::Flag, which enforces desired behavior, but changes the appearance
+Qt::Tool flag, which enforces desired behavior, but changes the appearance
 of the dialogs, which is ok.
 
 2.  How to handle drawing, accommodating the paint events and other
@@ -110,8 +116,6 @@ qtmain.cc:     OK (drawing win drop)
     hasUrls() text/property text/twostring text/cellname text/string text/plain
 qtplace.cc:    OK hasUrls() text/twostring text/cellname text/string text/plain
 
-TODO: promptline Ctrl-V.
-
 // FIX THIS STUFF
 qtdebug.cc   selections
 qtextdev.cc  clean up unused slots, check selections
@@ -125,24 +129,6 @@ What to do about X selections?
 
 // Need to detect need for and use exponential spin button.
 qtpcprms.cc
-
-// This is a mess, nothing here implemented.
-qtkeymacro.cc:
-
-qtasmpage.cc://XXX need to redraw?
-qtfiledlg.cc:    /*XXX
-qtfiles.cc:/*XXX set selection color, etc
-qtkeymacro.cc:/*XXX
-qtkeymacro.cc:/*XXX
-qtkeymacro.cc:/*XXX
-qtkeymacro.cc:/*XXX
-qtlogo.cc:// XXX FIXME: handle multi lines, justification
-qtlogo.cc:// XXX FIXME: handle multi lines, justification
-qtmain.cc:    /*XXX
-qtmain.cc:    // XXX Fix this if possible.
-qtmain.cc://XXX
-qtpcprms.cc://XXX Probably need to detect the need for and use exponential notation
-qtpcprms.cc:        /*XXX
 
 These use QTcanvas
 qtdevs.cc
