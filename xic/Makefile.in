@@ -253,7 +253,7 @@ DARGS = \
   -DBUG_ADDR=\"$(BUG_ADDR)\" \
   -DBUILD_DATE="\"$(DATE)\""
 
-bin/xic.o: bin/xic.cc
+bin/xic.o: bin/xic.cc Makefile ../Makefile
 	$(CXX) $(CFLAGS) $(DARGS) $(INCLUDE) $(MOZYINC) -c $*.cc -o $*.o
 
 .cc.o:
@@ -373,8 +373,8 @@ install_links::
 	        ln -s $(destn)/startup/xic_tech.scmos \
  $(destn)/startup/xic_tech; \
 	    fi; \
-	    sed -e s%/usr/local%$(INSTALL_PREFIX)% < $(destn)/bin/xic.sh \
-  > $(toolbin)/xic; chmod 755 $(toolbin)/xic; \
+	    sed -e s%/usr/local%$(INSTALL_PREFIX)% -e s%xictools%$(TOOLROOT)% \
+  < $(destn)/bin/xic.sh > $(toolbin)/xic; chmod 755 $(toolbin)/xic; \
 	fi
 
 # Under MSYS2, rm deletes Windows links and junctions.

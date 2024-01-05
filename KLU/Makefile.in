@@ -148,10 +148,8 @@ OFILES_KLU = \
     KLU/Lib/klu_zl_sort.o \
     KLU/Lib/klu_zl_tsolve.o
 
-OFILES_CONFIG = \
-    SuiteSparse_config/SuiteSparse_config.o
-
-$(SHLIB_TARGET): buildlib
+$(SHLIB_TARGET): AMD/Lib/libamd.a BTF/Lib/libbtf.a COLAMD/Lib/libcolamd.a \
+ KLU/Lib/libklu.a SuiteSparse_config/SuiteSparse_config.o
 	    $(CC) -o $(SHLIB_TARGET) $(LSHFLAG) \
  $(OFILES_AMD) $(OFILES_BTF) $(OFILES_COLAMD) $(OFILES_KLU) \
  SuiteSparse_config/SuiteSparse_config.o;
@@ -171,15 +169,21 @@ patch:
 
 depend: unpack patch
 
-buildlib:
-	@if [ ! -d AMD ]; then \
-	    $(MAKE) unpack patch; \
-	fi
-	@cd AMD/Lib;  $(MAKE) CC="$(CC)" CF="$(CFLAGS)"
-	@cd BTF/Lib;  $(MAKE) CC="$(CC)" CF="$(CFLAGS)"
-	@cd COLAMD/Lib;  $(MAKE) CC="$(CC)" CF="$(CFLAGS)"
-	@cd KLU/Lib;  $(MAKE) CC="$(CC)" CF="$(CFLAGS)"
-	@cd SuiteSparse_config;  $(CC) $(CFLAGS) -c SuiteSparse_config.c
+AMD/Lib/libamd.a ::
+	@cd AMD/Lib; $(MAKE) CC="$(CC)" CF="$(CFLAGS)"
+
+BTF/Lib/libbtf.a ::
+	@cd BTF/Lib; $(MAKE) CC="$(CC)" CF="$(CFLAGS)"
+
+COLAMD/Lib/libcolamd.a ::
+	@cd COLAMD/Lib; $(MAKE) CC="$(CC)" CF="$(CFLAGS)"
+
+KLU/Lib/libklu.a ::
+	@cd KLU/Lib; $(MAKE) CC="$(CC)" CF="$(CFLAGS)"
+
+SuiteSparse_config/SuiteSparse_config.o : \
+ SuiteSparse_config/SuiteSparse_config.c
+	$(CC) $(CFLAGS) -c SuiteSparse_config/SuiteSparse_config.c -o $@
 
 clean:
 	-@cd AMD;  $(MAKE) distclean
