@@ -148,8 +148,8 @@ config:
 	        fi; \
 	    fi; \
 	    touch $(FLAGFILE); \
+	    (${MAKE} depend); \
 	fi
-	(${MAKE} depend)
 
 reconfig:
 	-@rm -f $(FLAGFILE)

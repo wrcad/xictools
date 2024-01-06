@@ -185,7 +185,7 @@ fc_get_matrix(const char *fname, int *size, float ***mret, double *units,
     char buf[256];
     FILE *fp = fopen(fname, "r");
     if (!fp) {
-        sprintf(buf, "can't open file %s.", fname);
+        snprintf(buf, sizeof(buf), "can't open file %s.", fname);
         return (lstring::copy(buf));
     }
 
@@ -226,7 +226,7 @@ fc_get_matrix(const char *fname, int *size, float ***mret, double *units,
     }
     if (!str) {
         fclose(fp);
-        sprintf(buf, "can't find matrix data in file %s.", fname);
+        snprintf(buf, sizeof(buf), "can't find matrix data in file %s.", fname);
         return (lstring::copy(buf));
     }
     fseek(fp, posn, SEEK_SET);
@@ -242,7 +242,8 @@ fc_get_matrix(const char *fname, int *size, float ***mret, double *units,
     for (;;) {
         if ((str = getline(fp)) == 0) {
             fclose(fp);
-            sprintf(buf, "read error or premature EOF, file %s.", fname);
+            snprintf(buf, sizeof(buf), "read error or premature EOF, file %s.",
+                fname);
             return (lstring::copy(buf));
         }
         if (lstring::ciprefix("demo", str)) {
@@ -278,7 +279,7 @@ fc_get_matrix(const char *fname, int *size, float ***mret, double *units,
 
     if (!matsz) {
         fclose(fp);
-        sprintf(buf, "matrix data has no size, file %s.", fname);
+        snprintf(buf, sizeof(buf), "matrix data has no size, file %s.", fname);
         return (lstring::copy(buf));
     }
     float **matrix = new float*[matsz];
@@ -290,7 +291,8 @@ fc_get_matrix(const char *fname, int *size, float ***mret, double *units,
             for (int k = 0; k < i; i++)
                 delete [] matrix[k];
             delete [] matrix;
-            sprintf(buf, "read error or premature EOF, file %s.", fname);
+            snprintf(buf, sizeof(buf), "read error or premature EOF, file %s.",
+                fname);
             return (lstring::copy(buf));
         }
         matrix[i] = new float[matsz];
@@ -319,7 +321,7 @@ fc_get_matrix(const char *fname, int *size, float ***mret, double *units,
                 for (int k = 0; k <= i; i++)
                     delete [] matrix[k];
                 delete [] matrix;
-                sprintf(buf,
+                snprintf(buf, sizeof(buf),
                     "read error or premature EOF, file %s.", fname);
                 return (lstring::copy(buf));
             }
@@ -358,14 +360,14 @@ fc_post_process(const char *fc_outfile)
 
     fprintf(fp, "\nSelf Capacitance (%sfarads):\n", scale_str(units));
     for (int i = 0; i < size; i++) {
-        sprintf(buf, "C.%s", names[i]);
+        snprintf(buf, sizeof(buf), "C.%s", names[i]);
         fprintf(fp, " %-12s%.3g\n", buf, selfcap(i, mat, size));
     }
     if (size > 1) {
         fprintf(fp, "\nMutual Capacitance (%sfarads):\n", scale_str(units));
         for (int i = 0; i < size; i++) {
             for (int j = i+1; j < size; j++) {
-                sprintf(buf, "C.%s.%s", names[i], names[j]);
+                snprintf(buf, sizeof(buf), "C.%s.%s", names[i], names[j]);
                 fprintf(fp, " %-12s%.3g\n", buf, mutcap(i, j, mat));
             }
         }

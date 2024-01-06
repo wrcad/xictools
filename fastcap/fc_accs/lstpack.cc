@@ -171,7 +171,7 @@ int main(int argc, char **argv)
             printf("Warning: can't open %s, not packed.\n", elt->tab_name());
             continue;
         }
-        sprintf(buf, "File %s\n", elt->tab_name());
+        snprintf(buf, sizeof(buf), "File %s\n", elt->tab_name());
         fputs(buf, fpout);
         while (fgets(buf, 256, fpin) != 0)
             fputs(buf, fpout);

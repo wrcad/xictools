@@ -5,7 +5,7 @@
 # 2.0 for major/minor, and increment the release.  The 033020
 # distribution is release number 14.
 
-release_num=16
+release_num=17
 
 echo 2.0.$release_num
 
