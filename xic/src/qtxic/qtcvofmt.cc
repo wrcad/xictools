@@ -557,12 +557,12 @@ QTconvOutFmt::update()
 
     unsigned int flgs = fmt_strip ?
         FIO()->CifStyle().flags_export() : FIO()->CifStyle().flags();
-    QList<QAction*> actions = fmt_cifflags->actions();
+    QList<QAction*> acts = fmt_cifflags->actions();
     int cnt = 0;
-    for (int i = 1; i < actions.size(); i++) {
-        if (actions[i]->data().toInt() == 0)
+    for (int i = 1; i < acts.size(); i++) {
+        if (acts[i]->data().toInt() == 0)
             continue;
-        actions[i]->setChecked(fmt_cif_extensions[cnt].code & flgs);
+        acts[i]->setChecked(fmt_cif_extensions[cnt].code & flgs);
         cnt++;
     }
 
@@ -862,12 +862,12 @@ QTconvOutFmt::cif_flags_slot(QAction *a)
         unsigned int flgs = fmt_strip ?
             FIO()->CifStyle().flags_export() : FIO()->CifStyle().flags();
         a->setText(fmt_which_flags[(int)fmt_strip]);
-        QList<QAction*> actions = fmt_cifflags->actions();
+        QList<QAction*> acts = fmt_cifflags->actions();
         int cnt = 0;
-        for (int i = 1; i < actions.size(); i++) {
-            if (actions[i]->data().toInt() == 0)
+        for (int i = 1; i < acts.size(); i++) {
+            if (acts[i]->data().toInt() == 0)
                 continue;
-            actions[i]->setChecked(fmt_cif_extensions[cnt].code & flgs);
+            acts[i]->setChecked(fmt_cif_extensions[cnt].code & flgs);
             cnt++;
         }
         return;

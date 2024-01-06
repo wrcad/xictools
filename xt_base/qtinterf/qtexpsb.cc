@@ -83,9 +83,9 @@ QTexpDoubleSpinBox::stepBy(int n)
 
 
 double
-QTexpDoubleSpinBox::valueFromText(const QString & text) const
+QTexpDoubleSpinBox::valueFromText(const QString & txt) const
 {
-    QByteArray text_ba = text.toLatin1();
+    QByteArray text_ba = txt.toLatin1();
     const char *str = text_ba.constData();
     double *d = SPnum.parse(&str, true);
     if (d)
@@ -95,9 +95,9 @@ QTexpDoubleSpinBox::valueFromText(const QString & text) const
 
 
 QString
-QTexpDoubleSpinBox::textFromValue(double value) const
+QTexpDoubleSpinBox::textFromValue(double val) const
 {
-    const char *str = SPnum.printnum(value, (const char*)0, true,
+    const char *str = SPnum.printnum(val, (const char*)0, true,
         decimals());
     while (isspace(*str))
         str++;
@@ -107,9 +107,9 @@ QTexpDoubleSpinBox::textFromValue(double value) const
 
 // Change the way we validate user input (if validate => valueFromText)
 QValidator::State
-QTexpDoubleSpinBox::validate(QString &text, int&) const
+QTexpDoubleSpinBox::validate(QString &txt, int&) const
 {
-    QByteArray text_ba = text.toLatin1();
+    QByteArray text_ba = txt.toLatin1();
     const char *str = text_ba.constData();
     double *d = SPnum.parse(&str, true);
     return (d ? QValidator::Acceptable : QValidator::Invalid);

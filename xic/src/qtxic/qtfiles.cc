@@ -118,9 +118,9 @@ QTfileTextEdit::createMimeDataFromSelection() const
     if (QTfilesListDlg::self()) {
         char *sel = QTfilesListDlg::self()->get_selection();
         if (sel && *sel) {
-            QMimeData *data = new QMimeData();
-            data->setText(sel);
-            return (data);
+            QMimeData *dat = new QMimeData();
+            dat->setText(sel);
+            return (dat);
         }
     }
     return (0);

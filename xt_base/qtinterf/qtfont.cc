@@ -717,10 +717,10 @@ QTfontDlg::set_font_name(const char *fontname)
 
     if (!fontname || !*fontname)
         return;
-    QFont *font = QTfont::self()->new_font(fontname, false);
-    if (font) {
-        select_font(font);
-        delete font;
+    QFont *fnt = QTfont::self()->new_font(fontname, false);
+    if (fnt) {
+        select_font(fnt);
+        delete fnt;
     }
 }
 

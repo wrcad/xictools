@@ -65,6 +65,7 @@
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QMimeData>
+#include <QToolButton>
 
 #ifdef WIN32
 #include <windows.h>
@@ -353,41 +354,35 @@ QTtbDlg::QTtbDlg(int xx, int yy) : QTdraw(0)
     hbox->setSpacing(2);
 
     // the WR logo button
-    QPushButton *btn =  new QPushButton();
+    QToolButton *btn =  new QToolButton();
     btn->setIcon(QPixmap(tm30));
-    btn->setAutoDefault(false);
     hbox->addWidget(btn);
     btn->setToolTip(tr("Pop up email client"));
     connect(btn, SIGNAL(clicked()), this, SLOT(wr_btn_slot()));
 
     // the Run button
-    btn = new QPushButton();
+    btn = new QToolButton();
     btn->setIcon(QPixmap(run_xpm));
     hbox->addWidget(btn);
-    btn->setAutoDefault(false);
     btn->setToolTip(tr("Run current circuit"));
     connect(btn, SIGNAL(clicked()), this, SLOT(run_btn_slot()));
 
     // the Stop button
-    btn = new QPushButton();
+    btn = new QToolButton();
     btn->setIcon(QPixmap(stop_xpm));
     hbox->addWidget(btn);
-    btn->setAutoDefault(false);
     btn->setToolTip(tr("Pause current analysis"));
     connect(btn, SIGNAL(clicked()), this, SLOT(stop_btn_slot()));
+
+    hbox->addWidget(new QWidget);
+    hbox->setStretch(3, 1);
 
 #ifndef __APPLE__
     hbox->addWidget(menubar);
 #endif
 
-    QGroupBox *gb = new QGroupBox();
-    vbox->addWidget(gb);
-    QVBoxLayout *vb = new QVBoxLayout(gb);
-    vb->setContentsMargins(qmtop);
-    vb->setSpacing(2);
-
     gd_viewport = new QTcanvas();
-    vb->addWidget(Viewport());
+    vbox->addWidget(gd_viewport);
 
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_SCREEN))
@@ -640,10 +635,10 @@ namespace {
         FILE *fp = fopen(fname, "r");
         if (fp) {
             char buf[128];
-            fgets(buf, 128, fp);
-            if (lstring::prefix("Title:", buf)) {
-                fgets(buf, 128, fp);
-                if (lstring::prefix("Date:", buf)) {
+            const char *s = fgets(buf, 128, fp);
+            if (lstring::prefix("Title:", s)) {
+                s = fgets(buf, 128, fp);
+                if (lstring::prefix("Date:", s)) {
                     fclose(fp);
                     TTY.monitor();
                     CommandTab::com_load(&wl);

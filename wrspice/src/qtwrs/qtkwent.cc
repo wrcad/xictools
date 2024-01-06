@@ -83,11 +83,11 @@ QTchoiceSpinBox::validate(QString &txt, int&) const
 //----------------------------------------------------------------------------
 // The keyword entry composite widget.
 
-QTkwent::QTkwent(EntryMode m, EntryCallback cb, xKWent *kwstruct,
+QTkwent::QTkwent(EntryMode m, EntryCallback cb, xKWent *kwstr,
     const char *defstring, Kword **kw)
 {
     ke_update = cb;
-    ke_kwstruct = kwstruct;
+    ke_kwstruct = kwstr;
     ke_val = 0.0;
     ke_del = 0.0;
     ke_pgsize = 0.0;
@@ -105,12 +105,12 @@ QTkwent::QTkwent(EntryMode m, EntryCallback cb, xKWent *kwstruct,
     ke_choice = 0;
     ke_expsb = 0;
 
-    variable *v = Sp.GetRawVar(kwstruct->word);
+    variable *v = Sp.GetRawVar(ke_kwstruct->word);
     if (!defstring)
         defstring = "";
     ke_defstr = lstring::copy(defstring);
 
-    setTitle(kwstruct->word);
+    setTitle(ke_kwstruct->word);
 
     QHBoxLayout *hbox = new QHBoxLayout(this);
     hbox->setContentsMargins(2, 2, 2, 2);
@@ -120,8 +120,8 @@ QTkwent::QTkwent(EntryMode m, EntryCallback cb, xKWent *kwstruct,
     ke_active->setChecked(v);
     hbox->addWidget(ke_active);
 
-    if (kwstruct->type != VTYP_BOOL &&
-            !(kwstruct->type == VTYP_LIST && ke_mode == KW_NO_CB)) {
+    if (ke_kwstruct->type != VTYP_BOOL &&
+            !(ke_kwstruct->type == VTYP_LIST && ke_mode == KW_NO_CB)) {
         // second term is for "debug" button in debug panel
         ke_deflt = new QPushButton(tr("Def"));
         hbox->addWidget(ke_deflt);
@@ -130,8 +130,8 @@ QTkwent::QTkwent(EntryMode m, EntryCallback cb, xKWent *kwstruct,
     }
 
     if ((ke_mode != KW_FLOAT && ke_mode != KW_NO_SPIN) &&
-            (kwstruct->type == VTYP_NUM || kwstruct->type == VTYP_REAL ||
-            (kwstruct->type == VTYP_STRING &&
+            (ke_kwstruct->type == VTYP_NUM || ke_kwstruct->type == VTYP_REAL ||
+            (ke_kwstruct->type == VTYP_STRING &&
             (ke_mode == KW_INT_2 || ke_mode == KW_REAL_2)))) {
         if (ke_mode == KW_REAL_2) {
             // no spin - may want to add options with and without spin
@@ -152,9 +152,9 @@ QTkwent::QTkwent(EntryMode m, EntryCallback cb, xKWent *kwstruct,
         }
     }
     else if (ke_mode == KW_FLOAT ||
-            ke_mode == KW_NO_SPIN || kwstruct->type == VTYP_STRING ||
-            kwstruct->type == VTYP_LIST) {
-        if (kwstruct->type != VTYP_LIST || ke_mode != KW_NO_CB) {
+            ke_mode == KW_NO_SPIN || ke_kwstruct->type == VTYP_STRING ||
+            ke_kwstruct->type == VTYP_LIST) {
+        if (ke_kwstruct->type != VTYP_LIST || ke_mode != KW_NO_CB) {
             if (ke_mode == KW_FLOAT) {
                 ke_expsb = new QTexpDoubleSpinBox();
                 hbox->addWidget(ke_expsb);
@@ -189,7 +189,7 @@ QTkwent::QTkwent(EntryMode m, EntryCallback cb, xKWent *kwstruct,
         if (Sp.GetVar("debug", VTYP_LIST, &vv)) {
             for (variable *vx = vv.get_list(); vx; vx = vx->next()) {
                 if (vx->type() == VTYP_STRING) {
-                    if (!strcmp(kwstruct->word, vx->string())) {
+                    if (!strcmp(ke_kwstruct->word, vx->string())) {
                         ke_active->setChecked(true);
                         break;
                     }
@@ -197,7 +197,7 @@ QTkwent::QTkwent(EntryMode m, EntryCallback cb, xKWent *kwstruct,
             }
         }
         else if (Sp.GetVar("debug", VTYP_STRING, &vv)) {
-            if (!strcmp(kwstruct->word, vv.get_string()))
+            if (!strcmp(ke_kwstruct->word, vv.get_string()))
                 ke_active->setChecked(true);
         }
         else if (Sp.GetVar("debug", VTYP_BOOL, &vv)) {
@@ -207,10 +207,10 @@ QTkwent::QTkwent(EntryMode m, EntryCallback cb, xKWent *kwstruct,
     if (ke_entry) {
         if (!v) {
             ke_entry->setText(
-                kwstruct->lastv1 ? kwstruct->lastv1 : ke_defstr);
+                ke_kwstruct->lastv1 ? ke_kwstruct->lastv1 : ke_defstr);
             if (ke_entry2)
                 ke_entry2->setText(
-                    kwstruct->lastv2 ? kwstruct->lastv2 : ke_defstr);
+                    ke_kwstruct->lastv2 ? ke_kwstruct->lastv2 : ke_defstr);
         }
         else if (ke_update)
             (*ke_update)(true, v, this);
