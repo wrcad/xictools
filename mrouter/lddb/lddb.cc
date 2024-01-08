@@ -1339,8 +1339,9 @@ cLDDB::printNodeName(dbNode *node)
         }
     }
     delete [] nodestr;
-    nodestr = new char(22);
-    sprintf(nodestr, "(error: no such node)");
+    const char *st = "(error: no such node)";
+    nodestr = new char[strlen(st) + 1];
+    strcpy(nodestr, st);
     return (nodestr);
 }
 

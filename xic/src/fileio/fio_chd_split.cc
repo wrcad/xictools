@@ -1403,7 +1403,7 @@ cCHD::write_multi_hier(symref_t *ptop, const FIOcvtPrms *prms,
         for (int ic = 0; ic < nyc; ic++) {
             for (int jc = 0; jc < nxc; jc++) {
 
-                snprintf(fend, 20, "_%d_%d%s", jc, ic, ext);
+                snprintf(fend, 24, "_%d_%d%s", jc, ic, ext);
                 if (do_gz)
                     strcat(fend, ".gz");
 
@@ -2058,7 +2058,7 @@ cCHD::write_multi_flat(symref_t *ptop, const FIOcvtPrms *prms,
                 gBB.bloat(bloatval);
                 wmc.bnds[cnt] = gBB;
 
-                snprintf(fend, 20, "_%d_%d%s", jc, ic, ext);
+                snprintf(fend, 24, "_%d_%d%s", jc, ic, ext);
                 if (do_gz)
                     strcat(fend, ".gz");
 

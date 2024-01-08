@@ -2308,6 +2308,9 @@ bool
 oa_in::readPhysicalDesign(const oaDesign *design, const oaString &xic_cname,
     CDs **sdp, int depth)
 {
+#ifndef LOAD_DBG
+    (void)depth;
+#endif
     if (!design) {
         Errs()->add_error("Null design handle encountered.");
         return (false);

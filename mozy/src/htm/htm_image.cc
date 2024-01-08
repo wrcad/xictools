@@ -457,21 +457,29 @@ namespace {
     bool
     convert(ImageBuffer *ib, const char *program)
     {
+        if (!program || !*program)
+            return (false);
         const char *path = getenv("TMPDIR");
         if (!path)
             path = "/tmp";
-        char tf[256], buf[256];
-        snprintf(tf, sizeof(tf), "%s/moz%d-%s.tmp", path, getpid(), program);
+        int tflen = strlen(path) + strlen(program) + 32;
+        char *tf = new char[tflen];
+        snprintf(tf, tflen, "%s/moz%d-%s.tmp", path, getpid(), program);
         FILE *fp = fopen(tf, "w");
-        if (!fp)
+        if (!fp) {
+            delete [] tf;
             return (false);
+        }
 
         fwrite(ib->buffer, 1, ib->size, fp);
         fclose(fp);
 
         bool ret = false;
-        snprintf(buf, sizeof(buf), "%s %s 2>/dev/null", program, tf);
+        int buflen = strlen(program) + strlen(tf) + 16;
+        char *buf = new char[buflen];
+        snprintf(buf, buflen, "%s %s 2>/dev/null", program, tf);
         fp = popen(buf, "r");
+        delete [] buf;
         if (fp) {
             int c, cnt = 0;
             unsigned char *s0 = new unsigned char[1024];
@@ -497,6 +505,7 @@ namespace {
             ret = true;
         }
         unlink(tf);
+        delete [] tf;
         return (ret);
     }
 }

@@ -170,13 +170,13 @@ namespace {
                 *alp = new sArgList(av, ac);
 
                 // The name token of the function is funcname(arg_cnt).
-                char *pn = new char[t - pname + 6];
+                char *pn = new char[t - pname + 12];
                 t = pname;
                 s = pn;
                 while (*t && !isspace(*t) && *t != '(')
                     *s++ = *t++;
                 *s++ = '(';
-                snprintf(s, 8,  "%d)", ac);
+                snprintf(s, 12,  "%d)", ac);
                 delete [] pname;
                 *namep = pn;
                 return (true);

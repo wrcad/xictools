@@ -57,6 +57,7 @@
 #include <QMouseEvent>
 #include <QMimeData>
 #include <QScrollBar>
+#include <QAbstractTextDocumentLayout>
 
 
 //-----------------------------------------------------------------------------

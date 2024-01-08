@@ -276,7 +276,7 @@ cAlibFixup::alib_vpwl(sLstr &lstr)
         return (false);
     lstr.free();
     lstr.add("pwl");
-    char txx[4], vxx[4];
+    char txx[12], vxx[12];
     txx[0] = 't';
     vxx[0] = 'v';
     for (int i = 1; i <= tvp; i++) {
@@ -389,7 +389,7 @@ cAlibFixup::alib_ipwl(sLstr &lstr)
         return (false);
     lstr.free();
     lstr.add("pwl");
-    char txx[4], ixx[4];
+    char txx[12], ixx[12];
     txx[0] = 't';
     ixx[0] = 'i';
     for (int i = 1; i <= tvp; i++) {

@@ -642,7 +642,8 @@ if test $with_oa = yes; then
     OA_INCLUDE=$oa_loc/include/oa
     OA_LIBS="-L$oa_lpath -loaCommon -loaBase -loaPlugIn -loaDM -loaTech \
  -loaDesign"
-    OA_CFLAGS="-O -g -Wall -W -Wwrite-strings $oa_cflags"
+    dnl no_deprecated_copy avoids many compiler warnings.
+    OA_CFLAGS="-O -g -Wall -W -Wwrite-strings $oa_cflags -Wno-deprecated-copy"
     OA_SUBDIR="src/oa"
     echo '#define HAVE_OA 1'>> confdefs.h
 fi
@@ -866,11 +867,12 @@ dnl             # Filter needed in Windows, pkg-config adds ^M that chokes g++.
                 tkl="`${gtklocd}pkg-config --libs gtk+-2.0`"
             fi
             TOOLKITINC="-DUSE_GTK $tkcf -Wno-deprecated-declarations"
-dnl            TOOLKITCFLAGS="-DGTK_DISABLE_SINGLE_INCLUDES -DGDK_DISABLE_DEPRECATED \
-dnl     -DGTK_DISABLE_DEPRECATED \
-dnl     -DGSEAL_ENABLE"
+	    dnl  Avoid a bunch of compiler warnings from GTK code.
+	    TOOLKITCFLAGS="-Wno-parentheses"
+dnl            TOOLKITCFLAGS="$TOOLKITCFLAGS -DGTK_DISABLE_SINGLE_INCLUDES \
+dnl     -DGDK_DISABLE_DEPRECATED -DGTK_DISABLE_DEPRECATED -DGSEAL_ENABLE"
             if test $OSNAME = "Darwin" -a $with_quartz = yes; then
-                TOOLKITCFLAGS+="-DWITH_QUARTZ"
+                TOOLKITCFLAGS="TOOLKITCFLAGS -DWITH_QUARTZ"
             fi
             TOOLKITLIBS="$tkl"
         else
