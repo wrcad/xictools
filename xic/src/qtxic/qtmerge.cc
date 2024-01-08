@@ -131,6 +131,7 @@ cConvert::PopUpMergeControl(ShowMode mode, mitem_t *mi)
         QTdev::self()->SetPopupLocation(GRloc(LW_LL), QTmergeDlg::self(),
             QTmainwin::self()->Viewport());
         start_modal(QTmergeDlg::self());
+        QTmergeDlg::self()->show();
     }
 
     QTdev::self()->MainLoop();  // Wait for user's response.
@@ -175,48 +176,47 @@ QTmergeDlg::QTmergeDlg(mitem_t *mi)
     vbox->setSpacing(2);
     vbox->setSizeConstraint(QLayout::SetFixedSize);
 
-    QHBoxLayout *hbox = new QHBoxLayout(0);
+    QHBoxLayout *hbox = new QHBoxLayout();
+    vbox->addLayout(hbox);
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
-    vbox->addLayout(hbox);
 
-    QGroupBox *gb = new QGroupBox(this);
+    QGroupBox *gb = new QGroupBox();
+    hbox->addWidget(gb);
     QHBoxLayout *hb = new QHBoxLayout(gb);
     hb->setContentsMargins(qm);
-    mc_label = new QLabel(gb);
+    mc_label = new QLabel();
+    hb->addWidget(mc_label);
     char buf[256];
     snprintf(buf, sizeof(buf), "Cell: %s", mi->name);
     mc_label->setText(tr(buf));
 
-    hb->addWidget(mc_label);
-    hbox->addWidget(gb);
+    hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
-
-    hbox = new QHBoxLayout(0);
     hbox->setContentsMargins(qm);
-    vbox->addLayout(hbox);
+    hbox->setSpacing(2);
     
-    QCheckBox *cb = new QCheckBox();
+    QCheckBox *cb = new QCheckBox(tr("Overwrite Physical"));
     hbox->addWidget(cb);
-    cb->setText(tr("Overwrite Physical"));
     connect(cb, SIGNAL(stateChanged(int)),
         this, SLOT(phys_check_box_slot(int)));
     cb->setChecked(mc_do_elec);
 
     hbox = new QHBoxLayout(0);
-    hbox->setContentsMargins(qm);
     vbox->addLayout(hbox);
+    hbox->setContentsMargins(qm);
+    hbox->setSpacing(2);
 
-    cb = new QCheckBox();
+    cb = new QCheckBox(tr("Overwrite Electrical"));
     hbox->addWidget(cb);
-    cb->setText(tr("Overwrite Electrical"));
     connect(cb, SIGNAL(stateChanged(int)),
         this, SLOT(elec_check_box_slot(int)));
     cb->setChecked(mc_do_elec);
 
     hbox = new QHBoxLayout(0);
-    hbox->setContentsMargins(qm);
     vbox->addLayout(hbox);
+    hbox->setContentsMargins(qm);
+    hbox->setSpacing(2);
 
     QPushButton *btn = new QPushButton(tr("Apply"));
     hbox->addWidget(btn);
@@ -226,8 +226,6 @@ QTmergeDlg::QTmergeDlg(mitem_t *mi)
     hbox->addWidget(btn);
     btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(apply_to_all_btn_slot()));
-
-    show();
 }
 
 

@@ -50,6 +50,8 @@
 #include <QPushButton>
 #include <QComboBox>
 #include <QDrag>
+#include <QScrollBar>
+#include <QAbstractTextDocumentLayout>
 
 
 // Dialog to display a list.  title is the title label text, callback
@@ -495,8 +497,11 @@ QTmcolDlg::mouse_press_slot(QMouseEvent *ev)
     }
     ev->accept();
 
-    const char *str = lstring::copy(
-        wb_textarea->toPlainText().toLatin1().constData());
+    int vsv = wb_textarea->verticalScrollBar()->value();
+    int hsv = wb_textarea->horizontalScrollBar()->value();
+    select_range(0, 0);
+
+    const char *str = wb_textarea->get_chars();
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     int xx = ev->position().x();
     int yy = ev->position().y();;
@@ -504,10 +509,8 @@ QTmcolDlg::mouse_press_slot(QMouseEvent *ev)
     int xx = ev->x();
     int yy = ev->y();;
 #endif
-    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(xx, yy));
-    int posn = cur.position();
-
-    select_range(0, 0);
+    int posn = wb_textarea->document()->documentLayout()->hitTest(
+        QPointF(xx + hsv, yy + vsv), Qt::ExactHit);
 
     if (isspace(str[posn])) {
         // Clicked on white space.
@@ -551,6 +554,9 @@ QTmcolDlg::mouse_press_slot(QMouseEvent *ev)
     start += (lineptr - str);
     end += (lineptr - str);
     select_range(start, end);
+    // Don't let the scroll position change.
+    wb_textarea->verticalScrollBar()->setValue(vsv);
+    wb_textarea->horizontalScrollBar()->setValue(hsv);
 
     if (p_callback)
         (*p_callback)(tbuf, p_cb_arg);

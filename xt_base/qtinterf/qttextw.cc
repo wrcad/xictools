@@ -301,9 +301,9 @@ QTtextEdit::get_selection_pos(int *strtp, int *endp)
 {
     QTextCursor c = textCursor();
     if (strtp)
-        *strtp = c.position();
+        *strtp = c.anchor();
     if (endp)
-        *endp = c.anchor();
+        *endp = c.position();
 }
 
 

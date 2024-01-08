@@ -374,10 +374,11 @@ QTtbDlg::QTtbDlg(int xx, int yy) : QTdraw(0)
     btn->setToolTip(tr("Pause current analysis"));
     connect(btn, SIGNAL(clicked()), this, SLOT(stop_btn_slot()));
 
-    hbox->addWidget(new QWidget);
+#ifdef __APPLE__
+    hbox->addWidget(new QWidget());
     hbox->setStretch(3, 1);
-
-#ifndef __APPLE__
+#else
+    hbox->addSpacing(20);
     hbox->addWidget(menubar);
 #endif
 

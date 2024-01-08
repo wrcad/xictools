@@ -70,6 +70,8 @@
 #include <QMimeData>
 #include <QAction>
 #include <QApplication>
+#include <QScrollBar>
+#include <QAbstractTextDocumentLayout>
 
 
 //===========================================================================
@@ -946,6 +948,9 @@ QTfilesListDlg::mouse_press_slot(QMouseEvent *ev)
     }
     ev->accept();
 
+    int vsv = wb_textarea->verticalScrollBar()->value();
+    int hsv = wb_textarea->horizontalScrollBar()->value();
+
     set_sensitive(FB_EDIT, false);
     set_sensitive(FB_SOURCE, false);
 
@@ -962,8 +967,8 @@ QTfilesListDlg::mouse_press_slot(QMouseEvent *ev)
     int xx = ev->x();
     int yy = ev->y();
 #endif
-    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(xx, yy));
-    int posn = cur.position();
+    int posn = wb_textarea->document()->documentLayout()->hitTest(
+        QPointF(xx + hsv, yy + vsv), Qt::ExactHit);
     const char *str = lstring::copy((const char*)qba.constData());
     const char *line_start = str;
     for (int i = 0; i <= posn; i++) {
@@ -1037,6 +1042,9 @@ QTfilesListDlg::mouse_press_slot(QMouseEvent *ev)
         return;
     }
     select_range(wb_textarea, cstart, cend);
+    // Don't let the scroll position change.
+    wb_textarea->verticalScrollBar()->setValue(vsv);
+    wb_textarea->horizontalScrollBar()->setValue(hsv);
 
     // The fl_selection has the full path.
     delete [] fl_selection;

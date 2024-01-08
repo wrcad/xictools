@@ -73,6 +73,8 @@
 #include <QMouseEvent>
 #include <QMimeData>
 #include <QTextBlock>
+#include <QScrollBar>
+#include <QAbstractTextDocumentLayout>
 
 
 //-----------------------------------------------------------------------------
@@ -1557,11 +1559,13 @@ QTscriptDebuggerDlg::mouse_press_slot(QMouseEvent *ev)
     }
 
     if (db_mode == DBedit) {
-        //wb_textarea->QTextEdit::mousePressEvent(ev);
         ev->ignore();
         return;
     }
     ev->accept();
+
+    int vsv = wb_textarea->verticalScrollBar()->value();
+    int hsv = wb_textarea->horizontalScrollBar()->value();
 
     char *str = wb_textarea->get_chars();
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
@@ -1571,8 +1575,8 @@ QTscriptDebuggerDlg::mouse_press_slot(QMouseEvent *ev)
     int xx = ev->x();
     int yy = ev->y();
 #endif
-    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(xx, yy));
-    int posn = cur.position();
+    int posn = wb_textarea->document()->documentLayout()->hitTest(
+        QPointF(xx + hsv, yy + vsv), Qt::ExactHit);
 
     const char *lineptr = str;
     int line = 0;

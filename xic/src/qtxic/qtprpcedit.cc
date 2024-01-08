@@ -410,6 +410,9 @@ QTcellPrpDlg::mouse_press_slot(QMouseEvent *ev)
     }
     ev->accept();
 
+    int vsv = wb_textarea->verticalScrollBar()->value();
+    int hsv = wb_textarea->horizontalScrollBar()->value();
+
 #ifdef PRPC_DD
     pc_dragging = false;
 #endif
@@ -422,8 +425,8 @@ QTcellPrpDlg::mouse_press_slot(QMouseEvent *ev)
     int xx = ev->x();
     int yy = ev->y();
 #endif
-    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(xx, yy));
-    int posn = cur.position();
+    int posn = wb_textarea->document()->documentLayout()->hitTest(
+        QPointF(xx + hsv, yy + vsv), Qt::ExactHit);
     const char *line_start = str;
     int linesel = 0;
     for (int i = 0; i <= posn; i++) {
@@ -446,6 +449,9 @@ QTcellPrpDlg::mouse_press_slot(QMouseEvent *ev)
         if (p && pc_line_selected != linesel) {
             pc_line_selected = linesel;
             select_range(p->start() + strlen(p->head()), p->end());
+            // Don't let the scroll position change.
+            wb_textarea->verticalScrollBar()->setValue(vsv);
+            wb_textarea->horizontalScrollBar()->setValue(hsv);
 #ifdef PRPC_DD
             pc_drag_x = xx;
             pc_drag_y = yy;

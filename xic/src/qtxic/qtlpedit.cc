@@ -61,6 +61,8 @@
 #include <QMouseEvent>
 #include <QGroupBox>
 #include <QLabel>
+#include <QScrollBar>
+#include <QAbstractTextDocumentLayout>
 
 
 //-----------------------------------------------------------------------------
@@ -1307,7 +1309,10 @@ QTlayerParamDlg::mouse_press_slot(QMouseEvent *ev)
     }
     ev->accept();
 
+    int vsv = lp_text->verticalScrollBar()->value();
+    int hsv = lp_text->horizontalScrollBar()->value();
     select_range(0, 0);
+
     char *str = lp_text->get_chars();
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     int xx = ev->position().x();
@@ -1316,8 +1321,8 @@ QTlayerParamDlg::mouse_press_slot(QMouseEvent *ev)
     int xx = ev->x();
     int yy = ev->y();
 #endif
-    QTextCursor cur = lp_text->cursorForPosition(QPoint(xx, yy));
-    int posn = cur.position();
+    int posn = lp_text->document()->documentLayout()->hitTest(
+        QPointF(xx + hsv, yy + vsv), Qt::ExactHit);
     
     if (isspace(str[posn])) {
         // Clicked on white space.
@@ -1351,6 +1356,9 @@ QTlayerParamDlg::mouse_press_slot(QMouseEvent *ev)
     for ( ; *s && *s != '\n'; s++) ;
 
     select_range(start, start + (s - lineptr));
+    // Don't let the scroll position change.
+    lp_text->verticalScrollBar()->setValue(vsv);
+    lp_text->horizontalScrollBar()->setValue(hsv);
     delete [] str;
 }
 

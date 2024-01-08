@@ -52,6 +52,7 @@
 #include <QLabel>
 #include <QScrollBar>
 #include <QMouseEvent>
+#include <QAbstractTextDocumentLayout>
 
 
 //-----------------------------------------------------------------------------
@@ -347,11 +348,13 @@ QTemptyDlg::mouse_press_slot(QMouseEvent *ev)
     }
     ev->accept();
 
+    int vsv = ec_text->verticalScrollBar()->value();
+    int hsv = ec_text->horizontalScrollBar()->value();
+
     if (!instPtr)
         return;
 
-    const char *str = lstring::copy(
-        (const char*)ec_text->toPlainText().toLatin1().constData());
+    const char *str = ec_text->get_chars();
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     int xx = ev->position().x();
     int yy = ev->position().y();
@@ -359,8 +362,8 @@ QTemptyDlg::mouse_press_slot(QMouseEvent *ev)
     int xx = ev->x();
     int yy = ev->y();
 #endif
-    QTextCursor cur = ec_text->cursorForPosition(QPoint(xx, yy));
-    int posn = cur.position();
+    int posn = ec_text->document()->documentLayout()->hitTest(
+        QPointF(xx + hsv, yy + vsv), Qt::ExactHit);
     
     if (isspace(str[posn])) {
         // Clicked on white space.
@@ -399,7 +402,8 @@ QTemptyDlg::mouse_press_slot(QMouseEvent *ev)
         return;
     }
 
-    ec_text->setTextCursor(cur);
+    ec_text->set_insertion_point(posn);
+    ec_text->moveCursor(QTextCursor::StartOfWord, QTextCursor::MoveAnchor);
     ec_text->moveCursor(QTextCursor::StartOfWord, QTextCursor::MoveAnchor);
     ec_text->moveCursor(QTextCursor::EndOfWord,QTextCursor::KeepAnchor);
     e_item *scur = 0;

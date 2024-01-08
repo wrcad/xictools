@@ -53,8 +53,9 @@
 #include <QDropEvent>
 #include <QDrag>
 #include <QMimeData>
-#include <QScrollBar>
 #include <QTextCursor>
+#include <QScrollBar>
+#include <QAbstractTextDocumentLayout>
 
 
 //-----------------------------------------------------------------------------
@@ -188,6 +189,8 @@ QTprpBase::select_range(int start, int end)
 void
 QTprpBase::handle_button_down(QMouseEvent *ev)
 {
+    int vsv = wb_textarea->verticalScrollBar()->value();
+    int hsv = wb_textarea->horizontalScrollBar()->value();
     pb_dragging = false;
     QByteArray qba = wb_textarea->toPlainText().toLatin1();
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
@@ -197,8 +200,8 @@ QTprpBase::handle_button_down(QMouseEvent *ev)
     int x = ev->x();
     int y = ev->y();
 #endif
-    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(x, y));
-    int pos = cur.position();
+    int pos = wb_textarea->document()->documentLayout()->hitTest(
+        QPointF(x + hsv, y + vsv), Qt::ExactHit);
     const char *str = lstring::copy((const char*)qba.constData());
     const char *line_start = str;
     int linesel = 0;
@@ -223,6 +226,9 @@ QTprpBase::handle_button_down(QMouseEvent *ev)
         if (p && pb_line_selected != linesel) {
             pb_line_selected = linesel;
             select_range(p->start() + strlen(p->head()), p->end());
+            // Don't let the scroll position change.
+            wb_textarea->verticalScrollBar()->setValue(vsv);
+            wb_textarea->horizontalScrollBar()->setValue(hsv);
             if (pb_btn_callback)
                 (*pb_btn_callback)(p);
             delete [] str;

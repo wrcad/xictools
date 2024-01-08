@@ -59,6 +59,8 @@
 #include <QMenu>
 #include <QAction>
 #include <QMouseEvent>
+#include <QScrollBar>
+#include <QAbstractTextDocumentLayout>
 
 
 //-----------------------------------------------------------------------------
@@ -767,6 +769,9 @@ QTdrcRuleEditDlg::mouse_press_slot(QMouseEvent *ev)
     }
     ev->accept();
 
+    int vsv = dim_text->verticalScrollBar()->value();
+    int hsv = dim_text->horizontalScrollBar()->value();
+
     char *str = dim_text->get_chars();
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     int xx = ev->position().x();
@@ -775,8 +780,8 @@ QTdrcRuleEditDlg::mouse_press_slot(QMouseEvent *ev)
     int xx = ev->x();
     int yy = ev->y();
 #endif
-    QTextCursor cur = dim_text->cursorForPosition(QPoint(xx, yy));
-    int posn = cur.position();
+    int posn = dim_text->document()->documentLayout()->hitTest(
+        QPointF(xx + hsv, yy + vsv), Qt::ExactHit);
 
     int rule = 0;
     int start = 0;
@@ -809,6 +814,9 @@ QTdrcRuleEditDlg::mouse_press_slot(QMouseEvent *ev)
     ed_rule_selected = rule;
 
     select_range(start + 2, end);
+    // Don't let the scroll position change.
+    dim_text->verticalScrollBar()->setValue(vsv);
+    dim_text->horizontalScrollBar()->setValue(hsv);
     delete [] str;
 }
 

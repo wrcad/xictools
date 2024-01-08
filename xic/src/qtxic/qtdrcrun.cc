@@ -64,6 +64,8 @@
 #include <QLineEdit>
 #include <QCheckBox>
 #include <QMouseEvent>
+#include <QScrollBar>
+#include <QAbstractTextDocumentLayout>
 
 
 //-----------------------------------------------------------------------------
@@ -855,8 +857,10 @@ QTdrcRunDlg::mouse_press_slot(QMouseEvent *ev)
     }
     ev->accept();
 
-    const char *str = lstring::copy(
-        (const char*)dc_jobs->toPlainText().toLatin1());
+    int vsv = dc_jobs->verticalScrollBar()->value();
+    int hsv = dc_jobs->horizontalScrollBar()->value();
+
+    const char *str = dc_jobs->get_chars();
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     int xx = ev->position().x();
     int yy = ev->position().y();
@@ -864,8 +868,8 @@ QTdrcRunDlg::mouse_press_slot(QMouseEvent *ev)
     int xx = ev->x();
     int yy = ev->y();
 #endif
-    QTextCursor cur = dc_jobs->cursorForPosition(QPoint(xx, yy));
-    int posn = cur.position();
+    int posn = dc_jobs->document()->documentLayout()->hitTest(
+        QPointF(xx + hsv, yy + vsv), Qt::ExactHit);
     
     if (isspace(str[posn])) {
         // Clicked on white space.

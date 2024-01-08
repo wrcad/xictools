@@ -5,6 +5,17 @@ command-arrows don't change rotation angle. (Apple) FIXES
 Place panel, can't bring back text popup if deleted.
 Known problem, no signal available for this case from combo button.
 XXXXXXX
+To get a string offset from a click in a QTtextEdit:=
+old way
+This fails when the scrollbar is advanced.
+    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(xx, yy));
+    int posn = cur.position();
+new way
+This works well with lots of text and scrollbars.
+    int vsv = wb_textarea->verticalScrollBar()->value();
+    int hsv = wb_textarea->horizontalScrollBar()->value();
+    int posn = wb_textarea->document()->documentLayout()->hitTest(
+        QPointF(xx + hsv, yy + vsv), Qt::ExactHit);
 
 * No tooltips from main menu in Apple.
 * Added a Help button to logo panel.

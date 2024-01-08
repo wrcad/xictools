@@ -98,6 +98,7 @@ private slots:
     void help_btn_slot();
     void resize_slot(QResizeEvent*);
     void mouse_press_slot(QMouseEvent*);
+    void mouse_release_slot(QMouseEvent*);
     void mouse_motion_slot(QMouseEvent*);
     void font_changed_slot(int);
     void save_btn_slot(bool);

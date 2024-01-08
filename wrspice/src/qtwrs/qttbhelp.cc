@@ -56,6 +56,8 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QMouseEvent>
+#include <QScrollBar>
+#include <QAbstractTextDocumentLayout>
 
 
 // Dialog to display keyword help lists.  Clicking on the list entries
@@ -220,8 +222,10 @@ QTtbHelpDlg::mouse_press_slot(QMouseEvent *ev)
     }
     ev->accept();
 
-    const char *str = lstring::copy(
-        th_text->toPlainText().toLatin1().constData());
+    int vsv = th_text->verticalScrollBar()->value();
+    int hsv = th_text->horizontalScrollBar()->value();
+
+    const char *str = th_text->get_chars();
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     int xx = ev->position().x();
     int yy = ev->position().y();
@@ -229,8 +233,8 @@ QTtbHelpDlg::mouse_press_slot(QMouseEvent *ev)
     int xx = ev->x();
     int yy = ev->y();
 #endif
-    QTextCursor cur = th_text->cursorForPosition(QPoint(xx, yy));
-    int posn = cur.position();
+    int posn = th_text->document()->documentLayout()->hitTest(
+        QPointF(xx + hsv, yy + vsv), Qt::ExactHit);
 
     const char *lineptr = str;
     for (int i = 0; i <= posn; i++) {
@@ -263,6 +267,9 @@ QTtbHelpDlg::mouse_press_slot(QMouseEvent *ev)
     int end = lineptr - str;
 
     th_text->select_range(start, end);
+    // Don't let the scroll position change.
+    th_text->verticalScrollBar()->setValue(vsv);
+    th_text->horizontalScrollBar()->setValue(hsv);
 #ifdef HAVE_MOZY
     HLP()->word(buf);
 #endif

@@ -60,6 +60,8 @@
 #include <QPushButton>
 #include <QMouseEvent>
 #include <QAction>
+#include <QScrollBar>
+#include <QAbstractTextDocumentLayout>
 
 
 //===========================================================================
@@ -282,10 +284,12 @@ QTcircuitListDlg::mouse_release_slot(QMouseEvent *ev)
     if (fabs(xx - cl_x) < 5 && fabs(yy - cl_y) < 5) {
         // Clicked, accept to prevent selection or drag/drop.
         ev->accept();
+        int vsv = wb_textarea->verticalScrollBar()->value();
+        int hsv = wb_textarea->horizontalScrollBar()->value();
         QByteArray ba = wb_textarea->toPlainText().toLatin1();
         const char *str = ba.constData();
-        QTextCursor cur = wb_textarea->cursorForPosition(QPoint(xx, yy));
-        int posn = cur.position();
+        int posn = wb_textarea->document()->documentLayout()->hitTest(
+            QPointF(xx + hsv, yy + vsv), Qt::ExactHit);
 
         int line = 0;
         for (int i = 0; i <= posn; i++) {

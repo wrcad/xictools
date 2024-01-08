@@ -51,6 +51,8 @@
 #include <QPushButton>
 #include <QGroupBox>
 #include <QLabel>
+#include <QScrollBar>
+#include <QAbstractTextDocumentLayout>
 
 
 //-----------------------------------------------------------------------------
@@ -382,6 +384,9 @@ QTcellInstSelectDlg::mouse_press_slot(QMouseEvent *ev)
     }
     ev->accept();
 
+    int vsv = wb_textarea->verticalScrollBar()->value();
+    int hsv = wb_textarea->horizontalScrollBar()->value();
+
     char *str = wb_textarea->get_chars();
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     int xx = ev->position().x();
@@ -390,8 +395,8 @@ QTcellInstSelectDlg::mouse_press_slot(QMouseEvent *ev)
     int xx = ev->x();
     int yy = ev->y();
 #endif
-    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(xx, yy));
-    int posn = cur.position();
+    int posn = wb_textarea->document()->documentLayout()->hitTest(
+        QPointF(xx + hsv, yy + vsv), Qt::ExactHit);
 
     if (isspace(str[posn])) {
         // Clicked on white space.
@@ -430,7 +435,7 @@ QTcellInstSelectDlg::mouse_press_slot(QMouseEvent *ev)
         return;
     }
 
-    wb_textarea->setTextCursor(cur);
+    wb_textarea->set_insertion_point(posn);
     wb_textarea->moveCursor(QTextCursor::StartOfWord, QTextCursor::MoveAnchor);
     wb_textarea->moveCursor(QTextCursor::EndOfWord,QTextCursor::KeepAnchor);
     if (!strncmp(start, "yes", 3)) {

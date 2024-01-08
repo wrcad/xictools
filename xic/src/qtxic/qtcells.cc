@@ -67,6 +67,8 @@
 #include <QMimeData>
 #include <QComboBox>
 #include <QDrag>
+#include <QScrollBar>
+#include <QAbstractTextDocumentLayout>
 
 
 //-----------------------------------------------------------------------------
@@ -326,6 +328,8 @@ QTcellsDlg::QTcellsDlg(GRobject c) : QTbag(this)
         this, SLOT(resize_slot(QResizeEvent*)));
     connect(wb_textarea, SIGNAL(press_event(QMouseEvent*)),
         this, SLOT(mouse_press_slot(QMouseEvent*)));
+    connect(wb_textarea, SIGNAL(release_event(QMouseEvent*)),
+        this, SLOT(mouse_release_slot(QMouseEvent*)));
     connect(wb_textarea, SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(mouse_motion_slot(QMouseEvent*)));
 
@@ -1436,11 +1440,6 @@ QTcellsDlg::resize_slot(QResizeEvent *ev)
 void
 QTcellsDlg::mouse_press_slot(QMouseEvent *ev)
 {
-    if (ev->type() == QEvent::MouseButtonRelease) {
-        c_dragging = false;
-        ev->accept();
-        return;
-    }
     if (ev->type() != QEvent::MouseButtonPress) {
         ev->ignore();
         return;
@@ -1450,10 +1449,11 @@ QTcellsDlg::mouse_press_slot(QMouseEvent *ev)
     if (c_no_select)
         return;
 
+    int vsv = wb_textarea->verticalScrollBar()->value();
+    int hsv = wb_textarea->horizontalScrollBar()->value();
     select_range(0, 0);
 
-    char *str =
-        lstring::copy(wb_textarea->toPlainText().toLatin1().constData());
+    char *str = wb_textarea->get_chars();
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     int xx = ev->position().x();
     int yy = ev->position().y();
@@ -1461,11 +1461,10 @@ QTcellsDlg::mouse_press_slot(QMouseEvent *ev)
     int xx = ev->x();
     int yy = ev->y();
 #endif
-    QTextCursor cur = wb_textarea->cursorForPosition(QPoint(xx, yy));
-    int posn = cur.position();
+    int posn = wb_textarea->document()->documentLayout()->hitTest(
+        QPointF(xx + hsv, yy + vsv), Qt::ExactHit);
 
     if (isspace(str[posn])) {
-        // Clicked on white space.
         delete [] str;
         return;
     }
@@ -1491,10 +1490,25 @@ QTcellsDlg::mouse_press_slot(QMouseEvent *ev)
     }
     select_range(start - str, end - str);
     delete [] str;
+    // Don't let the scroll position change.
+    wb_textarea->verticalScrollBar()->setValue(vsv);
+    wb_textarea->horizontalScrollBar()->setValue(hsv);
 
     c_dragging = true;
     c_drag_x = xx;
     c_drag_y = yy;
+}
+
+
+void
+QTcellsDlg::mouse_release_slot(QMouseEvent *ev)
+{
+    if (ev->type() != QEvent::MouseButtonRelease) {
+        ev->ignore();
+        return;
+    }
+    c_dragging = false;
+    ev->accept();
 }
 
 
