@@ -623,7 +623,7 @@ cLDDB::emitError(const char *fmt, ...)
 
     if (db_errors < LD_MAX_ERRORS) {
         char buf[2048];
-        sprintf(buf, "Read, line %d: ", db_currentLine);
+        snprintf(buf, sizeof(buf), "Read, line %d: ", db_currentLine);
         int n = strlen(buf);
         char *e = buf + n;
         va_start(args, fmt);
@@ -1318,10 +1318,10 @@ cLDDB::printNodeName(dbNode *node)
         dbGate *g = db_nlGates[k];
         for (int i = 0; i < g->nodes; i++) {
             if (g->noderec[i] == node) {
-               delete [] nodestr;
-                nodestr = new char[strlen(g->gatename) +
-                    strlen(g->node[i]) + 2];
-                sprintf(nodestr, "%s/%s", g->gatename, g->node[i]);
+                delete [] nodestr;
+                int len = strlen(g->gatename) + strlen(g->node[i]) + 2;
+                nodestr = new char[len];
+                snprintf(nodestr, len, "%s/%s", g->gatename, g->node[i]);
                 return (nodestr);
             }
         }
@@ -1330,10 +1330,10 @@ cLDDB::printNodeName(dbNode *node)
         dbGate *g = db_nlPins[k];
         for (int i = 0; i < g->nodes; i++) {
             if (g->noderec[i] == node) {
-               delete [] nodestr;
-                nodestr = new char[strlen(g->gatename) +
-                    strlen(g->node[i]) + 2];
-                sprintf(nodestr, "%s/%s", g->gatename, g->node[i]);
+                delete [] nodestr;
+                int len = strlen(g->gatename) + strlen(g->node[i]) + 2;
+                nodestr = new char[len];
+                snprintf(nodestr, len, "%s/%s", g->gatename, g->node[i]);
                 return (nodestr);
             }
         }

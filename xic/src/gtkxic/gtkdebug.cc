@@ -805,7 +805,6 @@ sDbg::set_mode(DBmode mode)
             gdk_window_set_cursor(
                 gtk_text_view_get_window(GTK_TEXT_VIEW(wb_textarea),
                 GTK_TEXT_WINDOW_TEXT), c);
-            g_object_unref(G_OBJECT(c));
         }
     }
     else if (mode == DBrun) {
@@ -824,7 +823,6 @@ sDbg::set_mode(DBmode mode)
             gdk_window_set_cursor(
                 gtk_text_view_get_window(GTK_TEXT_VIEW(wb_textarea),
                 GTK_TEXT_WINDOW_TEXT),  c);
-            g_object_unref(G_OBJECT(c));
         }
     }
 }
@@ -1691,18 +1689,7 @@ sDbg::db_change_proc(GtkWidget*, void*)
 int
 sDbg::db_key_dn_hdlr(GtkWidget*, GdkEvent *event, void*)
 {
-    if (!Dbg)
-        return (false);
-    if (Dbg->db_mode == DBedit) {
-        // Eat the spacebar press, so that it doesn't "press" the
-        // mode button.
-        if (event->key.string) {
-            if (*event->key.string == ' ')
-                return (true);
-        }
-        return (false);
-    }
-    else if (Dbg->db_mode == DBrun) {
+    if (Dbg && Dbg->db_mode == DBrun) {
         if (event->key.string) {
             switch (*event->key.string) {
             case ' ':

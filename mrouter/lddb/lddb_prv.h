@@ -565,7 +565,7 @@ public:
             else {
                 int len = strlen(db_warnmsg) + strlen(s) + 2;
                 char *t = new char[len];
-                sprintf(t, "%s\n%s", db_warnmsg, s);
+                snprintf(t, len, "%s\n%s", db_warnmsg, s);
                 delete [] s;
                 delete [] db_warnmsg;
                 db_warnmsg = t;

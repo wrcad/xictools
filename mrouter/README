@@ -152,3 +152,8 @@ New elapsed time and internal memory use diagnostics.
 Now use unsigned short for routing grid storage, saves memory.
 
 New hash table class used for finding of gates/nets/pins by name.
+
+-----
+The present release is 1.2.6.  This represents code changes and bug
+fixes that were unfortunately not recorded here.  They are probably
+in the git log.

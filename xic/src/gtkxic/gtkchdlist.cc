@@ -594,7 +594,7 @@ sCHL::recolor()
             return;
         if (!gtk_tree_model_get_iter_first(GTK_TREE_MODEL(store), &iter))
             return;
-        for (int i = 0; ; i++) {
+        for (;;) {
             char *name;
             gtk_tree_model_get(GTK_TREE_MODEL(store), &iter, 0, &name, -1);
             int sc = strcmp(name, DSP()->MainWdesc()->DbName());
@@ -615,7 +615,7 @@ sCHL::recolor()
             return;
         if (!gtk_tree_model_get_iter_first(GTK_TREE_MODEL(store), &iter))
             return;
-        for (int i = 0; ; i++) {
+        for (;;) {
             gtk_list_store_set(store, &iter, 3, NULL, 4, NULL, -1);
             if (!gtk_tree_model_iter_next(GTK_TREE_MODEL(store), &iter))
                 break;
