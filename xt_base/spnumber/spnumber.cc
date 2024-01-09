@@ -117,9 +117,12 @@ sSPnumber::printnum(double num, const char *unitstr, bool fix, int numd)
 #ifdef WRSPICE
     if (numd < 2)
         numd = CP.NumDigits();
-#endif
     if (numd < 0)
-        numd = 0;
+        numd = DEF_numdgt;
+#else
+    if (numd < 0)
+        numd = 6;
+#endif
     if (numd > 15)
         numd = 15;
 

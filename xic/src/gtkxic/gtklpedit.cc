@@ -694,7 +694,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(lp_kw_proc), 0);
+        G_CALLBACK(lp_attr_proc), 0);
 
     // LayerReorderMode, 0, lp_attr_proc, lpLayerReorderMode, 0
     item = gtk_menu_item_new_with_mnemonic("LayerReorderMode");
@@ -703,7 +703,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(lp_kw_proc), 0);
+        G_CALLBACK(lp_attr_proc), 0);
 
     // NoPlanarize, 0, lp_attr_proc, lpNoPlanarize, 0
     item = gtk_menu_item_new_with_mnemonic("NoPlanarize");
@@ -712,7 +712,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(lp_kw_proc), 0);
+        G_CALLBACK(lp_attr_proc), 0);
 
     // AntennaTotal, 0, lp_attr_proc, lpAntennaTotal, 0
     item = gtk_menu_item_new_with_mnemonic("AntennaTotal");
@@ -721,7 +721,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(lp_kw_proc), 0);
+        G_CALLBACK(lp_attr_proc), 0);
 
     // SubstrateEps, 0, lp_attr_proc, lpSubstrateEps, 0
     item = gtk_menu_item_new_with_mnemonic("SubstrateEps");
@@ -730,7 +730,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(lp_kw_proc), 0);
+        G_CALLBACK(lp_attr_proc), 0);
 
     // SubstrateThickness, 0, lp_attr_proc, lpSubstrateThickness, 0
     item = gtk_menu_item_new_with_mnemonic("SubstrateThickness");
@@ -739,7 +739,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     gtk_widget_show(item);
     gtk_menu_shell_append(GTK_MENU_SHELL(submenu), item);
     g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(lp_kw_proc), 0);
+        G_CALLBACK(lp_attr_proc), 0);
 
     // Help Menu.
     item = gtk_menu_item_new_with_mnemonic("_Help");

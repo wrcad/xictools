@@ -143,10 +143,10 @@ namespace {
 
     bool x_error;
 
-    void
-    handle_x_error(Display*, XErrorEvent*)
+    int handle_x_error(Display*, XErrorEvent*)
     {
         x_error = true;
+        return (0);
     }
 
 

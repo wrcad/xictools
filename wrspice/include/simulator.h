@@ -907,7 +907,7 @@ namespace ResPrint
 #define DEF_nfreqs_MIN          1
 #define DEF_nfreqs_MAX          100
 
-#define DEF_numdgt              4
+#define DEF_numdgt              6
 #define DEF_numdgt_MIN          0
 #define DEF_numdgt_MAX          15
 
