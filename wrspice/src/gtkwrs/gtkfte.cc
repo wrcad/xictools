@@ -64,7 +64,7 @@
 //  vectorspanel
 //  circuitspanel
 //  filespanel
-//  tracepanel
+//  runoppanel
 //  variablespanel
 
 // Default window size, assumes 6X13 chars, 80 cols, 16 rows
@@ -1034,18 +1034,18 @@ GTKtoolbar::UpdateFiles()
 
 
 //===========================================================================
-// Pop up to display the current traces, iplots, etc.
+// Pop up to display the current runops, iplots, etc.
 // Buttons:
 //  cancel: pop down
 //  help:   bring up help panel
 //  delete: delete entry
 
-struct sTraces
+struct sRunops
 {
-    sTraces(int x, int y, const char *s)
+    sRunops(int x, int y, const char *s)
         {
-            TB()->tr_shell = TB()->TextPop(x, y, "Trace",
-                "Active Traces and Debugs", s, tr_btn_hdlr, tr_btns, 1,
+            TB()->tr_shell = TB()->TextPop(x, y, "Runop",
+                "Active Runops", s, tr_btn_hdlr, tr_btns, 1,
                 tr_actions);
         }
 
@@ -1060,11 +1060,11 @@ private:
     static const char *tr_btns[];
 };
 
-const char *sTraces::tr_btns[] = { "Delete Inactive" };
+const char *sRunops::tr_btns[] = { "Delete Inactive" };
 
 
 void
-sTraces::update()
+sRunops::update()
 {
     sLstr lstr;
     OP.statusCmd(&lstr);
@@ -1082,7 +1082,7 @@ sTraces::update()
 // 'Delete' button pressed, ask for confirmation.
 //
 void
-sTraces::tr_actions(GtkWidget *caller, void*)
+sRunops::tr_actions(GtkWidget *caller, void*)
 {
     char *s = text_get_chars(TB()->tr_text, 0, -1);
     if (*s != 'I') {
@@ -1094,7 +1094,7 @@ sTraces::tr_actions(GtkWidget *caller, void*)
             }
         }
         if (!*t) {
-            GRpkg::self()->ErrPrintf(ET_ERROR, "no inactive debugs.\n");
+            GRpkg::self()->ErrPrintf(ET_ERROR, "no inactive runops.\n");
             GTKdev::SetStatus(caller, false);
             delete [] s;
             return;
@@ -1110,7 +1110,7 @@ sTraces::tr_actions(GtkWidget *caller, void*)
 // Callback to perform the deletions.
 //
 void
-sTraces::tr_dfunc()
+sRunops::tr_dfunc()
 {
     OP.deleteRunop(DF_ALL, true, -1);
     TB()->UpdateRunops();
@@ -1121,7 +1121,7 @@ sTraces::tr_dfunc()
 // Handle button presses in the text area.
 //
 void
-sTraces::tr_btn_hdlr(GtkWidget *caller, int x, int y)
+sRunops::tr_btn_hdlr(GtkWidget *caller, int x, int y)
 {
     char *string = text_get_chars(TB()->tr_text, 0, -1);
     gtk_text_view_window_to_buffer_coords(GTK_TEXT_VIEW(caller),
@@ -1132,8 +1132,8 @@ sTraces::tr_btn_hdlr(GtkWidget *caller, int x, int y)
     x = gtk_text_iter_get_offset(&ihere) - gtk_text_iter_get_offset(&iline);
     char *line_start = string + gtk_text_iter_get_offset(&iline);
 
-    // The first column should start with ' ' for active debugs, 'I'
-    // for inactive ones.  Anything else is a 'no debugs in effect'
+    // The first column should start with ' ' for active runops, 'I'
+    // for inactive ones.  Anything else is a 'no runops in effect'
     // message.
     //
     if (*line_start != ' ' && *line_start != 'I') {
@@ -1165,7 +1165,7 @@ sTraces::tr_btn_hdlr(GtkWidget *caller, int x, int y)
 
 // Static function.
 void
-sTraces::tr_recolor()
+sRunops::tr_recolor()
 {
     GdkColor clr, *c = 0;
     if (gdk_color_parse("red", &clr))
@@ -1189,7 +1189,7 @@ sTraces::tr_recolor()
     text_set_editable(TB()->tr_text, false);
     delete [] string;
 }
-// End of sTraces functions
+// End of sRunops functions
 
 
 void
@@ -1198,33 +1198,33 @@ GTKtoolbar::PopUpRunops(ShowMode mode, int x, int y)
     if (mode == MODE_OFF) {
         if (!tr_shell)
             return;
-        SetLoc(ntb_trace, tr_shell);
+        SetLoc(ntb_runop, tr_shell);
 
         GtkWidget *confirm = (GtkWidget*)g_object_get_data(G_OBJECT(tr_shell),
             "confirm");
         if (confirm)
             gtk_widget_destroy(confirm);
 
-        GTKdev::SetStatus(tb_trace, false);
+        GTKdev::SetStatus(tb_runop, false);
         g_signal_handlers_disconnect_by_func(G_OBJECT(tr_shell),
             (gpointer)tp_cancel_proc, tr_shell);
         gtk_widget_destroy(tr_shell);
         tr_shell = 0;
 
-        SetActive(ntb_trace, false);
+        SetActive(ntb_runop, false);
         return;
     }
     if (tr_shell)
         return;
     FixLoc(&x, &y);
-    sTraces traces(x, y, "");
+    sRunops runops(x, y, "");
     tr_text = (GtkWidget*)g_object_get_data(G_OBJECT(tr_shell), "text");
-    sTraces::update();
-    SetActive(ntb_trace, true);
+    sRunops::update();
+    SetActive(ntb_runop, true);
 }
 
 
-// Update the trace list.  Called when debugs are added or deleted.
+// Update the runop list.  Called when runops are added or deleted.
 //
 void
 GTKtoolbar::UpdateRunops()
@@ -1233,7 +1233,7 @@ GTKtoolbar::UpdateRunops()
         return;
     if (!tr_shell)
         return;
-    sTraces::update();
+    sRunops::update();
 }
 
 
@@ -1462,7 +1462,7 @@ sTextPop::tp_help_proc(GtkWidget*, void *client_data)
     else if (which == TB()->fi_shell)
         HLP()->word("filespanel");
     else if (which == TB()->tr_shell)
-        HLP()->word("tracepanel");
+        HLP()->word("runoppanel");
     else if (which == TB()->va_shell)
         HLP()->word("variablespanel");
 #else

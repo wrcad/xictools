@@ -301,8 +301,8 @@ QTrunopListDlg::mouse_release_slot(QMouseEvent *ev)
             }
         }
 
-        // The first column should start with ' ' for active debugs, 'I'
-        // for inactive ones.  Anything else is a 'no debugs in effect'
+        // The first column should start with ' ' for active runops, 'I'
+        // for inactive ones.  Anything else is a 'no runops in effect'
         // message.
         //
         if (*lineptr != ' ' && *lineptr != 'I')
@@ -372,7 +372,7 @@ QTrunopListDlg::button_slot(bool state)
                     }
                     if (!*t) {
                         GRpkg::self()->ErrPrintf(ET_ERROR,
-                            "no inactive debugs.\n");
+                            "no inactive runops.\n");
                         QTdev::SetStatus(btn, false);
                         return;
                     }

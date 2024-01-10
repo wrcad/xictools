@@ -333,7 +333,7 @@ GTKtoolbar::GTKtoolbar()
     sh_shell = 0;
     tb_simdefs = 0;
     sd_shell = 0;
-    tb_trace = 0;
+    tb_runop = 0;
     tr_shell = 0;
     tr_text = 0;
     tb_variables = 0;
@@ -361,7 +361,7 @@ GTKtoolbar::GTKtoolbar()
     ntb_shell     = "shell";
     ntb_simdefs   = "simdefs";
     ntb_toolbar   = "toolbar";
-    ntb_trace     = "trace";
+    ntb_runop     = "runop";
     ntb_variables = "variables";
     ntb_vectors   = "vectors";
 
@@ -379,7 +379,7 @@ GTKtoolbar::GTKtoolbar()
     entries[10].name = ntb_shell;
     entries[11].name = ntb_simdefs;
     entries[12].name = ntb_commands;
-    entries[13].name = ntb_trace;
+    entries[13].name = ntb_runop;
     entries[14].name = ntb_debug;
     entries[15].name = 0;
 
@@ -1491,6 +1491,9 @@ tbent *
 GTKtoolbar::FindEnt(const char *str)
 {
     if (str) {
+        // Handle old "trace" keyword, now called "runop".
+        if (!strcmp(str, "trace"))
+            str = "runop";
         for (tbent *tb = entries; tb && tb->name; tb++) {
             if (!strcmp(str, tb->name))
                 return (tb);
@@ -1527,7 +1530,7 @@ GTKtoolbar::GetShell(const char *str)
         return (sh_shell);
     else if (str == ntb_simdefs)
         return (sd_shell);
-    else if (str == ntb_trace)
+    else if (str == ntb_runop)
         return (tr_shell);
     else if (str == ntb_variables)
         return (va_shell);
@@ -2125,9 +2128,9 @@ GTKtoolbar::tbpop(bool up)
             gtk_widget_set_tooltip_text(item, "Set simulation options");
             tb_simdefs = item;
         }
-        else if (tb->name == ntb_trace) {
-            // "/Tools/_Trace", "<alt>A", menu_proc, ix, "<CheckItem>");
-            item = gtk_check_menu_item_new_with_mnemonic("_Trace");
+        else if (tb->name == ntb_runop) {
+            // "/Tools/_Runops", "<alt>A", menu_proc, ix, "<CheckItem>");
+            item = gtk_check_menu_item_new_with_mnemonic("_Runops");
             gtk_widget_show(item);
             gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
             g_signal_connect(G_OBJECT(item), "activate",
@@ -2135,8 +2138,8 @@ GTKtoolbar::tbpop(bool up)
             gtk_widget_add_accelerator(item, "activate", accel_group,
                 GDK_KEY_a, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
                 GTK_ACCEL_VISIBLE);
-            gtk_widget_set_tooltip_text(item, "List traces in effect");
-            tb_trace = item;
+            gtk_widget_set_tooltip_text(item, "List runops in effect");
+            tb_runop = item;
         }
         else if (tb->name == ntb_variables) {
             // "/Tools/Va_riables", "<alt>R", menu_proc, ix, "<CheckItem>");
@@ -2249,9 +2252,9 @@ GTKtoolbar::tbpop(bool up)
             if (tb_simdefs)
                 GTKdev::SetStatus(tb_simdefs, tb->active);
         }
-        else if (tb->name == ntb_trace) {
-            if (tb_trace)
-                GTKdev::SetStatus(tb_trace, tb->active);
+        else if (tb->name == ntb_runop) {
+            if (tb_runop)
+                GTKdev::SetStatus(tb_runop, tb->active);
         }
         else if (tb->name == ntb_variables) {
             if (tb_variables)
@@ -2762,7 +2765,7 @@ GTKtoolbar::menu_proc(GtkWidget*, void *data)
         else
             TB()->PopUpSimDefs(MODE_OFF, 0, 0);
     }
-    else if (tb->name == TB()->ntb_trace) {
+    else if (tb->name == TB()->ntb_runop) {
         if (!tb->active)
             TB()->PopUpRunops(MODE_ON, tb->x, tb->y);
         else
