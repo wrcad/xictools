@@ -1,10 +1,5 @@
 XXXXXXX
 GTK issues:
-command-arrows don't change rotation angle. (Apple) FIXES
-
-gtklpedit.cc
-lp_attr_proc not used!?  CHECK THIS, QT too
-
 Place panel, can't bring back text popup if deleted.
 Known problem, no signal available for this case from combo button.
 XXXXXXX

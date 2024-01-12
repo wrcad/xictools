@@ -194,9 +194,9 @@ public:
     static tbent_t *FindEnt(const char *str)
     {
         if (str) {
-            // Handle old "trace" keyword, now called "runop".
+            // Handle old "trace" keyword, now called "runops".
             if (!strcmp(str, "trace"))
-                str = "runop";
+                str = "runops";
             for (tbent_t *tb = tb_entries; tb->name(); tb++) {
                 if (!strcmp(str, tb->name()))
                     return (tb);

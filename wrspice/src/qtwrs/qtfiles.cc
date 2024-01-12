@@ -86,6 +86,35 @@
 //  filespanel
 
 
+// Derived class to create mime data for selection, so we can prepend
+// the file path.
+//
+class QTfileTextEdit : public QTtextEdit
+{
+public:
+    QTfileTextEdit(QWidget *prnt = 0) : QTtextEdit(prnt) { }
+
+protected:
+    QMimeData * createMimeDataFromSelection() const;
+};
+
+
+QMimeData *
+QTfileTextEdit::createMimeDataFromSelection() const
+{
+    if (QTfilesListDlg::self()) {
+        char *sel = QTfilesListDlg::self()->get_selection();
+        if (sel && *sel) {
+            QMimeData *dat = new QMimeData();
+            dat->setText(sel);
+            return (dat);
+        }
+    }
+    return (0);
+}
+// End of QTfileTextEdit functions.
+
+
 // It can take a while to process the files, unfortunately the "busy"
 // cursor seems to never appear with the standard logic.  In order to
 // make the busy cursor appear, had to use a timeout as below.
@@ -551,7 +580,7 @@ QTfilesListDlg::create_page(sDirList *dl)
 
     // scrolled text area
     //
-    QTtextEdit *nbtext = new QTtextEdit();
+    QTtextEdit *nbtext = new QTfileTextEdit();
     vbox->addWidget(nbtext);
     dl->set_dataptr(nbtext);
     nbtext->setReadOnly(true);
@@ -577,6 +606,9 @@ QTfilesListDlg::create_page(sDirList *dl)
         this, SLOT(mime_data_handled_slot(const QMimeData*, bool*)));
     connect(nbtext, SIGNAL(mime_data_delivered(const QMimeData*, bool*)),
         this, SLOT(mime_data_delivered_slot(const QMimeData*, bool*)));
+    connect(nbtext, SIGNAL(key_press_event(QKeyEvent*)),
+        this, SLOT(key_press_slot(QKeyEvent*)));
+
     return (page);
 }
 
@@ -1200,6 +1232,24 @@ QTfilesListDlg::mime_data_delivered_slot(const QMimeData *dta, bool *accpt)
                 delete [] pth;
             }
         }
+    }
+}
+
+
+void
+QTfilesListDlg::key_press_slot(QKeyEvent *ev)
+{
+    // Accept Ctrl-C as a copy operation, this is only done in
+    // read-only mode.  Note that the QTtextEdit was modified to send
+    // these.
+    QTtextEdit *w = qobject_cast<QTtextEdit*>(sender());
+    if (!w)
+        return;
+    if (!w->isReadOnly())
+        return;
+    if (ev->key() == Qt::Key_C && (ev->modifiers() & Qt::ControlModifier)) {
+        ev->accept();
+        w->copy();
     }
 }
 

@@ -81,6 +81,7 @@ QTcanvas::QTcanvas(QWidget *prnt) : QWidget(prnt)
     // Ghost drawing.
     da_ghost_overlay_bg = 0;
     da_ghost_draw_ptr = &da_local;
+    da_local.gd_windows[0] = this;
 
     da_bg.setNamedColor(QString("white"));
     da_fg.setNamedColor(QString("black"));
@@ -313,8 +314,8 @@ void
 QTcanvas::create_overlay_backg()
 {
     // Make sure that the overlay_bg is size consistent with the main
-    // pixmap and copy the main pixmap into it.  The user must call this
-    // before entering overlay mode.
+    // pixmap and copy the main pixmap into it.  The user should call
+    // this before entering overlay mode.
 
     if (da_overlay_bg && (da_overlay_bg->size() != da_pixmap->size())) {
         delete da_overlay_bg;
@@ -1488,7 +1489,7 @@ cGhostDrawCommon::draw_ghost(int xx, int yy)
                     cv->drw_beg();
                     // Need to update the overlay_backg here after
                     // drawing a mark (such as a plot mark) otherwise
-                    // erasing the ghose will eat the mark.  The call
+                    // erasing the ghost will eat the mark.  The call
                     // count will be nonzero if a mark was just drawn,
                     // and is reset in the block below.
 

@@ -1447,7 +1447,9 @@ sGraph::gr_zoomin(int x0, int y0)
     gr_pressy = y0;
 
     gr_set_ghost(ghost_zoom, x0, y0);
+    GP.PushGraphContext(this);
     gr_dev->DrawGhost();
+    GP.PopGraphContext();
 }
 
 
@@ -4668,7 +4670,9 @@ sGraph::timeout_move(void *arg)
 {
     sGraph *graph = (sGraph*)arg;
     graph->gr_set_ghost(ghost_tbox, 0, 0);
+    GP.PushGraphContext(graph);
     graph->gr_dev->DrawGhost();
+    GP.PopGraphContext();
     graph->gr_cmdmode |= grMoving;
     graph->gr_timer_id = 0;
     return (false);

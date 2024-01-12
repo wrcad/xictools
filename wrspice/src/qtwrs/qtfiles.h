@@ -57,6 +57,7 @@ class QHBoxLayout;
 class QComboBox;
 class QStackedWidget;
 class QMimeData;
+class QKeyEvent;
 struct sPathList;
 struct sDirList;
 
@@ -89,6 +90,7 @@ private slots:
     void mouse_motion_slot(QMouseEvent*);
     void mime_data_handled_slot(const QMimeData*, bool*) const;
     void mime_data_delivered_slot(const QMimeData*, bool*);
+    void key_press_slot(QKeyEvent*);
     void dismiss_btn_slot();
 
 private:
