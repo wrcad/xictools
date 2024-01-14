@@ -203,7 +203,7 @@ stringlist::get_columns(const stringlist *thissl, int charcols)
 
     stringcolumn *c0 = 0, *ce = 0;
     const stringlist *s = thissl;
-    for (int i = 0; s; i++) {
+    while (s) {
         stringcolumn *c = new stringcolumn(&s, r);
         if (!c0)
             c0 = ce = c;

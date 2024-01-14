@@ -54,6 +54,7 @@ Sydney University mods Copyright(c) 1989 Anthony E. Parker, David J. Skellern
 #include "jfetdefs.h"
 #include "noisdefs.h"
 
+// JFETnoise (mode, operation, firstModel, ckt, data, OnDens)
 //    This routine names and evaluates all of the noise sources
 //    associated with JFET's.  It starts with the model *firstModel and
 //    traverses all of its insts.  It then proceeds to any other models
@@ -65,12 +66,12 @@ static const char *JFETnNames[JFETNSRCS] = {
     // Note that we have to keep the order
     // consistent with the index definitions
     // in JFETdefs.h
-    //
-    "_rd",      /* noise due to rd */
-    "_rs",      /* noise due to rs */
-    "_id",      /* noise due to id */
-    "_1overf",  /* flicker (1/f) noise */
-    ""          /* total transistor noise */
+
+    "_rd",      // noise due to rd
+    "_rs",      // noise due to rs
+    "_id",      // noise due to id
+    "_1overf",  // flicker (1/f) noise
+    ""          // total transistor noise
 };
 
 
@@ -80,6 +81,7 @@ JFETdev::noise (int mode, int operation, sGENmodel *genmod, sCKT *ckt,
 {
     char jfetname[N_MXVLNTH];
     sJFETmodel *model = static_cast<sJFETmodel*>(genmod);
+
     if (operation == N_OPEN) {
         // see if we have to to produce a summary report
         // if so, name all the noise generators
@@ -91,8 +93,9 @@ JFETdev::noise (int mode, int operation, sGENmodel *genmod, sCKT *ckt,
                 for (inst = model->inst(); inst; inst = inst->next()) {
 
                     for (int i = 0; i < JFETNSRCS; i++) {
-                        (void)sprintf(jfetname, "onoise_%s%s",
-                            (char*)inst->GENname, JFETnNames[i]);
+                        (void)snprintf(jfetname, sizeof(jfetname),
+                            "onoise_%s%s", (char*)inst->GENname,
+                            JFETnNames[i]);
                         Realloc(&data->namelist, data->numPlots+1,
                             data->numPlots);
                         ckt->newUid(&data->namelist[data->numPlots++],
@@ -110,14 +113,16 @@ JFETdev::noise (int mode, int operation, sGENmodel *genmod, sCKT *ckt,
                 for (inst = model->inst(); inst; inst = inst->next()) {
 
                     for (int i = 0; i < JFETNSRCS; i++) {
-                        (void)sprintf(jfetname, "onoise_total_%s%s",
-                            (char*)inst->GENname, JFETnNames[i]);
+                        (void)snprintf(jfetname, sizeof(jfetname),
+                            "onoise_total_%s%s", (char*)inst->GENname,
+                            JFETnNames[i]);
                         Realloc(&data->namelist, data->numPlots+2,
                             data->numPlots);
                         ckt->newUid(&data->namelist[data->numPlots++],
                             0, jfetname, UID_OTHER);
-                        (void)sprintf(jfetname, "inoise_total_%s%s",
-                            (char*)inst->GENname, JFETnNames[i]);
+                        (void)snprintf(jfetname, sizeof(jfetname),
+                            "inoise_total_%s%s", (char*)inst->GENname,
+                            JFETnNames[i]);
                         ckt->newUid(&data->namelist[data->numPlots++],
                             0, jfetname, UID_OTHER);
                         // we've added two more plots
@@ -223,10 +228,9 @@ JFETdev::noise (int mode, int operation, sGENmodel *genmod, sCKT *ckt,
                         }
                     }
                     if (data->prtSummary) {
-                        // print a summary report
                         for (i = 0; i < JFETNSRCS; i++) {
-                            data->outpVector[data->outNumber++] =
-                                noizDens[i];
+                            // print a summary report
+                            data->outpVector[data->outNumber++] = noizDens[i];
                         }
                     }
                 }

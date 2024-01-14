@@ -97,7 +97,7 @@ MOSdev::noise (int mode, int operation, sGENmodel *genmod, sCKT *ckt,
                 sMOSinstance *inst;
                 for (inst = model->inst(); inst; inst = inst->next()) {
                     for (int i = 0; i < MOSNSRCS; i++) {
-                        (void)sprintf(mosname, "onoise_%s%s",
+                        (void)snprintf(mosname, sizeof(mosname), "onoise_%s%s",
                             (char*)inst->GENname, MOSnNames[i]);
                         Realloc(&data->namelist, data->numPlots+1,
                             data->numPlots);
@@ -122,14 +122,16 @@ MOSdev::noise (int mode, int operation, sGENmodel *genmod, sCKT *ckt,
                 sMOSinstance *inst;
                 for (inst = model->inst(); inst; inst = inst->next()) {
                     for (int i = 0; i < MOSNSRCS; i++) {
-                        (void)sprintf(mosname, "onoise_total_%s%s",
-                            (char*)inst->GENname, MOSnNames[i]);
+                        (void)snprintf(mosname, sizeof(mosname),
+                            "onoise_total_%s%s", (char*)inst->GENname,
+                            MOSnNames[i]);
                         Realloc(&data->namelist, data->numPlots+2,
                             data->numPlots);
                         ckt->newUid(&data->namelist[data->numPlots++],
                             0, mosname, UID_OTHER);
-                        (void)sprintf(mosname, "inoise_total_%s%s",
-                            (char*)inst->GENname, MOSnNames[i]);
+                        (void)snprintf(mosname, sizeof(mosname),
+                            "inoise_total_%s%s", (char*)inst->GENname,
+                            MOSnNames[i]);
                         ckt->newUid(&data->namelist[data->numPlots++],
                             0, mosname, UID_OTHER);
                         // we've added two more plots

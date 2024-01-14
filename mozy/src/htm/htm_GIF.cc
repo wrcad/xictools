@@ -1165,7 +1165,6 @@ htmImageManager::cvtGifToGzf(ImageBuffer *ib, const char *file)
         writeColormap(ib, fp, 2 << (buf[4] & 0x07));
     }
 
-    int imageCount = 0;
     int done = 0;
     while (!done) {
         // block identifier
@@ -1283,7 +1282,6 @@ htmImageManager::cvtGifToGzf(ImageBuffer *ib, const char *file)
             done = -1;
             break;
         }
-        ++imageCount;
     }
     // close output file
     fclose(fp);

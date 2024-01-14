@@ -88,7 +88,7 @@ MESdev::noise(int mode, int operation, sGENmodel *genmod, sCKT *ckt,
                 for (inst = model->inst(); inst; inst = inst->next()) {
 
                     for (int i = 0; i < MESNSRCS; i++) {
-                        (void)sprintf(mesname, "onoise_%s%s",
+                        (void)snprintf(mesname, sizeof(mesname), "onoise_%s%s",
                             (char*)inst->GENname, MESnNames[i]);
                         Realloc(&data->namelist, data->numPlots+1,
                             data->numPlots);
@@ -107,14 +107,16 @@ MESdev::noise(int mode, int operation, sGENmodel *genmod, sCKT *ckt,
                 for (inst = model->inst(); inst; inst = inst->next()) {
 
                     for (int i = 0; i < MESNSRCS; i++) {
-                        (void)sprintf(mesname, "onoise_total_%s%s",
-                            (char*)inst->GENname, MESnNames[i]);
+                        (void)snprintf(mesname, sizeof(mesname),
+                            "onoise_total_%s%s", (char*)inst->GENname,
+                            MESnNames[i]);
                         Realloc(&data->namelist, data->numPlots+2,
                             data->numPlots);
                         ckt->newUid(&data->namelist[data->numPlots++],
                             0, mesname, UID_OTHER);
-                        (void)sprintf(mesname, "inoise_total_%s%s",
-                            (char*)inst->GENname, MESnNames[i]);
+                        (void)snprintf(mesname, sizeof(mesname),
+                            "inoise_total_%s%s", (char*)inst->GENname,
+                            MESnNames[i]);
                         ckt->newUid(&data->namelist[data->numPlots++],
                             0, mesname, UID_OTHER);
                         // we've added two more plots

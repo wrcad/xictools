@@ -104,7 +104,7 @@ int i;
 		      {   switch (mode)
 			  {  case N_DENS:
 			          for (i = 0; i < UFSNSRCS; i++)
-				  {    (void) sprintf(ufsname, "onoise.%s%s",
+				  {    (void) snprintf(ufsname, sizeof(ufsname), "onoise.%s%s",
 					              (char*)here->UFSname,
 						      UFSnNames[i]);
 /*
@@ -130,7 +130,7 @@ int i;
 			          break;
 		             case INT_NOIZ:
 			          for (i = 0; i < UFSNSRCS; i++)
-				  {    (void) sprintf(ufsname, "onoise_total.%s%s",
+				  {    (void) snprintf(ufsname, sizeof(ufsname), "onoise_total.%s%s",
 						      (char*)here->UFSname,
 						      UFSnNames[i]);
 /*
@@ -153,7 +153,7 @@ int i;
 
 				       /* we've added one more plot */
 
-			               (void) sprintf(ufsname, "inoise_total.%s%s",
+			               (void) snprintf(ufsname, sizeof(ufsname), "inoise_total.%s%s",
 						      (char*)here->UFSname,
 						      UFSnNames[i]);
 /*

@@ -99,13 +99,13 @@ VBICdev::load(sGENinstance *in_inst, sCKT *ckt)
     ,Vbcx,Vrci,Vrbx,Vrbi,Vre,Vrbp,Vrs
     ,Vbe,Vbc,Ibe,Ibe_Vbei,Ibex,Ibex_Vbex,Itzf
     ,Itzf_Vbei,Itzf_Vbci,Itzr,Itzr_Vbci,Itzr_Vbei,Ibc,Ibc_Vbci
-    ,Ibc_Vbei,Ibep,Ibep_Vbep,Ircx,Ircx_Vrcx,Irci,Irci_Vrci
-    ,Irci_Vbci,Irci_Vbcx,Irbx,Irbx_Vrbx,Irbi,Irbi_Vrbi,Irbi_Vbei
-    ,Irbi_Vbci,Ire,Ire_Vre,Irbp,Irbp_Vrbp,Irbp_Vbep,Irbp_Vbci
+    ,Ibc_Vbei,Ibep,Ibep_Vbep,Ircx,Ircx_Vrcx=0.0,Irci,Irci_Vrci
+    ,Irci_Vbci,Irci_Vbcx,Irbx,Irbx_Vrbx=0.0,Irbi,Irbi_Vrbi,Irbi_Vbei
+    ,Irbi_Vbci,Ire,Ire_Vre=0.0,Irbp,Irbp_Vrbp,Irbp_Vbep,Irbp_Vbci
     ,Qbe,Qbe_Vbei,Qbe_Vbci,Qbex,Qbex_Vbex,Qbc,Qbc_Vbci
     ,Qbcx,Qbcx_Vbcx,Qbep,Qbep_Vbep,Qbep_Vbci,Qbeo,Qbeo_Vbe
     ,Qbco,Qbco_Vbc,Ibcp,Ibcp_Vbcp,Iccp,Iccp_Vbep,Iccp_Vbci
-    ,Iccp_Vbcp,Irs,Irs_Vrs,Qbcp,Qbcp_Vbcp,SCALE;
+    ,Iccp_Vbcp,Irs,Irs_Vrs=0.0,Qbcp,Qbcp_Vbcp,SCALE;
 // SRW    int iret;
 /*
     int vbic_4T_it_cf_fj(double *

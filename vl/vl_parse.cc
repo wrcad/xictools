@@ -427,7 +427,7 @@ vl_bitexp_parse::dec(char *instr)
         firstcp++;
     int num = atoi(firstcp); // don't put x, z, ? in decimal string
     char buf[MAXSTRLEN];
-    sprintf(buf, "%d'h%x", bits().size(), num);
+    snprintf(buf, MAXSTRLEN,  "%d'h%x", bits().size(), num);
     hex(buf);
 }
 

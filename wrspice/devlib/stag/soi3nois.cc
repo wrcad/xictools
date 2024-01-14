@@ -138,12 +138,12 @@ SOI3dev::noise(int mode, int operation, sGENmodel *genmod, sCKT *ckt,
 #ifdef SIMETRIX_VERSION
          	 /*  NTL modification - remove onoise - add SIM_STRING */
              if (*SOI3nNames[i])
-                sprintf(soi3name,"%s%s%s",inst->SOI3name,SIM_STRING,SOI3nNames[i]);
+                snprintf(soi3name, sizeof(soi3name),"%s%s%s",inst->SOI3name,SIM_STRING,SOI3nNames[i]);
              else
-                sprintf(soi3name, "%s", inst->SOI3name);
+                snprintf(soi3name, sizeor(soi3name), "%s", inst->SOI3name);
 				 /* end NTL modification */
 #else /* SIMETRIX_VERSION */
-			    (void)sprintf(soi3name,"onoise_%s%s",(char*)inst->SOI3name,SOI3nNames[i]);
+			    (void)snprintf(soi3name, sizeof(soi3name),"onoise_%s%s",(char*)inst->SOI3name,SOI3nNames[i]);
 #endif /* SIMETRIX_VERSION */
 
 /*
@@ -168,10 +168,10 @@ if (!data->namelist) return(E_NOMEM);
 
 #ifdef SIMETRIX_VERSION
          	 /* NTL modification - remove onoise_total - add SIM_STRING */
-			    sprintf(soi3name,"%s%s%s",inst->SOI3name,SIM_STRING,SOI3nNames[i]);
+			    snprintf(soi3name, sizeof(soi3name),"%s%s%s",inst->SOI3name,SIM_STRING,SOI3nNames[i]);
 				 /* end NTL modification */
 #else /* SIMETRIX_VERSION */
-			    (void)sprintf(soi3name,"onoise_total_%s%s",(char*)inst->SOI3name,SOI3nNames[i]);
+			    (void)snprintf(soi3name, sizeof(soi3name),"onoise_total_%s%s",(char*)inst->SOI3name,SOI3nNames[i]);
 #endif /* SIMETRIX_VERSION */
 
 /*
@@ -189,10 +189,10 @@ if (!data->namelist) return(E_NOMEM);
 
 #ifdef SIMETRIX_VERSION
  				  /*  NTL modification - remove inoise_total - add SIM_STRING */
-              sprintf(soi3name,"%s%s%s_in",inst->SOI3name,SIM_STRING,SOI3nNames[i]);
+              snprintf(soi3name, sizeof(soi3name),"%s%s%s_in",inst->SOI3name,SIM_STRING,SOI3nNames[i]);
 				  /* end NTL modification */
 #else /* SIMETRIX_VERSION */
-             (void)sprintf(soi3name,"inoise_total_%s%s",(char*)inst->SOI3name,SOI3nNames[i]);
+             (void)snprintf(soi3name, sizeof(soi3name),"inoise_total_%s%s",(char*)inst->SOI3name,SOI3nNames[i]);
 #endif /* SIMETRIX_VERSION */
 
 

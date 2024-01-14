@@ -82,7 +82,8 @@ RESdev::noise (int mode, int operation, sGENmodel *genmod, sCKT *ckt,
                 sRESinstance *inst;
                 for (inst = model->inst(); inst; inst = inst->next()) {
 
-                    sprintf(resname, "onoise_%s", (char*)inst->GENname);
+                    (void)snprintf(resname, sizeof(resname), "onoise_%s",
+                        (char*)inst->GENname);
                     Realloc(&data->namelist, data->numPlots+1,
                         data->numPlots);
                     ckt->newUid(&data->namelist[data->numPlots++],
@@ -90,7 +91,8 @@ RESdev::noise (int mode, int operation, sGENmodel *genmod, sCKT *ckt,
                         // we've added one more plot
 
                     if (doing_flicker(model, inst)) {
-                        sprintf(resname, "onoise_%s_kf", (char*)inst->GENname);
+                        (void)snprintf(resname, sizeof(resname),
+                            "onoise_%s_kf", (char*)inst->GENname);
                         Realloc(&data->namelist, data->numPlots+1,
                             data->numPlots);
                         ckt->newUid(&data->namelist[data->numPlots++],
@@ -107,27 +109,27 @@ RESdev::noise (int mode, int operation, sGENmodel *genmod, sCKT *ckt,
                 sRESinstance *inst;
                 for (inst = model->inst(); inst; inst = inst->next()) {
 
-                    sprintf(resname, "onoise_total_%s",
+                    (void)snprintf(resname, sizeof(resname), "onoise_total_%s",
                         (char*)inst->GENname);
                     Realloc(&data->namelist, data->numPlots+2,
                         data->numPlots);
                     ckt->newUid(&data->namelist[data->numPlots++],
                         0, resname, UID_OTHER);
-                    sprintf(resname, "inoise_total_%s",
+                    (void)snprintf(resname, sizeof(resname), "inoise_total_%s",
                         (char*)inst->GENname);
                     ckt->newUid(&data->namelist[data->numPlots++],
                         0, resname, UID_OTHER);
                     // we've added two more plots
 
                     if (doing_flicker(model, inst)) {
-                        sprintf(resname, "onoise_total_%s_kf",
-                            (char*)inst->GENname);
+                        (void)snprintf(resname, sizeof(resname),
+                            "onoise_total_%s_kf", (char*)inst->GENname);
                         Realloc(&data->namelist, data->numPlots+2,
                             data->numPlots);
                         ckt->newUid(&data->namelist[data->numPlots++],
                             0, resname, UID_OTHER);
-                        sprintf(resname, "inoise_total_%s_kf",
-                            (char*)inst->GENname);
+                        (void)snprintf(resname, sizeof(resname),
+                            "inoise_total_%s_kf", (char*)inst->GENname);
                         ckt->newUid(&data->namelist[data->numPlots++],
                             0, resname, UID_OTHER);
                         // we've added two more plots

@@ -1,3 +1,8 @@
+vl-4.3.4  1/13/24
+
+Convert all sprintf calls to snprintf to avoid compiler warning about
+deprecated sprintf.
+
 vl-4.3.3  1/5/19
 
 New internal vl_simulator::setptime,  vl_simulator::step no longer takes

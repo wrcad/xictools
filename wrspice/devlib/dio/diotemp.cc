@@ -255,7 +255,7 @@ DIOdev::temperature(sGENmodel *genmod, sCKT *ckt)
                     cbv=here->DIOtSatCur*here->DIOarea*here->DIOm * bvt/vt;
                     emsg = MALLOC(100);
                     if(emsg == (char *)NULL) return(E_NOMEM);
-                    (void)sprintf(emsg,
+                    (void)snprintf(emsg, 100,
                     "%%s: breakdown current increased to %g to resolve",
                             cbv);
 /* SRW
@@ -283,7 +283,7 @@ DIOdev::temperature(sGENmodel *genmod, sCKT *ckt)
                     }
                     emsg = MALLOC(100);
                     if(emsg == (char *)NULL) return(E_NOMEM);
-                    (void)sprintf(emsg,
+                    (void)snprintf(emsg, 100,
                     "%%s: unable to match forward and reverse diode regions: bv = %g, ibv = %g",
                             xbv,xcbv);
 /* SRW

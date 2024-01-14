@@ -96,7 +96,7 @@ BSIM3dev::load(sGENinstance *in_inst, sCKT *ckt)
     double gcbdb, gcbgb, gcbsb, gcddb, gcdgb, gcdsb, gcgdb, gcggb, gcgsb, gcsdb;
     double gcsgb, gcssb, /*tol,*/ MJ, MJSW, MJSWG;
     double vbd, vbs, vds, vgb, vgd, vgs, vgdo /*, xfact*/;
-    double qgate, qbulk, qdrn, qsrc, qinoi, cqgate, cqbulk, cqdrn;
+    double qgate=0, qbulk=0, qdrn=0, qsrc, qinoi, cqgate, cqbulk, cqdrn;
     double Vds, Vgs, Vbs, Gmbs, FwdSum, RevSum;
     double Vgs_eff, Vfb /*, dVbs_dVb*/;
     double Phis, dPhis_dVb, sqrtPhis, dsqrtPhis_dVb, Vth, dVth_dVb, dVth_dVd;

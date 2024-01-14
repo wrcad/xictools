@@ -1050,7 +1050,7 @@ vl_simulator::display_print(lsList<vl_expr*> *args, ostream &outs,
                 case 'c':
                 case 'C':
                     gen.next(&e);
-                    sprintf(buf, "%c", (char)(int)(e->eval()));
+                    snprintf(buf, sizeof(buf),  "%c", (char)(int)(e->eval()));
                     wformat(outs, buf, ' ', fw);
                     break;
                 case 'd':
@@ -1064,29 +1064,29 @@ vl_simulator::display_print(lsList<vl_expr*> *args, ostream &outs,
                                 fw = 0;
                             }
                             else
-                                sprintf(buf, "%u", (unsigned)d);
+                                snprintf(buf, sizeof(buf),  "%u", (unsigned)d);
                         }
                         else
-                            sprintf(buf, "%d", (int)d);
+                            snprintf(buf, sizeof(buf), "%d", (int)d);
                         wformat(outs, buf, ' ', fw);
                     }
                     break;
                 case 'e':
                 case 'E':
                     gen.next(&e);
-                    sprintf(buf, "%e", (double)(e->eval()));
+                    snprintf(buf, sizeof(buf), "%e", (double)(e->eval()));
                     wformat(outs, buf, ' ', fw);
                     break;
                 case 'f':
                 case 'F':
                     gen.next(&e);
-                    sprintf(buf, "%f", (double)(e->eval()));
+                    snprintf(buf, sizeof(buf), "%f", (double)(e->eval()));
                     wformat(outs, buf, ' ', fw);
                     break;
                 case 'g':
                 case 'G':
                     gen.next(&e);
-                    sprintf(buf, "%g", (double)(e->eval()));
+                    snprintf(buf, sizeof(buf), "%g", (double)(e->eval()));
                     wformat(outs, buf, ' ', fw);
                     break;
                 case 'h':
@@ -1105,11 +1105,13 @@ vl_simulator::display_print(lsList<vl_expr*> *args, ostream &outs,
                                 buf[i] = 0;
                                 fw = w;
                             }
-                            else
-                                sprintf(buf, "%0*x", w, (unsigned)d);
+                            else {
+                                snprintf(buf, sizeof(buf), "%0*x", w,
+                                    (unsigned)d);
+                            }
                         }
                         else
-                            sprintf(buf, "%x", (unsigned)d);
+                            snprintf(buf, sizeof(buf), "%x", (unsigned)d);
                         wformat(outs, buf, ' ', fw);
                     }
                     break;
@@ -1137,11 +1139,13 @@ vl_simulator::display_print(lsList<vl_expr*> *args, ostream &outs,
                                 buf[i] = 0;
                                 fw = w;
                             }
-                            else
-                                sprintf(buf, "%0*o", w, (unsigned)d);
+                            else {
+                                snprintf(buf, sizeof(buf), "%0*o", w,
+                                    (unsigned)d);
+                            }
                         }
                         else
-                            sprintf(buf, "%o", (unsigned)d);
+                            snprintf(buf, sizeof(buf), "%o", (unsigned)d);
                         wformat(outs, buf, ' ', fw);
                     }
                     break;
@@ -1151,7 +1155,7 @@ vl_simulator::display_print(lsList<vl_expr*> *args, ostream &outs,
                     {
                         char *tt = (char*)(e->eval());
                         tt = vl_fix_str(tt);
-                        sprintf(buf, "%s", tt);
+                        snprintf(buf, sizeof(buf), "%s", tt);
                         delete [] tt;
                         wformat(outs, buf, ' ', fw);
                     }
@@ -1166,10 +1170,12 @@ vl_simulator::display_print(lsList<vl_expr*> *args, ostream &outs,
                         else {
                             double t = (double) d;
                             t *= (s_description->tstep()/pow(10.0, s_tfunit));
-                            if (s_tfsuffix && *s_tfsuffix)
-                                sprintf(buf, "%.*f%s", s_tfprec, t, s_tfsuffix);
+                            if (s_tfsuffix && *s_tfsuffix) {
+                                snprintf(buf, sizeof(buf), "%.*f%s", s_tfprec,
+                                    t, s_tfsuffix);
+                            }
                             else
-                                sprintf(buf, "%.*f", s_tfprec, t);
+                                snprintf(buf, sizeof(buf), "%.*f", s_tfprec, t);
                         }
                         wformat(outs, buf, ' ', s_tfwidth);
                     }
@@ -1422,7 +1428,7 @@ vl_primitive::symbol(unsigned char sym)
     case PrimBQ: return("(B?)");
     default:
         char msg[MAXSTRLEN];
-        sprintf(msg, "Unexpected primitive symbol type %d", sym);
+        snprintf(msg, MAXSTRLEN, "Unexpected primitive symbol type %d", sym);
         VP()->error(ERR_INTERNAL, msg);
         break;
     }

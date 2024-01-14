@@ -314,7 +314,6 @@ PLCImageJPEG::ScanlineProc()
     // keep processing scanlines as long as we have data available
     JSAMPROW buffer[1];         // row pointer array for read_scanlines
 
-    int cnt = 0;
     while (cinfo->output_scanline < cinfo->output_height) {
         buffer[0] = r;
 
@@ -326,7 +325,6 @@ PLCImageJPEG::ScanlineProc()
             break;
         // next data slot
         r += o_stride;
-        cnt++;
     }
 
     // Note:  since we have set the buffered_image flag, data_pos will

@@ -426,7 +426,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double IdlovVdseff, dIdlovVdseff_dVg, dIdlovVdseff_dVd, dIdlovVdseff_dVb /*,
            dIdlovVdseff_dT */;
 //    double IdovVds;
-    double vdbs, vsbs, /* vdb, vsb, */ vdbd, vsbd, vsbdo, vbs_jct, vbd_jct;
+    double vdbs, vsbs, /* vdb, vsb, */ vdbd=0, vsbd, vsbdo, vbs_jct, vbd_jct;
     double Vsbs, Vdbd, Vdbs;
     double delvdbd, delvsbs, delvdbs, delvbd_jct,  delvbs_jct;
     double gcdbdb, gcsbsb, gcsbb, gcdbb;
@@ -492,7 +492,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double qsrc2, qbulk2;
     double Csg2, Csd2, Csb2;
     double  DELTA_3_SOI2;
-    double dphi_dT,dsqrtPhi_dT,dXdep0_dT,cdep0,/*dcep0_dT,*/theta0vb0,dtheta0vb0_dT;
+    double dphi_dT,dsqrtPhi_dT,dXdep0_dT,cdep0,/*dcep0_dT,*/theta0vb0,dtheta0vb0_dT=0;
     double thetaRout/*,dthetaRout_dT,dcdep0_dT*/;
     double dPhis_dT,dsqrtPhis_dT,dXdep_dT,dlt1_dT,dltw_dT;
     double agidl, bgidl, cgidl, egidl, rgidl, kgidl, fgidl;
@@ -8694,10 +8694,10 @@ line900:
 
             if (model->B4SOItype > 0)
             {
-                ceqqg = ceqqg;
-                ceqqb = ceqqb;
-                ceqqe = ceqqe;
-                ceqqd = ceqqd;
+                //ceqqg = ceqqg;
+                //ceqqb = ceqqb;
+                //ceqqe = ceqqe;
+                //ceqqd = ceqqd;
             }
             else
             {

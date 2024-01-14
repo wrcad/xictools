@@ -120,7 +120,7 @@ HSM1dev::noise(int mode, int operation, sGENmodel *genmod, sCKT *ckt,
           switch (mode) {
           case N_DENS:
             for ( i = 0; i < HSM1NSRCS; i++ ) { 
-              (void) sprintf(hsm1name, "onoise.%s%s", 
+              (void) snprintf(hsm1name, sizeof(hsm1name), "onoise.%s%s", 
                              (char *)here->HSM1name, HSM1nNames[i]);
 /* SRW
               data->namelist = 
@@ -141,7 +141,7 @@ HSM1dev::noise(int mode, int operation, sGENmodel *genmod, sCKT *ckt,
             break;
           case INT_NOIZ:
             for ( i = 0; i < HSM1NSRCS; i++ ) {
-              (void) sprintf(hsm1name, "onoise_total.%s%s", 
+              (void) snprintf(hsm1name, sizeof(hsm1name), "onoise_total.%s%s", 
                              (char *)here->HSM1name, HSM1nNames[i]);
 /* SRW
               data->namelist = 
@@ -158,7 +158,7 @@ HSM1dev::noise(int mode, int operation, sGENmodel *genmod, sCKT *ckt,
                 ckt->newUid(&data->namelist[data->numPlots++],
                     0, hsm1name, UID_OTHER);
               
-              (void) sprintf(hsm1name, "inoise_total.%s%s", 
+              (void) snprintf(hsm1name, sizeof(hsm1name), "inoise_total.%s%s", 
                              (char *)here->HSM1name, HSM1nNames[i]);
 /* SRW
               data->namelist = 

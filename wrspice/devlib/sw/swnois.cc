@@ -73,7 +73,8 @@ SWdev::noise(int mode, int operation, sGENmodel *genmod, sCKT *ckt,
                 sSWinstance *inst;
                 for (inst = model->inst(); inst; inst = inst->next()) {
 
-                    (void)sprintf(swname, "onoise_%s", (char*)inst->GENname);
+                    (void)snprintf(swname, sizeof(swname), "onoise_%s",
+                        (char*)inst->GENname);
                     Realloc(&data->namelist, data->numPlots+1,
                         data->numPlots);
                     ckt->newUid(&data->namelist[data->numPlots++],
@@ -89,13 +90,13 @@ SWdev::noise(int mode, int operation, sGENmodel *genmod, sCKT *ckt,
                 sSWinstance *inst;
                 for (inst = model->inst(); inst; inst = inst->next()) {
 
-                    (void)sprintf(swname, "onoise_total_%s",
+                    (void)snprintf(swname, sizeof(swname), "onoise_total_%s",
                         (char*)inst->GENname);
                     Realloc(&data->namelist, data->numPlots+2,
                         data->numPlots);
                     ckt->newUid(&data->namelist[data->numPlots++],
                         0, swname, UID_OTHER);
-                    (void)sprintf(swname, "inoise_total_%s",
+                    (void)snprintf(swname, sizeof(swname), "inoise_total_%s",
                         (char*)inst->GENname);
                     ckt->newUid(&data->namelist[data->numPlots++],
                         0, swname, UID_OTHER);

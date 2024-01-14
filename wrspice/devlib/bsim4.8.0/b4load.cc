@@ -191,12 +191,12 @@ BSIM4dev::load(sGENinstance *in_inst, sCKT *ckt)
     double gcgbb, gcdbb, gcsbb, gcbbb;
     double gcdbdb, gcsbsb;
     double gcsgb, gcssb, MJD, MJSWD, MJSWGD, MJS, MJSWS, MJSWGS;
-    double qgate, qbulk, qdrn, qsrc, cqgate, cqbody, cqdrn;
+    double qgate=0, qbulk=0, qdrn=0, qsrc, cqgate, cqbody, cqdrn;
     double /*Vdb,*/ Vds, /*Vgs,*/ Vbs, Gmbs, FwdSum, RevSum;
     double Igidl, Ggidld, Ggidlg, Ggidlb;
     double Voxacc, dVoxacc_dVg, dVoxacc_dVb;
     double Voxdepinv, dVoxdepinv_dVg, dVoxdepinv_dVd, dVoxdepinv_dVb;
-    double VxNVt, ExpVxNVt, Vaux, dVaux_dVg, dVaux_dVd, dVaux_dVb;
+    double VxNVt=0, ExpVxNVt, Vaux, dVaux_dVg, dVaux_dVd, dVaux_dVb;
     double Igc, dIgc_dVg, dIgc_dVd, dIgc_dVb;
     double Igcs, dIgcs_dVg, dIgcs_dVd, dIgcs_dVb;
     double Igcd, dIgcd_dVg, dIgcd_dVd, dIgcd_dVb;

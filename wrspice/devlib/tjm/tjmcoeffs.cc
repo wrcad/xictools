@@ -63,18 +63,20 @@ TJMcoeffSet::fit_fname(double temp, double d1, double d2, double sm,
     int numxpts, int numterms, double thr)
 {
     char tbuf[80];
-    sprintf(tbuf, "tca%06ld%05ld%05ld%02ld%04d",
+    snprintf(tbuf, sizeof(tbuf), "tca%06ld%05ld%05ld%02ld%04d",
         lround(temp*1e4), lround(d1*1e7), lround(d2*1e7), lround(sm*1e3),
         numxpts);
     /* Original format.
-    sprintf(tbuf, "tca%03ld%03ld%03ld%02ld%04d",
+    snprintf(tbuf, sizeof(tbuf), "tca%03ld%03ld%03ld%02ld%04d",
         lround(temp*100), lround(d1*100000), lround(d2*100000),
         lround(sm*1000), numxpts);
     */
-    sprintf(tbuf+strlen(tbuf), "-%02d%03ld.fit", numterms,
+    char tbuf2[80];
+    snprintf(tbuf2, sizeof(tbuf2), "-%02d%03ld.fit", numterms,
         lround(thr*1e3));
-    char *tr = new char[strlen(tbuf)+1];
+    char *tr = new char[strlen(tbuf) + strlen(tbuf2) + 1];
     strcpy(tr, tbuf);
+    strcat(tr, tbuf2);
     return (tr);
 }
 
@@ -197,14 +199,15 @@ TJMcoeffSet::getTJMcoeffSet(double temp, double d1, double d2, double sm,
         return (cs);
     }
     char buf[80];
-    sprintf(buf,
+    (void)snprintf(buf, sizeof(buf),
         "mmjco cdf -t %.4f -d1 %.4f -d2 %.4f -s %.3f -x %d -n %d -h %.2f",
         temp, d1*1e3, d2*1e3, sm, numxpts, numterms, thr);
     const char *mpath = getenv("MMJCO_PATH");
     char *str;
     if (mpath) {
-        str = new char[strlen(mpath) + strlen(buf) + 2];
-        sprintf(str, "%s/%s", mpath, buf);
+        int len = strlen(mpath) + strlen(buf) + 2;
+        str = new char[len];
+        (void)snprintf(str, len, "%s/%s", mpath, buf);
     }
     else {
         str = new char[strlen(buf) + 1];
@@ -244,7 +247,7 @@ TJMcoeffSet::getTJMcoeffSet(const char *nm, double temp)
         // Compose the name of the fit file.
         strcpy(buf, nm);
         char *t = buf + (sfx - nm);
-        sprintf(t, "_%.4f.fit", temp);
+        (void)snprintf(t, sizeof(buf) - (sfx-nm), "_%.4f.fit", temp);
         nm = buf;
     }
 
@@ -258,12 +261,15 @@ TJMcoeffSet::getTJMcoeffSet(const char *nm, double temp)
         const char *mpath = getenv("MMJCO_PATH");
         char *cmd;
         if (mpath) {
-            cmd = new char[strlen(mpath) + strlen(swpfile) + 32];
-            sprintf(cmd, "%s/mmjco swf -fs %s %.4f", mpath, swpfile, temp);
+            int len = strlen(mpath) + strlen(swpfile) + 32;
+            cmd = new char[len];
+            (void)snprintf(cmd, len, "%s/mmjco swf -fs %s %.4f", mpath,
+                swpfile, temp);
         }
         else {
-            cmd = new char[strlen(swpfile) + 32];
-            sprintf(cmd, "mmjco swf -fs %s %.4f", swpfile, temp);
+            int len = strlen(swpfile) + 32;
+            cmd = new char[len];
+            (void)snprintf(cmd, len, "mmjco swf -fs %s %.4f", swpfile, temp);
         }
         int ret = system(cmd);
         delete [] cmd;

@@ -197,7 +197,7 @@ BSIM3dev::noise(int mode, int operation, sGENmodel *genmod, sCKT *ckt,
                     case N_DENS:
                         for (i = 0; i < BSIM3NSRCS; i++)
                         {
-                            (void) sprintf(b3name, "onoise.%s%s",
+                            (void) snprintf(b3name, sizeof(b3name), "onoise.%s%s",
                                            (char*)here->BSIM3name,
                                            BSIM3nNames[i]);
                             /* SRW
@@ -224,7 +224,7 @@ BSIM3dev::noise(int mode, int operation, sGENmodel *genmod, sCKT *ckt,
                     case INT_NOIZ:
                         for (i = 0; i < BSIM3NSRCS; i++)
                         {
-                            (void) sprintf(b3name, "onoise_total.%s%s",
+                            (void) snprintf(b3name, sizeof(b3name), "onoise_total.%s%s",
                                            (char*)here->BSIM3name,
                                            BSIM3nNames[i]);
                             /* SRW
@@ -247,7 +247,7 @@ BSIM3dev::noise(int mode, int operation, sGENmodel *genmod, sCKT *ckt,
 
                             /* we've added one more plot */
 
-                            (void) sprintf(b3name, "inoise_total.%s%s",
+                            (void) snprintf(b3name, sizeof(b3name), "inoise_total.%s%s",
                                            (char*)here->BSIM3name,
                                            BSIM3nNames[i]);
                             /* SRW

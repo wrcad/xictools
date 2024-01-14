@@ -153,7 +153,7 @@ URCdev::setup(sGENmodel *genmod, sCKT *ckt, int *state)
             sCKTnode *hir = ckt->num2node(inst->URCnegNode);
             for (i = 1; i <= inst->URClumps; i++) {
                 char namebf[16];
-                sprintf(namebf, "hi%d", i);
+                (void)snprintf(namebf, sizeof(namebf), "hi%d", i);
                 namehi = new char[strlen(namebf)+1];
                 strcpy(namehi, namebf);
                 error = ckt->mkVolt(&nodehi, inst->GENname, namehi);
@@ -164,7 +164,7 @@ URCdev::setup(sGENmodel *genmod, sCKT *ckt, int *state)
                 if (i == inst->URClumps)
                     lowr = hil;
                 else {
-                    sprintf(namebf, "lo%d", i);
+                    (void)snprintf(namebf, sizeof(namebf), "lo%d", i);
                     namelo = new char[strlen(namebf)+1];
                     strcpy(namelo, namebf);
                     error = ckt->mkVolt(&nodelo, inst->GENname, namelo);
@@ -175,7 +175,7 @@ URCdev::setup(sGENmodel *genmod, sCKT *ckt, int *state)
                 double r = prop*r1;
                 double c = prop*c1;
 
-                sprintf(namebf, "rlo%d",i);
+                (void)snprintf(namebf, sizeof(namebf), "rlo%d",i);
                 nameelt =  new char[strlen(namebf)+1];
                 strcpy(nameelt, namebf);
                 error = ckt->newUid(&eltUid, inst->GENname, nameelt,
@@ -196,7 +196,7 @@ URCdev::setup(sGENmodel *genmod, sCKT *ckt, int *state)
                 if (error)
                     return (error);
 
-                sprintf(namebf, "rhi%d", i);
+                (void)snprintf(namebf, sizeof(namebf), "rhi%d", i);
                 nameelt = new char[strlen(namebf)+1];
                 strcpy(nameelt, namebf);
                 error = ckt->newUid(&eltUid, inst->GENname, nameelt,
@@ -218,7 +218,7 @@ URCdev::setup(sGENmodel *genmod, sCKT *ckt, int *state)
 
                 if (model->URCisPerLGiven) {
                     // use diode
-                    sprintf(namebf, "dlo%d", i);
+                    (void)snprintf(namebf, sizeof(namebf), "dlo%d", i);
                     nameelt = new char[strlen(namebf)+1];
                     strcpy(nameelt, namebf);
                     error = ckt->newUid(&eltUid, inst->GENname, nameelt,
@@ -241,7 +241,7 @@ URCdev::setup(sGENmodel *genmod, sCKT *ckt, int *state)
                 }
                 else {
                     // use simple capacitor
-                    sprintf(namebf, "clo%d", i);
+                    (void)snprintf(namebf, sizeof(namebf), "clo%d", i);
                     nameelt = new char[strlen(namebf)+1];
                     strcpy(nameelt, namebf);
                     error = ckt->newUid(&eltUid, inst->GENname, nameelt,
@@ -266,7 +266,7 @@ URCdev::setup(sGENmodel *genmod, sCKT *ckt, int *state)
                 if (i != inst->URClumps){
                     if (model->URCisPerLGiven) {
                         // use diode
-                        sprintf(namebf, "dhi%d", i);
+                        (void)snprintf(namebf, sizeof(namebf), "dhi%d", i);
                         nameelt = new char[strlen(namebf)+1];
                         strcpy(nameelt, namebf);
                         error = ckt->newUid(&eltUid, inst->GENname, nameelt,
@@ -289,7 +289,7 @@ URCdev::setup(sGENmodel *genmod, sCKT *ckt, int *state)
                     }
                     else {
                         // use simple capacitor
-                        sprintf(namebf, "chi%d", i);
+                        (void)snprintf(namebf, sizeof(namebf), "chi%d", i);
                         nameelt = new char[strlen(namebf)+1];
                         strcpy(nameelt, namebf);
                         error = ckt->newUid(&eltUid, inst->GENname, nameelt,

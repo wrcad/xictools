@@ -602,7 +602,6 @@ htmParser::parseHTML()
     char *text_start = chPtr;
 
     int cnt = 0;
-    int on_stack = 0;
     bool done = false;
     while (*chPtr) {
         if (*chPtr == '<') {
@@ -822,7 +821,6 @@ htmParser::parseHTML()
         p_cend   = p_cstart + 1;
         // make all elements balanced
         while (p_state_stack->next != 0) {
-            on_stack++;
             state = popState();
             insertElement(html_tokens[state], state, true);
         }
@@ -2463,7 +2461,6 @@ removeData:
                     !is_end) {
                 int done = 0;
                 char *tmpstart = end;
-                int text_len = 0;
 
                 // move past closing >
                 tmpstart++;
@@ -2484,7 +2481,6 @@ removeData:
                         p_num_lines++;
                         // fall through
                     default:
-                        text_len++;
                         break;
                     }
                     if (*end == '\0')
@@ -2632,7 +2628,6 @@ htmParser::storeElementUnconditional(char *start, char *end)
         if ((id == HT_SCRIPT || id == HT_STYLE) && !is_end) {
             int done = 0;
             char *tmpstart = end;
-            int text_len = 0;
 
             // move past closing >
             tmpstart++;
@@ -2651,7 +2646,6 @@ htmParser::storeElementUnconditional(char *start, char *end)
                     p_num_lines++;
                     // fall through
                 default:
-                    text_len++;
                     break;
                 }
                 if (*end == '\0')

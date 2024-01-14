@@ -160,8 +160,9 @@ B3dev::noise(int mode, int operation, sGENmodel *genmod, sCKT *ckt,
                     switch (mode) {
                     case N_DENS:
                         for (i = 0; i < B3NSRCS; i++) {
-                            (void) sprintf(b3name, "onoise.%s%s",
-                                (char*)inst->GENname, B3nNames[i]);
+                            (void) snprintf(b3name, sizeof(b3name),
+                                "onoise.%s%s", (char*)inst->GENname,
+                                B3nNames[i]);
                             Realloc(&data->namelist, data->numPlots+1,
                                 data->numPlots);
                             ckt->newUid(&data->namelist[data->numPlots++],
@@ -171,14 +172,16 @@ B3dev::noise(int mode, int operation, sGENmodel *genmod, sCKT *ckt,
                         break;
                     case INT_NOIZ:
                         for (i = 0; i < B3NSRCS; i++) {
-                            (void) sprintf(b3name, "onoise_total.%s%s",
-                                (char*)inst->GENname, B3nNames[i]);
+                            (void) snprintf(b3name, sizeof(b3name),
+                                "onoise_total.%s%s", (char*)inst->GENname,
+                                B3nNames[i]);
                             Realloc(&data->namelist, data->numPlots+2,
                                 data->numPlots);
                             ckt->newUid(&data->namelist[data->numPlots++],
                                 0, b3name, UID_OTHER);
-                            (void) sprintf(b3name, "inoise_total.%s%s",
-                                (char*)inst->GENname, B3nNames[i]);
+                            (void) snprintf(b3name, sizeof(b3name),
+                                "inoise_total.%s%s", (char*)inst->GENname,
+                                B3nNames[i]);
                             ckt->newUid(&data->namelist[data->numPlots++],
                                 0, b3name, UID_OTHER);
                             // we've added two more plots

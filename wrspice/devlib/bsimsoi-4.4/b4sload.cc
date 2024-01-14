@@ -304,7 +304,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double dEg_dT;                                                      /* new line Wagner */
     double cjsbs;
     double dVfbeff_dVrg;
-    double qinv, qgate, qbody, qdrn, qsrc, qsub, cqgate, cqbody, cqdrn, cqsub, cqtemp;
+    double qinv=0, qgate, qbody, qdrn, qsrc, qsub, cqgate, cqbody, cqdrn, cqsub, cqtemp;
 //    double qgate1;                                                      /* new line Wagner */
 
     double Cgg, Cgd, Cgb, Cge;
@@ -390,7 +390,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double Cox, Tox, Tcen, dTcen_dVg, dTcen_dVb, LINK, Ccen, Coxeff, dCoxeff_dVg, dCoxeff_dVb;
     double CoxWLcen, QovCox, dQac0_dVg, dQac0_dVe, DeltaPhi, dDeltaPhi_dVg, dDeltaPhi_dT;
     double  dDeltaPhi_dVd, dDeltaPhi_dVb, dDeltaPhi_dVe;
-    double dTcen_dVd, dTcen_dVe, dTcen_dT, dCoxeff_dVd, dCoxeff_dT, dCoxWLcenb_dT, qinoi, qbulk/*, qbulk1*/;
+    double dTcen_dVd, dTcen_dVe, dTcen_dT, dCoxeff_dVd, dCoxeff_dT, dCoxWLcenb_dT, qinoi=0, qbulk=0/*, qbulk1*/;
     double dCoxeff_dVe;
     double T3zb, lt1zb, ltwzb, Theta0zb;
     double Delt_vthzb, dDelt_vthzb_dT;
@@ -461,7 +461,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double IdlovVdseff, dIdlovVdseff_dVg, dIdlovVdseff_dVd, dIdlovVdseff_dVb/*,
            dIdlovVdseff_dT*/;
 //    double IdovVds;
-    double vdbs, vsbs, /*vdb, vsb,*/ vdbd, vsbd, vsbdo, vbs_jct, vbd_jct;
+    double vdbs, vsbs, /*vdb, vsb,*/ vdbd=0, vsbd, vsbdo, vbs_jct, vbd_jct;
     double Vsbs, Vdbd, Vdbs;
     double delvdbd, delvsbs, delvdbs, delvbd_jct,  delvbs_jct;
     double gcdbdb, gcsbsb, gcsbb, gcdbb;
@@ -10739,10 +10739,10 @@ line900:
 
             if (model->B4SOItype > 0)
             {
-                ceqqg = ceqqg;
-                ceqqb = ceqqb;
-                ceqqe = ceqqe;
-                ceqqd = ceqqd;
+                //ceqqg = ceqqg;
+                //ceqqb = ceqqb;
+                //ceqqe = ceqqe;
+                //ceqqd = ceqqd;
             }
             else
             {

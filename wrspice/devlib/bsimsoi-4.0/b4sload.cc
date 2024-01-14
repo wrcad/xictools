@@ -187,7 +187,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double dVdsat_dVg, dVdsat_dVb, dVdsat_dVd, dVdsat_dT, Vasat/*, dAlphaz_dVg, dAlphaz_dVb*/;
     double dVasat_dVg, dVasat_dVb, dVasat_dVd, dVasat_dT;
     double Va, /*Va2,*/ dVa_dVd, dVa_dVg, dVa_dVb, dVa_dT;
-    double Vbseff, dVbseff_dVb;
+    double Vbseff=0, dVbseff_dVb;
     double /*Alphaz,*/ CoxWL;
 //double dVgdt_dVg, dVgdt_dVd, dVgdt_dVb;
     double T0, dT0_dVg, dT0_dVd, dT0_dVb, /*dT0_dVrg,*/ dT0_dT;
@@ -268,7 +268,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double dVfbeff_dVrg;
     double qinv, qgate, qbody, qdrn, qsrc, qsub, cqgate, cqbody, cqdrn, cqsub, cqtemp;
     double Cgg, Cgd, /*Cgs,*/ Cgb/*, Cdg, Cdd, Cds, Cdb, Qg, Qd*/;
-    double Csg, Csd, /*Css,*/ Csb, Cbg, Cbd, /*Cbs,*/ Cbb/*, Qs, Qb*/;
+    double Csg, Csd, /*Css,*/ Csb, Cbg=0, Cbd=0, /*Cbs,*/ Cbb=0/*, Qs, Qb*/;
     double Cgg1, Cgb1, Cgd1, Cbg1, Cbb1, Cbd1, Csg1, Csd1, Csb1;
 //double Vbseff0;
     double Vdsatii /*,dVdsatii_dVg ,dVdsatii_dVd, dVdsatii_dVb, dVdsatii_dT*/;
@@ -292,8 +292,8 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double Ibs /*,dIbs_dVb ,dIbs_dVd*/;
     double Ibd /*,dIbd_dVb*/;
     double Denomi ,dDenomi_dVg ,dDenomi_dVd ,dDenomi_dVb ,dDenomi_dT;
-    double Qsub0  ,dQsub0_dVg   ,dQsub0_dVb  ,dQsub0_dVd ;
-    double Qac0 ,dQac0_dVb   ,dQac0_dVd;
+    double Qsub0=0  ,dQsub0_dVg   ,dQsub0_dVb  ,dQsub0_dVd ;
+    double Qac0=0 ,dQac0_dVb   ,dQac0_dVd;
 //double Qdep0 ,dQdep0_dVb;
     double Qe1 , dQe1_dVb, dQe1_dVe, dQe1_dT;
     double Ce1b ,Ce1e, Ce1T;
@@ -352,7 +352,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double Delt_vthzb, dDelt_vthzb_dT;
     double DeltVthwzb, dDeltVthwzb_dT;
     double DeltVthtempzb, dDeltVthtempzb_dT;
-    double Vthzb, dVthzb_dT, Vfbzb, dVfbzb_dT;
+    double Vthzb, dVthzb_dT, Vfbzb=0, dVfbzb_dT;
 
     /* v3.2 */
     double noff, dnoff_dVd, dnoff_dVb;
@@ -414,7 +414,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double IdlovVdseff, dIdlovVdseff_dVg, dIdlovVdseff_dVd, dIdlovVdseff_dVb /*,
        dIdlovVdseff_dT*/;
 //    double IdovVds;
-    double vdbs, vsbs, /*vdb, vsb,*/ vdbd, vsbd, vsbdo, vbs_jct, vbd_jct;
+    double vdbs, vsbs, /*vdb, vsb,*/ vdbd=0, vsbd, vsbdo, vbs_jct, vbd_jct;
     double Vsbs, Vdbd, Vdbs;
     double delvdbd, delvsbs, delvdbs, delvbd_jct,  delvbs_jct;
     double gcdbdb, gcsbsb, gcsbb, gcdbb;
@@ -426,7 +426,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double Iii_Igidl, /*Giigidl_b, Giigidl_d, Giigidl_g, Giigidl_e,*/ Giigidl_T;
 //    double gjsdb;
     double Idbdp, Isbsp, cdbdp, csbsp, gcjdbdp, gcjsbsp, GGjdb, GGjsb;
-    double vdes, vses, vdedo, delvdes, delvses, delvded, Isestot, cseshat, Idedtot,        cdedhat;
+    double vdes, vses, vdedo, delvdes,delvses, delvded, Isestot, cseshat, Idedtot,        cdedhat;
     double PowWeffWr, /*rd0,*/ rs0, /*rdwmin,*/ rswmin, drs0_dT, drd0_dT, drswmin_dT,
            drdwmin_dT, Rd, dRd_dVg, dRd_dVb, dRd_dT, Rs, dRs_dVg, dRs_dVb, dRs_dT;
     double dgstot_dvd, dgstot_dvg, dgstot_dvs, dgstot_dvb, dgstot_dve, dgstot_dT;
@@ -6563,10 +6563,10 @@ line900:
 
             if (model->B4SOItype > 0)
             {
-                ceqqg = ceqqg;
-                ceqqb = ceqqb;
-                ceqqe = ceqqe;
-                ceqqd = ceqqd;
+                //ceqqg = ceqqg;
+                //ceqqb = ceqqb;
+                //ceqqe = ceqqe;
+                //ceqqd = ceqqd;
             }
             else
             {

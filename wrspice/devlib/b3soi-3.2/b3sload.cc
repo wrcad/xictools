@@ -257,8 +257,8 @@ B3SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double delTemp, deldelTemp, Temp;
     double ceqth, ceqqth;
     double K1/*, WL*/;
-    double qjs, gcjsbs, gcjsT;
-    double qjd, gcjdbs, gcjdds, gcjdT;
+    double qjs=0, gcjsbs, gcjsT;
+    double qjd=0, gcjdbs, gcjdds, gcjdT;
     double qge;
     double ceqqe;
     double ni, Eg, Cbox, /*Nfb,*/ CboxWL;
@@ -266,7 +266,7 @@ B3SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double dVfbeff_dVrg;
     double qinv, qgate, qbody, qdrn, qsrc, qsub, cqgate, cqbody, cqdrn, cqsub, cqtemp;
     double Cgg, Cgd, /*Cgs,*/ Cgb/*, Cdg, Cdd, Cds, Cdb, Qg, Qd*/;
-    double Csg, Csd, /*Css,*/ Csb, Cbg, Cbd, /*Cbs,*/ Cbb/*, Qs, Qb*/;
+    double Csg, Csd, /*Css,*/ Csb, Cbg=0, Cbd=0, /*Cbs,*/ Cbb=0/*, Qs, Qb*/;
     double Cgg1, Cgb1, Cgd1, Cbg1, Cbb1, Cbd1, Csg1, Csd1, Csb1;
 //double Vbseff0;
     double Vdsatii /*,dVdsatii_dVg ,dVdsatii_dVd, dVdsatii_dVb, dVdsatii_dT*/;
@@ -290,8 +290,8 @@ B3SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double Ibs /*,dIbs_dVb ,dIbs_dVd*/;
     double Ibd /*,dIbd_dVb*/;
     double Denomi ,dDenomi_dVg ,dDenomi_dVd ,dDenomi_dVb ,dDenomi_dT;
-    double Qsub0  ,dQsub0_dVg   ,dQsub0_dVb  ,dQsub0_dVd ;
-    double Qac0 ,dQac0_dVb   ,dQac0_dVd;
+    double Qsub0=0  ,dQsub0_dVg   ,dQsub0_dVb  ,dQsub0_dVd ;
+    double Qac0=0 ,dQac0_dVb   ,dQac0_dVd;
 //double Qdep0 ,dQdep0_dVb;
     double Qe1 , dQe1_dVb, dQe1_dVe, dQe1_dT;
     double Ce1b ,Ce1e, Ce1T;
@@ -345,7 +345,7 @@ B3SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double Delt_vthzb, dDelt_vthzb_dT;
     double DeltVthwzb, dDeltVthwzb_dT;
     double DeltVthtempzb, dDeltVthtempzb_dT;
-    double Vthzb, dVthzb_dT, Vfbzb, dVfbzb_dT;
+    double Vthzb, dVthzb_dT, Vfbzb=0, dVfbzb_dT;
 
     /* v3.2 */
     double noff, dnoff_dVd, dnoff_dVb;
@@ -359,7 +359,7 @@ B3SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double gcgmeb, gcegmb, qgme, qgmid, ceqqgmid;
     double gcgbb;
     double vgge, vggm;
-    double wdiosCV_NoSwap, wdiodCV_NoSwap;
+    double wdiosCV_NoSwap=0, wdiodCV_NoSwap=0;
 
     /* v3.0 */
     double Igc, dIgc_dVg, dIgc_dVd, dIgc_dVb, Igs, dIgs_dVg, dIgs_dVs, Igd, dIgd_dVg, dIgd_dVd;
@@ -5554,10 +5554,10 @@ line900:
 
             if (model->B3SOItype > 0)
             {
-                ceqqg = ceqqg;
-                ceqqb = ceqqb;
-                ceqqe = ceqqe;
-                ceqqd = ceqqd;
+                //ceqqg = ceqqg;
+                //ceqqb = ceqqb;
+                //ceqqe = ceqqe;
+                //ceqqd = ceqqd;
             }
             else
             {

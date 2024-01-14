@@ -4125,7 +4125,7 @@ vl_mp_inst::port_setup(vl_simulator *sim, vl_port_connect *pc, vl_port *port,
     const char *portname = pc->name();
     if (!portname) {
         portname = buf;
-        sprintf(buf, "%d", argcnt);
+        snprintf(buf, sizeof(buf), "%d", argcnt);
     }
     bool isprim = (pi_inst_list->mptype() == MPprim ? true : false);
     const char *modpri = isprim ? "primitive" : "module";

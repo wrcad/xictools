@@ -119,7 +119,7 @@ EKVdev::noise(int mode, int operation, sGENmodel *genmod, sCKT *ckt,
 
                     case N_DENS:
                         for (i=0; i < EKVNSRCS; i++) {
-                            (void)sprintf(ekvname,"onoise_%s%s",
+                            (void)snprintf(ekvname, sizeof(ekvname),"onoise_%s%s",
                                 (char*) inst->EKVname,EKVnNames[i]);
 
 /*
@@ -142,7 +142,7 @@ EKVdev::noise(int mode, int operation, sGENmodel *genmod, sCKT *ckt,
 
                     case INT_NOIZ:
                         for (i=0; i < EKVNSRCS; i++) {
-                            (void)sprintf(ekvname,"onoise_total_%s%s",
+                            (void)snprintf(ekvname, sizeof(ekvname),"onoise_total_%s%s",
                                 (char*) inst->EKVname,EKVnNames[i]);
 
 /*
@@ -160,7 +160,7 @@ EKVdev::noise(int mode, int operation, sGENmodel *genmod, sCKT *ckt,
                     0, ekvname, UID_OTHER);
 
 
-                            (void)sprintf(ekvname,"inoise_total_%s%s",
+                            (void)snprintf(ekvname, sizeof(ekvname),"inoise_total_%s%s",
                                 (char*) inst->EKVname,EKVnNames[i]);
 
 

@@ -127,9 +127,9 @@ B2dev::load(sGENinstance *in_inst, sCKT *ckt)
     double cgdb;
     double cgsb;
     double cbdb;
-    double cdgb;
-    double cddb;
-    double cdsb;
+    double cdgb=0;
+    double cddb=0;
+    double cdsb=0;
     double cggb;
     double cbgb;
     double cbsb;
