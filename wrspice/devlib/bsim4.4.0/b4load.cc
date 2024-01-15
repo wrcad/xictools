@@ -216,7 +216,7 @@ BSIM4dev::load(sGENinstance *in_inst, sCKT *ckt)
     double T3, dT3_dVg, dT3_dVd, dT3_dVb;
     double T4, /*dT4_dVg,*/ dT4_dVd, dT4_dVb;
     double T5, dT5_dVg, dT5_dVd, dT5_dVb;
-    double T6, dT6_dVg, dT6_dVd, dT6_dVb;
+    double T6=0, dT6_dVg, dT6_dVd, dT6_dVb;
     double T7, dT7_dVg, dT7_dVd, dT7_dVb;
     double T8, dT8_dVg, dT8_dVd, dT8_dVb;
     double T9, dT9_dVg, dT9_dVd, dT9_dVb;

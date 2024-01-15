@@ -59,13 +59,15 @@ int main(int argc, char **argv)
             char *swf;
             if (mmc.mm_get_sweep_fit(argc-1, argv+1, &mt, &temp, &swf))
                 return (1);
-            char *tbf = new char[strlen(swf) + 16];
+            int len = strlen(swf) + 16;
+            char *tbf = new char[len];
             strcpy(tbf, swf);
             delete [] swf;
             char *t = strrchr(tbf, '.');
             if (t && !strcmp(t, ".swp"))
                 *t = 0;
-            sprintf(tbf + strlen(tbf), "_%.4f.fit", temp);
+            int slen = strlen(tbf);
+            snprintf(tbf + slen, len - slen,  "_%.4f.fit", temp);
             bool ret = mt->dump_file(tbf);
             delete mt;
             delete [] tbf;

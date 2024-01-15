@@ -272,40 +272,40 @@ cMRouter::cmdSet(const char *cmd)
         delete [] doneMsg();
         setDoneMsg(0);
 
-        sprintf(buf, fmt, "netorder");
+        snprintf(buf, sizeof(buf), fmt, "netorder");
         lstr.add(buf);
-        sprintf(buf, "%u\n", netOrder());
-        lstr.add(buf);
-
-        sprintf(buf, fmt, "passes");
-        lstr.add(buf);
-        sprintf(buf, "%d\n", numPasses());
+        snprintf(buf, sizeof(buf), "%u\n", netOrder());
         lstr.add(buf);
 
-        sprintf(buf, fmt, "increments");
+        snprintf(buf, sizeof(buf), fmt, "passes");
+        lstr.add(buf);
+        snprintf(buf, sizeof(buf), "%d\n", numPasses());
+        lstr.add(buf);
+
+        snprintf(buf, sizeof(buf), fmt, "increments");
         lstr.add(buf);
         if (!mr_rmaskIncs)
             lstr.add("1\n");
         else {
             for (u_int i = 0; i < mr_rmaskIncsSz; i++) {
-                sprintf(buf, " %d", mr_rmaskIncs[i]);
+                snprintf(buf, sizeof(buf), " %d", mr_rmaskIncs[i]);
                 lstr.add(buf);
             }
             lstr.add_c('\n');
         }
 
-        sprintf(buf, fmt, "via_stack");
+        snprintf(buf, sizeof(buf), fmt, "via_stack");
         lstr.add(buf);
         if (stackedVias() < 0 ||
                 (stackedVias() > 0 && stackedVias() >= (int)numLayers()))
-            sprintf(buf, "all\n");
+            snprintf(buf, sizeof(buf), "all\n");
         else if (stackedVias() == 0 || stackedVias() == 1)
-            sprintf(buf, "none\n");
+            snprintf(buf, sizeof(buf), "none\n");
         else
-            sprintf(buf, "%d\n", stackedVias());
+            snprintf(buf, sizeof(buf), "%d\n", stackedVias());
         lstr.add(buf);
 
-        sprintf(buf, fmt, "via_pattern");
+        snprintf(buf, sizeof(buf), fmt, "via_pattern");
         lstr.add(buf);
         lstr.add(viaPattern() == VIA_PATTERN_NORMAL ? "normal" : "inverted");
         lstr.add_c('\n');
@@ -319,7 +319,7 @@ cMRouter::cmdSet(const char *cmd)
         delete [] tok;
         tok = lstring::gettok(&s);
         if (!tok) {
-            sprintf(buf, "netorder: %u", netOrder());
+            snprintf(buf, sizeof(buf), "netorder: %u", netOrder());
             setDoneMsg(lstring::copy(buf));
         }
         else {
@@ -363,7 +363,7 @@ cMRouter::cmdSet(const char *cmd)
         delete [] tok;
         tok = lstring::gettok(&s);
         if (!tok) {
-            sprintf(buf, "passes: %d", numPasses());
+            snprintf(buf, sizeof(buf), "passes: %d", numPasses());
             setDoneMsg(lstring::copy(buf));
         }
         else {
@@ -408,7 +408,7 @@ cMRouter::cmdSet(const char *cmd)
                 lstr.add("1");
             else {
                 for (u_int i = 0; i < rmaskIncsSz(); i++) {
-                    sprintf(buf, " %d", rmaskIncs()[i]);
+                    snprintf(buf, sizeof(buf), " %d", rmaskIncs()[i]);
                     lstr.add(buf);
                 }
             }
@@ -469,11 +469,11 @@ cMRouter::cmdSet(const char *cmd)
         if (!tok) {
             if (stackedVias() < 0 ||
                     (stackedVias() > 0 && stackedVias() >= (int)numLayers()))
-                sprintf(buf, "via_stack: all");
+                snprintf(buf, sizeof(buf), "via_stack: all");
             else if (stackedVias() == 0 || stackedVias() == 1)
-                sprintf(buf, "via_stack: none");
+                snprintf(buf, sizeof(buf), "via_stack: none");
             else
-                sprintf(buf, "via_stack: %d", stackedVias());
+                snprintf(buf, sizeof(buf), "via_stack: %d", stackedVias());
             setDoneMsg(lstring::copy(buf));
         }
         else {
@@ -503,7 +503,7 @@ cMRouter::cmdSet(const char *cmd)
         delete [] tok;
         tok = lstring::gettok(&s);
         if (!tok) {
-            sprintf(buf, "via_stack: %s",
+            snprintf(buf, sizeof(buf), "via_stack: %s",
                 viaPattern() == VIA_PATTERN_NORMAL ? "normal" : "inverted");
             setDoneMsg(lstring::copy(buf));
         }
@@ -536,39 +536,39 @@ cMRouter::cmdSetcost(const char *cmd)
         sLstr lstr;
         const char *fmt = "%-16s: ";
 
-        sprintf(buf, fmt, "segcost");
+        snprintf(buf, sizeof(buf), fmt, "segcost");
         lstr.add(buf);
-        sprintf(buf, "%d\n", segCost());
-        lstr.add(buf);
-
-        sprintf(buf, fmt, "viacost");
-        lstr.add(buf);
-        sprintf(buf, "%d\n", viaCost());
+        snprintf(buf, sizeof(buf), "%d\n", segCost());
         lstr.add(buf);
 
-        sprintf(buf, fmt, "jogcost");
+        snprintf(buf, sizeof(buf), fmt, "viacost");
         lstr.add(buf);
-        sprintf(buf, "%d\n", jogCost());
-        lstr.add(buf);
-
-        sprintf(buf, fmt, "crossovercost");
-        lstr.add(buf);
-        sprintf(buf, "%d\n", xverCost());
+        snprintf(buf, sizeof(buf), "%d\n", viaCost());
         lstr.add(buf);
 
-        sprintf(buf, fmt, "blockcost");
+        snprintf(buf, sizeof(buf), fmt, "jogcost");
         lstr.add(buf);
-        sprintf(buf, "%d\n", blockCost());
-        lstr.add(buf);
-
-        sprintf(buf, fmt, "offsetcost");
-        lstr.add(buf);
-        sprintf(buf, "%d\n", offsetCost());
+        snprintf(buf, sizeof(buf), "%d\n", jogCost());
         lstr.add(buf);
 
-        sprintf(buf, fmt, "conflictcost");
+        snprintf(buf, sizeof(buf), fmt, "crossovercost");
         lstr.add(buf);
-        sprintf(buf, "%d\n", conflictCost());
+        snprintf(buf, sizeof(buf), "%d\n", xverCost());
+        lstr.add(buf);
+
+        snprintf(buf, sizeof(buf), fmt, "blockcost");
+        lstr.add(buf);
+        snprintf(buf, sizeof(buf), "%d\n", blockCost());
+        lstr.add(buf);
+
+        snprintf(buf, sizeof(buf), fmt, "offsetcost");
+        lstr.add(buf);
+        snprintf(buf, sizeof(buf), "%d\n", offsetCost());
+        lstr.add(buf);
+
+        snprintf(buf, sizeof(buf), fmt, "conflictcost");
+        lstr.add(buf);
+        snprintf(buf, sizeof(buf), "%d\n", conflictCost());
         lstr.add(buf);
 
         db->setDoneMsg(lstr.string_trim());
@@ -582,7 +582,7 @@ cMRouter::cmdSetcost(const char *cmd)
         delete [] tok;
         tok = lstring::gettok(&cmd);
         if (!tok) {
-            sprintf(buf, "segment cost: %d", segCost());
+            snprintf(buf, sizeof(buf), "segment cost: %d", segCost());
             db->setDoneMsg(lstring::copy(buf));
         }
         else {
@@ -599,7 +599,7 @@ cMRouter::cmdSetcost(const char *cmd)
         delete [] tok;
         tok = lstring::gettok(&cmd);
         if (!tok) {
-            sprintf(buf, "via cost: %d", viaCost());
+            snprintf(buf, sizeof(buf), "via cost: %d", viaCost());
             db->setDoneMsg(lstring::copy(buf));
         }
         else {
@@ -616,7 +616,7 @@ cMRouter::cmdSetcost(const char *cmd)
         delete [] tok;
         tok = lstring::gettok(&cmd);
         if (!tok) {
-            sprintf(buf, "jog cost: %d", jogCost());
+            snprintf(buf, sizeof(buf), "jog cost: %d", jogCost());
             db->setDoneMsg(lstring::copy(buf));
         }
         else {
@@ -637,7 +637,7 @@ cMRouter::cmdSetcost(const char *cmd)
         delete [] tok;
         tok = lstring::gettok(&cmd);
         if (!tok) {
-            sprintf(buf, "crossover cost: %d", xverCost());
+            snprintf(buf, sizeof(buf), "crossover cost: %d", xverCost());
             db->setDoneMsg(lstring::copy(buf));
         }
         else {
@@ -654,7 +654,7 @@ cMRouter::cmdSetcost(const char *cmd)
         delete [] tok;
         tok = lstring::gettok(&cmd);
         if (!tok) {
-            sprintf(buf, "block cost: %d", blockCost());
+            snprintf(buf, sizeof(buf), "block cost: %d", blockCost());
             db->setDoneMsg(lstring::copy(buf));
         }
         else {
@@ -671,7 +671,7 @@ cMRouter::cmdSetcost(const char *cmd)
         delete [] tok;
         tok = lstring::gettok(&cmd);
         if (!tok) {
-            sprintf(buf, "offset cost: %d", offsetCost());
+            snprintf(buf, sizeof(buf), "offset cost: %d", offsetCost());
             db->setDoneMsg(lstring::copy(buf));
         }
         else {
@@ -688,7 +688,7 @@ cMRouter::cmdSetcost(const char *cmd)
         delete [] tok;
         tok = lstring::gettok(&cmd);
         if (!tok) {
-            sprintf(buf, "conflict cost: %d", conflictCost());
+            snprintf(buf, sizeof(buf), "conflict cost: %d", conflictCost());
             db->setDoneMsg(lstring::copy(buf));
         }
         else {
@@ -1357,7 +1357,7 @@ cMRouter::cmdRipUp(const char *cmd)
                 cnt++;
             }
             char buf[64];
-            sprintf(buf, "%d nets ripped up.", cnt);
+            snprintf(buf, sizeof(buf), "%d nets ripped up.", cnt);
             db->setDoneMsg(lstring::copy(buf));
         }
         stringlist::destroy(netnames);

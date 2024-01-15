@@ -258,8 +258,9 @@ mmjco_cmds::mm_get_sweep_fit(int argc, char **argv, mmjco_mtdb **pmt,
                 char f[256];
                 if (sscanf(argv[i], "%s", f) == 1) {
                     if (mmc_tcadir && !is_rooted(f)) {
-                        swpfile = new char[strlen(mmc_tcadir) + strlen(f) +2];
-                        sprintf(swpfile, "%s/%s", mmc_tcadir, f);
+                        int len = strlen(mmc_tcadir) + strlen(f) + 2;
+                        swpfile = new char[len];
+                        snprintf(swpfile, len, "%s/%s", mmc_tcadir, f);
                     }
                     else {
                         swpfile = new char[strlen(f)+1];
@@ -723,8 +724,9 @@ mmjco_cmds::mm_create_data(int argc, char **argv, double temp, bool no_out)
         df_given = false;
         char *dp;
         if (mmc_tcadir) {
-            datafile = new char[strlen(mmc_tcadir) + 32];
-            sprintf(datafile, "%s/", mmc_tcadir);
+            int len = strlen(mmc_tcadir) + 33;
+            datafile = new char[len];
+            snprintf(datafile, len, "%s/", mmc_tcadir);
             dp = datafile + strlen(datafile);
         }
         else {
@@ -732,7 +734,7 @@ mmjco_cmds::mm_create_data(int argc, char **argv, double temp, bool no_out)
             dp = datafile;
         }
         filename = dp;
-        sprintf(dp, "tca%06ld%05ld%05ld%02ld%04d",
+        snprintf(dp, 32, "tca%06ld%05ld%05ld%02ld%04d",
             lround(mmc_temp*1e4), lround(mmc_d1*1e7), lround(mmc_d2*1e7),
             lround(mmc_sm*1e3), mmc_numxpts);
         if (dtype == DFDATA)
@@ -743,8 +745,9 @@ mmjco_cmds::mm_create_data(int argc, char **argv, double temp, bool no_out)
     if (!no_out) {
         if (df_given) {
             if (mmc_tcadir && !is_rooted(datafile)) {
-                char *t = new char[strlen(datafile) + strlen(mmc_tcadir) + 2];
-                sprintf(t, "%s/%s", mmc_tcadir, datafile);
+                int len = strlen(datafile) + strlen(mmc_tcadir) + 2;
+                char *t = new char[len];
+                snprintf(t, len, "%s/%s", mmc_tcadir, datafile);
                 delete [] datafile;
                 datafile = t;
                 filename = datafile + strlen(mmc_tcadir)+1;
@@ -870,8 +873,9 @@ mmjco_cmds::mm_create_fit(int argc, char **argv, FILE *fp)
         }
         else {
             if (mmc_tcadir) {
-                tbuf = new char[strlen(mmc_tcadir) + 20];
-                sprintf(tbuf, "%s/", mmc_tcadir);
+                int len = strlen(mmc_tcadir) + 21;
+                tbuf = new char[len];
+                snprintf(tbuf, len, "%s/", mmc_tcadir);
             }
             else {
                 tbuf = new char[20];
@@ -880,13 +884,14 @@ mmjco_cmds::mm_create_fit(int argc, char **argv, FILE *fp)
             strcat(tbuf, "tca_data");
         }
         
-        sprintf(tbuf+strlen(tbuf), "-%02d%03ld.fit", mmc_nterms,
+        snprintf(tbuf+strlen(tbuf), 12, "-%02d%03ld.fit", mmc_nterms,
             lround(mmc_thr*1e3));
         fitfile = tbuf;
     }
     else if (mmc_tcadir && !is_rooted(fitfile)) {
-        char *t = new char[strlen(mmc_tcadir) + strlen(fitfile) + 2];
-        sprintf(t, "%s/%s", mmc_tcadir, fitfile);
+        int len = strlen(mmc_tcadir) + strlen(fitfile) + 2;
+        char *t = new char[len];
+        snprintf(t, len, "%s/%s", mmc_tcadir, fitfile);
         delete [] fitfile;
         fitfile = t;
     }
@@ -895,14 +900,15 @@ mmjco_cmds::mm_create_fit(int argc, char **argv, FILE *fp)
     char *hdr = new char[80];
     if (fp) {
         // Sweep or table file.
-        sprintf(hdr, "tcafit %11.4e %11.4e %11.4e %11.4e", mmc_temp, mmc_d1,
-            mmc_d2, ip8);
+        snprintf(hdr, 80, "tcafit %11.4e %11.4e %11.4e %11.4e", mmc_temp,
+            mmc_d1, mmc_d2, ip8);
     }
     else {
         // Stand-alone file.
-        sprintf(hdr, "tcafit %11.4e %11.4e %11.4e %.3f %-4d %-2d %.3f %11.4e",
-            mmc_temp, mmc_d1, mmc_d2, mmc_sm, mmc_numxpts, mmc_nterms, mmc_thr,
-            ip8);
+        snprintf(hdr, 80,
+            "tcafit %11.4e %11.4e %11.4e %.3f %-4d %-2d %.3f %11.4e",
+            mmc_temp, mmc_d1, mmc_d2, mmc_sm, mmc_numxpts, mmc_nterms,
+            mmc_thr, ip8);
     }
     mmc_mf.save_fit_parameters(fitfile, fp, hdr);
     delete [] hdr;
@@ -1072,8 +1078,9 @@ mmjco_cmds::mm_create_sweep(int argc, char **argv)
     char *datafile;
     char *dp;
     if (mmc_tcadir) {
-        datafile = new char[strlen(mmc_tcadir) + 40];
-        sprintf(datafile, "%s/", mmc_tcadir);
+        int len = strlen(mmc_tcadir) + 41;
+        datafile = new char[len];
+        snprintf(datafile, len, "%s/", mmc_tcadir);
         dp = datafile + strlen(datafile);
     }
     else {
@@ -1096,7 +1103,7 @@ mmjco_cmds::mm_create_sweep(int argc, char **argv)
                 err = 1;
                 break;
             }
-            sprintf(dp, "tsw%03d%06ld%06ld%02ld%04d-%02d%03ld.swp", ntemps,
+            snprintf(dp, 40, "tsw%03d%06ld%06ld%02ld%04d-%02d%03ld.swp", ntemps,
                 lround(vals[0]*1e4), lround(vals[2]*1e4), lround(mmc_sm*1e3),
                 mmc_numxpts, mmc_nterms, lround(mmc_thr*1e3));
             fp = fopen(datafile, "w");
@@ -1159,8 +1166,9 @@ mmjco_cmds::mm_create_table(int argc, char **argv)
     char *datafile;
     char *dp;
     if (mmc_tcadir) {
-        datafile = new char[strlen(mmc_tcadir) + 40];
-        sprintf(datafile, "%s/", mmc_tcadir);
+        int len = strlen(mmc_tcadir) + 41;
+        datafile = new char[len];
+        snprintf(datafile, len, "%s/", mmc_tcadir);
         dp = datafile + strlen(datafile);
     }
     else {
@@ -1177,7 +1185,7 @@ mmjco_cmds::mm_create_table(int argc, char **argv)
         mm_create_data(argc-nt, argv+nt, temps[i], true);
         if (!done_header) {
             done_header = true;
-            sprintf(dp, "tpt%03d%06ld%06ld%02ld%04d-%02d%03ld.pts", nt,
+            snprintf(dp, 40, "tpt%03d%06ld%06ld%02ld%04d-%02d%03ld.pts", nt,
                 lround(temps[0]*1e4), lround(temps[nt-1]*1e4),
                 lround(mmc_sm*1e3), mmc_numxpts, mmc_nterms,
                 lround(mmc_thr*1e3));
@@ -1225,8 +1233,9 @@ mmjco_cmds::mm_load_data(int argc, char **argv)
         }
     }
     else {
-        path = new char[strlen(mmc_tcadir) + strlen(argv[1]) + 2];
-        sprintf(path, "%s/%s", mmc_tcadir, argv[1]);
+        int len = strlen(mmc_tcadir) + strlen(argv[1]) + 2;
+        path = new char[len];
+        snprintf(path, len, "%s/%s", mmc_tcadir, argv[1]);
         fp = fopen(path, "r");
         if (!fp) {
             delete [] path;
@@ -1461,8 +1470,9 @@ mmjco_cmds::mm_load_fit(int argc, char **argv)
         }
     }
     else {
-        path = new char[strlen(mmc_tcadir) + strlen(argv[1]) + 2];
-        sprintf(path, "%s/%s", mmc_tcadir, argv[1]);
+        int len = strlen(mmc_tcadir) + strlen(argv[1]) + 2;
+        path = new char[len];
+        snprintf(path, len, "%s/%s", mmc_tcadir, argv[1]);
         fp = fopen(path, "r");
         if (!fp) {
             delete [] path;
@@ -1565,13 +1575,14 @@ mmjco_cmds::mm_load_sweep(int argc, char **argv)
     delete [] mmc_fitfile;
     mmc_fitfile = 0;
 
-    char *fitfile = new char[strlen(ffn) + 16];
+    int len = strlen(ffn) + 16;
+    char *fitfile = new char[len];
     strcpy(fitfile, ffn);
     delete [] ffn;
     char *t = strrchr(fitfile, '.');
     if (t && !strcmp(t, ".swp"))
         *t = 0;
-    sprintf(fitfile + strlen(fitfile), "_%.4f.fit", temp);
+    snprintf(fitfile + strlen(fitfile), 16, "_%.4f.fit", temp);
 
     // Save a fit file.
     if (!mt->dump_file(fitfile)) {
@@ -1636,7 +1647,7 @@ mmjco_cmds::save_data(const char *filename, FILE *fp, DFTYPE dtype,
     else {
         // Save in rawfile format.
         char tbf[80];
-        sprintf(tbf, "%11.4e %11.4e %11.4e %.3f %-4d", mmc_temp, mmc_d1,
+        snprintf(tbf, 80, "%11.4e %11.4e %11.4e %.3f %-4d", mmc_temp, mmc_d1,
             mmc_d2, mmc_sm, mmc_numxpts);
 
         fprintf(fp, "Title: mmjco\n");

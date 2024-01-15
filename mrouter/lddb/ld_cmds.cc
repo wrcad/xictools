@@ -154,7 +154,7 @@ cLDDB::doCmd(const char *cmd)
     bool unhandled = false;
     if (!strcmp(tok,        "version")) {
         char buf[64];
-        sprintf(buf, "LDDB release: %s", LD_VERSION);
+        snprintf(buf, sizeof(buf), "LDDB release: %s", LD_VERSION);
         db_donemsg = lstring::copy(buf);
         ret = LD_OK;
     }
@@ -255,17 +255,17 @@ cLDDB::cmdSet(const char *cmd)
         sLstr lstr;
         const char *fmt = "%-16s: ";
 
-        sprintf(buf, fmt, "debug");
+        snprintf(buf, sizeof(buf), fmt, "debug");
         lstr.add(buf);
-        sprintf(buf, "0x%x\n", debug());
-        lstr.add(buf);
-
-        sprintf(buf, fmt, "verbose");
-        lstr.add(buf);
-        sprintf(buf, "%d\n", verbose());
+        snprintf(buf, sizeof(buf), "0x%x\n", debug());
         lstr.add(buf);
 
-        sprintf(buf, fmt, "global");
+        snprintf(buf, sizeof(buf), fmt, "verbose");
+        lstr.add(buf);
+        snprintf(buf, sizeof(buf), "%d\n", verbose());
+        lstr.add(buf);
+
+        snprintf(buf, sizeof(buf), fmt, "global");
         lstr.add(buf);
         lstr.add("global:");
         for (int i = 0; i < LD_MAX_GLOBALS; i++) {
@@ -276,34 +276,34 @@ cLDDB::cmdSet(const char *cmd)
         }
         lstr.add_c('\n');
 
-        sprintf(buf, fmt, "layers");
+        snprintf(buf, sizeof(buf), fmt, "layers");
         lstr.add(buf);
-        sprintf(buf, "%u\n", numLayers());
-        lstr.add(buf);
-
-        sprintf(buf, fmt, "maxnets");
-        lstr.add(buf);
-        sprintf(buf, "%u\n", maxNets());
+        snprintf(buf, sizeof(buf), "%u\n", numLayers());
         lstr.add(buf);
 
-        sprintf(buf, fmt, "lefresol");
+        snprintf(buf, sizeof(buf), fmt, "maxnets");
         lstr.add(buf);
-        sprintf(buf, "%d\n", lefResol());
-        lstr.add(buf);
-
-        sprintf(buf, fmt, "mfggrid");
-        lstr.add(buf);
-        sprintf(buf, "%g\n", lefToMic(manufacturingGrid()));
+        snprintf(buf, sizeof(buf), "%u\n", maxNets());
         lstr.add(buf);
 
-        sprintf(buf, fmt, "definresol");
+        snprintf(buf, sizeof(buf), fmt, "lefresol");
         lstr.add(buf);
-        sprintf(buf, "%d\n", defInResol());
+        snprintf(buf, sizeof(buf), "%d\n", lefResol());
         lstr.add(buf);
 
-        sprintf(buf, fmt, "defoutresol");
+        snprintf(buf, sizeof(buf), fmt, "mfggrid");
         lstr.add(buf);
-        sprintf(buf, "%d\n", defOutResol());
+        snprintf(buf, sizeof(buf), "%g\n", lefToMic(manufacturingGrid()));
+        lstr.add(buf);
+
+        snprintf(buf, sizeof(buf), fmt, "definresol");
+        lstr.add(buf);
+        snprintf(buf, sizeof(buf), "%d\n", defInResol());
+        lstr.add(buf);
+
+        snprintf(buf, sizeof(buf), fmt, "defoutresol");
+        lstr.add(buf);
+        snprintf(buf, sizeof(buf), "%d\n", defOutResol());
         lstr.add(buf);
 
         db_donemsg = lstr.string_trim();
@@ -313,7 +313,7 @@ cLDDB::cmdSet(const char *cmd)
         delete [] tok;
         tok = lstring::gettok(&cmd);
         if (!tok) {
-            sprintf(buf, "debug: 0x%x", debug());
+            snprintf(buf, sizeof(buf), "debug: 0x%x", debug());
             db_donemsg = lstring::copy(buf);
         }
         else {
@@ -326,7 +326,7 @@ cLDDB::cmdSet(const char *cmd)
         delete [] tok;
         tok = lstring::gettok(&cmd);
         if (!tok) {
-            sprintf(buf, "verbose: %d", verbose());
+            snprintf(buf, sizeof(buf), "verbose: %d", verbose());
             db_donemsg = lstring::copy(buf);
         }
         else {
@@ -375,7 +375,7 @@ cLDDB::cmdSet(const char *cmd)
         delete [] tok;
         tok = lstring::gettok(&cmd);
         if (!tok) {
-            sprintf(buf, "layers: %u", numLayers());
+            snprintf(buf, sizeof(buf), "layers: %u", numLayers());
             db_donemsg = lstring::copy(buf);
         }
         else {
@@ -411,7 +411,7 @@ cLDDB::cmdSet(const char *cmd)
         delete [] tok;
         tok = lstring::gettok(&cmd);
         if (!tok) {
-            sprintf(buf, "maxnets: %u", maxNets());
+            snprintf(buf, sizeof(buf), "maxnets: %u", maxNets());
             db_donemsg = lstring::copy(buf);
         }
         else {
@@ -449,7 +449,7 @@ cLDDB::cmdSet(const char *cmd)
         delete [] tok;
         tok = lstring::gettok(&cmd);
         if (!tok) {
-            sprintf(buf, "lefresol: %d", lefResol());
+            snprintf(buf, sizeof(buf), "lefresol: %d", lefResol());
             db_donemsg = lstring::copy(buf);
         }
         else {
@@ -476,7 +476,7 @@ cLDDB::cmdSet(const char *cmd)
         delete [] tok;
         tok = lstring::gettok(&cmd);
         if (!tok) {
-            sprintf(buf, "mfggrid: %g", lefToMic(manufacturingGrid()));
+            snprintf(buf, sizeof(buf), "mfggrid: %g", lefToMic(manufacturingGrid()));
             db_donemsg = lstring::copy(buf);
         }
         else {
@@ -503,7 +503,7 @@ cLDDB::cmdSet(const char *cmd)
         delete [] tok;
         tok = lstring::gettok(&cmd);
         if (!tok) {
-            sprintf(buf, "definresol: %d", defInResol());
+            snprintf(buf, sizeof(buf), "definresol: %d", defInResol());
             db_donemsg = lstring::copy(buf);
         }
         else {
@@ -530,7 +530,7 @@ cLDDB::cmdSet(const char *cmd)
         delete [] tok;
         tok = lstring::gettok(&cmd);
         if (!tok) {
-            sprintf(buf, "defoutresol: %d", defOutResol());
+            snprintf(buf, sizeof(buf), "defoutresol: %d", defOutResol());
             db_donemsg = lstring::copy(buf);
         }
         else {
@@ -683,7 +683,7 @@ cLDDB::cmdIgnore(const char *s)
                 else {
                     int len = strlen(db_warnmsg) + strlen(t) + 2;
                     char *tt = new char[len];
-                    sprintf(tt, "%s\n%s", db_warnmsg, t);
+                    snprintf(tt, len, "%s\n%s", db_warnmsg, t);
                     delete [] t;
                     delete [] db_warnmsg;
                     db_warnmsg = tt;
@@ -822,7 +822,7 @@ cLDDB::cmdCritical(const char *s)
                 else {
                     int len = strlen(db_warnmsg) + strlen(t) + 2;
                     char *tt = new char[len];
-                    sprintf(tt, "%s\n%s", db_warnmsg, t);
+                    snprintf(tt, len, "%s\n%s", db_warnmsg, t);
                     delete [] t;
                     delete [] db_warnmsg;
                     db_warnmsg = tt;
@@ -1056,8 +1056,8 @@ cLDDB::cmdObstruction(const char *cmd)
         if (userObs()) {
             sLstr lstr;
             for (dbDseg *ds = userObs(); ds; ds = ds->next) {
-                sprintf(buf, "%-3d %.4f,%.4f  %.4f,%.4f\n", ds->layer,
-                    lefToMic(ds->x1), lefToMic(ds->y1),
+                snprintf(buf, sizeof(buf), "%-3d %.4f,%.4f  %.4f,%.4f\n",
+                    ds->layer, lefToMic(ds->x1), lefToMic(ds->y1),
                     lefToMic(ds->x2), lefToMic(ds->y2));
                 lstr.add(buf);
             }
@@ -1081,8 +1081,8 @@ cLDDB::cmdObstruction(const char *cmd)
             for (dbDseg *ds = userObs(); ds; ds = ds->next) {
                 if (ds->layer != lnum)
                     continue;
-                sprintf(buf, "%-3d %.4f,%.4f  %.4f,%.4f\n", ds->layer,
-                    lefToMic(ds->x1), lefToMic(ds->y1),
+                snprintf(buf, sizeof(buf), "%-3d %.4f,%.4f  %.4f,%.4f\n",
+                    ds->layer, lefToMic(ds->x1), lefToMic(ds->y1),
                     lefToMic(ds->x2), lefToMic(ds->y2));
                 lstr.add(buf);
             }
@@ -1139,29 +1139,32 @@ cLDDB::cmdLayer(const char *cmd)
                 if (lnum >= 0 && (int)i != lnum)
                     continue;
                 lefRouteLayer *lefr = getLefRouteLayer(i);
-                sprintf(buf, "layer %d\n", i+1);
+                snprintf(buf, sizeof(buf), "layer %d\n", i+1);
                 lstr.add(buf);
-                sprintf(buf, "  %-10s: %s\n", "name", layerName(i));
+                snprintf(buf, sizeof(buf), "  %-10s: %s\n", "name",
+                    layerName(i));
                 lstr.add(buf);
-                sprintf(buf, "  %-10s: %d\n", "layernum", layerNumber(i));
+                snprintf(buf, sizeof(buf), "  %-10s: %d\n", "layernum",
+                    layerNumber(i));
                 lstr.add(buf);
-                sprintf(buf, "  %-10s: %d\n", "typenum", purposeNumber(i));
+                snprintf(buf, sizeof(buf), "  %-10s: %d\n", "typenum",
+                    purposeNumber(i));
                 lstr.add(buf);
-                sprintf(buf, "  %-10s: %.4f\n", "width",
+                snprintf(buf, sizeof(buf), "  %-10s: %.4f\n", "width",
                     lefToMic(lefr->route.width));
                 lstr.add(buf);
                 if (lefr->route.pitchX == lefr->route.pitchY ||
                         lefr->route.pitchY == 0) {
-                    sprintf(buf, "  %-10s: %.4f\n", "pitch",
+                    snprintf(buf, sizeof(buf), "  %-10s: %.4f\n", "pitch",
                         lefToMic(lefr->route.pitchX));
                 }
                 else {
-                    sprintf(buf, "  %-10s: %.4f %.4f\n", "pitch",
+                    snprintf(buf, sizeof(buf), "  %-10s: %.4f %.4f\n", "pitch",
                         lefToMic(lefr->route.pitchX),
                         lefToMic(lefr->route.pitchY));
                 }
                 lstr.add(buf);
-                sprintf(buf, "  %-10s: %s\n", "direction",
+                snprintf(buf, sizeof(buf), "  %-10s: %s\n", "direction",
                     lefr->route.direction == DIR_VERT ? "vert" : "horiz");
                 lstr.add(buf);
             }
@@ -1176,7 +1179,8 @@ cLDDB::cmdLayer(const char *cmd)
         delete [] tok;
         tok = lstring::gettok(&cmd);
         if (!tok) {
-            sprintf(buf, "layer %d name: %s", lnum+1, layerName(lnum));
+            snprintf(buf, sizeof(buf), "layer %d name: %s", lnum+1,
+                layerName(lnum));
             db_donemsg = lstring::copy(buf);
         }
         else {
@@ -1190,7 +1194,7 @@ cLDDB::cmdLayer(const char *cmd)
         delete [] tok;
         tok = lstring::gettok(&cmd);
         if (!tok) {
-            sprintf(buf, "layer %d GDSII layernum: %d", lnum+1,
+            snprintf(buf, sizeof(buf), "layer %d GDSII layernum: %d", lnum+1,
                 layerNumber(lnum));
             db_donemsg = lstring::copy(buf);
         }
@@ -1211,7 +1215,7 @@ cLDDB::cmdLayer(const char *cmd)
         delete [] tok;
         tok = lstring::gettok(&cmd);
         if (!tok) {
-            sprintf(buf, "layer %d GDSII datatype: %d", lnum+1,
+            snprintf(buf, sizeof(buf), "layer %d GDSII datatype: %d", lnum+1,
                 purposeNumber(lnum));
             db_donemsg = lstring::copy(buf);
         }
@@ -1233,7 +1237,7 @@ cLDDB::cmdLayer(const char *cmd)
         delete [] tok;
         tok = lstring::gettok(&cmd);
         if (!tok) {
-            sprintf(buf, "layer %d path width: %g", lnum+1,
+            snprintf(buf, sizeof(buf), "layer %d path width: %g", lnum+1,
                 lefToMic(lefr->route.width));
             db_donemsg = lstring::copy(buf);
         }
@@ -1257,11 +1261,11 @@ cLDDB::cmdLayer(const char *cmd)
         if (!tok) {
             if (lefr->route.pitchX == lefr->route.pitchY ||
                     lefr->route.pitchY == 0) {
-                sprintf(buf, "layer %d pitch: %.4f\n", lnum+1,
+                snprintf(buf, sizeof(buf), "layer %d pitch: %.4f\n", lnum+1,
                     lefToMic(lefr->route.pitchX));
             }
             else {
-                sprintf(buf, "layer %d pitch: %.4f %.4f", lnum+1,
+                snprintf(buf, sizeof(buf), "layer %d pitch: %.4f %.4f", lnum+1,
                     lefToMic(lefr->route.pitchX),
                     lefToMic(lefr->route.pitchY));
             }
@@ -1296,7 +1300,7 @@ cLDDB::cmdLayer(const char *cmd)
         delete [] tok;
         tok = lstring::gettok(&cmd);
         if (!tok) {
-            sprintf(buf, "layer %d direction: %s", lnum+1,
+            snprintf(buf, sizeof(buf), "layer %d direction: %s", lnum+1,
                 lefr->route.direction == DIR_VERT ? "vert" : "horiz");
             db_donemsg = lstring::copy(buf);
         }
@@ -1348,7 +1352,7 @@ cLDDB::cmdBoundary(const char *cmd)
 
     if (!tok1) {
         char buf[80];
-        sprintf(buf, "boundary:  %.4f,%.4f  %.4f,%.4f",
+        snprintf(buf, sizeof(buf), "boundary:  %.4f,%.4f  %.4f,%.4f",
             lefToMic(xLower()), lefToMic(yLower()),
             lefToMic(xUpper()), lefToMic(yUpper()));
         db_donemsg = lstring::copy(buf);

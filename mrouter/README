@@ -153,7 +153,12 @@ Now use unsigned short for routing grid storage, saves memory.
 
 New hash table class used for finding of gates/nets/pins by name.
 
------
-The present release is 1.2.6.  This represents code changes and bug
-fixes that were unfortunately not recorded here.  They are probably
-in the git log.
+----------------------------------------------------------------------------
+Merge into XicTools, see release.sh.
+Initial xictools release 1.2.6
+
+1.2.7 01/15/24
+Replacement of sprintf with snprintf to avoid security warning from
+compilers.  This includes third party lef/def code, patches updated.
+
+

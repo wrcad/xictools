@@ -130,11 +130,9 @@ cMRouter::readConfig(const char *filename, bool is_info, bool incr)
     char line[MAX_LINE_LEN];
     lefMacro *gateinfo = 0;       // Gate information, pin location, etc.
     int count = 0;
-    int lines = 0;
 
     while (!feof(fconfig)) {
         fgets(line, MAX_LINE_LEN, fconfig);
-        lines++;
         char *lineptr = line;
         while (isspace(*lineptr))
             lineptr++;
