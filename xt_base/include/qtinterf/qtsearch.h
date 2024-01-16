@@ -45,6 +45,7 @@
 #include <QVariant>
 #include <QDialog>
 #include <QTimer>
+#include <QKeyEvent>
 
 
 class QCheckBox;
@@ -87,6 +88,13 @@ public:
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
+        }
+
+    // Don't pop down from Esc press.
+    void keyPressEvent(QKeyEvent *ev)
+        {
+            if (ev->key() != Qt::Key_Escape)
+                QDialog::keyPressEvent(ev);
         }
 
     void set_ign_case(bool);

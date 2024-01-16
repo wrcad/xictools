@@ -79,6 +79,13 @@ public:
             setWindowFlags(f);
         }
 
+    // Don't pop down from Esc press.
+    void keyPressEvent(QKeyEvent *ev)
+        {
+            if (ev->key() != Qt::Key_Escape)
+                QDialog::keyPressEvent(ev);
+        }
+
 private slots:
     void help_btn_slot();
     void add_layer_slot(bool);

@@ -76,6 +76,13 @@ public:
             setWindowFlags(f);
         }
 
+    // Don't pop down from Esc press.
+    void keyPressEvent(QKeyEvent *ev)
+        {
+            if (ev->key() != Qt::Key_Escape)
+                QDialog::keyPressEvent(ev);
+        }
+
     bool is_hidden()                    { return (mc_allflag); }
     static QTmergeDlg *self()           { return (instPtr); }
 

@@ -44,11 +44,11 @@
 #include "qtkwent.h"
 
 #include <QDialog>
+#include <QKeyEvent>
 
 
-/**************************************************************************
- * Command parameter setting dialog.
- **************************************************************************/
+//-----------------------------------------------------------------------------
+// QTcmdParamDlg:  command parameter setting dialog.
 
 class QTabWidget;
 
@@ -59,6 +59,13 @@ class QTcmdParamDlg : public QDialog
 public:
     QTcmdParamDlg(int, int);
     ~QTcmdParamDlg();
+
+    // Don't pop down from Esc press.
+    void keyPressEvent(QKeyEvent *ev)
+        {
+            if (ev->key() != Qt::Key_Escape)
+                QDialog::keyPressEvent(ev);
+        }
 
     static QTcmdParamDlg *self()        { return (instPtr); }
 

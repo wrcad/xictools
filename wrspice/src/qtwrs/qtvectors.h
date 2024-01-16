@@ -44,10 +44,13 @@
 #include "qtinterf/qtinterf.h"
 
 #include <QDialog>
+#include <QKeyEvent>
 
-//===========================================================================
-// Pop up to display the list of vectors for the current plot.  Point at
-// entries to select them (indicated by '>' in the first column.
+
+//-----------------------------------------------------------------------------
+// QTvectorListDlg:  dialog to display the list of vectors for the
+// current plot.  Click on entries to select them, as indicated by '>'
+// in the first column.
 
 struct wordlist;
 
@@ -58,6 +61,13 @@ class QTvectorListDlg : public QDialog, public QTbag
 public:
     QTvectorListDlg(int, int, const char*);
     ~QTvectorListDlg();
+
+    // Don't pop down from Esc press.
+    void keyPressEvent(QKeyEvent *ev)
+        {
+            if (ev->key() != Qt::Key_Escape)
+                QDialog::keyPressEvent(ev);
+        }
 
     QSize sizeHint() const;
     void update(const char *s);

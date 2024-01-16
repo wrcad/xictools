@@ -44,11 +44,11 @@
 #include "qtkwent.h"
 
 #include <QDialog>
+#include <QKeyEvent>
 
 
-/**************************************************************************
- * Debug parameter setting dialog.
- **************************************************************************/
+//-----------------------------------------------------------------------------
+// QTdebugParamDlg:  debug parameter setting dialog.
 
 class QTabWidget;
 
@@ -59,6 +59,13 @@ class QTdebugParamDlg : public QDialog
 public:
     QTdebugParamDlg(int, int);
     ~QTdebugParamDlg();
+
+    // Don't pop down from Esc press.
+    void keyPressEvent(QKeyEvent *ev)
+        {
+            if (ev->key() != Qt::Key_Escape)
+                QDialog::keyPressEvent(ev);
+        }
 
     static QTdebugParamDlg *self()      { return (instPtr); }
 

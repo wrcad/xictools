@@ -44,6 +44,11 @@
 #include "toolbar.h"
 
 #include <QDialog>
+#include <QKeyEvent>
+
+
+//-----------------------------------------------------------------------------
+// QTerrmsgDlg:  error reporting system.
 
 namespace qtinterf { class QTtextEdit; }
 using namespace qtinterf;
@@ -84,6 +89,13 @@ class QTerrmsgDlg : public QDialog
 public:
     QTerrmsgDlg(const char*);
     ~QTerrmsgDlg();
+
+    // Don't pop down from Esc press.
+    void keyPressEvent(QKeyEvent *ev)
+        {
+            if (ev->key() != Qt::Key_Escape)
+                QDialog::keyPressEvent(ev);
+        }
 
     QSize sizeHint() const;
 

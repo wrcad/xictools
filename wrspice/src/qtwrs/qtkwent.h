@@ -60,8 +60,9 @@ namespace qtinterf {
 using namespace qtinterf;
 
 
-//----------------------------------------------------------------------------
-// A string Spin Box that is used for keyword choice selection.
+//-----------------------------------------------------------------------------
+// QTchoiceSpinBox:  a string Spin Box that is used for keyword choice
+// selection.
 
 class QTchoiceSpinBox : public QSpinBox
 {
@@ -84,9 +85,9 @@ private:
 };
 
 
-//----------------------------------------------------------------------------
-// The keyword entry area used in the panels and pages to set variables.
-// Lots of options.
+//-----------------------------------------------------------------------------
+// The keyword entry area used in the panels and pages to set
+// variables.  Lots of options.
 
 // Wrapper to access KWent::ent cleanly.
 //

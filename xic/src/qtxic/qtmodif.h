@@ -88,6 +88,13 @@ public:
             setWindowFlags(f);
         }
 
+    // Don't pop down from Esc press.
+    void keyPressEvent(QKeyEvent *ev)
+        {
+            if (ev->key() != Qt::Key_Escape)
+                QDialog::keyPressEvent(ev);
+        }
+
     bool is_empty()                 { return (!m_field || !m_width); }
     static PMretType retval()       { return (m_retval); }
     static QTmodifDlg *self()       { return (instPtr); }

@@ -49,6 +49,7 @@
 #include <QListWidget>
 #include <QListWidgetItem>
 #include <QItemDelegate>
+#include <QKeyEvent>
 
 
 class QCloseEvent;
@@ -96,6 +97,13 @@ public:
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
+        }
+
+    // Don't pop down from Esc press.
+    void keyPressEvent(QKeyEvent *ev)
+        {
+            if (ev->key() != Qt::Key_Escape)
+                QDialog::keyPressEvent(ev);
         }
 
     QList<QListWidgetItem*> get_items();

@@ -45,6 +45,9 @@
 #include "toolbar.h"
 
 
+//-----------------------------------------------------------------------------
+// QTtoolbar:  main container class for application.
+
 enum tid_id { tid_toolbar, tid_bug, tid_font, tid_files, tid_circuits,
     tid_plots, tid_plotdefs, tid_colors, tid_vectors, tid_variables,
     tid_shell, tid_simdefs, tid_commands, tid_runops, tid_debug, tid_END };
@@ -55,7 +58,7 @@ class QDialog;
 
 extern inline class QTtoolbar *TB();
 
-// Keep track of the active popup widgets
+// Keep track of the active dialogs.
 //
 class QTtoolbar : public sToolbar, public QTbag
 {

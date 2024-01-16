@@ -44,6 +44,11 @@
 #include "qttoolb.h"
 
 #include <QDialog>
+#include <QKeyEvent>
+
+
+//-----------------------------------------------------------------------------
+// QTtbDlg: the 'tool bar' application dialog, contains main menus, etc.
 
 class QMenu;
 class QAction;
@@ -70,6 +75,13 @@ public:
         MA_help, MA_about, MA_notes };
 
     void update(ResUpdType = RES_UPD);
+
+    // Don't pop down from Esc press.
+    void keyPressEvent(QKeyEvent *ev)
+        {
+            if (ev->key() != Qt::Key_Escape)
+                QDialog::keyPressEvent(ev);
+        }
 
     static QTtbDlg *self()          { return (instPtr); }
 

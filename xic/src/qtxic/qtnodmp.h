@@ -85,6 +85,13 @@ public:
             setWindowFlags(f);
         }
 
+    // Don't pop down from Esc press.
+    void keyPressEvent(QKeyEvent *ev)
+        {
+            if (ev->key() != Qt::Key_Escape)
+                QDialog::keyPressEvent(ev);
+        }
+
     void clear_cmd()                    { nm_cmd = 0; }
     void desel_point_btn()              { QTdev::Deselect(nm_point_btn); }
 

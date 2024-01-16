@@ -44,11 +44,11 @@
 #include "qtkwent.h"
 
 #include <QDialog>
+#include <QKeyEvent>
 
 
-/**************************************************************************
- * Color parameter setting dialog.
- **************************************************************************/
+//-----------------------------------------------------------------------------
+// QTcolorParamDlg:  color parameter setting dialog.
 
 class QTcolorParamDlg : public QDialog
 {
@@ -57,6 +57,13 @@ class QTcolorParamDlg : public QDialog
 public:
     QTcolorParamDlg(int, int);
     ~QTcolorParamDlg();
+
+    // Don't pop down from Esc press.
+    void keyPressEvent(QKeyEvent *ev)
+        {
+            if (ev->key() != Qt::Key_Escape)
+                QDialog::keyPressEvent(ev);
+        }
 
     static QTcolorParamDlg *self()          { return (instPtr); }
 

@@ -44,10 +44,12 @@
 #include "qtinterf/qtinterf.h"
 
 #include <QDialog>
+#include <QKeyEvent>
 
 
-//===========================================================================
-// Dialog to display the current "runops" (traces, iplots, etc.).
+//-----------------------------------------------------------------------------
+// QTrunopListDlg:  dialog to display the current "runops" (traces,
+// iplots, etc.).
 
 class QTrunopListDlg : public QDialog, public QTbag
 {
@@ -56,6 +58,13 @@ class QTrunopListDlg : public QDialog, public QTbag
 public:
     QTrunopListDlg(int, int, const char*);
     ~QTrunopListDlg();
+
+    // Don't pop down from Esc press.
+    void keyPressEvent(QKeyEvent *ev)
+        {
+            if (ev->key() != Qt::Key_Escape)
+                QDialog::keyPressEvent(ev);
+        }
 
     QSize sizeHint() const;
     void update(const char *s);

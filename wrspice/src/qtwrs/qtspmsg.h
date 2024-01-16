@@ -42,7 +42,11 @@
 #define QTSPMSG_H
 
 #include <QDialog>
+#include <QKeyEvent>
 
+
+//-----------------------------------------------------------------------------
+// QTspmsgDlg:  message box dialog.
 
 class QTspmsgDlg : public QDialog
 {
@@ -51,6 +55,13 @@ class QTspmsgDlg : public QDialog
 public:
     QTspmsgDlg(const char*);
     ~QTspmsgDlg();
+
+    // Don't pop down from Esc press.
+    void keyPressEvent(QKeyEvent *ev)
+        {
+            if (ev->key() != Qt::Key_Escape)
+                QDialog::keyPressEvent(ev);
+        }
 
     static QTspmsgDlg *self()       { return (instPtr); }
 

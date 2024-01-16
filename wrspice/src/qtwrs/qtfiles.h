@@ -44,11 +44,11 @@
 #include "qtinterf/qtinterf.h"
 
 #include <QDialog>
+#include <QKeyEvent>
 
 
-//----------------------------------------------------------------------
-//  Files Listing Dialog
-//
+//-----------------------------------------------------------------------------
+// QTfilesListDlg:  files listing dialog.
 
 #define MAX_BTNS 5
 
@@ -68,6 +68,13 @@ class QTfilesListDlg : public QDialog, public QTbag
 public:
     QTfilesListDlg(int, int);
     ~QTfilesListDlg();
+
+    // Don't pop down from Esc press.
+    void keyPressEvent(QKeyEvent *ev)
+        {
+            if (ev->key() != Qt::Key_Escape)
+                QDialog::keyPressEvent(ev);
+        }
 
     QSize sizeHint()                const { return (QSize(500, 400)); }
 

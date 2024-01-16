@@ -44,6 +44,7 @@
 #include "ginterf/graphics.h"
 
 #include <QVariant>
+#include <QKeyEvent>
 #include <QDialog>
 
 
@@ -96,6 +97,13 @@ public:
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
+        }
+
+    // Don't pop down from Esc press.
+    void keyPressEvent(QKeyEvent *ev)
+        {
+            if (ev->key() != Qt::Key_Escape)
+                QDialog::keyPressEvent(ev);
         }
 
     void set_info_limit(int n)  { pg_info_limit = n; pg_info_count = 0; }

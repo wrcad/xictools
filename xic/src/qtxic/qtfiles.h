@@ -85,6 +85,13 @@ public:
             setWindowFlags(f);
         }
 
+    // Don't pop down from Esc press.
+    void keyPressEvent(QKeyEvent *ev)
+        {
+            if (ev->key() != Qt::Key_Escape)
+                QDialog::keyPressEvent(ev);
+        }
+
     const char *get_directory()         { return (fl_directory); }
     static void panic()                 { instPtr = 0; }
     static QTfilesListDlg *self()       { return (instPtr); }

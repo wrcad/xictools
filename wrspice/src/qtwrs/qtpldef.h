@@ -44,11 +44,11 @@
 #include "qtkwent.h"
 
 #include <QDialog>
+#include <QKeyEvent>
 
 
-/**************************************************************************
- * Plot parameter setting dialog.
- **************************************************************************/
+//-----------------------------------------------------------------------------
+// QTplotParamDlg:  plot parameter setting dialog.
 
 class QTabWidget;
 
@@ -59,6 +59,13 @@ class QTplotParamDlg : public QDialog
 public:
     QTplotParamDlg(int, int);
     ~QTplotParamDlg();
+
+    // Don't pop down from Esc press.
+    void keyPressEvent(QKeyEvent *ev)
+        {
+            if (ev->key() != Qt::Key_Escape)
+                QDialog::keyPressEvent(ev);
+        }
 
     static QTplotParamDlg *self()       { return (instPtr); }
 

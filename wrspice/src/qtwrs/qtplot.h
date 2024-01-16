@@ -45,6 +45,11 @@
 #include "qtinterf/qtdraw.h"
 
 #include <QDialog>
+#include <QKeyEvent>
+
+
+//-----------------------------------------------------------------------------
+// QTplotDlg:  plot and mplot display dialogs.
 
 struct sGraph;
 class QGroupBox;
@@ -58,9 +63,6 @@ class QFocusEvent;
 class QDragEnterEvent;
 class QDropEvent;
 
-
-// special 'widget bag' for plot and mplot windows.
-//
 class QTplotDlg : QDialog, public QTbag,  public QTdraw
 {
     Q_OBJECT
@@ -107,6 +109,13 @@ public:
         if (pb_id)
             QTdev::self()->RemoveIdleProc(pb_id);
     }
+
+    // Don't pop down from Esc press.
+    void keyPressEvent(QKeyEvent *ev)
+        {
+            if (ev->key() != Qt::Key_Escape)
+                QDialog::keyPressEvent(ev);
+        }
 
     QSize sizeHint() const;
 

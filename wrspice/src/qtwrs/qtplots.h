@@ -44,11 +44,12 @@
 #include "qtinterf/qtinterf.h"
 
 #include <QDialog>
+#include <QKeyEvent>
 
-//===========================================================================
-// Dialog to display a list of the plots.  Clicking in the list selects the
-// 'current' plot.
 
+//-----------------------------------------------------------------------------
+// QTplotListDlg:  dialog to display a list of the plots.  Clicking in
+// the list selects the 'current' plot.
 
 class QTplotListDlg : public QDialog, public QTbag
 {
@@ -57,6 +58,13 @@ class QTplotListDlg : public QDialog, public QTbag
 public:
     QTplotListDlg(int, int, const char*);
     ~QTplotListDlg();
+
+    // Don't pop down from Esc press.
+    void keyPressEvent(QKeyEvent *ev)
+        {
+            if (ev->key() != Qt::Key_Escape)
+                QDialog::keyPressEvent(ev);
+        }
 
     QSize sizeHint() const;
     void update(const char *s);

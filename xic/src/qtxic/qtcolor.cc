@@ -57,6 +57,7 @@
 #include <QColorDialog>
 #include <QComboBox>
 #include <QPushButton>
+#include <QKeyEvent>
 
 
 //-----------------------------------------------------------------------------
@@ -92,6 +93,23 @@ cMain::PopUpColor(GRobject caller, ShowMode mode)
         QTmainwin::self()->Viewport());
     QTcolorDlg::self()->show();
 }
+// End of cMain functions.
+
+
+// Prevent the QColorDialog from disappearing when Esc is pressed, leaving
+// the frame and buttons in view, which is weird.
+//
+class QTcolorDialog : public QColorDialog
+{
+public:
+    QTcolorDialog(QWidget *prnt = 0) : QColorDialog(prnt) { }
+
+    void keyPressEvent(QKeyEvent *ev)
+        {
+            if (ev->key() != Qt::Key_Escape)
+                QDialog::keyPressEvent(ev);
+        }
+};
 
 
 //
@@ -219,7 +237,7 @@ QTcolorDlg::QTcolorDlg(GRobject c)
     connect(c_attrmenu, SIGNAL(currentIndexChanged(int)),
         this, SLOT(attr_menu_change_slot(int)));
 
-    c_clrd = new QColorDialog();
+    c_clrd = new QTcolorDialog();
     c_clrd->setWindowFlags(Qt::Widget);
     c_clrd->setOptions(QColorDialog::DontUseNativeDialog |
         QColorDialog::NoButtons);
@@ -412,8 +430,10 @@ QTcolorDlg::c_list_callback(const char *string, void*)
         if (sscanf(string, "%d %d %d", &r, &g, &b) != 3)
             return;
         if (QTcolorDlg::self()) {
-            QColor rgb(r, g, b);
             QTcolorDlg::c_set_rgb(r, g, b);
+            QColor rgb(r, g, b);
+            if (QTcolorDlg::self() && QTcolorDlg::self()->c_clrd)
+                QTcolorDlg::self()->c_clrd->setCurrentColor(rgb);
         }
     }
     else if (QTcolorDlg::self()) {
@@ -442,11 +462,8 @@ QTcolorDlg::categ_menu_change_slot(int ix)
 void
 QTcolorDlg::attr_menu_change_slot(int)
 {
-    int ix = c_attrmenu->currentData().toInt();
-    if (ix == Physical || ix == Electrical) {
-        c_mode = ix;
-        update_color();
-    }
+    c_mode = c_attrmenu->currentData().toInt();
+    update_color();
 }
 
 

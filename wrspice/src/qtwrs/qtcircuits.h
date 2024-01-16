@@ -44,11 +44,13 @@
 #include "qtinterf/qtinterf.h"
 
 #include <QDialog>
+#include <QKeyEvent>
 
 
-//===========================================================================
-// Dialog that displays a list of the circuits that have been loaded.
-// Clicking on an entry will make it the 'current' circuit.
+//-----------------------------------------------------------------------------
+// QTcircuitListDlg:  dialog that displays a list of the circuits that
+// have been loaded.  Clicking on an entry will make it the 'current'
+// circuit.
 
 class QTcircuitListDlg : public QDialog, public QTbag
 {
@@ -57,6 +59,13 @@ class QTcircuitListDlg : public QDialog, public QTbag
 public:
     QTcircuitListDlg(int, int, const char*);
     ~QTcircuitListDlg();
+
+    // Don't pop down from Esc press.
+    void keyPressEvent(QKeyEvent *ev)
+        {
+            if (ev->key() != Qt::Key_Escape)
+                QDialog::keyPressEvent(ev);
+        }
 
     QSize sizeHint() const;
     void update(const char *s);

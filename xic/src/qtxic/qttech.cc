@@ -101,11 +101,11 @@ QTwriteTechDlg::QTwriteTechDlg(GRobject caller)
 
     setWindowTitle(tr("Write Tech File"));
     setAttribute(Qt::WA_DeleteOnClose);
+    setMinimumWidth(300);
 
-    QMargins qmtop(2, 2, 2, 2);
     QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setContentsMargins(qmtop);
+    vbox->setContentsMargins(4, 4, 4, 4);
     vbox->setSpacing(2);
 
     tc_none = new QRadioButton(tr("Omit default definitions"));
@@ -129,12 +129,12 @@ QTwriteTechDlg::QTwriteTechDlg(GRobject caller)
     vbox->addLayout(hbox);
 
     QLabel *label = new QLabel(tr("Technology File"));
-    label->setAlignment(Qt::AlignCenter);
     hbox->addWidget(label);
 
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
     btn->setAutoDefault(false);
+    btn->setMaximumWidth(60);
     connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     char string[256];
@@ -160,6 +160,9 @@ QTwriteTechDlg::QTwriteTechDlg(GRobject caller)
     btn = new QPushButton(tr("Dismiss"));
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+
+    // Enter will activate tc_write, uncommont below to dismiss instead.
+    //setTabOrder(btn, tc_write);
 
     update();
 }

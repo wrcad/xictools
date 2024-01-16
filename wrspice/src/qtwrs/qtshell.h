@@ -44,11 +44,11 @@
 #include "qtkwent.h"
 
 #include <QDialog>
+#include <QKeyEvent>
 
 
-/**************************************************************************
- * Shell parameter setting dialog.
- **************************************************************************/
+//-----------------------------------------------------------------------------
+// QTshellParamDlg: shell parameter setting dialog.
 
 class QTshellParamDlg : public QDialog
 {
@@ -57,6 +57,13 @@ class QTshellParamDlg : public QDialog
 public:
     QTshellParamDlg(int, int);
     ~QTshellParamDlg();
+
+    // Don't pop down from Esc press.
+    void keyPressEvent(QKeyEvent *ev)
+        {
+            if (ev->key() != Qt::Key_Escape)
+                QDialog::keyPressEvent(ev);
+        }
 
     static QTshellParamDlg *self()      { return (instPtr); }
 

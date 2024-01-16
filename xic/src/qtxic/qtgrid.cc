@@ -761,6 +761,11 @@ QTgridDlg::redraw()
 void
 QTgridDlg::keyPressEvent(QKeyEvent *ev)
 {
+    // Don't pop down from Esc press.
+
+    if (ev->key() != Qt::Key_Escape)
+        QDialog::keyPressEvent(ev);
+
     // Look only at Enter key events.  If not focussed on the Dismiss
     // button, run the Apply callback and set focus to the Dismiss
     // button.  A second Enter press will then dismiss the pop-up.

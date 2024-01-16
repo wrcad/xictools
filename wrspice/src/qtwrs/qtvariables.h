@@ -44,9 +44,11 @@
 #include "qtinterf/qtinterf.h"
 
 #include <QDialog>
+#include <QKeyEvent>
 
-//===========================================================================
-// Pop-up to display the current shell variables.
+
+//-----------------------------------------------------------------------------
+// QTvarListDlg: dialog to display the current shell variables.
 
 class QTvarListDlg : public QDialog, public QTbag
 {
@@ -55,6 +57,13 @@ class QTvarListDlg : public QDialog, public QTbag
 public:
     QTvarListDlg(int, int, const char*);
     ~QTvarListDlg();
+
+    // Don't pop down from Esc press.
+    void keyPressEvent(QKeyEvent *ev)
+        {
+            if (ev->key() != Qt::Key_Escape)
+                QDialog::keyPressEvent(ev);
+        }
 
     QSize sizeHint() const;
     void update(const char *s);

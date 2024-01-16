@@ -75,6 +75,13 @@ public:
             setWindowFlags(f);
         }
 
+    // Don't pop down from Esc press.
+    void keyPressEvent(QKeyEvent *ev)
+        {
+            if (ev->key() != Qt::Key_Escape)
+                QDialog::keyPressEvent(ev);
+        }
+
     GRobject call_btn()                 { return (oas_caller); }
     static QToasisDlg *self()           { return (instPtr); }
 

@@ -44,11 +44,11 @@
 #include "qtkwent.h"
 
 #include <QDialog>
+#include <QKeyEvent>
 
 
-/**************************************************************************
- * Simulation parameter setting dialog.
- **************************************************************************/
+//-----------------------------------------------------------------------------
+// QTsimParamDlg:  simulation parameter setting dialog.
 
 class QTabWidget;
 
@@ -59,6 +59,13 @@ class QTsimParamDlg : public QDialog
 public:
     QTsimParamDlg(int, int);
     ~QTsimParamDlg();
+
+    // Don't pop down from Esc press.
+    void keyPressEvent(QKeyEvent *ev)
+        {
+            if (ev->key() != Qt::Key_Escape)
+                QDialog::keyPressEvent(ev);
+        }
 
     static QTsimParamDlg *self()        { return (instPtr); }
 

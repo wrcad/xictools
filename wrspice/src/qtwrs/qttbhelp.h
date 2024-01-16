@@ -45,15 +45,18 @@
 #include "toolbar.h"
 
 #include <QDialog>
+#include <QKeyEvent>
+
+
+//-----------------------------------------------------------------------------
+// QTtbHelpDlg:  dialog to display keyword help lists.  Clicking on
+// the list entries calls the main help system.  This is called from
+// the dialogs which contain lists of 'set' variables to modify.
 
 namespace qtinterf { class QTtextEdit; }
 class QMouseEvent;
 using namespace qtinterf;
 
-// Dialog to display keyword help lists.  Clicking on the list entries
-// calls the main help system.  This is called from the dialogs which
-// contain lists of 'set' variables to modify.
-//
 class QTtbHelpDlg : public QDialog
 {
     Q_OBJECT
@@ -61,6 +64,13 @@ class QTtbHelpDlg : public QDialog
 public:
     QTtbHelpDlg(GRobject, GRobject, TBH_type);
     ~QTtbHelpDlg();
+
+    // Don't pop down from Esc press.
+    void keyPressEvent(QKeyEvent *ev)
+        {
+            if (ev->key() != Qt::Key_Escape)
+                QDialog::keyPressEvent(ev);
+        }
 
     QSize sizeHint() const;
 
