@@ -215,7 +215,8 @@ cKbMacro::keyText(unsigned key, unsigned state)
     QByteArray ba = ks.toString().toLatin1();
     if (ba.size() > 0) {
         const char *tt = ba.constData();
-        strncpy(text, tt, 4);
+        strncpy(text, tt, 3);
+        text[3] = 0;
 // printf("*%s*\n", tt);
     }
 
@@ -407,8 +408,8 @@ qt_keyb::macro_event_handler(QObject *obj, QEvent *ev, void *arg)
         if (wname) {
             sEvent *nev = new sKeyEvent(wname,
                 mod_state(kev->modifiers()), KEY_RELEASE, kev->key());
-            if (!kev->text().isNull() && kev->text().toLatin1()[1] == 0)
-                *((sKeyEvent*)nev)->text = kev->text().toLatin1()[0];;
+            if (!kev->text().isNull() && (kev->text().length() == 1))
+                *((sKeyEvent*)nev)->text = kev->text().toLatin1()[0];
             km->add_response(nev);
         }
         return (true);
@@ -416,7 +417,7 @@ qt_keyb::macro_event_handler(QObject *obj, QEvent *ev, void *arg)
     if (ev->type() == QEvent::KeyPress) {
         QKeyEvent *kev = dynamic_cast<QKeyEvent*>(ev);
         km->lastkey = (!kev->text().isNull() &&
-            kev->text().toLatin1()[1] == 0) ? kev->text().toLatin1()[0] : 0;
+            kev->text().length() == 1) ? kev->text().toLatin1()[0] : 0;
         if (km->lastkey == 13 && !(mod_state(kev->modifiers()) &
                 (GR_CONTROL_MASK | GR_ALT_MASK)))
             return (true);
@@ -440,7 +441,7 @@ qt_keyb::macro_event_handler(QObject *obj, QEvent *ev, void *arg)
         if (wname) {
             sEvent *nev = new sKeyEvent(wname,
                 mod_state(kev->modifiers()), KEY_PRESS, kev->key());
-            if (!kev->text().isNull() && kev->text().toLatin1()[1] == 0)
+            if (!kev->text().isNull() && kev->text().length() == 1)
                 *((sKeyEvent*)nev)->text = kev->text().toLatin1()[0];
             km->add_response(nev);
             km->show();

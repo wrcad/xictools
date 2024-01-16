@@ -895,7 +895,7 @@ cLDDB::lefMacroBegin(const char *mname)
 
         lefMacro *g = gate;
         for (int suffix = 1; g; suffix++) {
-            snprintf(e, 11, "_%d", suffix);
+            snprintf(e, 12, "_%d", suffix);
             g = getLefGate(newname);
         }
         emitError(

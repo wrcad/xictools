@@ -313,7 +313,8 @@ QTpkg::NewGX()
 
 namespace {
     // All QT text comes through here.
-    void messageOutput(QtMsgType type, QMessageLogContext&,
+    // This function proto is a QtMessageHandler.
+    void messageOutput(QtMsgType type, const QMessageLogContext&,
         const QString &smsg)
     {
         switch (type) {
@@ -345,7 +346,7 @@ QTpkg::Initialize(GRwbag *wcp)
 {
     if (!MainDev())
         return (true);
-    qInstallMessageHandler((QtMessageHandler)messageOutput);
+    qInstallMessageHandler(&messageOutput);
     if (MainDev()->ident == _devNULL_) {
         static QTltab qt_lt(true);
         static QTedit qt_hy(true);

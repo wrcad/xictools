@@ -37,13 +37,13 @@ LOCAL_LIBS = \
   lib/htm.a \
   lib/help.a \
   lib/$(GRPREF)mozy.a \
-  $(BASE)/lib/$(GRPREF)interf.a  \
-  $(BASE)/lib/ginterf.a \
-  $(BASE)/lib/miscutil.a \
   lib/htm.a \
   lib/help.a \
   lib/httpget.a \
   lib/imsave.a \
+  $(BASE)/lib/$(GRPREF)interf.a  \
+  $(BASE)/lib/ginterf.a \
+  $(BASE)/lib/miscutil.a \
   $(REGEX)
 
 INSTALL_BIN    = $(INSTALL) -s -c -m 0755

@@ -1103,9 +1103,14 @@ mmjco_cmds::mm_create_sweep(int argc, char **argv)
                 err = 1;
                 break;
             }
-            snprintf(dp, 40, "tsw%03d%06ld%06ld%02ld%04d-%02d%03ld.swp", ntemps,
-                lround(vals[0]*1e4), lround(vals[2]*1e4), lround(mmc_sm*1e3),
-                mmc_numxpts, mmc_nterms, lround(mmc_thr*1e3));
+            char *tstr = new char[124];
+            snprintf(tstr, 124, "tsw%03d%06ld%06ld%02ld%04d-%02d%03ld.swp",
+                ntemps, lround(vals[0]*1e4), lround(vals[2]*1e4),
+                lround(mmc_sm*1e3), mmc_numxpts, mmc_nterms,
+                lround(mmc_thr*1e3));
+            tstr[40] = 0;  // Shouldn't be needed if values are sane.
+            strcpy(dp, tstr);
+            delete [] tstr;
             fp = fopen(datafile, "w");
             if (!fp) {
                 fprintf(stderr, "Error: failed to open %s for writing.\n",
