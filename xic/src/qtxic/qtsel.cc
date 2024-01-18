@@ -111,11 +111,10 @@ QTselectDlg::QTselectDlg(GRobject c) : QTbag(this)
 
     setWindowTitle(tr("Selection Control"));
     setAttribute(Qt::WA_DeleteOnClose);
-//    gtk_window_set_resizable(GTK_WINDOW(wb_shell), false);
 
     QMargins qm;
     QGridLayout *grid = new QGridLayout(this);
-    grid->setContentsMargins(qm);
+    grid->setContentsMargins(4, 4, 4, 4);
     grid->setSpacing(2);
     grid->setSizeConstraint(QLayout::SetFixedSize);
 

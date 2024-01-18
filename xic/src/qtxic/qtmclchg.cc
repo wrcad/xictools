@@ -99,10 +99,9 @@ QTmclChangeDlg::QTmclChangeDlg()
     setWindowTitle(tr("Layer Change Mode"));
     setAttribute(Qt::WA_DeleteOnClose);
 
-    QMargins qmtop(2, 2, 2, 2);
     QMargins qm;
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setContentsMargins(qmtop);
+    vbox->setContentsMargins(4, 4, 4, 4);
     vbox->setSpacing(4);
     vbox->setSizeConstraint(QLayout::SetFixedSize);
 

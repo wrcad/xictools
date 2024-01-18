@@ -1157,8 +1157,8 @@ QTbag::PopUpMail(const char *subject, const char *mailaddr,
     if (mailaddr && *mailaddr)
         wb_editors[i]->set_mailaddr(mailaddr);
     wb_editors[i]->register_quit_callback(downproc);
-    wb_editors[i]->set_visible(true);
     QTdev::self()->SetPopupLocation(loc, wb_editors[i], wb_shell);
+    wb_editors[i]->set_visible(true);
     return (wb_editors[i]);
 }
 
@@ -1173,8 +1173,8 @@ QTbag::PopUpFileSelector(FsMode mode, GRloc loc,
        fsel->set_transient_for(wb_shell);
     fsel->register_callback(cb);
     fsel->register_quit_callback(down_cb);
-    fsel->set_visible(true);
     QTdev::self()->SetPopupLocation(loc, fsel, wb_shell);
+    fsel->set_visible(true);
     return (fsel);
 }
 
@@ -1355,8 +1355,8 @@ QTbag::PopUpAffirm(GRobject caller, GRloc loc, const char *question_str,
     affirm->register_caller(caller, false, true);
     affirm->register_callback(action_callback);
     affirm->set_callback_arg(action_arg);
-    affirm->set_visible(true);
     QTdev::self()->SetPopupLocation(loc, affirm, wb_shell);
+    affirm->set_visible(true);
     return (affirm);
 }
 
@@ -1376,8 +1376,8 @@ QTbag::PopUpNumeric(GRobject caller, GRloc loc, const char *prompt_str,
     numer->register_caller(caller, false, true);
     numer->register_callback(action_callback);
     numer->set_callback_arg(action_arg);
-    numer->set_visible(true);
     QTdev::self()->SetPopupLocation(loc, numer, wb_shell);
+    numer->set_visible(true);
     return (numer);
 }
 
@@ -1412,8 +1412,8 @@ QTbag::PopUpEditString(GRobject caller, GRloc loc, const char *prompt_string,
     if (textwidth < 150)
         textwidth = 150;
     inp->setMinimumWidth(textwidth);
-    inp->set_visible(true);
     QTdev::self()->SetPopupLocation(loc, inp, wb_shell);
+    inp->set_visible(true);
     return (inp);
 }
 
@@ -1504,8 +1504,8 @@ QTbag::PopUpWarn(ShowMode mode, const char *message_str, STYtype style,
             style);
         if (wb_shell)
            wb_warning->set_transient_for(wb_shell);
-        wb_warning->set_visible(true);
         QTdev::self()->SetPopupLocation(loc, wb_warning, wb_shell);
+        wb_warning->set_visible(true);
     }
     return (wb_warn_cnt);
 }
@@ -1530,8 +1530,8 @@ QTbag::PopUpErr(ShowMode mode, const char *message_str, STYtype style,
         wb_error = new QTtextDlg(this, message_str, QTtextDlg::PuErr, style);
         if (wb_shell)
            wb_error->set_transient_for(wb_shell);
-        wb_error->set_visible(true);
         QTdev::self()->SetPopupLocation(loc, wb_error, wb_shell);
+        wb_error->set_visible(true);
     }
     return (wb_err_cnt);
 }
@@ -1544,8 +1544,8 @@ QTbag::PopUpErrText(const char *message_str, STYtype style, GRloc loc)
         style);
     if (wb_shell)
        mesg->set_transient_for(wb_shell);
-    mesg->set_visible(true);
     QTdev::self()->SetPopupLocation(loc, mesg, wb_shell);
+    mesg->set_visible(true);
     return (mesg);
 }
 
@@ -1569,8 +1569,8 @@ QTbag::PopUpInfo(ShowMode mode, const char *msg, STYtype style, GRloc loc)
         if (wb_shell)
            wb_info->set_transient_for(wb_shell);
         wb_info->setTitle("Info");
-        wb_info->set_visible(true);
         QTdev::self()->SetPopupLocation(loc, wb_info, wb_shell);
+        wb_info->set_visible(true);
     }
     return (wb_info_cnt);
 }
@@ -1596,10 +1596,10 @@ QTbag::PopUpInfo2(ShowMode mode, const char *msg, bool(*cb)(bool, void*),
         wb_info2 = new QTtextDlg(this, msg, QTtextDlg::PuInfo2, style);
         if (wb_shell)
            wb_info2->set_transient_for(wb_shell);
-        wb_info2->set_visible(true);
         wb_info2->register_callback(cb);
         wb_info2->set_callback_arg(arg);
         QTdev::self()->SetPopupLocation(loc, wb_info2, wb_shell);
+        wb_info2->set_visible(true);
     }
     return (wb_info2_cnt);
 }
@@ -1623,8 +1623,8 @@ QTbag::PopUpHTMLinfo(ShowMode mode, const char *msg, GRloc loc)
         wb_htinfo = new QTtextDlg(this, msg, QTtextDlg::PuHTML, STY_HTML);
         if (wb_shell)
            wb_htinfo->set_transient_for(wb_shell);
-        wb_htinfo->set_visible(true);
         QTdev::self()->SetPopupLocation(loc, wb_htinfo, wb_shell);
+        wb_htinfo->set_visible(true);
     }
     return (wb_htinfo_cnt);
 }

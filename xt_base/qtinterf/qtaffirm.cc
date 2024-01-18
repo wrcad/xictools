@@ -118,6 +118,8 @@ QTaffirmDlg::~QTaffirmDlg()
         (*p_callback)(af_affirmed, p_cb_arg);
     if (p_caller && !p_no_desel)
         QTdev::Deselect(p_caller);
+    // OK to emit a signal and die? Seems so.
+    emit affirm(af_affirmed, p_cb_arg);
 }
 
 
