@@ -200,6 +200,7 @@ public:
     static void com_spec(wordlist*);
     static void com_show(wordlist*);
     static void com_source(wordlist*);
+    static void com_sprint(wordlist*);
     static void com_state(wordlist*);
     static void com_stats(wordlist*);
     static void com_status(wordlist*);

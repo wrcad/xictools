@@ -226,6 +226,7 @@ namespace cmdnames {
     const char *cmd_spec        = "spec";
     const char *cmd_show        = "show";
     const char *cmd_source      = "source";
+    const char *cmd_sprint      = "sprint";
     const char *cmd_state       = "state";
     const char *cmd_stats       = "stats";
     const char *cmd_status      = "status";
@@ -554,6 +555,9 @@ sCommand CommandTab::ct_list[] = {
     sCommand( cmd_source, com_source, false, false, true,
       Bfile, Bfile, Bfile, Bfile, E_DEFHMASK, 1, LOTS, 0,
       "file : Source a %s file." ) ,
+    sCommand( cmd_sprint, com_sprint, false, false, true,
+      Bvec, Bvec, Bvec, Bvec, E_BEGINNING, 2, LOTS, 0,
+      "vname expr ... : Print vector values to vname variable." ) ,
     sCommand( cmd_state, com_state, false, true, false,
       Bnone, Bnone, Bnone, Bnone, E_DEFHMASK, 0, LOTS, 0,
       "(unimplemented) : Print the state of the circuit." ),

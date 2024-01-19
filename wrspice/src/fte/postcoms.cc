@@ -268,6 +268,110 @@ namespace {
     }
 
 
+    char *sprint_line(sDvList *dl0, const char *fmtstr, bool printall)
+    {
+        sDataVec *bv = dl0->dl_dvec;
+        sDvList *bl = dl0;
+
+        // Use the vector's scale if possible.
+        sDataVec *scale = bv->scale();
+        if (scale) {
+            for (sDvList *dl = bl->dl_next; dl; dl = dl->dl_next) {
+                if (scale != dl->dl_dvec->scale()) {
+                    scale = 0;
+                    break;
+                }
+            }
+        }
+
+        // No common scale, use the plot's scale.
+        if (!scale)
+            scale = bv->plot()->scale();
+        if (printall && scale) {
+            // The scale is not returned with "all", unless it is the
+            // only vector or has length 1.
+
+            sDvList *dl;
+            for (dl = dl0; dl; dl = dl->dl_next) {
+                if (IFoutput::vecEq(dl->dl_dvec, scale))
+                    break;
+            }
+            if (!dl) {
+                dl = new sDvList;
+                dl->dl_dvec = scale;
+                dl->dl_next = dl0;
+                dl0 = dl;
+            }
+        }
+
+        const char *format = 0;
+        char fmt_buf[32];
+        if (fmtstr) {
+            int n = -1;
+            char fc = 0;
+            for (const char *s = fmtstr; *s; s++) {
+                if (isdigit(*s)) {
+                    n = atoi(s);
+                    while (isdigit(*s))
+                        s++;
+                    s--;
+                }
+                else if (*s == 'f' || *s == 'F')
+                    fc = 'f';
+                else if (*s == 'e' || *s == 'E')
+                    fc = 'e';
+            }
+            if (fc || n >= 0) {
+                if (n < 0 || n > 16)
+                    n = CP.NumDigits() > 0 ? CP.NumDigits() : 6;
+                if (!fc)
+                    fc = 'e';
+                // Width must be less than 2 tabs!
+                snprintf(fmt_buf, sizeof(fmt_buf), "%%-15.%d%c", n, fc);
+                format = fmt_buf;
+            }
+        }
+
+        char buf[BSIZE_SP];
+        char buf2[64];
+        sLstr olstr;
+
+        for (sDvList *dl = dl0; dl; dl = dl->dl_next) {
+            sDataVec *v = dl->dl_dvec;
+            if (v->length() == 1) {
+                if (v->isreal()) {
+                    snprintf(buf, sizeof(buf), "%s", 
+                        format ? numprint(v->realval(0), format, buf2) :
+                        SPnum.printnum(v->realval(0), v->units(), false));
+                }
+                else {
+                    snprintf(buf, sizeof(buf), "%s,%s", 
+                        format ? numprint(v->realval(0), format, buf2) :
+                        SPnum.printnum(v->realval(0), "", false),
+                        format ? numprint(v->imagval(0), format, buf2) :
+                        SPnum.printnum(v->imagval(0), v->units(), false));
+                }
+                olstr.add(buf);
+            }
+            else {
+                olstr.add("( ");
+                for (int i = 0; i < v->length(); i++) {
+                    if (v->isreal())
+                        strcpy(buf, numprint(v->realval(i), format, buf2));
+                    else {
+                        strcpy(buf, numprint2(v->realval(i), v->imagval(i),
+                            format, buf2));
+                    }
+                    olstr.add(buf);
+                    olstr.add_c(' ');
+                }
+                olstr.add_c(')');
+            }
+        }
+        return (olstr.string_trim());
+    }
+
+
     // Field width for numbers.
     int colwid(bool isscale, bool isfixed, int ndgt)
     {
@@ -612,6 +716,160 @@ namespace {
             }
         }
     }
+
+    // Main print function for the print and sprint commands.
+    //
+    char *main_print(wordlist *wl, bool stringout = false)
+    {
+        static wordlist *wlast;
+
+        if (!wl) {
+            if (!wlast) {
+                GRpkg::self()->ErrPrintf(ET_ERRORS, "no vectors given.\n");
+                return (0);
+            }
+            wl = wlast;
+        }
+        else if (!wl->wl_next && *wl->wl_word == '/') {
+            // Nothing but a format.  Get the vectors from wlast.
+            if (!wlast) {
+                GRpkg::self()->ErrPrintf(ET_ERRORS, "no vectors given.\n");
+                return (0);
+            }
+            if (*wlast->wl_word == '/') {
+                delete [] wlast->wl_word;
+                wlast->wl_word = lstring::copy(wl->wl_word);
+                wl = wlast;
+            }
+            else {
+                wl = wordlist::copy(wl);
+                wl->wl_next = wlast;
+                wlast = wl;
+            }
+        }
+        else {
+            wordlist::destroy(wlast);
+            wlast = wordlist::copy(wl);
+            wl = wlast;
+            for (wordlist *ww = wl; ww; ww = ww->wl_next) {
+                if (lstring::eq(ww->wl_word, ".")) {
+                    wordlist *wx = Sp.ExtractPrintCmd(0);
+                    if (!wx) {
+                        GRpkg::self()->ErrPrintf(ET_ERRORS,
+                            "no vectors found for '.'.\n");
+                        return (0);
+                    }
+                    if (ww == wl) {
+                        wlast = wx;
+                        wl = wx;
+                    }
+                    ww = ww->splice(wx);
+                    continue;
+                }
+                if (ww->wl_word[0] == '.' && ww->wl_word[1] == '@' &&
+                        isdigit(ww->wl_word[2])) {
+                    int n = atoi(ww->wl_word + 2);
+                    wordlist *wx = Sp.ExtractPrintCmd(n ? n-1 : n);
+                    if (!wx) {
+                        GRpkg::self()->ErrPrintf(ET_ERRORS,
+                            "no vectors found for '.@%d'.\n", n);
+                        return (0);
+                    }
+                    if (ww == wl) {
+                        wlast = wx;
+                        wl = wx;
+                    }
+                    ww = ww->splice(wx);
+                    continue;
+                }
+            }
+        }
+
+        // Grab the format string for later (strip '/').
+        const char *format_str = 0;
+        if (*wl->wl_word == '/') {
+            format_str = wl->wl_word+1;
+            wl = wl->wl_next;
+        }
+
+        bool col = true;
+        bool optgiven = false;
+        if (lstring::eq(wl->wl_word, "col")) {
+            col = true;
+            optgiven = true;
+            wl = wl->wl_next;
+        }
+        else if (lstring::eq(wl->wl_word, "line")) {
+            col = false;
+            optgiven = true;
+            wl = wl->wl_next;
+        }
+
+        // See if we are printing "all".
+        bool printall = false;
+        for (wordlist *wx = wl; wx; wx = wx->wl_next) {
+            if (lstring::eq(wx->wl_word, "all")) {
+                printall = true;
+                break;
+            }
+        }
+
+        pnlist *n0 = Sp.GetPtree(wl, true);
+        if (!n0)
+            return (0);
+        sDvList *dl0 = Sp.DvList(n0);
+        if (!dl0)
+            return (0);
+
+        if (!optgiven) {
+            // Figure out whether col or line should be used...
+            col = false;
+            for (sDvList *dl = dl0; dl; dl = dl->dl_next) {
+                if (dl->dl_dvec->length() > 1) {
+                    col = true;
+                    break;
+                }
+            }
+        }
+
+        if (stringout) {
+            if (col) {
+                GRpkg::self()->ErrPrintf(ET_ERRORS,
+                    "col mode is not supported in sprint");
+                return (0);
+            }
+            char *s = sprint_line(dl0, format_str, printall);
+            sDvList::destroy(dl0);
+            return (s);
+        }
+
+        if (TTY.is_tty())
+            TTY.send("\n");
+
+        if (col) {
+            // Print in columns.
+            print_col(dl0, format_str, printall);
+        }
+        else {
+            // Print in line.
+            print_line(dl0, format_str, printall);
+        }
+
+        if (TTY.is_tty())
+            TTY.send("\n");
+        sDvList::destroy(dl0);
+
+        if (OP.curPlot()->notes()) {
+            TTY.send("Notes:\n");
+            int ncnt = 1;
+            for (wordlist *w = OP.curPlot()->notes(); w; w = w->wl_next) {
+                TTY.printf("%d. %s\n", ncnt, w->wl_word);
+                ncnt++;
+            }
+            TTY.send("\n");
+        }
+        return (0);
+    }
 }
 
 
@@ -620,142 +878,36 @@ namespace {
 void
 CommandTab::com_print(wordlist *wl)
 {
-    static wordlist *wlast;
+    (void)main_print(wl);
+}
 
-    if (!wl) {
-        if (!wlast) {
-            GRpkg::self()->ErrPrintf(ET_ERRORS, "no vectors given.\n");
-            return;
-        }
-        wl = wlast;
-    }
-    else if (!wl->wl_next && *wl->wl_word == '/') {
-        // Nothing but a format.  Get the vectors from wlast.
-        if (!wlast) {
-            GRpkg::self()->ErrPrintf(ET_ERRORS, "no vectors given.\n");
-            return;
-        }
-        if (*wlast->wl_word == '/') {
-            delete [] wlast->wl_word;
-            wlast->wl_word = lstring::copy(wl->wl_word);
-            wl = wlast;
-        }
-        else {
-            wl = wordlist::copy(wl);
-            wl->wl_next = wlast;
-            wlast = wl;
-        }
-    }
-    else {
-        wordlist::destroy(wlast);
-        wlast = wordlist::copy(wl);
-        wl = wlast;
-        for (wordlist *ww = wl; ww; ww = ww->wl_next) {
-            if (lstring::eq(ww->wl_word, ".")) {
-                wordlist *wx = Sp.ExtractPrintCmd(0);
-                if (!wx) {
-                    GRpkg::self()->ErrPrintf(ET_ERRORS,
-                        "no vectors found for '.'.\n");
-                    return;
-                }
-                if (ww == wl) {
-                    wlast = wx;
-                    wl = wx;
-                }
-                ww = ww->splice(wx);
-                continue;
-            }
-            if (ww->wl_word[0] == '.' && ww->wl_word[1] == '@' &&
-                    isdigit(ww->wl_word[2])) {
-                int n = atoi(ww->wl_word + 2);
-                wordlist *wx = Sp.ExtractPrintCmd(n ? n-1 : n);
-                if (!wx) {
-                    GRpkg::self()->ErrPrintf(ET_ERRORS,
-                        "no vectors found for '.@%d'.\n", n);
-                    return;
-                }
-                if (ww == wl) {
-                    wlast = wx;
-                    wl = wx;
-                }
-                ww = ww->splice(wx);
-                continue;
-            }
-        }
-    }
 
-    // Grab the format string for later (strip '/').
-    const char *format_str = 0;
-    if (*wl->wl_word == '/') {
-        format_str = wl->wl_word+1;
-        wl = wl->wl_next;
-    }
-
-    bool col = true;
-    bool optgiven = false;
-    if (lstring::eq(wl->wl_word, "col")) {
-        col = true;
-        optgiven = true;
-        wl = wl->wl_next;
-    }
-    else if (lstring::eq(wl->wl_word, "line")) {
-        col = false;
-        optgiven = true;
-        wl = wl->wl_next;
-    }
-
-    // See if we are printing "all".
-    bool printall = false;
-    for (wordlist *wx = wl; wx; wx = wx->wl_next) {
-        if (lstring::eq(wx->wl_word, "all")) {
-            printall = true;
-            break;
-        }
-    }
-
-    pnlist *n0 = Sp.GetPtree(wl, true);
-    if (!n0)
+// Print a line of values into a string whose name is provided.
+//
+void
+CommandTab::com_sprint(wordlist *wl)
+{
+    if (!wl || !wl->wl_next)
         return;
-    sDvList *dl0 = Sp.DvList(n0);
-    if (!dl0)
+    char *vname = wl->wl_word;
+    if (!vname || !*vname)
         return;
-
-    if (!optgiven) {
-        // Figure out whether col or line should be used...
-        col = false;
-        for (sDvList *dl = dl0; dl; dl = dl->dl_next) {
-            if (dl->dl_dvec->length() > 1) {
-                col = true;
-                break;
-            }
-        }
-    }
-
-    if (TTY.is_tty())
-        TTY.send("\n");
-
-    if (col) {
-        // Print in columns.
-        print_col(dl0, format_str, printall);
-    }
-    else {
-        // Print in line.
-        print_line(dl0, format_str, printall);
-    }
-
-    if (TTY.is_tty())
-        TTY.send("\n");
-    sDvList::destroy(dl0);
-
-    if (OP.curPlot()->notes()) {
-        TTY.send("Notes:\n");
-        int ncnt = 1;
-        for (wordlist *w = OP.curPlot()->notes(); w; w = w->wl_next) {
-            TTY.printf("%d. %s\n", ncnt, w->wl_word);
-            ncnt++;
-        }
-        TTY.send("\n");
-    }
+    char *txt = main_print(wl->wl_next, true);
+    if (!txt)
+        return;
+    wordlist w1, w2, w3;
+    char tbf[2];
+    tbf[0] = '=';
+    tbf[1] = 0;
+    w1.wl_word = vname;
+    w1.wl_next = &w2;
+    w2.wl_word = tbf;
+    w2.wl_prev = &w1;
+    w2.wl_next = &w3;
+    w3.wl_word = txt;
+    w3.wl_prev = &w2;
+    com_set(&w1);
+    delete [] txt;
 }
 
 
