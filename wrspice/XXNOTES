@@ -1,0 +1,27 @@
+01/20/24
+
+1.   set x = "$list"
+This now works to set x to the text string of the list.  Previously, the
+double quotes did not accomplish this.
+
+    set x = $list
+This will set x to the first list value (as before),  To set x as
+a copy of the list, use
+    set x = ( $list )
+
+2.  One can now convert a variable containing a list string to a real
+list with
+    set lv = ( $stringvar )
+The stringvar is a string variable with a string in the form
+    "( num num ... num )"
+
+3.  Note that the displayed numbers of a list variable are always in
+    exponential form.
+
+4.  in sprint, if the name arg is "-", the string is printed instead
+    of being used in a variable.
+
+5.  The format string nat takes 'g' which incates to print using
+    the SPICE multipliers in floating point format, e.g., 1.5m, 2.0k,
+    etc.  The precision can now be set to 1 and 0 (integer part only
+    and one dec place), these no longer revert to default 6.

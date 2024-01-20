@@ -114,15 +114,25 @@ sSPnumber::printnum(double num, const sUnits *units, bool fix, int numd)
 const char *
 sSPnumber::printnum(double num, const char *unitstr, bool fix, int numd)
 {
+    if (numd == SPN_CODE_0 || numd == SPN_CODE_1) {
+        // This is a hack to override the logic that locks out 0 and 1
+        // digit printing.
+        if (numd == SPN_CODE_0)
+            numd = 0;
+        else
+            numd = 1;
+    }
+    else {
 #ifdef WRSPICE
-    if (numd < 2)
-        numd = CP.NumDigits();
-    if (numd < 2)
-        numd = DEF_numdgt;
+        if (numd < 2)
+            numd = CP.NumDigits();
+        if (numd < 2)
+            numd = DEF_numdgt;
 #else
-    if (numd < 2)
-        numd = 6;
+        if (numd < 2)
+            numd = 6;
 #endif
+    }
     if (numd > 15)
         numd = 15;
 

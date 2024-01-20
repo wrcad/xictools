@@ -1136,6 +1136,47 @@ CshPar::ParseSet(wordlist *wl)
         else
             goto bad;
         val = lstring::copy(val);
+
+        if (*val == '"') {
+            // Grab to end of string, tricky.
+            if (strchr(val+1, '"')) {
+                char *ss = val + 1;
+                char *t = ss;
+                while (*t) {
+                    if (*t != '"')
+                        *ss++ = *t;
+                    t++;
+                }
+                *ss++ = '"';
+                *ss = 0;
+            }
+            bool fnd = *(val + strlen(val) - 1) == '"';
+            while (wl && !fnd) {
+                int len = strlen(val) + strlen(wl->wl_word) + 2;
+                char *nval = new char[len];
+                if (strchr(wl->wl_word, '"')) {
+                    snprintf(nval, len, "%s ", val);
+                    char *ss = nval + strlen(nval);
+                    char *t = wl->wl_word;
+                    while (*t) {
+                        if (*t != '"')
+                            *ss++ = *t;
+                        t++;
+                    }
+                    *ss++ = '"';
+                    *ss = 0;
+                }
+                else
+                    snprintf(nval, len, "%s %s", val, wl->wl_word);
+                delete [] val;
+                val = nval;
+                fnd = *(val + strlen(val) - 1) == '"';
+                wl = wl->wl_next;
+            }
+            if (!fnd)
+                goto bad;
+        }
+
         bool isstr = (*val == '"' && *(val + strlen(val) - 1) == '"');
         Unquote(val);
         if (isstr) {
@@ -1153,6 +1194,28 @@ CshPar::ParseSet(wordlist *wl)
             // A list
             delete [] val;
             val = 0;
+
+            char *ss = wl->wl_word;
+            if (ss[0] == '(' && *(ss + strlen(ss) - 1) == ')') {
+                // The list text seems to appear in the string, the
+                // variable is not really a list but a string. 
+                // Convert the string into a "real" list.
+
+                wordlist *wx = new wordlist(s);
+                wordlist *w0 = wx;
+                wx = wx->wl_next;
+                variable *lv = GetList(&wx);
+                wordlist::destroy(w0);
+                if (!lv)
+                    goto bad;
+                vv = new variable(name);
+                delete [] name;
+                vv->set_list(lv);
+                vv->set_next(vars);
+                vars = vv;
+                continue;
+            }
+
             variable *lv = GetList(&wl);
             if (!lv)
                 goto bad;

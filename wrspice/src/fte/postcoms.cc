@@ -168,10 +168,11 @@ namespace {
             }
         }
 
+        int n = -1;
+        bool gfmt = false;
         const char *format = 0;
         char fmt_buf[32];
         if (fmtstr) {
-            int n = 0;
             char fc = 0;
             for (const char *s = fmtstr; *s; s++) {
                 if (isdigit(*s)) {
@@ -184,15 +185,26 @@ namespace {
                     fc = 'f';
                 else if (*s == 'e' || *s == 'E')
                     fc = 'e';
+                else if (*s == 'g' || *s == 'G')
+                    fc = 'g';
             }
             if (fc || n > 0) {
                 if (n <= 0 || n > 16)
                     n = CP.NumDigits() > 0 ? CP.NumDigits() : 6;
                 if (!fc)
                     fc = 'e';
-                // Width must be less than 2 tabs!
-                snprintf(fmt_buf, sizeof(fmt_buf), "%%-15.%d%c", n, fc);
-                format = fmt_buf;
+                if (fc == 'g') {
+                    gfmt = true;
+                    if (n == 0)
+                        n = SPN_CODE_0;
+                    else if (n == 1)
+                        n = SPN_CODE_1;
+                }
+                else {
+                    // Width must be less than 2 tabs!
+                    snprintf(fmt_buf, sizeof(fmt_buf), "%%-15.%d%c", n, fc);
+                    format = fmt_buf;
+                }
             }
         }
 
@@ -222,20 +234,35 @@ namespace {
                 if (v->isreal()) {
                     const char *bb = b;
                     double *d = SPnum.parse(&bb, false);
-                    snprintf(buf, sizeof(buf), "%s", 
-                        format ? numprint(v->realval(0), format, buf2) :
-                        SPnum.printnum(v->realval(0), v->units(), false));
+                    const char *sc;
+                    if (gfmt)
+                        sc = SPnum.printnum(v->realval(0), "", false, n);
+                    else if (format)
+                        sc = numprint(v->realval(0), format, buf2);
+                    else
+                        sc = SPnum.printnum(v->realval(0), v->units(), false,n);
+                    snprintf(buf, sizeof(buf), "%s", sc);
                     if (strcmp(b, buf) && (!d || *d != v->realval(0)))
                         TTY.printf("%s = %s\n", b, buf);
                     else
                         TTY.printf("%s\n", buf);
                 }
                 else {
-                    snprintf(buf, sizeof(buf), "%s,%s", 
-                        format ? numprint(v->realval(0), format, buf2) :
-                        SPnum.printnum(v->realval(0), "", false),
-                        format ? numprint(v->imagval(0), format, buf2) :
-                        SPnum.printnum(v->imagval(0), v->units(), false));
+                    const char *sr, *si;
+                    if (gfmt) {
+                        sr = SPnum.printnum(v->realval(0), "", false, n);
+                        si = SPnum.printnum(v->imagval(0), "", false, n);
+                    }
+                    else if (format) {
+                        sr = numprint(v->realval(0), format, buf2);
+                        si = numprint(v->imagval(0), format, buf2);
+                    }
+                    else {
+                        sr = SPnum.printnum(v->realval(0), "", false, n);
+                        si = SPnum.printnum(v->imagval(0), v->units(), false,
+                            n);
+                    }
+                    snprintf(buf, sizeof(buf), "%s,%s", sr, si);
                     if (strcmp(b, buf))
                         TTY.printf("%s = %s\n", b, buf);
                     else
@@ -247,14 +274,20 @@ namespace {
                 int ll = strlen(buf) + 5;
                 TTY.printf("%s = ( ", buf);
                 for (int i = 0; i < v->length(); i++) {
-                    if (v->isreal())
-                        strcpy(buf, numprint(v->realval(i), format, buf2));
+                    if (v->isreal()) {
+                        const char *sc;
+                        if (gfmt)
+                            sc = SPnum.printnum(v->realval(i), "", false, n);
+                        else
+                            sc = numprint(v->realval(i), format, buf2);
+                        strcpy(buf, sc);
+                    }
                     else {
                         strcpy(buf, numprint2(v->realval(i), v->imagval(i),
                             format, buf2));
                     }
-                    int n = strlen(buf);
-                    if (ll + n >= width-2) {
+                    int blen = strlen(buf);
+                    if (ll + blen >= width-2) {
                         TTY.send("\n  ");
                         ll = 2;
                     }
@@ -304,10 +337,11 @@ namespace {
             }
         }
 
+        int n = -1;
+        bool gfmt = false;
         const char *format = 0;
         char fmt_buf[32];
         if (fmtstr) {
-            int n = -1;
             char fc = 0;
             for (const char *s = fmtstr; *s; s++) {
                 if (isdigit(*s)) {
@@ -320,15 +354,26 @@ namespace {
                     fc = 'f';
                 else if (*s == 'e' || *s == 'E')
                     fc = 'e';
+                else if (*s == 'g' || *s == 'G')
+                    fc = 'g';
             }
             if (fc || n >= 0) {
                 if (n < 0 || n > 16)
                     n = CP.NumDigits() > 0 ? CP.NumDigits() : 6;
                 if (!fc)
                     fc = 'e';
-                // Width must be less than 2 tabs!
-                snprintf(fmt_buf, sizeof(fmt_buf), "%%-15.%d%c", n, fc);
-                format = fmt_buf;
+                if (fc == 'g') {
+                    gfmt = true;
+                    if (n == 0)
+                        n = SPN_CODE_0;
+                    else if (n == 1)
+                        n = SPN_CODE_1;
+                }
+                else {
+                    // Width must be less than 2 tabs!
+                    snprintf(fmt_buf, sizeof(fmt_buf), "%%-15.%d%c", n, fc);
+                    format = fmt_buf;
+                }
             }
         }
 
@@ -340,24 +385,51 @@ namespace {
             sDataVec *v = dl->dl_dvec;
             if (v->length() == 1) {
                 if (v->isreal()) {
-                    snprintf(buf, sizeof(buf), "%s", 
-                        format ? numprint(v->realval(0), format, buf2) :
-                        SPnum.printnum(v->realval(0), v->units(), false));
+                    const char *s;
+                    if (gfmt)
+                        s = SPnum.printnum(v->realval(0), "", false, n);
+                    else if (format)
+                        s = numprint(v->realval(0), format, buf2);
+                    else
+                        s = SPnum.printnum(v->realval(0), v->units(), false, n);
+                    snprintf(buf, sizeof(buf), "%s", s);
                 }
                 else {
-                    snprintf(buf, sizeof(buf), "%s,%s", 
-                        format ? numprint(v->realval(0), format, buf2) :
-                        SPnum.printnum(v->realval(0), "", false),
-                        format ? numprint(v->imagval(0), format, buf2) :
-                        SPnum.printnum(v->imagval(0), v->units(), false));
+                    const char *sr, *si;
+                    if (gfmt) {
+                        sr = SPnum.printnum(v->realval(0), "", false, n),
+                        si = SPnum.printnum(v->imagval(0), "", false, n);
+                    }
+                    else if (format) {
+                        sr = numprint(v->realval(0), format, buf2);
+                        si = numprint(v->imagval(0), format, buf2);
+                    }
+                    else {
+                        sr = SPnum.printnum(v->realval(0), "", false, n),
+                        si = SPnum.printnum(v->imagval(0), v->units(), false,
+                            n);
+                    }
+                    snprintf(buf, sizeof(buf), "%s,%s", sr, si);
                 }
-                olstr.add(buf);
+                char *strt = buf;
+                while (isspace(*strt))
+                    strt++;
+                char *endc = strt + strlen(strt) - 1;
+                while (isspace(*endc))
+                    *endc-- = 0;
+                olstr.add(strt);
             }
             else {
                 olstr.add("( ");
                 for (int i = 0; i < v->length(); i++) {
-                    if (v->isreal())
-                        strcpy(buf, numprint(v->realval(i), format, buf2));
+                    if (v->isreal()) {
+                        const char *s;
+                        if (gfmt)
+                            s = SPnum.printnum(v->realval(i), "", false, n);
+                        else
+                            s = numprint(v->realval(i), format, buf2);
+                        strcpy(buf, s);
+                    }
                     else {
                         strcpy(buf, numprint2(v->realval(i), v->imagval(i),
                             format, buf2));
@@ -367,6 +439,8 @@ namespace {
                 }
                 olstr.add_c(')');
             }
+            if (dl->dl_next)
+               olstr.add_c(' ');
         }
         return (olstr.string_trim());
     }
@@ -822,12 +896,14 @@ namespace {
             return (0);
 
         if (!optgiven) {
-            // Figure out whether col or line should be used...
-            col = false;
-            for (sDvList *dl = dl0; dl; dl = dl->dl_next) {
-                if (dl->dl_dvec->length() > 1) {
-                    col = true;
-                    break;
+            if (!stringout) {
+                // Figure out whether col or line should be used...
+                col = false;
+                for (sDvList *dl = dl0; dl; dl = dl->dl_next) {
+                    if (dl->dl_dvec->length() > 1) {
+                        col = true;
+                        break;
+                    }
                 }
             }
         }
@@ -835,7 +911,7 @@ namespace {
         if (stringout) {
             if (col) {
                 GRpkg::self()->ErrPrintf(ET_ERRORS,
-                    "col mode is not supported in sprint");
+                    "col mode is not supported in sprint.\n");
                 return (0);
             }
             char *s = sprint_line(dl0, format_str, printall);
@@ -895,6 +971,13 @@ CommandTab::com_sprint(wordlist *wl)
     char *txt = main_print(wl->wl_next, true);
     if (!txt)
         return;
+    if (vname[0] == '-' && vname[1] == 0) {
+        TTY.printf("%s\n", txt);
+        delete [] txt;
+        return;
+    }
+    // Save the text as a single string, even though it may look like
+    // a list.  If saved as a list, the formatting is undone!
     wordlist w1, w2, w3;
     char tbf[2];
     tbf[0] = '=';

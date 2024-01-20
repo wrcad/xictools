@@ -68,6 +68,9 @@ struct sSPnumber
             np_offs = 0;
         }
 
+// Special codes for printnum numdgt argument (arg 4).
+#define SPN_CODE_0 100
+#define SPN_CODE_1 101
     const char *printnum(double, const sUnits*, bool = false, int = 0);
     const char *printnum(double, const char* = 0, bool = false, int = 0);
     const char *print_exp(double, int);
