@@ -205,11 +205,13 @@ Fedora 35/36
     dnf install autoconf automake flex bison patch g++ gpp gtk2-devel
     gsl-devel rpm-build libjpeg-turbo-devel ncurses-devel
 
-CentOS 8 Stream
+CentOS 8 Stream / Rocky 8/ Red Hat 8
     The first line installs the development tools, including for C++.
 
-    dnf group install "Development Tools"
-    dnf install gtk2-devel gsl-devel ncurses-devel libtiff-devel libjpeg-devel
+    COMMON| dnf group install "Development Tools"
+          | dnf install gsl-devel ncurses-devel libtiff-devel libjpeg-devel
+    GTK   | dnf install gtk2-devel
+    QT-5  | dnf install qt5-qtbase-devel
 
 
 3.2.  Build Procedure for Linux

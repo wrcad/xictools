@@ -2679,6 +2679,10 @@ sDataVec::v_mpw(sDataVec **v)
 }
 
 
+// Rise or fall time.  Y=This can have 3-5 arguments, the two optional
+// arguments are the start and end fractions, which default to 0.1
+// and 0.9.
+//
 sDataVec *
 sDataVec::v_mrft(sDataVec **v)
 {
@@ -2690,7 +2694,17 @@ sDataVec::v_mrft(sDataVec **v)
         double t2 = v[1] ? v[1]->realval(0) : xs->realval(len-1);
         int n1, n2;
         xs->find_range(t1, t2, &n1, &n2);
-        m.mrft(this, n1, n2, 0, 0);
+        if (v[2]) {
+            double pc1 = v[2]->realval(0);
+            if (v[3]) {
+                double pc2 = v[3]->realval(0);
+                m.mrft(this, n1, n2, 0, 0, pc1, pc2);
+            }
+            else 
+                m.mrft(this, n1, n2, 0, 0, pc1);
+        }
+        else
+            m.mrft(this, n1, n2, 0, 0);
     }
     sDataVec *res = new sDataVec(0, 0, 1, xs->units());
     res->v_data.real[0] = m.val();

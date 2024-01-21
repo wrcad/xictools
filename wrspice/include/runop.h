@@ -399,13 +399,15 @@ enum Mfunc { Mmin, Mmax, Mpp, Mavg, Mrms, Mpw, Mrft, Mfind };
 //
 struct sMfunc
 {
-    sMfunc(Mfunc t, const char *e)
+    sMfunc(Mfunc t, const char *e, double v1 = 0.0, double v2 = 0.0)
         {
             f_type  = t;
             f_error = false;
             f_next  = 0;
             f_expr  = e;
             f_val   = 0.0;
+            f_v1    = v1;
+            f_v2    = v2;
         }
 
     ~sMfunc()       { delete [] f_expr; }
@@ -436,7 +438,7 @@ struct sMfunc
     bool mavg(sDataVec*, int, int, double*, double*);
     bool mrms(sDataVec*, int, int, double*, double*);
     bool mpw(sDataVec*, int, int, double*, double*);
-    bool mrft(sDataVec*, int, int, double*, double*);
+    bool mrft(sDataVec*, int, int, double*, double*, double =0.1, double =0.9);
 
 private:
     Mfunc f_type;       // type of job
@@ -444,6 +446,8 @@ private:
     sMfunc *f_next;     // pointer to next job
     const char *f_expr; // expression to evaluate
     double f_val;       // result of measurement
+    double f_v1;        // aux. input
+    double f_v2;        // aux. input
 
 };
 
@@ -549,7 +553,7 @@ struct sRunopMeas : public sRunop
     char *print_meas();
 
 private:
-    void addMeas(Mfunc, const char*);
+    void addMeas(Mfunc, const char*, double = 0.0, double = 0.0);
     sDataVec *evaluate(const char*);
     double startval(sDataVec*);
     double endval(sDataVec*);

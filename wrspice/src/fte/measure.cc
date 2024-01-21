@@ -463,7 +463,7 @@ sMfunc::mpw(sDataVec *dv, int ixmin, int ixmax,
 //
 bool
 sMfunc::mrft(sDataVec *dv, int ixmin, int ixmax,
-    double *startval, double *endval)
+    double *startval, double *endval, double pc1, double pc2)
 {
     if (dv->length() == 1) {
         f_val = 0.0;
@@ -475,11 +475,16 @@ sMfunc::mrft(sDataVec *dv, int ixmin, int ixmax,
         f_val = 0.0;
         return (true);
     }
+    if (f_v1 != 0.0) {
+        pc1 = f_v1;
+        if (f_v2 != 0.0)
+            pc2 = f_v2;
+    }
 
     double vstart = startval ? *startval : dv->realval(ixmin);
     double vend = endval ? *endval : dv->realval(ixmax);
-    double th1 = vstart + 0.1*(vend - vstart);
-    double th2 = vstart + 0.9*(vend - vstart);
+    double th1 = vstart + pc1*(vend - vstart);  // pc1 def. 0.1
+    double th2 = vstart + pc2*(vend - vstart);  // pc2 def. 0.9
 
     int ibeg = -1, iend = -1;
     for (int i = ixmin + 1; i <= ixmax; i++) {
@@ -1763,7 +1768,17 @@ sRunopMeas::parse(const char *str, char **errstr)
         }
         if (lstring::cieq(tok, mkw_rt)) {
             delete [] tok;
-            addMeas(Mrft, gtok(&s));
+            tok = gtok(&s);
+            double *d1 = SPnum.parse(&s, true, true);
+            if (d1) {
+                double *d2 = SPnum.parse(&s, false, true, 0);
+                if (d2)
+                    addMeas(Mrft, tok, *d1, *d2);
+                else
+                    addMeas(Mrft, tok, *d1);
+            }
+            else
+                addMeas(Mrft, tok);
             continue;
         }
         if (lstring::cieq(tok, mkw_find)) {
@@ -2270,9 +2285,9 @@ sRunopMeas::print_meas()
 // called during the parse.
 //
 void
-sRunopMeas::addMeas(Mfunc mtype, const char *expr)
+sRunopMeas::addMeas(Mfunc mtype, const char *expr, double v1, double v2)
 {
-    sMfunc *m = new sMfunc(mtype, expr);
+    sMfunc *m = new sMfunc(mtype, expr, v1, v2);
     if (mtype == Mfind) {
         if (!ro_finds)
             ro_finds = m;

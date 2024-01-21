@@ -194,6 +194,7 @@ namespace {
         sFunc( "mrms",          &sDataVec::v_mrms,      3 ),
         sFunc( "mpw",           &sDataVec::v_mpw,       3 ),
         sFunc( "mrft",          &sDataVec::v_mrft,      3 ),
+        sFunc( "mrft2",         &sDataVec::v_mrft,      5 ),
 
         // HSPICE funcs
         sFunc( "unif",          &sDataVec::v_hs_unif,   2 ),
