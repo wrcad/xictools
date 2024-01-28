@@ -1399,6 +1399,9 @@ cGhostDrawCommon::show_ghost(bool showit)
                     gd_windows[i]->gdrw_unsetbg();
                 }
             }
+            // This will redraw ghost (maybe).
+            QPoint qp = QCursor::pos();
+            QCursor::setPos(qp.x() + 0, qp.y() + 0);
         }
         gd_ghost_cx_cnt++;
     }
@@ -1416,10 +1419,8 @@ cGhostDrawCommon::show_ghost(bool showit)
 
             // This will redraw ghost.
             QPoint qp = QCursor::pos();
-//            QCursor::setPos(qp.x() + 0, qp.y() + 0);
-            if (gd_windows[0]) {
+            if (gd_windows[0])
                 qp = gd_windows[0]->mapFromGlobal(qp);
-            }
             draw_ghost(qp.x(), qp.y());
         }
     }

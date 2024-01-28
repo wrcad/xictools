@@ -4728,6 +4728,7 @@ sGraph::start_drag_trace(void *arg)
 int
 sGraph::start_drag_text(void *arg)
 {
+    sGraph *graph = (sGraph*)arg;
     graph->gr_set_ghost(ghost_tbox, 0, 0);
     GP.PushGraphContext(graph);
     graph->gr_dev->DrawGhost();
