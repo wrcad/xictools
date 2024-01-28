@@ -62,6 +62,7 @@ printf
 return
 sced
 source
+sprint
 write
 xeditorcom
 simcmds
@@ -136,7 +137,7 @@ qhelp
 quit
 version
 
-!! commands.tex 083122
+!! commands.tex 012224
 !!KEYWORD
 commands
 !!TITLE
@@ -193,9 +194,6 @@ Built-in Commands
     invoked on the line.
     </ol>
     
-
-
-
     The following table lists all built-in commands understood by
     <i>WRspice</i>.
     <p>
@@ -283,6 +281,8 @@ Built-in Commands
       <td>Bring up <i>Xic</i> schematic editor</td></tr>
     <tr><td><a href="source"><b>source</b></a></td>
       <td>Read circuit or script input file</td></tr>
+    <tr><td><a href="sprint"><b>sprint</b></a></td>
+      <td>Print vectors to a string-type variable</td></tr>
     <tr><td><a href="write"><b>write</b></a></td>
       <td>Write data to rawfile</td></tr>
     <tr><td><a href="xeditorcom"><b>xeditor</b></a></td>
@@ -1406,7 +1406,7 @@ rehash command
 shellcmds
 unixcomcomm
 
-!! commands.tex 041611
+!! commands.tex 012624
 !!KEYWORD
 set
 !!TITLE
@@ -1463,7 +1463,10 @@ set command
     <tt>set mylist = ( abc def 1.2 xxdone )</tt>
     </blockquote>
     which sets the variable <tt>mylist</tt> to the list of four
-    tokens.  The <a href="unset"><b>unset</b></a> command can be used
+    tokens.
+
+    <p>
+    The <a href="unset"><b>unset</b></a> command can be used
     to delete a variable.
 
     <p>
@@ -1472,6 +1475,27 @@ set command
     of values that are enclosed in parentheses (which must be
     separated from their values by white space), the value of the
     variable is the list.
+
+    <p>
+    A list variable can be indexed, for example
+    <blockquote>
+    <tt>> set list = ( a s d f g )</tt><br>
+    <tt>> echo $list[2]</tt><br>
+    <tt>d</tt>
+    </blockquote>
+    This does not work for non-list variables.
+
+    <p>
+    The syntax <tt>set var = "$list"</tt> will set the variable
+    <tt>var</tt> to the text of the list variable, as a string and not
+    a list.  Note that if the double quotes are not given,
+    <tt>var</tt> is set to the first element of the list, and remining
+    elements of the list would be set by name as booleans, probably not
+    what is wanted.  To copy the list to a new variable, the syntax
+    <tt>set var = ( $list )</tt> should be used.  This same syntax
+    can be used the create a true list from the string representation
+    as in the first example in this paragraph.  Note that the
+    parentheses must be separated by white space.
 
     <p>
     The set command can also be used to assign values to <a
@@ -1641,7 +1665,7 @@ usrset command
 shellcmds
 
 !! ----------------------------------------------------------------------------
-!! commands.tex 011721
+!! commands.tex 012224
 !!KEYWORD
 iocmds
 !!TITLE
@@ -1673,6 +1697,8 @@ Input and Output Commands
       <td>Bring up <i>Xic</i> schematic editor</td></tr>
     <tr><td><a href="source"><b>source</b></a></td>
       <td>Read circuit or script input file</td></tr>
+    <tr><td><a href="sprint"><b>sprint</b></a></td>
+      <td>Print vectors to a string-type variable</td></tr>
     <tr><td><a href="write"><b>write</b></a></td>
       <td>Write data to rawfile</td></tr>
     <tr><td><a href="xeditorcom"><b>xeditor</b></a></td>
@@ -2052,7 +2078,9 @@ load command
 rawfilefmt
 iocmds
 
-!! commands.tex 083122
+!!REDIRECT print#format formatstr
+
+!! commands.tex 012624
 !!KEYWORD
 print
 !!TITLE
@@ -2200,6 +2228,7 @@ print command
     deprecated.
     </dl>
 
+    <a name="format"></a>
     <p>
     The syntax of the format string to the <b>print</b> command allows
     overriding the states of the switches listed above while printing. 
@@ -2207,7 +2236,8 @@ print command
     the <b>print</b> command, and must begin with a '<tt>/</tt>'
     (forward slash) character.  It contains no space, and is a
     sequence of the characters and forms shown below, all of which are
-    optional.
+    optional.  This format string syntax also applies to the <a
+    href="sprint"><b>sprint</b></a> command.
 
     <dl>
     <dt><i>integer</i><dd>
@@ -2216,10 +2246,20 @@ print command
     href="numdgt"><tt>numdgt</tt></a> variable is used if set,
     otherwise a default of 6 is used.
 
+    <dt><tt>e</tt><dd>
+    Use exponential print format.  This is the deffault so this input
+    is redundant.
+
     <dt><tt>f</tt><dd>
     If '<tt>f</tt>' is found in the string, data values will be printed
     using a fixed-point format, rather than the default exponential
-    format.
+    format.  If the vector has assigned units, then the printing will
+    use SPICE scaling codes and the units abbreviation will be
+    appended, e.g. 2.34mA.
+
+    <dt><tt>g</tt><dd>
+    Use a fixed-point format with SPICE scaling codes for all values,
+    and do not print units abbreviations.
     </dl>
 
     The remaining options apply/unapply the switches, whose defaults
@@ -2538,6 +2578,46 @@ source command
 !!SEEALSO
 fifo
 iocmds
+
+!! commands.tex 012224
+!!KEYWORD
+sprint
+!!TITLE
+sprint command
+!!HTML 
+    command: <tt>sprint</tt> <i>vname</i> [/<i>format</i>] [<tt>line</tt>]
+    <i>expr</i> [...]
+
+    <p>
+    This is very similar to the <a href="print"><b>print</b></a> command,
+    however by default output is created as a text string in a <a
+    href="variable">variable</a> whose name is given in the first
+    argument.  Variable substitution can then be used to poke the
+    string text into other commands or output.  However, if the first
+    argument is a hyphen ('-'), then the text is printed to the
+    standard output, as for the <b>print</b> command.
+
+    <p>
+    The output consists of a single line of text, which may be
+    formatted according to the format string, which if given must be
+    the second argument and is prefixed by a forward slash ('/')
+    character.  This is identical to the format string as described
+    for the <b>print</b> command, with inapplicable modes or flags
+    ignored.  Only the '<tt>line</tt>' mode of the <b>print</b>
+    command is supported, if the explicit keyword is given it is
+    ignored, however if the '<tt>col</tt>' keyword is given
+    explicitly, an error results.  The default format is <tt>line</tt>
+    so the keyword is never needed.
+
+    <p>
+    The values of vector results from expressions that follow are
+    formatted and appear in the result string.  Each vector index
+    value will appear so that the resulting string can be quite long. 
+    It is likely that this function will be used only for single
+    scalar values.
+
+!!SEEALSO
+print
 
 !! commands.tex 022117
 !!KEYWORD

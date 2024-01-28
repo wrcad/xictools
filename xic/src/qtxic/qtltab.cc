@@ -528,9 +528,11 @@ QTltab::motion_slot(QMouseEvent *ev)
 void
 QTltab::drag_enter_slot(QDragEnterEvent *ev)
 {
-    if (ev->mimeData()->hasFormat(QTltab::mime_type()) || ev->mimeData()->hasColor())
+    if (ev->mimeData()->hasFormat(QTltab::mime_type()) ||
+            ev->mimeData()->hasColor())
         ev->accept();
-    ev->ignore();
+    else
+        ev->ignore();
 }
 
 

@@ -866,7 +866,8 @@ namespace {
             wl = wl->wl_next;
         }
 
-        bool col = true;
+        // The stringout mode doesn't support 'col'.
+        bool col = !stringout;;
         bool optgiven = false;
         if (lstring::eq(wl->wl_word, "col")) {
             col = true;

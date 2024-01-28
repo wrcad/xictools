@@ -742,6 +742,26 @@ sGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
         }
     }
     else if (code == BSP_KEY) {
+#ifdef __APPLE__
+        // The Mac key labeled "Delete" returns a BSP code.
+        if (gr_apptype == GR_PLOT && gr_cmd_data && GP.SourceGraph() == this) {
+            int n = 0;
+            sDvList *dv0 = static_cast<sDvList*>(gr_plotdata);
+            for (sDvList *d = dv0; d; d = d->dl_next) {
+                if (d == gr_cmd_data) {
+                    if (gr_delete_trace(n)) {
+                        gr_cmd_data = 0;
+                        GP.SetSourceGraph(0);
+                        gr_set_ghost(0, 0, 0);
+                        dev()->Clear();
+                        gr_redraw();
+                    }
+                    return;
+                }
+                n++;
+            }
+        }
+#endif
         // Erase last character.  If terminated, undo terminated status.
         // If no more characters, delete string entry.
         if (!k || !gr_seltext)
@@ -776,8 +796,16 @@ sGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
                 k->ignore = true;
                 gr_seltext = false;
             }
-            else
+            else {
+                // write it
+                gr_dev->SetColor(gr_colors[k->colorindex].pixel);
+                int x, y;
+                gr_get_keyed_posn(k, &x, &y);
+                y = yinv(y);
+                gr_dev->Text(k->text, x, y, k->xform);
+                gr_seltext = true;
                 gr_show_sel_text(true);
+            }
         }
     }
     else if (code == DELETE_KEY) {
@@ -832,8 +860,16 @@ sGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
                 k->ignore = true;
                 gr_seltext = false;
             }
-            else
+            else {
+                // write it
+                gr_dev->SetColor(gr_colors[k->colorindex].pixel);
+                int x, y;
+                gr_get_keyed_posn(k, &x, &y);
+                y = yinv(y);
+                gr_dev->Text(k->text, x, y, k->xform);
+                gr_seltext = true;
                 gr_show_sel_text(true);
+            }
         }
     }
     else {
@@ -887,22 +923,6 @@ sGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
             gr_seltext = true;
             gr_show_sel_text(true);
         }
-    }
-}
-
-
-namespace {
-    // Show an outline box of the selected text
-    //
-    void ghost_tbox(int x, int y, int, int, bool)
-    {
-        GP.Cur()->gr_ghost_tbox(x, y);
-    }
-
-
-    void ghost_trace(int x, int y, int, int, bool)
-    {
-        GP.Cur()->gr_ghost_trace(x, y);
     }
 }
 
@@ -1016,7 +1036,7 @@ sGraph::gr_bdown_hdlr(int button, int x, int y)
                         gr_pressx = xl;
                     GP.SetSourceGraph(this);
 
-                    gr_timer_id = GRpkg::self()->AddTimer(200, timeout_move,
+                    gr_timer_id = GRpkg::self()->AddTimer(200, start_drag_text,
                         this);
                     return;
                 }
@@ -1037,11 +1057,9 @@ sGraph::gr_bdown_hdlr(int button, int x, int y)
                         while (i-- && dl)
                             dl = dl->dl_next;
                         gr_cmd_data = dl;
-                        GP.SetSourceGraph(this);
-                        if (dl) {
-                            gr_set_ghost(ghost_trace, 0, 0);
-                            gr_show_ghost(true);
-                        }
+                        gr_timer_id = GRpkg::self()->AddTimer(200,
+                            start_drag_trace, this);
+                        return;
                     }
                 }
             }
@@ -1083,16 +1101,19 @@ sGraph::gr_bdown_hdlr(int button, int x, int y)
             gr_cmdmode |= grZoomIn;
             // Use a timeout to avoid zooming into a click, which is likely
             // inadvertant.
-            gr_timer_id = GRpkg::self()->AddTimer(300, timeout_zoom, this);
+            gr_timer_id = GRpkg::self()->AddTimer(300, start_drag_zoom, this);
         }
     }
 }
 
 
-// Called for button release handling.
+// Called for button release handling.  The new_keyed argument is used
+// to push in a new keyed text element from dropping text/plain in the
+// window from anywhere.  The QT code handles this, GTK does not
+// presently.
 //
 void
-sGraph::gr_bup_hdlr(int button, int x, int y)
+sGraph::gr_bup_hdlr(int button, int x, int y, const char *new_keyed)
 {
     if (button == 1) {
         sGraph *graph = GP.SourceGraph();
@@ -1125,12 +1146,23 @@ sGraph::gr_bup_hdlr(int button, int x, int y)
                 if (ok) {
                     // should be in window
                     gr_show_sel_text(false);
-                    if (graph != this ||
+                    if (graph != this || new_keyed ||
                             (gr_cmdmode & (grShiftMode | grControlMode))) {
                         // Copy the text, note that drag between
                         // windows is always a copy.
-                        sKeyed *kk = new sKeyed(*k);
-                        kk->text = lstring::copy(kk->text);
+                        sKeyed *kk;
+                        if (new_keyed) {
+                            // Not from a plot window so create a new
+                            // sKeyed struct.
+                            kk = new sKeyed();
+                            kk->text = lstring::copy(new_keyed);
+                            kk->colorindex = 1;
+                        }
+                        else {
+                            // Copy existing sKeyed struct.
+                            kk = new sKeyed(*k);
+                            kk->text = lstring::copy(kk->text);
+                        }
                         kk->type = LAuser;
                         kk->fixed = false;
                         gr_set_keyed_posn(kk, x, y);
@@ -4664,11 +4696,38 @@ sGraph::dv_find_selections()
 }
 
 
-// Static function.
+namespace {
+    // Show an outline box of the selected text
+    //
+    void ghost_tbox(int x, int y, int, int, bool)
+    {
+        GP.Cur()->gr_ghost_tbox(x, y);
+    }
+
+
+    void ghost_trace(int x, int y, int, int, bool)
+    {
+        GP.Cur()->gr_ghost_trace(x, y);
+    }
+}
+
+
 int
-sGraph::timeout_move(void *arg)
+sGraph::start_drag_trace(void *arg)
 {
     sGraph *graph = (sGraph*)arg;
+    GP.SetSourceGraph(graph);
+    if (graph->gr_cmd_data) {
+        graph->gr_set_ghost(ghost_trace, 0, 0);
+        graph->gr_show_ghost(true);
+    }
+    return (false);
+}
+
+
+int
+sGraph::start_drag_text(void *arg)
+{
     graph->gr_set_ghost(ghost_tbox, 0, 0);
     GP.PushGraphContext(graph);
     graph->gr_dev->DrawGhost();
@@ -4681,7 +4740,7 @@ sGraph::timeout_move(void *arg)
 
 // Static function.
 int
-sGraph::timeout_zoom(void *arg)
+sGraph::start_drag_zoom(void *arg)
 {
     sGraph *graph = (sGraph*)arg;
     if (graph->gr_reference.mark)

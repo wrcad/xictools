@@ -458,8 +458,9 @@ sMfunc::mpw(sDataVec *dv, int ixmin, int ixmax,
 }
 
 
-// Find the 10-90% rise or fall time of an edge contained in the
-// interval.
+// Find the rise or fall time of an edge contained in the interval. 
+// The two final arguments specify the reference crossing points,
+// which default to 0.1 and 0.9 (10% to 90%).
 //
 bool
 sMfunc::mrft(sDataVec *dv, int ixmin, int ixmax,
@@ -475,6 +476,8 @@ sMfunc::mrft(sDataVec *dv, int ixmin, int ixmax,
         f_val = 0.0;
         return (true);
     }
+
+    // f_v1 and f_v2 if nonzero override the reference crossing pts.
     if (f_v1 != 0.0) {
         pc1 = f_v1;
         if (f_v2 != 0.0)

@@ -1,7 +1,7 @@
 \chapter{{\WRspice} Commands}
 \label{commands}
 
-% spCommands.hlp:commands 083122
+% spCommands.hlp:commands 012224
 
 When a line is entered, it is interpreted in one of several ways. 
 
@@ -92,6 +92,7 @@ The following table lists all built-in commands understood by
 \cb return & Return from script immediately, possibly with a value\\ \hline
 \cb sced & Bring up {\Xic} schematic editor\\ \hline
 \cb source & Read circuit or script input file\\ \hline
+\cb sprint & Print vectors to a string-type variable\\ \hline
 \cb write & Write data to rawfile\\ \hline
 \cb xeditor & Edit text file\\ \hline
 \hline
@@ -915,7 +916,7 @@ unixcom} variable is set.
 \index{set command}
 \label{setcmd}
 
-% spCommands.hlp:set 041611
+% spCommands.hlp:set 012624
 
 The {\cb set} command allows the user to examine and set shell
 variables.  It is also possible to assign vectors with the {\cb set}
@@ -960,13 +961,32 @@ parentheses, as in
 \begin{quote}\vt
 set mylist = ( abc def 1.2 xxdone )
 \end{quote}
-which sets the variable {\vt mylist} to the list of four tokens.  The
-{\cb unset} command can be used to delete a variable.
+which sets the variable {\vt mylist} to the list of four tokens.
+
+The {\cb unset} command can be used to delete a variable.
 
 The value of a variable {\it word\/} may be inserted into a command by
 writing {\vt \${\it word}}.  If a variable is set to a list of values
 that are enclosed in parentheses (which must be separated from their
 values by white space), the value of the variable is the list.
+
+A list variable can be indexed, for example
+\begin{quote}\vt
+> set list = ( a s d f g )\\
+> echo \$list[2]\\
+d
+\end{quote}
+This does not work for non-list variables.
+
+The syntax {\vt set var = "\$list"} will set the variable {\vt var} to
+the text of the list variable, as a string and not a list.  Note that
+if the double quotes are not given, {\vt var} is set to the first
+element of the list, and remining elements of the list would be set by
+name as booleans, probably not what is wanted.  To copy the list to a
+new variable, the syntax {\vt set var = ( \$list )} should be used. 
+This same syntax can be used the create a true list from the string
+representation as in the first example in this paragraph.  Note that
+the parentheses must be separated by white space.
 
 The set command can also be used to assign values to vectors (vectors
 are described in \ref{vectors}).  The syntax in this case is
@@ -1098,7 +1118,7 @@ a description of that variable being printed.
 %S-----------------------------------------------------------------------------
 \section{Input and Output Commands}
 
-% spCommands.hlp:iocmds 011721
+% spCommands.hlp:iocmds 012224
 
 These commands manage input to {\WRspice}, or allow {\WRspice}
 output to be saved in files.
@@ -1115,6 +1135,7 @@ output to be saved in files.
 \cb return & Return from script immediately, possibly with a value\\ \hline
 \cb sced & Bring up {\Xic} schematic editor\\ \hline
 \cb source & Read circuit or script input file\\ \hline
+\cb sprint & Print vectors to a string-type variable\\ \hline
 \cb write & Write data to rawfile\\ \hline
 \cb xeditor & Edit text file\\ \hline
 \end{tabular}
@@ -1416,7 +1437,7 @@ determined.
 \index{print command}
 \label{print}
 
-% spCommands.hlp:print 083122
+% spCommands.hlp:print 012624
 
 The {\cb print} command is used to print vector data on-screen or
 to a file using output redirection.
@@ -1529,12 +1550,15 @@ This is otherwise done for each set of variables printed.  The Spice3
 {\et noprintscale} variable is an alias, but deprecated.
 \end{description}
 
+\index{format_string}
+
 The syntax of the format string to the {\cb print} command allows
 overriding the states of the switches listed above while printing. 
 The format string, if used, must be the first argument given to the
 {\cb print} command, and must begin with a `{\vt /}' (forward slash)
 character.  It contains no space, and is a sequence of the characters
-and forms shown below, all of which are optional.
+and forms shown below, all of which are optional.  The format string
+syntax also applies to the {\cb sprint} command.
 
 \begin{description}
 \item{\it integer}\\
@@ -1542,9 +1566,20 @@ The {\it integer} is the number of figures to the right of the decimal
 point to print.  If not given, the value of the {\et numdgt} variable
 is used if set, otherwise a default of 6 is used.
 
+\item{\vt e}\\
+Use exponential print format.  This is the default so this input is
+redundant.
+
 \item{\vt f}\\
 If `{\vt f}' is found in the string, data values will be printed using
-a fixed-point format, rather than the default exponential format.
+a fixed-point format, rather than the default exponential format.  If
+the vector has assigned units, then the printing will use SPICE
+scaling codes and the units abbreviation will be appended, e.g.
+2.34mA.
+
+\item{\vt g}\\
+Use a fixed-point format with SPICE scaling codes for all values, and
+do not print units bbreviations.
 \end{description}
 
 The remaining options apply/unapply the switches, whose defaults are
@@ -1804,6 +1839,43 @@ Shell variables found in the circuit deck (but not in the
 commands text) are evaluated during the source.  The {\cb reset}
 command can be used to update these variables if they are later
 changed by the shell after sourcing. 
+
+
+%SU-------------------------------------
+\subsection{\spcmd{sprint}}
+\index{sprint command}
+\label{sprint}
+
+% spCommands.hlp:sprint 012224
+
+The {\cb sprint} command is used to print vector data to a string-type
+variable.
+\begin{quote}\vt
+sprint {\it vname} [/{\it format\/}] [line] {\it expr\/} [...]
+\end{quote}
+
+This is very similar to the {\cb print} command, however by default
+output is created as a text string in a variable whose name is given in
+the first argument.  Variable substitution can then be used to poke the
+string text into other commands or output.  However, if the first
+argument is a hyphen ('-'), then the text is printed to the standard
+output, as for the {\cb print} command.
+
+The output consists of a single line of text, which may be formatted
+according to the format string, which if given must be the second
+argument and is prefixed by a forward slash ('/') character.  This is
+identical to the format string as described for the {\cb print}
+command, with inapplicable modes or flags ignored.  Only the '{\vt
+line}' mode of the {\cb print} command is supported, if the explicit
+keyword is given it is ignored, however if the '{\cb col}' keyword is
+given explicitly, an error results.  The default format is {\vt line}
+so the keyword is never needed.
+
+The values of vector results from expressions that follow are
+formatted and appear in the result string.  Each vector index value
+will appear so that the resulting string can be quite long.  It is
+likely that this function will be used only for single scalar values.
+
 
 %SU-------------------------------------
 \subsection{\spcmd{write}}

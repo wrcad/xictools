@@ -58,6 +58,8 @@ Authors: 1988 Jeffrey M. Hsu
 #include "spnumber/spnumber.h"
 
 #include <QApplication>
+#include <QDrag>
+#include <QMimeData>
 
 //
 // The graphics-package (QT) dependent part of the sGraph class.
@@ -193,6 +195,82 @@ sGraph::gr_popdown()
     delete w;
     set_dev(0);
     GP.DestroyGraph(id());
+}
+
+
+namespace {
+    // XPM
+    const char *trace_xpm[] = {
+    "52 12 3 1",
+    " 	c none",
+    ".	c black",
+    "o	c blue",
+    "  . . . . . . . . . . . . . . . . . . . . . . . .   ",
+    "                                                 .  ",
+    "  .          ooooooo             ooooooo            ",
+    "            ooooooooo           ooooooooo        .  ",
+    "  .         o       o           o       o           ",
+    "           oo       oo         oo       oo       .  ",
+    "  .        oo       oo         oo       oo          ",
+    "          oo         oo       oo         oo      .  ",
+    "  .oooooooo           ooooooooo           ooooooo   ",
+    "   ooXoooo             ooooooo             oooooo.  ",
+    "  .                                                 ",
+    "   . . . . . . . . . . . . . . . . . . . . . . . .  "};
+}
+
+
+// Static function
+// Timeout function, start dragging a trace.
+//
+int
+sGraph::drag_trace(void *arg)
+{
+    sGraph *graph = (sGraph*)arg;
+    QTplotDlg *wb = dynamic_cast<QTplotDlg*>(graph->gr_dev);
+
+    GP.SetSourceGraph(graph);
+    QDrag *drag = new QDrag(wb);
+    drag->setPixmap(QPixmap(trace_xpm));
+    QMimeData *mimedata = new QMimeData();
+    QByteArray qdata("TRACE", 8);
+    mimedata->setData(MIME_TYPE_TRACE, qdata);
+    drag->setMimeData(mimedata);
+    drag->exec(Qt::CopyAction);
+    GP.SetSourceGraph(0);
+
+    return (0);
+}
+
+
+// Static function
+// Timeout function, start draggint text.
+//
+int
+sGraph::drag_text(void *arg)
+{
+    sGraph *graph = (sGraph*)arg;
+    QTplotDlg *wb = dynamic_cast<QTplotDlg*>(graph->gr_dev);
+
+    GP.SetSourceGraph(graph);
+    graph->gr_cmdmode |= grMoving;
+    QDrag *drag = new QDrag(wb);
+    QMimeData *mimedata = new QMimeData();
+    QByteArray qdata(graph->gr_keyed->text, strlen(graph->gr_keyed->text));
+    mimedata->setData("text/plain", qdata);
+    drag->setMimeData(mimedata);
+
+    // The cursor hot spot is at the right side of the text, need this to
+    // point at the left side.
+    int tw;
+    wb->TextExtent(graph->gr_keyed->text, &tw, 0);
+    QPoint pt = drag->hotSpot();
+    pt.setX(pt.x() + tw);
+    drag->setHotSpot(pt);
+    drag->exec(Qt::CopyAction);
+    GP.SetSourceGraph(0);
+
+    return (0);
 }
 // End of sGraph functions.
 

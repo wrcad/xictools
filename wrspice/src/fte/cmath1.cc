@@ -2679,9 +2679,10 @@ sDataVec::v_mpw(sDataVec **v)
 }
 
 
-// Rise or fall time.  Y=This can have 3-5 arguments, the two optional
-// arguments are the start and end fractions, which default to 0.1
-// and 0.9.
+// Rise or fall time.  This can have 1-5 arguments, the four optional
+// arguments are the start and end observations times which default
+// the the scale endpoints, and the start and end fractions, which
+// default to 0.1 and 0.9.
 //
 sDataVec *
 sDataVec::v_mrft(sDataVec **v)
@@ -3423,3 +3424,15 @@ sDataVec::v_hs_sign(sDataVec **args)
     return (res);
 }
 
+/* XXX
+cmath2.cc -> cmathops.cc 
+cmath1.cc -> cmathfns.cc
+
+// Cubic Spline implementation.
+#include "miscutil cbspline.h"
+sDataVec *
+sDataVec::v_cbspl(sDataVec **args)
+{
+}
+
+*/

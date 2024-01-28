@@ -51,6 +51,8 @@
 //-----------------------------------------------------------------------------
 // QTplotDlg:  plot and mplot display dialogs.
 
+#define MIME_TYPE_TRACE     "application/wrspice-trace"
+
 struct sGraph;
 class QGroupBox;
 class QPushButton;
@@ -60,10 +62,11 @@ class QMouseEvent;
 class QKeyEvent;
 class QEnterEvent;
 class QFocusEvent;
+class QDragMoveEvent;
 class QDragEnterEvent;
 class QDropEvent;
 
-class QTplotDlg : QDialog, public QTbag,  public QTdraw
+class QTplotDlg : public QDialog, public QTbag,  public QTdraw
 {
     Q_OBJECT
 
@@ -155,6 +158,8 @@ private slots:
     void separate_btn_slot(bool);
     void single_btn_slot(bool);
     void group_btn_slot(bool);
+    void drag_enter_slot(QDragEnterEvent*);
+    void drop_slot(QDropEvent*);
 
 private:
     bool check_event(QEvent*);

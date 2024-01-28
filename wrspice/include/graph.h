@@ -411,7 +411,7 @@ struct sGraph
     bool gr_delete_trace(int);
     void gr_key_hdlr(const char*, int, int, int);
     void gr_bdown_hdlr(int, int, int);
-    void gr_bup_hdlr(int, int, int);
+    void gr_bup_hdlr(int, int, int, const char* = 0);
     int gr_select_trace(int, int);
     void gr_replot();
     void gr_zoomin(int, int);
@@ -609,6 +609,12 @@ struct sGraph
         }
     }
 
+    // qtgraph.cc
+    static int drag_trace(void*);
+    static int drag_text(void*);
+
+    bool have_trace_data()          const { return (gr_cmd_data != 0); }
+
 private:
 
     // graph.cc
@@ -631,8 +637,9 @@ private:
     void dv_pl_environ(double, double, double, double, bool);
     void dv_find_selections();
 
-    static int timeout_move(void*);
-    static int timeout_zoom(void*);
+    static int start_drag_trace(void*);
+    static int start_drag_text(void*);
+    static int start_drag_zoom(void*);
 
     // grid.cc
     void lingrid(double*, Axis);

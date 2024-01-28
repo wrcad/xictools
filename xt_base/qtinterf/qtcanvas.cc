@@ -45,6 +45,7 @@
 #include <QPainter>
 #include <QEnterEvent>
 #include <QFocusEvent>
+#include <QGuiApplication>
 
 
 using namespace qtinterf;
@@ -1415,7 +1416,11 @@ cGhostDrawCommon::show_ghost(bool showit)
 
             // This will redraw ghost.
             QPoint qp = QCursor::pos();
-            QCursor::setPos(qp.x() + 0, qp.y() + 0);
+//            QCursor::setPos(qp.x() + 0, qp.y() + 0);
+            if (gd_windows[0]) {
+                qp = gd_windows[0]->mapFromGlobal(qp);
+            }
+            draw_ghost(qp.x(), qp.y());
         }
     }
 }

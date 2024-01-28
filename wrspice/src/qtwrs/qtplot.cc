@@ -82,6 +82,8 @@ Authors: 1988 Jeffrey M. Hsu
 #include <QFocusEvent>
 #include <QDragEnterEvent>
 #include <QDropEvent>
+#include <QDrag>
+#include <QMimeData>
 
 // help keywords used in this file
 // plotpanel
@@ -169,8 +171,9 @@ QTplotDlg::init(sGraph *gr)
 
     // set up viewport
     gd_viewport = new QTcanvas();
-    hbox->addWidget(Viewport());
-    Viewport()->setFocusPolicy(Qt::StrongFocus);
+    hbox->addWidget(gd_viewport);
+    gd_viewport->setFocusPolicy(Qt::StrongFocus);
+    gd_viewport->setAcceptDrops(true);
 
     QFont *fnt;
     if (FC.getFont(&fnt, FNT_SCREEN))
@@ -178,20 +181,24 @@ QTplotDlg::init(sGraph *gr)
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
 
-    connect(Viewport(), SIGNAL(resize_event(QResizeEvent*)),
+    connect(gd_viewport, SIGNAL(resize_event(QResizeEvent*)),
         this, SLOT(resize_slot(QResizeEvent*)));
-    connect(Viewport(), SIGNAL(press_event(QMouseEvent*)),
+    connect(gd_viewport, SIGNAL(press_event(QMouseEvent*)),
         this, SLOT(button_down_slot(QMouseEvent*)));
-    connect(Viewport(), SIGNAL(release_event(QMouseEvent*)),
+    connect(gd_viewport, SIGNAL(release_event(QMouseEvent*)),
         this, SLOT(button_up_slot(QMouseEvent*)));
-    connect(Viewport(), SIGNAL(motion_event(QMouseEvent*)),
+    connect(gd_viewport, SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(motion_slot(QMouseEvent*)));
-    connect(Viewport(), SIGNAL(key_press_event(QKeyEvent*)),
+    connect(gd_viewport, SIGNAL(key_press_event(QKeyEvent*)),
         this, SLOT(key_down_slot(QKeyEvent*)));
-    connect(Viewport(), SIGNAL(enter_event(QEnterEvent*)),
+    connect(gd_viewport, SIGNAL(enter_event(QEnterEvent*)),
         this, SLOT(enter_slot(QEnterEvent*)));
-    connect(Viewport(), SIGNAL(leave_event(QEvent*)),
+    connect(gd_viewport, SIGNAL(leave_event(QEvent*)),
         this, SLOT(leave_slot(QEvent*)));
+    connect(gd_viewport, SIGNAL(drag_enter_event(QDragEnterEvent*)),
+        this, SLOT(drag_enter_slot(QDragEnterEvent*)));
+    connect(gd_viewport, SIGNAL(drop_event(QDropEvent*)),
+        this, SLOT(drop_slot(QDropEvent*)));
 
     pb_gbox = new QGroupBox();
     hbox->addWidget(pb_gbox);
@@ -220,17 +227,22 @@ QTplotDlg::init(sGraph *gr)
 }
 
 
-//
 // Set up the button array, return true if the button count changes.
 //
 bool
 QTplotDlg::init_gbuttons()
 {
+    // Just rebuild the whole button array, easier that way.
+
+    QObjectList ol = pb_gbox->children();
+    int sz = ol.size();
+    for (int i = 0; i < sz; i++)
+        delete ol[i];
+    delete pb_gbox->layout();
     QVBoxLayout *vbox = new QVBoxLayout(pb_gbox);
     vbox->setContentsMargins(0, 0, 0, 0);
     vbox->setSpacing(2);
 
-    // Just rebuild the whole button array, easier that way.
     for (int i = 0; i < pbtn_NUMBTNS; i++)
         pb_checkwins[i] = 0;
 
@@ -871,13 +883,6 @@ QTplotDlg::key_down_slot(QKeyEvent *ev)
 void
 QTplotDlg::enter_slot(QEnterEvent*)
 {
-    // Pointer entered a drawing window.
-    if (GP.SourceGraph() && pb_graph != GP.SourceGraph()) {
-        // hack a ghost for move/copy
-//        DrawIf()->set_ghost_func(dynamic_cast<QTplotDlg*>(
-//            GP.SourceGraph()->dev())->DrawIf()->get_ghost_func());
-    }
-//    ShowGhost(true);
 }
 
 
@@ -885,14 +890,26 @@ void
 QTplotDlg::leave_slot(QEvent*)
 {
     // Pointer left the drawing window.
-    if (Viewport()->has_ghost()) {
-        GP.PushGraphContext(pb_graph);
-//XXX        ShowGhost(false);
-        GP.PopGraphContext();
-    }
-    if (GP.SourceGraph() && pb_graph != GP.SourceGraph()) {
-        // remove hacked ghost
-//XXX        Viewport()->set_ghost_func(0);
+    if (gd_viewport->has_ghost()) {
+        // If there is trace data, end the local ghost and start a QT
+        // drag for data transfer to other plot windows.
+        if (pb_graph->have_trace_data()) {
+            GP.PushGraphContext(pb_graph);
+            ShowGhost(false);
+            GP.PopGraphContext();
+            sGraph::drag_trace(pb_graph);
+            return;
+        }
+
+        // If moving text, end the local ghost and start a QT drag for
+        // data transfer to other plot windows.
+        if (pb_graph->cmdmode() & grMoving) {
+            GP.PushGraphContext(pb_graph);
+            ShowGhost(false);
+            GP.PopGraphContext();
+            sGraph::drag_text(pb_graph);
+            return;
+        }
     }
 }
 
@@ -1110,5 +1127,76 @@ QTplotDlg::group_btn_slot(bool)
         pb_graph->dev()->Clear();
         pb_graph->gr_redraw();
     }
+}
+
+
+void
+QTplotDlg::drag_enter_slot(QDragEnterEvent *ev)
+{
+    if (GRpkg::self()->CurDev()->devtype == GRhardcopy) {
+        ev->ignore();
+        return;
+    }
+    if (ev->mimeData()->hasFormat(MIME_TYPE_TRACE) ||
+            ev->mimeData()->hasFormat("text/plain")) {
+        if (sender() == this)
+            ev->setDropAction(Qt::MoveAction);
+        else
+            ev->setDropAction(Qt::CopyAction);
+        ev->accept();
+    }
+    else {
+        ev->ignore();
+        return;
+    }
+}
+
+
+void
+QTplotDlg::drop_slot(QDropEvent *ev)
+{
+    if (GRpkg::self()->CurDev()->devtype == GRhardcopy) {
+        ev->ignore();
+        return;
+    }
+    if (ev->mimeData()->hasFormat(MIME_TYPE_TRACE) ||
+            ev->mimeData()->hasFormat("text/plain")) {
+        ev->setDropAction(Qt::CopyAction);
+        ev->accept();
+
+        int button = 1;
+        int state = ev->modifiers();
+
+        if (state & Qt::ShiftModifier)
+            pb_graph->set_cmdmode(pb_graph->cmdmode() | grShiftMode);
+        else
+            pb_graph->set_cmdmode(pb_graph->cmdmode() & ~grShiftMode);
+        if (state & Qt::ControlModifier)
+            pb_graph->set_cmdmode(pb_graph->cmdmode() | grControlMode);
+        else
+            pb_graph->set_cmdmode(pb_graph->cmdmode() & ~grControlMode);
+
+        const char *new_keyed = 0;
+        QByteArray ba = ev->mimeData()->text().toLatin1();
+        if (!dynamic_cast<QTplotDlg*>(ev->source())) {
+            // Received plain text not from a plot window.  This will
+            // become a new keyed text element at the drop location. 
+            // Need to set the flag below and pass the string to the
+            // handler through a "hidden" argument.
+
+            pb_graph->set_cmdmode(pb_graph->cmdmode() | grMoving);
+            new_keyed = ba.constData();
+        }
+
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+        pb_graph->gr_bup_hdlr(button, ev->position().x(),
+            pb_graph->yinv(ev->position().y()), new_keyed);
+#else
+        pb_graph->gr_bup_hdlr(button, ev->x(), pb_graph->yinv(ev->y()),
+            new_keyed);
+#endif
+        return;
+    }
+    ev->ignore();
 }
 

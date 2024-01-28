@@ -117,6 +117,67 @@ End of general info.
 
 
 ===============================================================================
+wrspice-4.3.19  01/28/2024
+Current Release
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* New command:  sprint varname|- [/format] expression ...
+
+  This is similar to the "line" mode of the print command, however
+  the string output is saved in a variable whose name is passed as the
+  first argument.  If instead the first argument is a hyphen ('-'),
+  the text is sent to the standard output.  This command is useful for
+  generating tokens to be concatenated into filenames for output files
+  in a script, among other things.
+
+* Changes to the format string used in the print and sprint commands.
+
+  When a number is included, values 0 and 1 now set the integer-part
+  only and one decimal point precision, respectively.  Previously these
+  were not recognized and output used the default precision (6).
+
+  The format character 'g' is now recognized, and will set the format
+  a floating representation using SPICE scale factors, but will not
+  include a units suffix.  The 'f' format will use the same format and
+  include a units string if available.
+
+* Subtle behavior changes.
+  - The syntax
+      set x = "$list"
+    now sets the x variable to a string representation of the list
+    in the list-type variable.  Previously, the double-quotes did not
+    accomplish this.
+    The form
+      set x = $list
+    will set x to the first element of the list, and the remaining
+    elements are set as booleans, which is unlokely to make any sense.
+    to set x as a copy of the list use the form
+      set x = ( $list )
+    Be aware that space is required between the parentheses and the
+    contents.
+  - This latter form, re-expressed as
+      set lv = ( $stringvar )
+    where the stringvar is a text string representing a list, including
+    the space-separated parentheses, will set lv to be a "real" list
+    variable.
+
+    The numeric elements of a list variable are presently always
+    displayed in exponential format.
+
+
+BUGS FIXED
+---- -----
+
+* QT only:  Drag/drop now works between plot windows.  The local drag
+  which wokts within a plot window converts to a QT drag when the
+  pointer leaves the window.
+
+* Other misc. QT fixes as support evolves.
+
+
+-------------------------------------------------------------------------------
 wrspice-4.3.18  10/28/2023
 Current Release
 
