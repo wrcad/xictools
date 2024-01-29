@@ -2078,7 +2078,7 @@ load command
 rawfilefmt
 iocmds
 
-!!REDIRECT print#format formatstr
+!!REDIRECT formatstr print#format
 
 !! commands.tex 012624
 !!KEYWORD
@@ -2591,7 +2591,7 @@ sprint command
     <p>
     This is very similar to the <a href="print"><b>print</b></a> command,
     however by default output is created as a text string in a <a
-    href="variable">variable</a> whose name is given in the first
+    href="variables">variable</a> whose name is given in the first
     argument.  Variable substitution can then be used to poke the
     string text into other commands or output.  However, if the first
     argument is a hyphen ('-'), then the text is printed to the
@@ -2601,13 +2601,13 @@ sprint command
     The output consists of a single line of text, which may be
     formatted according to the format string, which if given must be
     the second argument and is prefixed by a forward slash ('/')
-    character.  This is identical to the format string as described
-    for the <b>print</b> command, with inapplicable modes or flags
-    ignored.  Only the '<tt>line</tt>' mode of the <b>print</b>
-    command is supported, if the explicit keyword is given it is
-    ignored, however if the '<tt>col</tt>' keyword is given
-    explicitly, an error results.  The default format is <tt>line</tt>
-    so the keyword is never needed.
+    character.  This is identical to the <a href="formatstr">format
+    string</a> as described for the <b>print</b> command, with
+    inapplicable modes or flags ignored.  Only the '<tt>line</tt>'
+    mode of the <b>print</b> command is supported, if the explicit
+    keyword is given it is ignored, however if the '<tt>col</tt>'
+    keyword is given explicitly, an error results.  The default format
+    is <tt>line</tt> so the keyword is never needed.
 
     <p>
     The values of vector results from expressions that follow are

@@ -90,7 +90,7 @@ struct variable
     void set_list(variable*);
     void set_reference(const char*);
 
-    const char *typeString(int) const;
+    static const char *typeString(int);
     static variable *copy(const variable*);
     wordlist *varwl(const char* = 0) const;
     wordlist *var2wl(int, int) const;

@@ -188,10 +188,11 @@ variable::set_reference(const char *r)
 }
 
 
+// Static function.
 // Return a string representing the variable struct type.
 //
 const char *
-variable::typeString(int tp) const
+variable::typeString(int tp)
 {
     switch (tp) {
     case VTYP_BOOL:

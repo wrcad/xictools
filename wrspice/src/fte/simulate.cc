@@ -685,8 +685,9 @@ sFtCirc::rebuild(bool save_loop)
     sSTATS *tstat = 0;
     if (ci_runckt) {
         ttask = FTSAVE(ci_runckt->CKTcurTask);
-        if (ttask)
+        if (ttask) {
             tstat = FTSAVE(ci_runckt->CKTstat);
+        }
     }
     int trtype = ci_runtype;
     sLine *dd = ci_deck;
@@ -771,8 +772,9 @@ sFtCirc::reset()
     sSTATS *tstat = 0;
     if (ci_runckt) {
         ttask = FTSAVE(ci_runckt->CKTcurTask);
-        if (ttask)
+        if (ttask) {
             tstat = FTSAVE(ci_runckt->CKTstat);
+        }
         delete ci_runckt;
         ci_runckt = 0;
     }

@@ -1201,7 +1201,7 @@ CshPar::ParseSet(wordlist *wl)
                 // variable is not really a list but a string. 
                 // Convert the string into a "real" list.
 
-                wordlist *wx = new wordlist(s);
+                wordlist *wx = new wordlist(ss);
                 wordlist *w0 = wx;
                 wx = wx->wl_next;
                 variable *lv = GetList(&wx);

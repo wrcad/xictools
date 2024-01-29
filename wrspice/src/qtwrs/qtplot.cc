@@ -1165,7 +1165,11 @@ QTplotDlg::drop_slot(QDropEvent *ev)
         ev->accept();
 
         int button = 1;
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         int state = ev->modifiers();
+#else
+        int state = QApplication::queryKeyboardModifiers();
+#endif
 
         if (state & Qt::ShiftModifier)
             pb_graph->set_cmdmode(pb_graph->cmdmode() | grShiftMode);
@@ -1192,8 +1196,8 @@ QTplotDlg::drop_slot(QDropEvent *ev)
         pb_graph->gr_bup_hdlr(button, ev->position().x(),
             pb_graph->yinv(ev->position().y()), new_keyed);
 #else
-        pb_graph->gr_bup_hdlr(button, ev->x(), pb_graph->yinv(ev->y()),
-            new_keyed);
+        pb_graph->gr_bup_hdlr(button, ev->pos().x(),
+            pb_graph->yinv(ev->pos().y()), new_keyed);
 #endif
         return;
     }
