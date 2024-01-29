@@ -136,7 +136,7 @@ CommandTab::com_usrset(wordlist *wl)
         Kword *entry = (Kword*)sHtab::get(Sp.Options(), wl->wl_word);
         if (entry)
             TTY.printf("%-18s %s %s\n", entry->word,
-                ((variable*)0)->typeString(entry->type), entry->descr);
+                variable::typeString(entry->type), entry->descr);
         else
             TTY.printf("%-18s      %s\n", wl->wl_word,
                 "Not an internal variable.");
@@ -174,7 +174,7 @@ Kword::print(sLstr *plstr)
 {
     char buf[256];
     const char *fmt = "%-18s %s %s\n";
-    snprintf(buf, sizeof(buf), fmt, word, ((variable*)0)->typeString(type),
+    snprintf(buf, sizeof(buf), fmt, word, variable::typeString(type),
         descr);
     if (!plstr)
         TTY.send(buf);

@@ -1579,7 +1579,7 @@ scaling codes and the units abbreviation will be appended, e.g.
 
 \item{\vt g}\\
 Use a fixed-point format with SPICE scaling codes for all values, and
-do not print units bbreviations.
+do not print units abbreviations.
 \end{description}
 
 The remaining options apply/unapply the switches, whose defaults are
@@ -1858,16 +1858,16 @@ This is very similar to the {\cb print} command, however by default
 output is created as a text string in a variable whose name is given in
 the first argument.  Variable substitution can then be used to poke the
 string text into other commands or output.  However, if the first
-argument is a hyphen ('-'), then the text is printed to the standard
+argument is a hyphen (`-'), then the text is printed to the standard
 output, as for the {\cb print} command.
 
 The output consists of a single line of text, which may be formatted
 according to the format string, which if given must be the second
-argument and is prefixed by a forward slash ('/') character.  This is
+argument and is prefixed by a forward slash (`/') character.  This is
 identical to the format string as described for the {\cb print}
-command, with inapplicable modes or flags ignored.  Only the '{\vt
+command, with inapplicable modes or flags ignored.  Only the `{\vt
 line}' mode of the {\cb print} command is supported, if the explicit
-keyword is given it is ignored, however if the '{\cb col}' keyword is
+keyword is given it is ignored, however if the `{\cb col}' keyword is
 given explicitly, an error results.  The default format is {\vt line}
 so the keyword is never needed.
 
