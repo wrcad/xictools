@@ -514,7 +514,7 @@ sGraph::gr_delete_trace(int n)
         return (false);
 
     int nn = n;
-    bool deleted = false;
+    bool hidden = false;
     sDvList *dp = 0, *dn;
     for (sDvList *d = dv0; d; d = dn) {
         dn = d->dl_next;
@@ -523,14 +523,15 @@ sGraph::gr_delete_trace(int n)
                 dp->dl_next = dn;
             else
                 gr_plotdata = dn;
-            delete d;
-            deleted = true;
+            d->dl_next = gr_hidden_data;
+            gr_hidden_data = d;
+            hidden = true;
             break;
         }
         dp = d;
         nn--;
     }
-    if (!deleted)
+    if (!hidden)
         return (false);
 
     gr_numtraces--;
@@ -604,6 +605,7 @@ void
 sGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
 {
     sKeyed *k = gr_keyed;
+#if (defined (WITH_GTK2) || defined (WITH_GTK3))
     if (gr_cmdmode & grMoving) {
         if (code == UP_KEY || code == RIGHT_KEY) {
             gr_show_ghost(false);
@@ -631,6 +633,7 @@ sGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
         }
         return;
     }
+#endif
     if (code == UP_KEY) {
         // Advance color index of current string
         if (!k || !gr_seltext)
@@ -680,6 +683,20 @@ sGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
 #endif
                 gr_show_sel_text(true);
             }
+#if defined (WITH_QT5) || defined (WITH_QT6)
+            else {
+                gr_show_sel_text(false);
+                if (gr_xform & TXTF_HJR) {
+                    gr_xform &= ~TXTF_HJR;
+                    gr_xform |= TXTF_HJC;
+                }
+                else if (gr_xform & TXTF_HJC)
+                    gr_xform &= ~TXTF_HJC;
+                else
+                    gr_xform |= TXTF_HJR;
+                gr_show_sel_text(true);
+            }
+#endif
         }
         else if (k && k->next && gr_seltext) {
             // Rotate to previous string
@@ -716,6 +733,20 @@ sGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
 #endif
                 gr_show_sel_text(true);
             }
+#if defined (WITH_QT5) || defined (WITH_QT6)
+            else {
+                gr_show_sel_text(false);
+                if (gr_xform & TXTF_HJR)
+                    gr_xform &= ~(TXTF_HJR | TXTF_HJC);
+                else if (gr_xform & TXTF_HJC) {
+                    gr_xform &= ~TXTF_HJC;
+                    gr_xform |= TXTF_HJR;
+                }
+                else
+                    gr_xform |= TXTF_HJC;
+                gr_show_sel_text(true);
+            }
+#endif
         }
         else if (k && k->next && gr_seltext) {
             // Rotate to next string
@@ -1019,11 +1050,13 @@ sGraph::gr_bdown_hdlr(int button, int x, int y)
 
                         gr_seltext = true;
                         gr_show_sel_text(true);
+                        gr_xform = k->xform;
                         return;
                     }
                     if (!was_seltext) {
                         gr_seltext = true;
                         gr_show_sel_text(true);
+                        gr_xform = k->xform;
                         return;
                     }
 
@@ -1057,6 +1090,13 @@ sGraph::gr_bdown_hdlr(int button, int x, int y)
                         while (i-- && dl)
                             dl = dl->dl_next;
                         gr_cmd_data = dl;
+                        gr_timer_id = GRpkg::self()->AddTimer(200,
+                            start_drag_trace, this);
+                        return;
+                    }
+                    if (x < 50 && yinv(y) < 20 && gr_hidden_data) {
+                        // Select the top of the hidden queue.
+                        gr_cmd_data = gr_hidden_data;
                         gr_timer_id = GRpkg::self()->AddTimer(200,
                             start_drag_trace, this);
                         return;
@@ -1163,6 +1203,9 @@ sGraph::gr_bup_hdlr(int button, int x, int y, const char *new_keyed)
                             kk = new sKeyed(*k);
                             kk->text = lstring::copy(kk->text);
                         }
+kk->xform &= ~(TXTF_HJC | TXTF_HJR);
+kk->xform |= (graph->gr_xform & TXTF_HJC);
+kk->xform |= (graph->gr_xform & TXTF_HJR);
                         kk->type = LAuser;
                         kk->fixed = false;
                         gr_set_keyed_posn(kk, x, y);
@@ -1185,6 +1228,9 @@ sGraph::gr_bup_hdlr(int button, int x, int y, const char *new_keyed)
                         gr_dev->TextExtent(k->text, &w, &h);
                         yy = yinv(yy);
 
+k->xform &= ~(TXTF_HJC | TXTF_HJR);
+k->xform |= (gr_xform & TXTF_HJC);
+k->xform |= (gr_xform & TXTF_HJR);
                         // The justification may have changed!
 #if defined (WITH_QT5) || defined (WITH_QT6)
                         gr_dev->SetOverlayMode(true);
@@ -1224,9 +1270,57 @@ sGraph::gr_bup_hdlr(int button, int x, int y, const char *new_keyed)
         if (graph->gr_cmd_data) {
             gr_set_ghost(0, 0, 0);
             if (this == graph) {
+                if (x < 50 && yinv(y) < 20) {
+                    // Dropped on the file cabinet.
+                    int n = 0;
+                    sDvList *dv0 = static_cast<sDvList*>(gr_plotdata);
+                    for (sDvList *d = dv0; d; d = d->dl_next) {
+                        if (d == gr_cmd_data) {
+                            if (gr_delete_trace(n)) {
+                                gr_cmd_data = 0;
+                                GP.SetSourceGraph(0);
+                                gr_set_ghost(0, 0, 0);
+                                dev()->Clear();
+                                gr_redraw();
+                            }
+                            return;
+                        }
+                        n++;
+                    }
+                    // cabinet to cabinet?
+                    gr_cmd_data = 0;
+                    GP.SetSourceGraph(0);
+                    return;
+                }
                 if (gr_numtraces > 1) {
                     int i = gr_select_trace(x, y);
                     if (i >= 0) {
+                        if (gr_cmd_data == gr_hidden_data) {
+                            // Recall hidden trace from this plot.
+                            graph->gr_set_ghost(0, 0, 0);
+
+                            // Clear the Y-Units text string, if set.
+                            sKeyed *kp = 0;
+                            for (sKeyed *k = gr_keyed; k; k = k->next) {
+                                if (k->type == LAyunits) {
+                                    if (kp)
+                                        kp->next = k->next;
+                                    else
+                                        gr_keyed = k->next;
+                                    delete k;
+                                    break;
+                                }
+                                kp = k;
+                            }
+
+                            sDvList *nv = gr_hidden_data;
+                            gr_hidden_data = nv->dl_next;
+                            if (gr_add_trace(nv, i)) {
+                                gr_dev->Clear();
+                                gr_redraw();
+                            }
+                            return;
+                        }
                         sDvList *dl = static_cast<sDvList*>(gr_plotdata);
                         while (i-- && dl)
                             dl = dl->dl_next;
@@ -1287,23 +1381,25 @@ sGraph::gr_bup_hdlr(int button, int x, int y, const char *new_keyed)
             else {
                 // moving between graphs
                 graph->gr_set_ghost(0, 0, 0);
-
-                // Clear the Y-Units text string, if set.
-                sKeyed *kp = 0;
-                for (sKeyed *k = gr_keyed; k; k = k->next) {
-                    if (k->type == LAyunits) {
-                        if (kp)
-                            kp->next = k->next;
-                        else
-                            gr_keyed = k->next;
-                        delete k;
-                        break;
-                    }
-                    kp = k;
-                }
+//XXX fixme from cabinet
 
                 int i = gr_select_trace(x, y);
                 if (i >= 0) {
+
+                    // Clear the Y-Units text string, if set.
+                    sKeyed *kp = 0;
+                    for (sKeyed *k = gr_keyed; k; k = k->next) {
+                        if (k->type == LAyunits) {
+                            if (kp)
+                                kp->next = k->next;
+                            else
+                                gr_keyed = k->next;
+                            delete k;
+                            break;
+                        }
+                        kp = k;
+                    }
+
                     int si = 0;  // source trace index
                     sDvList *dl = static_cast<sDvList*>(graph->gr_plotdata);
                     for ( ; dl; si++, dl = dl->dl_next) {
@@ -1320,7 +1416,7 @@ sGraph::gr_bup_hdlr(int button, int x, int y, const char *new_keyed)
                         int sid = graph->gr_id;
 
                         char buf[BSIZE_SP];
-                        snprintf(buf,sizeof(buf), "%d:%s", sid, t);
+                        snprintf(buf, sizeof(buf), "%d:%s", sid, t);
                         nv->set_name(buf);
 
                         sDvList *ndvl = new sDvList;
@@ -2333,12 +2429,27 @@ sGraph::gr_show_sel_text(bool show)
                 int xx = xl-1 + k->inspos*gr_fontwid;
                 gr_dev->Line(xx, yinv(yb), xx, yinv(yt));
             }
+            gr_dev->SetColor(gr_colors[4].pixel);
+            if (gr_xform & TXTF_HJC) {
+                int xc = (xl + xr)/2;
+                gr_dev->Line(xc-1, yinv(yb)+1, xc+1, yinv(yb)+1);
+                gr_dev->Line(xc-1, yinv(yb)+2, xc+1, yinv(yb)+2);
+            }
+            else if (gr_xform & TXTF_HJR) {
+                gr_dev->Line(xr-2, yinv(yb)+1, xr, yinv(yb)+1);
+                gr_dev->Line(xr-2, yinv(yb)+2, xr, yinv(yb)+2);
+            }
+            else {
+                gr_dev->Line(xl, yinv(yb)+1, xl+2, yinv(yb)+1);
+                gr_dev->Line(xl, yinv(yb)+2, xl+2, yinv(yb)+2);
+            }
         }
         else {
             gr_refresh(xl-5, yinv(yb)+1, xl-2, yinv(yt));
-            gr_refresh(xr+2, yinv(yb)+1, xr+3, yinv(yt));
+            gr_refresh(xr+2, yinv(yb)+3, xr+3, yinv(yt));
             int xx = xl-1 + k->inspos*gr_fontwid;
             gr_refresh(xx, yinv(yb)+1, xx+1, yinv(yt));
+            gr_refresh(xl-1, yinv(yb)+2, xr+1, yinv(yb)+1);
         }
         gr_dev->SetOverlayMode(false);
     }
@@ -3077,17 +3188,59 @@ void
 sGraph::dv_destroy_data()
 {
     sDvList *dl = static_cast<sDvList*>(gr_plotdata);
-    if (dl == 0)
-        return;
-    delete dl->dl_dvec->scale();
+    if (dl) {
+        delete dl->dl_dvec->scale();
 
-    sDvList *dn;
-    for ( ; dl; dl = dn) {
-        dn = dl->dl_next;
-        delete dl->dl_dvec;
-        delete dl;
+        sDvList *dn;
+        for ( ; dl; dl = dn) {
+            dn = dl->dl_next;
+            delete dl->dl_dvec;
+            delete dl;
+        }
     }
     gr_plotdata = 0;
+
+    dl = static_cast<sDvList*>(gr_hidden_data);
+    if (dl) {
+        sDvList *dn;
+        for ( ; dl; dl = dn) {
+            dn = dl->dl_next;
+            delete dl->dl_dvec;
+            delete dl;
+        }
+    }
+    gr_hidden_data = 0;
+}
+
+
+namespace {
+    // Icon for hidden trces.
+    // XPM
+    const char *cabinet_xpm[] = {
+    "16 20 3 1",
+    " 	c none",
+    ".	c blue",
+    "X	c black",
+    "                ",
+    "   ...........  ",
+    "  .         ..  ",
+    " ........... .  ",
+    " .         . .  ",
+    " .         . .  ",
+    " .   XXX   . .  ",
+    " .   XXX   . .  ",
+    " .         . .  ",
+    " .         . .  ",
+    " ........... .  ",
+    " .         . .  ",
+    " .         . .  ",
+    " .   XXX   . .  ",
+    " .   XXX   . .  ",
+    " .         . .  ",
+    " .         ..   ",
+    " ...........    ",
+    "                ",
+    "                "};
 }
 
 
@@ -3247,6 +3400,31 @@ sGraph::dv_redraw()
 
     // Show a logo on the plot.
     gr_show_logo();
+
+    if (GRpkg::self()->CurDev()->devtype != GRhardcopy) {
+        // "file cabinet" drop target
+        int x = 2;
+        int y = yinv(2);
+        if (gr_hidden_data)
+            gr_dev->SetColor(gr_colors[4].pixel);
+        else
+            gr_dev->SetColor(0xaaaaaa);
+        for (int i = 0; i < 20; i++) {
+            for (int j = 0; j < 16; j++) {
+                if (cabinet_xpm[3+i][j] == '.')
+                    gr_dev->Pixel(x+j, yinv(y-i));
+
+            }
+        }
+        gr_dev->SetColor(gr_colors[1].pixel);
+        for (int i = 0; i < 20; i++) {
+            for (int j = 0; j < 16; j++) {
+                if (cabinet_xpm[3+i][j] == 'X')
+                    gr_dev->Pixel(x+j, yinv(y-i));
+
+            }
+        }
+    }
 
     return (ret);
 }
@@ -3461,12 +3639,14 @@ sGraph::dv_trace(bool leg_only)
             gr_vport.set_height(tmpht/gr_numtraces - nsy);
         }
         sDvList *link;
-        int plotno;
-        for (link = (sDvList*)gr_plotdata, plotno = 0; link;
-                link = link->dl_next, plotno++) {
-            if (gr_ysep)
+        int tracenum;
+        for (link = (sDvList*)gr_plotdata, tracenum = 0; link;
+                link = link->dl_next, tracenum++) {
+            if (gr_ysep) {
                 gr_vport.set_bottom(tmposy +
-                    (gr_numtraces - plotno - 1)*(gr_vport.height()+nsy) + nsy);
+                    (gr_numtraces - tracenum - 1)*
+                    (gr_vport.height()+nsy) + nsy);
+            }
             if (gr_format == FT_GROUP) {
                 if (*link->dl_dvec->units() == UU_VOLTAGE) {
                     gr_datawin.ymin = gr_grpmin[0];
@@ -3488,11 +3668,11 @@ sGraph::dv_trace(bool leg_only)
             gr_aspect_y =
                 (gr_datawin.ymax - gr_datawin.ymin)/gr_vport.height();
             if (leg_only)
-                dv_legend(plotno, link->dl_dvec);
+                dv_legend(tracenum, link->dl_dvec);
             else {
                 if (gr_stop)
                     break;
-                dv_set_trace(link->dl_dvec, scale, plotno);
+                dv_set_trace(link->dl_dvec, scale, tracenum);
             }
         }
         if (gr_ysep) {
@@ -3505,15 +3685,15 @@ sGraph::dv_trace(bool leg_only)
     }
     else {
         sDvList *link;
-        int plotno;
-        for (link = (sDvList*)gr_plotdata, plotno = 0; link;
-                link = link->dl_next, plotno++) {
+        int tracenum;
+        for (link = (sDvList*)gr_plotdata, tracenum = 0; link;
+                link = link->dl_next, tracenum++) {
             if (leg_only)
-                dv_legend(plotno, link->dl_dvec);
+                dv_legend(tracenum, link->dl_dvec);
             else {
                 if (gr_stop)
                     break;
-                dv_set_trace(link->dl_dvec, scale, plotno);
+                dv_set_trace(link->dl_dvec, scale, tracenum);
             }
         }
     }
@@ -3521,7 +3701,7 @@ sGraph::dv_trace(bool leg_only)
 
 
 void
-sGraph::dv_legend(int plotno, sDataVec *dv)
+sGraph::dv_legend(int tracenum, sDataVec *dv)
 {
     if (gr_present)
         return;
@@ -3544,10 +3724,10 @@ sGraph::dv_legend(int plotno, sDataVec *dv)
         else
             spa = dely;
         dely -= gr_fonthei/4;
-        int scry = yu - plotno*spa - gr_fonthei;
+        int scry = yu - tracenum*spa - gr_fonthei;
     
         gr_dev->SetColor(gr_colors[1].pixel);
-        gr_save_text(dv->name(), scrx, scry, LAyval+plotno, 1, 0);
+        gr_save_text(dv->name(), scrx, scry, LAyval+tracenum, 1, 0);
         if (!(gr_reference.mark)) {
             double uu = gr_datawin.ymax;
             double ll = gr_datawin.ymin;
@@ -3561,16 +3741,16 @@ sGraph::dv_legend(int plotno, sDataVec *dv)
             gr_dev->SetColor(gr_colors[dv->color()].pixel);
         if (num_colors() == 2 && gr_pltype != PLOT_POINT && !gr_ysep)
             gr_dev->setDefaultLinestyle(dv->linestyle());
-        gr_linebox(scrx - gr_fontwid/2, yu - plotno*spa - dely + 1,
-            gr_vport.left() - gr_fontwid, yu - plotno*spa + 1);
+        gr_linebox(scrx - gr_fontwid/2, yu - tracenum*spa - dely + 1,
+            gr_vport.left() - gr_fontwid, yu - tracenum*spa + 1);
     }
     else {
         int scrx = gr_fontwid + effleft();
         spa = 2*gr_fonthei + gr_fonthei/4;
-        int scry = gr_vport.top() - 2*gr_fonthei - plotno*spa;
+        int scry = gr_vport.top() - 2*gr_fonthei - tracenum*spa;
         if (gr_pltype == PLOT_POINT) {
             gr_dev->SetColor(gr_colors[1].pixel);
-            gr_save_text(dv->name(), scrx + 2*gr_fontwid, scry, LAyval+plotno,
+            gr_save_text(dv->name(), scrx + 2*gr_fontwid, scry, LAyval+tracenum,
                 1, 0);
             gr_dev->SetColor(gr_colors[dv->color()].pixel);
             if (PointChars) {
@@ -3584,7 +3764,7 @@ sGraph::dv_legend(int plotno, sDataVec *dv)
         }
         else {
             gr_dev->SetColor(gr_colors[1].pixel);
-            gr_save_text(dv->name(), scrx, scry, LAyval+plotno, 1, 0);
+            gr_save_text(dv->name(), scrx, scry, LAyval+tracenum, 1, 0);
             gr_dev->SetColor(gr_colors[dv->color()].pixel);
             gr_dev->setDefaultLinestyle(dv->linestyle());
             int y = yinv(scry + gr_fonthei + gr_fonthei/4);
@@ -3597,7 +3777,7 @@ sGraph::dv_legend(int plotno, sDataVec *dv)
         if (gr_grtype == GRID_POLAR || gr_grtype == GRID_SMITH ||
                 gr_grtype == GRID_SMITHGRID)
             return;
-        if (gr_format == FT_SINGLE && plotno > 0)
+        if (gr_format == FT_SINGLE && tracenum > 0)
             return;
 
         GRmultiPt p(4);
@@ -3605,7 +3785,7 @@ sGraph::dv_legend(int plotno, sDataVec *dv)
         int x = gr_area.right() - gr_fontwid;
         int y = yu;
         if (!gr_ysep)
-            y -= plotno*spa;
+            y -= tracenum*spa;
 
         // probably an X oddity, but the 1's below are needed to
         // keep the figures symmetrical
@@ -3642,14 +3822,14 @@ namespace {
 // of the vector, block by block.
 //
 void
-sGraph::dv_set_trace(sDataVec *v, sDataVec *xs, int plotno)
+sGraph::dv_set_trace(sDataVec *v, sDataVec *xs, int tracenum)
 {
     if (!xs || xs->numdims() <= 1) {
         // If the scale has unit dimension, ignore dimensionality
         // of vector.
         //
-        dv_legend(plotno, v);
-        dv_plot_trace(v, xs, plotno);
+        dv_legend(tracenum, v);
+        dv_plot_trace(v, xs, tracenum);
         return;
     }
 
@@ -3718,7 +3898,7 @@ sGraph::dv_set_trace(sDataVec *v, sDataVec *xs, int plotno)
 
     int size = 0;
     int lastcolor = 0;
-    dv_legend(plotno, v);
+    dv_legend(tracenum, v);
 
     // Prevent writing dimension map entries more than once, looks bad
     // with anti-aliased fonts.
@@ -3783,7 +3963,7 @@ sGraph::dv_set_trace(sDataVec *v, sDataVec *xs, int plotno)
             v->set_color(lastcolor);
         }
         if (show_trace)
-            dv_plot_trace(v, xs, plotno);
+            dv_plot_trace(v, xs, tracenum);
         if (gr_sel_show && numdtab > 0) {
             // Show dimension indices.
             char buf[32];
@@ -3987,18 +4167,18 @@ namespace {
 // then do some tricky stuff.
 //
 void
-sGraph::dv_plot_trace(sDataVec *v, sDataVec *xs, int plotno)
+sGraph::dv_plot_trace(sDataVec *v, sDataVec *xs, int tracenum)
 {
     if (v->length() < 1) {
         GRpkg::self()->ErrPrintf(ET_WARN,
-            "trace %d contains no data, can't plot.\n", plotno);
+            "trace %d contains no data, can't plot.\n", tracenum);
         return;
     }
     int deg = gr_degree;
     if (deg > v->length())
         deg = v->length();
     if (deg < 1) {
-        if (plotno == 0) {
+        if (tracenum == 0) {
             GRpkg::self()->ErrPrintf(ET_ERROR, "polydegree is %d, set to 1.\n",
                 deg);
         }
@@ -4010,7 +4190,7 @@ sGraph::dv_plot_trace(sDataVec *v, sDataVec *xs, int plotno)
     if (Sp.GetVar(kw_gridsize, VTYP_NUM, &vv))
         gridsize = vv.get_int();
     if ((gridsize < 0) || (gridsize > 10000)) {
-        if (plotno == 0) {
+        if (tracenum == 0) {
             GRpkg::self()->ErrPrintf(ET_WARN,
                 "grid size %d, out of range 0-10000, set to 0.\n", gridsize);
         }
@@ -4018,14 +4198,14 @@ sGraph::dv_plot_trace(sDataVec *v, sDataVec *xs, int plotno)
     }
     if (gridsize) {
         if (gr_grtype != GRID_LIN) {
-            if (plotno == 0) {
+            if (tracenum == 0) {
                 GRpkg::self()->ErrPrintf(ET_WARN,
                     "scale not linear, gridsize ignored.\n");
             }
             gridsize = 0;
         }
         if (xs && !gr_xmono) {
-            if (plotno == 0) {
+            if (tracenum == 0) {
                 GRpkg::self()->ErrPrintf(ET_WARN,
                     "scale not monotonic, gridsize ignored.\n");
             }
@@ -4696,6 +4876,7 @@ sGraph::dv_find_selections()
 }
 
 
+#if (defined (WITH_GTK2) || defined (WITH_GTK3))
 namespace {
     // Show an outline box of the selected text
     //
@@ -4710,17 +4891,28 @@ namespace {
         GP.Cur()->gr_ghost_trace(x, y);
     }
 }
+#endif
 
 
 int
 sGraph::start_drag_trace(void *arg)
 {
     sGraph *graph = (sGraph*)arg;
+#if (defined (WITH_QT5) || defined (WITH_QT6))
+    // In QT, start in QT's drag mode.
+    graph->gr_timer_id = 0;
+    sGraph::drag_trace(graph);
+#else
+    // In GTK, use the local drag mode, which works between windows,
+    // unlike this mode in QT.  For QT6, it is also possible to start
+    // in local mode and switch to QT mode in the leave event handler,
+    // but this doesn't work in QT5 under Linux.
     GP.SetSourceGraph(graph);
     if (graph->gr_cmd_data) {
         graph->gr_set_ghost(ghost_trace, 0, 0);
         graph->gr_show_ghost(true);
     }
+#endif
     return (false);
 }
 
@@ -4729,11 +4921,22 @@ int
 sGraph::start_drag_text(void *arg)
 {
     sGraph *graph = (sGraph*)arg;
+#if (defined (WITH_QT5) || defined (WITH_QT6))
+    // In QT, start in QT's drag mode.
+    graph->gr_timer_id = 0;
+    sGraph::drag_text(graph);
+    graph->gr_cmdmode &= ~grMoving;
+#else
+    // In GTK, use the local drag mode, which works between windows,
+    // unlike this mode in QT.  For QT6, it is also possible to start
+    // in local mode and switch to QT mode in the leave event handler,
+    // but this doesn't work in QT5 under Linux.
     graph->gr_set_ghost(ghost_tbox, 0, 0);
     GP.PushGraphContext(graph);
     graph->gr_dev->DrawGhost();
     GP.PopGraphContext();
     graph->gr_cmdmode |= grMoving;
+#endif
     graph->gr_timer_id = 0;
     return (false);
 }

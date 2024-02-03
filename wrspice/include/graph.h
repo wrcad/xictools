@@ -352,21 +352,22 @@ struct sGraph
 #endif
 
         gr_keyed        = 0;
+        gr_xform        = 0;
         gr_timer_id     = 0;
 
         gr_pressx       = 0;
         gr_pressy       = 0;
-        gr_cmdmode      = 0;
         gr_cmd_data     = 0;
+        gr_hidden_data  = 0;
 
         gr_selections   = 0;
+        gr_sel_x        = 0;
+        gr_sel_y        = 0;
         gr_selsize      = 0;
         gr_sel_flat     = false;
         gr_sel_show     = false;
         gr_sel_drag     = false;
-        gr_sel_x        = 0;
-        gr_sel_y        = 0;
-
+        gr_cmdmode      = 0;
         gr_scale_flags  = 0;
 
         gr_cpage        = 0;
@@ -747,25 +748,27 @@ private:
 
     // Characters the user typed on graph.
     sKeyed *gr_keyed;               // list head for saved text
+    int gr_xform;                   // moved text justification
     int gr_timer_id;                // id of move-mode timer for keyed text
 
     int gr_pressx;                  // button press point
     int gr_pressy;
-#define grMoving        1
-#define grZoomIn        2
-#define grShiftMode     16
-#define grControlMode   32
-    unsigned int gr_cmdmode;        // in-command flags
     sDvList *gr_cmd_data;           // transient trace data storage
+    sDvList *gr_hidden_data;        // hidden traces
 
     char *gr_selections;            // trace display mask
+    int gr_sel_x;                   // drag start x
+    int gr_sel_y;                   // drag start y
     short gr_selsize;               // selection size
     bool gr_sel_flat;               // selection list is flat
     bool gr_sel_show;               // displaying selection list
     bool gr_sel_drag;               // in drag, to selecte/deselect range
-    int gr_sel_x;                   // drag start x
-    int gr_sel_y;                   // drag start y
 
+#define grMoving        1
+#define grZoomIn        2
+#define grShiftMode     16
+#define grControlMode   32
+    unsigned short gr_cmdmode;      // in-command flags
     unsigned int gr_scale_flags;    // suppress rescaling for scale icon funcs
                                     //  0       x-scale
                                     //  1-3     class0-2

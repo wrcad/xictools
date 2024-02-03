@@ -166,6 +166,19 @@ CHANGES AND NEW FEATURES
     The numeric elements of a list variable are presently always
     displayed in exponential format.
 
+* New measure/math function mrft2
+
+ This is similar to the mrft mesurement and function which computes
+ the 10-90% risetime of a rising edge between reference points of a
+ waveform.  The mrft2 allows the threshold points to be specified
+ by the caller.
+
+ In the .measure directive line, the mrft2 keyword can appear, similar
+ to the mrft keyword, but is followed by two numbers which represent the
+ fractional thresholds of the first and second measurement points.  The
+ measurement computes the diference in scale vector between the initial
+ crossings of these thresholds.
+
 
 BUGS FIXED
 ---- -----

@@ -890,6 +890,7 @@ void
 QTplotDlg::leave_slot(QEvent*)
 {
     // Pointer left the drawing window.
+/* XXX this isn't used.
     if (gd_viewport->has_ghost()) {
         // If there is trace data, end the local ghost and start a QT
         // drag for data transfer to other plot windows.
@@ -911,6 +912,7 @@ QTplotDlg::leave_slot(QEvent*)
             return;
         }
     }
+*/
 }
 
 

@@ -55,11 +55,13 @@ Authors: 1988 Jeffrey M. Hsu
 #include "qtinterf/qtfont.h"
 #include "miscutil/pathlist.h"
 #include "miscutil/filestat.h"
+#include "miscutil/texttf.h"
 #include "spnumber/spnumber.h"
 
 #include <QApplication>
 #include <QDrag>
 #include <QMimeData>
+#include <QLabel>
 
 //
 // The graphics-package (QT) dependent part of the sGraph class.
@@ -238,6 +240,7 @@ sGraph::drag_trace(void *arg)
     drag->setMimeData(mimedata);
     drag->exec(Qt::CopyAction);
     GP.SetSourceGraph(0);
+    graph->gr_cmd_data = 0;
 
     return (0);
 }
@@ -256,16 +259,22 @@ sGraph::drag_text(void *arg)
     graph->gr_cmdmode |= grMoving;
     QDrag *drag = new QDrag(wb);
     QMimeData *mimedata = new QMimeData();
-    QByteArray qdata(graph->gr_keyed->text, strlen(graph->gr_keyed->text));
+    QByteArray qdata(graph->gr_keyed->text, strlen(graph->gr_keyed->text) + 1);
     mimedata->setData("text/plain", qdata);
     drag->setMimeData(mimedata);
 
-    // The cursor hot spot is at the right side of the text, need this to
-    // point at the left side.
-    int tw;
-    wb->TextExtent(graph->gr_keyed->text, &tw, 0);
-    QPoint pt = drag->hotSpot();
-    pt.setX(pt.x() + tw);
+    int tw, th;
+    wb->TextExtent(graph->gr_keyed->text, &tw, &th);
+    QLabel label(graph->gr_keyed->text);
+    label.setFont(wb->Viewport()->font());
+    QPixmap pm(QSize(tw, th));
+    label.render(&pm);
+    drag->setPixmap(pm);
+    QPoint pt(0, th);;
+    if (graph->gr_xform & TXTF_HJR)
+        pt.setX(tw);
+    else if (graph->gr_xform & TXTF_HJC)
+        pt.setX(tw/2);
     drag->setHotSpot(pt);
     drag->exec(Qt::CopyAction);
     GP.SetSourceGraph(0);
