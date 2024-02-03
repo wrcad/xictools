@@ -4293,7 +4293,7 @@ mctrial command
 !!SEEALSO
 simcmds
 
-!! commands.tex 071722
+!! commands.tex 020324
 !!KEYWORD
 measure
 !!TITLE
@@ -4347,11 +4347,11 @@ measure command
     </dl>
 
     <p>
-    A vector with this name will be added to the current
-    plot, if the measurement is successful.  Vector names found in
-    <tt>.measure</tt> lines are added to the internal save list,
-    guaranteeing that the necessary data will be available when
-    needed, whether or not the vector has been mentioned in a <a
+    A vector with this name will be added to the current plot, if the
+    measurement is successful.  Vector names found in <b>measure</b>
+    commands and <tt>.measure</tt> lines are added to the internal
+    save list, guaranteeing that the necessary data will be available
+    when needed, whether or not the vector has been mentioned in a <a
     href=".save"><tt>.save</tt></a> line.
 
     <a name="point"></a>
@@ -4580,9 +4580,10 @@ measure command
     <h2>Syntax Compatibility</h2>
 
     <p>
-    The present syntax supported by the <tt>.measure</tt> command in
-    <i>WRspice</i> is a super set of the previous syntax cases, which
-    are shown below.  These should all work in the present system.
+    The present syntax supported by the <b>measure</b> command and
+    <tt>.measure</tt> lines in <i>WRspice</i> is a superset of the
+    previous syntax cases, which are shown below.  These should all
+    work in the present system.
 
     <p>
     Form 1:
@@ -4698,25 +4699,36 @@ measure command
           difference from the peak value.  The algorithm will measure
           the larger of a negative going or positive going pulse.</dl>
     <dl>
-    <dt><tt>rt</tt> <i>expr</i>
-      <dd>This will measure the 10-90 percent rise or fall time of the
-          edge from <i>expr</i> contained in the interval.  The
-          reference start and final values are the values at the ends
-          of the interval.
+    <dt><tt>rt</tt> <i>expr</i> [<i>firstval</i> <i>secondval</i>]
+      <dd>This will measure rise or fall time of the edge from
+          <i>expr</i> contained in the interval.  The optional
+          following two numbers are the measurement thresholds, which
+          default to 0.1 and 0.9 if not given.  The reference start
+          and final values are the values at the ends of the interval.
     </dl>
 
     <p>
     These functions are also available in general expressions outside
     of the <b>measure</b> command:
-    <a href="mmin"><b>mmin</b></a>,
-    <a href="mmax"><b>mmax</b></a>,
-    <a href="mpp"><b>mpp</b></a>,
-    <a href="mavg"><b>mavg</b></a>,
-    <a href="mrms"><b>mrms</b></a>,
-    <a href="mpw"><b>mpw</b></a>,
-    <a href="mrft"><b>mrft</b></a>.
-    Each of these functions takes three arguments:
-    (<i>vector</i>, <i>scaleval1</i>, <i>scaleval2</i>).
+    <blockquote>
+    <a href="mmin"><b>mmin</b></a>,<br>
+    <a href="mmax"><b>mmax</b></a>,<br>
+    <a href="mpp"><b>mpp</b></a>,<br>
+    <a href="mavg"><b>mavg</b></a>,<br>
+    <a href="mrms"><b>mrms</b></a>,<br>
+    <a href="mpw"><b>mpw</b></a>,<br>
+    <a href="mrft"><b>mrft</b></a>,<br>
+    <a href="mrft2"><b>mrft2</b></a>.
+    </blockquote>
+
+    <p>
+    Each of these functions other than <b>mrft2</b> takes three
+    arguments:  (<i>vector</i>, <i>scaleval1</i>, <i>scaleval2</i>). 
+    The <b>mrft2</b> function tackes the same arguments, but in
+    addition accepts two additional real numbers representing the
+    transition thresholds that would replace 0.1 and 0.9 used for
+    rise/fall time measurement in the <b>mrft</b> function.  The
+    <b>mrft2</b> function is otherwise identical to <b>mrft</b>.
     The two scale values frame the area of measurement.  These must be
     chosen to isolate the feature of interest for rise/fall/width
     measurement.  If not in range of the <i>vector</i> scale, 
@@ -4731,21 +4743,22 @@ measure command
       <dd>evaluate <i>expr</i> at point</dl>
 
     <p>
-    A <tt>.measure</tt> statement can contain any number of
-    measurements, including no measurements.  If no measurement is
-    specified, the vector produced contains only zeros, however the
-    scale vector contains the start and stop values, which may be the
-    only result needed.  The created vector, which is added to the
-    current plot, will be of length equal to the number of
-    measurements, with the results placed in the vector in order.
+    A <b>measure</b> command line or <tt>.measure</tt> statement can
+    contain any number of measurements, including no measurements.  If
+    no measurement is specified, the vector produced contains only
+    zeros, however the scale vector contains the start and stop
+    values, which may be the only result needed.  The created vector,
+    which is added to the current plot, will be of length equal to the
+    number of measurements, with the results placed in the vector in
+    order.
 
     <p>
-    The measurement scale point(s) in <tt>.measure</tt> statements are
-    saved in a vector, which is the scale for the result vector.  If
-    the measurement name is "<tt>result</tt>", the scale vector is
-    named "<tt>result_scale</tt>".  The scale contains one or two
-    values, depending on whether it is a point or interval
-    measurement.
+    The measurement scale point(s) in <b>measure</b> commands and
+    <tt>.measure</tt> statements are saved in a vector, which is the
+    scale for the result vector.  If the measurement name is
+    "<tt>result</tt>", the scale vector is named
+    "<tt>result_scale</tt>".  The scale contains one or two values,
+    depending on whether it is a point or interval measurement.
 
     <a name="addl"></a>
     <h2>Post-Measurement Commands</h2>
@@ -4755,25 +4768,25 @@ measure command
     
     <dl>
     <dt><tt>print</tt>, <tt>print_terse</tt><dd>
-    By default, nothing is printed on-screen for a <tt>.measure</tt>
-    line during interactive simulation.  If the keywords
-    "<tt>print</tt>" appears in the <tt>.measure</tt> line, the
-    results will be printed on the standard output.  A more concise
-    format can be obtained from the alternative keyword
-    <tt>print_terse</tt>.  The result vectors are created in all
-    cases.
+    By default, nothing is printed on-screen for a measurement
+    performed during interactive simulation.  If the keywords
+    "<tt>print</tt>" appears in the <b>measure</b> command or
+    <tt>.measure</tt> line, the results will be printed on the
+    standard output.  A more concise format can be obtained from the
+    alternative keyword <tt>print_terse</tt>.  The result vectors are
+    created in all cases.
     </dl>
 
     <dl>
     <dt><tt>stop</tt><dd>
-    If the keyword "<tt>stop</tt>" appears in a <tt>.measure</tt>
-    line, the analysis will be paused when <i>all</i> measurements are
-    complete.  Thus if the deck contains several <tt>.measure</tt>
-    lines and <tt>stop</tt> is given in at least one, the analysis
-    will pause when all of the measurements are complete, not just the
-    one containing <tt>stop</tt>.  The analysis can then be resumed
-    with the <a href="resume"><b>resume</b></a> command, or reset with
-    the <a href="reset"><b>reset</b></a> command.
+    If the keyword "<tt>stop</tt>" appears in a <b>measure</b> command
+    or <tt>.measure</tt> line, the analysis will be paused when
+    <i>all</i> measurements are complete.  Thus if the run performs
+    several measurements and <tt>stop</tt> is given in at least one,
+    the analysis will pause when all of the measurements are complete,
+    not just the one containing <tt>stop</tt>.  The analysis can then
+    be resumed with the <a href="resume"><b>resume</b></a> command, or
+    reset with the <a href="reset"><b>reset</b></a> command.
     </dl>
 
     <dl>
@@ -4807,8 +4820,8 @@ measure command
     </dl>
 
     <p>
-    When a <tt>.measure</tt> is included in an iterative analysis
-    (Monte Carlo, loop, etc.), data are saved as follows.  Before each
+    When a measurement is included in an iterative analysis (Monte
+    Carlo, loop, etc.), data are saved as follows.  Before each
     iteration, the previous result vector and its scale are saved to
     the end of a "history" vector and scale, and are then deleted. 
     The result vector and scale are recreated when the measurement is
@@ -4840,8 +4853,8 @@ measure command
     each trial).
 
     <p>
-    Multiple <tt>.measure</tt> lines can be "chained" in the following
-    manner.  The vector name following the <tt>from</tt>, <tt>to</tt>,
+    Multiple measurements can be "chained" in the following manner. 
+    The vector name following the <tt>from</tt>, <tt>to</tt>,
     <tt>trig</tt>, or <tt>targ</tt> keywords can be the name of
     another measure.  In this case, the effective start time is the
     measure time of the referenced measure.  The measure time is the
@@ -4871,9 +4884,9 @@ measure command
     <h2>Referencing Results in Sources</h2>
 
     <p>
-    It is possible to reference <tt>.measure</tt> results in sources. 
-    The referencing token has the same form as a circuit variable,
-    with an optional index, i.e.
+    It is possible to reference measurement results in sources.  The
+    referencing token has the same form as a circuit variable, with an
+    optional index, i.e.
     <blockquote>
     <tt>@</tt><i>result</i>[<i>index</i>]
     </blockquote>

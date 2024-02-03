@@ -3201,7 +3201,7 @@ JJexamples/nor\_mc.cir}.
 \subsection{\spcmd{measure}}
 \index{measure command}
 
-% spCommands.hlp:measure 071722
+% spCommands.hlp:measure 020324
 
 The {\cb measure} command allows one to set up a runop (see
 \ref{runop}) which will identify a measurement point or interval, and
@@ -3236,10 +3236,11 @@ character and contain no white space or other special characters.
 \end{description}
 
 A vector with this name will be added to the current plot, if the
-measurement is successful.  Vector names found in {\vt .measure} lines
-are added to the internal save list, guaranteeing that the necessary
-data will be available when needed, whether or not the vector has been
-mentioned in a {\vt .save} line.
+measurement is successful.  Vector names found in <\cb measure
+commands} and {\vt .measure} lines are added to the internal save
+list, guaranteeing that the necessary data will be available when
+needed, whether or not the vector has been mentioned in a {\vt .save}
+line.
 
 \subsubsection{Point and Interval Specification}
 \index{measurement interval}
@@ -3435,9 +3436,10 @@ if {\vt v(2) < v(3)} has never been true.
 
 \subsubsection{Syntax Compatibility}
 
-The present syntax supported by the {\vt .measure} command in
-{\WRspice} is a super set of the previous syntax cases, which
-    are shown below.  These should all work in the present system.
+The present syntax supported by the {\cb measure} command and {\vt
+.measure} lines in {\WRspice} is a superset of the previous syntax
+cases, which are shown below.  These should all work in the present
+system.
 
 Form 1:
 \begin{quote}\vt
@@ -3530,17 +3532,33 @@ This will measure the full-width half-maximum of a pulse contained in
 the interval.  The baseline is taken as the initial or final value
 with the smallest difference from the peak value.  The algorithm will
 measure the larger of a negative going or positive going pulse.
-\item{{\vt rt} {\it expr}}\\
-This will measure the 10-90 percent rise or fall time of the edge
-contained in the interval.  The reference start and final values are
-the values at the ends of the interval.
+\item{{\vt rt} {\it expr} \[{\it firstval} {\it secondval\/}\]}\\
+This will measure the rise or fall time of the edge contained in the
+interval.  The optional following two numbers are the measurement
+thresholds, which default to 0.1 and 0.9 if not given.  The reference
+start and final values are the values at the ends of the interval.
 \end{description}
 
 These functions are also available in general expressions outside of
-the {\cb measure} command:  {\cb mmin}, {\cb mmax}, {\cb mpp}, {\cb
-mavg}, {\cb mrms}, {\cb mpw}, {\cb mrft}.  Each of these functions
-takes three arguments:  ({\it vector\/}, {\it scaleval1\/}, {\it
-scaleval2\/}).  The two scale values frame the area of measurement. 
+the {\cb measure} command:
+\begin{quote}
+ {\cb mmin},\\
+ {\cb mmax},\\
+ {\cb mpp},\\
+ {\cb mavg},\\
+ {\cb mrms},\\
+ {\cb mpw},\\
+ {\cb mrft},\\
+ {\cb mrft2}.
+\end{quote}
+
+Each of these functions other than {\cb mrft2} takes three arguments: 
+({\it vector\/}, {\it scaleval1\/}, {\it scaleval2\/}).  The {\cb
+mrft2} function tackes the same arguments, but in addition accepts two
+additional real numbers representing the transition thresholds that
+would replace 0.1 and 0.9 used for rise/fall time measurement in the
+{\cb mrft} function.  The [\cb mrft2} function is otherwise identical
+to {\cb mrft}.  The two scale values frame the area of measurement. 
 These must be chosen to isolate the feature of interest for
 rise/fall/width measurement.  If not in range of the {\it vector}
 scale, the {\it vector} scale endpoints are assumed.
@@ -3553,19 +3571,20 @@ available is
 Evaluate {\it expr} at point.
 \end{description}
 
-A {\vt .measure} statement can contain any number of measurements,
-including no measurements.  If no measurement is specified, the vector
-produced contains only zeros, however the scale vector contains the
-start and stop values, which may be the only result needed.  The
-created vector, which is added to the current plot, will be of length
-equal to the number of measurements, with the results placed in the
-vector in order.
+A {\cb measure} command line or {\vt .measure} statement can contain
+any number of measurements, including no measurements.  If no
+measurement is specified, the vector produced contains only zeros,
+however the scale vector contains the start and stop values, which may
+be the only result needed.  The created vector, which is added to the
+current plot, will be of length equal to the number of measurements,
+with the results placed in the vector in order.
 
-The measurement scale point(s) in {\vt .measure} statements are also
-saved in a vector, which is the scale for the result vector.  If the
-measurement name is ``{\vt result}'', then the scale vector is named
-``{\vt result\_scale}''.  The scale contains one or two values,
-depending on whether it is a point or interval measurement.
+The measurement scale point(s) in {\cb measure} commands and {\vt
+.measure} statements are also saved in a vector, which is the scale
+for the result vector.  If the measurement name is ``{\vt result}'',
+then the scale vector is named ``{\vt result\_scale}''.  The scale
+contains one or two values, depending on whether it is a point or
+interval measurement.
 
 \subsubsection{Post-Measurement Commands}
 \index{post-measurement commands}
@@ -3575,21 +3594,21 @@ which will run whether or not any measurements are actually made.
 
 \begin{description}
 \item{{\vt print}, {\vt print\_terse}}\\
-By default, nothing is printed on-screen for a {\vt .measure} line
+By default, nothing is printed on-screen for a measurement performed
 during interactive simulation.  If the keyword {\vt print} appears in
-the {\vt .measure} line, the results will be printed on the standard
-output.  A more concise format can be obtained from the alternative
-keyword {\vt print\_terse}.  The result vectors are created in all
-cases.
+the {\cb measure} command or {\vt .measure} line, the results will be
+printed on the standard output.  A more concise format can be obtained
+from the alternative keyword {\vt print\_terse}.  The result vectors
+are created in all cases.
 
 \item{\vt stop}\\
-If the keyword {\vt stop} appears in a {\vt .measure} line, the
-analysis will be paused when {\it all} measurements are complete. 
-Thus if the deck contains several {\vt .measure} lines and {\vt stop}
-is given in at least one, the analysis will pause when all of the
-measurements are complete, not just the one containing {\vt stop}. 
-The analysis can then be resumed with the {\cb resume} command, or
-reset with the {\cb reset} command.
+If the keyword {\vt stop} appears in a {\cb measure} command or {\vt
+.measure} line, the analysis will be paused when {\it all}
+measurements are complete.  Thus if the run performs several
+wmeasurements and {\vt stop} is given in at least one, the analysis
+will pause when all of the measurements are complete, not just the one
+containing {\vt stop}.  The analysis can then be resumed with the {\cb
+resume} command, or reset with the {\cb reset} command.
 
 \item{{\vt exec} {\it command}}\\
 Execute the {\WRspice} shell command found in {\it command\/}, which
@@ -3615,9 +3634,9 @@ stopped too.  Any other return value allows the run to continue
 normally.
 \end{description}
 
-When a {\vt .measure} is included in an iterative analysis (Monte
-Carlo, loop, etc.), data are saved as follows.  Before each iteration,
-the previous result vector and its scale are saved to the end of a
+When a measurement is included in an iterative analysis (Monte Carlo,
+loop, etc.), data are saved as follows.  Before each iteration, the
+previous result vector and its scale are saved to the end of a
 ``history'' vector and scale, and are then deleted.  The result vector
 and scale are recreated when the measurement is completed during the
 iteration.  Thus, at the end of the analysis, for a measurement named
@@ -3639,16 +3658,16 @@ no {\vt checkPNTS} vector defined, the {\vt .control} block is called
 once at the end of each trial).
 
 \index{measurements, chained}
-Multiple {\vt .measure} lines can be ``chained'' in the following
-manner.  The vector name following the {\vt from}, {\vt to}, {\vt
-trig}, or {\vt targ} keywords can be the name of another measure.  In
-this case, the effective start time is the measure time of the
-referenced measure.  The measure time is the end of the interval or
-the measure point.  The {\vt td}, {\vt rise}, and other keywords can
-be used in the referencing measure.  The {\vt td} will be added to the
-imported time, and the other keywords operate in the normal way.  If
-there are no keywords other than {\vt td} specified, the time is the
-delay time plus the imported time.
+Multiple measurements can be ``chained'' in the following manner.  The
+vector name following the {\vt from}, {\vt to}, {\vt trig}, or {\vt
+targ} keywords can be the name of another measure.  In this case, the
+effective start time is the measure time of the referenced measure. 
+The measure time is the end of the interval or the measure point.  The
+{\vt td}, {\vt rise}, and other keywords can be used in the
+referencing measure.  The {\vt td} will be added to the imported time,
+and the other keywords operate in the normal way.  If there are no
+keywords other than {\vt td} specified, the time is the delay time
+plus the imported time.
 
 Example:
 \begin{quote}\vt
@@ -3667,7 +3686,7 @@ width and peak value.
 \subsubsection{Referencing Results in Sources}
 \index{measurements, source reference}
 
-It is possible to reference {\vt .measure} results in sources.  The
+It is possible to reference measurement results in sources.  The
 referencing token has the same form as a circuit variable, with an
 optional index, i.e.
 \begin{quote}\vt

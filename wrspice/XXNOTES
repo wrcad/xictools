@@ -25,3 +25,6 @@ The stringvar is a string variable with a string in the form
     the SPICE multipliers in floating point format, e.g., 1.5m, 2.0k,
     etc.  The precision can now be set to 1 and 0 (integer part only
     and one dec place), these no longer revert to default 6.
+-------
+
+Modify build to allow no graphics as an option (Jacob in xictools).

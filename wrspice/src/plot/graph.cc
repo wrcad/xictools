@@ -773,6 +773,7 @@ sGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
         }
     }
     else if (code == BSP_KEY) {
+/* XXX use icon
 #ifdef __APPLE__
         // The Mac key labeled "Delete" returns a BSP code.
         if (gr_apptype == GR_PLOT && gr_cmd_data && GP.SourceGraph() == this) {
@@ -793,6 +794,7 @@ sGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
             }
         }
 #endif
+*/
         // Erase last character.  If terminated, undo terminated status.
         // If no more characters, delete string entry.
         if (!k || !gr_seltext)
@@ -840,6 +842,7 @@ sGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
         }
     }
     else if (code == DELETE_KEY) {
+/*XXX use icon
         if (gr_apptype == GR_PLOT && gr_cmd_data && GP.SourceGraph() == this) {
             int n = 0;
             sDvList *dv0 = static_cast<sDvList*>(gr_plotdata);
@@ -857,6 +860,7 @@ sGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
                 n++;
             }
         }
+*/
         if (!k || !gr_seltext)
             return;
         int len = strlen(k->text);
@@ -1203,9 +1207,11 @@ sGraph::gr_bup_hdlr(int button, int x, int y, const char *new_keyed)
                             kk = new sKeyed(*k);
                             kk->text = lstring::copy(kk->text);
                         }
+#if (defined (WITH_QT5) || defined (WITH_QT6))
 kk->xform &= ~(TXTF_HJC | TXTF_HJR);
 kk->xform |= (graph->gr_xform & TXTF_HJC);
 kk->xform |= (graph->gr_xform & TXTF_HJR);
+#endif
                         kk->type = LAuser;
                         kk->fixed = false;
                         gr_set_keyed_posn(kk, x, y);
@@ -1228,9 +1234,11 @@ kk->xform |= (graph->gr_xform & TXTF_HJR);
                         gr_dev->TextExtent(k->text, &w, &h);
                         yy = yinv(yy);
 
+#if (defined (WITH_QT5) || defined (WITH_QT6))
 k->xform &= ~(TXTF_HJC | TXTF_HJR);
 k->xform |= (gr_xform & TXTF_HJC);
 k->xform |= (gr_xform & TXTF_HJR);
+#endif
                         // The justification may have changed!
 #if defined (WITH_QT5) || defined (WITH_QT6)
                         gr_dev->SetOverlayMode(true);
@@ -2429,6 +2437,8 @@ sGraph::gr_show_sel_text(bool show)
                 int xx = xl-1 + k->inspos*gr_fontwid;
                 gr_dev->Line(xx, yinv(yb), xx, yinv(yt));
             }
+#if (defined (WITH_QT5) || defined (WITH_QT6))
+            // Update the justification indicator, QT only.
             gr_dev->SetColor(gr_colors[4].pixel);
             if (gr_xform & TXTF_HJC) {
                 int xc = (xl + xr)/2;
@@ -2443,6 +2453,7 @@ sGraph::gr_show_sel_text(bool show)
                 gr_dev->Line(xl, yinv(yb)+1, xl+2, yinv(yb)+1);
                 gr_dev->Line(xl, yinv(yb)+2, xl+2, yinv(yb)+2);
             }
+#endif
         }
         else {
             gr_refresh(xl-5, yinv(yb)+1, xl-2, yinv(yt));

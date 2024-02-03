@@ -168,26 +168,44 @@ CHANGES AND NEW FEATURES
 
 * New measure/math function mrft2
 
- This is similar to the mrft mesurement and function which computes
- the 10-90% risetime of a rising edge between reference points of a
- waveform.  The mrft2 allows the threshold points to be specified
- by the caller.
+  This is similar to the mrft mesurement and function which computes
+  the rise/fall time of an edge.  The difference is that mrft2 takes
+  two additional real-valued arguments which replace the 0.1 and 0.9
+  threshold values hard-coded into mrft.
 
- In the .measure directive line, the mrft2 keyword can appear, similar
- to the mrft keyword, but is followed by two numbers which represent the
- fractional thresholds of the first and second measurement points.  The
- measurement computes the diference in scale vector between the initial
- crossings of these thresholds.
+  In the measure command and .measure directive line, the rt keyword
+  and expression can be followed by two optional numbers which give
+  the fractional thresholds of the first and second measurement
+  points, which default to 0.1 and 0.9 when not given.  The
+  measurement computes the diference in scale vector between the
+  initial crossings of these thresholds.
+
+* Now plot window features.
+
+  There is a new file cabinet icon in the upper left corner of plot
+  windows.  Traces can be dragged to this icon and dropped, and they
+  will be removed from the display.  Traces can be dragged from the
+  icon in first-in-last-out order and dropped among existing traces to
+  return them to the display.
+
+  Pressing Delete when dragging a trace no longer deletes the trace,
+  use the icon instead.
+
+  QT only:
+  To set the justification of keyed text, select the text and
+  un-terminate if necessary (press BSP or Delete on Apple).  The
+  right-side bar will be black when terminated, red if not.  The left
+  arrow moves the green cursor bar across the word, right arrow moves
+  it to the right.  At either endpoint, the arrow key will change the
+  justification used when moving the text, as shown by the indicator
+  just under the text string.  When the text is dragged, the image
+  will have the selected justification.
 
 
 BUGS FIXED
 ---- -----
 
-* QT only:  Drag/drop now works between plot windows.  The local drag
-  which works within a plot window converts to a QT drag when the
-  pointer leaves the window.
-
-* Other misc. QT fixes as support evolves.
+* Many misc. fixes along the way.
 
 
 -------------------------------------------------------------------------------

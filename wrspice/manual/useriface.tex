@@ -2369,7 +2369,7 @@ modified.
 \index{plot window}
 \index{plot panel}
 
-% PlotPanel.hlp:plotpanel 092522
+% PlotPanel.hlp:plotpanel 020324
 
 This panel displays and controls aspects of plots generated from a
 simulation with the {\cb plot} command.  The plot window contains a
@@ -2522,6 +2522,7 @@ string will be copied to the new location.  Strings can be copied to
 other plot windows using this drag and drop technique, but the {\kb
 Shift} key is ignored in this case.
 
+{\bf GTK release only}\\
 While dragging the string, the left and right arrow keys cycle through
 left, center, and right justification of the string.  The string
 outline box attached to the mouse pointer will shift to indicate the
@@ -2531,9 +2532,9 @@ Strings have a termination property.  When selected, the color of the
 right side indicator bar will be color1 (default black) if terminated,
 color2 (default red) if not terminated.  When the selected string is
 not terminated, it can be edited.  Pressing the {\cb Backspace} key
-will cause a selected terminated string to become non-terminated. 
-Pressing the {\cb Enter} key will terminate a selected non-terminated
-string.
+({\cb Delete} key in Apple) will cause a selected terminated string to
+become non-terminated.  Pressing the {\cb Enter} key will terminate a
+selected non-terminated string.
 
 When the selected string is terminated, as indicated by a color1
 (default black) vertical bar on the right side:
@@ -2568,6 +2569,14 @@ into the string to the right of the cursor, advancing the cursor.  The
 {\cb Delete} key will delete the character to the right of the cursor. 
 It will have no effect in editing mode if the cursor is not visible.
 
+{\bf QT release only}\\
+When the cursor is at the beginning or end of the selected string, the
+left and right arrow keys in the direction of impeded cursor movement
+will instead cycle the justification used when the string is moved or
+copied between left, center, and right.  This will be seen in the text
+image used during drag/drop.  The present justification is shown by
+the marks that appear just below the selected text.
+
 If all of the characters are deleted, then the string is deleted. 
 When all characters have been entered, pressing {\cb Enter}
 terminates the string and exits the editing mode.  Note that
@@ -2583,8 +2592,7 @@ generated from the {\cb Print} button in the plot window.  If a new
 plot is created by using button 3 to zoom in, the child plot will
 inherit the text strings of the parent plot.  However, if the plot is
 saved to disk with the {\cb Save Plot} button, the saved strings will
-revert to the original strings.  The file data format presently does
-not provide for alternate strings.
+revert to the original strings.
 
 \subsection{Trace Drag and Drop}
 
@@ -2599,15 +2607,19 @@ which case the dragged trace occupies the drop trace location, and the
 drop trace and below are shifted down.  Traces can be dropped in the
 legend area but below all existing legends to move a trace to the end.
 
+Traces can also be dropped on the file cabinet icon in the upper left
+corner of the plot window.  This will remove the dragged trace from
+the display, if the trace is from the same plot window as the icon. 
+If the trace is from a different plot window, a copy of the trace is
+added to the icon storage.  Traces that have been dragged into the
+file cabinet can be dragged out again in first-in last-out order, and
+can be dropped among the existing trace legends to make them visible
+again.
+
 Dragging trace data between plots is an an easy way to see differences
 between simulation runs.  The trace data are copied and interpolated
 to the new scale.  If the new scale is not compatible, the operation
 will fail.
-
-While a trace is being dragged, pressing the {\kb Delete} key will
-delete the trace (and end the drag).  This will permanently remove the
-trace data from the plot, and is not undoable.  However, if the plot
-contains only a single trace, it will not be deleted.
 
 \subsection{Multidimensional Traces}
 
@@ -5494,7 +5506,7 @@ imaginary parts of {\it vector}.
 \index{measurement functions}
 \label{measfuncs}
 
-% spExpressions.hlp:measfuncs 032220
+% spExpressions.hlp:measfuncs 020324
 
 These functions are exported from the {\cb measure} command and provide
 the same measurement capability in post-processing.
@@ -5538,6 +5550,15 @@ provide the result.
 \item{\vt mrft}({\it vec\/}, {\it start\/}, {\it end\/})\\
 Find the 10\% to 90\% rise or fall duration for an edge assumed to be
 framed by {\it start} and {\it end\/}.
+
+\index{mrft2 function}
+\item{\vt mrft2}({\it vec\/}, {\it start\/}, {\it end\/},
+ {\it firstval\/}, {\it secondval\/})\\
+This is identical to {\cb mrft}, except that two additional real
+valued variables provide the measurement thresholds rather than being
+fixed an 0.1 and 0.9.  This will find the rise or fall duration (time
+between threshold crossings) for an edge assumed to be framed by {\it
+start} and {\it end\/}.
 
 \index{mrms function}
 \item{\vt mrms}({\it vec\/}, {\it start\/}, {\it end\/})\\

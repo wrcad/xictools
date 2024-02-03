@@ -19,7 +19,7 @@ plotpanel
 mplotpanel
 
 
-!! useriface.tex 092522
+!! useriface.tex 020324
 !!KEYWORD
 plotpanel
 !!TITLE
@@ -229,6 +229,7 @@ Plot Panel
     technique, but the <b>Shift</b> key is ignored in this case.
 
     <p>
+    <b>GTK release only</b><br>
     While dragging the string, the left and right arrow keys cycle
     through left, center, and right justification of the string.  The
     string outline box attached to the mouse pointer will shift to
@@ -239,9 +240,9 @@ Plot Panel
     the right side indicator bar will be color1 (default black) if
     terminated, color2 (default red) if not terminated.  When the
     selected string is not terminated, it can be edited.  Pressing the
-    <b>Backspace</b> key will cause a selected terminated string to
-    become non-terminated.  Pressing the <b>Enter</b> key will
-    terminate a selected non-terminated string.
+    <b>Backspace</b> key (<b>Delete</b> key in Apple) will cause a
+    selected terminated string to become non-terminated.  Pressing the
+    <b>Enter</b> key will terminate a selected non-terminated string.
 
     <p>
     When the selected string is terminated, as indicated by a color1
@@ -279,6 +280,16 @@ Plot Panel
     have no effect in editing mode if the cursor is not visible.
 
     <p>
+    <b>QT release only</b><br>
+    When the cursor is at the beginning or end of the selected string,
+    the left and right arrow keys in the direction of impeded cursor
+    movement will instead cycle the justification used when the string
+    is moved or copied between left, center, and right.  This will be
+    seen in the text image used during drag/drop.  The present
+    justification is shown by the marks that appear just below the
+    selected text.
+
+    <p>
     If all of the characters are deleted, then the string is deleted. 
     When all characters have been entered, pressing <b>Enter</b>
     terminates the string and exits the editing mode.  Note that
@@ -296,8 +307,7 @@ Plot Panel
     new plot is created by using button 3 to zoom in, the child plot
     will inherit the text strings of the parent plot.  However, if the
     plot is saved to disk with the <b>Save Plot</b> button, the saved
-    strings will revert to the original strings.  The file data format
-    presently does not provide for alternate strings.
+    strings will revert to the original strings.
 
     <a name="trdnd"></a>
     <h2>Trace Drag and Drop</h2>
@@ -318,17 +328,20 @@ Plot Panel
     to the end.
 
     <p>
+    Traces can also be dropped on the file cabinet icon in the upper
+    left corner of the plot window.  This will remove the dragged
+    trace from the display, if the trace is from the same plot window
+    as the icon.  If the trace is from a different plot window, a copy
+    of the trace is added to the icon storage.  Traces that have been
+    dragged into the file cabinet can be dragged out again in first-in
+    last-out order, and can be dropped among the existing trace
+    legends to make them visible again.
+
+    <p>
     Dragging trace data between plots is an an easy way to see
     differences between simulation runs.  The trace data are copied
     and interpolated to the new scale.  If the new scale is not
     compatible, the operation will fail.
-
-    <p>
-    While a trace is being dragged, pressing the <b>Delete</b> key
-    will delete the trace (and end the drag).  This will permanently
-    remove the trace data from the plot, and is not undoable. 
-    However, if the plot contains only a single trace, it will not be
-    deleted.
 
     <a name="multidim"></a>
     <h2>Multidimensional Traces</h2>
