@@ -1550,7 +1550,7 @@ This is otherwise done for each set of variables printed.  The Spice3
 {\et noprintscale} variable is an alias, but deprecated.
 \end{description}
 
-\index{format_string}
+\index{format string}
 
 The syntax of the format string to the {\cb print} command allows
 overriding the states of the switches listed above while printing. 
@@ -3236,7 +3236,7 @@ character and contain no white space or other special characters.
 \end{description}
 
 A vector with this name will be added to the current plot, if the
-measurement is successful.  Vector names found in <\cb measure
+measurement is successful.  Vector names found in {\cb measure
 commands} and {\vt .measure} lines are added to the internal save
 list, guaranteeing that the necessary data will be available when
 needed, whether or not the vector has been mentioned in a {\vt .save}
@@ -3532,7 +3532,7 @@ This will measure the full-width half-maximum of a pulse contained in
 the interval.  The baseline is taken as the initial or final value
 with the smallest difference from the peak value.  The algorithm will
 measure the larger of a negative going or positive going pulse.
-\item{{\vt rt} {\it expr} \[{\it firstval} {\it secondval\/}\]}\\
+\item{{\vt rt} {\it expr} [{\it firstval} {\it secondval\/}]}\\
 This will measure the rise or fall time of the edge contained in the
 interval.  The optional following two numbers are the measurement
 thresholds, which default to 0.1 and 0.9 if not given.  The reference
@@ -3557,7 +3557,7 @@ Each of these functions other than {\cb mrft2} takes three arguments:
 mrft2} function tackes the same arguments, but in addition accepts two
 additional real numbers representing the transition thresholds that
 would replace 0.1 and 0.9 used for rise/fall time measurement in the
-{\cb mrft} function.  The [\cb mrft2} function is otherwise identical
+{\cb mrft} function.  The {\cb mrft2} function is otherwise identical
 to {\cb mrft}.  The two scale values frame the area of measurement. 
 These must be chosen to isolate the feature of interest for
 rise/fall/width measurement.  If not in range of the {\it vector}
