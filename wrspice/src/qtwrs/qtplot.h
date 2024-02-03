@@ -126,6 +126,7 @@ public:
     bool init_gbuttons();
 
     bool event(QEvent*);
+    bool eventFilter(QObject*, QEvent*);
 
     void enable_event_test(bool b)
     {
@@ -143,8 +144,6 @@ private slots:
     void button_up_slot(QMouseEvent*);
     void motion_slot(QMouseEvent*);
     void key_down_slot(QKeyEvent*);
-    void enter_slot(QEnterEvent*);
-    void leave_slot(QEvent*);
     void dismiss_btn_slot();
     void help_btn_slot();
     void redraw_btn_slot();
@@ -162,8 +161,6 @@ private slots:
     void drop_slot(QDropEvent*);
 
 private:
-    bool check_event(QEvent*);
-
     static void sens_set(QTbag*, bool, int);
     static int redraw_timeout(void*);
     static int motion_idle(void*);

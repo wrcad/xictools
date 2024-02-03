@@ -773,28 +773,6 @@ sGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
         }
     }
     else if (code == BSP_KEY) {
-/* XXX use icon
-#ifdef __APPLE__
-        // The Mac key labeled "Delete" returns a BSP code.
-        if (gr_apptype == GR_PLOT && gr_cmd_data && GP.SourceGraph() == this) {
-            int n = 0;
-            sDvList *dv0 = static_cast<sDvList*>(gr_plotdata);
-            for (sDvList *d = dv0; d; d = d->dl_next) {
-                if (d == gr_cmd_data) {
-                    if (gr_delete_trace(n)) {
-                        gr_cmd_data = 0;
-                        GP.SetSourceGraph(0);
-                        gr_set_ghost(0, 0, 0);
-                        dev()->Clear();
-                        gr_redraw();
-                    }
-                    return;
-                }
-                n++;
-            }
-        }
-#endif
-*/
         // Erase last character.  If terminated, undo terminated status.
         // If no more characters, delete string entry.
         if (!k || !gr_seltext)
@@ -842,25 +820,6 @@ sGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
         }
     }
     else if (code == DELETE_KEY) {
-/*XXX use icon
-        if (gr_apptype == GR_PLOT && gr_cmd_data && GP.SourceGraph() == this) {
-            int n = 0;
-            sDvList *dv0 = static_cast<sDvList*>(gr_plotdata);
-            for (sDvList *d = dv0; d; d = d->dl_next) {
-                if (d == gr_cmd_data) {
-                    if (gr_delete_trace(n)) {
-                        gr_cmd_data = 0;
-                        GP.SetSourceGraph(0);
-                        gr_set_ghost(0, 0, 0);
-                        dev()->Clear();
-                        gr_redraw();
-                    }
-                    return;
-                }
-                n++;
-            }
-        }
-*/
         if (!k || !gr_seltext)
             return;
         int len = strlen(k->text);
@@ -1389,7 +1348,31 @@ k->xform |= (gr_xform & TXTF_HJR);
             else {
                 // moving between graphs
                 graph->gr_set_ghost(0, 0, 0);
-//XXX fixme from cabinet
+                if (x < 50 && yinv(y) < 20) {
+                    // Dropped on the file cabinet.
+                    sDvList *dl = static_cast<sDvList*>(gr_plotdata);
+                    sDataVec *nv = graph->gr_cmd_data->dl_dvec->v_interpolate(
+                        dl->dl_dvec->scale());
+                    if (nv) {
+                        const char *t = graph->gr_cmd_data->dl_dvec->name();
+                        int sid = graph->gr_id;
+
+                        char buf[BSIZE_SP];
+                        snprintf(buf, sizeof(buf), "%d:%s", sid, t);
+                        nv->set_name(buf);
+
+                        sDvList *ndvl = new sDvList;
+                        ndvl->dl_dvec = nv;
+                        ndvl->dl_next = gr_hidden_data;
+                        gr_hidden_data = ndvl;
+                        gr_dev->Clear();
+                        gr_redraw();
+
+                    }
+                    gr_cmd_data = 0;
+                    GP.SetSourceGraph(0);
+                    return;
+                }
 
                 int i = gr_select_trace(x, y);
                 if (i >= 0) {
@@ -1414,12 +1397,15 @@ k->xform |= (gr_xform & TXTF_HJR);
                         if (dl == graph->gr_cmd_data)
                             break;
                     }
+                    if (!dl)
+                        si = -1;  // Source is hidden.
 
                     dl = static_cast<sDvList*>(gr_plotdata);
                     sDataVec *nv = graph->gr_cmd_data->dl_dvec->v_interpolate(
                         dl->dl_dvec->scale());
                     if (nv) {
-                        char *t = graph->get_txt(si);
+                        const char *t = si >= 0 ? graph->get_txt(si) :
+                            graph->gr_cmd_data->dl_dvec->name();
                         // the v_plot field is 0 for these dvec's
                         int sid = graph->gr_id;
 
@@ -3422,7 +3408,7 @@ sGraph::dv_redraw()
             gr_dev->SetColor(0xaaaaaa);
         for (int i = 0; i < 20; i++) {
             for (int j = 0; j < 16; j++) {
-                if (cabinet_xpm[3+i][j] == '.')
+                if (cabinet_xpm[4+i][j] == '.')
                     gr_dev->Pixel(x+j, yinv(y-i));
 
             }
@@ -3430,7 +3416,7 @@ sGraph::dv_redraw()
         gr_dev->SetColor(gr_colors[1].pixel);
         for (int i = 0; i < 20; i++) {
             for (int j = 0; j < 16; j++) {
-                if (cabinet_xpm[3+i][j] == 'X')
+                if (cabinet_xpm[4+i][j] == 'X')
                     gr_dev->Pixel(x+j, yinv(y-i));
 
             }

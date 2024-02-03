@@ -191,10 +191,6 @@ QTplotDlg::init(sGraph *gr)
         this, SLOT(motion_slot(QMouseEvent*)));
     connect(gd_viewport, SIGNAL(key_press_event(QKeyEvent*)),
         this, SLOT(key_down_slot(QKeyEvent*)));
-    connect(gd_viewport, SIGNAL(enter_event(QEnterEvent*)),
-        this, SLOT(enter_slot(QEnterEvent*)));
-    connect(gd_viewport, SIGNAL(leave_event(QEvent*)),
-        this, SLOT(leave_slot(QEvent*)));
     connect(gd_viewport, SIGNAL(drag_enter_event(QDragEnterEvent*)),
         this, SLOT(drag_enter_slot(QDragEnterEvent*)));
     connect(gd_viewport, SIGNAL(drop_event(QDropEvent*)),
@@ -248,6 +244,7 @@ QTplotDlg::init_gbuttons()
 
     if (!pb_checkwins[pbtn_dismiss]) {
         QPushButton *btn = new QPushButton(tr("Dismiss"));
+        btn->installEventFilter(this);
         vbox->addWidget(btn);
         btn->setToolTip(tr("Delete this window"));
         pb_checkwins[pbtn_dismiss] = btn;
@@ -265,6 +262,7 @@ QTplotDlg::init_gbuttons()
 
     if (!pb_checkwins[pbtn_redraw]) {
         QPushButton *btn = new QPushButton(tr("Redraw"));
+        btn->installEventFilter(this);
         vbox->addWidget(btn);
         btn->setAutoDefault(false);
         btn->setToolTip(tr("Redraw the plot"));
@@ -307,6 +305,7 @@ QTplotDlg::init_gbuttons()
 
         if (!pb_checkwins[pbtn_points]) {
             QPushButton *btn = new QPushButton(tr("Points"));
+            btn->installEventFilter(this);
             vbox->addWidget(btn);
             btn->setCheckable(true);
             btn->setChecked(pb_graph->plottype() == PLOT_POINT); 
@@ -319,6 +318,7 @@ QTplotDlg::init_gbuttons()
 
         if (!pb_checkwins[pbtn_comb]) {
             QPushButton *btn = new QPushButton(tr("Comb"));
+            btn->installEventFilter(this);
             vbox->addWidget(btn);
             btn->setCheckable(true);
             btn->setChecked(pb_graph->plottype() == PLOT_COMB); 
@@ -332,6 +332,7 @@ QTplotDlg::init_gbuttons()
         if (pb_graph->rawdata().xmin > 0) {
             if (!pb_checkwins[pbtn_logx]) {
                 QPushButton *btn = new QPushButton(tr("Log X"));
+                btn->installEventFilter(this);
                 vbox->addWidget(btn);
                 btn->setCheckable(true);
                 btn->setChecked(pb_graph->gridtype() == GRID_XLOG ||
@@ -354,6 +355,7 @@ QTplotDlg::init_gbuttons()
         if (pb_graph->rawdata().ymin > 0) {
             if (!pb_checkwins[pbtn_logy]) {
                 QPushButton *btn = new QPushButton(tr("Log Y"));
+                btn->installEventFilter(this);
                 vbox->addWidget(btn);
                 btn->setCheckable(true);
                 btn->setChecked(pb_graph->gridtype() == GRID_YLOG ||
@@ -388,6 +390,7 @@ QTplotDlg::init_gbuttons()
         if (pb_graph->numtraces() > 1 && pb_graph->numtraces() <= MAXNUMTR) {
             if (!pb_checkwins[pbtn_separate]) {
                 QPushButton *btn = new QPushButton(tr("Separate"));
+                btn->installEventFilter(this);
                 vbox->addWidget(btn);
                 btn->setCheckable(true);
                 btn->setChecked(pb_graph->yseparate());
@@ -411,6 +414,7 @@ QTplotDlg::init_gbuttons()
                 // more than one trace, same type
                 if (!pb_checkwins[pbtn_single]) {
                     QPushButton *btn = new QPushButton(tr("Single"));
+                    btn->installEventFilter(this);
                     vbox->addWidget(btn);
                     btn->setCheckable(true);
                     btn->setChecked(pb_graph->format() == FT_SINGLE);
@@ -426,6 +430,7 @@ QTplotDlg::init_gbuttons()
                 // more than one trace type
                 if (!pb_checkwins[pbtn_single]) {
                     QPushButton *btn = new QPushButton(tr("Single"));
+                    btn->installEventFilter(this);
                     vbox->addWidget(btn);
                     btn->setCheckable(true);
                     btn->setChecked(pb_graph->format() == FT_SINGLE);
@@ -439,6 +444,7 @@ QTplotDlg::init_gbuttons()
 
                 if (!pb_checkwins[pbtn_group]) {
                     QPushButton *btn = new QPushButton(tr("Group"));
+                    btn->installEventFilter(this);
                     vbox->addWidget(btn);
                     btn->setCheckable(true);
                     btn->setChecked(pb_graph->format() == FT_GROUP);
@@ -459,51 +465,35 @@ QTplotDlg::init_gbuttons()
 bool
 QTplotDlg::event(QEvent *ev)
 {
-    if (pb_event_test && check_event(ev)) {
-#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-        QApplication::postEvent(this, ev->clone());
-#else
-        // XXX fixme, no clone in QT5
-#endif
-        pb_event_deferred = true;
-        return (true);
+    // When event testing, defer resize events.  The widget will stop
+    // drawing and then handle the event.
+
+    if (ev->type() == QEvent::Resize) {
+        if (pb_event_test) {
+            // Might need ev->clone() here, but this exists only in QT6.
+            QApplication::postEvent(this, ev);
+            pb_event_deferred = true;
+            return (true);
+        }
     }
     return (QWidget::event(ev));
 }
 
 
-// Core event test.
-//
 bool
-QTplotDlg::check_event(QEvent *ev)
+QTplotDlg::eventFilter(QObject *obj, QEvent *ev)
 {
-    if (ev->type() == QEvent::Resize) {
-        return (true);
-    }
-    else if (ev->type() == QEvent::MouseButtonPress) {
-/*XXX
-        // This is the magic to get a widget from a window.
-        GtkWidget *widget = 0;
-        gdk_window_get_user_data(ev->button.window, (void**)&widget);
-        if (widget) {
-            if (widget == w->pb_checkwins[pbtn_dismiss])
-                return (true);
-            if (widget == w->pb_checkwins[pbtn_points])
-                return (true);
-            if (widget == w->pb_checkwins[pbtn_comb])
-                return (true);
-            if (widget == w->pb_checkwins[pbtn_logx])
-                return (true);
-            if (widget == w->pb_checkwins[pbtn_logy])
-                return (true);
-            if (widget == w->pb_checkwins[pbtn_separate])
-                return (true);
-            if (widget == w->pb_checkwins[pbtn_single])
-                return (true);
-            if (widget == w->pb_checkwins[pbtn_group])
-                return (true);
+    // When event testing, defer certain button presses.  The widget
+    // will stop drawing and then handle the event.
+
+    if (ev->type() == QEvent::MouseButtonPress ||
+            ev->type() == QEvent::MouseButtonRelease) {
+        if (pb_event_test) {
+            // Might need ev->clone() here, but this exists only in QT6.
+            QApplication::postEvent(obj, ev);
+            pb_event_deferred = true;
+            return (true);
         }
-*/
     }
     return (false);
 }
@@ -877,42 +867,6 @@ QTplotDlg::key_down_slot(QKeyEvent *ev)
     gd_viewport->set_overlay_mode(true);
     pb_graph->gr_key_hdlr(string, code, pt.x(), pb_graph->yinv(pt.y()));
     gd_viewport->set_overlay_mode(false);
-}
-
-
-void
-QTplotDlg::enter_slot(QEnterEvent*)
-{
-}
-
-
-void
-QTplotDlg::leave_slot(QEvent*)
-{
-    // Pointer left the drawing window.
-/* XXX this isn't used.
-    if (gd_viewport->has_ghost()) {
-        // If there is trace data, end the local ghost and start a QT
-        // drag for data transfer to other plot windows.
-        if (pb_graph->have_trace_data()) {
-            GP.PushGraphContext(pb_graph);
-            ShowGhost(false);
-            GP.PopGraphContext();
-            sGraph::drag_trace(pb_graph);
-            return;
-        }
-
-        // If moving text, end the local ghost and start a QT drag for
-        // data transfer to other plot windows.
-        if (pb_graph->cmdmode() & grMoving) {
-            GP.PushGraphContext(pb_graph);
-            ShowGhost(false);
-            GP.PopGraphContext();
-            sGraph::drag_text(pb_graph);
-            return;
-        }
-    }
-*/
 }
 
 

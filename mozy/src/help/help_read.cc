@@ -70,8 +70,8 @@ namespace {
     // error strings
     const char *msg_nodb  = "no path to database.\n";
     const char *msg_notop = "no top level topic.\n";
-    const char *msg_noent = "topic not found.\n";
     const char *msg_nox   = "can't open display.\n";
+    char msg_noent[128];
 
     // Used in cHelp::hlp_read.
     struct scope
@@ -266,8 +266,11 @@ cHelp::word(const char *keyword_in)
     if (!top)
         top = read(keyword);
     if (!top) {
-        if (keyword && *keyword)
+        if (keyword && *keyword) {
+            snprintf(msg_noent, sizeof(msg_noent),
+                "topic not found: %s.\n", keyword);
             hlp_errmsg = msg_noent;
+        }
         else
             hlp_errmsg = msg_notop;
         return;
