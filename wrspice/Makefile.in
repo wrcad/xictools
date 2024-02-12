@@ -108,7 +108,7 @@ LOCAL_LIBS = \
 #######################################################################
 ####### Executable targets ############################################
 
-TARGETS = wrspice wrspiced multidec proc2mod printtoraw
+TARGETS = wrspice wrspiced csvtoraw multidec proc2mod printtoraw
 MMJCO = mmjco/mmjco
 all: cptest $(TARGETS) $(MMJCO) wdemo
 
@@ -146,6 +146,11 @@ bin/wrspiced: bin/wrspiced.o $(BASE)/lib/miscutil.a
 	@echo $@: dynamic link
 	@$(LINKCC) -o bin/wrspiced $(LFLAGS) bin/wrspiced.o \
   $(BASE)/lib/miscutil.a $(SLIBS) $(STDCLIB) $(WINPTHREADFIX)
+
+bin/csvtoraw: bin/csvtoraw.o $(BASE)/lib/miscutil.a
+	@echo $@: dynamic link
+	@$(LINKCC) -o bin/csvtoraw bin/csvtoraw.o $(BASE)/lib/miscutil.a \
+  $(STDCLIB) $(WINPTHREADFIX)
 
 bin/multidec: bin/multidec.o src/sparse/sparse.a src/misc/misc.a
 	@echo $@: dynamic link

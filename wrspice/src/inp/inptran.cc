@@ -617,7 +617,7 @@ SPinput::getTranFunc(const char **s, bool in_source)
     // The table shows the number of args expected.  For math
     // functions, recall that i,j converts to a single complex arg, so
     // "2" args is really one when evaluated.  The gauss math function
-    // is parsed a bit differently, but in each case the naieve
+    // is parsed a bit differently, but in each case the naive
     // interpretation of the syntax gives the number of args in the
     // third column.  For math functions, a comma is always the
     // delimiter.  For tran functions, either space or a comma is

@@ -392,6 +392,11 @@ private:
     unsigned char t_range;  // Before/at/after, MPrange.
 };
 
+struct sXpt
+{
+    double val;
+    double scval;
+};
 
 enum Mfunc { Mmin, Mmax, Mpp, Mavg, Mrms, Mpw, Mrft, Mfind };
 
@@ -432,13 +437,13 @@ struct sMfunc
 
     void print(sLstr*);
 
-    bool mmin(sDataVec*, int, int, double*, double*);
-    bool mmax(sDataVec*, int, int, double*, double*);
-    bool mpp(sDataVec*, int, int, double*, double*);
-    bool mavg(sDataVec*, int, int, double*, double*);
-    bool mrms(sDataVec*, int, int, double*, double*);
-    bool mpw(sDataVec*, int, int, double*, double*);
-    bool mrft(sDataVec*, int, int, double*, double*, double =0.1, double =0.9);
+    bool mmin(sDataVec*, int, int, sXpt*, sXpt*);
+    bool mmax(sDataVec*, int, int, sXpt*, sXpt*);
+    bool mpp(sDataVec*,  int, int, sXpt*, sXpt*);
+    bool mavg(sDataVec*, int, int, sXpt*, sXpt*);
+    bool mrms(sDataVec*, int, int, sXpt*, sXpt*);
+    bool mpw(sDataVec*,  int, int, sXpt*, sXpt*);
+    bool mrft(sDataVec*, int, int, sXpt*, sXpt*, double =0.1, double =0.9);
 
 private:
     Mfunc f_type;       // type of job
@@ -448,7 +453,6 @@ private:
     double f_val;       // result of measurement
     double f_v1;        // aux. input
     double f_v2;        // aux. input
-
 };
 
 
@@ -557,6 +561,8 @@ private:
     sDataVec *evaluate(const char*);
     double startval(sDataVec*);
     double endval(sDataVec*);
+    sXpt startpoint(sDataVec*);
+    sXpt endpoint(sDataVec*);
 
     sMpoint ro_start;
     sMpoint ro_end;
