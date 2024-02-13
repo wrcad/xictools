@@ -153,7 +153,7 @@ $(SHLIB_TARGET): AMD/Lib/libamd.a BTF/Lib/libbtf.a COLAMD/Lib/libcolamd.a \
 	    $(CC) -o $(SHLIB_TARGET) $(LSHFLAG) \
  $(OFILES_AMD) $(OFILES_BTF) $(OFILES_COLAMD) $(OFILES_KLU) \
  SuiteSparse_config/SuiteSparse_config.o;
-	
+
 unpack:
 	-@rm -rf AMD BTF COLAMD KLU SuiteSparse_config
 	@tar xzf SuiteSparse-$(SSVERSION).tar.gz
@@ -164,8 +164,8 @@ unpack:
 	@mv SuiteSparse/SuiteSparse_config .
 	-@rm -rf SuiteSparse
 
-patch:
-	@patch -p0 < long_dbl_patch
+patch: unpack
+	@patch -p0 --forward < long_dbl_patch
 
 depend: unpack patch
 
