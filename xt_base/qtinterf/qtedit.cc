@@ -74,55 +74,56 @@
 // messages
 #define MAIL_MAXSIZE 1600000
 
-// defaults
-static const char *mail_addr = "bugs@wrcad.com";
-static const char *mail_subject = "bug report";
+namespace {
+    // defaults
+    const char *mail_addr = "bugs@wrcad.com";
+    const char *mail_subject = "bug report";
 
-// for hardcopies
-static HCcb edHCcb =
-{
-    0,            // hcsetup
-    0,            // hcgo
-    0,            // hcframe
-    0,            // format
-    0,            // drvrmask
-    HClegNone,    // legend
-    HCportrait,   // orient
-    0,            // resolution
-    0,            // command
-    false,        // tofile
-    "",           // tofilename
-    0.25,         // left
-    0.25,         // top
-    8.0,          // width
-    10.5          // height
-};
+    // for hardcopies
+    HCcb edHCcb =
+    {
+        0,            // hcsetup
+        0,            // hcgo
+        0,            // hcframe
+        0,            // format
+        0,            // drvrmask
+        HClegNone,    // legend
+        HCportrait,   // orient
+        0,            // resolution
+        0,            // command
+        false,        // tofile
+        "",           // tofilename
+        0.25,         // left
+        0.25,         // top
+        8.0,          // width
+        10.5          // height
+    };
 
-// Envelope xpm used to denote attachments
-// XPM
-static const char * const attach_xpm[] = {
-"32 16 4 1",
-" 	s None	c None",
-".	c black",
-"x	c white",
-"o	c sienna",
-"                                ",
-"   .........................    ",
-"   .x..xxxxxxxxxxxxxxxxx..x.    ",
-"   .xxx..xxxxxxxxxxxxx..xxx.    ",
-"   .xxxxx..xxxxxxxxx..xxxxx.    ",
-"   .xooxoxx..xxxxx..xxxxxxx.    ",
-"   .xxoxxxxxx.....xxxxxxxxx.    ",
-"   .xxxxxxxxxxxxxxxxxxxxxxx.    ",
-"   .xxxxxxxxxxxxxxxxxxxxxxx.    ",
-"   .xxxxxxxoxxxxxxxoxxxxxxx.    ",
-"   .xxxxxxxxoxxoxooxxxxxxxx.    ",
-"   .xxxxxxxoxxoxoxxoxxxxxxx.    ",
-"   .xxxxxxxxxxxxxxxxxxxxxxx.    ",
-"   .xxxxxxxxxxxxxxxxxxxxxxx.    ",
-"   .........................    ",
-"                                "};
-
+    // Envelope xpm used to denote attachments
+    // XPM
+    const char * const attach_xpm[] = {
+    "32 16 4 1",
+    " 	s None	c None",
+    ".	c black",
+    "x	c white",
+    "o	c sienna",
+    "                                ",
+    "   .........................    ",
+    "   .x..xxxxxxxxxxxxxxxxx..x.    ",
+    "   .xxx..xxxxxxxxxxxxx..xxx.    ",
+    "   .xxxxx..xxxxxxxxx..xxxxx.    ",
+    "   .xooxoxx..xxxxx..xxxxxxx.    ",
+    "   .xxoxxxxxx.....xxxxxxxxx.    ",
+    "   .xxxxxxxxxxxxxxxxxxxxxxx.    ",
+    "   .xxxxxxxxxxxxxxxxxxxxxxx.    ",
+    "   .xxxxxxxoxxxxxxxoxxxxxxx.    ",
+    "   .xxxxxxxxoxxoxooxxxxxxxx.    ",
+    "   .xxxxxxxoxxoxoxxoxxxxxxx.    ",
+    "   .xxxxxxxxxxxxxxxxxxxxxxx.    ",
+    "   .xxxxxxxxxxxxxxxxxxxxxxx.    ",
+    "   .........................    ",
+    "                                "};
+}
 
 QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::EditorType type,
     const char *file_or_string, bool with_source, void *arg) :
@@ -652,7 +653,7 @@ QTeditDlg::load_file_slot(const char *fnamein, void*)
 }
 
 
-// Callback to load a new file into the editor
+// Callback to load a new file into the editor.
 //
 void
 QTeditDlg::load_slot()
@@ -755,13 +756,15 @@ QTeditDlg::save_slot()
 {
     ed_last_event = SAVE;
 
-    if (p_callback) {
-        char *st =
-            lstring::copy(ed_text_editor->toPlainText().toLatin1().constData());
-        bool ret = (*p_callback)(st, p_cb_arg, XE_SAVE);
-        delete [] st;
-        if (ret)
-            delete this;
+    if (ed_editor_type == StringEditor) {
+        if (p_callback) {
+            char *st = lstring::copy(
+                ed_text_editor->toPlainText().toLatin1().constData());
+            bool ret = (*p_callback)(st, p_cb_arg, XE_SAVE);
+            delete [] st;
+            if (ret)
+                delete this;
+        }
         return;
     }
     char *fname = ed_source_file;
@@ -788,7 +791,7 @@ QTeditDlg::save_slot()
     // under a new name, and made no subsequent changes.
     if (ed_text_changed)
         ed_text_changed = false;
-    ed_File_SaveAs->setEnabled(false);
+    ed_File_Save->setEnabled(false);
     if (ed_saved_as) {
         delete [] ed_saved_as;
         ed_saved_as = 0;

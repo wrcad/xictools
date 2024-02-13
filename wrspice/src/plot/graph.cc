@@ -1665,8 +1665,8 @@ void
 sGraph::gr_mark()
 {
     if (!gr_reference.mark) {
-        gr_refmark(true);
         gr_set_ghost(0, 0, 0);
+        gr_refmark(true);
         // redraw scale factors
         dv_erase_factors();
         dv_trace(true);
