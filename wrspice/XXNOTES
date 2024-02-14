@@ -39,3 +39,6 @@ Inplement A ? B : C
 Update numeric constants to present official values.
 
 finish csvtoraw
+
+modify build to auto-update SyntaxLevel in wrspice/devlib/adms/Makefile
+also adms scripts device.xml.
