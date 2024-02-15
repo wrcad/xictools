@@ -1345,6 +1345,8 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
         this, SLOT(button_down_slot(QMouseEvent*)));
     connect(gd_viewport, SIGNAL(release_event(QMouseEvent*)),
         this, SLOT(button_up_slot(QMouseEvent*)));
+    connect(gd_viewport, SIGNAL(double_click_event(QMouseEvent*)),
+        this, SLOT(double_click_slot(QMouseEvent*)));
     connect(gd_viewport, SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(motion_slot(QMouseEvent*)));
     connect(gd_viewport, SIGNAL(key_press_event(QKeyEvent*)),
@@ -1927,7 +1929,8 @@ QTsubwin::button_down_slot(QMouseEvent *ev)
         ev->ignore();
         return;
     }
-    if (ev->type() != QEvent::MouseButtonPress) {
+    if (ev->type() != QEvent::MouseButtonPress &&
+            ev->type() != QEvent::MouseButtonDblClick) {
         ev->ignore();
         return;
     }
@@ -2138,6 +2141,15 @@ QTsubwin::button_up_slot(QMouseEvent *ev)
     }
     if (showing_ghost)
         ShowGhost(DISPLAY);
+}
+
+
+void
+QTsubwin::double_click_slot(QMouseEvent *ev)
+{
+    // Treat this as just another press, used to terminate poly/wire
+    // vertex input.
+    button_down_slot(ev);
 }
 
 

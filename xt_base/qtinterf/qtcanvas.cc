@@ -1213,6 +1213,13 @@ QTcanvas::mouseReleaseEvent(QMouseEvent *ev)
 
 
 void
+QTcanvas::mouseDoubleClickEvent(QMouseEvent *ev)
+{
+    emit double_click_event(ev);
+}
+
+
+void
 QTcanvas::mouseMoveEvent(QMouseEvent *ev)
 {
     emit motion_event(ev);
