@@ -1134,7 +1134,7 @@ cKeys::show_keys()
     if (!s)
         s = k_keys + (k_keypos > 5 ? k_keypos - 5 : 0);
     clear();
-    int yy = QTfont::lineHeight(FNT_SCREEN);
+    int yy = QTfont::lineHeight(FNT_SCREEN) + 2;
     draw_text(2, yy, s, -1);
     if (rsz)
         updateGeometry();
@@ -1187,7 +1187,7 @@ cKeys::check_exec(bool exact)
 
     resize(sizeHint().width(), sizeHint().height());
     clear();
-    int yy = QTfont::lineHeight(FNT_SCREEN);
+    int yy = QTfont::lineHeight(FNT_SCREEN) + 2;
     draw_text(2, yy, k_cmd, -1);
     updateGeometry();
     update();
