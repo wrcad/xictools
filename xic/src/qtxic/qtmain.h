@@ -403,6 +403,7 @@ protected slots:
     void resize_slot(QResizeEvent*);
     void button_down_slot(QMouseEvent*);
     void button_up_slot(QMouseEvent*);
+    void double_click_slot(QMouseEvent*);
     void motion_slot(QMouseEvent*);
     void key_down_slot(QKeyEvent*);
     void key_up_slot(QKeyEvent*);

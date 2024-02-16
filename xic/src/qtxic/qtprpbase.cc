@@ -117,7 +117,7 @@ QTprpBase::update_display()
         for (PrptyText *p = pb_list; p; p = p->next()) {
             p->set_start(cnt);
 
-            QColor *c, *cx = &blk;
+            QColor *c = 0, *cx = &blk;
             const char *s = p->head();
             if (*s == '(')
                 s++;
@@ -154,11 +154,11 @@ QTprpBase::update_display()
                     c = &c1;
                     break;
                 default:
-                    c = 0;
                     break;
                 }
             }
-            wb_textarea->setTextColor(*c);
+            if (c)
+                wb_textarea->setTextColor(*c);
             wb_textarea->insertPlainText(p->head());
             cnt += strlen(p->head());
             wb_textarea->setTextColor(*cx);
