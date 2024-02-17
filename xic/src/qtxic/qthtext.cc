@@ -329,11 +329,12 @@ QTedit::set_indicate()
 void
 QTedit::show_lt_button(bool show_btn)
 {
+    // Don't show/hide, use enable/disable instead to avoid text moving.
     if (!pe_disabled) {
         if (show_btn)
-            pe_ltx_btn->show();
+            pe_ltx_btn->setEnabled(true);
         else
-            pe_ltx_btn->hide();
+            pe_ltx_btn->setEnabled(false);
     }
 }
 

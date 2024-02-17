@@ -117,7 +117,7 @@ QTprpBase::update_display()
         for (PrptyText *p = pb_list; p; p = p->next()) {
             p->set_start(cnt);
 
-            QColor *c = 0, *cx = &blk;
+            QColor *c, *cx = &blk;
             const char *s = p->head();
             if (*s == '(')
                 s++;
@@ -132,6 +132,7 @@ QTprpBase::update_display()
                     c = &c1;
             }
             else {
+                c = &blk;
                 switch (num) {
                 case P_NAME:
                     // Indicate name property set
@@ -157,8 +158,7 @@ QTprpBase::update_display()
                     break;
                 }
             }
-            if (c)
-                wb_textarea->setTextColor(*c);
+            wb_textarea->setTextColor(*c);
             wb_textarea->insertPlainText(p->head());
             cnt += strlen(p->head());
             wb_textarea->setTextColor(*cx);

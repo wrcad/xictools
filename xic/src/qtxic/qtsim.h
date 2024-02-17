@@ -88,9 +88,6 @@ private slots:
     void dismiss_btn_slot();
 
 private:
-    static int sp_down_timer(void*);
-    static int sp_label_set_idle(void*);
-
     QLabel *sp_label;
 
     static SpType sp_status;
