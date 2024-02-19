@@ -42,7 +42,7 @@
 #include "edit.h"
 #include "geo_zlist.h"
 #include "dsp_inlines.h"
-#include "ginterf/grfont.h"
+#include "ginterf/grvecfont.h"
 #include "miscutil/filestat.h"
 #include "qtinterf/qtdblsb.h"
 

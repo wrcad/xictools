@@ -59,13 +59,19 @@ INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 
 WDEMODIR = wrspice_ipc_demo
 
+ifdef GRPREF
+GRPREF_DIR = src/$(GRPREF)wrs
+GRPREF_LIB = src/$(GRPREF)wrs/$(GRPREF)wrs.a
+GRPREF_BASELIB = $(BASE)/lib/$(GRPREF)interf.a
+endif
+
 SUBDIRS = \
   src/cp src/fte src/analysis src/inp src/ckt src/sparse src/plot \
-  src/$(GRPREF)wrs src/misc
+  $(GRPREF_DIR) src/misc
 SUBDIR_LIBS = \
   src/cp/cp.a src/fte/fte.a src/analysis/analysis.a src/inp/inp.a \
   src/ckt/ckt.a src/sparse/sparse.a src/plot/plot.a \
-  src/$(GRPREF)wrs/$(GRPREF)wrs.a src/misc/misc.a
+  $(GRPREF_LIB) src/misc/misc.a
 
 BASE = ../xt_base
 VLOG = ../vl
@@ -78,11 +84,13 @@ else
 INCLUDE = -Iinclude -I$(BASE)/include
 endif
 
+ifdef GRPREF
 ifeq ($(USEMOZY), yes)
 MOZY = ../mozy
 MOZYLIBS1 = $(MOZY)/lib/htm.a $(MOZY)/lib/help.a $(MOZY)/lib/$(GRPREF)mozy.a
 MOZYLIBS2 = $(MOZY)/lib/htm.a $(MOZY)/lib/help.a $(MOZY)/lib/httpget.a \
   $(MOZY)/lib/imsave.a
+endif
 endif
 
 LOCAL_LIBS = \
@@ -94,10 +102,10 @@ LOCAL_LIBS = \
   src/ckt/ckt.a \
   src/sparse/sparse.a \
   src/plot/plot.a \
-  src/$(GRPREF)wrs/$(GRPREF)wrs.a \
+  $(GRPREF_LIB) \
   $(SECURELIB) \
   $(MOZYLIBS1) \
-  $(BASE)/lib/$(GRPREF)interf.a  \
+  $(GRPREF_BASELIB) \
   $(BASE)/lib/ginterf.a \
   $(BASE)/lib/miscutil.a \
   $(MOZYLIBS2) \
@@ -193,8 +201,10 @@ $(MALLOC)::
 $(BASE)/lib/ginterf.a::
 	cd $(BASE)/ginterf; $(MAKE)
 
+ifdef GRPREF
 $(BASE)/lib/$(GRPREF)interf.a::
 	cd $(BASE)/$(GRPREF)interf; $(MAKE)
+endif
 
 $(BASE)/lib/miscutil.a::
 	cd $(BASE)/miscutil; $(MAKE)
@@ -202,6 +212,7 @@ $(BASE)/lib/miscutil.a::
 $(BASE)/lib/libregex.a::
 	cd $(BASE)/regex; $(MAKE)
 
+ifdef GRPREF
 ifeq ($(USEMOZY), yes)
 $(MOZY)/lib/$(GRPREF)mozy.a::
 	if [ -d $(MOZY)/src/$(GRPREF)mozy ]; then \
@@ -227,6 +238,7 @@ $(MOZY)/lib/imsave.a::
 	if [ -d $(MOZY)/src/imsave ] ; then \
 	    cd $(MOZY)/src/imsave; $(MAKE); \
 	fi
+endif
 endif
 
 #######################################################################
@@ -321,10 +333,12 @@ distclean: eclean
 	-@rm -f bin/*.o wrspice_ipc_demo.tar.gz Makefile
 	-@rm -f examples/wrspice_ipc_demo.tar.gz
 
+ifdef GRPREF
 grclean:
 	cd src/$(GRPREF)wrs; $(MAKE) clean
 	cd ../mozy/src/$(GRPREF)mozy; $(MAKE) clean
 	cd ../xt_base/$(GRPREF)interf; $(MAKE) clean
+endif
 
 #######################################################################
 ####### Install into another location #################################

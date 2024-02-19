@@ -45,6 +45,7 @@ Authors: 1985 Wayne A. Christopher
          1992 Stephen R. Whiteley
 ****************************************************************************/
 
+#include "config.h"
 #include "cshell.h"
 #include "commands.h"
 #include "spnumber/hash.h"
@@ -751,4 +752,25 @@ CommandTab::arg_display(wordlist*, sCommand*)
     // just return; display does the right thing
     return (0);
 }
+
+
+#if (!defined(WITH_QT5) && !defined(WITH_QT6) && \
+    !defined(WITH_GTK2) && !defined(WITH_GTK3))
+
+// Stubs for commands provided by graphics code for linking without
+// a graphics toolkit.
+
+void
+CommandTab::com_setrdb(wordlist*) { }
+
+void
+CommandTab::com_setfont(wordlist*) { }
+
+void
+CommandTab::com_tbsetup(wordlist*) { }
+
+void
+CommandTab::com_tbupdate(wordlist*) { }
+
+#endif
 

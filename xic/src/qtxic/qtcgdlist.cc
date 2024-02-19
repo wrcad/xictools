@@ -98,6 +98,7 @@ cConvert::PopUpGeometries(GRobject caller, ShowMode mode)
         QTmainwin::self()->Viewport());
     QTcgdListDlg::self()->show();
 }
+// End of cConvert functions.
 
 
 // Contests pop-up button.

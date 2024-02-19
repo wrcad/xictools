@@ -105,7 +105,7 @@ cExt::PopUpExtSetup(GRobject caller, ShowMode mode)
         QTmainwin::self()->Viewport());
     QTextSetupDlg::self()->show();
 }
-// End of cExt functions
+// End of cExt functions.
 
 
 QTextSetupDlg *QTextSetupDlg::instPtr;

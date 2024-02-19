@@ -106,7 +106,7 @@ fi
 )
 
 dnl --enable-nomozy
-dnl Don't build/link mozy, GNU tainted.
+dnl Don't build/link mozy.
 nomozy="no"
 AC_ARG_ENABLE(nomozy,
     [  ]--enable-nomozy        skip mozy build,
@@ -271,10 +271,10 @@ if test $enable_quartz = yes; then
 fi
 )
 
-#XXX fixme
-#echo '#define HAVE_GTK2 1'>> confdefs.h
+if test -z $grpkg; then
+    nomozy=yes
+fi
 echo "#define WITH_$grpkg 1">> confdefs.h
-
 if test $nomozy = no; then
     echo '#define HAVE_MOZY 1'>> confdefs.h
     USEMOZY=yes
@@ -723,8 +723,7 @@ dnl *** Graphical interface configuration
 dnl ***
 
 if test -z "$grpkg"; then
-   echo "No graphics toolkit specified, fatal error."
-   exit 1;
+   echo "No graphics toolkit specified, building tools without one."
 elif test $grpkg == QT5 -o $grpkg == QT6 ; then
     QTBASE=$qtloc
 
@@ -1388,8 +1387,10 @@ fi
 if test -d ginterf; then
     makefiles="$makefiles ginterf/Makefile"
 fi
-if test -d ${GRPREF}interf; then
-    makefiles="$makefiles ${GRPREF}interf/Makefile"
+if test -n "$GRPREF"; then
+    if test -d ${GRPREF}interf; then
+        makefiles="$makefiles ${GRPREF}interf/Makefile"
+    fi
 fi
 if test -d miscutil; then
     makefiles="$makefiles miscutil/Makefile"
@@ -1404,7 +1405,7 @@ fi
 if test -d ../secure; then
     makefiles="$makefiles ../secure/Makefile"
 fi
-if test -d ../mozy; then
+if test $nomozy = no; then
     makefiles="$makefiles \
         ../mozy/src/${GRPREF}mozy/Makefile \
         ../mozy/src/help/Makefile \
@@ -1420,6 +1421,9 @@ if test -d ../mrouter; then
     makefiles="$makefiles ../mrouter/examples/Makefile"
 fi
 if test -d ../xic; then
+    if test -n "$GRPREF"; then
+        GRPREF_XIC_MK=../xic/src/${GRPREF}xic/Makefile
+    fi
     if test $with_oa = yes; then
         oa=../xic/src/oa/Makefile
     fi
@@ -1431,7 +1435,7 @@ if test -d ../xic; then
         ../xic/src/extract/Makefile \
         ../xic/src/fileio/Makefile \
         ../xic/src/geom/Makefile \
-        ../xic/src/${GRPREF}xic/Makefile \
+        ${GRPREF_XIC_MK} \
         ../xic/src/main/Makefile \
         $oa \
         ../xic/src/parser/Makefile \
@@ -1450,12 +1454,15 @@ if test -d ../vl; then
     makefiles="$makefiles ../vl/Makefile"
 fi
 if test -d ../wrspice; then
+    if test -n "$GRPREF"; then
+        GRPREF_WRS_MK=../wrspice/src/${GRPREF}wrs/Makefile
+    fi
     makefiles="$makefiles \
         ../wrspice/src/analysis/Makefile \
         ../wrspice/src/ckt/Makefile \
         ../wrspice/src/cp/Makefile \
         ../wrspice/src/fte/Makefile \
-        ../wrspice/src/${GRPREF}wrs/Makefile \
+        ${GRPREF_WRS_MK} \
         ../wrspice/src/inp/Makefile \
         ../wrspice/src/malt/Makefile \
         ../wrspice/src/misc/Makefile \

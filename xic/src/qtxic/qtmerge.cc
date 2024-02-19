@@ -140,6 +140,7 @@ cConvert::PopUpMergeControl(ShowMode mode, mitem_t *mi)
         QTmergeDlg::self()->query(mi);
     return (true);
 }
+// End of cConvert functions.
 
 
 QTmergeDlg *QTmergeDlg::instPtr;

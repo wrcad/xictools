@@ -247,7 +247,7 @@ sGraph::drag_trace(void *arg)
 
 
 // Static function
-// Timeout function, start draggint text.
+// Timeout function, start dragging text.
 //
 int
 sGraph::drag_text(void *arg)

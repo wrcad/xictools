@@ -42,13 +42,18 @@ INSTALL_SCRIPT = $(INSTALL) -c -m 0755
 INSTALL_LIB    = $(INSTALL) -c -m 0644
 INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 
+ifdef GRPREF
+GRPREF_DIR = src/$(GRPREF)xic
+GRPREF_LIB = src/$(GRPREF)xic/$(GRPREF)xic.a
+GRPREF_BASELIB = $(BASE)/lib/$(GRPREF)interf.a
+endif
 
 SUBDIRS = \
-  src/$(GRPREF)xic src/cd src/display src/drc src/edit src/extract src/fileio \
+  $(GRPREF_DIR) src/cd src/display src/drc src/edit src/extract src/fileio \
   src/geom src/main src/parser src/sced src/wrspif src/sparse src/tech \
   $(OA_SUBDIR)
 SUBDIR_LIBS = \
-  src/$(GRPREF)xic/$(GRPREF)xic.a src/cd/cd.a src/display/display.a \
+  $(GRPREF_LIB) src/cd/cd.a src/display/display.a \
   src/fileio/fileio.a src/geom/geom.a src/main/main.a src/parser/parser.a \
   src/sparse/sparse.a src/wrspif/wrspif.a src/tech/tech.a src/edit/edit.a \
   src/sced/sced.a src/drc/drc.a src/extract/extract.a
@@ -63,11 +68,13 @@ else
 INCLUDE = -Iinclude -I$(BASE)/include
 endif
 
+ifdef GRPREF
 ifeq ($(USEMOZY), yes)
 MOZY = ../mozy
 MOZYLIBS1 = $(MOZY)/lib/htm.a $(MOZY)/lib/help.a $(MOZY)/lib/$(GRPREF)mozy.a
 MOZYLIBS2 = $(MOZY)/lib/htm.a $(MOZY)/lib/help.a $(MOZY)/lib/httpget.a \
   $(MOZY)/lib/imsave.a
+endif
 endif
 
 LOCAL_LIBS = \
@@ -77,7 +84,7 @@ LOCAL_LIBS = \
   src/tech/tech.a \
   src/edit/edit.a \
   src/sced/sced.a \
-  src/$(GRPREF)xic/$(GRPREF)xic.a \
+  $(GRPREF_LIB) \
   src/main/main.a \
   src/drc/drc.a \
   src/extract/extract.a \
@@ -93,7 +100,7 @@ LOCAL_LIBS = \
   src/wrspif/wrspif.a \
   $(SECURELIB) \
   $(MOZYLIBS1) \
-  $(BASE)/lib/$(GRPREF)interf.a  \
+  $(GRPREF_BASELIB) \
   $(BASE)/lib/ginterf.a \
   $(BASE)/lib/miscutil.a \
   $(MOZYLIBS2) \
@@ -194,8 +201,10 @@ $(MALLOC)::
 $(BASE)/lib/ginterf.a::
 	cd $(BASE)/ginterf; $(MAKE)
 
+ifdef GRPREF
 $(BASE)/lib/$(GRPREF)interf.a::
 	cd $(BASE)/$(GRPREF)interf; $(MAKE)
+endif
 
 $(BASE)/lib/miscutil.a::
 	cd $(BASE)/miscutil; $(MAKE)
@@ -203,6 +212,7 @@ $(BASE)/lib/miscutil.a::
 $(BASE)/lib/libregex.a::
 	cd $(BASE)/regex; $(MAKE)
 
+ifdef GRPREF
 ifeq ($(USEMOZY), yes)
 $(MOZY)/lib/$(GRPREF)mozy.a::
 	if [ -d $(MOZY)/src/$(GRPREF)mozy ]; then \
@@ -228,6 +238,7 @@ $(MOZY)/lib/imsave.a::
 	if [ -d $(MOZY)/src/imsave ] ; then \
 	    cd $(MOZY)/src/imsave; $(MAKE); \
 	fi
+endif
 endif
 
 #######################################################################
@@ -303,10 +314,12 @@ distclean: eclean
 	done
 	-@rm -f bin/*.o Makefile
 
+ifdef GRPREF
 grclean:
 	cd src/$(GRPREF)xic; $(MAKE) clean
 	cd ../mozy/src/$(GRPREF)mozy; $(MAKE) clean
 	cd ../xt_base/$(GRPREF)interf; $(MAKE) clean
+endif
 
 #######################################################################
 ####### Install programs into system location #########################

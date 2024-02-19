@@ -16,6 +16,10 @@ ifdef REGEX
 REGEX_DIR = regex
 endif
 
+ifdef GRPREF
+GRPREF_DIR = $(GRPREF)interf
+endif
+
 ifdef MSW
 MSW_DIR = msw
 endif
@@ -23,8 +27,8 @@ endif
 SUBDIRS = \
   miscutil \
   ginterf \
-  $(GRPREF)interf \
   util \
+  $(GRPREF_DIR) \
   $(MSW_DIR) \
   $(MALLOC_DIR) \
   $(REGEX_DIR)

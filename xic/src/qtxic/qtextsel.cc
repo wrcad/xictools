@@ -87,6 +87,7 @@ cExt::PopUpSelections(GRobject caller, ShowMode mode)
         QTmainwin::self()->Viewport());
     QTextNetSelDlg::self()->show();
 }
+// End of cExt functions.
 
 
 QTextNetSelDlg *QTextNetSelDlg::instPtr;

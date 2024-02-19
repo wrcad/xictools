@@ -184,6 +184,56 @@ cMain::on_null_ptr()
 }
 
 
+// Stubs for functions defined in graphical toolkit, include when
+// not building with toolkit.
+#if (!defined(WITH_QT5) && !defined(WITH_QT6) && !defined(WITH_GTK2) &&\
+    !defined(GTK3))
+CursorType cMain::GetCursor() { return (CursorDefault); }
+void cMain::UpdateCursor(WindowDesc*, CursorType, bool) { }
+void cMain::PopUpAttributes(GRobject, ShowMode) { }
+void cMain::PopUpCells(     GRobject, ShowMode) { }
+void cMain::PopUpCellFilt(  GRobject, ShowMode, DisplayMode,
+    void(*)(cfilter_t*, void*), void*) { }
+void cMain::PopUpCellFlags( GRobject, ShowMode, const stringlist*, int) { }
+void cMain::PopUpColor(     GRobject, ShowMode) { }
+void cMain::ColorTimerInit() { }
+void cMain::FixupColors(void*) { }
+void cMain::SetCoordMode(COmode, int, int) { }
+void cMain::PopUpDebugFlags(GRobject, ShowMode) { }
+void cMain::PopUpDebug(     GRobject, ShowMode) { }
+bool cMain::DbgLoad(MenuEnt*) { return (false); }
+char *cMain::SaveFileDlg(const char*, const char*) { return (0); }
+char *cMain::OpenFileDlg(const char*, const char*) { return (0); }
+void cMain::PopUpFileSel(const char*, void(*)(const char*, void*), void*) { }
+void cMain::PopUpFillEditor(GRobject, ShowMode) { }
+void cMain::FillLoadCallback(LayerFillData*, CDl*) { }
+bool cMain::SendKeyEvent(const char*, int, int, bool) { return (false); }
+bool cMain::SendButtonEvent(const char*, int, int, int, int, bool)
+    { return (false); }
+void cMain::PopUpLayerPalette(GRobject, ShowMode, bool, CDl*) { }
+void cMain::PopUpLayerParamEditor(GRobject, ShowMode, const char*,
+    const char*) { }
+void cMain::PopUpLayerAliases(GRobject, ShowMode) { }
+sLcb *cMain::PopUpLayerEditor(GRobject) { return (0); }
+char *cMain::GetCurFileSelection() { return (0); }
+void cMain::DisableDialogs() { }
+void cMain::SetNoToTop(bool) { }
+void cMain::SetLowerWinOffset(int) { }
+void cMain::PopUpMemory(ShowMode) { }
+void cMain::ShowParameters(const char*) { }
+void cMain::PopUpSelectControl(GRobject, ShowMode) { }
+void cMain::PopUpSelectInstances(CDol*) { }
+CDol *cMain::PopUpFilterInstances(CDol*) { return (0); }
+void cMain::PopUpSymTabs(GRobject, ShowMode) { }
+void cMain::PopUpTechWrite(GRobject, ShowMode) { }
+void cMain::PopUpTree(      GRobject, ShowMode, const char*, TreeUpdMode
+    , const char*) { }
+void *cMain::SetupLayers(void*, GRdraw*, void*) { return (0); }
+bool cMain::DrawCallback(void*, GRdraw*, int, int, int, int, int, int)
+    { return (false); }
+#endif
+
+
 // Return static string containing version data and date.
 //
 const char *

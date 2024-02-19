@@ -95,7 +95,7 @@
 #include "miscutil/tvals.h"
 #include "miscutil/timedbg.h"
 #include "miscutil/crypt.h"
-#include "ginterf/grfont.h"
+#include "ginterf/grvecfont.h"
 
 #include <errno.h>
 #include <sys/time.h>
@@ -108,6 +108,15 @@
 #include <conio.h>
 #include "miscutil/msw.h"
 #include "miscutil/miscutil.h"
+#endif
+
+#if (!defined(WITH_QT5) && !defined(WITH_QT6) && \
+    !defined(WITH_GTK2) && !defined(WITH_GTK3))
+void
+GRpkg::DevDepInit(unsigned int)
+{
+//    GRpkg::self()->RegisterDevice(new NULLdev);
+}
 #endif
 
 // Set up the ginterf package, include all drivers.

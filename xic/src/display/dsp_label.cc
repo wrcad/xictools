@@ -46,7 +46,7 @@
 #include "cd_hypertext.h"
 #include "cd_lgen.h"
 #include "miscutil/texttf.h"
-#include "ginterf/grfont.h"
+#include "ginterf/grvecfont.h"
 
 
 //

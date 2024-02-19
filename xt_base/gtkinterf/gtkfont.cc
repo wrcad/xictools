@@ -58,20 +58,6 @@ namespace { GTKfont gtk_font; }
 
 GRfont &FC = gtk_font;
 
-GRfont::fnt_t GRfont::app_fonts[] =
-{
-    fnt_t( 0, 0, false, false ),  // not used
-    fnt_t( "Fixed Pitch Text Window Font",    0, true, false ),
-    fnt_t( "Proportional Text Window Font",   0, false, false ),
-    fnt_t( "Fixed Pitch Drawing Window Font", 0, true, false ),
-    fnt_t( "Text Editor Font",                0, true, false ),
-    fnt_t( "HTML Viewer Proportional Family", 0, false, true ),
-    fnt_t( "HTML Viewer Fixed Pitch Family",  0, true, true )
-};
-
-int GRfont::num_app_fonts =
-    sizeof(GRfont::app_fonts)/sizeof(GRfont::app_fonts[0]);
-
 //#define DEF_FIXED_FACE "Courier New"
 //#define DEF_PROP_FACE "Helvetica"
 #define DEF_FIXED_FACE "Monospace"

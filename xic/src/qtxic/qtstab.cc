@@ -84,6 +84,7 @@ cMain::PopUpSymTabs(GRobject caller, ShowMode mode)
         QTmainwin::self()->Viewport());
     QTstabDlg::self()->show();
 }
+// End of cMain functions.
 
 
 QTstabDlg *QTstabDlg::instPtr;

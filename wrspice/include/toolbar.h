@@ -191,8 +191,143 @@ struct sToolbar
     virtual void PopUpNotes() = 0;
 #endif
 };
+
 extern sToolbar *ToolBar();
 
+// A dummy class that does nothing, used when running without a graphics
+// package and therefor no toolbar.
+struct sNullToolbar : public sToolbar
+{
+#define NEW_TBIF
+#ifdef NEW_TBIF
+
+    // timer/idle utilities
+    int RegisterIdleProc(int(*)(void*), void*)          { return (0); }
+    bool RemoveIdleProc(int)                            { return (false); }
+    int RegisterTimeoutProc(int, int(*)(void*), void*)  { return (0); }
+    bool RemoveTimeoutProc(int)                         { return (false); }
+    void RegisterBigForeignWindow(unsigned int)         { }
+
+    // command defaults dialog
+    void PopUpCmdConfig(ShowMode, int, int)             { }
+
+    // color control dialog
+    void PopUpColors(ShowMode, int, int)                { }
+    void UpdateColors(const char*)                      { }
+    void LoadResourceColors()                           { }
+
+    // debugging dialog
+    void PopUpDebugDefs(ShowMode, int, int)             { }
+
+    // plot defaults dialog
+    void PopUpPlotDefs(ShowMode, int, int)              { }
+
+    // shell defaults dialog
+    void PopUpShellDefs(ShowMode, int, int)             { }
+
+    // simulation defaults dialog
+    void PopUpSimDefs(ShowMode, int, int)               { }
+
+    // misc listing panels and dialogs
+    void SuppressUpdate(bool)                           { }
+    void PopUpPlots(ShowMode, int, int)                 { }
+    void UpdatePlots(int)                               { }
+    void PopUpVectors(ShowMode, int, int)               { }
+    void UpdateVectors(int)                             { }
+    void PopUpCircuits(ShowMode, int, int)              { }
+    void UpdateCircuits()                               { }
+    void PopUpFiles(ShowMode, int, int)                 { }
+    void UpdateFiles()                                  { }
+    void PopUpRunops(ShowMode, int, int)                { }
+    void UpdateRunops()                                 { }
+    void PopUpVariables(ShowMode, int, int)             { }
+    void UpdateVariables()                              { }
+
+    // main window and a few more
+    void Toolbar()                                      { }
+    void PopUpToolbar(ShowMode, int, int)               { }
+    void PopUpBugRpt(ShowMode, int, int)                { }
+    void PopUpFont(ShowMode, int, int)                  { }
+    void PopUpTBhelp(ShowMode, GRobject, GRobject, TBH_type) { }
+    void PopUpNotes()                                   { }
+    void PopUpSpiceErr(bool, const char*)               { }
+    void PopUpSpiceMessage(const char*, int, int)       { }
+    void PopUpSpiceInfo(const char*)                    { }
+    void UpdateMain(ResUpdType)                         { }
+    void CloseGraphicsConnection()                      { }
+
+#else
+    // timer/idle utilities
+    int RegisterIdleProc(int(*)(void*), void*)          { return (0); }
+    bool RemoveIdleProc(int)                            { return (false); }
+    int RegisterTimeoutProc(int, int(*)(void*), void*)  { return (0); }
+    bool RemoveTimeoutProc(int)                         { return (false); }
+    void RegisterBigForeignWindow(unsigned int)         { }
+
+    // command defaults dialog
+    void PopUpCmdConfig(int, int)                       { }
+    void PopDownCmdConfig()                             { }
+
+    // color control dialog
+    void PopUpColors(int, int)                          { }
+    void PopDownColors()                                { }
+    void UpdateColors(const char*)                      { }
+    void LoadResourceColors()                           { }
+
+    // debugging dialog
+    void PopUpDebugDefs(int, int)                       { }
+    void PopDownDebugDefs()                             { }
+
+    // plot defaults dialog
+    void PopUpPlotDefs(int, int)                        { }
+    void PopDownPlotDefs()                              { }
+
+    // shell defaults dialog
+    void PopUpShellDefs(int, int)                       { }
+    void PopDownShellDefs()                             { }
+
+    // simulation defaults dialog
+    void PopUpSimDefs(int, int)                         { }
+    void PopDownSimDefs()                               { }
+
+    // misc listing panels and dialogs
+    void SuppressUpdate(bool)                           { }
+    void PopUpPlots(int, int)                           { }
+    void PopDownPlots()                                 { }
+    void UpdatePlots(int)                               { }
+    void PopUpVectors(int, int)                         { }
+    void PopDownVectors()                               { }
+    void UpdateVectors(int)                             { }
+    void PopUpCircuits(int, int)                        { }
+    void PopDownCircuits()                              { }
+    void UpdateCircuits()                               { }
+    void PopUpFiles(int, int)                           { }
+    void PopDownFiles()                                 { }
+    void UpdateFiles()                                  { }
+    void PopUpTrace(int, int)                           { }
+    void PopDownTrace()                                 { }
+    void UpdateTrace()                                  { }
+    void PopUpVariables(int, int)                       { }
+    void PopDownVariables()                             { }
+    void UpdateVariables()                              { }
+
+    // main window and a few more
+    void Toolbar()                                      { }
+    void PopUpBugRpt(int, int)                          { }
+    void PopDownBugRpt()                                { }
+    void PopUpFont(int, int)                            { }
+    void PopDownFont()                                  { }
+    void PopUpTBhelp(GRobject, GRobject, TBH_type)      { }
+    void PopDownTBhelp(TBH_type)                        { }
+    void PopUpSpiceErr(bool, const char*)               { }
+    void PopUpSpiceMessage(const char*, int, int)       { }
+    void UpdateMain(ResUpdType)                         { }
+    void CloseGraphicsConnection()                      { }
+
+    void PopUpInfo(const char*)                         { }
+    void PopUpNotes()                                   { }
+#endif
+};
 
 //
 // Error message handling/display base class.

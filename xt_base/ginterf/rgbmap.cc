@@ -43,7 +43,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "rgbmap.h"
-#include "grfont.h"
+#include "grvecfont.h"
 #include "polydecomp.h"
 
 

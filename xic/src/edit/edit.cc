@@ -123,6 +123,43 @@ cEdit::cEdit()
 }
 
 
+// Stubs for functions defined in graphical toolkit, include when
+// not building with toolkit.
+#if (!defined(WITH_QT5) && !defined(WITH_QT6) && !defined(WITH_GTK2) &&\
+    !defined(GTK3))
+void cEdit::PopUpEditSetup( GRobject, ShowMode) { }
+void cEdit::PopUpFlatten(   GRobject, ShowMode,
+    bool (*)(const char*, bool, const char*, void*), void*, int,
+    bool, bool) { }
+void cEdit::PopUpJoin(      GRobject, ShowMode) { }
+void cEdit::PopUpLayerExp(  GRobject, ShowMode) { }
+void cEdit::PopUpLogo(      GRobject, ShowMode) { }
+void cEdit::PopUpPolytextFont(GRobject, ShowMode) { }
+void cEdit::polytextExtent(const char*, int*, int*, int*) { }
+PolyList *cEdit::polytext(const char*, int, int, int) { return (0); }
+void cEdit::PopUpLayerChangeMode(ShowMode) { }
+PMretType cEdit::PopUpModified(stringlist*, bool(*)(const char*))
+    { return (PMok); }
+void cEdit::PopUpPCellCtrl( GRobject, ShowMode) { }
+bool cEdit::PopUpPCellParams(GRobject, ShowMode, PCellParam*, const char*,
+    pcpMode) { return (false); }
+void cEdit::PopUpPlace(ShowMode, bool) { }
+void cEdit::PopUpCellProperties(ShowMode) { }
+void cEdit::PopUpProperties(CDo*, ShowMode, PRPmode) { }
+PrptyText *cEdit::PropertyResolve(int, int, CDo**) { return (0); }
+void cEdit::PropertyPurge(CDo*, CDo*) { }
+PrptyText *cEdit::PropertySelect(int) { return (0); }
+PrptyText *cEdit::PropertyCycle(CDp*, bool(*)(const CDp*), bool)
+    { return (0); }
+void cEdit::RegisterPrptyBtnCallback(int(*)(PrptyText*)) { }
+void cEdit::PopUpPropertyInfo(CDo*, ShowMode) { }
+void cEdit::PropertyInfoPurge(CDo*, CDo*) { }
+void cEdit::PopUpStdVia(    GRobject, ShowMode, CDc*) { }
+void cEdit::PopUpTransform( GRobject, ShowMode,
+    bool (*)(const char*, bool, const char*, void*), void*) { }
+#endif
+
+
 // Set the editing capability on/off in accord with the immutable flag
 // of the current cell.  If there is no current cell, the passed
 // argument state is used.

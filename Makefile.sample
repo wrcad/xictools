@@ -40,11 +40,14 @@ ITOPOK = --enable-itopok=no
 #
 #HVSECURE = --enable-secure=yes
 
-# The Mozy help viewer is tainted with GNU licensing restrictions due
-# to derivation from GNU-licensed original source code.  All of the
-# tainted code is under mozy.  If you're commercial and fear the GNU,
-# uncomment this and live without the help system, http file transfer,
-# screen dumps, and package management.
+# Uncomment this to NOT include the Mozy help system, http file
+# transfer, screen dumps, and package management.  This was used to
+# avoid the GNU-licensed code when building commercial packages. 
+# Since the tools are now open-source this is not an issue.  There
+# presently is other GNU-licensed code within the tools, users need
+# to be aware of the license restrictions this imposes for non-open
+# source applications, which are allowed by the Apache license but not
+# GNU.
 #
 #NOMOZY = --enable-nomozy=yes
 
@@ -53,26 +56,26 @@ ITOPOK = --enable-itopok=no
 #32BIT = --enable-force32=yes
 
 # Graphics package.  The programs can build with GTK-2, GTK-3, QT-5,
-# and QT-6.  GTK-2 is the production graphics system and is strongly
-# recommended for actual work.  GTK-3 has numerous issues:  primarily
-# the Cairo graphics is not suitable for a program like Xic (or any
-# EDA tool with performance requirements) thus has to be worked
-# around, which is a challenge.  Presently, only X-Windows is
-# supported in GTK-3, using direct X calls.  Native Windows is not
-# supported, and if support is ever provided under GTK-3 for Windows
-# it will require an X server, same for Apple.  It is unlikely that
-# further effort will be directed toward GTK.  QT support is just
-# getting started but will eventually replace GTK.  Most of the
-# dialogs have not been implemented but much of the core functionality
-# is available.  Help implementing the dialogs would be greatly
-# appreciated!
+# and QT-6.  GTK-2 is still the production graphics system and is
+# recommended for actual work.  QT support is in progress and will
+# replace GTK.  Virtually all GTK functionality has been ported to QT
+# and at present fine tuning and bug fixing is being done.  Bug
+# reports and comments would be appreciated!  GTK-3 semi-works
+# (X-Windoes only) but has numerous issues.  The Cairo graphics is not
+# suitable for a program like Xic (or any EDA tool with performance
+# requirements) thus has to be worked around, which is a challenge. 
+# It is unlikely that further effort will be directed toward GTK.
 #
-# This variable must be set, there is no default.  Most of the time it
-# can be set to something like "--enable-gtk2=yes", which should
-# always be true for GTK if the pkg-config utility is working.  If can
-# be set to the directory containing pkg-config for GTK.  Otherwise,
-# the value can be the installation location for QT-5/6.  If the qmake
-# program is in your search path "yes" should work here as well.
+# If this variable is not set, the programs will be built without a
+# GUI toolkit.  Mozy will not build in this case, Xic can be used in
+# server-mode only, and WRspice will be command-line only.
+#
+# To select a graphics library, most of the time this variable can be
+# set to something like "--enable-gtk2=yes", which should always be
+# true for GTK if the pkg-config utility is working.  If can be set to
+# the directory containing pkg-config for GTK.  Otherwise, the value
+# can be the installation location for QT-5/6.  If the qmake program
+# is in your search path "yes" should work here as well.
 #
 #GFXLOC = --enable-gtk2=/mingw64/bin
 #GFXLOC = --enable-qt5=/opt/local/libexec/qt5
@@ -118,7 +121,9 @@ ifdef HVSECURE
 SECURE = secure
 endif
 ifndef NOMOZY 
+ifdef GFXLOC
 MOZY = mozy
+endif
 endif
 
 SUBDIRS = xt_base $(SECURE) $(MOZY) $(WRSPICE) $(XIC) fastcap fasthenry

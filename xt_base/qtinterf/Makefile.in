@@ -42,8 +42,7 @@ CCFILES = \
     qtsearch.cc \
     qttext.cc \
     qttextw.cc \
-    qttimer.cc \
-    qtxdraw.cc
+    qttimer.cc
 
 MOCFILES = \
     moc_activity.cpp \

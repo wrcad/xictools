@@ -84,6 +84,7 @@ cMain::PopUpCellFilt(GRobject caller, ShowMode mode, DisplayMode dm,
         QTmainwin::self()->Viewport());
     QTcfiltDlg::self()->show();
 }
+// End of cMain functions.
 
 
 char *QTcfiltDlg::cf_phys_regs[NUMREGS];

@@ -32,113 +32,106 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * GtkInterf Graphical Interface Library                                  *
+ * Ginterf Graphical Interface Library                                    *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#ifndef GTKFONT_H
-#define GTKFONT_H
+#ifndef GRVECFONT_H
+#define GRVECFONT_H
 
-#include "ginterf/grfont.h"
+#include <stdio.h>
 
 //
-// Font handling
+// Scalable vector text generation
 //
 
-namespace gtkinterf {
-    struct GTKfont : public GRfont
+namespace ginterf
+{
+
+    struct GRvecFont
     {
-        GTKfont() { last_index = 0; }
-
-        void initFonts();
-        GRfontType getType() { return (GRfontP); }
-        void setName(const char*, int);
-        const char *getName(int);
-        char *getFamilyName(int);
-        bool getFont(void*, int);
-        void registerCallback(void*, int);
-        void unregisterCallback(void*, int);
-
-        static void trackFontChange(GtkWidget*, int);
-        static void setupFont(GtkWidget*, int, bool);
-        static bool stringBounds(int, const char*, int*, int*);
-        static int stringWidth(GtkWidget*, const char*);
-        static int stringHeight(GtkWidget*, const char*);
-
-        // Note that this can be called once only, it resets itself to
-        // avoid signal loops.
-        int last_index_for_update()
-            {
-                int i = last_index;
-                last_index = 0;
-                return (i);
-            }
-
-    private:
-        void refresh(int);
-
-        struct FcbRec
+        struct Cpair
         {
-            FcbRec(GtkWidget *w, FcbRec *n) { widget = w; next = n; }
-
-            GtkWidget *widget;
-            FcbRec *next;
+            char x;
+            char y;
         };
 
-        struct sFrec
+        struct Cstroke
         {
-            sFrec() { name = 0; cbs = 0; }
+            int numpts;
+            Cpair *cp;
+        };
 
-            const char *name;
-            FcbRec *cbs;
-        } fonts[MAX_NUM_APP_FONTS];
+        struct Character
+        {
+            int numstroke;
+            Cstroke *stroke;
+            short ofst;
+            short width;
+        };
 
-        int last_index;
-    };
+    public:
+        GRvecFont();
 
-    // The font selection pop-up
-    //
-    struct GTKfontPopup : public GRfontPopup, public GTKbag
-    {
-        GTKfontPopup(GTKbag*, int, void*, const char**, const char*);
-        ~GTKfontPopup();
-
-        // GRpopup overrides
-        void set_visible(bool visib)
+        int charWidth(int c) const
             {
-                if (visib)
-                    gtk_widget_show(wb_shell);
+                if (c >= vf_startChar && c <= vf_endChar)
+                    return (vf_charset[c - vf_startChar]->width);
+                else if (c == '\n')
+                    return (0);
                 else
-                    gtk_widget_hide(wb_shell);
+                    return (vf_cellWidth);
             }
-        void popdown();
 
-        // GRfontPopup overrides
-        void set_font_name(const char*);
-        void update_label(const char*);
+        int charHeight(int) const
+            {
+                return (vf_cellHeight);
+            }
 
-        void set_index(int);
-        static void update_all(int);
+        Character *entry(int c) const
+            {
+                if (c >= vf_startChar && c <= vf_endChar)
+                    return (vf_charset[c - vf_startChar]);
+                return (0);
+            }
+
+        int lineExtent(const char *string) const
+            {
+                int xw = 0;
+                for (const char *s = string; *s; s++) {
+                    int w = charWidth(*s);
+                    if (!w)
+                        // newline
+                        break;
+                    xw += w;
+                }
+                return (xw);
+            }
+
+        int cellWidth()             const { return (vf_cellWidth); }
+        int cellHeight()            const { return (vf_cellHeight); }
+        int startChar()             const { return (vf_startChar); }
+        int endChar()               const { return (vf_endChar); }
+
+        void textExtent(const char*, int*, int*, int*, int = 0) const;
+        int xoffset(const char*, int, int, int) const;
+        void renderText(GRdraw*, const char*, int, int, int, int, int,
+            int = 0) const;
+        void parseChars(FILE*);
+        void dumpFont(FILE*) const;
 
     private:
-        // GTK signal handlers
-        static void ft_quit_proc(GtkWidget*, void*);
-        static void ft_button_proc(GtkWidget*, void*);
-        static void ft_apply_proc(GtkWidget*, void*);
-        static void ft_font_activated_proc(GtkWidget*, const char*, void*);
-        static void ft_opt_menu_proc(GtkWidget*, void*);
-        static int index_idle(void*);
-        void show_available_fonts(bool);
-
-        GtkWidget *ft_fsel;
-        GtkWidget *ft_label;
-        int ft_index;
-
-        static GTKfontPopup *activeFontSels[4];
+        Character **vf_charset;
+        int vf_cellWidth;
+        int vf_cellHeight;
+        int vf_startChar;
+        int vf_endChar;
     };
 }
+
+extern ginterf::GRvecFont FT;
 
 #endif
 

@@ -38,6 +38,7 @@
  $Id:$
  *========================================================================*/
 
+#include "config.h"
 #include "main.h"
 #include "keymap.h"
 #include "menu.h"
@@ -206,6 +207,18 @@ cKsMap::on_null_ptr()
     fprintf(stderr, "Singleton class cKsMap used before instantiated.\n");
     exit(1);
 }
+
+
+// Stubs for functions defined in graphical toolkit, include when
+// not building with toolkit.
+#if (!defined(WITH_QT5) && !defined(WITH_QT6) && !defined(WITH_GTK2) &&\
+    !defined(GTK3))
+void cKsMap::SetMap(int, unsigned) { }
+char *cKsMap::KeyvalToString(unsigned int) { return (0); }
+unsigned int cKsMap::StringToKeyval(const char*) { return (0); }
+void cKsMap::init() { }
+int cKsMap::filter_key(unsigned) { return (0); }
+#endif
 
 
 int
