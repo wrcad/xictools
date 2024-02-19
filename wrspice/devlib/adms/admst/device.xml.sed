@@ -7,7 +7,7 @@
   Whiteley Research Inc. (wrcad.com). 
 
 This must match the Makefile.
-SyntaxLevel 19
+SyntaxLevel 0
 -->
 
 <!DOCTYPE admst SYSTEM "admst.dtd">

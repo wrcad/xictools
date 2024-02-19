@@ -10,6 +10,7 @@ adms/include/inpline.h
 adms/include/input.h
 adms/include/noisdefs.h
 adms/include/stab.h
+adms/admst/device.xml
 toc.cc
 include/acdefs.h
 include/circuit.h
