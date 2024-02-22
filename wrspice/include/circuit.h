@@ -511,7 +511,7 @@ enum OMRG_TYPE { OMRG_GLOBAL, OMRG_LOCAL, OMRG_NOSHELL };
 #define DEF_gmax_MAX            1e9
 
 #define DEF_gmin                1e-12
-#define DEF_gmin_MIN            1e-15
+#define DEF_gmin_MIN            1e-18
 #define DEF_gmin_MAX            1e-6
 
 #define DEF_maxData             256000
