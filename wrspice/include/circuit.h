@@ -433,11 +433,8 @@ struct sJOB : public cBase
 
     virtual sJOB *dup()
         {
-            sJOB *j = new sJOB;
-            j->b_name = b_name;
-            j->b_type = b_type;
+            sJOB *j = new sJOB(*this);
             j->JOBoutdata = new sOUTdata(*JOBoutdata);
-            j->JOBrun = JOBrun;
             return (j);
         }
 

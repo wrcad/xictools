@@ -163,19 +163,10 @@ struct sTRANAN : public sDCTAN
 
     sJOB *dup()
         {
-            sTRANAN *tran = new sTRANAN;
-            tran->b_name = b_name;
-            tran->b_type = b_type;
+            sTRANAN *tran = new sTRANAN(*this);
             tran->JOBoutdata = new sOUTdata(*JOBoutdata);
-            tran->JOBrun = JOBrun;
-            tran->JOBdc = JOBdc;
             tran->JOBdc.uninit();
             tran->TRANspec = TRANspec->dup();
-            tran->TRANmaxStep = TRANmaxStep;
-            tran->TRANsegDelta = TRANsegDelta;
-            tran->TRANmode = TRANmode;
-            tran->TRANsegBaseName = TRANsegBaseName;
-            tran->TS = TS;
             return (tran);
         }
 

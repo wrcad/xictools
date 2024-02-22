@@ -76,25 +76,9 @@ struct sTFAN : public sACAN
 
     sJOB *dup()
         {
-            sTFAN *tf = new sTFAN;
-            tf->b_name = b_name;
-            tf->b_type = b_type;
+            sTFAN *tf = new sTFAN(*this);
             tf->JOBoutdata = new sOUTdata(*JOBoutdata);
-            tf->JOBrun = JOBrun;
-            tf->JOBdc = JOBdc;
             tf->JOBdc.uninit();
-            tf->JOBac = JOBac;
-            tf->TFoutPos = TFoutPos;
-            tf->TFoutNeg = TFoutNeg;
-            tf->TFoutSrc = TFoutSrc;
-            tf->TFinSrc = TFinSrc;
-            tf->TFinSrcDev = TFinSrcDev;
-            tf->TFoutSrcDev = TFoutSrcDev;
-            tf->TFoutName = TFoutName;
-            tf->TFoutIsV = TFoutIsV;
-            tf->TFoutIsI = TFoutIsI;
-            tf->TFinIsV = TFinIsV;
-            tf->TFinIsI = TFinIsI;
             return (tf);
         }
 

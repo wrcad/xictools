@@ -153,12 +153,8 @@ struct sDCTAN : public sJOB
 
     virtual sJOB *dup()
         {
-            sDCTAN *dct = new sDCTAN;
-            dct->b_name = b_name;
-            dct->b_type = b_type;
+            sDCTAN *dct = new sDCTAN(*this);
             dct->JOBoutdata = new sOUTdata(*JOBoutdata);
-            dct->JOBrun = JOBrun;
-            dct->JOBdc = JOBdc;
             dct->JOBdc.uninit();
             return (dct);
         }
