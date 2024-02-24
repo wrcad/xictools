@@ -67,6 +67,7 @@
 #include <QScrollBar>
 #include <QLineEdit>
 #include <QSplitter>
+#include <QWheelEvent>
 
 
 //-----------------------------------------------------------------------------
@@ -173,6 +174,8 @@ QTltab::QTltab(bool nogr) : QTdraw(XW_LTAB)
         this, SLOT(button_release_slot(QMouseEvent*)));
     connect(gd_viewport, SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(motion_slot(QMouseEvent*)));
+    connect(gd_viewport, SIGNAL(mouse_wheel_event(QWheelEvent*)),
+        this, SLOT(mouse_wheel_slot(QWheelEvent*)));
     connect(ltab_scrollbar, SIGNAL(valueChanged(int)),
         this, SLOT(ltab_scroll_value_changed_slot(int)));
     connect(gd_viewport, SIGNAL(drag_enter_event(QDragEnterEvent*)),
@@ -576,6 +579,13 @@ QTltab::drop_event_slot(QDropEvent *ev)
         return;
     }
     ev->ignore();
+}
+
+
+void
+QTltab::mouse_wheel_slot(QWheelEvent *ev)
+{
+    ltab_scrollbar->event(ev);
 }
 
 

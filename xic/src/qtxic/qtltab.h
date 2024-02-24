@@ -62,6 +62,7 @@ class QResizeEvent;
 class QDragEnterEvent;
 class QDropEvent;
 class QLineEdit;
+class QWheelEvent;
 
 Q_DECLARE_METATYPE(LayerFillData);
 
@@ -110,6 +111,7 @@ private slots:
     void drag_enter_slot(QDragEnterEvent*);
     void drop_event_slot(QDropEvent*);
     void resize_slot(QResizeEvent*);
+    void mouse_wheel_slot(QWheelEvent*);
     void ltab_scroll_value_changed_slot(int);
     void font_changed(int);
     void pressed_slot();

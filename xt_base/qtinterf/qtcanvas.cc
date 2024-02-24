@@ -45,6 +45,7 @@
 #include <QPainter>
 #include <QEnterEvent>
 #include <QFocusEvent>
+#include <QWheelEvent>
 #include <QGuiApplication>
 
 
@@ -1279,6 +1280,13 @@ void
 QTcanvas::focusOutEvent(QFocusEvent *ev)
 {
     emit focus_out_event(ev);
+}
+
+
+void
+QTcanvas::wheelEvent(QWheelEvent *ev)
+{
+    emit mouse_wheel_event(ev);
 }
 
 
