@@ -392,8 +392,6 @@ public:
     // in Xic.
     bool focusNextPrevChild(bool);
 
-    void wheelEvent(QWheelEvent*);
-
     bool keypress_handler(unsigned int, unsigned int, const char*, bool, bool);
 
 signals:
@@ -411,6 +409,7 @@ protected slots:
     void leave_slot(QEvent*);
     void focus_in_slot(QFocusEvent*);
     void focus_out_slot(QFocusEvent*);
+    void mouse_wheel_slot(QWheelEvent*);
     void drag_enter_slot(QDragEnterEvent*);
     void drop_slot(QDropEvent*);
     void font_changed(int);

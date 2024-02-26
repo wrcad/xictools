@@ -54,7 +54,7 @@
 // interfaces to the QTviewer viewing area.  This derives from QDialog
 // and the HelpWidget and QTbag interfaces.
 
-class QStatusBar;
+class QLabel;
 class QMenu;
 class QMenuBar;
 class QResizeEvent;
@@ -152,7 +152,6 @@ private slots:
     void search_slot();
     void find_slot();
     void set_font_slot(bool);
-    void font_down_slot();
     void dont_cache_slot(bool);
     void clear_cache_slot();
     void reload_cache_slot();
@@ -195,7 +194,7 @@ private:
     QTviewer    *h_viewer;
 
     QMenu       *h_main_menus[4];
-    QStatusBar  *h_status_bar;
+    QLabel      *h_status_bar;
 
     HLPparams   *h_params;          // default parameters
     HLPtopic    *h_root_topic;      // root (original) topic

@@ -69,6 +69,7 @@
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *------------------------------------------------------------------------*/
 
+#include "config.h"
 #include "htm_widget.h"
 #include "htm_font.h"
 #include "htm_format.h"
@@ -1095,6 +1096,26 @@ htmWidget::drawBullet(htmObjectTable *data, htmRect *rect)
     int xv = viewportX(data->area.x);
     int yv = viewportY(data->area.y);
 
+    // Tweek for toolkit drawing functions.
+#if (defined(WITH_QT5) || defined(WITH_QT6))
+    int w2 = 2*w;
+    switch (data->marker) {
+    case MARKER_DISC:
+        htm_tk->tk_draw_arc(true, xv - 2, yv - w, w2, w2, 0, 5760);
+        break;
+    case MARKER_SQUARE:
+        htm_tk->tk_draw_rectangle(false, xv - 2, yv - w, w2, w2);
+        break;
+    case MARKER_CIRCLE:
+        htm_tk->tk_draw_arc(false, xv - 2, yv - w, w2, w2, 0, 5760);
+        break;
+    default:
+        htm_tk->tk_set_font(htm_default_font);
+        htm_tk->tk_draw_text(xv, yv + htm_default_font->ascent, data->text,
+            data->len);
+        break;
+    }
+#else
     int w2 = 2*w;
     switch (data->marker) {
     case MARKER_DISC:
@@ -1112,6 +1133,7 @@ htmWidget::drawBullet(htmObjectTable *data, htmRect *rect)
             data->len);
         break;
     }
+#endif
 }
 
 

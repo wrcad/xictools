@@ -223,6 +223,8 @@ QTviewer::QTviewer(int wid, int hei, htmDataInterface *dta, QWidget *prnt) :
         this, SLOT(release_event_slot(QMouseEvent*)));
     connect(v_darea, SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(motion_event_slot(QMouseEvent*)));
+    connect(v_darea, SIGNAL(mouse_wheel_event(QWheelEvent*)),
+        this, SLOT(mouse_wheel_slot(QWheelEvent*)));
 
     v_timers = 0;
 
@@ -241,8 +243,6 @@ QTviewer::QTviewer(int wid, int hei, htmDataInterface *dta, QWidget *prnt) :
     // Listen for font family names under FNT_MOZY and FNT_MOZY_FIXED.
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
-
-    setReady();
 }
 
 
@@ -591,6 +591,12 @@ QTviewer::tk_claim_selection(const char*)
 htmFont *
 QTviewer::tk_alloc_font(const char *family, int sz, unsigned char sty)
 {
+#ifdef __APPLE__
+    // In QT, if a font doesn't exist, a long annoying message is printed
+    // on-screen.  Sans doesn't exist in Apple at present (Sonoma).
+    if (!strcasecmp(family, "sans"))
+        family = "Arial";
+#endif
     QFont *xfont = new QFont(QString(family), sz);
     if (sty & FONT_FIXED)
         xfont->setFixedPitch(true);
@@ -608,10 +614,11 @@ QTviewer::tk_alloc_font(const char *family, int sz, unsigned char sty)
 
     fnt->ascent = fm.ascent();
     fnt->descent = fm.descent();
-    fnt->width = fm.maxWidth();
 #if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
+    fnt->width = fm.horizontalAdvance('x');
     fnt->lbearing = fm.horizontalAdvance(' ');
 #else
+    fnt->width = fm.width('x');
     fnt->lbearing = fm.width(' ');
 #endif
     fnt->rbearing = 0;
@@ -1572,6 +1579,15 @@ QTviewer::motion_event_slot(QMouseEvent *ev)
 }
 
 
+void
+QTviewer::mouse_wheel_slot(QWheelEvent *ev)
+{
+    QScrollBar *sb = verticalScrollBar();
+    if (sb)
+        sb->event(ev);
+}
+
+
 // This is called a short time after a button press.  It signals the
 // end of a "click" and starts the rectangle sprite for selection if
 // the mouse button is still down.
@@ -1607,6 +1623,7 @@ QTviewer::resizeEvent(QResizeEvent *ev)
 {
     QScrollArea::resizeEvent(ev);
 
+/*XXX not needed?
     // If the size increases, resize the drawing area immediately so it
     // won't look strange while reformatting.  The reformatting will
     // resize it again.
@@ -1617,9 +1634,17 @@ QTviewer::resizeEvent(QResizeEvent *ev)
         dasize.setHeight(ev->size().height());
     if (dasize != v_darea->size())
         v_darea->resize(dasize);
+*/
 
     htmWidget::resize();
-    if (!htm_in_layout && htm_initialized)
+    if (!isReady()) {
+        //XXX
+        // I don't know why but this is needed for the initial window
+        // to have correct layout.
+        QWidget::resize(width() + 1, height());
+        setReady();
+    }
+    else if (!htm_in_layout && htm_initialized)
         trySync();
 }
 

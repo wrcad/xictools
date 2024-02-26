@@ -64,17 +64,11 @@ Help
     <table border=0 width=100%>
     <tr><td align=center>
     <font face=helvetica color="#000090">
-    <b>456 Flora Vista Avenue, Sunnyvale CA 94086</b>
+    <b>Sunnyvale California</b>
     </font>
     <table border=0 width=80%>
      <tr><td align=left>
-     <font face=helvetica color="#000090">
-     (408) 735-8973
-     </font>
      </td><td align=right>
-     <font face=helvetica color="#000090">
-     (408) 245-4033 (fax)
-     </font>
      </td></tr>
      <tr><td align=left>
      <font face=helvetica>
@@ -91,7 +85,8 @@ Help
 
     <p>
     <center>
-    <h3>Welcome to the <i>WRspice</i> <a href="helpsys">help system</a></h3>
+    <h3><font color=red>Welcome to the <i>WRspice</i><font>
+         <a href="helpsys">help system</a></h3>
     </center>
 
     <h4>Introduction and <i>WRspice</i> Overview</h4>

@@ -137,7 +137,15 @@ struct sNOISEAN : public sACAN
             delete Ioutdata;
         }
 
-    sJOB *dup()  { return (0); } // XXX fixme
+    sJOB *dup()
+        {
+            //XXX finish me
+            return (0);
+            sNOISEAN *n = new sNOISEAN(*this);
+            n->JOBoutdata = new sOUTdata(*JOBoutdata);
+            n->JOBdc.uninit();
+            return (n);
+        }
 
     sOUTdata *Ioutdata; // integrated noise output data struct
     sRunDesc *Irun;     // run descriptor for integrated noise

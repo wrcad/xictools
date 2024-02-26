@@ -59,7 +59,7 @@
 #include <QMenuBar>
 #include <QToolBar>
 #include <QToolButton>
-#include <QStatusBar>
+#include <QLabel>
 #include <QResizeEvent>
 #include <QScrollBar>
 #include <QActionGroup>
@@ -385,7 +385,8 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QDialog(prnt),
 
     h_viewer = new QTviewer(HLP_DEF_WIDTH, HLP_DEF_HEIGHT, this, this);
     vbox->addWidget(h_viewer);
-    h_status_bar = new QStatusBar(this);
+    h_status_bar = new QLabel();
+    h_status_bar->setAlignment(Qt::AlignCenter);
     vbox->addWidget(h_status_bar);
     if (!has_menu)
         h_status_bar->hide();
@@ -428,6 +429,16 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QDialog(prnt),
         this, SLOT(print_slot()));
     h_Reload = h_main_menus[0]->addAction(tr("&Reload"), Qt::CTRL|Qt::Key_R,
         this, SLOT(reload_slot()));
+
+    /*XXX
+    h_OldCset = h_main_menus[0]->addAction(tr("Old &Charset"), 0,
+        this, SLOT(old_charser_slot()));
+    h_OldCset->setCheckable(true);
+    h_MkFIFO = h_main_menus[0]->addAction(tr("&Make FIFO"), Qt::CTRL|Qt::Key_M,
+        this, SLOT(make_fifo_slot()));
+    h_MkFIFO->setCheckable(true);
+    */
+
     h_main_menus[0]->addSeparator();
     h_Quit = h_main_menus[0]->addAction(tr("&Quit"), Qt::CTRL|Qt::Key_Q,
         this, SLOT(quit_slot()));
@@ -442,6 +453,16 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QDialog(prnt),
         SLOT(print_slot()), Qt::CTRL|Qt::Key_P);
     h_Reload = h_main_menus[0]->addAction(tr("&Reload"), this,
         SLOT(reload_slot()), Qt::CTRL|Qt::Key_R);
+
+    /*XXX
+    h_OldCset = h_main_menus[0]->addAction(tr("Old &Charset"), this,
+        SLOT(old_charser_slot(bool)), 0);
+    h_OldCset->setCheckable(true);
+    h_MkFIFO = h_main_menus[0]->addAction(tr("&Make FIFO"), this,
+        SLOT(make_fifo_slot(bool)), Qt::CTRL|Qt::Key_M);
+    h_MkFIFO->setCheckable(true);
+    */
+
     h_main_menus[0]->addSeparator();
     h_Quit = h_main_menus[0]->addAction(tr("&Quit"), this,
         SLOT(quit_slot()), Qt::CTRL|Qt::Key_Q);
@@ -457,10 +478,17 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QDialog(prnt),
 #else
     h_main_menus[1] = menubar->addMenu(tr("&Options"));
 #endif
-    h_Search = h_main_menus[1]->addAction(tr("S&earch"),
+    /*XXX
+    Save Config
+    Set Proxy
+    */
+    h_Search = h_main_menus[1]->addAction(tr("&Search Database"),
         this, SLOT(search_slot()));
-    h_FindText = h_main_menus[1]->addAction(tr("Find Text"),
+    h_FindText = h_main_menus[1]->addAction(tr("Find &Text"),
         this, SLOT(find_slot()));
+/*XXX
+Default Colors
+*/
     h_SetFont = h_main_menus[1]->addAction(tr("Set &Font"));
     h_SetFont->setCheckable(true);
     connect(h_SetFont, SIGNAL(toggled(bool)),
@@ -733,7 +761,7 @@ QThelpDlg::set_status_line(const char *msg)
     if (h_frame_parent)
         h_frame_parent->set_status_line(msg);
     else
-        h_status_bar->showMessage(QString(msg));
+        h_status_bar->setText(msg);
 }
 
 
@@ -1311,6 +1339,20 @@ QThelpDlg::reload_slot()
 }
 
 
+/*XXX
+void
+QThelpDlg::old_charset_slot(bool state)
+{
+}
+
+
+void
+QThelpDlg::make_fifo_slot(bool state)
+{
+}
+*/
+
+
 void
 QThelpDlg::quit_slot()
 {
@@ -1339,21 +1381,10 @@ QThelpDlg::find_slot()
 void
 QThelpDlg::set_font_slot(bool set)
 {
-    if (set) {
-        PopUpFontSel(0, GRloc(), MODE_ON, 0, 0, FNT_MOZY);
-        connect(wb_fontsel, SIGNAL(dismiss()), this, SLOT(font_down_slot()));
-    }
+    if (set)
+        PopUpFontSel(h_SetFont, GRloc(), MODE_ON, 0, 0, FNT_MOZY);
     else
         PopUpFontSel(0, GRloc(), MODE_OFF, 0, 0, 0);
-}
-
-
-// Handle font selector dismissal.
-//
-void
-QThelpDlg::font_down_slot()
-{
-    h_SetFont->setChecked(false);
 }
 
 
@@ -1600,9 +1631,9 @@ void
 QThelpDlg::anchor_track_slot(htmAnchorCallbackStruct *c)
 {
     if (c && c->href)
-        h_status_bar->showMessage(QString(c->href));
+        h_status_bar->setText(c->href);
     else
-        h_status_bar->showMessage(QString(h_cur_topic->keyword()));
+        h_status_bar->setText(h_cur_topic->keyword());
 }
 
 

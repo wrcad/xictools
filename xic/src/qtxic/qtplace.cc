@@ -235,6 +235,10 @@ QTplaceDlg::QTplaceDlg(bool noprompt)
     //
     pl_masterbtn = new QComboBox();
     vbox->addWidget(pl_masterbtn);
+    connect(pl_masterbtn, SIGNAL(activated(int)),
+        this, SLOT(master_menu_active_slot(int)));
+    connect(pl_masterbtn, SIGNAL(currentIndexChanged(int)),
+        this, SLOT(master_menu_slot(int)));
     rebuild_menu();
 
     // Only prompt if we don't already have a cell.
@@ -397,19 +401,17 @@ QTplaceDlg::rebuild_menu()
 {
     if (!pl_masterbtn)
         return;
+    disconnect(pl_masterbtn, SIGNAL(currentIndexChanged(int)),
+        this, SLOT(master_menu_slot(int)));
     pl_masterbtn->clear();
     pl_masterbtn->addItem(tr("New"));
-    for (stringlist *p = ED()->plMenu(); p; p = p->next) {
+    pl_masterbtn->setCurrentIndex(0);
+    for (stringlist *p = ED()->plMenu(); p; p = p->next)
         pl_masterbtn->addItem(tr(p->string));
-    }
     if (ED()->plMenu())
         pl_masterbtn->setCurrentIndex(1);
-    else
-        pl_masterbtn->setCurrentIndex(0);
     connect(pl_masterbtn, SIGNAL(currentIndexChanged(int)),
         this, SLOT(master_menu_slot(int)));
-    connect(pl_masterbtn, SIGNAL(activated(int)),
-        this, SLOT(master_menu_active_slot(int)));
 }
 
 
@@ -600,12 +602,12 @@ QTplaceDlg::dismiss_btn_slot()
 void
 QTplaceDlg::master_menu_slot(int ix)
 {
-    if (ix != 0) {
-        const char *tok = (const char*)pl_masterbtn->currentText().toLatin1();
-        const char *string = tok;
-        const char *aname = lstring::getqtok(&string);
-        const char *cname = lstring::getqtok(&string);
-        ED()->addMaster(aname, cname);
+    if (ix > 0) {
+        QByteArray ba = pl_masterbtn->currentText().toLatin1();
+        const char *str = ba.constData();
+        const char *aname = lstring::getqtok(&str);
+        const char *cname = lstring::getqtok(&str);
+//        ED()->addMaster(aname, cname);
         delete [] aname;
         delete [] cname;
     }

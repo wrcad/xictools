@@ -61,6 +61,7 @@ class QDragEnterEvent;
 class QDragEvent;
 class QEnterEvent;
 class QFocusEvent;
+class QWheelEvent;;
 
 namespace qtinterf {
     class cGhostDrawCommon;
@@ -276,6 +277,7 @@ signals:
     void leave_event(QEvent*);
     void focus_in_event(QFocusEvent*);
     void focus_out_event(QFocusEvent*);
+    void mouse_wheel_event(QWheelEvent*);
     void drag_enter_event(QDragEnterEvent*);
     void drop_event(QDropEvent*);
 
@@ -296,6 +298,7 @@ protected:
     void leaveEvent(QEvent*);
     void focusInEvent(QFocusEvent*);
     void focusOutEvent(QFocusEvent*);
+    void wheelEvent(QWheelEvent*);
     void dragEnterEvent(QDragEnterEvent*);
     void dropEvent(QDropEvent*);
 

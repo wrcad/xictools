@@ -272,9 +272,9 @@ QTfont::new_font(const char *name, bool fixed)
     parse_freeform_font_string(name, &family, &style, &size);
     if (!family) {
         if (fixed)
-            family = lstring::copy("courier");
+            family = lstring::copy(DEF_FIXED_FACE);
         else
-            family = lstring::copy("helvetica");
+            family = lstring::copy(DEF_PROP_FACE);
     }
     if (style) {
         sty = stringlist::flatten(style, " ");

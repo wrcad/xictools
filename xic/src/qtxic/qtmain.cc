@@ -1361,6 +1361,8 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
         this, SLOT(focus_in_slot(QFocusEvent*)));
     connect(gd_viewport, SIGNAL(focus_out_event(QFocusEvent*)),
         this, SLOT(focus_out_slot(QFocusEvent*)));
+    connect(gd_viewport, SIGNAL(mouse_wheel_event(QWheelEvent*)),
+        this, SLOT(mouse_wheel_slot(QWheelEvent*)));
     connect(gd_viewport, SIGNAL(drag_enter_event(QDragEnterEvent*)),
         this, SLOT(drag_enter_slot(QDragEnterEvent*)));
     connect(gd_viewport, SIGNAL(drop_event(QDropEvent*)),
@@ -1713,48 +1715,6 @@ bool
 QTsubwin::focusNextPrevChild(bool)
 {
     return (false);
-}
-
-
-void
-QTsubwin::wheelEvent(QWheelEvent *ev)
-{
-    QPoint numDegrees = ev->angleDelta()/8;
-    if (numDegrees.isNull() || numDegrees.y() == 0) {
-        ev->ignore();
-        return;
-    }
-    bool scroll_up = (numDegrees.y() > 0);
-    ev->accept();
-    if (scroll_up) {
-
-        if (ev->modifiers() & Qt::ControlModifier) {
-            if (DSP()->MouseWheelZoomFactor() > 0.0)
-                sw_windesc->Zoom(1.0 - DSP()->MouseWheelZoomFactor());
-        }
-        else if (ev->modifiers() & Qt::ShiftModifier) {
-            if (DSP()->MouseWheelPanFactor() > 0.0)
-                sw_windesc->Pan(DirEast, DSP()->MouseWheelPanFactor());
-        }
-        else {
-            if (DSP()->MouseWheelPanFactor() > 0.0)
-                sw_windesc->Pan(DirNorth, DSP()->MouseWheelPanFactor());
-        }
-    }
-    else {
-        if (ev->modifiers() & Qt::ControlModifier) {
-            if (DSP()->MouseWheelZoomFactor() > 0.0)
-                sw_windesc->Zoom(1.0 + DSP()->MouseWheelZoomFactor());
-        }
-        else if (ev->modifiers() & Qt::ShiftModifier) {
-            if (DSP()->MouseWheelPanFactor() > 0.0)
-                sw_windesc->Pan(DirWest, DSP()->MouseWheelPanFactor());
-        }
-        else {
-            if (DSP()->MouseWheelPanFactor() > 0.0)
-                sw_windesc->Pan(DirSouth, DSP()->MouseWheelPanFactor());
-        }
-    }
 }
 
 
@@ -2357,6 +2317,48 @@ QTsubwin::focus_out_slot(QFocusEvent *ev)
     ev->accept();
     if (QTedit::self() && QTedit::self()->is_active())
         QTedit::self()->draw_cursor(UNDRAW);
+}
+
+
+void
+QTsubwin::mouse_wheel_slot(QWheelEvent *ev)
+{
+    QPoint numDegrees = ev->angleDelta()/8;
+    if (numDegrees.isNull() || numDegrees.y() == 0) {
+        ev->ignore();
+        return;
+    }
+    bool scroll_up = (numDegrees.y() > 0);
+    ev->accept();
+    if (scroll_up) {
+
+        if (ev->modifiers() & Qt::ControlModifier) {
+            if (DSP()->MouseWheelZoomFactor() > 0.0)
+                sw_windesc->Zoom(1.0 - DSP()->MouseWheelZoomFactor());
+        }
+        else if (ev->modifiers() & Qt::ShiftModifier) {
+            if (DSP()->MouseWheelPanFactor() > 0.0)
+                sw_windesc->Pan(DirEast, DSP()->MouseWheelPanFactor());
+        }
+        else {
+            if (DSP()->MouseWheelPanFactor() > 0.0)
+                sw_windesc->Pan(DirNorth, DSP()->MouseWheelPanFactor());
+        }
+    }
+    else {
+        if (ev->modifiers() & Qt::ControlModifier) {
+            if (DSP()->MouseWheelZoomFactor() > 0.0)
+                sw_windesc->Zoom(1.0 + DSP()->MouseWheelZoomFactor());
+        }
+        else if (ev->modifiers() & Qt::ShiftModifier) {
+            if (DSP()->MouseWheelPanFactor() > 0.0)
+                sw_windesc->Pan(DirWest, DSP()->MouseWheelPanFactor());
+        }
+        else {
+            if (DSP()->MouseWheelPanFactor() > 0.0)
+                sw_windesc->Pan(DirSouth, DSP()->MouseWheelPanFactor());
+        }
+    }
 }
 
 

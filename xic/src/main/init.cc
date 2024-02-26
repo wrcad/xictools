@@ -452,7 +452,7 @@ namespace {
     "</font>\n",
     "Use of the software constitutes formal acceptance of the Terms and\n",
     "Conditions as specified in any Licensing Agreement provided upon\n",
-    "purchase of the software.\n<br>\n",
+    "acquisition of the software.\n<br>\n",
     0 };
 }
 
@@ -515,8 +515,9 @@ cMain::LegalMsg()
     }
     else
         lstr.add("<b>Whiteley Research, Inc.</b><br>");
-    lstr.add("456 Flora Vista Ave.<br>Sunnyvale CA 94086<br>");
-    lstr.add("<tt>wrcad.com</tt>\n");
+    lstr.add("<font size=4><b>open source</b></font>, available<br>");
+    lstr.add("<tt>github.com/wrcad/xictools</tt><br>");
+    lstr.add("<tt>wrcad.com</tt><br>\n");
     lstr.add("<font color=blue>\n");
     lstr.add("<h2>");
     lstr.add(prg);

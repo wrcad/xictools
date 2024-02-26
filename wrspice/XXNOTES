@@ -42,3 +42,5 @@ finish csvtoraw
 
 modify build to auto-update SyntaxLevel in wrspice/devlib/adms/Makefile
 also adms scripts device.xml.
+
+!!! make tran sewwp [...] work with parameters (.param)
