@@ -115,10 +115,11 @@ QTtextDlg::QTtextDlg(QTbag *owner, const char *message_str, PuType which,
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
-    /* Used to use mozy for this.
-    if (tx_style != STY_HTML) {
+    // Used to use mozy for this.
+    if (tx_style == STY_HTML) {
+        // Wrap lines, this is not the default.
+        tx_tbox->setLineWrapMode(QTextEdit::WidgetWidth);
     }
-    */
     tx_save = new QPushButton(tr("Save Text "));
     hbox->addWidget(tx_save);
     tx_save->setCheckable(true);

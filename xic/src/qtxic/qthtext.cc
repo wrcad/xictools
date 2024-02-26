@@ -141,6 +141,7 @@ QTedit::QTedit(bool nogr) : QTdraw(XW_TEXT)
 
     // Long Text button.
     pe_ltx_btn = new QToolButton();
+    pe_ltx_btn->hide();
     pe_ltx_btn->setText("L");
     pe_ltx_btn->setToolTip(tr(
         "Associate a block of text with the label - pop up an editor."));
@@ -329,13 +330,8 @@ QTedit::set_indicate()
 void
 QTedit::show_lt_button(bool show_btn)
 {
-    // Don't show/hide, use enable/disable instead to avoid text moving.
-    if (!pe_disabled) {
-        if (show_btn)
-            pe_ltx_btn->setEnabled(true);
-        else
-            pe_ltx_btn->setEnabled(false);
-    }
+    if (!pe_disabled)
+        pe_ltx_btn->setEnabled(show_btn);
 }
 
 

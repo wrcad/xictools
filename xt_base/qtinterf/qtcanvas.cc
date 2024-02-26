@@ -839,6 +839,8 @@ QTcanvas::draw_boxes(GRmultiPt *p, int n)
 void
 QTcanvas::draw_arc(int x0, int y0, int r, int, double a1, double a2)
 {
+    if (r < 0)
+        r = -r;
     if (da_overlay_count) {
         bb_add(x0-r, y0-r);
         bb_add(x0+r, y0+r);
@@ -849,8 +851,7 @@ QTcanvas::draw_arc(int x0, int y0, int r, int, double a1, double a2)
     int t2 = (int)(16 * (180.0 / M_PI) * a2 - t1);
     if (t2 == 0)
         return;
-    int dim = 2*r;
-    da_painter->drawPie(x0 - r, y0 - r, dim, dim, t1, t2);
+    da_painter->drawPie(x0, y0, r, r, t1, t2);
 }
 
 
@@ -1106,6 +1107,9 @@ QTcanvas::draw_rectangle(bool filled, int x0, int y0, int w, int h)
         Qt::BrushStyle st = da_brush.style();
         da_brush.setStyle(Qt::NoBrush);
         da_painter->setBrush(da_brush);
+        da_pen.setStyle(Qt::SolidLine);
+        da_pen.setColor(da_fg);
+        da_painter->setPen(da_pen);
         da_painter->drawRect(x0, y0, w, h);
         da_brush.setStyle(st);
         da_painter->setBrush(da_brush);
@@ -1118,10 +1122,20 @@ QTcanvas::draw_rectangle(bool filled, int x0, int y0, int w, int h)
 void
 QTcanvas::draw_arc(bool filled, int x0, int y0, int w, int h, int st, int sp)
 {
-    if (filled)
-        da_painter->drawPie(x0, y0, w, h, st/4, sp/4);
-    else
-        da_painter->drawArc(x0, y0, w, h, st/4, sp/4);
+    if (filled) {
+        da_painter->drawPie(x0, y0, w, h, st, sp);
+    }
+    else {
+        Qt::BrushStyle sty = da_brush.style();
+        da_brush.setStyle(Qt::NoBrush);
+        da_painter->setBrush(da_brush);
+        da_pen.setStyle(Qt::SolidLine);
+        da_pen.setColor(da_fg);
+        da_painter->setPen(da_pen);
+        da_painter->drawArc(x0, y0, w, h, st, sp);
+        da_brush.setStyle(sty);
+        da_painter->setBrush(da_brush);
+    }
 }
 
 
@@ -1136,6 +1150,9 @@ QTcanvas::draw_polygon(bool filled, QPoint *points, int numpts)
         Qt::BrushStyle st = da_brush.style();
         da_brush.setStyle(Qt::NoBrush);
         da_painter->setBrush(da_brush);
+        da_pen.setStyle(Qt::SolidLine);
+        da_pen.setColor(da_fg);
+        da_painter->setPen(da_pen);
         da_painter->drawPolygon(points, numpts);
         da_brush.setStyle(st);
         da_painter->setBrush(da_brush);

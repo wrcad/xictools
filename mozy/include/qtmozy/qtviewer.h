@@ -63,6 +63,7 @@
 // from QScrollArea and htmWidget.
 
 class QMouseEvent;
+class QEvent;
 class QResizeEvent;
 class QRubberBand;
 
@@ -281,6 +282,7 @@ private slots:
     void press_event_slot(QMouseEvent*);
     void release_event_slot(QMouseEvent*);
     void motion_event_slot(QMouseEvent*);
+    void mouse_wheel_slot(QWheelEvent*);
     void btn_timer_slot();
     void form_submit_slot(htmForm*);
     void form_reset_slot(htmForm*);

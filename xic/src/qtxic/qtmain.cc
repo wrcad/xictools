@@ -1360,7 +1360,7 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
     connect(gd_viewport, SIGNAL(focus_in_event(QFocusEvent*)),
         this, SLOT(focus_in_slot(QFocusEvent*)));
     connect(gd_viewport, SIGNAL(focus_out_event(QFocusEvent*)),
-        this, SLOT(focus_o ut_slot(QFocusEvent*)));
+        this, SLOT(focus_out_slot(QFocusEvent*)));
     connect(gd_viewport, SIGNAL(mouse_wheel_event(QWheelEvent*)),
         this, SLOT(mouse_wheel_slot(QWheelEvent*)));
     connect(gd_viewport, SIGNAL(drag_enter_event(QDragEnterEvent*)),
