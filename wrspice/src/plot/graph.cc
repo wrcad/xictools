@@ -70,9 +70,10 @@ namespace {
 // Initial size of bounding box for zoomin.
 #define BOXSIZE 30
 
-// Dimension map icon position.
-#define DIM_ICON_X (GRpkg::self()->CurDev()->xoff + gr_fontwid)
-#define DIM_ICON_Y (gr_vport.top() + 2*gr_fonthei)
+// Dimension map icon position: top of window, to the right of the
+// file cabinet icon.
+#define DIM_ICON_X (GRpkg::self()->CurDev()->xoff + 4*gr_fontwid)
+#define DIM_ICON_Y (gr_vport.top() + 2*gr_fonthei + 9)
 
 // The left-side text filed width in y-separated plots.
 #define FIELD_MIN   9
