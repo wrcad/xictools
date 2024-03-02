@@ -51,6 +51,7 @@
 
 // Whiteley Research/Synopsys PWL-RCSJ Josephson Junction Model
 //
+// Version 1.41, March 2, 2024 updated constants PHI0_2PI, BOLTZ.
 // Version 1.40, January 10, 2023 increased range of vm, rsub,
 //   icrn, rn.
 // Version 1.39, January 18, 2022 added block name "tempblk" to
@@ -276,8 +277,8 @@
 //`define Vm      `Vm_HYP
 
 // Phi0/2pi = hbar over 2 e.
-`define PHI0_2PI    3.29105978475453e-16
-`define BOLTZ       1.3806226e-23
+`define PHI0_2PI    3.291059785-16
+`define BOLTZ       1.380649-23
 `define ECHG        1.602176634e-19
 
 module jj (n1, n2, ph);

@@ -401,7 +401,7 @@ QTdeviceDlg::do_save(bool tofile)
 {
     CDs *cursde = CurCell(Electrical);
     if (!cursde) {
-        Log()->PopUpErr("No curent cell!");
+        Log()->PopUpErr("No current cell!");
         return;
     }
 

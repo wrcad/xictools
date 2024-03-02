@@ -630,8 +630,8 @@ QTviewer::tk_alloc_font(const char *family, int sz, unsigned char sty)
 #else
     fnt->isp = fm.width(' ');
 #endif
-    fnt->sup_yoffset = (int)(fnt->ascent  * -.4);
-    fnt->sub_yoffset = (int)(fnt->descent * .8);
+    fnt->sup_yoffset = (int)(fnt->ascent  * -0.4);
+    fnt->sub_yoffset = (int)(fnt->descent * 0.8);
 
     fnt->ul_offset = fm.underlinePos();
     fnt->ul_thickness = 1;

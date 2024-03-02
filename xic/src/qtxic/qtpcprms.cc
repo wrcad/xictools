@@ -416,7 +416,7 @@ QTpcellParamsDlg::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
                 i++;
             }
 
-            connect(w, SIGNAL(curentTextChanged(const QString&)),
+            connect(w, SIGNAL(currentTextChanged(const QString&)),
                 this, SLOT(choice_type_slot(const QString&)));
             if (hstv >= 0)
                 w->setCurrentIndex(hstv);

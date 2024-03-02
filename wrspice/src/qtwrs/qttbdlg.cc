@@ -488,7 +488,7 @@ QTtbDlg::update(ResUpdType updt)
         TextExtent(0, &fwid, &dy);
         SetWindowBackground(SpGrPkg::DefColors[0].pixel);
         SetBackground(SpGrPkg::DefColors[0].pixel);
-        int yy = dy + 2;
+        int yy = dy;
         int xx = 4;
         int ux = 18*fwid;
         int vx = ux + 14*fwid;

@@ -151,7 +151,7 @@ QTcoord::print(int xc, int yc, int upd)
     int fwid, fhei;
     TextExtent(0, &fwid, &fhei);
     int xx = 2;
-    int yy = (height() - fhei)/2 + fhei;
+    int yy = (height() - fhei)/2 + fhei - 2;
 
     if (co_snap)
         EV()->CurrentWin()->Snap(&xc, &yc);

@@ -975,9 +975,7 @@ QTcanvas::draw_text(int x0, int y0, const char *str, int len)
     if (len >= 0)
         qs.truncate(len);
 
-    // The y0 is the bottom of the text box so subtract off the descent().
     QFontMetrics fm(font());
-    y0 -= fm.descent();;
     if (da_overlay_count) {
         QRect r = fm.boundingRect(qs);
         bb_add(x0 + r.x(), y0);

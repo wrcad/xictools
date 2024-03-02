@@ -399,6 +399,7 @@ struct sGraph
     // graph.cc
     bool gr_setup_dev(int, const char*);
     int gr_dev_init();
+    int gr_win_ht(int);
     void gr_reset();
     sGraph* gr_copy();
     void gr_update_keyed(sGraph*, bool);

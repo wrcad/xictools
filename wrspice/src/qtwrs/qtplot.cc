@@ -96,7 +96,8 @@ QTplotDlg::sizeHint() const
     int wid, hei;
     if (pb_graph->apptype() == GR_PLOT) {
         wid = 500;
-        hei = 300;
+        hei = pb_graph->gr_win_ht(300);
+
     
         variable *v = Sp.GetRawVar(kw_plotgeom);
         if (v) {

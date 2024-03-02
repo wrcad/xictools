@@ -131,6 +131,27 @@ sGraph::gr_dev_init()
 }
 
 
+int
+sGraph::gr_win_ht(int minht)
+{
+    // Return a height for a normal plot window based on the legend
+    // layout.  The argument is the minimum/default.
+
+    if (gr_grtype == GRID_POLAR || gr_grtype == GRID_SMITH ||
+            gr_grtype == GRID_SMITHGRID)
+        return (minht);
+
+    // Size as if ysep was given.
+    gr_dev->TextExtent(0, &gr_fontwid, &gr_fonthei);
+    int nsy = gr_fonthei/4;
+    if (nsy < 2)
+        nsy = 2;
+    int dely = 3*gr_fonthei + gr_fonthei/2 + nsy + 1;
+    int h = gr_numtraces*dely + 7*gr_fonthei;
+    return (h > minht ? h : minht);
+}
+
+
 // Clear the graph for reuse (pass to SPgraphics::Init()).
 //
 void
@@ -1168,9 +1189,9 @@ sGraph::gr_bup_hdlr(int button, int x, int y, const char *new_keyed)
                             kk->text = lstring::copy(kk->text);
                         }
 #if (defined (WITH_QT5) || defined (WITH_QT6))
-kk->xform &= ~(TXTF_HJC | TXTF_HJR);
-kk->xform |= (graph->gr_xform & TXTF_HJC);
-kk->xform |= (graph->gr_xform & TXTF_HJR);
+                        kk->xform &= ~(TXTF_HJC | TXTF_HJR);
+                        kk->xform |= (graph->gr_xform & TXTF_HJC);
+                        kk->xform |= (graph->gr_xform & TXTF_HJR);
 #endif
                         kk->type = LAuser;
                         kk->fixed = false;
@@ -1195,9 +1216,9 @@ kk->xform |= (graph->gr_xform & TXTF_HJR);
                         yy = yinv(yy);
 
 #if (defined (WITH_QT5) || defined (WITH_QT6))
-k->xform &= ~(TXTF_HJC | TXTF_HJR);
-k->xform |= (gr_xform & TXTF_HJC);
-k->xform |= (gr_xform & TXTF_HJR);
+                        k->xform &= ~(TXTF_HJC | TXTF_HJR);
+                        k->xform |= (gr_xform & TXTF_HJC);
+                        k->xform |= (gr_xform & TXTF_HJR);
 #endif
                         // The justification may have changed!
 #if defined (WITH_QT5) || defined (WITH_QT6)
@@ -2003,7 +2024,11 @@ sGraph::gr_writef(double d, const sUnits *units, int x, int y, bool limit)
             tmp = SPnum.printnum(d, (const char*)0, true, NUMDGT);
         // Will always fit now with NUMDGT=5 and VALBOX_WIDTH=14.
     }
+#if (defined (WITH_QT5) || defined (WITH_QT6))
+    gr_dev->Text(tmp, x, yinv(y) - 2, 0);
+#else
     gr_dev->Text(tmp, x, yinv(y), 0);
+#endif
 }
 
 
