@@ -169,7 +169,7 @@ QTcflagsDlg::QTcflagsDlg(GRobject caller, const stringlist *sl, int dmode)
     // Use a fixed font in the label, same as the text area, so can
     // match columns.
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_FIXED)) {
+    if (Fnt()->getFont(&fnt, FNT_FIXED)) {
         wb_textarea->setFont(*fnt);
         cf_label->setFont(*fnt);
     }
@@ -458,7 +458,7 @@ QTcflagsDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_FIXED) {
         QFont *fnt;
-        if (FC.getFont(&fnt, FNT_FIXED)) {
+        if (Fnt()->getFont(&fnt, FNT_FIXED)) {
             wb_textarea->setFont(*fnt);
             cf_label->setFont(*fnt);
         }

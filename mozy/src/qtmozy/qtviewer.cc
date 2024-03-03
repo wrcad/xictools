@@ -234,10 +234,10 @@ QTviewer::QTviewer(int wid, int hei, htmDataInterface *dta, QWidget *prnt) :
     v_btn_timer.setSingleShot(true);
     connect(&v_btn_timer, SIGNAL(timeout()), this, SLOT(btn_timer_slot()));
 
-    const char *fn = FC.getName(FNT_MOZY);
+    const char *fn = Fnt()->getName(FNT_MOZY);
     if (fn)
         set_font(fn);
-    fn = FC.getName(FNT_MOZY_FIXED);
+    fn = Fnt()->getName(FNT_MOZY_FIXED);
     if (fn)
         set_fixed_font(fn);
     // Listen for font family names under FNT_MOZY and FNT_MOZY_FIXED.
@@ -357,7 +357,7 @@ QTviewer::set_font(const char *fontspec)
 {
     char *family;
     int sz;
-    FC.parse_freeform_font_string(fontspec, &family, 0, &sz, 0);
+    Fnt()->parse_freeform_font_string(fontspec, &family, 0, &sz, 0);
     setFontFamily(family, sz);
     delete [] family;
 }
@@ -368,7 +368,7 @@ QTviewer::set_fixed_font(const char *fontspec)
 {
     char *family;
     int sz;
-    FC.parse_freeform_font_string(fontspec, &family, 0, &sz, 0);
+    Fnt()->parse_freeform_font_string(fontspec, &family, 0, &sz, 0);
     setFixedFontFamily(family, sz);
     delete [] family;
 }
@@ -1423,12 +1423,12 @@ void
 QTviewer::font_changed_slot(int fnum)
 {
     if (fnum == FNT_MOZY) {
-        const char *fn = FC.getName(FNT_MOZY);
+        const char *fn = Fnt()->getName(FNT_MOZY);
         if (fn)
             set_font(fn);
     }
     else if (fnum == FNT_MOZY_FIXED) {
-        const char *fn = FC.getName(FNT_MOZY_FIXED);
+        const char *fn = Fnt()->getName(FNT_MOZY_FIXED);
         if (fn)
             set_fixed_font(fn);
     }

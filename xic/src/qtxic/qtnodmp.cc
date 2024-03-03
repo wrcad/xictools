@@ -297,7 +297,7 @@ QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node) : QTbag(this)
     spl->setSizes(QList<int>() << 0.8*width() << 0.2*width());
 
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_PROP)) {
+    if (Fnt()->getFont(&fnt, FNT_PROP)) {
         nm_node_list->setFont(*fnt);
         nm_term_list->setFont(*fnt);
     }
@@ -1210,7 +1210,7 @@ QTnodeMapDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_PROP) {
         QFont *fnt;
-        if (FC.getFont(&fnt, fnum)) {
+        if (Fnt()->getFont(&fnt, fnum)) {
             nm_node_list->setFont(*fnt);
             nm_term_list->setFont(*fnt);
         }

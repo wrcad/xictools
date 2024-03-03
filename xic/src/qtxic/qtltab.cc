@@ -161,7 +161,7 @@ QTltab::QTltab(bool nogr) : QTdraw(XW_LTAB)
     vb->addLayout(hbox);
 
     QFont *scfont;
-    if (FC.getFont(&scfont, FNT_SCREEN))
+    if (Fnt()->getFont(&scfont, FNT_SCREEN))
         gd_viewport->set_font(scfont);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed(int)), Qt::QueuedConnection);
@@ -604,7 +604,7 @@ QTltab::font_changed(int fnum)
 {
     if (fnum == FNT_SCREEN) {
         QFont *fnt;
-        if (FC.getFont(&fnt, FNT_SCREEN))
+        if (Fnt()->getFont(&fnt, FNT_SCREEN))
             gd_viewport->set_font(fnt);
         init();
     }

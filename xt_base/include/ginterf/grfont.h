@@ -149,7 +149,7 @@ namespace ginterf
     };
 }
 
-extern GRfont &FC;
+extern ginterf::GRfont *Fnt();
 
 #endif
 

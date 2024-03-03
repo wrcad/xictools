@@ -440,7 +440,7 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c) : QTbag(this)
         this, SLOT(mouse_press_slot(QMouseEvent*)));
 
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_FIXED))
+    if (Fnt()->getFont(&fnt, FNT_FIXED))
         fh_jobs->setFont(*fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
@@ -1207,7 +1207,7 @@ QTfastHenryDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_FIXED) {
         QFont *fnt;
-        if (FC.getFont(&fnt, FNT_FIXED))
+        if (Fnt()->getFont(&fnt, FNT_FIXED))
             fh_jobs->setFont(*fnt);
         update_jobs_list();
     }

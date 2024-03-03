@@ -153,7 +153,7 @@ QTemptyDlg::QTemptyDlg(stringlist *l) : QTbag(this)
     // Use a fixed font in the label, same as the text area, so can
     // match columns.
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_FIXED)) {
+    if (Fnt()->getFont(&fnt, FNT_FIXED)) {
         ec_text->setFont(*fnt);
         ec_label->setFont(*fnt);
     }
@@ -330,7 +330,7 @@ QTemptyDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_FIXED) {
         QFont *fnt;
-        if (FC.getFont(&fnt, FNT_FIXED)) {
+        if (Fnt()->getFont(&fnt, FNT_FIXED)) {
             ec_text->setFont(*fnt);
             ec_label->setFont(*fnt);
         }

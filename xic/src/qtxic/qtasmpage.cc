@@ -309,7 +309,7 @@ QTasmPage::QTasmPage(QTasmDlg *mt)
         this, SLOT(toplev_selection_changed_slot()));
 
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_PROP))
+    if (Fnt()->getFont(&fnt, FNT_PROP))
         pg_toplevels->setFont(*fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
@@ -416,7 +416,7 @@ QTasmPage::font_changed_slot(int fnum)
 {
     if (fnum == FNT_PROP) {
         QFont *fnt;
-        if (FC.getFont(&fnt, FNT_PROP))
+        if (Fnt()->getFont(&fnt, FNT_PROP))
             pg_toplevels->setFont(*fnt);
     }
 }

@@ -130,7 +130,7 @@ QTmemMonDlg::QTmemMonDlg() : QTbag(this), QTdraw(XW_TEXT)
     // Font setup.
     //
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_FIXED)) {
+    if (Fnt()->getFont(&fnt, FNT_FIXED)) {
         gd_viewport->setFont(*fnt);
     }
     setMinimumWidth(sizeHint().width());
@@ -319,7 +319,7 @@ QTmemMonDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_FIXED) {
         QFont *fnt;
-        if (FC.getFont(&fnt, FNT_FIXED))
+        if (Fnt()->getFont(&fnt, FNT_FIXED))
             gd_viewport->setFont(*fnt);
         XM()->PopUpMemory(MODE_UPD);
     }

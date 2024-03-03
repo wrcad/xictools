@@ -142,7 +142,7 @@ QTprpInfoDlg::QTprpInfoDlg(CDo *odesc) : QTprpBase(this)
         this, SLOT(mime_data_delivered_slot(const QMimeData*, bool*)));
 
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_FIXED))
+    if (Fnt()->getFont(&fnt, FNT_FIXED))
         wb_textarea->setFont(*fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
@@ -258,7 +258,7 @@ QTprpInfoDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_FIXED) {
         QFont *fnt;
-        if (FC.getFont(&fnt, FNT_FIXED))
+        if (Fnt()->getFont(&fnt, FNT_FIXED))
             wb_textarea->setFont(*fnt);
     }
 }

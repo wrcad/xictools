@@ -1034,7 +1034,7 @@ GTKfilePopup::GTKfilePopup(GTKbag *owner, FsMode mode, void *arg,
         gtk_widget_show(fs_label);
 
         // Use fixed-pitch font
-        const char *fname = FC.getName(FNT_SCREEN);
+        const char *fname = Fnt()->getName(FNT_SCREEN);
         PangoFontDescription *pfd = pango_font_description_from_string(fname);
         gtk_widget_modify_font(fs_label, pfd);
 

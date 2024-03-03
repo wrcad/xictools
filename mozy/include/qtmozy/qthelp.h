@@ -149,6 +149,8 @@ private slots:
     void print_slot();
     void reload_slot();
     void quit_slot();
+    void config_slot();
+//XXX    void proxy_slot();
     void search_slot();
     void find_slot();
     void set_font_slot(bool);
@@ -218,6 +220,7 @@ private:
     QAction     *h_Print;
     QAction     *h_Reload;
     QAction     *h_Quit;
+    QAction     *h_Config;
     QAction     *h_Search;
     QAction     *h_FindText;
     QAction     *h_SetFont;

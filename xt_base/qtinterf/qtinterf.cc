@@ -130,7 +130,7 @@ QTdev::Init(int *argc, char **argv)
         *argc = ac;
     }
 
-    FC.initFonts();
+    Fnt()->initFonts();
 
     // set correct information
     width = 1;

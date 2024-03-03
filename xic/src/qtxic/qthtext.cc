@@ -154,7 +154,7 @@ QTedit::QTedit(bool nogr) : QTdraw(XW_TEXT)
     Viewport()->setAcceptDrops(true);
 
     QFont *tfont;
-    if (FC.getFont(&tfont, FNT_SCREEN)) {
+    if (Fnt()->getFont(&tfont, FNT_SCREEN)) {
         gd_viewport->set_font(tfont);
         pe_rcl_btn->setFont(*tfont);
         pe_sto_btn->setFont(*tfont);
@@ -414,7 +414,7 @@ QTedit::font_changed_slot(int fnum)
 {
     if (fnum == FNT_SCREEN) {
         QFont *fnt;
-        if (FC.getFont(&fnt, FNT_SCREEN)) {
+        if (Fnt()->getFont(&fnt, FNT_SCREEN)) {
             gd_viewport->set_font(fnt);
             init();
             redraw();

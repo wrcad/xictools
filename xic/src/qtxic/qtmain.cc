@@ -711,7 +711,7 @@ QTpkg::SetFont(const char *fname, int fnum, FNT_FMT fmt)
         return;
 
     if (!xfd_t::is_xfd(fname))
-        FC.setName(fname, fnum);
+        Fnt()->setName(fname, fnum);
 }
 
 
@@ -721,7 +721,7 @@ const char *
 QTpkg::GetFont(int fnum)
 {
     // Valid for NULL graphics also.
-    return (FC.getName(fnum));
+    return (Fnt()->getName(fnum));
 }
 
 
@@ -1101,7 +1101,7 @@ cKeys::cKeys(int wnum, QWidget *prnt) : QTcanvas(prnt)
     k_cmd = 0;
 
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_SCREEN))
+    if (Fnt()->getFont(&fnt, FNT_SCREEN))
         set_font(fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed(int)), Qt::QueuedConnection);
@@ -1221,7 +1221,7 @@ cKeys::font_changed(int fnum)
 {
     if (fnum == FNT_SCREEN) {
         QFont *fnt;
-        if (FC.getFont(&fnt, FNT_SCREEN))
+        if (Fnt()->getFont(&fnt, FNT_SCREEN))
             set_font(fnt);
         show_keys();
     }
@@ -1332,7 +1332,7 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
         GhostDrawCommon.gd_windows[sw_win_number] = gd_viewport;
 
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_SCREEN))
+    if (Fnt()->getFont(&fnt, FNT_SCREEN))
         gd_viewport->set_font(fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed(int)), Qt::QueuedConnection);
@@ -2488,7 +2488,7 @@ QTsubwin::font_changed(int fnum)
 {
     if (fnum == FNT_SCREEN) {
         QFont *fnt;
-        if (FC.getFont(&fnt, FNT_SCREEN))
+        if (Fnt()->getFont(&fnt, FNT_SCREEN))
             gd_viewport->set_font(fnt);
     }
 }

@@ -57,7 +57,7 @@
 
 
 namespace { QTfont _qt_font_; }
-GRfont &FC = _qt_font_;
+ginterf::GRfont *Fnt()      { return (_qt_font_.self()); }
 
 
 #ifdef __APPLE__
@@ -183,7 +183,7 @@ QTfont::getFamilyName(int fnum)
     if (fnum > 0 && fnum < num_app_fonts) {
         char *family;
         int sz;
-        parse_freeform_font_string(fonts[fnum].name, &family, 0, &sz, 0);
+        parse_freeform_font_string(getName(fnum), &family, 0, &sz, 0);
         if (family) {
             int len = strlen(family) + 8;
             char *str = new char[len];
@@ -313,7 +313,7 @@ bool
 QTfont::stringBounds(const char *string, int fnum, int *w, int *h)
 {
     QFont *f;
-    if (FC.getFont(&f, fnum)) {
+    if (Fnt()->getFont(&f, fnum)) {
         QFontMetrics fm(*f);
         if (!string)
             string = "X";
@@ -362,7 +362,7 @@ int
 QTfont::stringWidth(const char *string, int fnum)
 {
     QFont *f;
-    if (FC.getFont(&f, fnum)) {
+    if (Fnt()->getFont(&f, fnum)) {
         QFontMetrics fm(*f);
         if (!string)
             string = "X";
@@ -403,7 +403,7 @@ int
 QTfont::lineHeight(int fnum)
 {
     QFont *f;
-    if (FC.getFont(&f, fnum)) {
+    if (Fnt()->getFont(&f, fnum)) {
         QFontMetrics fm(*f);
         return (fm.height());
     }
@@ -601,10 +601,10 @@ QTfontDlg::QTfontDlg(QTbag *owner, int indx, void *arg) :
     ft_quit->setAutoDefault(false);
     connect(ft_quit, SIGNAL(clicked()), this, SLOT(quit_slot()));
 
-    for (int i = 1; i < FC.num_app_fonts; i++) {
+    for (int i = 1; i < Fnt()->num_app_fonts; i++) {
         QFont *fnt;
-        FC.getFont(&fnt, i);
-        add_choice(fnt, FC.getLabel(i));
+        Fnt()->getFont(&fnt, i);
+        add_choice(fnt, Fnt()->getLabel(i));
     }
     ft_menu->setCurrentIndex(indx-1);
     menu_choice_slot(indx - 1);
@@ -906,9 +906,9 @@ QTfontDlg::action_slot()
     }
     else {
         int fnum = ft_menu->currentIndex() + 1;
-        FC.setName(lstr.string(), fnum);
+        Fnt()->setName(lstr.string(), fnum);
         if (p_callback)
-            (*p_callback)(FC.getLabel(fnum), lstr.string(), p_cb_arg);
+            (*p_callback)(Fnt()->getLabel(fnum), lstr.string(), p_cb_arg);
         emit select_action(fnum, lstr.string(), p_cb_arg);
     }
 }
@@ -1081,12 +1081,12 @@ QTfontDlg::menu_choice_slot(int indx)
 #endif
         bool fixed = (w1 >= w2);
 
-        if (!FC.isFixed(indx) || fixed)
+        if (!Fnt()->isFixed(indx) || fixed)
             ft_face_list->addItem(families.at(i));
     }
     if (indx > 0) {
         QFont *fnt;
-        FC.getFont(&fnt, indx);
+        Fnt()->getFont(&fnt, indx);
         select_font(fnt);
     }
 }

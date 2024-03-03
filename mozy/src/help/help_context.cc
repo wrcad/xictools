@@ -111,11 +111,11 @@ cHelp::set_font_family(const char *fontname)
             if (!f.get_pixsize() || !isdigit(*f.get_pixsize()))
                 f.set_pixsize(14);
             fontname = f.font_xfd();
-            FC.setName(fontname, FNT_MOZY);
+            Fnt()->setName(fontname, FNT_MOZY);
             delete [] fontname;
         }
         else
-            FC.setName(fontname, FNT_MOZY);
+            Fnt()->setName(fontname, FNT_MOZY);
         hlp_context->setFontSet(true);
     }
 }
@@ -133,11 +133,11 @@ cHelp::set_fixed_family(const char *fontname)
             if (!f.get_pixsize() || !isdigit(*f.get_pixsize()))
                 f.set_pixsize(14);
             fontname = f.font_xfd();
-            FC.setName(fontname, FNT_MOZY_FIXED);
+            Fnt()->setName(fontname, FNT_MOZY_FIXED);
             delete [] fontname;
         }
         else
-            FC.setName(fontname, FNT_MOZY_FIXED);
+            Fnt()->setName(fontname, FNT_MOZY_FIXED);
         hlp_context->setFixedFontSet(true);
     }
 }
@@ -146,7 +146,7 @@ cHelp::set_fixed_family(const char *fontname)
 const char *
 cHelp::get_font_family()
 {
-    const char *fontname = FC.getName(FNT_MOZY);
+    const char *fontname = Fnt()->getName(FNT_MOZY);
     if (xfd_t::is_xfd(fontname)) {
         // X font for gtk-1
         xfd_t f(fontname);
@@ -161,7 +161,7 @@ cHelp::get_font_family()
 const char *
 cHelp::get_fixed_family()
 {
-    const char *fontname =  FC.getName(FNT_MOZY_FIXED);
+    const char *fontname =  Fnt()->getName(FNT_MOZY_FIXED);
     if (xfd_t::is_xfd(fontname)) {
         // X font for gtk-1
         xfd_t f(fontname);
@@ -342,11 +342,11 @@ HLPcontext::setFont(const char *fontname)
             if (!f.get_pixsize() || !isdigit(*f.get_pixsize()))
                 f.set_pixsize(14);
             fontname = f.font_xfd();
-            FC.setName(fontname, FNT_MOZY);
+            Fnt()->setName(fontname, FNT_MOZY);
             delete [] fontname;
         }
         else
-            FC.setName(fontname, FNT_MOZY);
+            Fnt()->setName(fontname, FNT_MOZY);
         hcxFontSet = true;
     }
 }
@@ -366,11 +366,11 @@ HLPcontext::setFixedFont(const char *fontname)
             if (!f.get_pixsize() || !isdigit(*f.get_pixsize()))
                 f.set_pixsize(14);
             fontname = f.font_xfd();
-            FC.setName(fontname, FNT_MOZY_FIXED);
+            Fnt()->setName(fontname, FNT_MOZY_FIXED);
             delete [] fontname;
         }
         else
-            FC.setName(fontname, FNT_MOZY_FIXED);
+            Fnt()->setName(fontname, FNT_MOZY_FIXED);
         hcxFixedFontSet = true;
     }
 }

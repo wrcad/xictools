@@ -56,7 +56,7 @@
 //
 namespace { GTKfont gtk_font; }
 
-GRfont &FC = gtk_font;
+GRfont *Fnt()   { return (&gtk_font); }
 
 //#define DEF_FIXED_FACE "Courier New"
 //#define DEF_PROP_FACE "Helvetica"
@@ -299,7 +299,7 @@ GTKfont::trackFontChange(GtkWidget *widget, int fnum)
 void
 GTKfont::setupFont(GtkWidget *widget, int font_index, bool track)
 {
-    const char *fname = FC.getName(font_index);
+    const char *fname = Fnt()->getName(font_index);
     PangoFontDescription *pfd = pango_font_description_from_string(fname);
     gtk_widget_modify_font(widget, pfd);
     pango_font_description_free(pfd);
@@ -319,7 +319,7 @@ GTKfont::stringBounds(int indx, const char *string, int *w, int *h)
     PangoContext *pc = gdk_pango_context_get();
     PangoLayout *pl = pango_layout_new(pc);
     PangoFontDescription *pfd =
-        pango_font_description_from_string(FC.getName(indx));
+        pango_font_description_from_string(Fnt()->getName(indx));
     pango_layout_set_font_description(pl, pfd);
     pango_font_description_free(pfd);
     pango_layout_set_text(pl, string, -1);
@@ -356,7 +356,7 @@ GTKfont::stringWidth(GtkWidget *widget, const char *string)
         pc = gdk_pango_context_get();
         pl = pango_layout_new(pc);
         PangoFontDescription *pfd =
-            pango_font_description_from_string(FC.getName(FNT_FIXED));
+            pango_font_description_from_string(Fnt()->getName(FNT_FIXED));
         pango_layout_set_font_description(pl, pfd);
         pango_font_description_free(pfd);
         pango_layout_set_text(pl, string, -1);
@@ -390,7 +390,7 @@ GTKfont::stringHeight(GtkWidget *widget, const char *string)
         pc = gdk_pango_context_get();
         pl = pango_layout_new(pc);
         PangoFontDescription *pfd =
-            pango_font_description_from_string(FC.getName(FNT_FIXED));
+            pango_font_description_from_string(Fnt()->getName(FNT_FIXED));
         pango_layout_set_font_description(pl, pfd);
         pango_font_description_free(pfd);
         pango_layout_set_text(pl, string, -1);

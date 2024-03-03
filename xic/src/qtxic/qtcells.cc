@@ -334,7 +334,7 @@ QTcellsDlg::QTcellsDlg(GRobject c) : QTbag(this)
         this, SLOT(mouse_motion_slot(QMouseEvent*)));
 
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_FIXED))
+    if (Fnt()->getFont(&fnt, FNT_FIXED))
         wb_textarea->setFont(*fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
@@ -1551,7 +1551,7 @@ QTcellsDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_FIXED) {
         QFont *fnt;
-        if (FC.getFont(&fnt, FNT_FIXED))
+        if (Fnt()->getFont(&fnt, FNT_FIXED))
             wb_textarea->setFont(*fnt);
         int cols = (wb_textarea->width()-4)/
             QTfont::stringWidth(0, wb_textarea) - 2;

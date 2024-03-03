@@ -589,7 +589,7 @@ QTfilesListDlg::create_page(sDirList *dl)
     nbtext->set_chars(dl->dirfiles());
 
     QFont *tfont;
-    if (FC.getFont(&tfont, FNT_SCREEN))
+    if (Fnt()->getFont(&tfont, FNT_SCREEN))
         nbtext->setFont(*tfont);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)));
@@ -944,7 +944,7 @@ QTfilesListDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_FIXED) {
         QFont *fnt;
-        if (FC.getFont(&fnt, FNT_FIXED))
+        if (Fnt()->getFont(&fnt, FNT_FIXED))
             qobject_cast<QTtextEdit*>(sender())->setFont(*fnt);
     }
 }

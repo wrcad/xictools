@@ -194,7 +194,7 @@ QTcgdListDlg::QTcgdListDlg(GRobject c) : QTbag(this)
         this, SLOT(item_selection_changed()));
 
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_PROP))
+    if (Fnt()->getFont(&fnt, FNT_PROP))
         cgl_list->setFont(*fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
@@ -594,7 +594,7 @@ QTcgdListDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_PROP) {
         QFont *fnt;
-        if (FC.getFont(&fnt, fnum))
+        if (Fnt()->getFont(&fnt, fnum))
             cgl_list->setFont(*fnt);
         update();
     }

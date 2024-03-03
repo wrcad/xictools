@@ -78,7 +78,7 @@ QTmsgDlg::QTmsgDlg(QTbag *owner, const char *message_str,
 
     if (sty == STY_FIXED) {
         QFont *f;
-        if (FC.getFont(&f, FNT_FIXED)) {
+        if (Fnt()->getFont(&f, FNT_FIXED)) {
             tx_tbox->setCurrentFont(*f);
             tx_tbox->setFont(*f);
         }

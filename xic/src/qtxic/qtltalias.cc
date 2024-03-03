@@ -178,7 +178,7 @@ QTlayerAliasDlg::QTlayerAliasDlg(GRobject c) : QTbag(this)
         SLOT(current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*)));
 
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_PROP))
+    if (Fnt()->getFont(&fnt, FNT_PROP))
         la_list->setFont(*fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
@@ -476,7 +476,7 @@ QTlayerAliasDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_PROP) {
         QFont *fnt;
-        if (FC.getFont(&fnt, fnum))
+        if (Fnt()->getFont(&fnt, fnum))
             la_list->setFont(*fnt);
         update();
     }

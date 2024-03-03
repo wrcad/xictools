@@ -420,10 +420,10 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::EditorType type,
         checked_env = true;
         const char *fn = getenv("XEDITOR_FONT");
         if (fn)
-            FC.setName(fn, FNT_EDITOR);
+            Fnt()->setName(fn, FNT_EDITOR);
     }
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_EDITOR))
+    if (Fnt()->getFont(&fnt, FNT_EDITOR))
         ed_text_editor->setFont(*fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
@@ -1497,7 +1497,7 @@ QTeditDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_EDITOR) {
         QFont *fnt;
-        if (FC.getFont(&fnt, FNT_EDITOR))
+        if (Fnt()->getFont(&fnt, FNT_EDITOR))
             ed_text_editor->setFont(*fnt);
     }
 }

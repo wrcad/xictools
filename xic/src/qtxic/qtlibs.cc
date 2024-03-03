@@ -201,7 +201,7 @@ QTlibsDlg::QTlibsDlg(GRobject c) : QTbag(this)
         this, SLOT(item_clicked_slot(QTreeWidgetItem*, int)));
 
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_PROP))
+    if (Fnt()->getFont(&fnt, FNT_PROP))
         lb_list->setFont(*fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
@@ -581,7 +581,7 @@ QTlibsDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_PROP) {
         QFont *fnt;
-        if (FC.getFont(&fnt, fnum))
+        if (Fnt()->getFont(&fnt, fnum))
             lb_list->setFont(*fnt);
         update();
     }

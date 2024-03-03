@@ -430,14 +430,14 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QDialog(prnt),
     h_Reload = h_main_menus[0]->addAction(tr("&Reload"), Qt::CTRL|Qt::Key_R,
         this, SLOT(reload_slot()));
 
-    /*XXX
+/*XXX
     h_OldCset = h_main_menus[0]->addAction(tr("Old &Charset"), 0,
-        this, SLOT(old_charser_slot()));
+        this, SLOT(old_charset_slot()));
     h_OldCset->setCheckable(true);
     h_MkFIFO = h_main_menus[0]->addAction(tr("&Make FIFO"), Qt::CTRL|Qt::Key_M,
         this, SLOT(make_fifo_slot()));
     h_MkFIFO->setCheckable(true);
-    */
+*/
 
     h_main_menus[0]->addSeparator();
     h_Quit = h_main_menus[0]->addAction(tr("&Quit"), Qt::CTRL|Qt::Key_Q,
@@ -454,14 +454,14 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QDialog(prnt),
     h_Reload = h_main_menus[0]->addAction(tr("&Reload"), this,
         SLOT(reload_slot()), Qt::CTRL|Qt::Key_R);
 
-    /*XXX
+/*XXX
     h_OldCset = h_main_menus[0]->addAction(tr("Old &Charset"), this,
         SLOT(old_charser_slot(bool)), 0);
     h_OldCset->setCheckable(true);
     h_MkFIFO = h_main_menus[0]->addAction(tr("&Make FIFO"), this,
         SLOT(make_fifo_slot(bool)), Qt::CTRL|Qt::Key_M);
     h_MkFIFO->setCheckable(true);
-    */
+*/
 
     h_main_menus[0]->addSeparator();
     h_Quit = h_main_menus[0]->addAction(tr("&Quit"), this,
@@ -478,16 +478,23 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QDialog(prnt),
 #else
     h_main_menus[1] = menubar->addMenu(tr("&Options"));
 #endif
-    /*XXX
-    Save Config
-    Set Proxy
-    */
+    h_Config = h_main_menus[1]->addAction(tr("Save Config"),
+        this, SLOT(config_slot()));
+/*XXX
+Save Config
+Set Proxy
+    h_Proxy = h_main_menus[1]->addAction(tr("Set Proxy"),
+        this, SLOT(proxy_slot()));
+*/
     h_Search = h_main_menus[1]->addAction(tr("&Search Database"),
         this, SLOT(search_slot()));
     h_FindText = h_main_menus[1]->addAction(tr("Find &Text"),
         this, SLOT(find_slot()));
 /*XXX
 Default Colors
+    h_DefaultColors = h_main_menus[1]->addAction(tr("Default Colors"),
+        this, SLOT(colors_slot()));
+    h_DefaultColors->setCheckable(true);
 */
     h_SetFont = h_main_menus[1]->addAction(tr("Set &Font"));
     h_SetFont->setCheckable(true);
@@ -651,8 +658,8 @@ Default Colors
 QThelpDlg::~QThelpDlg()
 {
     HLP()->context()->quitHelp();
-    FC.unregisterCallback(h_viewer, FNT_MOZY);
-    FC.unregisterCallback(h_viewer, FNT_MOZY_FIXED);
+    Fnt()->unregisterCallback(h_viewer, FNT_MOZY);
+    Fnt()->unregisterCallback(h_viewer, FNT_MOZY_FIXED);
     halt_images();
     HLP()->context()->removeTopic(h_root_topic);
     if (!h_is_frame)
@@ -1361,6 +1368,28 @@ QThelpDlg::quit_slot()
 
 
 void
+QThelpDlg::config_slot()
+{
+    if (!h_params->dump())
+        PopUpErr(MODE_ON,
+            "Failed to write .mozyrc file, permission problem?");
+    else
+        PopUpMessage("Saved .mozyrc file.", false);
+}
+
+
+/*XXX
+void
+QThelpDlg::proxy_slot()
+{
+    char *pxy = proxy::get_proxy();
+    w->PopUpInput("Enter proxy url:", pxy, "Proxy", h_proxy_proc, w);
+    delete [] pxy;
+}
+*/
+
+
+void
 QThelpDlg::search_slot()
 {
     PopUpInput("Enter keyword for database search:", "", "Search", 0, 0);
@@ -1376,6 +1405,14 @@ QThelpDlg::find_slot()
     connect(wb_input, SIGNAL(action_call(const char*, void*)), this,
         SLOT(do_find_text_slot(const char*, void*)));
 }
+
+
+/*
+void
+QThelpDlg::colors_slot(bool)
+{
+}
+*/
 
 
 void

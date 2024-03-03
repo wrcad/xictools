@@ -502,7 +502,7 @@ QTfastCapDlg::QTfastCapDlg(GRobject c) : QTbag(this)
         this, SLOT(mouse_press_slot(QMouseEvent*)));
 
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_FIXED))
+    if (Fnt()->getFont(&fnt, FNT_FIXED))
         fc_jobs->setFont(*fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
@@ -1255,7 +1255,7 @@ QTfastCapDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_FIXED) {
         QFont *fnt;
-        if (FC.getFont(&fnt, FNT_FIXED))
+        if (Fnt()->getFont(&fnt, FNT_FIXED))
             fc_jobs->setFont(*fnt);
         update_jobs_list();
     }
