@@ -975,6 +975,7 @@ QTcanvas::draw_text(int x0, int y0, const char *str, int len)
     if (len >= 0)
         qs.truncate(len);
 
+    y0 -= 2;
     QFontMetrics fm(font());
     if (da_overlay_count) {
         QRect r = fm.boundingRect(qs);

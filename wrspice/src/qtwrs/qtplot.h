@@ -53,7 +53,7 @@
 
 #define MIME_TYPE_TRACE     "application/wrspice-trace"
 
-struct sGraph;
+class cGraph;
 class QGroupBox;
 class QPushButton;
 class QResizeEvent;
@@ -71,7 +71,7 @@ class QTplotDlg : public QDialog, public QTbag,  public QTdraw
     Q_OBJECT
 
 public:
-    friend struct sGraph;
+    friend class cGraph;
 
     // Indices into the buttons array for the button witget pointers.
     enum pbtn_type
@@ -122,7 +122,7 @@ public:
 
     QSize sizeHint() const;
 
-    bool init(sGraph*);
+    bool init(cGraph*);
     bool init_gbuttons();
 
     bool event(QEvent*);
@@ -169,7 +169,7 @@ private:
     static void set_hccb(HCcb*);
     static bool get_dim(const char*, double*);
 
-    sGraph      *pb_graph;
+    cGraph      *pb_graph;
     QGroupBox   *pb_gbox;                       // frame containing the buttons
     QPushButton *pb_checkwins[pbtn_NUMBTNS];    // button widget pointers
     int         pb_id;                          // motion idle id

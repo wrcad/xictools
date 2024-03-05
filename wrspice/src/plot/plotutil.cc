@@ -79,7 +79,7 @@ struct sResponse
     int fd;
     union {
       int ch;
-      sGraph *graph;
+      cGraph *graph;
       int button;
     } reply;
 };

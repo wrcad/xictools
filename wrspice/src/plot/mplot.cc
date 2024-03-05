@@ -146,7 +146,7 @@ CommandTab::com_mplot(wordlist *wl)
     for (p = p0; p; p = p0) {
         p0 = p->next;
 
-        sGraph *graph = GP.NewGraph(GR_MPLT, GR_MPLTstr);
+        cGraph *graph = GP.NewGraph(GR_MPLT, GR_MPLTstr);
         if (!graph) {
             GRpkg::self()->ErrPrintf(ET_ERROR, errmsg_gralloc);
             for (; p; p = p0) {
@@ -179,7 +179,7 @@ CommandTab::com_mplot(wordlist *wl)
 // Full-screen mode prompt function.
 //
 void
-sGraph::mp_prompt(sChkPts *p)
+cGraph::mp_prompt(sChkPts *p)
 {
     gr_dev->SetColor(gr_colors[0].pixel);
     gr_dev->Box(gr_area.left(), yinv(gr_area.bottom()),
@@ -199,7 +199,7 @@ sGraph::mp_prompt(sChkPts *p)
 
 
 void
-sGraph::mp_mark(char pf)
+cGraph::mp_mark(char pf)
 {
     sChkPts *p = static_cast<sChkPts*>(gr_plotdata);
     addit(p, p->d1, p->d2, pf);
@@ -222,7 +222,7 @@ sGraph::mp_mark(char pf)
 // "selected".
 //
 void
-sGraph::mp_bdown_hdlr(int button, int x, int y)
+cGraph::mp_bdown_hdlr(int button, int x, int y)
 {
     sChkPts *p = static_cast<sChkPts*>(gr_plotdata);
     int j;
@@ -295,10 +295,10 @@ sGraph::mp_bdown_hdlr(int button, int x, int y)
 // Clear the selections on *other* windows.
 //
 void
-sGraph::mp_free_sel()
+cGraph::mp_free_sel()
 {
     sGgen *g = GP.InitGgen();
-    sGraph *graph;
+    cGraph *graph;
     while ((graph = g->next()) != 0) {
         if (graph->gr_apptype != GR_MPLT)
             continue;
@@ -317,7 +317,7 @@ sGraph::mp_free_sel()
 // Redraw procedure.
 //
 bool
-sGraph::mp_redraw()
+cGraph::mp_redraw()
 {
     sChkPts *p = static_cast<sChkPts*>(gr_plotdata);
     gr_init_data();
@@ -548,14 +548,14 @@ sGraph::mp_redraw()
 
 
 void
-sGraph::mp_initdata()
+cGraph::mp_initdata()
 {
     gr_dev->TextExtent(0, &gr_fontwid, &gr_fonthei);
 }
 
 
 sChkPts *
-sGraph::mp_copy_data()
+cGraph::mp_copy_data()
 {
     sChkPts *p = static_cast<sChkPts*>(gr_plotdata);
     sChkPts *newc = new sChkPts;
@@ -583,7 +583,7 @@ sGraph::mp_copy_data()
 // Free data procedure.
 //
 void
-sGraph::mp_destroy_data()
+cGraph::mp_destroy_data()
 {
     sChkPts *p = static_cast<sChkPts*>(gr_plotdata);
     delete p;
@@ -592,7 +592,7 @@ sGraph::mp_destroy_data()
 
 
 void
-sGraph::mp_xbox(int xl, int yl, int xu, int yu)
+cGraph::mp_xbox(int xl, int yl, int xu, int yu)
 {
     gr_linebox(xl, yl, xu, yu);
     yl = yinv(yl);
@@ -603,7 +603,7 @@ sGraph::mp_xbox(int xl, int yl, int xu, int yu)
 
 
 void
-sGraph::mp_pbox(int xl, int yl, int xu, int yu)
+cGraph::mp_pbox(int xl, int yl, int xu, int yu)
 {
     gr_linebox(xl, yl, xu, yu);
     gr_dev->Line(
@@ -619,7 +619,7 @@ sGraph::mp_pbox(int xl, int yl, int xu, int yu)
 // int j;  'r' right justify, else left justify
 //
 void
-sGraph::mp_writeg(double d, int x, int y, int j)
+cGraph::mp_writeg(double d, int x, int y, int j)
 {
     char t[20];
     snprintf(t, sizeof(t), "%g", d);
@@ -651,7 +651,7 @@ sGraph::mp_writeg(double d, int x, int y, int j)
     else
         gr_dev->Text(t, x, yinv(y), 0);
 }
-// End of sGraph functions.
+// End of cGraph functions.
 
 
 // Obtain the parsed tokens after "[DATA]".  Return false if not a
@@ -696,7 +696,7 @@ SPgraphics::MpInit(int delta1, int delta2, double v1min, double v1max,
 {
     if (!spg_mplotOn)
         return (0);
-    sGraph *graph = NewGraph(GR_MPLT, GR_MPLTstr);
+    cGraph *graph = NewGraph(GR_MPLT, GR_MPLTstr);
     if (!graph) {
         GRpkg::self()->ErrPrintf(ET_ERROR, errmsg_gralloc);
         return (0);
@@ -740,7 +740,7 @@ SPgraphics::MpWhere(int id, int d1, int d2)
 {
     if (!spg_mplotOn || !id)
         return (1);
-    sGraph *graph = FindGraph(id);
+    cGraph *graph = FindGraph(id);
     if (!graph)
         return (1);
     sChkPts *p = static_cast<sChkPts*>(graph->plotdata());
@@ -757,7 +757,7 @@ SPgraphics::MpMark(int id, char pf)
 {
     if (!spg_mplotOn || !id)
         return (1);
-    sGraph *graph = FindGraph(id);
+    cGraph *graph = FindGraph(id);
     if (!graph)
         return (1);
     graph->mp_mark(pf);
@@ -773,7 +773,7 @@ SPgraphics::MpDone(int id)
     spg_echogr = 0;
     if (!spg_mplotOn || !id)
         return (1);
-    sGraph *graph = FindGraph(id);
+    cGraph *graph = FindGraph(id);
     if (GRpkg::self()->CurDev()->devtype == GRmultiWindow) {
         if (graph)
             graph->gr_redraw();  // for backing store

@@ -88,7 +88,7 @@ namespace {
 
 
 bool
-sGraph::gr_setup_dev(int type, const char *name)
+cGraph::gr_setup_dev(int type, const char *name)
 {
     gr_apptype = type;
     if (GRpkg::self()->CurDev() == GRpkg::self()->MainDev()) {
@@ -114,7 +114,7 @@ sGraph::gr_setup_dev(int type, const char *name)
 
 
 int
-sGraph::gr_dev_init()
+cGraph::gr_dev_init()
 {
     if (GRpkg::self()->MainDev() &&
             GRpkg::self()->MainDev() == GRpkg::self()->CurDev() &&
@@ -132,7 +132,7 @@ sGraph::gr_dev_init()
 
 
 int
-sGraph::gr_win_ht(int minht)
+cGraph::gr_win_ht(int minht)
 {
     // Return a height for a normal plot window based on the legend
     // layout.  The argument is the minimum/default.
@@ -155,9 +155,9 @@ sGraph::gr_win_ht(int minht)
 // Clear the graph for reuse (pass to SPgraphics::Init()).
 //
 void
-sGraph::gr_reset()
+cGraph::gr_reset()
 {
-    const sGraph *thisgr = this;
+    const cGraph *thisgr = this;
     if (!thisgr)
         return;
 
@@ -184,11 +184,11 @@ sGraph::gr_reset()
 }
 
 
-sGraph *
-sGraph::gr_copy()
+cGraph *
+cGraph::gr_copy()
 {
-    sGraph *ret = GP.NewGraph();
-    memcpy(ret, this, sizeof(sGraph));
+    cGraph *ret = GP.NewGraph();
+    memcpy(ret, this, sizeof(cGraph));
     ret->gr_id = GP.RunningId() - 1;   // restore id
 
     // copy gr_keyed
@@ -231,7 +231,7 @@ sGraph::gr_copy()
 // Update the keyed list from fromgraph.
 //
 void
-sGraph::gr_update_keyed(sGraph *fromgraph, bool cpy_user)
+cGraph::gr_update_keyed(cGraph *fromgraph, bool cpy_user)
 {
     if (!fromgraph)
         return;
@@ -272,7 +272,7 @@ sGraph::gr_update_keyed(sGraph *fromgraph, bool cpy_user)
 // before starting over.
 //
 void
-sGraph::gr_abort()
+cGraph::gr_abort()
 {
     gr_cpage = 0;
 #if defined (HAVE_SETJMP_H) && defined (HAVE_SIGNAL)
@@ -288,7 +288,7 @@ sGraph::gr_abort()
 // setting the stage for trouble.
 //
 bool
-sGraph::gr_redraw_direct()
+cGraph::gr_redraw_direct()
 {
     // Push graph for possible use by err/interrupt handlers.
     GP.PushGraphContext(this);
@@ -328,7 +328,7 @@ sGraph::gr_redraw_direct()
 // Draw the relocatable text and transient marks.
 //
 void
-sGraph::gr_redraw_keyed()
+cGraph::gr_redraw_keyed()
 {
     if (gr_apptype == GR_MPLT) {
         for (sKeyed *k = gr_keyed; k; k = k->next) {
@@ -408,7 +408,7 @@ sGraph::gr_redraw_keyed()
 
 
 void
-sGraph::gr_init_data()
+cGraph::gr_init_data()
 {
     switch (gr_apptype) {
     case GR_PLOT:
@@ -422,7 +422,7 @@ sGraph::gr_init_data()
 
 
 void *
-sGraph::gr_copy_data()
+cGraph::gr_copy_data()
 {
     switch (gr_apptype) {
     case GR_PLOT:
@@ -435,7 +435,7 @@ sGraph::gr_copy_data()
 
 
 void
-sGraph::gr_destroy_data()
+cGraph::gr_destroy_data()
 {
     switch (gr_apptype) {
     case GR_PLOT:
@@ -451,7 +451,7 @@ sGraph::gr_destroy_data()
 
 
 bool
-sGraph::gr_add_trace(sDvList *ndvl, int n)
+cGraph::gr_add_trace(sDvList *ndvl, int n)
 {
     if (gr_apptype != GR_PLOT)
         return (false);
@@ -523,7 +523,7 @@ sGraph::gr_add_trace(sDvList *ndvl, int n)
 
 
 bool
-sGraph::gr_delete_trace(int n)
+cGraph::gr_delete_trace(int n)
 {
     if (gr_apptype != GR_PLOT)
         return (false);
@@ -624,7 +624,7 @@ sGraph::gr_delete_trace(int n)
 
 
 void
-sGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
+cGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
 {
     sKeyed *k = gr_keyed;
 #if (defined (WITH_GTK2) || defined (WITH_GTK3))
@@ -946,7 +946,7 @@ sGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
 // Called for button press handling.
 //
 void
-sGraph::gr_bdown_hdlr(int button, int x, int y)
+cGraph::gr_bdown_hdlr(int button, int x, int y)
 {
     if (button == 1) {
         if (gr_cmdmode & grShiftMode)
@@ -1138,10 +1138,10 @@ sGraph::gr_bdown_hdlr(int button, int x, int y)
 // presently.
 //
 void
-sGraph::gr_bup_hdlr(int button, int x, int y, const char *new_keyed)
+cGraph::gr_bup_hdlr(int button, int x, int y, const char *new_keyed)
 {
     if (button == 1) {
-        sGraph *graph = GP.SourceGraph();
+        cGraph *graph = GP.SourceGraph();
         if (!graph)
             graph = this;
         if (graph->gr_timer_id)
@@ -1496,7 +1496,7 @@ sGraph::gr_bup_hdlr(int button, int x, int y, const char *new_keyed)
 // traces.
 //
 int
-sGraph::gr_select_trace(int x, int y)
+cGraph::gr_select_trace(int x, int y)
 {
     if (x > gr_vport.left())
         return (-1);
@@ -1546,7 +1546,7 @@ sGraph::gr_select_trace(int x, int y)
 
 
 void
-sGraph::gr_replot()
+cGraph::gr_replot()
 {
     GP.Plot(0, this, 0, 0, GR_PLOT);
 }
@@ -1562,7 +1562,7 @@ namespace {
 // Initiate a zoomin at x0, y0.  Called from event handler.
 //
 void
-sGraph::gr_zoomin(int x0, int y0)
+cGraph::gr_zoomin(int x0, int y0)
 {
     // open box and get area to zoom in on
     int xlbnd = gr_vport.left() - 2;
@@ -1600,7 +1600,7 @@ sGraph::gr_zoomin(int x0, int y0)
 // Bring up a new plot of the region specified.
 //
 void
-sGraph::gr_zoom(double fx0, double fy0, double fx1, double fy1)
+cGraph::gr_zoom(double fx0, double fy0, double fx1, double fy1)
 {
     if (fx0 < gr_rawdata.xmin)
         fx0 = gr_rawdata.xmin;
@@ -1639,7 +1639,7 @@ sGraph::gr_zoom(double fx0, double fy0, double fx1, double fy1)
 // End a plot.
 //
 void
-sGraph::gr_end()
+cGraph::gr_end()
 {
     const char *text = "Enter p for hardcopy, return to continue";
     const char *text1 = "Hit p for hardcopy, any other key to continue";
@@ -1684,7 +1684,7 @@ namespace {
 // true, gr_reference.mark false.
 //
 void
-sGraph::gr_mark()
+cGraph::gr_mark()
 {
     if (!gr_reference.mark) {
         gr_set_ghost(0, 0, 0);
@@ -1714,7 +1714,7 @@ sGraph::gr_mark()
 // Draw/undraw the reference marker.
 //
 void
-sGraph::gr_refmark(bool erase)
+cGraph::gr_refmark(bool erase)
 {
     if (gr_reference.set) {
 #if defined (WITH_QT5) || defined (WITH_QT6)
@@ -1771,7 +1771,7 @@ sGraph::gr_refmark(bool erase)
 // relative to this reference (marker must be active).
 //
 void
-sGraph::gr_setref(int x0, int y0)
+cGraph::gr_setref(int x0, int y0)
 {
     if (!gr_reference.mark)
         return;
@@ -1812,7 +1812,7 @@ sGraph::gr_setref(int x0, int y0)
 
 
 void
-sGraph::gr_data_to_screen(double x, double y, int *screenx, int *screeny)
+cGraph::gr_data_to_screen(double x, double y, int *screenx, int *screeny)
 {
     if (gr_grtype == GRID_XLOG || gr_grtype == GRID_LOGLOG) {
         double low = mylog10(gr_datawin.xmin);
@@ -1850,7 +1850,7 @@ sGraph::gr_data_to_screen(double x, double y, int *screenx, int *screeny)
 
 
 void
-sGraph::gr_screen_to_data(int screenx, int screeny, double *x, double *y)
+cGraph::gr_screen_to_data(int screenx, int screeny, double *x, double *y)
 {
     if (gr_grtype == GRID_XLOG || gr_grtype == GRID_LOGLOG) {
         double high = mylog10(gr_datawin.xmax);
@@ -1878,7 +1878,7 @@ sGraph::gr_screen_to_data(int screenx, int screeny, double *x, double *y)
 // later.
 //
 void
-sGraph::gr_save_text(const char *text, int x, int y, int type, int colorindex,
+cGraph::gr_save_text(const char *text, int x, int y, int type, int colorindex,
     int rcode)
 {
     sKeyed *k = 0;
@@ -1907,7 +1907,7 @@ sGraph::gr_save_text(const char *text, int x, int y, int type, int colorindex,
 
 
 void
-sGraph::gr_set_keyed_posn(sKeyed *k, int x, int y)
+cGraph::gr_set_keyed_posn(sKeyed *k, int x, int y)
 {
     if (!k || k->fixed)
         return;
@@ -1954,7 +1954,7 @@ sGraph::gr_set_keyed_posn(sKeyed *k, int x, int y)
 
 
 void
-sGraph::gr_get_keyed_posn(sKeyed *k, int *x, int *y)
+cGraph::gr_get_keyed_posn(sKeyed *k, int *x, int *y)
 {
     if (!k) {
         *x = 0;
@@ -1991,7 +1991,7 @@ sGraph::gr_get_keyed_posn(sKeyed *k, int *x, int *y)
 
 
 bool
-sGraph::gr_get_keyed_bb(sKeyed *k, int *xl, int *yb, int *xr, int *yt)
+cGraph::gr_get_keyed_bb(sKeyed *k, int *xl, int *yb, int *xr, int *yt)
 {
     if (!k)
         return (false);
@@ -2016,7 +2016,7 @@ sGraph::gr_get_keyed_bb(sKeyed *k, int *xl, int *yb, int *xr, int *yt)
 
 
 void
-sGraph::gr_writef(double d, const sUnits *units, int x, int y, bool limit)
+cGraph::gr_writef(double d, const sUnits *units, int x, int y, bool limit)
 {
     const char *tmp = SPnum.printnum(d, units, true, NUMDGT);
     if (limit) {
@@ -2036,7 +2036,7 @@ sGraph::gr_writef(double d, const sUnits *units, int x, int y, bool limit)
 // curve interpolation, so it might look funny.
 //
 void
-sGraph::gr_draw_last(int len)
+cGraph::gr_draw_last(int len)
 {
     sDvList *dl0 = (sDvList*)gr_plotdata;
     sDataVec *xs = dl0->dl_dvec->scale();
@@ -2132,7 +2132,7 @@ sGraph::gr_draw_last(int len)
 // drawing functions.
 //
 void
-sGraph::gr_set_ghost(GhostDrawFunc cb, int x, int y)
+cGraph::gr_set_ghost(GhostDrawFunc cb, int x, int y)
 {
     GP.PushGraphContext(this);
     gr_dev->SetGhost(cb, x, y);
@@ -2141,7 +2141,7 @@ sGraph::gr_set_ghost(GhostDrawFunc cb, int x, int y)
 
 
 void
-sGraph::gr_show_ghost(bool on)
+cGraph::gr_show_ghost(bool on)
 {
     GP.PushGraphContext(this);
     gr_dev->ShowGhost(on);
@@ -2152,7 +2152,7 @@ sGraph::gr_show_ghost(bool on)
 // Ghost drawing functions, used in wrappers.
 
 void
-sGraph::gr_ghost_mark(int x, int y, bool erase)
+cGraph::gr_ghost_mark(int x, int y, bool erase)
 {
     if (erase) {
 #if defined (WITH_QT5) || defined (WITH_QT6)
@@ -2359,7 +2359,7 @@ sGraph::gr_ghost_mark(int x, int y, bool erase)
 
 
 void
-sGraph::gr_ghost_zoom(int x, int y, int ref_x, int ref_y)
+cGraph::gr_ghost_zoom(int x, int y, int ref_x, int ref_y)
 {
     y = yinv(y);
     int xlbnd = gr_vport.left() - 2;
@@ -2389,7 +2389,7 @@ sGraph::gr_ghost_zoom(int x, int y, int ref_x, int ref_y)
 // Show an outline box of the selected text.
 //
 void
-sGraph::gr_ghost_tbox(int x, int y)
+cGraph::gr_ghost_tbox(int x, int y)
 {
     if (!GP.SourceGraph())
         return;
@@ -2413,7 +2413,7 @@ sGraph::gr_ghost_tbox(int x, int y)
 
 
 void
-sGraph::gr_ghost_trace(int x, int y)
+cGraph::gr_ghost_trace(int x, int y)
 {
     gr_dev->SetGhostColor(gr_colors[1].pixel);
     gr_dev->Line(x+2, y-2, x+8, y-2);
@@ -2427,7 +2427,7 @@ sGraph::gr_ghost_trace(int x, int y)
 
 
 void
-sGraph::gr_show_sel_text(bool show)
+cGraph::gr_show_sel_text(bool show)
 {
     sKeyed *k = gr_keyed;
     if (!k)
@@ -2539,7 +2539,7 @@ namespace {
 // Show a "WRspice" logo in the plot.
 //
 void
-sGraph::gr_show_logo()
+cGraph::gr_show_logo()
 {
     if (gr_noplotlogo || gr_present)
         return;
@@ -2625,7 +2625,7 @@ sGraph::gr_show_logo()
 // Handle clicks on a scale translation icon, return true if handled.
 //
 bool
-sGraph::dv_scale_icon_hdlr(int button, int x, int y)
+cGraph::dv_scale_icon_hdlr(int button, int x, int y)
 {
     if (y > gr_area.bottom() + gr_fonthei/2 - gr_fontwid/2 &&
             y < gr_area.bottom() + gr_fontwid + gr_fonthei/2 +
@@ -3007,7 +3007,7 @@ namespace {
 // Handle clicks on the dimension map, return true if handled.
 //
 bool
-sGraph::dv_dims_map_hdlr(int button, int xin, int yin, bool up)
+cGraph::dv_dims_map_hdlr(int button, int xin, int yin, bool up)
 {
     if (!gr_sel_show)
         return (false);
@@ -3172,7 +3172,7 @@ sGraph::dv_dims_map_hdlr(int button, int xin, int yin, bool up)
 // Copy dvecs.
 //
 sDvList *
-sGraph::dv_copy_data()
+cGraph::dv_copy_data()
 {
     sDvList *dl = (sDvList*)gr_plotdata;
     if (dl == 0)
@@ -3208,7 +3208,7 @@ sGraph::dv_copy_data()
 // De-allocate dveclist.
 //
 void
-sGraph::dv_destroy_data()
+cGraph::dv_destroy_data()
 {
     sDvList *dl = static_cast<sDvList*>(gr_plotdata);
     if (dl) {
@@ -3270,7 +3270,7 @@ namespace {
 // Redraw everything in struct graph.
 //
 bool
-sGraph::dv_redraw()
+cGraph::dv_redraw()
 {
     bool tstop = gr_stop;
     gr_stop = false;
@@ -3456,7 +3456,7 @@ sGraph::dv_redraw()
 namespace { const char *PointChars; }
 
 void
-sGraph::dv_initdata()
+cGraph::dv_initdata()
 {
     gr_dev->TextExtent(0, &gr_fontwid, &gr_fonthei);
 
@@ -3556,7 +3556,7 @@ sGraph::dv_initdata()
 // Call this function after viewport size changes.
 //
 void
-sGraph::dv_resize()
+cGraph::dv_resize()
 {
     gr_datawin.xmin = gr_rawdata.xmin;
     gr_datawin.xmax = gr_rawdata.xmax;
@@ -3636,7 +3636,7 @@ sGraph::dv_resize()
 // draw the legend.
 //
 void
-sGraph::dv_trace(bool leg_only)
+cGraph::dv_trace(bool leg_only)
 {
     // replot data
     // if gr_oneval, pass it a 0 scale
@@ -3724,7 +3724,7 @@ sGraph::dv_trace(bool leg_only)
 
 
 void
-sGraph::dv_legend(int tracenum, sDataVec *dv)
+cGraph::dv_legend(int tracenum, sDataVec *dv)
 {
     if (gr_present)
         return;
@@ -3845,7 +3845,7 @@ namespace {
 // of the vector, block by block.
 //
 void
-sGraph::dv_set_trace(sDataVec *v, sDataVec *xs, int tracenum)
+cGraph::dv_set_trace(sDataVec *v, sDataVec *xs, int tracenum)
 {
     if (!xs || xs->numdims() <= 1) {
         // If the scale has unit dimension, ignore dimensionality
@@ -4190,7 +4190,7 @@ namespace {
 // then do some tricky stuff.
 //
 void
-sGraph::dv_plot_trace(sDataVec *v, sDataVec *xs, int tracenum)
+cGraph::dv_plot_trace(sDataVec *v, sDataVec *xs, int tracenum)
 {
     if (v->length() < 1) {
         GRpkg::self()->ErrPrintf(ET_WARN,
@@ -4471,7 +4471,7 @@ sGraph::dv_plot_trace(sDataVec *v, sDataVec *xs, int tracenum)
 
 
 void
-sGraph::dv_plot_interval(sDataVec *v, double *lohi, double *coeffs,
+cGraph::dv_plot_interval(sDataVec *v, double *lohi, double *coeffs,
     sPoly *po, bool rotated)
 {
     int steps = DEF_polysteps;
@@ -4505,7 +4505,7 @@ sGraph::dv_plot_interval(sDataVec *v, double *lohi, double *coeffs,
 // needed.
 //
 void
-sGraph::dv_point(sDataVec *dv, double newx, double newy,
+cGraph::dv_point(sDataVec *dv, double newx, double newy,
     double oldx, double oldy, int np)
 {
     if (!gr_dev)
@@ -4629,7 +4629,7 @@ sGraph::dv_point(sDataVec *dv, double newx, double newy,
 
 
 void
-sGraph::dv_erase_factors()
+cGraph::dv_erase_factors()
 {
     gr_dev->SetColor(gr_colors[0].pixel);
     int yu = gr_vport.top();
@@ -4687,7 +4687,7 @@ sGraph::dv_erase_factors()
 
 
 bool
-sGraph::dv_find_where(sDataVec *scale, int x, double *fx, int *indx)
+cGraph::dv_find_where(sDataVec *scale, int x, double *fx, int *indx)
 {
     double tx;
     if (gr_grtype == GRID_LOGLOG || gr_grtype == GRID_XLOG) {
@@ -4712,7 +4712,7 @@ sGraph::dv_find_where(sDataVec *scale, int x, double *fx, int *indx)
 
 
 void
-sGraph::dv_find_y(sDataVec *scale, sDataVec *dv, int indx, double fx,
+cGraph::dv_find_y(sDataVec *scale, sDataVec *dv, int indx, double fx,
     double *fy)
 {
     double x0 = scale->realval(indx-1);
@@ -4736,7 +4736,7 @@ sGraph::dv_find_y(sDataVec *scale, sDataVec *dv, int indx, double fx,
 // variables.  This is used during zoomin.
 //
 void
-sGraph::dv_pl_environ(double x0, double x1, double y0, double y1, bool unset)
+cGraph::dv_pl_environ(double x0, double x1, double y0, double y1, bool unset)
 {
     char buf[BSIZE_SP];
     const char *s = "_temp_xlimit";
@@ -4863,7 +4863,7 @@ sGraph::dv_pl_environ(double x0, double x1, double y0, double y1, bool unset)
 // create a new selections list.
 //
 void
-sGraph::dv_find_selections()
+cGraph::dv_find_selections()
 {
     clear_selections();
     char *tpname = lstring::copy(gr_plotname);
@@ -4873,7 +4873,7 @@ sGraph::dv_find_selections()
     if (t)
         *t = 0;
     sGgen *g = GP.InitGgen();
-    sGraph *graph;
+    cGraph *graph;
     while ((graph = g->next()) != 0) {
         if (graph->gr_apptype != GR_MPLT)
             continue;
@@ -4918,20 +4918,20 @@ namespace {
 
 
 int
-sGraph::start_drag_trace(void *arg)
+cGraph::start_drag_trace(void *arg)
 {
 #if (defined (WITH_QT5) || defined (WITH_QT6))
     // In QT, start in QT's drag mode.
-    sGraph *graph = (sGraph*)arg;
+    cGraph *graph = (cGraph*)arg;
     graph->gr_timer_id = 0;
-    sGraph::drag_trace(graph);
+    cGraph::drag_trace(graph);
 #else
 #if (defined (WITH_GTK2) || defined (WITH_GTK3))
     // In GTK, use the local drag mode, which works between windows,
     // unlike this mode in QT.  For QT6, it is also possible to start
     // in local mode and switch to QT mode in the leave event handler,
     // but this doesn't work in QT5 under Linux.
-    sGraph *graph = (sGraph*)arg;
+    cGraph *graph = (cGraph*)arg;
     GP.SetSourceGraph(graph);
     if (graph->gr_cmd_data) {
         graph->gr_set_ghost(ghost_trace, 0, 0);
@@ -4946,13 +4946,13 @@ sGraph::start_drag_trace(void *arg)
 
 
 int
-sGraph::start_drag_text(void *arg)
+cGraph::start_drag_text(void *arg)
 {
-    sGraph *graph = (sGraph*)arg;
+    cGraph *graph = (cGraph*)arg;
 #if (defined (WITH_QT5) || defined (WITH_QT6))
     // In QT, start in QT's drag mode.
     graph->gr_timer_id = 0;
-    sGraph::drag_text(graph);
+    cGraph::drag_text(graph);
     graph->gr_cmdmode &= ~grMoving;
 #else
 #if (defined (WITH_GTK2) || defined (WITH_GTK3))
@@ -4974,9 +4974,9 @@ sGraph::start_drag_text(void *arg)
 
 // Static function.
 int
-sGraph::start_drag_zoom(void *arg)
+cGraph::start_drag_zoom(void *arg)
 {
-    sGraph *graph = (sGraph*)arg;
+    cGraph *graph = (cGraph*)arg;
     if (graph->gr_reference.mark)
         graph->gr_show_ghost(false);
     graph->gr_zoomin(graph->gr_pressx, graph->gr_pressy);
@@ -4985,11 +4985,11 @@ sGraph::start_drag_zoom(void *arg)
     graph->gr_timer_id = 0;
     return (false);
 }
-// End of sGraph private functions.
+// End of cGraph private functions.
 
 
 //
-// The graphics-package dependent part of the sGraph class.
+// The graphics-package dependent part of the cGraph class.
 //
 
 // Below are stubs needed to link without a graphics package.  The
@@ -5002,7 +5002,7 @@ sGraph::start_drag_zoom(void *arg)
 // Return a new graphics context struct.
 //
 GRwbag *
-sGraph::gr_new_gx(int type)
+cGraph::gr_new_gx(int type)
 {
     return (0);
 }
@@ -5011,7 +5011,7 @@ sGraph::gr_new_gx(int type)
 // Initialization of graphics, return false on success.
 //
 int
-sGraph::gr_pkg_init()
+cGraph::gr_pkg_init()
 {
     return (true);
 }
@@ -5021,7 +5021,7 @@ sGraph::gr_pkg_init()
 // which is updated.
 //
 void
-sGraph::gr_pkg_init_colors()
+cGraph::gr_pkg_init_colors()
 {
 }
 
@@ -5030,7 +5030,7 @@ sGraph::gr_pkg_init_colors()
 // return is true if the button count changes
 //
 bool
-sGraph::gr_init_btns()
+cGraph::gr_init_btns()
 {
     return (false);
 }
@@ -5040,14 +5040,14 @@ sGraph::gr_init_btns()
 // press or exposure event is detected for the plot window, return true.
 //
 bool
-sGraph::gr_check_plot_events()
+cGraph::gr_check_plot_events()
 {
     return (false);
 }
 
 
 void
-sGraph::gr_redraw()
+cGraph::gr_redraw()
 {
     if (GRpkg::self()->CurDev()->devtype == GRhardcopy) {
         gr_redraw_direct();
@@ -5057,7 +5057,7 @@ sGraph::gr_redraw()
 
 
 void
-sGraph::gr_refresh(int left, int bottom, int right, int top, bool notxt)
+cGraph::gr_refresh(int left, int bottom, int right, int top, bool notxt)
 {
 }
 
@@ -5065,7 +5065,7 @@ sGraph::gr_refresh(int left, int bottom, int right, int top, bool notxt)
 // Pop down and destroy.
 //
 void
-sGraph::gr_popdown()
+cGraph::gr_popdown()
 {
 }
 
@@ -5074,7 +5074,7 @@ sGraph::gr_popdown()
 // Timeout function, start dragging a trace.
 //
 int
-sGraph::drag_trace(void *arg)
+cGraph::drag_trace(void *arg)
 {
     return (0);
 }
@@ -5084,7 +5084,7 @@ sGraph::drag_trace(void *arg)
 // Timeout function, start dragging text.
 //
 int
-sGraph::drag_text(void *arg)
+cGraph::drag_text(void *arg)
 {
     return (0);
 }

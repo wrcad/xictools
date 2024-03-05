@@ -84,6 +84,8 @@ QTparam::QTparam(QTmainwin *prnt) : QWidget(prnt), QTdraw(XW_TEXT)
     p_width = 0;
     p_height = 0;
 
+    setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
+
     gd_viewport = new QTcanvas();
     QHBoxLayout *hbox = new QHBoxLayout(this);
     hbox->setContentsMargins(0, 0, 0, 0);
@@ -328,9 +330,11 @@ QTparam::font_changed_slot(int fnum)
 {
     if (fnum == FNT_SCREEN) {
         QFont *fnt;
-        if (Fnt()->getFont(&fnt, FNT_SCREEN))
+        if (Fnt()->getFont(&fnt, FNT_SCREEN)) {
             gd_viewport->set_font(fnt);
-        print();
+            setFixedHeight(QFontMetrics(*fnt).height());
+            print();
+        }
     }
 }
 

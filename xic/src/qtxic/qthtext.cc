@@ -89,6 +89,8 @@ QTedit::QTedit(bool nogr) : QTdraw(XW_TEXT)
     if (nogr)
         return;
 
+    setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
+
     QMargins qm;
     QHBoxLayout *hbox = new QHBoxLayout(this);
     hbox->setContentsMargins(qm);
@@ -240,7 +242,6 @@ QTedit::flash_msg(const char *msg, ...)
     va_start(args, msg);
     vsnprintf(buf, 256, msg, args);
     va_end(args);
-    puts(buf);
 
     QTflashPop *pop = new QTflashPop(buf, QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_LL), pop,
@@ -261,7 +262,6 @@ QTedit::flash_msg_here(int xx, int yy, const char *msg, ...)
     va_start(args, msg);
     vsnprintf(buf, 256, msg, args);
     va_end(args);
-    puts(buf);
 
     QTflashPop *pop = new QTflashPop(buf, QTmainwin::self());
     QTdev::self()->SetPopupLocation(GRloc(LW_XYA, xx, yy),
