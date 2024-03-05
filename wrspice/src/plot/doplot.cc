@@ -124,14 +124,14 @@ CommandTab::com_plotwin(wordlist *wl)
         wl = wl->wl_next;
         if (!wl) {
             // pop down last
-            sGraph *graph = GP.FindGraph(GP.RunningId() - 1);
+            cGraph *graph = GP.FindGraph(GP.RunningId() - 1);
             if (graph)
                 graph->gr_popdown();
         }
         else if (*wl->wl_word == 'a' || *wl->wl_word == 'A') {
             // pop down all plots
             for (int i = 1; i < GP.RunningId(); i++) {
-                sGraph *graph = GP.FindGraph(i);
+                cGraph *graph = GP.FindGraph(i);
                 if (graph)
                     graph->gr_popdown();
             }
@@ -139,13 +139,13 @@ CommandTab::com_plotwin(wordlist *wl)
         else if (sscanf(wl->wl_word, "%d", &d) == 1) {
             if (d >= 0) {
                 // pop down this id
-                sGraph *graph = GP.FindGraph(d);
+                cGraph *graph = GP.FindGraph(d);
                 if (graph)
                     graph->gr_popdown();
             }
             else {
                 // pop down prev
-                sGraph *graph = GP.FindGraph(GP.RunningId() - 1 + d);
+                cGraph *graph = GP.FindGraph(GP.RunningId() - 1 + d);
                 if (graph)
                     graph->gr_popdown();
             }
@@ -191,7 +191,7 @@ namespace {
 // and graphics plotting.
 //
 bool
-SPgraphics::Plot(wordlist *wl, sGraph *fromgraph, const char *hcopy,
+SPgraphics::Plot(wordlist *wl, cGraph *fromgraph, const char *hcopy,
     const char *devname, int)
 {
     if (Sp.GetVar(kw_dontplot, VTYP_BOOL, 0)) {
@@ -623,7 +623,7 @@ SPgraphics::Plot(wordlist *wl, sGraph *fromgraph, const char *hcopy,
         gr.command = wordlist::copy(wl);
 
     // the dvec list is copied to graph->plotdata
-    sGraph *graph = Init(dl0, &gr);
+    cGraph *graph = Init(dl0, &gr);
     if (!fromgraph || copied)
         sDvList::destroy(dl0);
 

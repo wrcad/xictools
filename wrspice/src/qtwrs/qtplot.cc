@@ -146,7 +146,7 @@ QTplotDlg::sizeHint() const
 
 
 bool
-QTplotDlg::init(sGraph *gr)
+QTplotDlg::init(cGraph *gr)
 {
     wb_sens_set = sens_set;
     pb_graph = gr;

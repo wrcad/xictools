@@ -74,7 +74,7 @@ Authors: 1982 Giles Billingsley
 // need to be displayed) and 'false' if the line is in the AOI.
 //
 bool
-sGraph::clip_line(int *pX1, int *pY1, int *pX2, int *pY2,
+cGraph::clip_line(int *pX1, int *pY1, int *pX2, int *pY2,
     int l, int b, int r, int t)
 {
     int x1 = *pX1;
@@ -133,7 +133,7 @@ sGraph::clip_line(int *pX1, int *pY1, int *pX2, int *pY2,
 // know which is the outer point for putting the label on.
 //
 bool
-sGraph::clip_to_circle(int *x1, int *y1, int *x2, int *y2,
+cGraph::clip_to_circle(int *x1, int *y1, int *x2, int *y2,
     int cx, int cy, int rad)
 {
     // Get the angles between the origin and the endpoints

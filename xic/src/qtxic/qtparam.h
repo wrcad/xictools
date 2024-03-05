@@ -163,6 +163,11 @@ public:
 
     static QTparam *self()      { return (instPtr); }
 
+    QSize sizeHint() const
+        {
+            return (QSize(200, QFontMetrics(font()).height()));
+        }
+
     void print();
     void display(int, int);
 

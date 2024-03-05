@@ -40,6 +40,7 @@
 
 #include "qthelp.h"
 #include "qtviewer.h"
+#include "qtclrdlg.h"
 #include "qtinterf/qtfile.h"
 #include "qtinterf/qtfont.h"
 #include "qtinterf/qtinput.h"
@@ -52,6 +53,7 @@
 #include "httpget/transact.h"
 #include "miscutil/pathlist.h"
 #include "miscutil/filestat.h"
+#include "miscutil/proxy.h"
 
 #include <QApplication>
 #include <QLayout>
@@ -68,6 +70,13 @@
 #include <sys/stat.h>
 #include <errno.h>
 #include <unistd.h>
+#ifdef HAVE_PWD_H
+#include <pwd.h>
+#include <sys/wait.h>
+#endif
+#ifdef WIN32
+#include <windows.h>
+#endif
 
 
 /*=======================================================================
@@ -349,7 +358,15 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QDialog(prnt),
     h_cur_topic = 0;
     h_stop_btn_pressed = false;
     h_is_frame = !has_menu;
+    h_fifo_name = 0;
+    h_fifo_fd = -1;
+    h_fifo_tid = 0;
+#ifdef WIN32
+    h_fifo_pipe = 0;
+    h_fifo_tfiles = 0;
+#endif
     h_cache_list = 0;
+    h_clrdlg = 0;
     h_frame_array = 0;
     h_frame_array_size = 0;
     h_frame_parent = 0;
@@ -434,10 +451,10 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QDialog(prnt),
     h_OldCset = h_main_menus[0]->addAction(tr("Old &Charset"), 0,
         this, SLOT(old_charset_slot()));
     h_OldCset->setCheckable(true);
-    h_MkFIFO = h_main_menus[0]->addAction(tr("&Make FIFO"), Qt::CTRL|Qt::Key_M,
-        this, SLOT(make_fifo_slot()));
-    h_MkFIFO->setCheckable(true);
 */
+    h_MkFIFO = h_main_menus[0]->addAction(tr("&Make FIFO"), Qt::CTRL|Qt::Key_M,
+        this, SLOT(make_fifo_slot(bool)));
+    h_MkFIFO->setCheckable(true);
 
     h_main_menus[0]->addSeparator();
     h_Quit = h_main_menus[0]->addAction(tr("&Quit"), Qt::CTRL|Qt::Key_Q,
@@ -458,10 +475,10 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QDialog(prnt),
     h_OldCset = h_main_menus[0]->addAction(tr("Old &Charset"), this,
         SLOT(old_charser_slot(bool)), 0);
     h_OldCset->setCheckable(true);
+*/
     h_MkFIFO = h_main_menus[0]->addAction(tr("&Make FIFO"), this,
         SLOT(make_fifo_slot(bool)), Qt::CTRL|Qt::Key_M);
     h_MkFIFO->setCheckable(true);
-*/
 
     h_main_menus[0]->addSeparator();
     h_Quit = h_main_menus[0]->addAction(tr("&Quit"), this,
@@ -480,22 +497,15 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QDialog(prnt),
 #endif
     h_Config = h_main_menus[1]->addAction(tr("Save Config"),
         this, SLOT(config_slot()));
-/*XXX
-Save Config
-Set Proxy
     h_Proxy = h_main_menus[1]->addAction(tr("Set Proxy"),
         this, SLOT(proxy_slot()));
-*/
     h_Search = h_main_menus[1]->addAction(tr("&Search Database"),
         this, SLOT(search_slot()));
     h_FindText = h_main_menus[1]->addAction(tr("Find &Text"),
         this, SLOT(find_slot()));
-/*XXX
-Default Colors
     h_DefaultColors = h_main_menus[1]->addAction(tr("Default Colors"),
-        this, SLOT(colors_slot()));
+        this, SLOT(colors_slot(bool)));
     h_DefaultColors->setCheckable(true);
-*/
     h_SetFont = h_main_menus[1]->addAction(tr("Set &Font"));
     h_SetFont->setCheckable(true);
     connect(h_SetFont, SIGNAL(toggled(bool)),
@@ -657,6 +667,7 @@ Default Colors
 
 QThelpDlg::~QThelpDlg()
 {
+    unregister_fifo();
     HLP()->context()->quitHelp();
     Fnt()->unregisterCallback(h_viewer, FNT_MOZY);
     Fnt()->unregisterCallback(h_viewer, FNT_MOZY_FIXED);
@@ -1351,13 +1362,23 @@ void
 QThelpDlg::old_charset_slot(bool state)
 {
 }
+*/
 
 
 void
 QThelpDlg::make_fifo_slot(bool state)
 {
+    if (state) {
+        if (register_fifo(0)) {
+            sLstr tstr;
+            tstr.add("Listening for input on pipe named\n");
+            tstr.add(h_fifo_name);
+            PopUpMessage(tstr.string(), false);
+        }
+    }
+    else
+        unregister_fifo();
 }
-*/
 
 
 void
@@ -1378,15 +1399,13 @@ QThelpDlg::config_slot()
 }
 
 
-/*XXX
 void
 QThelpDlg::proxy_slot()
 {
     char *pxy = proxy::get_proxy();
-    w->PopUpInput("Enter proxy url:", pxy, "Proxy", h_proxy_proc, w);
+    PopUpInput("Enter proxy url:", pxy, "Proxy", h_proxy_proc, this);
     delete [] pxy;
 }
-*/
 
 
 void
@@ -1407,12 +1426,21 @@ QThelpDlg::find_slot()
 }
 
 
-/*
 void
-QThelpDlg::colors_slot(bool)
+QThelpDlg::colors_slot(bool state)
 {
+    if (state) {
+        if (!h_clrdlg) {
+            h_clrdlg = new QTmozyClrDlg(this);
+            h_clrdlg->register_caller(sender());
+            h_clrdlg->register_usrptr((void**)&h_clrdlg);
+            QTdev::self()->SetPopupLocation(GRloc(LW_CENTER), h_clrdlg, this);
+            h_clrdlg->show();
+        }
+    }
+    else if (h_clrdlg)
+        h_clrdlg->popdown();
 }
-*/
 
 
 void
@@ -1971,6 +1999,25 @@ QThelpDlg::newtopic(const char *href, bool spawn, bool force_download,
 }
 
 
+QThelpDlg::NTtype
+QThelpDlg::newtopic(const char *fname, FILE *fp, bool spawn)
+{
+//    topic *top = checkImage(url, this);
+//    if (top)
+//        return (top);
+    HLPtopic *top = new HLPtopic(fname, "");
+    top->get_file(fp, fname);
+
+    if (spawn)
+        top->set_context(0);
+    else
+        top->set_context(this);
+
+    top->link_new_and_show(spawn, h_cur_topic);
+    return (QThelpDlg::NTnew);
+}
+
+
 // Halt all image transfers in progress for the widget, and clear the
 // queue of jobs for this window
 //
@@ -1980,5 +2027,376 @@ QThelpDlg::stop_image_download()
     if (h_params->LoadMode == HLPparams::LoadProgressive)
         h_viewer->progressive_kill();
     HLP()->context()->abortImageDownload(this);
+}
+
+
+// Static function.
+// Callback passed to PopUpInput to set a proxy url.
+//
+// The string is in the form "url [port]", where the port can be part
+// of the url, separated by a colon.  In this case, the second token
+// should not be given.  An explicit port number must be provided by
+// either means.
+//
+void
+QThelpDlg::h_proxy_proc(const char *str, void *hlpptr)
+{
+    QThelpDlg *w = static_cast<QThelpDlg*>(hlpptr);
+    if (!w || !str)
+        return;
+    char buf[256];
+    char *addr = lstring::getqtok(&str);
+
+    // If not address given, convert to "-", which indicates to move
+    // .wrproxy -> .wrproxy.bak
+    if (!addr)
+        addr = lstring::copy("-");
+    else if (!*addr) {
+        delete [] addr;
+        addr = lstring::copy("-");
+    }
+    if (*addr == '-' || *addr == '+') {
+        const char *err = proxy::move_proxy(addr);
+        if (err) {
+            snprintf(buf, 256, "Operation failed: %s.", err);
+            w->PopUpErr(MODE_ON, buf);
+        }
+        else {
+            const char *t = addr+1;
+            if (!*t)
+                t = "bak";
+            if (*addr == '-') {
+                snprintf(buf, 256,
+                    "Move .wrproxy file to .wrproxy.%s succeeded.\n", t);
+                w->PopUpMessage(buf, false);
+            }
+            else {
+                snprintf(buf, 256,
+                    "Move .wrproxy.%s to .wrproxy file succeeded.\n", t);
+                w->PopUpMessage(buf, false);
+            }
+        }
+        delete [] addr;
+        if (w->wb_input)
+            w->wb_input->popdown();
+        return;
+    }
+    if (!lstring::prefix("http:", addr)) {
+        w->PopUpMessage("Error: \"http:\" prefix required in address.", true);
+        delete [] addr;
+        if (w->wb_input)
+            w->wb_input->popdown();
+        return;
+    }
+
+    bool a_has_port = false;
+    const char *e = strrchr(addr, ':');
+    if (e) {
+        e++;
+        if (isdigit(*e)) {
+            e++;
+            while (isdigit(*e))
+                e++;
+        }
+        if (!*e)
+            a_has_port = true;
+    }
+
+    char *port = lstring::gettok(&str, ":");
+    if (!a_has_port && !port) {
+        // Default to port 80.
+        port = lstring::copy("80");
+    }
+    if (port) {
+        for (const char *c = port; *c; c++) {
+            if (!isdigit(*c)) {
+                w->PopUpMessage("Error: port is not numeric.", true);
+                delete [] addr;
+                delete [] port;
+                if (w->wb_input)
+                    w->wb_input->popdown();
+                return;
+            }
+        }
+    }
+
+    const char *err = proxy::set_proxy(addr, port);
+    if (err) {
+        snprintf(buf, 256, "Operation failed: %s.", err);
+        w->PopUpErr(MODE_ON, buf);
+    }
+    else if (port) {
+        snprintf(buf, 256, "Created .wrproxy file for %s:%s.\n", addr, port);
+        w->PopUpMessage(buf, false);
+    }
+    else {
+        snprintf(buf, 256, "Created .wrproxy file for %s.\n", addr);
+        w->PopUpMessage(buf, false);
+    }
+    delete [] addr;
+    delete [] port;
+    if (w->wb_input)
+        w->wb_input->popdown();
+}
+
+
+#define MOZY_FIFO "mozyfifo"
+
+// Experimental new feature:  create a named pipe and set up a
+// listener.  When anything is written to the pipe, grab it and show
+// it.  This is intended for displaying HTML messages from an email
+// client.
+//
+bool 
+QThelpDlg::register_fifo(const char *fname)
+{
+    if (!fname)
+        fname = getenv("MOZY_FIFO");
+    if (!fname)
+        fname = MOZY_FIFO;
+        
+    bool ret = false;
+#ifdef WIN32
+    if (fname)
+        fname = lstring::strip_path(fname);
+    sLstr lstr;
+    lstr.add("\\\\.\\pipe\\");
+    lstr.add(fname);
+    int len = lstr.length();
+    int cnt = 1;
+    for (;;) {
+        if (access(lstr.string(), F_OK) < 0)
+            break;
+        lstr.truncate(len, 0);
+        lstr.add_i(cnt);
+        cnt++;
+    }
+    SECURITY_DESCRIPTOR sd;
+    InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION);
+    SECURITY_ATTRIBUTES sa;
+    sa.nLength = sizeof(SECURITY_ATTRIBUTES);
+    sa.lpSecurityDescriptor = &sd;
+    sa.bInheritHandle = false;
+
+    HANDLE hpipe = CreateNamedPipe(lstr.string(),
+        PIPE_ACCESS_INBOUND,
+        PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT,
+        PIPE_UNLIMITED_INSTANCES,
+        2048,
+        2048,
+        NMPWAIT_USE_DEFAULT_WAIT,
+        &sa);
+
+    if (hpipe != INVALID_HANDLE_VALUE) {
+        ret = true;
+        delete [] h_fifo_name;
+        h_fifo_name = lstr.string_trim();
+        h_fifo_pipe = hpipe;
+        _beginthread(pipe_thread_proc, 0, this);
+    }
+#else
+    sLstr lstr;
+    passwd *pw = getpwuid(getuid());
+    if (pw == 0) {
+        GRpkg::self()->Perror("getpwuid");
+        char *cwd = getcwd(0, 0);
+        lstr.add(cwd);
+        if (strcmp(cwd, "/"))
+            lstr.add_c('/');
+        free(cwd);
+    }
+    else {
+        lstr.add(pw->pw_dir);
+        lstr.add_c('/');
+    }
+    lstr.add(fname);
+    int len = lstr.length();
+    int cnt = 1;
+    for (;;) {
+        if (access(lstr.string(), F_OK) < 0)
+            break;
+        lstr.truncate(len, 0);
+        lstr.add_i(cnt);
+        cnt++;
+    }
+    if (!mkfifo(lstr.string(), 0666)) {
+        ret = true;
+        delete [] h_fifo_name;
+        h_fifo_name = lstr.string_trim();
+        filestat::queue_deletion(h_fifo_name);
+    }
+#endif
+
+    if (h_fifo_tid)
+        QTdev::self()->RemoveTimer(h_fifo_tid);
+    h_fifo_tid = QTdev::self()->AddTimer(100, fifo_check_proc, this);
+
+    return (ret);
+}
+
+
+void 
+QThelpDlg::unregister_fifo()
+{
+    if (h_fifo_tid) {
+        QTdev::self()->RemoveTimer(h_fifo_tid);
+        h_fifo_tid = 0;
+    }
+    if (h_fifo_name) {
+#ifdef WIN32
+        unlink(h_fifo_name);
+        delete [] h_fifo_name;
+        h_fifo_name = 0;
+        if (h_fifo_pipe) {
+            CloseHandle(h_fifo_pipe);
+            h_fifo_pipe = 0;
+        }
+#else
+        if (h_fifo_fd > 0)
+            ::close(h_fifo_fd);
+        h_fifo_fd = -1;
+        unlink(h_fifo_name);
+        delete [] h_fifo_name;
+        h_fifo_name = 0;
+#endif
+    }
+#ifdef WIN32
+    stringlist *sl = h_fifo_tfiles;
+    h_fifo_tfiles = 0;
+    while (sl) {
+        stringlist *sx = sl;
+        sl = sl->next;
+        unlink(sx->string);
+        delete [] sx->string;
+        delete sx;
+    }
+#endif
+}
+
+
+#ifdef WIN32
+
+// Static function.
+// Thread procedure to listen on the named pipe.
+//
+void
+QThelpDlg::pipe_thread_proc(void *arg)
+{
+    GTKhelpPopup *hw = (GTKhelpPopup*)arg;
+    if (!hw)
+        return;
+
+    for (;;) {
+        HANDLE hpipe = hw->h_fifo_pipe;
+        if (!hpipe)
+            return;
+
+        if (ConnectNamedPipe(hpipe, 0)) {
+
+            if (hw->h_fifo_name) {
+                char *tempfile = filestat::make_temp("mz");
+                FILE *fp = fopen(tempfile, "w");
+                if (fp) {
+                    unsigned int total = 0;
+                    char buf[2048];
+                    for (;;) {
+                        DWORD bytes_read;
+                        bool ok = ReadFile(hpipe, buf, 2048, &bytes_read, 0);
+                        if (!ok)
+                            break;
+                        if (bytes_read > 0) {
+                            fwrite(buf, 1, bytes_read, fp);
+                            total += bytes_read;
+                        }
+                    }
+                    fclose(fp);
+                    if (total > 0) {
+                        hw->h_fifo_tfiles =
+                            new stringlist(tempfile, hw->h_fifo_tfiles);
+                        tempfile = 0;
+                    }
+                }
+                else
+                    perror(tempfile);
+                delete [] tempfile;
+            }
+            DisconnectNamedPipe(hpipe);
+        }
+    }
+}
+
+#endif
+
+
+// Static timer callback function.
+//
+int 
+QThelpDlg::fifo_check_proc(void *arg)
+{
+    QThelpDlg *hw = (QThelpDlg*)arg;
+    if (!hw)
+        return (0);
+
+#ifdef WIN32
+    if (hw->h_fifo_tfiles) {
+        stringlist *sl = hw->h_fifo_tfiles;
+        hw->h_fifo_tfiles = sl->next;
+        char *tempfile = sl->string;
+        delete sl;
+        FILE *fp = fopen(tempfile, "r");
+        if (fp) {
+            hw->newtopic("fifo", fp, false);
+            fclose(fp);
+        }
+        unlink(tempfile);
+        delete [] tempfile;
+    }
+    return (1);
+
+#else
+    // Unfortunately, the stat and open calls appear to fail with
+    // Mingw, so can't use this.
+
+    struct stat st;
+    if (stat(hw->h_fifo_name, &st) < 0 || !(st.st_mode & S_IFIFO))
+        return (1);
+
+    if (hw->h_fifo_fd < 0) {
+        if (hw->h_fifo_name)
+            hw->h_fifo_fd = ::open(hw->h_fifo_name, O_RDONLY | O_NONBLOCK);
+        if (hw->h_fifo_fd < 0) {
+            hw->h_fifo_tid = 0;
+            return (0);
+        }
+    }
+    fd_set readfds;
+    FD_ZERO(&readfds);
+    FD_SET(hw->h_fifo_fd, &readfds);
+    timeval timeout;
+    timeout.tv_sec = 0;
+    timeout.tv_usec = 500;
+    int i = select(hw->h_fifo_fd + 1, &readfds, 0, 0, &timeout);
+    if (i < 0) {
+        // interrupted
+        return (1);
+    }
+    if (i == 0) {
+        // nothing to read
+        // return (1);
+    }
+    if (FD_ISSET(hw->h_fifo_fd, &readfds)) {
+        FILE *fp = fdopen(hw->h_fifo_fd, "r");
+        if (!fp) {
+            // Something wrong, close the fd and try again.
+            ::close(hw->h_fifo_fd);
+            hw->h_fifo_fd = -1;
+            return (1);
+        }
+        hw->newtopic("fifo", fp, false);
+        fclose(fp);  // closes fd, too
+        hw->h_fifo_fd = -1;
+    }
+    return (1);
+#endif
 }
 

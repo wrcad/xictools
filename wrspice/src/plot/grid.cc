@@ -112,7 +112,7 @@ namespace {
 
 
 void
-sGraph::gr_linebox(int xl, int yl, int xu, int yu)
+cGraph::gr_linebox(int xl, int yl, int xu, int yu)
 {
     yl = yinv(yl);
     yu = yinv(yu);
@@ -124,7 +124,7 @@ sGraph::gr_linebox(int xl, int yl, int xu, int yu)
 
 
 void
-sGraph::gr_fixgrid()
+cGraph::gr_fixgrid()
 {
     gr_dev->SetColor(gr_colors[1].pixel);
     gr_dev->setDefaultLinestyle(1);
@@ -182,7 +182,7 @@ sGraph::gr_fixgrid()
 
 
 void
-sGraph::gr_redrawgrid()
+cGraph::gr_redrawgrid()
 {
     gr_dev->SetColor(gr_colors[1].pixel);
     gr_dev->setDefaultLinestyle(1);
@@ -254,7 +254,7 @@ sGraph::gr_redrawgrid()
 // Plot a linear grid. Returns the new hi and lo limits.
 //
 void
-sGraph::lingrid(double *nscale, Axis axis)
+cGraph::lingrid(double *nscale, Axis axis)
 {
     if (axis == x_axis) {
         int mag;
@@ -325,7 +325,7 @@ sGraph::lingrid(double *nscale, Axis axis)
 
 
 void
-sGraph::set_lin_trace_limits()
+cGraph::set_lin_trace_limits()
 {
     sDvList *link;
     int nspa;
@@ -401,7 +401,7 @@ namespace {
 // and height is consistent when rendering.
 //
 void
-sGraph::drawlingrid(Axis axis, bool dosetup)
+cGraph::drawlingrid(Axis axis, bool dosetup)
 {
     const char *msg = "%cdelta is negative -- ignored.\n";
     char *units = 0;
@@ -611,7 +611,7 @@ sGraph::drawlingrid(Axis axis, bool dosetup)
 
 
 void
-sGraph::loggrid(double *nscale, Axis axis)
+cGraph::loggrid(double *nscale, Axis axis)
 {
     if (axis == x_axis) {
         set_log_grid(nscale, gr_datawin.xmin, gr_datawin.xmax, &gr_xaxis);
@@ -649,7 +649,7 @@ sGraph::loggrid(double *nscale, Axis axis)
 
 
 void
-sGraph::set_log_trace_limits()
+cGraph::set_log_trace_limits()
 {
     int nspa = 0;
     if (!gr_ysep) {
@@ -702,7 +702,7 @@ sGraph::set_log_trace_limits()
 // and height is consistent when rendering
 //
 void
-sGraph::drawloggrid(Axis axis, bool dosetup)
+cGraph::drawloggrid(Axis axis, bool dosetup)
 {
     int hmt = 0, lmt = 0, decsp = 0, subs = 0, pp = 0;
     if (axis == x_axis) {
@@ -875,7 +875,7 @@ sGraph::drawloggrid(Axis axis, bool dosetup)
 
 
 void
-sGraph::set_raw_trace_limits()
+cGraph::set_raw_trace_limits()
 {
     if (!(gr_scale_flags & 2)) {
         gr_grpmin[0] = 1;
@@ -966,7 +966,7 @@ sGraph::set_raw_trace_limits()
 // Polar grids.
 //
 void
-sGraph::polargrid()
+cGraph::polargrid()
 {
     // Figure out the minimum and maximum radii we're dealing with
     double mx = (gr_datawin.xmin + gr_datawin.xmax)/2;
@@ -1009,7 +1009,7 @@ sGraph::polargrid()
 
 
 void
-sGraph::drawpolargrid()
+cGraph::drawpolargrid()
 {
     // Make sure that our area is square
     if (gr_vport.width() > gr_vport.height())
@@ -1143,7 +1143,7 @@ sGraph::drawpolargrid()
 
 
 void
-sGraph::smithgrid()
+cGraph::smithgrid()
 {
     double mx = gr_datawin.xmax - gr_datawin.xmin;
     double my = gr_datawin.ymax - gr_datawin.ymin;
@@ -1163,7 +1163,7 @@ sGraph::smithgrid()
 #define CMAX  50
 
 void
-sGraph::drawsmithgrid()
+cGraph::drawsmithgrid()
 {
     // Make sure that our area is square
     if (gr_vport.width() > gr_vport.height())
@@ -1379,7 +1379,7 @@ sGraph::drawsmithgrid()
 // and is a power of 10, eg 1e5, or 0.0 for no limit.
 //
 void
-sGraph::set_scale_4(double l, double u, double *lnew, double *unew,
+cGraph::set_scale_4(double l, double u, double *lnew, double *unew,
     double fig) const
 {
     double x;
@@ -1448,7 +1448,7 @@ sGraph::set_scale_4(double l, double u, double *lnew, double *unew,
 // and is a power of 10, eg 1e5, or 0.0 for no limit.
 //
 void
-sGraph::set_scale(double l, double u, double *lnew, double *unew, int *n,
+cGraph::set_scale(double l, double u, double *lnew, double *unew, int *n,
     double fig) const
 {
     *n = 4;
@@ -1515,7 +1515,7 @@ sGraph::set_scale(double l, double u, double *lnew, double *unew, int *n,
 
 
 void
-sGraph::set_lin_grid(double *nscale, double lo, double hi, uGrid *grid,
+cGraph::set_lin_grid(double *nscale, double lo, double hi, uGrid *grid,
     int *magn) const
 {
     set_scale(lo, hi, &lo, &hi, &grid->lin.numspace, 0.0);
@@ -1547,7 +1547,7 @@ sGraph::set_lin_grid(double *nscale, double lo, double hi, uGrid *grid,
 
 
 void
-sGraph::set_log_grid(double *nscale, double lo, double hi, uGrid *grid) const
+cGraph::set_log_grid(double *nscale, double lo, double hi, uGrid *grid) const
 {
     // How many orders of magnitude.  We are already guaranteed that hi
     // and lo are positive. We want to have something like 8 grid lines
@@ -1587,7 +1587,7 @@ sGraph::set_log_grid(double *nscale, double lo, double hi, uGrid *grid) const
 // and the point is too small, don't put the label on.
 //
 void
-sGraph::add_deg_label(int deg, int x, int y, int cx, int cy, int lx, int ly)
+cGraph::add_deg_label(int deg, int x, int y, int cx, int cy, int lx, int ly)
 {
     if (sqrt((double) (x - cx)*(x - cx) + (y - cy)*(y - cy)) < MINDIST)
         return;
@@ -1612,7 +1612,7 @@ sGraph::add_deg_label(int deg, int x, int y, int cx, int cy, int lx, int ly)
 // center.
 //
 void
-sGraph::add_rad_label(int lab, double theta, int x, int y)
+cGraph::add_rad_label(int lab, double theta, int x, int y)
 {
     char buf[32];
     snprintf(buf, sizeof(buf), "%d", lab);
@@ -1646,7 +1646,7 @@ sGraph::add_rad_label(int lab, double theta, int x, int y)
 // X-axis isn't on the screen, then we have to be clever...
 //
 void
-sGraph::arc_set(double rad, double prevrad, double irad, double iprevrad,
+cGraph::arc_set(double rad, double prevrad, double irad, double iprevrad,
     double radoff, int xoffset, int yoffset, char *plab, char *nlab,
     int pdeg, int ndeg, int pxmin, int pxmax, int *xplace)
 {
@@ -1730,7 +1730,7 @@ sGraph::arc_set(double rad, double prevrad, double irad, double iprevrad,
 // paper I have in front of me, so let's hope it doesn't break.
 //
 double
-sGraph::clip_arc(double start, double end, int cx, int cy, int rad,
+cGraph::clip_arc(double start, double end, int cx, int cy, int rad,
     int clipx, int clipy, int cliprad, int flag)
 {
     int x = cx - clipx;

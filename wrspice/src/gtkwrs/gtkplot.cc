@@ -102,7 +102,7 @@ enum pbtn_type
 //
 struct plot_bag : public GTKbag,  public GTKdraw
 {
-    friend struct sGraph;
+    friend class cGraph;
 
     plot_bag(int type) : GTKdraw(type)
         {
@@ -130,12 +130,12 @@ struct plot_bag : public GTKbag,  public GTKdraw
                 g_source_remove(pb_id);
         }
 
-    bool init_gbuttons(sGraph*);
+    bool init_gbuttons(cGraph*);
 
-    bool init(sGraph*);
+    bool init(cGraph*);
 
 private:
-    static bool check_event(GdkEvent*, sGraph*);
+    static bool check_event(GdkEvent*, cGraph*);
     static void sens_set(GTKbag*, bool, int);
     static int resize(GtkWidget*, GdkEvent*, void*);
     static int redraw_timeout(void*);
@@ -185,7 +185,7 @@ private:
 
 
 bool
-plot_bag::init(sGraph *gr)
+plot_bag::init(cGraph *gr)
 {
     wb_sens_set = sens_set;
 
@@ -405,7 +405,7 @@ plot_bag::init(sGraph *gr)
 // Set up button array, return true if the button count changes
 //
 bool
-plot_bag::init_gbuttons(sGraph *graph)
+plot_bag::init_gbuttons(cGraph *graph)
 {
 
     GtkWidget *vbox = gtk_vbox_new(false, 0);
@@ -664,7 +664,7 @@ plot_bag::init_gbuttons(sGraph *graph)
 // Return a new graphics context struct.
 //
 GRwbag *
-sGraph::gr_new_gx(int type)
+cGraph::gr_new_gx(int type)
 {
     return (new plot_bag(type));
 }
@@ -673,7 +673,7 @@ sGraph::gr_new_gx(int type)
 // Initialization of X11 graphics, return false on success.
 //
 int
-sGraph::gr_pkg_init()
+cGraph::gr_pkg_init()
 {
     if (!gr_dev)
         return (true);
@@ -687,10 +687,10 @@ sGraph::gr_pkg_init()
 // which is updated.
 //
 void
-sGraph::gr_pkg_init_colors()
+cGraph::gr_pkg_init_colors()
 {
     SpGrPkg::SetDefaultColors();
-    const sGraph *tgraph = this;
+    const cGraph *tgraph = this;
     if (!tgraph)
         return;
 
@@ -709,7 +709,7 @@ sGraph::gr_pkg_init_colors()
 // return is true if the button count changes
 //
 bool
-sGraph::gr_init_btns()
+cGraph::gr_init_btns()
 {
     plot_bag *w = dynamic_cast<plot_bag*>(gr_dev);
     if (w)
@@ -722,7 +722,7 @@ sGraph::gr_init_btns()
 // press or exposure event is detected for the plot window, return true.
 //
 bool
-sGraph::gr_check_plot_events()
+cGraph::gr_check_plot_events()
 {
     GdkEvent *ev;
     while ((ev = gdk_event_peek()) != 0) {
@@ -739,7 +739,7 @@ sGraph::gr_check_plot_events()
 
 
 void
-sGraph::gr_redraw()
+cGraph::gr_redraw()
 {
     if (GRpkg::self()->CurDev()->devtype == GRhardcopy) {
         gr_redraw_direct();
@@ -791,7 +791,7 @@ sGraph::gr_redraw()
 
 
 void
-sGraph::gr_refresh(int left, int bottom, int right, int top, bool notxt)
+cGraph::gr_refresh(int left, int bottom, int right, int top, bool notxt)
 {
     plot_bag *wb = dynamic_cast<plot_bag*>(gr_dev);
 #if GTK_CHECK_VERSION(3,0,0)
@@ -850,7 +850,7 @@ sGraph::gr_refresh(int left, int bottom, int right, int top, bool notxt)
 // Pop down and destroy.
 //
 void
-sGraph::gr_popdown()
+cGraph::gr_popdown()
 {
     plot_bag *w = dynamic_cast<plot_bag*>(dev());
     g_signal_handlers_disconnect_by_func(G_OBJECT(w->Shell()),
@@ -859,14 +859,14 @@ sGraph::gr_popdown()
     set_dev(0);
     GP.DestroyGraph(id());
 }
-// End of sGraph functions.
+// End of cGraph functions.
 
 
 // Static function.
 // Core test for gr_check_plot_events.
 //
 bool
-plot_bag::check_event(GdkEvent *ev, sGraph *graph)
+plot_bag::check_event(GdkEvent *ev, cGraph *graph)
 {
     if (!graph)
         return (false);
@@ -937,7 +937,7 @@ plot_bag::sens_set(GTKbag *w, bool set, int)
 int
 plot_bag::resize(GtkWidget *caller, GdkEvent*, void *client_data)
 {
-    sGraph *graph = static_cast<sGraph*>(client_data);
+    cGraph *graph = static_cast<cGraph*>(client_data);
     plot_bag *wb = dynamic_cast<plot_bag*>(graph->dev());
 
 #if GTK_CHECK_VERSION(3,0,0)
@@ -966,7 +966,7 @@ plot_bag::resize(GtkWidget *caller, GdkEvent*, void *client_data)
 int
 plot_bag::redraw_timeout(void *arg)
 {
-    sGraph *graph = static_cast<sGraph*>(arg);
+    cGraph *graph = static_cast<cGraph*>(arg);
     plot_bag *wb = dynamic_cast<plot_bag*>(graph->dev());
 
     wb->pb_rdid = 0;
@@ -1004,7 +1004,7 @@ plot_bag::redraw(GtkWidget*, cairo_t *cr, void *client_data)
 plot_bag::redraw(GtkWidget*, GdkEvent *event, void *client_data)
 #endif
 {
-    sGraph *graph = static_cast<sGraph*>(client_data);
+    cGraph *graph = static_cast<cGraph*>(client_data);
     plot_bag *wb = dynamic_cast<plot_bag*>(graph->dev());
 
 #if GTK_CHECK_VERSION(3,0,0)
@@ -1080,7 +1080,7 @@ plot_bag::redraw(GtkWidget*, GdkEvent *event, void *client_data)
 int
 plot_bag::motion(GtkWidget*, GdkEvent *event, void *client_data)
 {
-    sGraph *graph = static_cast<sGraph*>(client_data);
+    cGraph *graph = static_cast<cGraph*>(client_data);
     plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
     if (w && w->Gbag()->showing_ghost()) {
         if (w->pb_id) {
@@ -1104,7 +1104,7 @@ plot_bag::motion(GtkWidget*, GdkEvent *event, void *client_data)
 int
 plot_bag::motion_idle(void *arg)
 {
-    sGraph *graph = static_cast<sGraph*>(arg);
+    cGraph *graph = static_cast<cGraph*>(arg);
     plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
     if (w && w->Gbag()->showing_ghost()) {
         w->pb_id = 0;
@@ -1131,7 +1131,7 @@ plot_bag::focus(GtkWidget*, GdkEvent*, void*)
 int
 plot_bag::keypress(GtkWidget*, GdkEvent *event, void *client_data)
 {
-    sGraph *graph = static_cast<sGraph*>(client_data);
+    cGraph *graph = static_cast<cGraph*>(client_data);
     GdkEventKey *kev = &event->key;
     int keyval = kev->keyval;
 
@@ -1194,7 +1194,7 @@ plot_bag::buttonpress(GtkWidget *widget, GdkEvent *event, void *client_data)
     if (GRpkg::self()->CurDev()->devtype == GRhardcopy)
         return (false);
     GdkEventButton *buttonev = &event->button;
-    sGraph *graph = static_cast<sGraph*>(client_data);
+    cGraph *graph = static_cast<cGraph*>(client_data);
 
     gtk_widget_grab_focus(widget);
 
@@ -1231,7 +1231,7 @@ plot_bag::buttonup(GtkWidget*, GdkEvent *event, void *client_data)
     if (GRpkg::self()->CurDev()->devtype == GRhardcopy)
         return (false);
     GdkEventButton *buttonev = &event->button;
-    sGraph *graph = static_cast<sGraph*>(client_data);
+    cGraph *graph = static_cast<cGraph*>(client_data);
     int button = 0;
     switch (buttonev->button) {
     case 1:
@@ -1263,7 +1263,7 @@ int
 plot_bag::enter_hdlr(GtkWidget *caller, GdkEvent*, void *client_data)
 {
     // pointer entered a drawing window
-    sGraph *graph = static_cast<sGraph*>(client_data);
+    cGraph *graph = static_cast<cGraph*>(client_data);
     plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
     gtk_widget_set_can_focus(caller, true);
     gtk_window_set_focus(GTK_WINDOW(w->Shell()), caller);
@@ -1285,7 +1285,7 @@ int
 plot_bag::leave_hdlr(GtkWidget*, GdkEvent*, void *client_data)
 {
     // pointer left the drawing window
-    sGraph *graph = static_cast<sGraph*>(client_data);
+    cGraph *graph = static_cast<cGraph*>(client_data);
     plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
     if (w->Gbag()->has_ghost()) {
         GP.PushGraphContext(graph);
@@ -1304,7 +1304,7 @@ plot_bag::leave_hdlr(GtkWidget*, GdkEvent*, void *client_data)
 void
 plot_bag::font_change_hdlr(GtkWidget*, void*, void *arg)
 {
-    sGraph *graph = (sGraph*)arg;
+    cGraph *graph = (cGraph*)arg;
     graph->set_dirty(true);
 }
 
@@ -1317,7 +1317,7 @@ plot_bag::font_change_hdlr(GtkWidget*, void*, void *arg)
 void
 plot_bag::b_quit(GtkWidget*, void *client_data)
 {
-    sGraph *graph = static_cast<sGraph*>(client_data);
+    cGraph *graph = static_cast<cGraph*>(client_data);
     graph->gr_popdown();
 }
 
@@ -1326,7 +1326,7 @@ plot_bag::b_quit(GtkWidget*, void *client_data)
 void
 plot_bag::b_help(GtkWidget *caller, void *client_data)
 {
-    sGraph *graph = static_cast<sGraph*>(client_data);
+    cGraph *graph = static_cast<cGraph*>(client_data);
     plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
     bool state = GTKdev::GetStatus(caller);
     if (state)
@@ -1338,7 +1338,7 @@ plot_bag::b_help(GtkWidget *caller, void *client_data)
 void
 plot_bag::b_recolor(GtkWidget*, void *client_data)
 {
-    sGraph *graph = static_cast<sGraph*>(client_data);
+    cGraph *graph = static_cast<cGraph*>(client_data);
     graph->gr_pkg_init_colors();
     graph->dev()->Clear();
     graph->gr_redraw();
@@ -1349,7 +1349,7 @@ plot_bag::b_recolor(GtkWidget*, void *client_data)
 void
 plot_bag::b_hardcopy(GtkWidget *caller, void *client_data)
 {
-    sGraph *graph = static_cast<sGraph*>(client_data);
+    cGraph *graph = static_cast<cGraph*>(client_data);
     plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
     set_hccb(&wrsHCcb);
     w->PopUpPrint(caller, &wrsHCcb, HCgraphical, w);
@@ -1360,7 +1360,7 @@ plot_bag::b_hardcopy(GtkWidget *caller, void *client_data)
 void
 plot_bag::b_save_plot(GtkWidget*, void *client_data)
 {
-    sGraph *graph = static_cast<sGraph*>(client_data);
+    cGraph *graph = static_cast<cGraph*>(client_data);
     plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
     w->PopUpInput("Enter name for data file", 0, "Save Plot File",
         do_save_plot, client_data);
@@ -1371,7 +1371,7 @@ plot_bag::b_save_plot(GtkWidget*, void *client_data)
 void
 plot_bag::do_save_plot(const char *fnamein, void *client_data)
 {
-    sGraph *graph = static_cast<sGraph*>(client_data);
+    cGraph *graph = static_cast<cGraph*>(client_data);
     plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
     char *fname = pathlist::expand_path(fnamein, false, true);
     if (!fname)
@@ -1399,7 +1399,7 @@ plot_bag::do_save_plot(const char *fnamein, void *client_data)
 void
 plot_bag::b_save_print(GtkWidget*, void *client_data)
 {
-    sGraph *graph = static_cast<sGraph*>(client_data);
+    cGraph *graph = static_cast<cGraph*>(client_data);
     plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
     w->PopUpInput("Enter name for print file", 0, "Save Print File",
         do_save_print, client_data);
@@ -1410,7 +1410,7 @@ plot_bag::b_save_print(GtkWidget*, void *client_data)
 void
 plot_bag::do_save_print(const char *fnamein, void *client_data)
 {
-    sGraph *graph = static_cast<sGraph*>(client_data);
+    cGraph *graph = static_cast<cGraph*>(client_data);
     plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
     char *fname = pathlist::expand_path(fnamein, false, true);
     if (!fname)
@@ -1441,7 +1441,7 @@ void
 plot_bag::b_points(GtkWidget *caller, void *client_data)
 {
     // handle points and combplot modes
-    sGraph *graph = static_cast<sGraph*>(client_data);
+    cGraph *graph = static_cast<cGraph*>(client_data);
     plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
 
     GtkWidget *pts = (GtkWidget*)g_object_get_data(G_OBJECT(w->Shell()),
@@ -1474,7 +1474,7 @@ plot_bag::b_points(GtkWidget *caller, void *client_data)
 void
 plot_bag::b_logx(GtkWidget *caller, void *client_data)
 {
-    sGraph *graph = static_cast<sGraph*>(client_data);
+    cGraph *graph = static_cast<cGraph*>(client_data);
     plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
     if (graph->rawdata().xmin <= 0) {
         w->PopUpErr(MODE_ON,
@@ -1506,7 +1506,7 @@ plot_bag::b_logx(GtkWidget *caller, void *client_data)
 void
 plot_bag::b_logy(GtkWidget *caller, void *client_data)
 {
-    sGraph *graph = static_cast<sGraph*>(client_data);
+    cGraph *graph = static_cast<cGraph*>(client_data);
     plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
     if (graph->rawdata().ymin <= 0) {
         w->PopUpErr(MODE_ON,
@@ -1539,7 +1539,7 @@ plot_bag::b_logy(GtkWidget *caller, void *client_data)
 void
 plot_bag::b_marker(GtkWidget *caller, void *client_data)
 {
-    sGraph *graph = static_cast<sGraph*>(client_data);
+    cGraph *graph = static_cast<cGraph*>(client_data);
     plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
     if (!graph->xmonotonic() && graph->yseparate()) {
         w->PopUpErr(MODE_ON,
@@ -1565,7 +1565,7 @@ plot_bag::b_marker(GtkWidget *caller, void *client_data)
 void
 plot_bag::b_separate(GtkWidget *caller, void *client_data)
 {
-    sGraph *graph = static_cast<sGraph*>(client_data);
+    cGraph *graph = static_cast<cGraph*>(client_data);
     plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
     if (!graph->xmonotonic() && graph->reference().mark) {
         w->PopUpErr(MODE_ON,
@@ -1587,7 +1587,7 @@ marker is active.");
 void
 plot_bag::b_onescale(GtkWidget*, void *client_data)
 {
-    sGraph *graph = static_cast<sGraph*>(client_data);
+    cGraph *graph = static_cast<cGraph*>(client_data);
     if (graph->format() == FT_MULTI)
         graph->set_format(FT_SINGLE);
     else
@@ -1602,7 +1602,7 @@ void
 plot_bag::b_multiscale(GtkWidget *caller, void *client_data)
 {
     // Handle one scale and grp scale modes.
-    sGraph *graph = static_cast<sGraph*>(client_data);
+    cGraph *graph = static_cast<cGraph*>(client_data);
     plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
 
     GtkWidget *one = (GtkWidget*)g_object_get_data(G_OBJECT(w->Shell()),

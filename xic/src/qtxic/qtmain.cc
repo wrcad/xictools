@@ -2606,12 +2606,8 @@ QTmainwin::QTmainwin(QWidget *prnt) : QTsubwin(0, prnt)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    int h = QTfont::lineHeight(FNT_SCREEN) + 4;
-
     PL()->SetEdit(new QTedit(false));
     mw_promptline = QTedit::self()->Viewport();
-    mw_promptline->setMinimumHeight(h);
-    mw_promptline->setMaximumHeight(h);
     sw_keys_pressed = QTedit::self()->keys();
     hbox->addWidget(QTedit::self());
 
@@ -2620,8 +2616,6 @@ QTmainwin::QTmainwin(QWidget *prnt) : QTsubwin(0, prnt)
     f->setFrameShape(QFrame::HLine);
 
     mw_status = new QTparam(this);
-    mw_status->setMinimumHeight(h);
-    mw_status->setMaximumHeight(h);
     vbox->addWidget(mw_status);
 
     connect(this, SIGNAL(update_coords(int, int)),

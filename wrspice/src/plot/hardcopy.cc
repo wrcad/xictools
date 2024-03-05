@@ -111,10 +111,10 @@ namespace {
     {
         if (!grd)
             return (true);
-        sGraph *graph = static_cast<sGraph*>(grd->UserData());
+        cGraph *graph = static_cast<cGraph*>(grd->UserData());
         if (!graph)
             return (true);
-        sGraph *tempgraph = graph->gr_copy();
+        cGraph *tempgraph = graph->gr_copy();
         GP.PushGraphContext(graph);
         // Context is pushed during New() for ListPixels().
         GRdraw *w = GRpkg::self()->NewDraw();
@@ -367,7 +367,7 @@ CommandTab::com_hardcopy(wordlist *wl)
 // if a full-screen graphics context is being used.
 //
 void
-sGraph::gr_hardcopy()
+cGraph::gr_hardcopy()
 {
     char buf[BSIZE_SP];
     VTvalue vv;

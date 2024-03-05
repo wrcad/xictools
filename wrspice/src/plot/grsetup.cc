@@ -540,8 +540,8 @@ SPgraphics::Setup(sGrInit *gr, sDvList **dlptr, const char *attrs,
 //  Start of a new graph.
 //  Fill in the data that gets displayed.
 //
-sGraph *
-SPgraphics::Init(sDvList *dl0, sGrInit *gr, sGraph *graph)
+cGraph *
+SPgraphics::Init(sDvList *dl0, sGrInit *gr, cGraph *graph)
 {
     bool reuse = false;
     if (!graph)
@@ -571,7 +571,7 @@ SPgraphics::Init(sDvList *dl0, sGrInit *gr, sGraph *graph)
 
 
 void
-sGraph::setup(sDvList *dl0, sGrInit *gr)
+cGraph::setup(sDvList *dl0, sGrInit *gr)
 {
     gr_command = gr->command;
     gr_oneval = (gr->xname ? false : true);
@@ -669,7 +669,7 @@ sGraph::setup(sDvList *dl0, sGrInit *gr)
         gr_ysep = false;
     }
 }
-// End of sGraph functions.
+// End of cGraph functions.
 
 
 // Constructor, initialize state according to variables.

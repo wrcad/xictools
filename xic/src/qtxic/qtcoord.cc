@@ -80,6 +80,8 @@ QTcoord::QTcoord(QWidget *prnt) : QWidget(prnt), QTdraw(XW_TEXT)
     co_rel = false;
     co_snap = true;
 
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
     gd_viewport = new QTcanvas();
     QHBoxLayout *hbox = new QHBoxLayout(this);
     hbox->setContentsMargins(0, 0, 0, 0);
