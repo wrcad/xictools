@@ -27,20 +27,17 @@ The stringvar is a string variable with a string in the form
     and one dec place), these no longer revert to default 6.
 -------
 
-Modify build to allow no graphics as an option (Jacob in xictools).
-
 How to set a new vector to a repeated constant?  I'd like t assign a range
 of indices to the same value.
+"compose vecname random=length center=value span=0"
+ToDo: make '=' optional in compose cmd.
+
+in load csv, allow a list of var names.
 
 Is warning if multiple definitions of same subcircuit name?
 
-Inplement A ? B : C
-
-Update numeric constants to present official values.
+Implement A ? B : C
 
 finish csvtoraw
-
-modify build to auto-update SyntaxLevel in wrspice/devlib/adms/Makefile
-also adms scripts device.xml.
 
 !!! make tran sweep [...] work with parameters (.param)

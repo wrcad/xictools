@@ -157,6 +157,7 @@ QTcellPrpDlg::QTcellPrpDlg() : QTbag(this)
 
     pc_del = new QPushButton(tr("Delete"));
     hbox->addWidget(pc_del);
+    pc_del->setCheckable(true);
     pc_del->setAutoDefault(false);
     connect(pc_del, SIGNAL(toggled(bool)), this, SLOT(del_btn_slot(bool)));
 

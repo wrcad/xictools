@@ -64,7 +64,7 @@
 // parameter can not be given, and the sweep uses the value1/value2
 // variables to pass trial values, as in the old loop command, and
 // operating range analysis.  If the first parameter is given, then if
-// there is a second block the secvond parameter must be viven.
+// there is a second block the second parameter must be given.
 //
 void
 CommandTab::com_sweep(wordlist *wl)

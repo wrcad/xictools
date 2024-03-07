@@ -241,7 +241,7 @@ Symbol Tables
 !!SEEALSO
 xic:cellmenu
 
-!! 030316
+!! 030724
 !!KEYWORD
 xic:cells cellspanel
 !!TITLE
@@ -404,18 +404,18 @@ Cells Listing
     The <b>Replace</b> button is available when listing cells from
     memory, but not in CHD display mode, and is not available in the
     <i>Xiv</i> feature set.  When available, it is active when a cell
-    name is selected, and at least on cell instance is selected in a
+    name is selected, and at least one cell instance is selected in a
     drawing window.
 
     <p>
-    The button allows replacement is cell instances selected in a
-    drawing window to be replaced with instances of the selected cell. 
-    Pressing the button brings up a confirmation pop-up.  A 'yes'
-    response will initiate the replacement.  The <a
-    href="xic:xform">current transform</a> is ignored when replacing
-    cells from this panel, which is different from the <b>Replace</b>
-    function in the <a href="xic:place"><b>Cell Placement
-    Control</b></a> panel from the side menu.
+    The button allows cell instances selected in a drawing window to
+    be replaced with instances of the selected cell name.  Pressing
+    the button brings up a confirmation pop-up.  A 'yes' response will
+    initiate the replacement.  The <a href="xic:xform">current
+    transform</a> is ignored when replacing cells from this panel,
+    which is different from the <b>Replace</b> function in the <a
+    href="xic:place"><b>Cell Placement Control</b></a> panel from the
+    side menu.
 
     <p>
     When a cell is replaced, the placement of the new cell is
