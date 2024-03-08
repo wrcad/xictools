@@ -91,14 +91,18 @@ QTedit::QTedit(bool nogr) : QTdraw(XW_TEXT)
 
     setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
 
+    // Put the three tool buttons into an intermediate parent.  This
+    // prevents visual oddities appearing between the buttons (i.e.,
+    // in the background) when the buttons are shown.  Not sure what
+    // is going on, but putting the buttons in their own container
+    // seems to fix the problem.
+
+    QWidget *foobox = new QWidget();
+
     QMargins qm;
-    QHBoxLayout *hbox = new QHBoxLayout(this);
+    QHBoxLayout *hbox = new QHBoxLayout(foobox);
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
-
-    pe_keys = new cKeys(0, 0);
-    pe_keys->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    hbox->addWidget(pe_keys);
 
     // Recall button and menu.
     pe_rcl_btn = new QToolButton();
@@ -151,9 +155,20 @@ QTedit::QTedit(bool nogr) : QTdraw(XW_TEXT)
     connect(pe_ltx_btn, SIGNAL(clicked()),
         this, SLOT(long_text_slot()));
 
+    hbox = new QHBoxLayout(this);
+    hbox->setContentsMargins(qm);
+    hbox->setSpacing(2);
+
+    pe_keys = new cKeys(0, 0);
+    pe_keys->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    hbox->addWidget(pe_keys);
+
+    hbox->addWidget(foobox);
+
     gd_viewport = new QTcanvas();
-    hbox->addWidget(Viewport());
-    Viewport()->setAcceptDrops(true);
+    hbox->addWidget(gd_viewport);
+    hbox->setStretch(2, 100);
+    gd_viewport->setAcceptDrops(true);
 
     QFont *tfont;
     if (Fnt()->getFont(&tfont, FNT_SCREEN)) {
