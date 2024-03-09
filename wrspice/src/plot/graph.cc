@@ -275,9 +275,12 @@ void
 cGraph::gr_abort()
 {
     gr_cpage = 0;
-#if defined (HAVE_SETJMP_H) && defined (HAVE_SIGNAL)
+#if defined(GRAPH_SETJMP) && defined (HAVE_SETJMP_H)
     if (gr_in_redraw)
         longjmp(jmpbuf, 1);
+#else
+    if (gr_in_redraw)
+        throw 1;
 #endif
 }
 
@@ -294,9 +297,9 @@ cGraph::gr_redraw_direct()
     GP.PushGraphContext(this);
     Sp.PushFPEinhibit();
 
+#if defined(GRAPH_SETJMP) && defined (HAVE_SETJMP_H)
     if (!gr_in_redraw) {
         gr_stop = false;
-#if defined (HAVE_SETJMP_H) && defined (HAVE_SIGNAL)
         if (setjmp(jmpbuf) == 1) {
             if (gr_in_redraw)
                 gr_in_redraw--;
@@ -304,7 +307,6 @@ cGraph::gr_redraw_direct()
             GP.PopGraphContext();
             return (true);
         }
-#endif
     }
     bool ret = false;
     gr_in_redraw++;
@@ -316,6 +318,31 @@ cGraph::gr_redraw_direct()
         ret = mp_redraw();
         break;
     }
+
+#else
+    bool ret = false;
+    gr_in_redraw++;
+    try {
+        switch (gr_apptype) {
+        case GR_PLOT:
+            ret = dv_redraw();
+            break;
+        case GR_MPLT:
+            ret = mp_redraw();
+            break;
+        }
+    }
+    catch(int) {
+        ret = true;
+        if (gr_in_redraw)
+            gr_in_redraw--;
+        Sp.PopFPEinhibit();
+        GP.PopGraphContext();
+        if (gr_in_redraw)
+            throw;
+        return (ret);
+    }
+#endif
 
     if (gr_in_redraw)
         gr_in_redraw--;

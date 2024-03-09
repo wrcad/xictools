@@ -529,10 +529,7 @@ CshPar::MessageHandler(int fc)
             cp_flags[CP_NOBRKTOK] = true;
         }
 
-#ifdef WIN32
-        extern jmp_buf msw_jbf[4];
-        extern int msw_jbf_sp;
-
+#ifdef USE_SETJMP_EXP
         {
             volatile bool dopop = false;
             if (msw_jbf_sp < 3) {

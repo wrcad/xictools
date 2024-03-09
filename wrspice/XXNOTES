@@ -41,3 +41,9 @@ Implement A ? B : C
 finish csvtoraw
 
 !!! make tran sweep [...] work with parameters (.param)
+
+XXX
+setjmp/longjmp used in Windows version since c++ exceptions didn't work.
+Check current MSYS and get rid of setjmp if possible.
+
+setjmp/longjmp in graph.cc/graph.h.  Use exceptions?

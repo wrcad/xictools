@@ -52,8 +52,9 @@ Authors: 1985 Wayne A. Christopher
 #include "datavec.h"
 #include "ginterf/graphics.h"
 
-#if defined (HAVE_SETJMP_H) && defined (HAVE_SIGNAL)
-#include <signal.h>
+// XXX get rid of setjmp, don't include config.h above.
+//#define GRAPH_SETJMP
+#if defined(GRAPH_SETJMP) && defined (HAVE_SETJMP_H)
 #include <setjmp.h>
 #endif
 
@@ -375,10 +376,6 @@ public:
         gr_npage        = 0;
 
         gr_in_redraw    = 0;
-
-#if defined (HAVE_SETJMP_H) && defined (HAVE_SIGNAL)
-        oldhdlr         = 0;
-#endif
     }
 
     // No destructor, don't explicitly delete, gr_reset deallocates.
@@ -782,9 +779,8 @@ private:
 
     int gr_in_redraw;               // redrawing call depth
 
-#if defined (HAVE_SETJMP_H) && defined (HAVE_SIGNAL)
+#if defined(GRAPH_SETJMP) && defined (HAVE_SETJMP_H)
 public:
-    void(*oldhdlr)(int);            // old FPE handler
     jmp_buf jmpbuf;
 #endif
 };
