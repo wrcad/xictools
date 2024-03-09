@@ -41,7 +41,7 @@
 #ifdef WIN32
 
 #include "ginterf/graphics.h"
-#include "ginterf/fontutil.h"
+#include "ginterf/grfont.h"
 #include "miscutil/texttf.h"
 #include "miscutil/lstring.h"
 #include "mswdraw.h"
@@ -119,7 +119,7 @@ msw_draw::InitDC(HDC ndc)
     SetTextColor(dc, RGB(255, 255, 255));
     SetBkMode(dc, TRANSPARENT);
     HFONT hft;
-    if (FC.getFont(&hft, FNT_SCREEN))
+    if (Fnt()->getFont(&hft, FNT_SCREEN))
         SelectFont(dc, hft);
     SetTextAlign(dc, TA_LEFT | TA_BOTTOM | TA_NOUPDATECP);
     return (md_lastDC);

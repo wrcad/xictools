@@ -862,7 +862,11 @@ QTviewer::tk_parse_color(const char *name, htmColor *c)
 {
     QColor q;
     QtMessageHandler h = qInstallMessageHandler(messageOutput);
+#if QT_VERSION >= QT_VERSION_CHECK(6,6,0)
+    q.fromString(name);
+#else
     q.setNamedColor(name);
+#endif
     qInstallMessageHandler(h);
     if (!q.isValid())
         return (false);

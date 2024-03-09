@@ -194,7 +194,6 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c) : QTbag(this)
     db_in_undo = true;
     db_undo_list = 0;
     db_redo_list = 0;
-    memset(db_breaks, 0, NUMBKPTS*sizeof(sBp));
 
     setWindowTitle(tr("Script Debugger"));
     setAttribute(Qt::WA_DeleteOnClose);

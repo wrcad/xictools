@@ -2157,6 +2157,7 @@ QThelpDlg::register_fifo(const char *fname)
         
     bool ret = false;
 #ifdef WIN32
+/*XXX FIXME doesn't copmpile
     if (fname)
         fname = lstring::strip_path(fname);
     sLstr lstr;
@@ -2194,6 +2195,7 @@ QThelpDlg::register_fifo(const char *fname)
         h_fifo_pipe = hpipe;
         _beginthread(pipe_thread_proc, 0, this);
     }
+*/
 #else
     sLstr lstr;
     passwd *pw = getpwuid(getuid());
@@ -2282,7 +2284,7 @@ QThelpDlg::unregister_fifo()
 void
 QThelpDlg::pipe_thread_proc(void *arg)
 {
-    GTKhelpPopup *hw = (GTKhelpPopup*)arg;
+    QThelpDlg *hw = (QThelpDlg*)arg;
     if (!hw)
         return;
 

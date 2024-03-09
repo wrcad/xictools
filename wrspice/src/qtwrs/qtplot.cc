@@ -63,11 +63,9 @@ Authors: 1988 Jeffrey M. Hsu
 #include "miscutil/filestat.h"
 #include "spnumber/spnumber.h"
 
-#ifndef WIN32
 #include "../../icons/wrspice_16x16.xpm"
 #include "../../icons/wrspice_32x32.xpm"
 #include "../../icons/wrspice_48x48.xpm"
-#endif
 
 #include <QApplication>
 #include <QLayout>

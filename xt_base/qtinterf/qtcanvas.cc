@@ -85,8 +85,13 @@ QTcanvas::QTcanvas(QWidget *prnt) : QWidget(prnt)
     da_ghost_draw_ptr = &da_local;
     da_local.gd_windows[0] = this;
 
-    da_bg.setNamedColor(QString("white"));
-    da_fg.setNamedColor(QString("black"));
+#if QT_VERSION >= QT_VERSION_CHECK(6,6,0)
+    da_bg.fromString("white");
+    da_fg.fromString("black");
+#else
+    da_bg.setNamedColor("white");
+    da_fg.setNamedColor("black");
+#endif
     da_brush.setStyle(Qt::SolidPattern);
     da_pen.setStyle(Qt::NoPen);
     initialize();

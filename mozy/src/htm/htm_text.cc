@@ -941,7 +941,7 @@ sPS::ps_header(const char *title, const char *url)
     time_t clock = time(0);
 
     strftime(time_buf, sizeof(time_buf),
-         "Printed %a %b %e %T %Y", localtime(&clock));
+         "Printed %a %b %d %H:%M:%S %Y", localtime(&clock));
 
     ps_printf("%%!PS-Adobe-1.0\n");
     ps_printf("%%%%Creator: Whiteley Research Inc. from NCSA Mosaic\n");

@@ -52,7 +52,8 @@
 #include <math.h>
 #else
 #ifdef WIN32
-#include "mswdraw.h"
+#include "miscutil/mswdraw.h"
+#include <stdio.h>
 #endif
 #endif
 

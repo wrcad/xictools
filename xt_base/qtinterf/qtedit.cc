@@ -246,11 +246,11 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::EditorType type,
 #endif
     }
 #ifdef WIN32
-    if (ed_widget_type == Editor) {
+    if (ed_editor_type == Editor) {
         ed_File_CRLF = ed_filemenu->addAction(tr("&Write CRLF"), 0,
             this, SLOT(write_crlf_slot(bool)));
         ed_File_CRLF->setCheckable(true);
-        ed_file_CRLF->setChecked(QTdev::self()->GetCRLFtermination());
+        ed_File_CRLF->setChecked(QTdev::self()->GetCRLFtermination());
     }
 #endif
     ed_filemenu->addSeparator();
@@ -914,8 +914,9 @@ QTeditDlg::save_as_slot()
 
 #ifdef WIN32
 void
-QTeditDlg::write_crlf_slot()
+QTeditDlg::write_crlf_slot(bool state)
 {
+    QTdev::self()->SetCRLFtermination(state);
 }
 #endif
 
@@ -994,6 +995,8 @@ QTeditDlg::send_slot()
     if (state.outfile)
         fclose(state.outfile);
     delete [] header;
+
+//XXX Windows support needed
 
     if (!err) {
         if (!state.nfiles) {
@@ -1225,7 +1228,7 @@ QTeditDlg::attach_file_slot(const char *fnamein, void*)
         strcpy(fn + 20, "...");
     a = menu->addAction(fn);
     a->setEnabled(false);
-    delete fn;
+    delete [] fn;
     a = new QAction(this);
     a->setText("Unattach");
     a->setData(QVariant((unsigned long long)(uintptr_t)a_path));
@@ -1263,7 +1266,7 @@ void
 QTeditDlg::unattach_slot(QAction *a)
 {
     if (a) {
-        QAction *a_path = (QAction*)(unsigned long)a->data().toULongLong();
+        QAction *a_path = (QAction*)(uintptr_t)a->data().toULongLong();
         delete a_path;
     }
 }
@@ -1361,11 +1364,12 @@ QTeditDlg::write_file(const char *fname, int startpos, int endpos)
 {
     FILE *fp = fopen(fname, "w");
     if (fp) {
-        QString qs = ed_text_editor->toPlainText();
-        int length = qs.size();
-        char *buffer = lstring::copy(qs.toLatin1().constData());
+        int length = wb_textarea->get_length();
         if (endpos >= 0 && endpos < length)
             length = endpos;
+#ifdef WIN32
+        char lastc = 0;
+#endif
         int start = startpos;
         for (;;) {
             int end = start + WRT_BLOCK;
@@ -1373,18 +1377,33 @@ QTeditDlg::write_file(const char *fname, int startpos, int endpos)
                 end = length;
             if (end == start)
                 break;
-            if (fwrite(buffer + start, 1, end - start, fp) <
-                    (unsigned)(end - start)) {
-                delete [] buffer;
+            char *s = wb_textarea->get_chars(start, end);
+#ifdef WIN32
+            for (int i = 0; i < (end - start); i++) {
+                if (!QTdev::self()->GetCRLFtermination()) {
+                    if (s[i] == '\r' && s[i+1] == '\n') {
+                        lastc = s[i];
+                        continue;
+                    }
+                }
+                else if (s[i] == '\n' && lastc != '\r')
+                    putc('\r', fp);
+                putc(s[i], fp);
+                lastc = s[i];
+            }
+#else
+            if (fwrite(s, 1, end - start, fp) < (unsigned)(end - start)) {
+                delete [] s;
                 fclose(fp);
                 return (false);
             }
+#endif
+            delete [] s;
             if (end - start < WRT_BLOCK)
                 break;
             start = end;
         }
         fclose(fp);
-        delete [] buffer;
         return (true);
     }
     return (false);

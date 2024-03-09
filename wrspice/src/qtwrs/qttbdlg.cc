@@ -69,11 +69,10 @@
 
 #ifdef WIN32
 #include <windows.h>
-#else
+#endif
 #include "../../icons/wrspice_16x16.xpm"
 #include "../../icons/wrspice_32x32.xpm"
 #include "../../icons/wrspice_48x48.xpm"
-#endif
 
 
 void
