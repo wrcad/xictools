@@ -86,8 +86,8 @@ QTcanvas::QTcanvas(QWidget *prnt) : QWidget(prnt)
     da_local.gd_windows[0] = this;
 
 #if QT_VERSION >= QT_VERSION_CHECK(6,6,0)
-    da_bg.fromString("white");
-    da_fg.fromString("black");
+    da_bg = QColor::fromString("white");
+    da_fg = QColor::fromString("black");
 #else
     da_bg.setNamedColor("white");
     da_fg.setNamedColor("black");
