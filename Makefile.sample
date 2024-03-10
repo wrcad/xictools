@@ -1,0 +1,213 @@
+#######################################################################
+# Top level Makefile for XicTools.
+#######################################################################
+
+# Configuration
+
+# The tools will be installed under $(PREFIX)/$(TOOLROOT) where by
+# default PREFIX = /usr/local and TOOLROOT = xictools.  This can be
+# changed below.  If you want to install to a special location (that
+# may not require root permissions, for example), you can change this
+# variable.  Most packages are relocatable, meaning that the final
+# destination can be set when installing from packages (macOS and
+# Debian/Ubuntu don't allow relocation).
+#
+PREFIX = --prefix=/usr/local
+
+# This is the name of the top-level installation directory under
+# PREFIX.  You can change this if you want to have different builds
+# under PREFIX, for example QT and GTK,
+#
+TOOLROOT = --enable-toolroot=xictools
+
+# The traditional way to build and install xictools is to build a set
+# of packages, and then install the packages.  "make install" is
+# actually prevented from installing directly to the default
+# installation location, since typically packages and direct
+# installation don't mix well.  If this variable is set to "yes",
+# installation to the PREFIX/TOOLROOT location is allowed.  This is
+# for users who wish to skip the packaging step.  Package installers
+# may require root permission to run, so users can avoid this and keep
+# all files in their local space with the PREFIX variable set
+# appropriately and this variable set to "yes" instead of "no".
+#
+ITOPOK = --enable-itopok=no
+
+# The licensing system for Xic and WRspice is disabled by default, but
+# can be enabled by uncommenting the assignment below.  The code for
+# the license server and related is provided as it might be useful to
+# someone, but shouldn't be needed for Xic and WRspice as open-source.
+#
+#HVSECURE = --enable-secure=yes
+
+# Uncomment this to NOT include the Mozy help system, http file
+# transfer, screen dumps, and package management.  This was used to
+# avoid the GNU-licensed code when building commercial packages. 
+# Since the tools are now open-source this is not an issue.  There
+# presently is other GNU-licensed code within the tools, users need
+# to be aware of the license restrictions this imposes for non-open
+# source applications, which are allowed by the Apache license but not
+# GNU.
+#
+#NOMOZY = --enable-nomozy=yes
+
+# Force 32-bit build on x86_64 Linux systems.
+#
+#32BIT = --enable-force32=yes
+
+# Graphics package.  The programs can build with GTK-2, GTK-3, QT-5,
+# and QT-6.  GTK-2 is still the production graphics system and is
+# recommended for actual work.  QT support is in progress and will
+# replace GTK.  Virtually all GTK functionality has been ported to QT
+# and at present fine tuning and bug fixing is being done.  Bug
+# reports and comments would be appreciated!  GTK-3 semi-works
+# (X-Windoes only) but has numerous issues.  The Cairo graphics is not
+# suitable for a program like Xic (or any EDA tool with performance
+# requirements) thus has to be worked around, which is a challenge. 
+# It is unlikely that further effort will be directed toward GTK.
+#
+# If this variable is not set, the programs will be built without a
+# GUI toolkit.  Mozy will not build in this case, Xic can be used in
+# server-mode only, and WRspice will be command-line only.
+#
+# To select a graphics library, most of the time this variable can be
+# set to something like "--enable-gtk2=yes", which should always be
+# true for GTK if the pkg-config utility is working.  If can be set to
+# the directory containing pkg-config for GTK.  Otherwise, the value
+# can be the installation location for QT-5/6.  If the qmake program
+# is in your search path "yes" should work here as well.
+#
+#GFXLOC = --enable-gtk2=/mingw64/bin
+#GFXLOC = --enable-qt5=/opt/local/libexec/qt5
+#GFXLOC = --enable-qt5=/usr/lib64/qt5
+#GFXLOC = --enable-qt5=yes
+GFXLOC = --enable-gtk2=yes
+
+# OpenAccess support, Linux only.
+# If you have an OpenAccess source tree, specify its location in this
+# variable and uncomment.  This enables OpenAccess support in Xic.
+#
+#OALOC  = --enable-oa=/usr/local/cad/OA-22.04
+
+# If enabled and set to the installed location of the PyCellStudio
+# from Synopsys, the Python plug-in will link to the Python supplied
+# with PyCellStudio.  OpenAccess above must point to a version "close
+# to" that provided in PyCellStudio, but we need the source for the
+# include files not provided with PyCellStudio.
+#
+#CNILOC = \
+#  --enable-cni=/global/apps/customcompiler_2021.09-2/linux64/PyCellStudio
+
+# PSF support in WRspice (for Cadence ADE integration), Linux RHEL6/7
+# only.  If you have this Cadence product, PSF file support can be
+# enabled by setting and uncommenting this variable.
+#
+#KITLOC = --enable-psf=/home/stevew/cadence/oasis-kit/tools.lnx86
+
+# Windows setup.  Currently, the programs are built under the MINGW
+# X64 environment in MSYS2.  Set this to the mingw64 root and uncomment.
+#
+#MINGW  = --enable-mingw=/mingw64
+
+# If you don't want to build all the tools, you can choose what to
+# build below.  The xt_base is required for everything, other
+# dependencies are represented by the two lines below.  You can change
+# SUBDIRS to list only the tools you need.
+
+WRSPICE = adms KLU vl wrspice
+XIC = mrouter xic
+
+ifdef HVSECURE
+SECURE = secure
+endif
+ifndef NOMOZY 
+ifdef GFXLOC
+MOZY = mozy
+endif
+endif
+
+SUBDIRS = xt_base $(SECURE) $(MOZY) $(WRSPICE) $(XIC) fastcap fasthenry
+
+#######################################################################
+CFARGS = $(PREFIX) $(TOOLROOT) $(ITOPOK) $(HVSECURE) $(NOMOZY) $(32BIT) \
+  $(OALOC) $(KITLOC) $(MINGW) $(GFXLOC)
+
+FLAGFILE = .configured
+
+config:
+	@if [ ! -f $(FLAGFILE) ]; then \
+	    command -v autoconf; \
+	    if [ $$? = 0 ]; then \
+	        (cd xt_base; autoconf; ./configure $(CFARGS)); \
+	        if [ $$? != 0 ]; then exit 1; fi; \
+	    else \
+	        command -v autoconf-2.69; \
+                if [ $$? = 0 ]; then \
+                    (cd xt_base; autoconf-2.69; ./configure $(CFARGS)); \
+                    if [ $$? != 0 ]; then exit 1; fi; \
+                else \
+	            echo \
+"  Error: the autoconf program (autoconf-2.69 in Cygwin) is not found"; \
+	            echo "  and is required."; \
+	            exit 1; \
+	        fi; \
+	    fi; \
+	    touch $(FLAGFILE); \
+	    (${MAKE} depend); \
+	fi
+
+reconfig:
+	-@rm -f $(FLAGFILE)
+	$(MAKE) config
+
+all: config
+	-@for a in $(SUBDIRS); do \
+	    if [ -d $$a ]; then \
+	        (cd $$a; $(MAKE)); \
+	    fi; \
+	done
+
+packages: all
+	-@for a in $(SUBDIRS); do \
+	    if [ -d $$a -a -d $$a/packages ]; then \
+	        (cd $$a; $(MAKE) package); \
+	    fi; \
+	done
+
+quick_pkgs: all
+	-@export quick_pkgs=1; for a in $(SUBDIRS); do \
+	    if [ -d $$a -a -d $$a/packages ]; then \
+	        (cd $$a; $(MAKE) package); \
+	    fi; \
+	done
+
+install: all
+	-@for a in $(SUBDIRS); do \
+	    if [ -d $$a -a -d $$a/packages ]; then \
+	        (cd $$a; $(MAKE) install); \
+	    fi; \
+	done
+
+uninstall::
+	-@for a in $(SUBDIRS); do \
+	    if [ -d $$a -a -d $$a/packages ]; then \
+	        (cd $$a; $(MAKE) uninstall); \
+	    fi; \
+	done
+
+depend clean:
+	-@for a in $(SUBDIRS); do \
+	    if [ -d $$a ]; then \
+	        (cd $$a; $(MAKE) $@); \
+	    fi; \
+	done
+
+distclean:
+	-@rm -f $(FLAGFILE)
+	-@for a in $(SUBDIRS); do \
+	    if [ -d $$a ]; then \
+	        (cd $$a; $(MAKE) $@); \
+	    fi; \
+	done
+
+
