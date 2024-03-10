@@ -1626,23 +1626,8 @@ void
 QTviewer::resizeEvent(QResizeEvent *ev)
 {
     QScrollArea::resizeEvent(ev);
-
-/*XXX not needed?
-    // If the size increases, resize the drawing area immediately so it
-    // won't look strange while reformatting.  The reformatting will
-    // resize it again.
-    QSize dasize = v_darea->size();
-    if (dasize.width() < ev->size().width())
-        dasize.setWidth(ev->size().width());
-    if (dasize.height() < ev->size().height())
-        dasize.setHeight(ev->size().height());
-    if (dasize != v_darea->size())
-        v_darea->resize(dasize);
-*/
-
     htmWidget::resize();
     if (!isReady()) {
-        //XXX
         // I don't know why but this is needed for the initial window
         // to have correct layout.
         QWidget::resize(width() + 1, height());

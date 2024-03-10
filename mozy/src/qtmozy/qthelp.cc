@@ -446,12 +446,7 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QDialog(prnt),
         this, SLOT(print_slot()));
     h_Reload = h_main_menus[0]->addAction(tr("&Reload"), Qt::CTRL|Qt::Key_R,
         this, SLOT(reload_slot()));
-
-/*XXX
-    h_OldCset = h_main_menus[0]->addAction(tr("Old &Charset"), 0,
-        this, SLOT(old_charset_slot()));
-    h_OldCset->setCheckable(true);
-*/
+    // "Old Charset" 8859 support removed.
     h_MkFIFO = h_main_menus[0]->addAction(tr("&Make FIFO"), Qt::CTRL|Qt::Key_M,
         this, SLOT(make_fifo_slot(bool)));
     h_MkFIFO->setCheckable(true);
@@ -470,12 +465,7 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QDialog(prnt),
         SLOT(print_slot()), Qt::CTRL|Qt::Key_P);
     h_Reload = h_main_menus[0]->addAction(tr("&Reload"), this,
         SLOT(reload_slot()), Qt::CTRL|Qt::Key_R);
-
-/*XXX
-    h_OldCset = h_main_menus[0]->addAction(tr("Old &Charset"), this,
-        SLOT(old_charser_slot(bool)), 0);
-    h_OldCset->setCheckable(true);
-*/
+    // "Old Charset" 8859 support removed.
     h_MkFIFO = h_main_menus[0]->addAction(tr("&Make FIFO"), this,
         SLOT(make_fifo_slot(bool)), Qt::CTRL|Qt::Key_M);
     h_MkFIFO->setCheckable(true);
@@ -1357,14 +1347,6 @@ QThelpDlg::reload_slot()
 }
 
 
-/*XXX
-void
-QThelpDlg::old_charset_slot(bool state)
-{
-}
-*/
-
-
 void
 QThelpDlg::make_fifo_slot(bool state)
 {
@@ -2157,7 +2139,6 @@ QThelpDlg::register_fifo(const char *fname)
         
     bool ret = false;
 #ifdef WIN32
-/*XXX FIXME doesn't copmpile
     if (fname)
         fname = lstring::strip_path(fname);
     sLstr lstr;
@@ -2179,7 +2160,11 @@ QThelpDlg::register_fifo(const char *fname)
     sa.lpSecurityDescriptor = &sd;
     sa.bInheritHandle = false;
 
-    HANDLE hpipe = CreateNamedPipe(lstr.string(),
+    // Convert to WCHAR, didn't need this in GTK!
+    len = strlen(lstr.string());
+    WCHAR *wcbuf = new WCHAR[len+1];
+    mbstowcs(wcbuf, lstr.string(), len+1);
+    HANDLE hpipe = CreateNamedPipe(wcbuf,
         PIPE_ACCESS_INBOUND,
         PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT,
         PIPE_UNLIMITED_INSTANCES,
@@ -2187,6 +2172,7 @@ QThelpDlg::register_fifo(const char *fname)
         2048,
         NMPWAIT_USE_DEFAULT_WAIT,
         &sa);
+    delete [] wcbuf;
 
     if (hpipe != INVALID_HANDLE_VALUE) {
         ret = true;
@@ -2195,7 +2181,6 @@ QThelpDlg::register_fifo(const char *fname)
         h_fifo_pipe = hpipe;
         _beginthread(pipe_thread_proc, 0, this);
     }
-*/
 #else
     sLstr lstr;
     passwd *pw = getpwuid(getuid());

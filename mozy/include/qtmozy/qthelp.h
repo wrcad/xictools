@@ -205,7 +205,7 @@ private:
     bool register_fifo(const char*);
     void unregister_fifo();
 #ifdef WIN32
-    void pipe_thread_proc(void*);
+    static void pipe_thread_proc(void*);
 #endif
     static int fifo_check_proc(void*);
 
