@@ -125,60 +125,56 @@ QTsimRunDlg::control(SpType status)
     switch (status) {
     case SpNil:
     default:
-        if (instPtr)
-            instPtr->hide();
+        msg = "";
         sp_status = SpNil;
+        if (instPtr) {
+            instPtr->sp_label->setText(msg);
+            instPtr->hide();
+        }
         return;
+
     case SpBusy:
         msg = "Running...";
         sp_status = SpBusy;
+        if (instPtr) {
+            instPtr->sp_label->setText(msg);
+            instPtr->show();
+            return;
+        }
         break;
     case SpPause:
         msg = "Paused";
         sp_status = SpPause;
-        QTdev::self()->AddTimer(2000, sp_down_timer, 0);
+        if (instPtr) {
+            instPtr->sp_label->setText(msg);
+            instPtr->show();
+            sleep(2);
+            instPtr->hide();
+            return;
+        }
         break;
     case SpDone:
         msg = "Analysis Complete";
         sp_status = SpDone;
-        QTdev::self()->AddTimer(2000, sp_down_timer, 0);
+        if (instPtr) {
+            instPtr->sp_label->setText(msg);
+            instPtr->show();
+            sleep(2);
+            instPtr->hide();
+            return;
+        }
         break;
     case SpError:
         msg = "Error: connection broken";
         sp_status = SpError;
+        if (instPtr) {
+            instPtr->sp_label->setText(msg);
+            instPtr->show();
+            return;
+        }
         break;
     }
-    if (instPtr) {
-        QTpkg::self()->RegisterIdleProc(sp_label_set_idle, (void*)msg);
-        return;
-    }
-
     new QTsimRunDlg(msg);
-}
-
-
-// Static function.
-// Make the popup go away after an interval.
-//
-int
-QTsimRunDlg::sp_down_timer(void*)
-{
-    if (instPtr)
-        instPtr->hide();
-    return (false);
-}
-
-
-// Static function.
-int
-QTsimRunDlg::sp_label_set_idle(void *arg)
-{
-    if (instPtr) {
-        const char *msg = (const char*)arg;
-        instPtr->sp_label->setText(msg);
-        instPtr->show();
-    }
-    return (false);
 }
 
 

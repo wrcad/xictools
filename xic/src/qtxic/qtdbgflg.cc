@@ -87,6 +87,7 @@ cMain::PopUpDebugFlags(GRobject caller, ShowMode mode)
         QTmainwin::self()->Viewport());
     QTdbgFlagsDlg::self()->show();
 }
+// End of cMain functions.
 
 
 QTdbgFlagsDlg *QTdbgFlagsDlg::instPtr;

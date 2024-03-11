@@ -85,6 +85,7 @@ cEdit::PopUpPCellCtrl(GRobject caller, ShowMode mode)
         QTmainwin::self()->Viewport());
     QTpcellCtrlDlg::self()->show();
 }
+// End of cEdit functions.
 
 
 const char *QTpcellCtrlDlg::pcc_abutvals[] =

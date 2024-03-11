@@ -61,7 +61,7 @@
 #include "ghost.h"
 #include "miscutil/encode.h"
 #include "miscutil/texttf.h"
-#include "ginterf/grfont.h"
+#include "ginterf/grvecfont.h"
 
 
 // Fine zoom factor.  Applying this five times is equivalent to the

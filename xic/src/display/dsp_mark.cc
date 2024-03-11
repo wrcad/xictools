@@ -52,7 +52,7 @@
 #include "cd_lgen.h"
 #include "fio.h"
 #include "fio_chd.h"
-#include "ginterf/grfont.h"
+#include "ginterf/grvecfont.h"
 #include "miscutil/filestat.h"
 
 

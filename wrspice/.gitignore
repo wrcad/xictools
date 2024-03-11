@@ -1,3 +1,5 @@
+bin/csvtoraw
+bin/csvtoraw.exe
 bin/multidec
 bin/multidec.exe
 bin/printtoraw

@@ -38,6 +38,7 @@
  $Id:$
  *========================================================================*/
 
+#include "config.h"
 #include "main.h"
 #include "ext.h"
 #include "ext_fc.h"
@@ -87,6 +88,17 @@ cFC::on_null_ptr()
     fprintf(stderr, "Singleton class cFC used before instantiated.\n");
     exit(1);
 }
+
+
+// Stubs for functions defined in graphical toolkit, include when
+// not building with toolkit.
+#if (!defined(WITH_QT5) && !defined(WITH_QT6) && !defined(WITH_GTK2) &&\
+    !defined(GTK3))
+void cFC::PopUpExtIf(GRobject, ShowMode) { }
+void cFC::updateString() { }
+void cFC::updateMarks() { }
+void cFC::clearMarks() { }
+#endif
 
 
 // Perform an operation, according to the keyword given.

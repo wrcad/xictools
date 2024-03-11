@@ -132,6 +132,7 @@ QTprpBase::update_display()
                     c = &c1;
             }
             else {
+                c = &blk;
                 switch (num) {
                 case P_NAME:
                     // Indicate name property set
@@ -154,7 +155,6 @@ QTprpBase::update_display()
                     c = &c1;
                     break;
                 default:
-                    c = 0;
                     break;
                 }
             }

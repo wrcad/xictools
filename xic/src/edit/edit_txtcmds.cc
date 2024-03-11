@@ -61,7 +61,7 @@
 #include "tech.h"
 #include "errorlog.h"
 #include "miscutil/filestat.h"
-#include "ginterf/grfont.h"
+#include "ginterf/grvecfont.h"
 
 
 //-----------------------------------------------------------------------------

@@ -32,67 +32,106 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * Xic Integrated Circuit Layout and Schematic Editor                     *
+ * Ginterf Graphical Interface Library                                    *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#ifndef QTSIM_H
-#define QTSIM_H
+#ifndef GRVECFONT_H
+#define GRVECFONT_H
 
-#include "main.h"
-#include "qtmain.h"
-#include "sced.h"
-#include "sced_spiceipc.h"
+#include <stdio.h>
 
-#include <QDialog>
+//
+// Scalable vector text generation
+//
 
-
-//-----------------------------------------------------------------------------
-// QTsimRunDlg:  Dialog for monitoring asynchronous SPICE simulation runs.
-
-class QLabel;
-
-class QTsimRunDlg : public QDialog
+namespace ginterf
 {
-    Q_OBJECT
 
-public:
-    QTsimRunDlg(const char*);
-    ~QTsimRunDlg();
-
-    static void control(SpType);
-
-    void set_transient_for(QWidget *prnt)
+    struct GRvecFont
+    {
+        struct Cpair
         {
-            Qt::WindowFlags f = windowFlags();
-            setParent(prnt);
-#ifdef __APPLE__
-            f |= Qt::Tool;
-#endif
-            setWindowFlags(f);
-        }
+            char x;
+            char y;
+        };
 
-    // Don't pop down from Esc press.
-    void keyPressEvent(QKeyEvent *ev)
+        struct Cstroke
         {
-            if (ev->key() != Qt::Key_Escape)
-                QDialog::keyPressEvent(ev);
-        }
+            int numpts;
+            Cpair *cp;
+        };
 
-    static QTsimRunDlg *self()          { return (instPtr); }
+        struct Character
+        {
+            int numstroke;
+            Cstroke *stroke;
+            short ofst;
+            short width;
+        };
 
-private slots:
-    void pause_btn_slot();
-    void dismiss_btn_slot();
+    public:
+        GRvecFont();
 
-private:
-    QLabel *sp_label;
+        int charWidth(int c) const
+            {
+                if (c >= vf_startChar && c <= vf_endChar)
+                    return (vf_charset[c - vf_startChar]->width);
+                else if (c == '\n')
+                    return (0);
+                else
+                    return (vf_cellWidth);
+            }
 
-    static SpType sp_status;
-    static QTsimRunDlg *instPtr;
-};
+        int charHeight(int) const
+            {
+                return (vf_cellHeight);
+            }
+
+        Character *entry(int c) const
+            {
+                if (c >= vf_startChar && c <= vf_endChar)
+                    return (vf_charset[c - vf_startChar]);
+                return (0);
+            }
+
+        int lineExtent(const char *string) const
+            {
+                int xw = 0;
+                for (const char *s = string; *s; s++) {
+                    int w = charWidth(*s);
+                    if (!w)
+                        // newline
+                        break;
+                    xw += w;
+                }
+                return (xw);
+            }
+
+        int cellWidth()             const { return (vf_cellWidth); }
+        int cellHeight()            const { return (vf_cellHeight); }
+        int startChar()             const { return (vf_startChar); }
+        int endChar()               const { return (vf_endChar); }
+
+        void textExtent(const char*, int*, int*, int*, int = 0) const;
+        int xoffset(const char*, int, int, int) const;
+        void renderText(GRdraw*, const char*, int, int, int, int, int,
+            int = 0) const;
+        void parseChars(FILE*);
+        void dumpFont(FILE*) const;
+
+    private:
+        Character **vf_charset;
+        int vf_cellWidth;
+        int vf_cellHeight;
+        int vf_startChar;
+        int vf_endChar;
+    };
+}
+
+extern ginterf::GRvecFont FT;
 
 #endif
 

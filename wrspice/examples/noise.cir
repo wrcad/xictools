@@ -11,34 +11,35 @@
 * resistors in the circuit, as in the text that follows.  There are
 * two equivalent ways to define the function:
 
-* 9/15/2016: Fixed the expressions, which were wrong.  The cutoff
-* frequency is 1/(2*dt) NOT 1/dt (from Nyquist sampling equations).
-
 * This one is active (recall that *@ is like .exec/.endc for one line).
-*@ define noise(r,t,dt,n) gauss(sqrt(2*boltz*t/(r*dt)), 0, dt, n)
+*@ define noise(R,T,B) gauss(sqrt(4*boltz*T*B/R), 0, 0.5/B, 0)
 * This is not a comment in WRspice, it acts like the three lines
 * below if they were uncommented.
 * .exec
-* define noise(r,t,dt,n) gauss(sqrt(2*boltz*t/(r*dt)), 0, dt, n)
+* define noise(R,T,B) gauss(sqrt(4*boltz*T*B/R), 0, 0.5/B, 0)
 * .endc
+*
+* This alternative way to specify the function is commented out,
+* comment the one above and uncomment this to try it out.
+* .param noise(R,T,B) gauss(sqrt(4*boltz*T*B/R), 0, 0.5/B, 0)
 
-* This one is commented out, comment the one above and uncomment this
-* to try it out.
-* .param noise(r,t,dt,n) = gauss(sqrt(2*boltz*t/(r*dt)), 0, dt, n)
+* Above, R is the resistance, T is the temperature of the
+* resistor in Kelvin, and B is the bandwidth over which the noise
+* contributes.  The bandwidth is generally limited by circuit
+* impedances and parasitics, but we have to choose a frequency
+* high enough that this is the case.
+* See the documentation for "tgauss" for more information.
 
 r1 1 0 1.0
 c1 1 0 5p
 l1 1 0 1p
 
-ir1 1 0 noise(1.0, 4.2, 0.5p, 1)
-* Arguments are resistance, temperature in Kelvin, lattice delta, and
-* interpolation method.  See the documentation for "tgauss" for an
-* explanation of the final two arguments.
+ir1 1 0 noise(1.0, 4.2, 1THz)
 
-.meas tran foo from 1e-11 to 1n rms v(1) print
+.meas tran foo from 57.7425p to 9.000013nn rms v(1) print
 
 .control
-tran .5p 10n
+tran .1p 10n
 plot v(1)
 plot combplot mag(fft(v(1)))
 .endc

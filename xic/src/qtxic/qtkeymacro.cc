@@ -160,7 +160,7 @@ cKbMacro::getKeyToMap()
 
 
 bool
-cKbMacro::isModifier(unsigned key)
+cKbMacro::isModifier(unsigned int key)
 {
     return (
         key == Qt::Key_Shift    ||
@@ -172,28 +172,28 @@ cKbMacro::isModifier(unsigned key)
 
 
 bool
-cKbMacro::isControl(unsigned key)
+cKbMacro::isControl(unsigned int key)
 {
     return (key == Qt::Key_Control);
 }
 
 
 bool
-cKbMacro::isShift(unsigned key)
+cKbMacro::isShift(unsigned int key)
 {
     return (key == Qt::Key_Shift);
 }
 
 
 bool
-cKbMacro::isAlt(unsigned key)
+cKbMacro::isAlt(unsigned int key)
 {
     return (key == Qt::Key_Alt);
 }
 
 
 char *
-cKbMacro::keyText(unsigned key, unsigned state)
+cKbMacro::keyText(unsigned int key, unsigned int state)
 {
     static char text[4];
     text[0] = 0;
@@ -229,7 +229,7 @@ cKbMacro::keyText(unsigned key, unsigned state)
 
 
 void
-cKbMacro::keyName(unsigned key, char *buf)
+cKbMacro::keyName(unsigned int key, char *buf)
 {
     QKeySequence ks(key);
     strncpy(buf, ks.toString().toLatin1().constData(), 32);
@@ -253,7 +253,7 @@ cKbMacro::isModifierDown()
 // Return true if the given key event can not be mapped.
 //
 bool
-cKbMacro::notMappable(unsigned key, unsigned state)
+cKbMacro::notMappable(unsigned int key, unsigned int state)
 {
     if (isModifier(key))
         return (true);

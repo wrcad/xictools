@@ -19,10 +19,11 @@ LIB_TARGET = ../lib/ginterf.a
 
 HFILES =
 CCFILES = \
-  colorname.cc fontutil.cc graphics.cc grfont.cc grimage.cc \
-  grlinedb.cc hpgl.cc pcl.cc pixtab.cc polydecomp.cc psbc.cc psbm.cc \
+  colorname.cc graphics.cc grfont.cc grimage.cc grlinedb.cc \
+  grvecfont.cc hpgl.cc pcl.cc pixtab.cc polydecomp.cc psbc.cc psbm.cc \
   psencode.cc pslindrw.cc raster.cc rgbmap.cc rgbzimg.cc shmctl.cc \
-  xfig.cc
+  xdraw.cc xfig.cc
+
 CCOBJS = $(CCFILES:.cc=.o)
 
 $(LIB_TARGET): $(CCOBJS)

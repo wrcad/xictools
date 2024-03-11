@@ -171,8 +171,7 @@ sMfunc::print(sLstr *plstr)
 // Find the maximum of dv over the interval.
 //
 bool
-sMfunc::mmin(sDataVec *dv, int ixmin, int ixmax,
-    double *startval, double *endval)
+sMfunc::mmin(sDataVec *dv, int ixmin, int ixmax, sXpt *spt, sXpt *ept)
 {
     if (dv->length() == 1) {
         f_val = dv->realval(0);
@@ -183,13 +182,13 @@ sMfunc::mmin(sDataVec *dv, int ixmin, int ixmax,
         if (dv->realval(i) < mn)
             mn = dv->realval(i);
     }
-    if (startval) {
-        if (*startval < mn)
-            mn = *startval;
+    if (spt) {
+        if (spt->val < mn)
+            mn = spt->val;
     }
-    if (endval) {
-        if (*endval < mn)
-            mn = *endval;
+    if (ept) {
+        if (ept->val < mn)
+            mn = ept->val;
     }
     f_val = mn;
     return (true);
@@ -199,8 +198,7 @@ sMfunc::mmin(sDataVec *dv, int ixmin, int ixmax,
 // Find the maximum of dv over the interval.
 //
 bool
-sMfunc::mmax(sDataVec *dv, int ixmin, int ixmax,
-    double *startval, double *endval)
+sMfunc::mmax(sDataVec *dv, int ixmin, int ixmax, sXpt *spt, sXpt *ept)
 {
     if (dv->length() == 1) {
         f_val = dv->realval(0);
@@ -211,13 +209,13 @@ sMfunc::mmax(sDataVec *dv, int ixmin, int ixmax,
         if (dv->realval(i) > mx)
             mx = dv->realval(i);
     }
-    if (startval) {
-        if (*startval > mx)
-            mx = *startval;
+    if (spt) {
+        if (spt->val > mx)
+            mx = spt->val;
     }
-    if (endval) {
-        if (*endval > mx)
-            mx = *endval;
+    if (ept) {
+        if (ept->val > mx)
+            mx = ept->val;
     }
     f_val = mx;
     return (true);
@@ -227,8 +225,7 @@ sMfunc::mmax(sDataVec *dv, int ixmin, int ixmax,
 // Find the maximum minus minimum of dv over the interval.
 //
 bool
-sMfunc::mpp(sDataVec *dv, int ixmin, int ixmax,
-    double *startval, double *endval)
+sMfunc::mpp(sDataVec *dv, int ixmin, int ixmax, sXpt *spt, sXpt *ept)
 {
     if (dv->length() == 1) {
         f_val = 0.0;
@@ -242,17 +239,17 @@ sMfunc::mpp(sDataVec *dv, int ixmin, int ixmax,
         else if (dv->realval(i) > mx)
             mx = dv->realval(i);
     }
-    if (startval) {
-        if (*startval > mx)
-            mx = *startval;
-        else if (*startval < mn)
-            mn = *startval;
+    if (spt) {
+        if (spt->val > mx)
+            mx = spt->val;
+        else if (spt->val < mn)
+            mn = spt->val;
     }
-    if (endval) {
-        if (*endval > mx)
-            mx = *endval;
-        else if (*endval < mn)
-            mn = *endval;
+    if (ept) {
+        if (ept->val > mx)
+            mx = ept->val;
+        else if (ept->val < mn)
+            mn = ept->val;
     }
     f_val = mx - mn;
     return (true);
@@ -263,8 +260,7 @@ sMfunc::mpp(sDataVec *dv, int ixmin, int ixmax,
 // integration and divide by the scale interval.
 //
 bool
-sMfunc::mavg(sDataVec *dv, int ixmin, int ixmax,
-    double *startval, double *endval)
+sMfunc::mavg(sDataVec *dv, int ixmin, int ixmax, sXpt *spt, sXpt *ept)
 {
     if (dv->length() == 1) {
         f_val = dv->realval(0);
@@ -278,40 +274,34 @@ sMfunc::mavg(sDataVec *dv, int ixmin, int ixmax,
     }
 
     double sum = 0.0;
-    double d, delt;
     // compute the sum over the scale intervals
-    int i;
-    for (i = ixmin+1; i <= ixmax; i++) {
-        delt = xs->realval(i) - xs->realval(i-1);
+    for (int i = ixmin+1; i <= ixmax; i++) {
+        double delt = xs->realval(i) - xs->realval(i-1);
         sum += 0.5*delt*(dv->realval(i-1) + dv->realval(i));
     }
 
-    // *startval is ahead of the start index (between i-1 and i)
-    if (startval) {
-        delt = xs->realval(ixmin) - *startval;
-        if (delt != 0) {
-            i = ixmin;
-            d = dv->realval(i) + (dv->realval(i-1) - dv->realval(i))*
-                (*startval - xs->realval(ixmin))/
-                (xs->realval(i-1) - xs->realval(i));
-            sum += 0.5*delt*(d + dv->realval(i));
+    // spt is ahead of the start index (between i-1 and i)
+    double tstart = xs->realval(ixmin);
+    if (spt) {
+        int i = ixmin;
+        if (spt->val != dv->realval(i)) {
+            double delt = xs->realval(i) - spt->scval;
+            sum += 0.5*delt*(spt->val + dv->realval(i));
+            tstart -= delt;
         }
     }
 
-    // *endval is behind the end index
-    if (endval) {
-        delt = *endval - xs->realval(ixmax);
-        if (delt != 0.0) {
-            i = ixmax;
-            d = dv->realval(i) + (dv->realval(i+1) - dv->realval(i))*
-                (*endval - xs->realval(ixmax))/
-                (xs->realval(i+1) - xs->realval(i));
-            sum += 0.5*delt*(d + dv->realval(i));
+    // ept is behind the end index
+    double tend = xs->realval(ixmax);
+    if (ept) {
+        int i = ixmax;
+        if (ept->val != dv->realval(i)) {
+            double delt = ept->scval - xs->realval(i);
+            sum += 0.5*delt*(dv->realval(i) + ept->val);
+            tend += delt;
         }
     }
 
-    double tstart = startval ? *startval : xs->realval(ixmin);
-    double tend = endval ? *endval : xs->realval(ixmax);
     double dt = tend - tstart;
     if (dt != 0.0)
         sum /= dt;
@@ -324,8 +314,7 @@ sMfunc::mavg(sDataVec *dv, int ixmin, int ixmax,
 // integration of the magnitudes.
 //
 bool
-sMfunc::mrms(sDataVec *dv, int ixmin, int ixmax,
-    double *startval, double *endval)
+sMfunc::mrms(sDataVec *dv, int ixmin, int ixmax, sXpt *spt, sXpt *ept)
 {
     if (dv->length() == 1) {
         f_val = dv->realval(0);
@@ -339,41 +328,38 @@ sMfunc::mrms(sDataVec *dv, int ixmin, int ixmax,
     }
 
     double sum = 0.0;
-    double d, delt;
     // compute the sum over the scale intervals
     int i;
     for (i = ixmin+1; i <= ixmax; i++) {
-        delt = xs->realval(i) - xs->realval(i-1);
+        double delt = xs->realval(i) - xs->realval(i-1);
         sum += 0.5*delt*(dv->realval(i-1)*dv->realval(i-1) +
             dv->realval(i)*dv->realval(i));
     }
 
-    // *startval is ahead of the start index
-    if (startval) {
-        delt = xs->realval(ixmin) - *startval;
-        if (delt != 0.0) {
-            i = ixmin;
-            d = dv->realval(i) + (dv->realval(i-1) - dv->realval(i))*
-                (*startval - xs->realval(ixmin))/
-                (xs->realval(i-1) - xs->realval(i));
-            sum += 0.5*delt*(d*d + dv->realval(i)*dv->realval(i));
+    // spt is ahead of the start index
+    double tstart = xs->realval(ixmin);
+    if (spt) {
+        i = ixmin;
+        if (spt->val != dv->realval(i)) {
+            double delt = xs->realval(i) - spt->scval;
+            sum += 0.5*delt*(spt->val*spt->val +
+                dv->realval(i)*dv->realval(i));
+            tstart -= delt;
         }
     }
 
-    // *endval is behind the end index
-    if (endval) {
-        delt = *endval - xs->realval(ixmax);
-        if (delt != 0.0) {
-            i = ixmax;
-            d = dv->realval(i) + (dv->realval(i+1) - dv->realval(i))*
-                (*endval - xs->realval(ixmax))/
-                (xs->realval(i+1) - xs->realval(i));
-            sum += 0.5*delt*(d*d + dv->realval(i)*dv->realval(i));
+    // ept is behind the end index
+    double tend = xs->realval(ixmax);
+    if (ept) {
+        i = ixmax;
+        if (ept->val != dv->realval(i)) {
+            double delt = ept->scval - xs->realval(i);
+            sum += 0.5*delt*(dv->realval(i)*dv->realval(i) +
+                ept->val*ept->val);
+            tend += delt;
         }
     }
 
-    double tstart = startval ? *startval : xs->realval(ixmin);
-    double tend = endval ? *endval : xs->realval(ixmax);
     double dt = tend - tstart;
     if (dt != 0.0)
         sum /= dt;
@@ -385,8 +371,7 @@ sMfunc::mrms(sDataVec *dv, int ixmin, int ixmax,
 // Find the fwhm of a pulse assumed to be contained in the interval.
 //
 bool
-sMfunc::mpw(sDataVec *dv, int ixmin, int ixmax,
-    double *startval, double *endval)
+sMfunc::mpw(sDataVec *dv, int ixmin, int ixmax, sXpt *spt, sXpt *ept)
 {
     if (dv->length() == 1) {
         f_val = 0.0;
@@ -414,8 +399,8 @@ sMfunc::mpw(sDataVec *dv, int ixmin, int ixmax,
             imn = i;
         }
     }
-    double ds = startval ? *startval : dv->realval(ixmin);
-    double de = endval ? *endval : dv->realval(ixmax);
+    double ds = spt ? spt->val : dv->realval(ixmin);
+    double de = ept ? ept->val : dv->realval(ixmax);
     double mid;
     int imid;
     if (mx - SPMAX(ds, de) > SPMIN(ds, de) - mn) {
@@ -463,8 +448,8 @@ sMfunc::mpw(sDataVec *dv, int ixmin, int ixmax,
 // which default to 0.1 and 0.9 (10% to 90%).
 //
 bool
-sMfunc::mrft(sDataVec *dv, int ixmin, int ixmax,
-    double *startval, double *endval, double pc1, double pc2)
+sMfunc::mrft(sDataVec *dv, int ixmin, int ixmax, sXpt *spt, sXpt *ept,
+    double pc1, double pc2)
 {
     if (dv->length() == 1) {
         f_val = 0.0;
@@ -484,8 +469,8 @@ sMfunc::mrft(sDataVec *dv, int ixmin, int ixmax,
             pc2 = f_v2;
     }
 
-    double vstart = startval ? *startval : dv->realval(ixmin);
-    double vend = endval ? *endval : dv->realval(ixmax);
+    double vstart = spt ? spt->val : dv->realval(ixmin);
+    double vend = ept ? ept->val : dv->realval(ixmax);
     double th1 = vstart + pc1*(vend - vstart);  // pc1 def. 0.1
     double th2 = vstart + pc2*(vend - vstart);  // pc2 def. 0.9
 
@@ -1974,22 +1959,22 @@ sRunopMeas::measure(sDataVec **dvp, int *cntp)
                     dv->length() > ro_end.indx()) || dv->length() == 1)) {
                 if (!dv0)
                     dv0 = dv;
-                double sv = startval(dv);
-                double ev = endval(dv);
+                sXpt spt = startpoint(dv);
+                sXpt ept = endpoint(dv);
                 if (ff->type() == Mmin)
-                    ff->mmin(dv, ro_start.indx(), ro_end.indx(), &sv, &ev);
+                    ff->mmin(dv, ro_start.indx(), ro_end.indx(), &spt, &ept);
                 else if (ff->type() == Mmax)
-                    ff->mmax(dv, ro_start.indx(), ro_end.indx(), &sv, &ev);
+                    ff->mmax(dv, ro_start.indx(), ro_end.indx(), &spt, &ept);
                 else if (ff->type() == Mpp)
-                    ff->mpp(dv, ro_start.indx(), ro_end.indx(), &sv, &ev);
+                    ff->mpp(dv,  ro_start.indx(), ro_end.indx(), &spt, &ept);
                 else if (ff->type() == Mavg)
-                    ff->mavg(dv, ro_start.indx(), ro_end.indx(), &sv, &ev);
+                    ff->mavg(dv, ro_start.indx(), ro_end.indx(), &spt, &ept);
                 else if (ff->type() == Mrms)
-                    ff->mrms(dv, ro_start.indx(), ro_end.indx(), &sv, &ev);
+                    ff->mrms(dv, ro_start.indx(), ro_end.indx(), &spt, &ept);
                 else if (ff->type() == Mpw)
-                    ff->mpw(dv, ro_start.indx(), ro_end.indx(), &sv, &ev);
+                    ff->mpw(dv,  ro_start.indx(), ro_end.indx(), &spt, &ept);
                 else if (ff->type() == Mrft)
-                    ff->mrft(dv, ro_start.indx(), ro_end.indx(), &sv, &ev);
+                    ff->mrft(dv, ro_start.indx(), ro_end.indx(), &spt, &ept);
             }
             else {
                 ff->set_error(true);
@@ -2377,6 +2362,42 @@ sRunopMeas::endval(sDataVec *dv)
             (xs->realval(i-1) - xs->realval(i)));
     }
     return (value(dv, ro_end.indx()));
+}
+
+
+sXpt
+sRunopMeas::startpoint(sDataVec *dv)
+{
+    sDataVec *xs = dv->scale();
+    int i = ro_start.indx();
+    sXpt xpt;
+    if (xs && ro_start.found() != xs->realval(i) && i > 0) {
+        double y0 = value(dv, ro_start.indx());
+        double y1 = value(dv, ro_start.indx() - 1);
+        xpt.val = y0 + (y1 - y0)*(ro_start.found() - xs->realval(i))/
+            (xs->realval(i-1) - xs->realval(i));
+    }
+    xpt.val = value(dv, ro_start.indx());
+    xpt.scval = ro_start.found();
+    return (xpt);
+}
+
+
+sXpt
+sRunopMeas::endpoint(sDataVec *dv)
+{
+    sDataVec *xs = dv->scale();
+    int i = ro_end.indx();
+    sXpt xpt;
+    if (xs && ro_end.found() != xs->realval(i) && i > 0) {
+        double y0 = value(dv, ro_end.indx());
+        double y1 = value(dv, ro_end.indx() - 1);
+        xpt.val = y0 + (y1 - y0)*(ro_end.found() - xs->realval(i))/
+            (xs->realval(i-1) - xs->realval(i));
+    }
+    xpt.val = value(dv, ro_end.indx());
+    xpt.scval = ro_end.found();
+    return (xpt);
 }
 // End of sRunopMeas functions.
 

@@ -196,6 +196,19 @@ Authors: 1985 Thomas L. Quarles
 #define SPICE_NOTICE ""
 #endif
 
+#if (!defined(WITH_QT5) && !defined(WITH_QT6) && \
+    !defined(WITH_GTK2) && !defined(WITH_GTK3))
+// No graphics, provide a phony toolbar.
+namespace { sNullToolbar _dummy_tb_; }
+sToolbar *ToolBar() { return (&_dummy_tb_); }
+
+void
+GRpkg::DevDepInit(unsigned int)
+{
+//    GRpkg::self()->RegisterDevice(new NULLdev);
+}
+
+#endif
 
 // WRspice creates and listens on a named pipe.  Text written to the
 // pipe is sourced as WRspice input.  This is the default pipe name.

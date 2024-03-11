@@ -59,19 +59,6 @@
 namespace { QTfont _qt_font_; }
 GRfont &FC = _qt_font_;
 
-GRfont::fnt_t GRfont::app_fonts[] =
-{
-    fnt_t( 0, 0, false, false ),  // not used
-    fnt_t( "Fixed Pitch Text Window Font",    0, true, false ),
-    fnt_t( "Proportional Text Window Font",   0, false, false ),
-    fnt_t( "Fixed Pitch Drawing Window Font", 0, true, false ),
-    fnt_t( "Text Editor Font",                0, true, false ),
-    fnt_t( "HTML Viewer Proportional Font",   0, false, true ),
-    fnt_t( "HTML Viewer Fixed Pitch Font",    0, true, true )
-};
-
-int GRfont::num_app_fonts =
-    sizeof(GRfont::app_fonts)/sizeof(GRfont::app_fonts[0]);
 
 #ifdef __APPLE__
 #define DEF_SIZE 11

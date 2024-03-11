@@ -1665,8 +1665,8 @@ void
 sGraph::gr_mark()
 {
     if (!gr_reference.mark) {
-        gr_refmark(true);
         gr_set_ghost(0, 0, 0);
+        gr_refmark(true);
         // redraw scale factors
         dv_erase_factors();
         dv_trace(true);
@@ -4894,21 +4894,26 @@ namespace {
 int
 sGraph::start_drag_trace(void *arg)
 {
-    sGraph *graph = (sGraph*)arg;
 #if (defined (WITH_QT5) || defined (WITH_QT6))
     // In QT, start in QT's drag mode.
+    sGraph *graph = (sGraph*)arg;
     graph->gr_timer_id = 0;
     sGraph::drag_trace(graph);
 #else
+#if (defined (WITH_GTK2) || defined (WITH_GTK3))
     // In GTK, use the local drag mode, which works between windows,
     // unlike this mode in QT.  For QT6, it is also possible to start
     // in local mode and switch to QT mode in the leave event handler,
     // but this doesn't work in QT5 under Linux.
+    sGraph *graph = (sGraph*)arg;
     GP.SetSourceGraph(graph);
     if (graph->gr_cmd_data) {
         graph->gr_set_ghost(ghost_trace, 0, 0);
         graph->gr_show_ghost(true);
     }
+#else
+    (void)arg;
+#endif
 #endif
     return (false);
 }
@@ -4924,6 +4929,7 @@ sGraph::start_drag_text(void *arg)
     sGraph::drag_text(graph);
     graph->gr_cmdmode &= ~grMoving;
 #else
+#if (defined (WITH_GTK2) || defined (WITH_GTK3))
     // In GTK, use the local drag mode, which works between windows,
     // unlike this mode in QT.  For QT6, it is also possible to start
     // in local mode and switch to QT mode in the leave event handler,
@@ -4933,6 +4939,7 @@ sGraph::start_drag_text(void *arg)
     graph->gr_dev->DrawGhost();
     GP.PopGraphContext();
     graph->gr_cmdmode |= grMoving;
+#endif
 #endif
     graph->gr_timer_id = 0;
     return (false);
@@ -4953,4 +4960,108 @@ sGraph::start_drag_zoom(void *arg)
     return (false);
 }
 // End of sGraph private functions.
+
+
+//
+// The graphics-package dependent part of the sGraph class.
+//
+
+// Below are stubs needed to link without a graphics package.  The
+// functions below are gemerally implemented in graphics code.
+
+#if (!defined(WITH_QT5) && !defined(WITH_QT6) && \
+    !defined(WITH_GTK2) && !defined(WITH_GTK3))
+
+
+// Return a new graphics context struct.
+//
+GRwbag *
+sGraph::gr_new_gx(int type)
+{
+    return (0);
+}
+
+
+// Initialization of graphics, return false on success.
+//
+int
+sGraph::gr_pkg_init()
+{
+    return (true);
+}
+
+
+// Fill in the current colors in the graph from the DefColors array,
+// which is updated.
+//
+void
+sGraph::gr_pkg_init_colors()
+{
+}
+
+
+// This rebuilds the button array after adding/removing a trace.  The
+// return is true if the button count changes
+//
+bool
+sGraph::gr_init_btns()
+{
+    return (false);
+}
+
+
+// This is called periodically while a plot is being drawn.  If a button
+// press or exposure event is detected for the plot window, return true.
+//
+bool
+sGraph::gr_check_plot_events()
+{
+    return (false);
+}
+
+
+void
+sGraph::gr_redraw()
+{
+    if (GRpkg::self()->CurDev()->devtype == GRhardcopy) {
+        gr_redraw_direct();
+        gr_redraw_keyed();
+    }
+}
+
+
+void
+sGraph::gr_refresh(int left, int bottom, int right, int top, bool notxt)
+{
+}
+
+
+// Pop down and destroy.
+//
+void
+sGraph::gr_popdown()
+{
+}
+
+
+// Static function
+// Timeout function, start dragging a trace.
+//
+int
+sGraph::drag_trace(void *arg)
+{
+    return (0);
+}
+
+
+// Static function
+// Timeout function, start dragging text.
+//
+int
+sGraph::drag_text(void *arg)
+{
+    return (0);
+}
+
+#endif
 

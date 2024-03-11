@@ -38,6 +38,7 @@
  $Id:$
  *========================================================================*/
 
+#include "config.h"
 #include "main.h"
 #include "dsp_tkif.h"
 #include "si_parsenode.h"
@@ -87,6 +88,24 @@ cKbMacro::on_null_ptr()
     fprintf(stderr, "Singleton class cKbMacro used before instantiated.\n");
     exit(1);
 }
+
+
+// Stubs for functions defined in graphical toolkit, include when
+// not building with toolkit.
+#if (!defined(WITH_QT5) && !defined(WITH_QT6) && !defined(WITH_GTK2) &&\
+    !defined(GTK3))
+sKeyMap *cKbMacro::getKeyToMap() { return (0); }
+bool cKbMacro::isModifier(unsigned int) { return (false); }
+bool cKbMacro::isControl(unsigned int) { return (false); }
+bool cKbMacro::isShift(unsigned int) { return (false); }
+bool cKbMacro::isAlt(unsigned int) { return (false); }
+char *cKbMacro::keyText(unsigned int, unsigned int) { return (0); }
+void cKbMacro::keyName(unsigned int, char*) { }
+bool cKbMacro::isModifierDown() { return (false); }
+bool cKbMacro::notMappable(unsigned int, unsigned int) { return (false); }
+bool cKbMacro::execKey(sKeyEvent*) { return (false); }
+bool cKbMacro::execBtn(sBtnEvent*) { return (false); }
+#endif
 
 
 // Begin recording events for a macro definition.

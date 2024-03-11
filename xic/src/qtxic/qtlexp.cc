@@ -90,6 +90,7 @@ cEdit::PopUpLayerExp(GRobject caller, ShowMode mode)
         QTmainwin::self()->Viewport());
     QTlayerExpDlg::self()->show();
 }
+// End of cEdit functions.
 
 
 char *QTlayerExpDlg::last_lexpr = 0;

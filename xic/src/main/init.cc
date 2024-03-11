@@ -61,7 +61,7 @@
 #include "tech.h"
 #include "ghost.h"
 #include "miscutil/pathlist.h"
-#include "ginterf/grfont.h"
+#include "ginterf/grvecfont.h"
 #ifdef HAVE_MOZY
 #include "help/help_defs.h"
 #endif

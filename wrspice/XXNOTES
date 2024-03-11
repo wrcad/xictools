@@ -28,3 +28,17 @@ The stringvar is a string variable with a string in the form
 -------
 
 Modify build to allow no graphics as an option (Jacob in xictools).
+
+How to set a new vector to a repeated constant?  I'd like t assign a range
+of indices to the same value.
+
+Is warning if multiple definitions of same subcircuit name?
+
+Inplement A ? B : C
+
+Update numeric constants to present official values.
+
+finish csvtoraw
+
+modify build to auto-update SyntaxLevel in wrspice/devlib/adms/Makefile
+also adms scripts device.xml.

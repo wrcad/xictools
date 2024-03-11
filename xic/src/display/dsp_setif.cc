@@ -45,7 +45,7 @@
 #include "dsp_inlines.h"
 #include "geo_zoid.h"
 #include "fio.h"
-#include "ginterf/grfont.h"
+#include "ginterf/grvecfont.h"
 
 
 //

@@ -100,6 +100,7 @@ cEdit::PopUpTransform(GRobject caller, ShowMode mode,
         QTmainwin::self()->Viewport());
     QTxformDlg::self()->show();
 }
+// End of cEdit functions.
 
 
 QTxformDlg *QTxformDlg::instPtr;

@@ -38,6 +38,7 @@
  $Id:$
  *========================================================================*/
 
+#include "config.h"
 #include "main.h"
 #include "cvrt.h"
 #include "cd_celldb.h"
@@ -92,6 +93,38 @@ cConvert::on_null_ptr()
     fprintf(stderr, "Singleton class cConvert used before instantiated.\n");
     exit(1);
 }
+
+// Stubs for functions defined in graphical toolkit, include when
+// not building with toolkit.
+#if (!defined(WITH_QT5) && !defined(WITH_QT6) && !defined(WITH_GTK2) &&\
+    !defined(GTK3))
+void cConvert::PopUpAssemble(   GRobject, ShowMode) { }
+void cConvert::PopUpAuxTab(     GRobject, ShowMode) { }
+void cConvert::PopUpGeometries( GRobject, ShowMode) { }
+void cConvert::PopUpCgdOpen(    GRobject, ShowMode, const char*, const char *,
+    int, int, bool(*)(const char*, const char*, int, void*), void*) { }
+void cConvert::PopUpChdConfig(  GRobject, ShowMode, const char*, int, int) { }
+void cConvert::PopUpHierarchies(GRobject, ShowMode) { }
+void cConvert::PopUpChdOpen(    GRobject, ShowMode, const char*, const char*,
+    int, int, bool(*)(const char*, const char*, int, void*), void*) { }
+void cConvert::PopUpChdSave(    GRobject, ShowMode, const char*, int, int,
+    bool(*)(const char*, bool, void*), void*) { }
+void cConvert::PopUpCompare(    GRobject, ShowMode) { }
+void cConvert::PopUpConvert(    GRobject, ShowMode, int,
+    bool(*)(int, void*), void*) { }
+void cConvert::PopUpImport(     GRobject, ShowMode, bool (*)(int, void*),
+    void*) { }
+void cConvert::PopUpExport(     GRobject, ShowMode,
+    bool (*)(FileType, bool, void*), void*) { }
+void cConvert::PopUpDisplayWindow(GRobject, ShowMode, const BBox*,
+    bool(*)(bool, const BBox*, void*), void*) { }
+void cConvert::PopUpEmpties(stringlist*) { }
+void cConvert::PopUpFiles(      GRobject caller, ShowMode mode) { }
+void cConvert::PopUpLibraries(  GRobject caller, ShowMode mode) { }
+bool cConvert::PopUpMergeControl(ShowMode, mitem_t*) { return (false); }
+void cConvert::PopUpOasAdv(     GRobject, ShowMode, int, int) { }
+void cConvert::PopUpPropertyFilter(GRobject, ShowMode) { }
+#endif
 
 
 // Call the update method of all visible related pop-ups.  Called when,

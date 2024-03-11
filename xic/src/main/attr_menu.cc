@@ -53,7 +53,7 @@
 #include "keymacro.h"
 #include "attr_menu.h"
 #include "miscutil/filestat.h"
-#include "ginterf/grfont.h"
+#include "ginterf/grvecfont.h"
 
 
 // The Attributes menu for the main and subwindows.

@@ -43,7 +43,7 @@
 #include "dsp_inlines.h"
 #include "gtkmain.h"
 #include "gtkinterf/gtkspinbtn.h"
-#include "ginterf/grfont.h"
+#include "ginterf/grvecfont.h"
 #include "miscutil/filestat.h"
 
 

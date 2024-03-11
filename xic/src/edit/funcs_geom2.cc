@@ -65,7 +65,7 @@
 #include "tech.h"
 #include "select.h"
 #include "errorlog.h"
-#include "ginterf/grfont.h"
+#include "ginterf/grvecfont.h"
 #include "miscutil/texttf.h"
 
 

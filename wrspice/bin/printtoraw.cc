@@ -130,15 +130,16 @@ sPlot::~sPlot()
 }
 
 
-static bool
-pfp(char *tok, double *d)
-{
-    if (sscanf(tok, "%le", d) != 1) {
-        fprintf(stderr,
-            "Error: expected floating point number, parse failed.\n");
-        return (false);
+namespace {
+    bool pfp(char *tok, double *d)
+    {
+        if (sscanf(tok, "%le", d) != 1) {
+            fprintf(stderr,
+                "Error: expected floating point number, parse failed.\n");
+            return (false);
+        }
+        return (true);
     }
-    return (true);
 }
 
 
@@ -313,14 +314,15 @@ sPlot::parse(FILE *fp)
 }
 
 
-static bool
-is_cycle(double *d, int cyc)
-{
-    for (int i = 0; i < cyc; i++) {
-        if (d[i] != d[cyc + i])
-            return (false);
+namespace {
+    bool is_cycle(double *d, int cyc)
+    {
+        for (int i = 0; i < cyc; i++) {
+            if (d[i] != d[cyc + i])
+                return (false);
+        }
+        return (true);
     }
-    return (true);
 }
 
 

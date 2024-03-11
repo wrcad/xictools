@@ -268,6 +268,7 @@ signals:
     void paint_event(QPaintEvent*);
     void press_event(QMouseEvent*);
     void release_event(QMouseEvent*);
+    void double_click_event(QMouseEvent*);
     void motion_event(QMouseEvent*);
     void key_press_event(QKeyEvent*);
     void key_release_event(QKeyEvent*);
@@ -283,6 +284,7 @@ protected:
     void paintEvent(QPaintEvent*);
     void mousePressEvent(QMouseEvent*);
     void mouseReleaseEvent(QMouseEvent*);
+    void mouseDoubleClickEvent(QMouseEvent*);
     void mouseMoveEvent(QMouseEvent*);
     void keyPressEvent(QKeyEvent*);
     void keyReleaseEvent(QKeyEvent*);

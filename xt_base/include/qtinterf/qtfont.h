@@ -42,7 +42,7 @@
 #define QTFONT_H
 
 #include "ginterf/graphics.h"
-#include "ginterf/fontutil.h"
+#include "ginterf/grfont.h"
 
 #include <QVariant>
 #include <QDialog>

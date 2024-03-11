@@ -122,7 +122,7 @@ QTparam::print()
     TextExtent(0, &fwid, &fhei);
 
     p_xval = 2;
-    p_yval = fhei - 1;
+    p_yval = fhei + 1;
 
     unsigned int selectno;
     Selections.countQueue(CurCell(), &selectno, 0);

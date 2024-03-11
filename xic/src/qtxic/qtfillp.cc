@@ -110,6 +110,7 @@ cMain::FillLoadCallback(LayerFillData *dd, CDl *ld)
     if (QTfillPatDlg::self())
         QTfillPatDlg::self()->drag_load(dd, ld);
 }
+// End of cMain functions.
 
 
 QTfillPatDlg *QTfillPatDlg::instPtr;

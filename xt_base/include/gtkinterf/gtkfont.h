@@ -41,7 +41,7 @@
 #ifndef GTKFONT_H
 #define GTKFONT_H
 
-#include "ginterf/fontutil.h"
+#include "ginterf/grfont.h"
 
 //
 // Font handling

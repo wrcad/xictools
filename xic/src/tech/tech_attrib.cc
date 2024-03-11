@@ -49,7 +49,7 @@
 #include "tech_extract.h"
 #include "tech_ldb3d.h"
 #include "tech_attr_cx.h"
-#include "ginterf/fontutil.h"
+#include "ginterf/grfont.h"
 
 
 // Parse attribute keywords.  When there are multiple keywords to set
@@ -1492,7 +1492,7 @@ cTech::print_fonts(FILE *techfp)
     const char *hstr = "\n# Fonts\n";
 
     const char *fn = DSPpkg::self()->GetFont(FNT_FIXED);
-    const char *dn = FC.getDefaultName(FNT_FIXED);
+    const char *dn = GRfont::getDefaultName(FNT_FIXED);
     if (fn && *fn) {
         if (pcheck(techfp, (!dn || strcmp(fn, dn)))) {
             if (!hdr_printed) {
@@ -1524,7 +1524,7 @@ cTech::print_fonts(FILE *techfp)
     CommentDump(techfp, 0, tBlkNone, 0, Tkw.Font1X());
 
     fn = DSPpkg::self()->GetFont(FNT_PROP);
-    dn = FC.getDefaultName(FNT_PROP);
+    dn = GRfont::getDefaultName(FNT_PROP);
     if (fn && *fn) {
         if (pcheck(techfp, (!dn || strcmp(fn, dn)))) {
             if (!hdr_printed) {
@@ -1556,7 +1556,7 @@ cTech::print_fonts(FILE *techfp)
     CommentDump(techfp, 0, tBlkNone, 0, Tkw.Font2X());
 
     fn = DSPpkg::self()->GetFont(FNT_SCREEN);
-    dn = FC.getDefaultName(FNT_SCREEN);
+    dn = GRfont::getDefaultName(FNT_SCREEN);
     if (fn && *fn) {
         if (pcheck(techfp, (!dn || strcmp(fn, dn)))) {
             if (!hdr_printed) {
@@ -1588,7 +1588,7 @@ cTech::print_fonts(FILE *techfp)
     CommentDump(techfp, 0, tBlkNone, 0, Tkw.Font3X());
 
     fn = DSPpkg::self()->GetFont(FNT_EDITOR);
-    dn = FC.getDefaultName(FNT_EDITOR);
+    dn = GRfont::getDefaultName(FNT_EDITOR);
     if (fn && *fn) {
         if (pcheck(techfp, (!dn || strcmp(fn, dn)))) {
             if (!hdr_printed) {
@@ -1620,7 +1620,7 @@ cTech::print_fonts(FILE *techfp)
     CommentDump(techfp, 0, tBlkNone, 0, Tkw.Font4X());
 
     fn = DSPpkg::self()->GetFont(FNT_MOZY);
-    dn = FC.getDefaultName(FNT_MOZY);
+    dn = GRfont::getDefaultName(FNT_MOZY);
     if (fn && *fn) {
         if (pcheck(techfp, (!dn || strcmp(fn, dn)))) {
             if (!hdr_printed) {
@@ -1652,7 +1652,7 @@ cTech::print_fonts(FILE *techfp)
     CommentDump(techfp, 0, tBlkNone, 0, Tkw.Font5X());
 
     fn = DSPpkg::self()->GetFont(FNT_MOZY_FIXED);
-    dn = FC.getDefaultName(FNT_MOZY_FIXED);
+    dn = GRfont::getDefaultName(FNT_MOZY_FIXED);
     if (fn && *fn) {
         if (pcheck(techfp, (!dn || strcmp(fn, dn)))) {
             if (!hdr_printed) {

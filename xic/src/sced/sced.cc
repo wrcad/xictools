@@ -38,6 +38,7 @@
  $Id:$
  *========================================================================*/
 
+#include "config.h"
 #include "main.h"
 #include "sced.h"
 #include "sced_modlib.h"
@@ -78,6 +79,22 @@ cSced::cSced()
     setupVariables();
     loadScriptFuncs();
 }
+
+
+// Stubs for functions defined in graphical toolkit, include when
+// not building with toolkit.
+#if (!defined(WITH_QT5) && !defined(WITH_QT6) && !defined(WITH_GTK2) &&\
+    !defined(GTK3))
+void cSced::PopUpDevEdit(   GRobject, ShowMode) { }
+void cSced::PopUpDevs(      GRobject, ShowMode) { }
+void cSced::DevsEscCallback() { }
+void cSced::PopUpDots(      GRobject, ShowMode) { }
+bool cSced::PopUpNodeMap(   GRobject, ShowMode, int) { return (false); }
+void cSced::PopUpSim(SpType) { }
+void cSced::PopUpSpiceIf(   GRobject, ShowMode) { }
+void cSced::PopUpTermEdit(  GRobject, ShowMode, TermEditInfo*,
+    void(*)(TermEditInfo*, CDp*), CDp*, int, int) { }
+#endif
 
 
 void

@@ -42,7 +42,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "rgbzimg.h"
-#include "grfont.h"
+#include "grvecfont.h"
 #include "polydecomp.h"
 
 #ifndef M_PI

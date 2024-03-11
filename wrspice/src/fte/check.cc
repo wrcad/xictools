@@ -42,6 +42,7 @@
 // Functions for operating range and related analysis
 //
 
+#include "config.h"
 #include "simulator.h"
 #include "spglobal.h"
 #include "runop.h"

@@ -45,6 +45,7 @@ Authors: 1985 Wayne A. Christopher
          1992 Stephen R. Whiteley
 ****************************************************************************/
 
+#include "config.h"
 #include "cshell.h"
 #include "commands.h"
 #include "simulator.h"

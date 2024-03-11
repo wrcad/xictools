@@ -85,6 +85,7 @@ cMain::PopUpLayerAliases(GRobject caller, ShowMode mode)
         QTmainwin::self()->Viewport());
     QTlayerAliasDlg::self()->show();
 }
+// End of cMain functions.
 
 
 namespace {
