@@ -97,7 +97,7 @@
 // set to point to the topic.  Topics linked to lastborn do not have
 // the context field set.
 
-static queue_timer QueueTimer;
+namespace { queue_timer QueueTimer; }
 QueueLoop &HLPcontext::hcxImageQueueLoop = QueueTimer;
 
 // Initiate queue processing.
@@ -182,77 +182,79 @@ namespace qtinterf
 //-----------------------------------------------------------------------------
 // Local declarations
 
-// XPM 
-static const char * const forward_xpm[] = {
-"16 16 4 1",
-" 	c none",
-".	c #0000dd",
-"x	c #0000ee",
-"+  c #0000ff",
-"                ",
-"    .+          ",
-"    .x+         ",
-"    .xx+        ",
-"    .xxx+       ",
-"    .xxxx+      ",
-"    .xxxxx+     ",
-"    .xxxxxx.    ",
-"    .xxxxx.     ",
-"    .xxxx.      ",
-"    .xxx.       ",
-"    .xx.        ",
-"    .x.         ",
-"    ..          ",
-"                ",
-"                "};
+namespace {
+    // XPM 
+    const char * const forward_xpm[] = {
+    "16 16 4 1",
+    " 	c none",
+    ".	c #0000dd",
+    "x	c #0000ee",
+    "+  c #0000ff",
+    "                ",
+    "    .+          ",
+    "    .x+         ",
+    "    .xx+        ",
+    "    .xxx+       ",
+    "    .xxxx+      ",
+    "    .xxxxx+     ",
+    "    .xxxxxx.    ",
+    "    .xxxxx.     ",
+    "    .xxxx.      ",
+    "    .xxx.       ",
+    "    .xx.        ",
+    "    .x.         ",
+    "    ..          ",
+    "                ",
+    "                "};
 
-// XPM 
-static const char * const backward_xpm[] = {
-"16 16 4 1",
-" 	c none",
-".	c #0000dd",
-"x	c #0000ee",
-"+  c #0000ff",
-"                ",
-"          +.    ",
-"         +x.    ",
-"        +xx.    ",
-"       +xxx.    ",
-"      +xxxx.    ",
-"     +xxxxx.    ",
-"    .xxxxxx.    ",
-"     .xxxxx.    ",
-"      .xxxx.    ",
-"       .xxx.    ",
-"        .xx.    ",
-"         .x.    ",
-"          ..    ",
-"                ",
-"                "};
+    // XPM 
+    const char * const backward_xpm[] = {
+    "16 16 4 1",
+    " 	c none",
+    ".	c #0000dd",
+    "x	c #0000ee",
+    "+  c #0000ff",
+    "                ",
+    "          +.    ",
+    "         +x.    ",
+    "        +xx.    ",
+    "       +xxx.    ",
+    "      +xxxx.    ",
+    "     +xxxxx.    ",
+    "    .xxxxxx.    ",
+    "     .xxxxx.    ",
+    "      .xxxx.    ",
+    "       .xxx.    ",
+    "        .xx.    ",
+    "         .x.    ",
+    "          ..    ",
+    "                ",
+    "                "};
 
-// XPM
-static const char * const stop_xpm[] = {
-"16 16 4 1",
-" 	c none",
-".	c red",
-"x  c pink",
-"+  c black",
-"                ",
-"     xxxxxx     ",
-"    x......x    ",
-"   x........x   ",
-"  x..........x  ",
-" x............x ",
-" x............x ",
-" x............x ",
-" x............x ",
-" x............x ",
-" x............x ",
-"  x..........x  ",
-"   x........x   ",
-"    x......x    ",
-"     xxxxxx     ",
-"                "};
+    // XPM
+    const char * const stop_xpm[] = {
+    "16 16 4 1",
+    " 	c none",
+    ".	c red",
+    "x  c pink",
+    "+  c black",
+    "                ",
+    "     xxxxxx     ",
+    "    x......x    ",
+    "   x........x   ",
+    "  x..........x  ",
+    " x............x ",
+    " x............x ",
+    " x............x ",
+    " x............x ",
+    " x............x ",
+    " x............x ",
+    "  x..........x  ",
+    "   x........x   ",
+    "    x......x    ",
+    "     xxxxxx     ",
+    "                "};
+}
 
 //-----------------------------------------------------------------------------
 // Exports
@@ -659,8 +661,6 @@ QThelpDlg::~QThelpDlg()
 {
     unregister_fifo();
     HLP()->context()->quitHelp();
-    Fnt()->unregisterCallback(h_viewer, FNT_MOZY);
-    Fnt()->unregisterCallback(h_viewer, FNT_MOZY_FIXED);
     halt_images();
     HLP()->context()->removeTopic(h_root_topic);
     if (!h_is_frame)
@@ -898,8 +898,8 @@ QThelpDlg::reuse(HLPtopic *newtop, bool newlink)
     if (!newtop)
         newtop = h_root_topic;
 
-    char *anchor = 0;
-    newtop->set_show_plain(HLP()->context()->isPlain(newtop->keyword()));
+    if (!newtop->is_html())
+        newtop->set_show_plain(HLP()->context()->isPlain(newtop->keyword()));
     if (newtop != h_root_topic) {
         h_root_topic->set_text(newtop->get_text());
         newtop->clear_text();
@@ -907,7 +907,9 @@ QThelpDlg::reuse(HLPtopic *newtop, bool newlink)
     else
         h_root_topic->get_text();
     h_cur_topic = newtop;
+
     const char *t = HLP()->context()->findAnchorRef(newtop->keyword());
+    char *anchor = 0;
     if (t)
         anchor = lstring::copy(t);
     if (newlink && newtop != h_root_topic) {
@@ -1861,7 +1863,7 @@ QThelpDlg::do_open_slot(const char *name, void*)
                             int len = strlen(cwd) + strlen(name) + 2;
                             url = new char[len];
                             snprintf(url, len, "%s/%s", cwd, name);
-                            delete [] cwd;
+                            free(cwd);
                             if (access(url, R_OK)) {
                                 // no such file
                                 delete [] url;
@@ -1873,9 +1875,10 @@ QThelpDlg::do_open_slot(const char *name, void*)
             }
             if (!url)
                 url = lstring::copy(name);
-            newtopic(url, false, false, true);
-            if (wb_input)
-                wb_input->popdown();
+            if (newtopic(url, false, false, true) != QThelpDlg::NTnone) {
+                if (wb_input)
+                    wb_input->popdown();
+            }
             delete [] url;
         }
     }
@@ -1959,9 +1962,9 @@ QThelpDlg::do_find_text_slot(const char *target, void*)
 //-----------------------------------------------------------------------------
 // Private functions
 
-// Function to display a new topic, or respond to a link
+// Function to display a new topic, or respond to a link.
 //
-void
+QThelpDlg::NTtype
 QThelpDlg::newtopic(const char *href, bool spawn, bool force_download,
     bool nonrelative)
 {
@@ -1969,24 +1972,26 @@ QThelpDlg::newtopic(const char *href, bool spawn, bool force_download,
     char hanchor[128];
     if (HLP()->context()->resolveKeyword(href, &newtop, hanchor, this,
             h_cur_topic, force_download, nonrelative))
-        return;
+        return (NThandled);
     if (!newtop) {
         char buf[256];
-        snprintf(buf, 256, "Unresolved link: %s.", href);
+        snprintf(buf, sizeof(buf), "Unresolved link: %s.", href);
         PopUpErr(MODE_ON, buf);
-        return;
+        return (NTnone);
     }
-    newtop->set_context(this);
+    if (spawn)
+        newtop->set_context(0);
+    else
+        newtop->set_context(this);
+
     newtop->link_new_and_show(spawn, h_cur_topic);
+    return (NTnew);
 }
 
 
 QThelpDlg::NTtype
 QThelpDlg::newtopic(const char *fname, FILE *fp, bool spawn)
 {
-//    topic *top = checkImage(url, this);
-//    if (top)
-//        return (top);
     HLPtopic *top = new HLPtopic(fname, "");
     top->get_file(fp, fname);
 

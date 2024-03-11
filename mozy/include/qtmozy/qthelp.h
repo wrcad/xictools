@@ -198,7 +198,7 @@ private:
     void set_frame_parent(QThelpDlg *p) { h_frame_parent = p; }
     void set_frame_name(const char *n) { h_frame_name = strdup(n); }
 
-    void newtopic(const char*, bool, bool, bool);
+    NTtype newtopic(const char*, bool, bool, bool);
     NTtype newtopic(const char*, FILE*, bool);
     void stop_image_download();
     static void h_proxy_proc(const char*, void*);

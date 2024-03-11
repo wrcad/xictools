@@ -38,6 +38,7 @@
  $Id:$
  *========================================================================*/
 
+#include "config.h"
 #include "qtmain.h"
 #include "qtmenu.h"
 #include "qtcoord.h"
@@ -71,6 +72,17 @@
 #include "help/help_context.h"
 #include "qtinterf/qtidleproc.h"
 #include "bitmaps/wr.xpm"
+#ifdef HAVE_MOZY
+#include "editif.h"
+#include "si_parsenode.h"
+#include "si_parser.h"
+#include "si_interp.h"
+#include "si_macro.h"
+#include "help/help_defs.h"
+#include "help/help_context.h"
+#include "htm/htm_widget.h"
+#include "htm/htm_form.h"
+#endif
 
 #include <QApplication>
 #include <QAction>
