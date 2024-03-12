@@ -184,11 +184,6 @@ private slots:
     void help_slot();
     void cache_choice_slot(const char*);
 
-    void anchor_track_slot(htmAnchorCallbackStruct*);
-    void newtopic_slot(htmAnchorCallbackStruct*);
-    void form_slot(htmFormCallbackStruct*);
-    void frame_slot(htmFrameCallbackStruct*);
-
     void do_open_slot(const char*, void*);
     void do_save_slot(const char*, void*);
     void do_search_slot(const char*, void*);
@@ -198,6 +193,8 @@ private:
     void set_frame_parent(QThelpDlg *p) { h_frame_parent = p; }
     void set_frame_name(const char *n) { h_frame_name = strdup(n); }
 
+    void htm_activate_proc(htmAnchorCallbackStruct*);
+    void htm_frame_proc(htmFrameCallbackStruct*);
     NTtype newtopic(const char*, bool, bool, bool);
     NTtype newtopic(const char*, FILE*, bool);
     void stop_image_download();

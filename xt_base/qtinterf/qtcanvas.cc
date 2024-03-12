@@ -79,6 +79,7 @@ QTcanvas::QTcanvas(QWidget *prnt) : QWidget(prnt)
     da_olw = 0;
     da_olh = 0;
     da_call_count = 0;
+    da_font = font();
 
     // Ghost drawing.
     da_ghost_overlay_bg = 0;
@@ -921,12 +922,18 @@ QTcanvas::draw_image(const GRimage *im, int xx, int yy, int w, int h)
 }
 
 
-// Set the font used for rendering in the drawing area.
+// Set the font used for rendering in the drawing area.  This is
+// different from the widget font (set with QWidget::setFont), the
+// changing of which may propagate to child widgets (used in forms for
+// the HTML viewer, for example).
 //
 void
 QTcanvas::set_font(QFont *fnt)
 {
-    setFont(*fnt);
+    if (fnt)
+        da_font = *fnt;
+    else
+        da_font = font();
 }
 
 
@@ -957,8 +964,7 @@ QTcanvas::text_extent(const char *str, int *w, int *h)
         *w = 0;
     if (h)
         *h = 0;
-    const QFont &f = font();
-    QFontMetrics fm(f);
+    QFontMetrics fm(da_font);
     if (w)
 #if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
         *w = fm.horizontalAdvance(QString(str));
@@ -981,14 +987,14 @@ QTcanvas::draw_text(int x0, int y0, const char *str, int len)
         qs.truncate(len);
 
     y0 -= 2;
-    QFontMetrics fm(font());
+    QFontMetrics fm(da_font);
     if (da_overlay_count) {
         QRect r = fm.boundingRect(qs);
         bb_add(x0 + r.x(), y0);
         bb_add(x0 + r.x() + r.width(), y0 + r.height());
     }
 
-    da_painter->setFont(font());
+    da_painter->setFont(da_font);
     da_pen.setStyle(Qt::SolidLine);
     da_painter->setPen(da_pen);
     da_painter->drawText(x0, y0, qs);

@@ -38,35 +38,39 @@
  $Id:$
  *========================================================================*/
 
-#ifndef QTFORM_BUTTON_H
-#define QTFORM_BUTTON_H
+#include "qtform_list.h"
+#include "qtviewer.h"
+#include "help/help_startup.h"
+#include "htm/htm_format.h"
 
-#include <QToolButton>
 
-
-struct htmForm;
-namespace qtinterf { class QTform_button; }
-
-// Subclass QToolButton for use in forms.
 //
-class qtinterf::QTform_button : public QToolButton
+// A list widget for forms.
+//
+
+QTform_list::QTform_list(htmForm *entry, QWidget *prnt) :
+    QListWidget(prnt)
 {
-    Q_OBJECT
+    form_entry = entry;
+}
 
-public:
-    QTform_button(htmForm*, QWidget*);
 
-signals:
-    void pressed(htmForm*);
-    void released(htmForm*);
-
-private slots:
-    void pressed_slot();
-    void released_slot();
-
-private:
-    htmForm *form_entry;
-};
-
+void
+QTform_list::setSize()
+{
+    QFontMetrics fm(font());
+    form_entry->height = form_entry->size * fm.height();
+    form_entry->width = 0;
+    for (htmForm *f = form_entry->options; f; f = f->next) {
+#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
+        unsigned int w = fm.horizontalAdvance(f->name);
+#else
+        unsigned int w = fm.width(f->name);
 #endif
+        if (w > form_entry->width)
+            form_entry->width = w;
+    }
+    form_entry->width += 30;  // scrollbar
+    setFixedSize(QSize(form_entry->width, form_entry->height));
+}
 

@@ -38,35 +38,92 @@
  $Id:$
  *========================================================================*/
 
-#ifndef QTFORM_BUTTON_H
-#define QTFORM_BUTTON_H
+#include "qtform_button.h"
+#include "qtviewer.h"
+#include "help/help_startup.h"
+#include "htm/htm_format.h"
 
-#include <QToolButton>
 
-
-struct htmForm;
-namespace qtinterf { class QTform_button; }
-
-// Subclass QToolButton for use in forms.
 //
-class qtinterf::QTform_button : public QToolButton
+// A push button for forms.
+//
+
+QTform_button::QTform_button(htmForm *entry, QWidget *prnt) :
+    QToolButton(prnt)
 {
-    Q_OBJECT
+    form_entry = entry;
 
-public:
-    QTform_button(htmForm*, QWidget*);
-
-signals:
-    void pressed(htmForm*);
-    void released(htmForm*);
-
-private slots:
-    void pressed_slot();
-    void released_slot();
-
-private:
-    htmForm *form_entry;
-};
-
+    QFontMetrics fm(font());
+    if (entry->type == FORM_RESET || entry->type == FORM_SUBMIT) {
+        const char *str = entry->value ? entry->value : entry->name;
+        if (!str || !*str)
+            str = "X";
+        else
+            setText(str);
+#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
+        entry->width = fm.horizontalAdvance(str) + 4;
+#else
+        entry->width = fm.width(str) + 4;
 #endif
+        entry->height = fm.height() + 4;
+    }
+    else {
+#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
+        entry->width = fm.horizontalAdvance("X") + 4;
+#else
+        entry->width = fm.width("X") + 4;
+#endif
+        entry->height = entry->width;
+        setCheckable(true);
+        setChecked(entry->checked);
+    }
+    setFixedSize(QSize(entry->width, entry->height));
+
+    connect(this, SIGNAL(pressed()), this, SLOT(pressed_slot()));
+    connect(this, SIGNAL(released()), this, SLOT(released_slot()));
+}
+
+
+void
+QTform_button::pressed_slot()
+{
+    if (form_entry->type == FORM_RADIO) {
+        // get start of this radiobox
+        htmForm *tmp;
+        for (tmp = form_entry->parent->components; tmp;
+                tmp = tmp->next)
+            if (tmp->type == FORM_RADIO &&
+                    !(strcasecmp(tmp->name, form_entry->name)))
+                break;
+
+        if (tmp == 0)
+            return;
+
+        // unset all other toggle buttons in this radiobox
+        for ( ; tmp != 0; tmp = tmp->next) {
+            if (tmp->type == FORM_RADIO && tmp != form_entry) {
+                if (!strcasecmp(tmp->name, form_entry->name)) {
+                    // same group, unset it
+                    QTform_button *btn = (QTform_button*)tmp->widget;
+                    btn->setChecked(false);
+                }
+                else
+                    // Not a member of this group, we processed all
+                    // elements in this radio box, break out.
+                    break;
+            }
+        }
+        form_entry->checked = true;
+    }
+    emit pressed(form_entry);
+}
+
+
+void
+QTform_button::released_slot()
+{
+    if (form_entry->type == FORM_RADIO)
+        setChecked(true);
+}
+
 

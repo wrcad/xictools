@@ -22,7 +22,10 @@ LIB_TARGET = ../../lib/qtmozy.a
 
 CCFILES = \
     qtclrdlg.cc \
+    qtform_button.cc \
+    qtform_combo.cc \
     qtform_file.cc \
+    qtform_list.cc \
     qthelp.cc \
     qthttpmon.cc \
     qtviewer.cc \

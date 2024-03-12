@@ -56,150 +56,11 @@
 #include <QHBoxLayout>
 #include <QLineEdit>
 #include <QPainter>
-#include <QPushButton>
 #include <QResizeEvent>
 #include <QScrollBar>
 #include <QTextEdit>
 
-
 using namespace qtinterf;
-
-//-----------------------------------------------------------------------------
-// Special widgets for forms
-
-QTform_button::QTform_button(htmForm *entry, QWidget *prnt) :
-    QPushButton(prnt)
-{
-    form_entry = entry;
-    setAutoDefault(false);
-
-    QFontMetrics fm(font());
-    if (entry->type == FORM_RESET || entry->type == FORM_SUBMIT) {
-        const char *str = entry->value ? entry->value : entry->name;
-        if (!str || !*str)
-            str = "X";
-        else
-            setText(QString(str));
-#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
-        entry->width = fm.horizontalAdvance(str) + 4;
-#else
-        entry->width = fm.width(str) + 4;
-#endif
-        entry->height = fm.height() + 4;
-    }
-    else {
-#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
-        entry->width = fm.horizontalAdvance("X") + 4;
-#else
-        entry->width = fm.width("X") + 4;
-#endif
-        entry->height = entry->width;
-        setCheckable(true);
-        setChecked(entry->checked);
-    }
-    setFixedSize(QSize(entry->width, entry->height));
-
-    connect(this, SIGNAL(pressed()), this, SLOT(pressed_slot()));
-    connect(this, SIGNAL(released()), this, SLOT(released_slot()));
-}
-
-
-void
-QTform_button::pressed_slot()
-{
-    if (form_entry->type == FORM_RADIO) {
-        // get start of this radiobox
-        htmForm *tmp;
-        for (tmp = form_entry->parent->components; tmp;
-                tmp = tmp->next)
-            if (tmp->type == FORM_RADIO &&
-                    !(strcasecmp(tmp->name, form_entry->name)))
-                break;
-
-        if (tmp == 0)
-            return;
-
-        // unset all other toggle buttons in this radiobox
-        for ( ; tmp != 0; tmp = tmp->next) {
-            if (tmp->type == FORM_RADIO && tmp != form_entry) {
-                if (!strcasecmp(tmp->name, form_entry->name)) {
-                    // same group, unset it
-                    QTform_button *btn = (QTform_button*)tmp->widget;
-                    btn->setChecked(false);
-                }
-                else
-                    // Not a member of this group, we processed all
-                    // elements in this radio box, break out.
-                    break;
-            }
-        }
-        form_entry->checked = true;
-    }
-    emit pressed(form_entry);
-}
-
-
-void
-QTform_button::released_slot()
-{
-    if (form_entry->type == FORM_RADIO)
-        setChecked(true);
-}
-
-
-QTform_combo::QTform_combo(htmForm *entry, QWidget *prnt) :
-    QComboBox(prnt)
-{
-    form_entry = entry;
-    setEditable(false);
-}
-
-
-void
-QTform_combo::setSize()
-{
-    QFontMetrics fm(font());
-    form_entry->height = form_entry->size * fm.height();
-    form_entry->width = 0;
-    for (htmForm *f = form_entry->options; f; f = f->next) {
-#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
-        unsigned int w = fm.horizontalAdvance(f->name);
-#else
-        unsigned int w = fm.width(f->name);
-#endif
-        if (w > form_entry->width)
-            form_entry->width = w;
-    }
-    form_entry->width += 30;  // drop button
-    setFixedSize(QSize(form_entry->width, form_entry->height));
-}
-
-
-QTform_list::QTform_list(htmForm *entry, QWidget *prnt) :
-    QListWidget(prnt)
-{
-    form_entry = entry;
-}
-
-
-void
-QTform_list::setSize()
-{
-    QFontMetrics fm(font());
-    form_entry->height = form_entry->size * fm.height();
-    form_entry->width = 0;
-    for (htmForm *f = form_entry->options; f; f = f->next) {
-#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
-        unsigned int w = fm.horizontalAdvance(f->name);
-#else
-        unsigned int w = fm.width(f->name);
-#endif
-        if (w > form_entry->width)
-            form_entry->width = w;
-    }
-    form_entry->width += 30;  // scrollbar
-    setFixedSize(QSize(form_entry->width, form_entry->height));
-}
 
 
 //-----------------------------------------------------------------------------
@@ -1119,7 +980,7 @@ QTviewer::tk_add_widget(htmForm *entry, htmForm *prnt)
     case FORM_CHECK:
     case FORM_RADIO:
         {
-            QPushButton *cb = new QTform_button(entry, v_darea);
+            QToolButton *cb = new QTform_button(entry, v_darea);
             entry->widget = cb;
         }
         break;
@@ -1131,7 +992,7 @@ QTviewer::tk_add_widget(htmForm *entry, htmForm *prnt)
     case FORM_RESET:
     case FORM_SUBMIT:
         {
-            QPushButton *btn = new QTform_button(entry, v_darea);
+            QToolButton *btn = new QTform_button(entry, v_darea);
             entry->widget = btn;
 
             if (entry->type == FORM_SUBMIT)

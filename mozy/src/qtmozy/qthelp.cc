@@ -1030,34 +1030,56 @@ QThelpDlg::emit_signal(SignalID id, void *payload)
 {
     switch (id) {
     case S_ARM:
-        // emit arm_slot(static_cast<htmCallbackInfo*>(payload));
+        // htm_arm_proc(static_cast<htmCallbackInfo*>(payload));
         break;
     case S_ACTIVATE:
-        newtopic_slot(static_cast<htmAnchorCallbackStruct*>(payload));
+        htm_activate_proc(static_cast<htmAnchorCallbackStruct*>(payload));
         break;
     case S_ANCHOR_TRACK:
-        anchor_track_slot(static_cast<htmAnchorCallbackStruct*>(payload));
+        {
+            htmAnchorCallbackStruct *cbs =
+                static_cast<htmAnchorCallbackStruct*>(payload);
+            if (cbs && cbs->href)
+                h_status_bar->setText(cbs->href);
+            else
+                h_status_bar->setText(h_cur_topic->keyword());
+        }
         break;
     case S_ANCHOR_VISITED:
-        // anchor_visited_slot(static_cast<htmVisitedCallbackStruct*>(payload));
+        {
+            htmVisitedCallbackStruct *cbs =
+                static_cast<htmVisitedCallbackStruct*>(payload);
+            if (cbs)
+                cbs->visited = HLP()->context()->isVisited(cbs->url);
+        }
         break;
     case S_DOCUMENT:
-        // document_slot(static_cast<htmDocumentCallbackStruct*>(payload));
+        // htm_document_proc(static_cast<htmDocumentCallbackStruct*>(payload));
         break;
     case S_LINK:
-        // link_slot(static_cast<htmLinkCallbackStruct*>(payload));
+        // htm_link_proc(static_cast<htmLinkCallbackStruct*>(payload));
         break;
     case S_FRAME:
-        frame_slot(static_cast<htmFrameCallbackStruct*>(payload));
+        htm_frame_proc(static_cast<htmFrameCallbackStruct*>(payload));
         break;
     case S_FORM:
-        form_slot(static_cast<htmFormCallbackStruct*>(payload));
+        {
+            // Handle the "submit" request for an html form.  The form
+            // return is always downloaded and never taken from the
+            // cache, since this prevents multiple submissions of the
+            // same form.
+
+            htmFormCallbackStruct *cbs =
+                static_cast<htmFormCallbackStruct*>(payload);
+            if (cbs)
+                HLP()->context()->formProcess(cbs, this);
+        }
         break;
     case S_IMAGEMAP:
-        // imagemap_slot(static_cast<htmImagemapCallbackStruct*>(payload));
+        // htm_imagemap_proc(static_cast<htmImagemapCallbackStruct*>(payload));
         break;
     case S_HTML_EVENT:
-        // html_event_slot(static_cast<htmEventCallbackStruct*>(payload));
+        // htm_html_event_proc(static_cast<htmEventCallbackStruct*>(payload));
         break;
     default:
         break;
@@ -1674,172 +1696,6 @@ QThelpDlg::cache_choice_slot(const char *string)
 }
 
 
-// Print the current anchor href in the status label.
-//
-void
-QThelpDlg::anchor_track_slot(htmAnchorCallbackStruct *c)
-{
-    if (c && c->href)
-        h_status_bar->setText(c->href);
-    else
-        h_status_bar->setText(h_cur_topic->keyword());
-}
-
-
-// Handle clicking on an anchor.
-//
-void
-QThelpDlg::newtopic_slot(htmAnchorCallbackStruct *c)
-{
-    if (c == 0 || c->href == 0)
-        return;
-    c->visited = true;
-
-    // download if shift pressed
-    bool force_download = false;
-    QMouseEvent *qme = static_cast<QMouseEvent*>(c->event);
-    if (qme && (qme->modifiers() & Qt::ShiftModifier))
-        force_download = true;
-
-    bool spawn = false;
-    if (!force_download) {
-        if (c->target) {
-            if (!h_cur_topic->target() ||
-                    strcmp(h_cur_topic->target(), c->target)) {
-                HLPtopic *t = HLP()->context()->findUrlTopic(c->target);
-                if (t) {
-                    newtopic(c->href, false, false, false);
-                    return;
-                }
-                // Special targets:
-                //  _top    reuse same window, no frames
-                //  _self   put in originating frame
-                //  _blank  put in new window
-                //  _parent put in parent frame (nested framesets)
-
-                if (!strcmp(c->target, "_top")) {
-                    newtopic(c->href, false, false, false);
-                    return;
-                }
-                // note: _parent not handled, use new window
-                if (strcmp(c->target, "_self"))
-                    spawn = true;
-            }
-        }
-    }
-
-    if (!spawn) {
-        // spawn a new window if button 2 pressed
-        if (qme && qme->button() == Qt::MiddleButton)
-            spawn = true;
-    }
-
-    newtopic(c->href, spawn, force_download, false);
-
-    if (c->target && spawn) {
-        HLPtopic *t = HLP()->context()->findKeywordTopic(c->href);
-        if (t)
-            t->set_target(c->target);
-    }
-}
-
-
-// Handle the "submit" request for an html form.  The form return is
-// always downloaded and never taken from the cache, since this
-// prevents multiple submissions of the same form.
-//
-void
-QThelpDlg::form_slot(htmFormCallbackStruct *cbs)
-{
-    HLP()->context()->formProcess(cbs, this);
-}
-
-
-// Handle frames.
-//
-void
-QThelpDlg::frame_slot(htmFrameCallbackStruct *cbs)
-{
-    if (cbs->reason == HTM_FRAMECREATE) {
-        h_viewer->hide_drawing_area(true);
-        h_frame_array_size = cbs->nframes;
-        h_frame_array = new QThelpDlg*[h_frame_array_size];
-        for (int i = 0; i < h_frame_array_size; i++) {
-            h_frame_array[i] = new QThelpDlg(false, this);
-            // use parent's defaults
-            h_frame_array[i]->h_params = h_params;
-            h_frame_array[i]->set_frame_parent(this);
-            h_frame_array[i]->set_frame_name(cbs->frames[i].name);
-
-            h_frame_array[i]->setGeometry(cbs->frames[i].x, cbs->frames[i].y,
-                cbs->frames[i].width, cbs->frames[i].height);
-
-            if (cbs->frames[i].scroll_type == FRAME_SCROLL_NONE) {
-                h_frame_array[i]->h_viewer->setVerticalScrollBarPolicy(
-                    Qt::ScrollBarAlwaysOff);
-                h_frame_array[i]->h_viewer->setHorizontalScrollBarPolicy(
-                    Qt::ScrollBarAlwaysOff);
-            }
-            else if (cbs->frames[i].scroll_type == FRAME_SCROLL_AUTO) {
-                h_frame_array[i]->h_viewer->setVerticalScrollBarPolicy(
-                    Qt::ScrollBarAsNeeded);
-                h_frame_array[i]->h_viewer->setHorizontalScrollBarPolicy(
-                    Qt::ScrollBarAsNeeded);
-            }
-            else if (cbs->frames[i].scroll_type == FRAME_SCROLL_YES) {
-                h_frame_array[i]->h_viewer->setVerticalScrollBarPolicy(
-                    Qt::ScrollBarAlwaysOn);
-                h_frame_array[i]->h_viewer->setHorizontalScrollBarPolicy(
-                    Qt::ScrollBarAlwaysOn);
-            }
-
-            h_frame_array[i]->show();
-
-            HLPtopic *newtop;
-            char hanchor[128];
-            HLP()->context()->resolveKeyword(cbs->frames[i].src, &newtop,
-                hanchor, this, 0, false, false);
-            if (!newtop) {
-                char buf[256];
-                snprintf(buf, 256, "Unresolved link: %s.", cbs->frames[i].src);
-                PopUpErr(MODE_ON, buf);
-            }
-
-            h_frame_array[i]->wb_shell = wb_shell;
-            newtop->set_target(cbs->frames[i].name);
-            newtop->set_context(h_frame_array[i]);
-            h_frame_array[i]->h_root_topic = newtop;
-            h_frame_array[i]->h_cur_topic = newtop;
-
-            if (!newtop->is_html() &&
-                    HLP()->context()->isPlain(newtop->keyword())) {
-                newtop->set_show_plain(true);
-                h_frame_array[i]->h_viewer->set_mime_type("text/plain");
-            }
-            else {
-                newtop->set_show_plain(false);
-                h_frame_array[i]->h_viewer->set_mime_type("text/html");
-            }
-            h_frame_array[i]->h_viewer->set_source(newtop->get_text());
-        }
-    }
-    else if (cbs->reason == HTM_FRAMERESIZE) {
-        for (int i = 0; i < h_frame_array_size; i++) {
-            h_frame_array[i]->setGeometry(cbs->frames[i].x, cbs->frames[i].y,
-                cbs->frames[i].width, cbs->frames[i].height);
-        }
-    }
-    else if (cbs->reason == HTM_FRAMEDESTROY) {
-        for (int i = 0; i < h_frame_array_size; i++)
-            delete h_frame_array[i];
-        delete [] h_frame_array;
-        h_frame_array = 0;
-        h_frame_array_size = 0;
-        h_viewer->show();
-    }
-}
-
-
 // Callback for the "Open" and "Open File" menu commands, opens a new
 // keyword or file
 //
@@ -1961,6 +1817,160 @@ QThelpDlg::do_find_text_slot(const char *target, void*)
 
 //-----------------------------------------------------------------------------
 // Private functions
+
+
+// Handle htm signam from clicking on an anchor.
+//
+void
+QThelpDlg::htm_activate_proc(htmAnchorCallbackStruct *cbs)
+{
+    if (cbs == 0 || cbs->href == 0)
+        return;
+    HLPtopic *parent = h_cur_topic;
+    cbs->visited = true;
+
+    // add link to visited table
+    HLP()->context()->addVisited(cbs->href);
+
+    // download if shift pressed
+    bool force_download = false;
+
+    QMouseEvent *qme = static_cast<QMouseEvent*>(cbs->event);
+    if (qme && (qme->modifiers() & Qt::ShiftModifier))
+        force_download = true;
+
+    bool spawn = false;
+    if (!force_download) {
+        if (cbs->target) {
+            if (!parent->target() ||
+                    strcmp(parent->target(), cbs->target)) {
+                for (HLPtopic *t = HLP()->context()->topList(); t;
+                        t = t->sibling()) {
+                    if (t->target() && !strcmp(t->target(), cbs->target)) {
+                        newtopic(cbs->href, false, false, false);
+                        return;
+                    }
+                }
+                // Special targets:
+                //  _top    reuse same window, no frames
+                //  _self   put in originating frame
+                //  _blank  put in new window
+                //  _parent put in parent frame (nested framesets)
+
+                if (!strcmp(cbs->target, "_top")) {
+                    newtopic(cbs->href, false, false, false);
+                    return;
+                }
+                // note: _parent not handled, use new window
+                if (strcmp(cbs->target, "_self"))
+                    spawn = true;
+            }
+        }
+    }
+
+    if (!spawn) {
+        // spawn a new window if button 2 pressed
+        if (qme && qme->button() == Qt::MiddleButton)
+            spawn = true;
+    }
+
+    newtopic(cbs->href, spawn, force_download, false);
+
+    if (cbs->target && spawn) {
+        for (HLPtopic *t = HLP()->context()->topList(); t; t = t->sibling()) {
+            if (!strcmp(t->keyword(), cbs->href)) {
+                t->set_target(cbs->target);
+                break;
+            }
+        }
+    }
+}
+
+
+// Handle htm signal for frames.
+//
+void
+QThelpDlg::htm_frame_proc(htmFrameCallbackStruct *cbs)
+{
+    if (cbs->reason == HTM_FRAMECREATE) {
+        h_viewer->hide_drawing_area(true);
+        h_frame_array_size = cbs->nframes;
+        h_frame_array = new QThelpDlg*[h_frame_array_size];
+        for (int i = 0; i < h_frame_array_size; i++) {
+            h_frame_array[i] = new QThelpDlg(false, this);
+            // use parent's defaults
+            h_frame_array[i]->h_params = h_params;
+            h_frame_array[i]->set_frame_parent(this);
+            h_frame_array[i]->set_frame_name(cbs->frames[i].name);
+
+            h_frame_array[i]->setGeometry(cbs->frames[i].x, cbs->frames[i].y,
+                cbs->frames[i].width, cbs->frames[i].height);
+
+            if (cbs->frames[i].scroll_type == FRAME_SCROLL_NONE) {
+                h_frame_array[i]->h_viewer->setVerticalScrollBarPolicy(
+                    Qt::ScrollBarAlwaysOff);
+                h_frame_array[i]->h_viewer->setHorizontalScrollBarPolicy(
+                    Qt::ScrollBarAlwaysOff);
+            }
+            else if (cbs->frames[i].scroll_type == FRAME_SCROLL_AUTO) {
+                h_frame_array[i]->h_viewer->setVerticalScrollBarPolicy(
+                    Qt::ScrollBarAsNeeded);
+                h_frame_array[i]->h_viewer->setHorizontalScrollBarPolicy(
+                    Qt::ScrollBarAsNeeded);
+            }
+            else if (cbs->frames[i].scroll_type == FRAME_SCROLL_YES) {
+                h_frame_array[i]->h_viewer->setVerticalScrollBarPolicy(
+                    Qt::ScrollBarAlwaysOn);
+                h_frame_array[i]->h_viewer->setHorizontalScrollBarPolicy(
+                    Qt::ScrollBarAlwaysOn);
+            }
+
+            h_frame_array[i]->show();
+
+            HLPtopic *newtop;
+            char hanchor[128];
+            HLP()->context()->resolveKeyword(cbs->frames[i].src, &newtop,
+                hanchor, this, 0, false, false);
+            if (!newtop) {
+                char buf[256];
+                snprintf(buf, 256, "Unresolved link: %s.", cbs->frames[i].src);
+                PopUpErr(MODE_ON, buf);
+            }
+
+            h_frame_array[i]->wb_shell = wb_shell;
+            newtop->set_target(cbs->frames[i].name);
+            newtop->set_context(h_frame_array[i]);
+            h_frame_array[i]->h_root_topic = newtop;
+            h_frame_array[i]->h_cur_topic = newtop;
+
+            if (!newtop->is_html() &&
+                    HLP()->context()->isPlain(newtop->keyword())) {
+                newtop->set_show_plain(true);
+                h_frame_array[i]->h_viewer->set_mime_type("text/plain");
+            }
+            else {
+                newtop->set_show_plain(false);
+                h_frame_array[i]->h_viewer->set_mime_type("text/html");
+            }
+            h_frame_array[i]->h_viewer->set_source(newtop->get_text());
+        }
+    }
+    else if (cbs->reason == HTM_FRAMERESIZE) {
+        for (int i = 0; i < h_frame_array_size; i++) {
+            h_frame_array[i]->setGeometry(cbs->frames[i].x, cbs->frames[i].y,
+                cbs->frames[i].width, cbs->frames[i].height);
+        }
+    }
+    else if (cbs->reason == HTM_FRAMEDESTROY) {
+        for (int i = 0; i < h_frame_array_size; i++)
+            delete h_frame_array[i];
+        delete [] h_frame_array;
+        h_frame_array = 0;
+        h_frame_array_size = 0;
+        h_viewer->show();
+    }
+}
+
 
 // Function to display a new topic, or respond to a link.
 //

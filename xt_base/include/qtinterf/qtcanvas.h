@@ -374,6 +374,8 @@ private:
     int         da_olx, da_oly;     // Previous accumulated overlay
     int         da_olw, da_olh;     //  bounding box.
 
+    QFont       da_font;            // Font used for draw_text.
+
     // Ghost drawing.
     QPixmap     *da_ghost_overlay_bg;   // Ghost drawing background.
     cGhostDrawCommon *da_ghost_draw_ptr;// Access pointer for ghost drawing
