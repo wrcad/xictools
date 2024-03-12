@@ -801,8 +801,12 @@ QTviewer::tk_get_pixels(unsigned short *r, unsigned short *g,
 void
 QTviewer::tk_set_clip_mask(htmPixmap *pix, htmBitmap *bits)
 {
-    if (pix && bits)
+    if (!pix)
+        return;
+    if ( bits)
         ((QPixmap*)pix)->setMask(*(QBitmap*)bits);
+    else
+        ((QPixmap*)pix)->setMask(QBitmap());
 }
 
 
@@ -813,8 +817,12 @@ QTviewer::tk_set_clip_origin(int, int)
 
 
 void
-QTviewer::tk_set_clip_rectangle(htmRect*)
+QTviewer::tk_set_clip_rectangle(htmRect *r)
 {
+    if (r)
+        v_darea->set_clipping(r->x, r->y, r->width, r->height);
+    else
+        v_darea->set_clipping(0, 0, 0, 0);
 }
 
 
