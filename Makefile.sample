@@ -137,7 +137,7 @@ SUBDIRS = xt_base $(SECURE) $(MOZY) $(WRSPICE) $(XIC) fastcap fasthenry
 
 #######################################################################
 CFARGS = $(PREFIX) $(TOOLROOT) $(ITOPOK) $(HVSECURE) $(NOMOZY) $(32BIT) \
-  $(OALOC) $(KITLOC) $(MINGW) $(GFXLOC)
+  $(OALOC) $(KITLOC) $(MINGW) $(GFXLOC) $(PYTHON) $(TCL)
 
 FLAGFILE = .configured
 
