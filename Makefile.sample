@@ -113,7 +113,7 @@ GFXLOC = --enable-gtk2=yes
 # this may not be reliable.  These can be uncommented and set to
 # provide the correct paths on your system.
 #
-#PYTHON = --enable-pylib="/usr/lib64 -lpython2.7"  --enable-pyinc=/usr/include/python2.7
+#PYTHON = --enable-pylib="/usr/lib64 -lpython2.7"  --enable-pyinc="-I/usr/include/python2.7"
 #TCL = --enable-tcllib=no  --enable-tclinc=no
 
 # If you don't want to build all the tools, you can choose what to

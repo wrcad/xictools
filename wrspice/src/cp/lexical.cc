@@ -67,6 +67,7 @@ Authors: 1985 Wayne A. Christopher
 #else
 #include <sys/socket.h>
 #include <sys/ioctl.h>
+#include <signal.h>
 #endif
 #include <sys/stat.h>
 #include <fcntl.h>
