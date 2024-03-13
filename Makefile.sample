@@ -115,6 +115,7 @@ GFXLOC = --enable-gtk2=yes
 #
 #PYTHON = --enable-pylib="/usr/lib64 -lpython2.7"  --enable-pyinc="-I/usr/include/python2.7"
 #TCL = --enable-tcllib=no  --enable-tclinc=no
+#TK = --enable-tklib=no  --enable-tkinc=no
 
 # If you don't want to build all the tools, you can choose what to
 # build below.  The xt_base is required for everything, other
@@ -137,7 +138,7 @@ SUBDIRS = xt_base $(SECURE) $(MOZY) $(WRSPICE) $(XIC) fastcap fasthenry
 
 #######################################################################
 CFARGS = $(PREFIX) $(TOOLROOT) $(ITOPOK) $(HVSECURE) $(NOMOZY) $(32BIT) \
-  $(OALOC) $(KITLOC) $(MINGW) $(GFXLOC) $(PYTHON) $(TCL)
+  $(OALOC) $(CNILOC) $(KITLOC) $(MINGW) $(GFXLOC) $(PYTHON) $(TCL) $(TK)
 
 FLAGFILE = .configured
 

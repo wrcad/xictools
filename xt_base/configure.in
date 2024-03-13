@@ -173,6 +173,26 @@ if test "$enable_tclinc" != no; then
 fi
 )
 
+dnl --enable-tklib=/tk/shared/lib/path
+dnl Path to tk libraries
+tklib=
+AC_ARG_ENABLE(tklib,
+    [  ]--enable_tklib=path_to_kl_libs         Tk shared library,
+if test "$enable_tklib" != no; then
+    tklib="$enable_tklib"
+fi
+)
+
+dnl --enable-tkinc=/tk/include/files
+dnl Path to tk includes
+tkinc=
+AC_ARG_ENABLE(tkinc,
+    [  ]--enable_tkinc=path_to_tk_includes     Tk include files,
+if test "$enable_tkinc" != no; then
+    tkinc="$enable_tkinc"
+fi
+)
+
 dnl  Enable OpenAccess support, i.e., enable and build the OA plugin.  This
 dnl  requires the presence of an OpenAccess source tree (for the include
 dnl  files) and the shared libraries in order to run.  The source code is
@@ -1000,12 +1020,12 @@ elif test ${OSNAME:0:5} = "Linux"; then
         PY_LIBS="-L$cni_loc/linux64/3rd/Python/lib -lpython2.6"
         PY_TARGETS="py26.so"
         echo '#define HAVE_PYTHON 1'>> confdefs.h
-    elif test -d /usr/include/python2.7; then
+    elif test -f /usr/include/python2.7/Python.h; then
         PY_INCLUDE="-I/usr/include/python2.7"
         PY_LIBS="-lpython2.7"
         PY_TARGETS="py27.so"
         echo '#define HAVE_PYTHON 1'>> confdefs.h
-    elif test -d /usr/include/python2.6; then
+    elif test -f /usr/include/python2.6/Python.h; then
         PY_INCLUDE="-I/usr/include/python2.6"
         PY_LIBS="-lpython2.6"
         PY_TARGETS="py26.so"
@@ -1038,6 +1058,12 @@ if test -n "$tclinc"; then
 fi
 if test -n "$tcllib"; then
     TCL_LIBS="$tcllib"
+fi
+if test -n "$tkinc"; then
+    TK_INCLUDE="$tkinc"
+fi
+if test -n "$tklib"; then
+    TK_LIBS="$tklib"
 fi
 
 AC_SUBST(PY_TARGETS)
