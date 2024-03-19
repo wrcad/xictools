@@ -1309,7 +1309,6 @@ QTmenuConfig::set_main_global_sens(const MenuList *list, bool sens)
         if (!ml->menubox || !ml->menubox->menu)
             continue;
         MenuEnt *ent = ml->menubox->menu;
-        QMenu *topmenu = (QMenu*)ent[0].cmd.caller;
 
         if (lstring::ciprefix("view", ml->menubox->name)) {
             // For the View Menu, keep Allocation button sensitive.
@@ -1320,8 +1319,15 @@ QTmenuConfig::set_main_global_sens(const MenuList *list, bool sens)
                     action(ent)->setEnabled(sens);
             }
         }
-        else
+        else {
+            QMenu *topmenu = (QMenu*)ent[0].cmd.caller;
+            if (!topmenu) {
+                fprintf(stderr,
+                    "Error (internal): set_main_global_sens, caller is null.\n");
+                continue;
+            }
             topmenu->setEnabled(sens);
+        }
     }
 }
 
@@ -1335,6 +1341,8 @@ void
 QTmenuConfig::file_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
+    if (i <= 0)
+        return;
     MenuBox *mbox = MainMenu()->FindMainMenu("file");
     if (!mbox)
         return;
@@ -1373,6 +1381,8 @@ void
 QTmenuConfig::cell_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
+    if (i <= 0)
+        return;
     MenuBox *mbox = MainMenu()->FindMainMenu("cell");
     if (!mbox)
         return;
@@ -1388,6 +1398,8 @@ void
 QTmenuConfig::edit_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
+    if (i <= 0)
+        return;
     MenuBox *mbox = MainMenu()->FindMainMenu("edit");
     if (!mbox)
         return;
@@ -1403,6 +1415,8 @@ void
 QTmenuConfig::modf_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
+    if (i <= 0)
+        return;
     MenuBox *mbox = MainMenu()->FindMainMenu("mod");
     if (!mbox)
         return;
@@ -1418,6 +1432,8 @@ void
 QTmenuConfig::view_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
+    if (i <= 0)
+        return;
     MenuBox *mbox = MainMenu()->FindMainMenu("view");
     if (!mbox)
         return;
@@ -1452,6 +1468,8 @@ void
 QTmenuConfig::attr_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
+    if (i <= 0)
+        return;
     MenuBox *mbox = MainMenu()->FindMainMenu("attr");
     if (!mbox)
         return;
@@ -1467,6 +1485,8 @@ void
 QTmenuConfig::attr_main_win_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
+    if (i <= 0)
+        return;
     MenuBox *mbox = MainMenu()->GetAttrSubMenu();
     if (!mbox)
         return;
@@ -1482,6 +1502,8 @@ void
 QTmenuConfig::attr_main_win_obj_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
+    if (i <= 0)
+        return;
     MenuBox *mbox = MainMenu()->GetObjSubMenu();
     if (!mbox)
         return;
@@ -1497,6 +1519,8 @@ void
 QTmenuConfig::cvrt_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
+    if (i <= 0)
+        return;
     MenuBox *mbox = MainMenu()->FindMainMenu("conv");
     if (!mbox)
         return;
@@ -1512,6 +1536,8 @@ void
 QTmenuConfig::drc_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
+    if (i <= 0)
+        return;
     MenuBox *mbox = MainMenu()->FindMainMenu("drc");
     if (!mbox)
         return;
@@ -1527,6 +1553,8 @@ void
 QTmenuConfig::ext_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
+    if (i <= 0)
+        return;
     MenuBox *mbox = MainMenu()->FindMainMenu("ext");
     if (!mbox)
         return;
@@ -1542,6 +1570,8 @@ void
 QTmenuConfig::user_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
+    if (i <= 0)
+        return;
     MenuBox *mbox = MainMenu()->FindMainMenu("user");
     if (!mbox)
         return;
@@ -1557,6 +1587,8 @@ void
 QTmenuConfig::help_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
+    if (i <= 0)
+        return;
     MenuBox *mbox = MainMenu()->FindMainMenu("help");
     if (!mbox)
         return;
@@ -1572,6 +1604,8 @@ void
 QTmenuConfig::subwin_view_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
+    if (i <= 0)
+        return;
     int wnum = i >> 16;  // Decode window number.
     i &= 0xffff;
     MenuBox *mbox = MainMenu()->FindSubwMenu("view", wnum);
@@ -1605,6 +1639,8 @@ QTmenuConfig::subwin_view_view_menu_slot(QAction *a)
     DSP()->MainWdesc()->SetView(string);
 
     int i = a->data().toInt();
+    if (i <= 0)
+        return;
     int wnum = i >> 16;  // Decode window number.
     if (wnum <= 0 || wnum >= DSP_NUMWINS)
         return;
@@ -1620,6 +1656,8 @@ void
 QTmenuConfig::subwin_attr_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
+    if (i <= 0)
+        return;
     int wnum = i >> 16;  // Decode window number.
     i &= 0xffff;
     MenuBox *mbox = MainMenu()->FindSubwMenu("attr", wnum);
@@ -1637,6 +1675,8 @@ void
 QTmenuConfig::subwin_help_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
+    if (i <= 0)
+        return;
     int wnum = i >> 16;  // Decode window number.
     i &= 0xffff;
     MenuBox *mbox = MainMenu()->FindSubwMenu("help", wnum);
