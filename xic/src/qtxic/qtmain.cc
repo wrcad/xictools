@@ -1180,6 +1180,40 @@ cKeys::bsp_keys()
 }
 
 
+namespace {
+    // Idle proc to exec when command prefix is entered.
+    //
+    int check_exec_idle(void *arg)
+    {
+        MenuEnt *ent = (MenuEnt*)arg;
+        if (ent->is_menu()) {
+            // Opening a menu is pointless, but intercept these commands
+            // and perhaps do something sensible.
+
+            if (!strcmp(ent->entry, MenuOPEN)) {
+                // Open a new file/cell, as for the "new" submenu button.
+                XM()->HandleOpenCellMenu("new", false);
+            }
+            else if (!strcmp(ent->entry, MenuVIEW)) {
+                // Centered full window display.
+                if (ent->cmd.wdesc)
+                    ent->cmd.wdesc->SetView("full");
+                else
+                    DSP()->MainWdesc()->SetView("full");
+            }
+            else if (!strcmp(ent->entry, MenuMAINW)) {
+                // What to do here?  Ignore for now.
+            }
+            return (0);
+        }
+
+        // Do the command.
+        MainMenu()->CallCallback(ent->cmd.caller);
+        return (0);
+    }
+}
+
+
 void
 cKeys::check_exec(bool exact)
 {
@@ -1207,31 +1241,12 @@ cKeys::check_exec(bool exact)
     clear();
     int yy = QTfont::lineHeight(FNT_SCREEN);
     draw_text(2, yy, k_cmd, -1);
-    updateGeometry();
     set_keys(0);
-    if (ent->is_menu()) {
-        // Opening a menu is pointless, but intercept these commands
-        // and perhaps do something sensible.
 
-        if (!strcmp(ent->entry, MenuOPEN)) {
-            // Open a new file/cell, as for the "new" submenu button.
-            XM()->HandleOpenCellMenu("new", false);
-        }
-        else if (!strcmp(ent->entry, MenuVIEW)) {
-            // Centered full window display.
-            if (ent->cmd.wdesc)
-                ent->cmd.wdesc->SetView("full");
-            else
-                DSP()->MainWdesc()->SetView("full");
-        }
-        else if (!strcmp(ent->entry, MenuMAINW)) {
-            // What to do here?  Ignore for now.
-        }
-        return;
-    }
-
-    // Do the command.
-    MainMenu()->CallCallback(ent->cmd.caller);
+    // Put the execution in an idle proc.  This avoids an artifact in
+    // prompt text from newly-generated text coming before the geometry
+    // update is finished.
+    QTpkg::self()->RegisterIdleProc(check_exec_idle, ent);
 }
 
 

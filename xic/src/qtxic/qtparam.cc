@@ -492,7 +492,9 @@ ptext_t::setup(QTparam *prm)
         else
             pt_chars[i].pc_posn = pt_chars[i-1].pc_posn +
                 pt_chars[i-1].pc_width;
-        pt_chars[i].pc_width = QTfont::stringWidth(bf, prm->Viewport());
+        int w;
+        prm->TextExtent(bf, &w, 0);
+        pt_chars[i].pc_width = w;
     }
     pt_sel_start = 0;
     pt_sel_end = 0;

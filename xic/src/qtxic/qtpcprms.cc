@@ -285,6 +285,7 @@ QTpcellParamsDlg::update(const char *dbname, PCellParam *p0)
     QWidget *page = new QWidget();
     pcp_swin->setWidget(page);
     QGridLayout *grid = new QGridLayout(page);
+    pcp_swin->setWidgetResizable(true);
 
     int rcnt = 0;
     sLstr lstr;
