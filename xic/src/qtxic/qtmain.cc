@@ -2145,27 +2145,73 @@ QTsubwin::double_click_slot(QMouseEvent *ev)
 }
 
 
+namespace {
+    bool dispatch(QMouseEvent *ev, QTsubwin *sub)
+    {
+        // Look through other drwing windows, it the mouse pointer
+        // is over any of the same type, send the event to the window.
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+        QPoint gpos = ev->globalPosition().toPoint();
+#else
+        QPoint gpos = ev->globalPos();
+#endif
+        WindowDesc *wdesc, *evwd = DSP()->Window(sub->win_number());
+        if (!evwd)
+            return (false);
+        WDgen wgen(WDgen::MAIN, WDgen::CDDB);
+        while ((wdesc = wgen.next()) != 0) {
+            if (wdesc == evwd)
+                continue;
+            if (!evwd->IsSimilar(wdesc))
+                continue;
+            QTsubwin *w = dynamic_cast<QTsubwin*>(wdesc->Wbag());
+            QPoint p(0, 0);
+            QPoint pg = w->Viewport()->mapToGlobal(p);
+            QRect rect(pg, w->Viewport()->size());
+            if (rect.contains(gpos)) {
+                w->Viewport()->event(ev);
+//QPoint gg = w->Viewport()->mapFromGlobal(gpos);
+//printf("%d %d\n", gg.x(), gg.y());
+                return (true);
+            }
+        }
+        return (false);
+    }
+}
+
+
 // Handle pointer motion in the main and subwindows.  In certain
-// commands, "ghost" XOR drawing is utilized.
+// commands, "ghost" drawing is utilized.
 //
 void
 QTsubwin::motion_slot(QMouseEvent *ev)
 {
-    if (!sw_windesc) {
+    if (!sw_windesc || ev->type() != QEvent::MouseMove) {
         ev->ignore();
         return;
     }
+//printf("%p %d %d\n", this, ev->x(), ev->y());
+    bool bdown = ev->buttons() &
+        (Qt::LeftButton|Qt::MiddleButton|Qt::RightButton);
 
     QRect r(QPoint(0, 0), gd_viewport->size());
-    if (ev->type() != QEvent::MouseMove ||
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-            !r.contains(ev->position().x(), ev->position().y())) {
+    if (!r.contains(ev->position().x(), ev->position().y())) {
 #else
-            !r.contains(ev->x(), ev->y())) {
+    if (!r.contains(ev->x(), ev->y())) {
 #endif
         // Leave event is not reliably delivered so do this here, too.
         UndrawGhost(true);
-        ev->ignore();
+        if (bdown) {
+            // If a button is pressed, move events are grabbed by the
+            // "down" window, so we have to do our own dispatching to
+            // get ghost visibility between drawing windows.
+
+            if (!dispatch(ev, this))
+                ev->ignore();
+        }
+        else
+            ev->ignore();
         return;
     }
     ev->accept();

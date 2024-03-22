@@ -105,6 +105,11 @@ public:
             return (da_pixmap_bak ? da_pixmap_bak : da_pixmap);
         }
 
+    bool event(QEvent *ev)
+        {
+            return (QWidget::event(ev));
+        }
+
     void switch_to_pixmap2(QPixmap* = 0);
     void switch_from_pixmap2(int, int, int, int, int, int);
     void clear_pixmap2();
