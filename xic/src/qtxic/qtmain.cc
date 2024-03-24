@@ -2797,16 +2797,30 @@ QTmainwin::send_key_event(sKeyEvent *kev)
 }
 
 
+namespace {
+    int close_idle(void*)
+    {
+        XM()->Exit(ExitCheckMod);
+        return (0);
+    }
+}
+
+
 void
 QTmainwin::closeEvent(QCloseEvent *ev)
 {
+    // Actual program exit is done from Exit() in the idle proc.  The idle
+    // proc allows this handler to return immediately.  If a second event
+    // occurs before the first returns, QT exits the program, which is not
+    // what we want.
+
+    ev->ignore();
     if (QTpkg::self()->IsBusy()) {
         QTpkg::self()->PopUpBusy();
-        ev->ignore();
+        return;
     }
     if (!QTmenu::self()->IsGlobalInsensitive())
-        XM()->Exit(ExitCheckMod);
-    ev->ignore();
+        QTpkg::self()->RegisterIdleProc(close_idle, 0);
 }
 
 
