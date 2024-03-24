@@ -890,7 +890,10 @@ bool
 QTeventMonitor::eventFilter(QObject *obj, QEvent *ev)
 {
     // Handle events here, return true to indicate handled.
-    // printf("%p %x\n", obj, ev->type());
+//XXX
+    if (ev->type() == QEvent::MouseMove) { 
+//    printf("%p %x\n", qApp->widgetAt(QCursor::pos()), ev->type());
+    }
 
     if (em_event_handler)
         return (em_event_handler(obj, ev, 0));
@@ -1266,6 +1269,18 @@ cKeys::font_changed(int fnum)
 // QTsubwin functions
 
 namespace {
+    int btnmap(int btn)
+    {
+        int button = 0;
+        if (btn == Qt::LeftButton)
+            button = 1;
+        else if (btn == Qt::MiddleButton)
+            button = 2;
+        else if (btn == Qt::RightButton)
+            button = 3;
+        return (button);
+    }
+
     // Share common ghost drawing parameters between similar drawing
     // windows.
     cGhostDrawCommon GhostDrawCommon;
@@ -1274,12 +1289,6 @@ namespace {
     QRect LastPos[DSP_NUMWINS];
 
     // Struct to hold state for button press grab action.
-    //
-    // XXX Fix this if possible.
-    // QT widgets grab events when a mouse button is pressed until
-    // released, which prevents continuity between drawing windows
-    // when dragging.  One can use the click-twice alternative to get
-    // around this in some cases.
     //
     struct grabstate_t
     {
@@ -1292,28 +1301,27 @@ namespace {
 
         void set(QWidget *w, QMouseEvent *ev)
         {
-            if (ev->button() >= GS_NBTNS)
-                return;
-            gs_caller[ev->button()] = w;
+            int b = btnmap(ev->button());
+            if (b)
+                gs_caller[b] = w;
         }
 
         bool is_armed(QMouseEvent *ev)
         {
-            return (ev->button() < GS_NBTNS && gs_caller[ev->button()] != 0);
+            int b = btnmap(ev->button());
+            return (gs_caller[b] != 0);
         }
 
         void clear(QMouseEvent *ev)
         {
-            if (ev->button() >= GS_NBTNS)
-                return;
-            gs_caller[ev->button()] = 0;
+            int b = btnmap(ev->button());
+            gs_caller[b] = 0;
         }
 
         void clear(unsigned int btn)
         {
-            if (btn >= GS_NBTNS)
-                return;
-            gs_caller[btn] = 0;
+            int b = btnmap(btn);
+            gs_caller[b] = 0;
         }
 
         bool check_noop(bool n)
@@ -1323,9 +1331,10 @@ namespace {
             return (x);
         }
 
-        QWidget *widget(unsigned int n)
+        QWidget *widget(unsigned int btn)
         {
-            return (n <= GS_NBTNS ? gs_caller[n] : 0);
+            int b = btnmap(btn);
+            return (gs_caller[b]);
         }
 
     private:
@@ -1928,13 +1937,7 @@ QTsubwin::button_down_slot(QMouseEvent *ev)
     }
     ev->accept();
 
-    int button = 0;
-    if (ev->button() == Qt::LeftButton)
-        button = 1;
-    else if (ev->button() == Qt::MiddleButton)
-        button = 2;
-    else if (ev->button() == Qt::RightButton)
-        button = 3;
+    int button = btnmap(ev->button());
     button = Kmap()->ButtonMap(button);
 
     if (wb_message)
@@ -1952,6 +1955,13 @@ QTsubwin::button_down_slot(QMouseEvent *ev)
         grabstate.set(gd_viewport, ev);
 
     int state = ev->modifiers();
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+    int xx = ev->position().x();
+    int yy = ev->position().y();
+#else
+    int xx = ev->x();
+    int yy = ev->y();
+#endif
 
     switch (button) {
     case 1:
@@ -1963,67 +1973,32 @@ QTsubwin::button_down_slot(QMouseEvent *ev)
             grabstate.check_noop(true);
             if (XM()->IsDoingHelp())
                 PopUpHelp("noopbutton");
-            else if (sw_windesc) {
-#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-                EV()->ButtonNopCallback(sw_windesc,
-                    ev->position().x(), ev->position().y(), mod_state(state));
-#else
-                EV()->ButtonNopCallback(sw_windesc, ev->x(), ev->y(),
-                    mod_state(state));
-#endif
-            }
+            else if (sw_windesc)
+                EV()->ButtonNopCallback(sw_windesc, xx, yy, mod_state(state));
         }
-        else {
-#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-            EV()->Button1Callback(sw_windesc,
-                ev->position().x(), ev->position().y(), mod_state(state));
-#else
-            EV()->Button1Callback(sw_windesc, ev->x(), ev->y(),
-                mod_state(state));
-#endif
-        }
+        else
+            EV()->Button1Callback(sw_windesc, xx, yy, mod_state(state));
         break;
     case 2:
         // Pan operation
         if (XM()->IsDoingHelp() && !(state & Qt::ShiftModifier))
             PopUpHelp("button2");
-        else {
-#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-            EV()->Button2Callback(sw_windesc,
-                ev->position().x(), ev->position().y(), mod_state(state));
-#else
-            EV()->Button2Callback(sw_windesc, ev->x(), ev->y(),
-                mod_state(state));
-#endif
-        }
+        else
+            EV()->Button2Callback(sw_windesc, xx, yy, mod_state(state));
         break;
     case 3:
         // Zoom opertion
         if (XM()->IsDoingHelp() && !(state & Qt::ShiftModifier))
             PopUpHelp("button3");
-        else {
-#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-            EV()->Button3Callback(sw_windesc,
-                ev->position().x(), ev->position().y(), mod_state(state));
-#else
-            EV()->Button3Callback(sw_windesc, ev->x(), ev->y(),
-                mod_state(state));
-#endif
-        }
+        else
+            EV()->Button3Callback(sw_windesc, xx, yy, mod_state(state));
         break;
     default:
         // No-op, update coordinates
         if (XM()->IsDoingHelp() && !(state & Qt::ShiftModifier))
             PopUpHelp("button4");
-        else {
-#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-            EV()->ButtonNopCallback(sw_windesc,
-                ev->position().x(), ev->position().y(), mod_state(state));
-#else
-            EV()->ButtonNopCallback(sw_windesc, ev->x(), ev->y(),
-                mod_state(state));
-#endif
-        }
+        else
+            EV()->ButtonNopCallback(sw_windesc, xx, yy, mod_state(state));
         break;
     }
     if (showing_ghost)
@@ -2036,23 +2011,13 @@ QTsubwin::button_down_slot(QMouseEvent *ev)
 void
 QTsubwin::button_up_slot(QMouseEvent *ev)
 {
-    if (!sw_windesc) {
-        ev->ignore();
-        return;
-    }
-    if (ev->type() != QEvent::MouseButtonRelease) {
+    if (!sw_windesc || ev->type() != QEvent::MouseButtonRelease) {
         ev->ignore();
         return;
     }
     ev->accept();
 
-    int button = 0;
-    if (ev->button() == Qt::LeftButton)
-        button = 1;
-    else if (ev->button() == Qt::MiddleButton)
-        button = 2;
-    else if (ev->button() == Qt::RightButton)
-        button = 3;
+    int button = btnmap(ev->button());
     button = Kmap()->ButtonMap(button);
 
     if (QTmenuConfig::self()->menu_disabled() && button == 1)
@@ -2065,70 +2030,65 @@ QTsubwin::button_up_slot(QMouseEvent *ev)
     }
     grabstate.clear(ev);
 
-    // The point can be outside of the viewport, due to the grab.
-    // Check for this.
-    const BBox *BB = &sw_windesc->Viewport();
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-    bool in = (ev->position().x() >= 0 && ev->position().x() < BB->right &&
-        ev->position().y() >= 0 && ev->position().y() < BB->bottom);
+    int xx = ev->position().x();
+    int yy = ev->position().y();
 #else
-    bool in = (ev->x() >= 0 && ev->x() < BB->right &&
-        ev->y() >= 0 && ev->y() < BB->bottom);
+    int xx = ev->x();
+    int yy = ev->y();
 #endif
 
     bool showing_ghost = ShowingGhost();
     if (showing_ghost)
         ShowGhost(ERASE);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+    QPoint gpos = ev->globalPosition().toPoint();
+#else
+    QPoint gpos = ev->globalPos();
+#endif
+
+    // Get the QTcanvas (drawing window) if underneath the pointer.
+    QTcanvas *cvs = dynamic_cast<QTcanvas*>(qApp->widgetAt(gpos));
+
     int state = ev->modifiers();
+    WindowDesc *wdesc = sw_windesc;
+    if (cvs) {
+        WDgen wgen(WDgen::MAIN, WDgen::CDDB);
+        WindowDesc *wd;
+        while ((wd = wgen.next()) != 0) {
+            if (wd == sw_windesc)
+                continue;
+            if (!wd->IsSimilar(sw_windesc))
+                continue;
+            QTsubwin *w = dynamic_cast<QTsubwin*>(wd->Wbag());
+            if (w->Viewport() == cvs) {
+                wdesc = wd;
+                QPoint gg = w->Viewport()->mapFromGlobal(gpos);
+                xx = gg.x();
+                yy = gg.y();
+                break;
+            }
+        }
+    }
+    else
+        wdesc = 0;
 
     switch (button) {
     case 1:
-        if (grabstate.check_noop(false)) {
-#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-            EV()->ButtonNopReleaseCallback((in ? sw_windesc : 0),
-                ev->position().x(), ev->position().y(), mod_state(state));
-        }
-        else {
-            EV()->Button1ReleaseCallback((in ? sw_windesc : 0),
-                ev->position().x(), ev->position().y(), mod_state(state));
-        }
-#else
-            EV()->ButtonNopReleaseCallback((in ? sw_windesc : 0),
-                ev->x(), ev->y(), mod_state(state));
-        }
-        else {
-            EV()->Button1ReleaseCallback((in ? sw_windesc : 0),
-                ev->x(), ev->y(), mod_state(state));
-        }
-#endif
+        if (grabstate.check_noop(false))
+            EV()->ButtonNopReleaseCallback(wdesc, xx, yy, mod_state(state));
+        else
+            EV()->Button1ReleaseCallback(wdesc, xx, yy, mod_state(state));
         break;
     case 2:
-#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-        EV()->Button2ReleaseCallback((in ? sw_windesc : 0),
-            ev->position().x(), ev->position().y(), mod_state(state));
-#else
-        EV()->Button2ReleaseCallback((in ? sw_windesc : 0),
-            ev->x(), ev->y(), mod_state(state));
-#endif
+        EV()->Button2ReleaseCallback(wdesc, xx, yy, mod_state(state));
         break;
     case 3:
-#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-        EV()->Button3ReleaseCallback((in ? sw_windesc : 0),
-            ev->position().x(), ev->position().y(), mod_state(state));
-#else
-        EV()->Button3ReleaseCallback((in ? sw_windesc : 0),
-            ev->x(), ev->y(), mod_state(state));
-#endif
+        EV()->Button3ReleaseCallback(wdesc, xx, yy, mod_state(state));
         break;
     default:
-#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-        EV()->ButtonNopReleaseCallback((in ? sw_windesc : 0),
-            ev->position().x(), ev->position().y(), mod_state(state));
-#else
-        EV()->ButtonNopReleaseCallback((in ? sw_windesc : 0),
-            ev->x(), ev->y(), mod_state(state));
-#endif
+        EV()->ButtonNopReleaseCallback(wdesc, xx, yy, mod_state(state));
         break;
     }
     if (showing_ghost)
@@ -2145,41 +2105,6 @@ QTsubwin::double_click_slot(QMouseEvent *ev)
 }
 
 
-namespace {
-    bool dispatch(QMouseEvent *ev, QTsubwin *sub)
-    {
-        // Look through other drwing windows, it the mouse pointer
-        // is over any of the same type, send the event to the window.
-#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-        QPoint gpos = ev->globalPosition().toPoint();
-#else
-        QPoint gpos = ev->globalPos();
-#endif
-        WindowDesc *wdesc, *evwd = DSP()->Window(sub->win_number());
-        if (!evwd)
-            return (false);
-        WDgen wgen(WDgen::MAIN, WDgen::CDDB);
-        while ((wdesc = wgen.next()) != 0) {
-            if (wdesc == evwd)
-                continue;
-            if (!evwd->IsSimilar(wdesc))
-                continue;
-            QTsubwin *w = dynamic_cast<QTsubwin*>(wdesc->Wbag());
-            QPoint p(0, 0);
-            QPoint pg = w->Viewport()->mapToGlobal(p);
-            QRect rect(pg, w->Viewport()->size());
-            if (rect.contains(gpos)) {
-                w->Viewport()->event(ev);
-//QPoint gg = w->Viewport()->mapFromGlobal(gpos);
-//printf("%d %d\n", gg.x(), gg.y());
-                return (true);
-            }
-        }
-        return (false);
-    }
-}
-
-
 // Handle pointer motion in the main and subwindows.  In certain
 // commands, "ghost" drawing is utilized.
 //
@@ -2190,42 +2115,6 @@ QTsubwin::motion_slot(QMouseEvent *ev)
         ev->ignore();
         return;
     }
-//printf("%p %d %d\n", this, ev->x(), ev->y());
-    bool bdown = ev->buttons() &
-        (Qt::LeftButton|Qt::MiddleButton|Qt::RightButton);
-
-    QRect r(QPoint(0, 0), gd_viewport->size());
-#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-    if (!r.contains(ev->position().x(), ev->position().y())) {
-#else
-    if (!r.contains(ev->x(), ev->y())) {
-#endif
-        // Leave event is not reliably delivered so do this here, too.
-        UndrawGhost(true);
-        if (bdown) {
-            // If a button is pressed, move events are grabbed by the
-            // "down" window, so we have to do our own dispatching to
-            // get ghost visibility between drawing windows.
-
-            if (!dispatch(ev, this))
-                ev->ignore();
-        }
-        else
-            ev->ignore();
-        return;
-    }
-    ev->accept();
-
-    EV()->MotionCallback(sw_windesc, mod_state(ev->modifiers()));
-    if (Gst()->ShowingGhostInWindow(sw_windesc)) {
-        UndrawGhost();
-#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-        DrawGhost(ev->position().x(), ev->position().y());
-#else
-        DrawGhost(ev->x(), ev->y());
-#endif
-    }
-
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     int xx = ev->position().x();
     int yy = ev->position().y();
@@ -2233,6 +2122,69 @@ QTsubwin::motion_slot(QMouseEvent *ev)
     int xx = ev->x();
     int yy = ev->y();
 #endif
+    bool bdown = ev->buttons() &
+        (Qt::LeftButton|Qt::MiddleButton|Qt::RightButton);
+    if (bdown) {
+        // If a button is pressed, move events are grabbed by the
+        // "down" window, so we have to do our own dispatching to
+        // get ghost visibility between drawing windows.
+
+        // Look through other drawing windows, if the mouse pointer
+        // is over any of the same type, send the event to the window.
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+        QPoint gpos = ev->globalPosition().toPoint();
+#else
+        QPoint gpos = ev->globalPos();
+#endif
+
+        // Get the QTcanvas (drawing window) if underneath the pointer.
+        // If there isn't one, we're done.
+        // This takes care of Z ordering, the return is on top.
+        QTcanvas *cvs = dynamic_cast<QTcanvas*>(qApp->widgetAt(gpos));
+        if (!cvs) {
+            UndrawGhost();
+            ev->ignore();
+            return;
+        }
+
+        WDgen wgen(WDgen::MAIN, WDgen::CDDB);
+        WindowDesc *wd;
+        while ((wd = wgen.next()) != 0) {
+            if (wd == sw_windesc)
+                continue;
+            if (!wd->IsSimilar(sw_windesc))
+                continue;
+            QTsubwin *w = dynamic_cast<QTsubwin*>(wd->Wbag());
+            if (w->Viewport() == cvs) {
+                // Here's the target widget, dispatch to it.
+                UndrawGhost(true);
+                QPoint gg = w->Viewport()->mapFromGlobal(gpos);
+                EV()->MotionCallback(wd, mod_state(ev->modifiers()));
+                if (Gst()->ShowingGhostInWindow(wd)) {
+                    w->UndrawGhost();
+                    w->DrawGhost(gg.x(), gg.y());
+                }
+                wd->PToL(gg.x(), gg.y(), xx, yy);
+                emit update_coords(xx, yy);
+                ev->accept();
+                return;
+            }
+        }
+    }
+
+    // Haven't changed windows.
+    QRect r(QPoint(0, 0), gd_viewport->size());
+    if (!r.contains(xx, yy)) {
+        UndrawGhost(true);
+        ev->ignore();
+        return;
+    }
+
+    EV()->MotionCallback(sw_windesc, mod_state(ev->modifiers()));
+    if (Gst()->ShowingGhostInWindow(sw_windesc)) {
+        UndrawGhost();
+        DrawGhost(xx, yy);
+    }
     sw_windesc->PToL(xx, yy, xx, yy);
     emit update_coords(xx, yy);
 }
