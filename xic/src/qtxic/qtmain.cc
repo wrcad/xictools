@@ -2492,6 +2492,7 @@ QTsubwin::drop_slot(QDropEvent *ev)
             hyList *hp = new hyList(cursd, val, HYcvAscii);
             QTedit::self()->insert(hp);
             hyList::destroy(hp);
+            QTedit::self()->set_focus();
         }
         ev->accept();
         return;

@@ -181,21 +181,21 @@ QTedit::QTedit(bool nogr) : QTdraw(XW_TEXT)
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)));
 
-    connect(Viewport(), SIGNAL(resize_event(QResizeEvent*)),
+    connect(gd_viewport, SIGNAL(resize_event(QResizeEvent*)),
         this, SLOT(resize_slot(QResizeEvent*)));
-    connect(Viewport(), SIGNAL(press_event(QMouseEvent*)),
+    connect(gd_viewport, SIGNAL(press_event(QMouseEvent*)),
         this, SLOT(press_slot(QMouseEvent*)));
-    connect(Viewport(), SIGNAL(release_event(QMouseEvent*)),
+    connect(gd_viewport, SIGNAL(release_event(QMouseEvent*)),
         this, SLOT(release_slot(QMouseEvent*)));
-    connect(Viewport(), SIGNAL(enter_event(QEnterEvent*)),
+    connect(gd_viewport, SIGNAL(enter_event(QEnterEvent*)),
         this, SLOT(enter_slot(QEnterEvent*)));
-    connect(Viewport(), SIGNAL(leave_event(QEvent*)),
+    connect(gd_viewport, SIGNAL(leave_event(QEvent*)),
         this, SLOT(leave_slot(QEvent*)));
-    connect(Viewport(), SIGNAL(motion_event(QMouseEvent*)),
+    connect(gd_viewport, SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(motion_slot(QMouseEvent*)));
-    connect(Viewport(), SIGNAL(drag_enter_event(QDragEnterEvent*)),
+    connect(gd_viewport, SIGNAL(drag_enter_event(QDragEnterEvent*)),
         this, SLOT(drag_enter_slot(QDragEnterEvent*)));
-    connect(Viewport(), SIGNAL(drop_event(QDropEvent*)),
+    connect(gd_viewport, SIGNAL(drop_event(QDropEvent*)),
         this, SLOT(drop_slot(QDropEvent*)));
 
     connect(pe_keys, SIGNAL(press_event(QMouseEvent*)),
@@ -681,13 +681,23 @@ namespace {
 void
 QTedit::drag_enter_slot(QDragEnterEvent *ev)
 {
+    // Accept urls or plain text (should be file or cell names)
+    // anytime.  If not editing thry will load a cell to edit
+    // in the main window.
     if (ev->mimeData()->hasUrls() ||
-            ev->mimeData()->hasFormat("text/property") ||
             ev->mimeData()->hasFormat("text/twostring") ||
             ev->mimeData()->hasFormat("text/cellname") ||
             ev->mimeData()->hasFormat("text/string") ||
             ev->mimeData()->hasFormat("text/plain")) {
         ev->accept();
+        return;
+    }
+    if (is_active()) {
+        // If editing also accept hypertext properties.
+        if (ev->mimeData()->hasFormat("text/property")) {
+            ev->accept();
+            return;
+        }
     }
     ev->ignore();
 }
@@ -711,6 +721,7 @@ QTedit::drop_slot(QDropEvent *ev)
             hyList *hp = new hyList(cursd, val, HYcvAscii);
             insert(hp);
             hyList::destroy(hp);
+            set_focus();
         }
         ev->accept();
         return;

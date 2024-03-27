@@ -112,10 +112,50 @@
 
 #if (!defined(WITH_QT5) && !defined(WITH_QT6) && \
     !defined(WITH_GTK2) && !defined(WITH_GTK3))
+
+// Running without a graphics toolkit, define stubs at the top level.
+class NULLpkg : public DSPpkg
+{
+public:
+    // Misc globals
+    GRwbag *NewGX()                         { return (0); }
+    int Initialize(GRwbag*)                 { return (0); }
+    void ReinitNoGraphics()                 { }
+    void Halt()                             { }
+    void AppLoop()                          { }
+    bool CheckForInterrupt()                { return (false); }
+    int Iconify(int)                        { return (0); }
+    bool SubwinInit(int)                    { return (false); }
+    void SubwinDestroy(int)                 { }
+
+    bool SetWorking(bool)                   { return (false); }
+    void SetOverrideBusy(bool)              { }
+    bool GetMainWinIdentifier(char*)        { return (false); }
+
+    bool UsingX11()                         { return (false); }
+    void CloseGraphicsConnection()          { }
+    const char *GetDisplayString()          { return (0); }
+    bool CheckScreenAccess(hostent*,
+        const char*, const char*)           { return (false); }
+    int RegisterIdleProc(int(*)(void*),
+        void*)                              { return (0); }
+    bool RemoveIdleProc(int)                { return (0); }
+    int RegisterTimeoutProc(int,
+        int(*)(void*), void*)               { return (0); }
+    bool RemoveTimeoutProc(int)             { return (false); }
+    int StartTimer(int, bool*)              { return (0); }
+    void SetFont(const char*, int,
+        FNT_FMT = FNT_FMT_ANY)              { }
+    const char *GetFont(int)                { return (0); }
+    FNT_FMT GetFontFmt()                    { return (FNT_FMT_ANY); }
+};
+
+// Instantiate.
+namespace { NULLpkg _dsppkg_; };
+
 void
 GRpkg::DevDepInit(unsigned int)
 {
-//    GRpkg::self()->RegisterDevice(new NULLdev);
 }
 #endif
 

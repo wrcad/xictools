@@ -284,8 +284,7 @@ QTprpBase::handle_mouse_motion(QMouseEvent *ev)
         }
     }
     else {
-        QString qs = wb_textarea->toPlainText();
-        QByteArray qba = qs.toLatin1();
+        QByteArray qba = wb_textarea->toPlainText().toLatin1();
         sz = p->end() - (p->start() + strlen(p->head())) + sizeof(int) + 1;
         bf = new char[sz];
         const char *q = p->head();
