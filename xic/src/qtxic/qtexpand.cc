@@ -226,6 +226,8 @@ QTexpandDlg::popdown()
     if (!p_parent)
         return;
     QTbag *owner = dynamic_cast<QTbag*>(p_parent);
+    if (owner && owner->Shell())
+        owner->Shell()->activateWindow();
     if (!owner || !owner->MonitorActive(this))
         return;
 

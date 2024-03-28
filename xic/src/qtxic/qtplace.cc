@@ -99,7 +99,8 @@ cEdit::PopUpPlace(ShowMode mode, bool noprompt)
         QTmainwin::self()->Viewport());
     QTplaceDlg::self()->show();
 
-    QTmainwin::self()->setFocus();
+    // Give focus to main window.
+    QTmainwin::self()->activateWindow();
 }
 // End of cEdit functions.
 
@@ -376,6 +377,8 @@ QTplaceDlg::pl_new_cb(const char *string, void*)
         delete [] aname;
         delete [] cname;
     }
+    // give focus to main window.
+    QTmainwin::self()->activateWindow();
     return (ESTR_DN);
 }
 

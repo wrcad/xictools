@@ -594,9 +594,7 @@ QTscriptDebuggerDlg::step()
         start();
         PL()->RestorePrompt();
         // Get focus back in case it was lost.
-        show();
         activateWindow();
-        raise();
         wb_textarea->setFocus();
         return;
     }
@@ -621,9 +619,7 @@ QTscriptDebuggerDlg::step()
     set_sens(true);
     update_variables();
     // Get focus back in case it was lost.
-    show();
     activateWindow();
-    raise();
     wb_textarea->setFocus();
 }
 

@@ -927,8 +927,8 @@ QTdevMenuDlg::menu_slot(QAction *a)
         DSPmainWbag(PopUpHelp(tbuf))
         return;
     }
-    // give focus to main window
-//    GTKdev::SetFocus(GTKmainwin::self()->Shell());
+    // Give focus to main window.
+    QTmainwin::self()->activateWindow();
     EV()->InitCallback();
     if (!strcmp(string, MUT_DUMMY)) {
         CmdDesc cmd;
@@ -1005,6 +1005,8 @@ QTdevMenuDlg::button_down_slot(QMouseEvent *ev)
     int lp = dv_pressed;
     EV()->InitCallback();  // sets pressed to -1
     if (lp != n) {
+        // Give focus to main window.
+        QTmainwin::self()->activateWindow();
         render_cell(n, true);
         dv_pressed = n;
         if (!strcmp(dv_entries[n].name, MUT_DUMMY)) {
