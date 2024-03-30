@@ -205,8 +205,8 @@ private slots:
     void key_press_slot(QKeyEvent*);
     void text_changed_slot();
     void text_change_slot(int, int, int);
-    void mime_data_handled_slot(const QMimeData*, bool*) const;
-    void mime_data_delivered_slot(const QMimeData*, bool*);
+    void mime_data_handled_slot(const QMimeData*, int*) const;
+    void mime_data_delivered_slot(const QMimeData*, int*);
     void font_changed_slot(int);
 
 private:

@@ -491,9 +491,7 @@ namespace {
 
 // This adds mname to the master list.  If the Place popup is not
 // visible, it will be popped.  If mname is an archive, cname is the
-// cell to open.  If chd is given, then mnamein is ignored.  If
-// is_pcell is true, then mname is the database name for the
-// super-master.
+// cell to open.  If chd is given, then mnamein is ignored.
 //
 void
 cEdit::addMaster(const char *mnamein, const char *cname, cCHD *chd)

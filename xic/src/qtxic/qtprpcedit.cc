@@ -542,18 +542,20 @@ QTcellPrpDlg::mouse_motion_slot(QMouseEvent *ev)
 
 
 void
-QTcellPrpDlg::mime_data_handled_slot(const QMimeData *dta, bool *accpt) const
+QTcellPrpDlg::mime_data_handled_slot(const QMimeData *dta, int *accpt) const
 {
     if (dta->hasFormat("text/property"))
-        *accpt = true;
+        *accpt = 1;
+    else
+        *accpt = -1;
 }
 
 
 void
-QTcellPrpDlg::mime_data_delivered_slot(const QMimeData *dta, bool *accpt)
+QTcellPrpDlg::mime_data_delivered_slot(const QMimeData *dta, int *accpt)
 {
+    *accpt = -1;
     if (dta->hasFormat("text/property")) {
-        *accpt = true;
         if (!pc_odesc) {
             QTpkg::self()->RegisterTimeoutProc(3000, pc_bad_cb, this);
             PopUpMessage("Can't add property, no object selected.", false,
@@ -584,7 +586,7 @@ QTcellPrpDlg::mime_data_delivered_slot(const QMimeData *dta, bool *accpt)
                                 0, hp);
                             hyList::destroy(hp);
                             Ulist()->CommitChanges(true);
-                            accept = true;
+                            *accpt = 1;
                         }
                     }
                 }
@@ -600,7 +602,7 @@ QTcellPrpDlg::mime_data_delivered_slot(const QMimeData *dta, bool *accpt)
 
                     Ulist()->CommitChanges(true);
                     DSP()->ShowOdescPhysProperties(pc_odesc, DISPLAY);
-                    accept = true;
+                    *accpt = 1;
                 }
             }
             if (!accept) {

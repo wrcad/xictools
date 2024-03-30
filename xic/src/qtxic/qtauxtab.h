@@ -96,8 +96,8 @@ private slots:
     void resize_slot(QResizeEvent*);
     void mouse_press_slot(QMouseEvent*);
     void mouse_motion_slot(QMouseEvent*);
-    void mime_data_handled_slot(const QMimeData*, bool*) const;
-    void mime_data_delivered_slot(const QMimeData*, bool*);
+    void mime_data_handled_slot(const QMimeData*, int*) const;
+    void mime_data_delivered_slot(const QMimeData*, int*);
     void font_changed_slot(int);
 
 private:

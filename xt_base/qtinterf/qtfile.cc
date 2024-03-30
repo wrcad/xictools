@@ -339,6 +339,7 @@ file_tree_widget::start_drag()
             QList<QUrl> ulst;
             ulst << QUrl(QString("File://") + path);
             md->setUrls(ulst);
+            md->setText(path);
             drag->setMimeData(md);
             QIcon dicon = QApplication::style()->standardIcon(
                 QStyle::SP_DirIcon);
@@ -537,6 +538,7 @@ file_list_widget::start_drag()
             QMimeData *md = new QMimeData();
             QList<QUrl> ulst;
             ulst << QUrl(QString("File://") + path);
+            md->setText(path);
             md->setUrls(ulst);
             drag->setMimeData(md);
             QIcon ficon = QApplication::style()->standardIcon(QStyle::SP_FileIcon);

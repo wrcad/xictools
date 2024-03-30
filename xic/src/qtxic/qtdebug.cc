@@ -405,10 +405,10 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c) : QTbag(this)
     connect(wb_textarea, SIGNAL(textChanged()),
         this, SLOT(text_changed_slot()));
     connect(wb_textarea,
-        SIGNAL(mime_data_handled(const QMimeData*, bool*)),
-        this, SLOT(mime_data_handled_slot(const QMimeData*, bool*)));
-    connect(wb_textarea, SIGNAL(mime_data_delivered(const QMimeData*, bool*)),
-        this, SLOT(mime_data_delivered_slot(const QMimeData*, bool*)));
+        SIGNAL(mime_data_handled(const QMimeData*, int*)),
+        this, SLOT(mime_data_handled_slot(const QMimeData*, int*)));
+    connect(wb_textarea, SIGNAL(mime_data_delivered(const QMimeData*, int*)),
+        this, SLOT(mime_data_delivered_slot(const QMimeData*, int*)));
     connect(wb_textarea, SIGNAL(key_press_event(QKeyEvent*)),
         this, SLOT(key_press_slot(QKeyEvent*)));
 
@@ -1739,19 +1739,22 @@ QTscriptDebuggerDlg::text_change_slot(int strt, int nch_rm, int nch_add)
 
 
 void
-QTscriptDebuggerDlg::mime_data_handled_slot(const QMimeData *dta, bool *accpt)
+QTscriptDebuggerDlg::mime_data_handled_slot(const QMimeData *dta, int *accpt)
 const
 {
     if (dta->hasFormat("text/twostring") || dta->hasFormat("text/plain"))
-        *accpt = true;
+        *accpt = 1;
+    else
+        *accpt = -1;
 }
 
 
 void
-QTscriptDebuggerDlg::mime_data_delivered_slot(const QMimeData *dta, bool *accpt)
+QTscriptDebuggerDlg::mime_data_delivered_slot(const QMimeData *dta, int *accpt)
 {
     // Receive drop data (a path name).
 
+    *accpt = -1;
     QByteArray data_ba;
     if (dta->hasFormat("text/twostring"))
         data_ba = dta->data("text/twostring");
@@ -1759,7 +1762,6 @@ QTscriptDebuggerDlg::mime_data_delivered_slot(const QMimeData *dta, bool *accpt)
         data_ba = dta->data("text/plain");
     else
         return;
-    *accpt = true;
     char *src = lstring::copy(data_ba.constData());
     if (!src)
         return;
@@ -1788,6 +1790,7 @@ QTscriptDebuggerDlg::mime_data_delivered_slot(const QMimeData *dta, bool *accpt)
         db_dropfile = lstring::copy(src);
         if (db_load_pop) {
             db_load_pop->popdown();
+            delete [] src;
             return;
         }
         if (check_save(LoadCode))
@@ -1799,6 +1802,7 @@ QTscriptDebuggerDlg::mime_data_delivered_slot(const QMimeData *dta, bool *accpt)
             db_load_pop->register_usrptr((void**)&db_load_pop);
     }
     delete [] src;
+    *accpt = 1;
 }
 
 

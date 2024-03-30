@@ -196,10 +196,10 @@ QTauxTabDlg::QTauxTabDlg(GRobject c) : QTbag(this)
     connect(wb_textarea, SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(mouse_motion_slot(QMouseEvent*)));
     connect(wb_textarea,
-        SIGNAL(mime_data_handled(const QMimeData*, bool*)),
-        this, SLOT(mime_data_handled_slot(const QMimeData*, bool*)));
-    connect(wb_textarea, SIGNAL(mime_data_delivered(const QMimeData*, bool*)),
-        this, SLOT(mime_data_delivered_slot(const QMimeData*, bool*)));
+        SIGNAL(mime_data_handled(const QMimeData*, int*)),
+        this, SLOT(mime_data_handled_slot(const QMimeData*, int*)));
+    connect(wb_textarea, SIGNAL(mime_data_delivered(const QMimeData*, int*)),
+        this, SLOT(mime_data_delivered_slot(const QMimeData*, int*)));
 
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_FIXED))
@@ -536,16 +536,19 @@ QTauxTabDlg::mouse_motion_slot(QMouseEvent *ev)
 
 
 void
-QTauxTabDlg::mime_data_handled_slot(const QMimeData *dta, bool *accpt) const
+QTauxTabDlg::mime_data_handled_slot(const QMimeData *dta, int *accpt) const
 {
     if (dta->hasFormat("text/twostring") || dta->hasFormat("text/plain"))
-        *accpt = true;
+        *accpt = 1;
+    else
+        *accpt = -1;
 }
 
 
 void
-QTauxTabDlg::mime_data_delivered_slot(const QMimeData *dta, bool *accpt)
+QTauxTabDlg::mime_data_delivered_slot(const QMimeData *dta, int *accpt)
 {
+    *accpt = -1;
     if (!CDcdb()->auxCellTab())
         return;
 
@@ -556,7 +559,6 @@ QTauxTabDlg::mime_data_delivered_slot(const QMimeData *dta, bool *accpt)
         data_ba = dta->data("text/plain");
     else
         return;
-    *accpt = true;
     char *src = lstring::copy(data_ba.constData());
     if (!src)
         return;
@@ -576,6 +578,7 @@ QTauxTabDlg::mime_data_delivered_slot(const QMimeData *dta, bool *accpt)
             update();
     }
     delete [] src;
+    *accpt = 1;
 }
 
 

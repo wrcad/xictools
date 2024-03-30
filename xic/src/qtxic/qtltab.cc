@@ -521,6 +521,7 @@ QTltab::motion_slot(QMouseEvent *ev)
             QMimeData *mimedata = new QMimeData();
             QByteArray qdata((const char*)&dd, sizeof(LayerFillData));
             mimedata->setData(mime_type(), qdata);
+            mimedata->setText(ld->name());
             drag->setMimeData(mimedata);
             drag->exec(Qt::CopyAction);
         }

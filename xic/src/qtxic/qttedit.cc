@@ -466,6 +466,7 @@ QTelecTermEditDlg::update(TermEditInfo *tinfo, CDp *prp)
         te_physgrp->setEnabled(tinfo->has_phys());
     }
     te_prp = prp;
+    te_name->setFocus();
 }
 
 

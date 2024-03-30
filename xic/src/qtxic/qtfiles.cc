@@ -665,10 +665,10 @@ QTfilesListDlg::create_page(sDirList *dl)
         this, SLOT(mouse_release_slot(QMouseEvent*)));
     connect(nbtext, SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(mouse_motion_slot(QMouseEvent*)));
-    connect(nbtext, SIGNAL(mime_data_handled(const QMimeData*, bool*)),
-        this, SLOT(mime_data_handled_slot(const QMimeData*, bool*)));
-    connect(nbtext, SIGNAL(mime_data_delivered(const QMimeData*, bool*)),
-        this, SLOT(mime_data_delivered_slot(const QMimeData*, bool*)));
+    connect(nbtext, SIGNAL(mime_data_handled(const QMimeData*, int*)),
+        this, SLOT(mime_data_handled_slot(const QMimeData*, int*)));
+    connect(nbtext, SIGNAL(mime_data_delivered(const QMimeData*, int*)),
+        this, SLOT(mime_data_delivered_slot(const QMimeData*, int*)));
     connect(nbtext, SIGNAL(key_press_event(QKeyEvent*)),
         this, SLOT(key_press_slot(QKeyEvent*)));
 
@@ -1473,6 +1473,7 @@ QTfilesListDlg::mouse_motion_slot(QMouseEvent *ev)
     QList<QUrl> ulst;
     ulst << QUrl(QString("File://") + s);
     mimedata->setUrls(ulst);
+    mimedata->setText(s);
     delete [] s;
     drag->setMimeData(mimedata);
     if (ft == GFT_DIR) {
@@ -1517,21 +1518,21 @@ QTfilesListDlg::mouse_motion_slot(QMouseEvent *ev)
 
 
 void
-QTfilesListDlg::mime_data_handled_slot(const QMimeData *dta, bool *accpt) const
+QTfilesListDlg::mime_data_handled_slot(const QMimeData *dta, int *accpt) const
 {
-    if (dta->hasFormat("text/twostring") || dta->hasFormat("text/plain"))
-        *accpt = true;
+    if (dta->hasUrls() || dta->hasFormat("text/twostring"))
+        *accpt = 1;
+    else
+        *accpt = -1;
 }
 
 
 void
-QTfilesListDlg::mime_data_delivered_slot(const QMimeData *dta, bool *accpt)
+QTfilesListDlg::mime_data_delivered_slot(const QMimeData *dta, int *accpt)
 {
-    if (dta->hasFormat("text/twostring") || dta->hasFormat("text/plain")) {
-        *accpt = true;
-        const char *dst = fl_directory;
-        if (!dst || !*dst)
-            return;  // sanity
+    if (dta->hasUrls() || dta->hasFormat("text/twostring")) {
+        *accpt = 1;
+
         int proposed_action = wb_textarea->drop_action();
         QTfileDlg::ActionType a = QTfileDlg::A_NOOP;
         if (proposed_action & Qt::CopyAction)
@@ -1543,36 +1544,37 @@ QTfilesListDlg::mime_data_delivered_slot(const QMimeData *dta, bool *accpt)
         else
             return;
 
-        // Handles URLs, text/twostring, and regular strings.
+        const char *dst = fl_directory;
+        if (!dst || !*dst)
+            return;  // sanity
+
         if (dta->hasUrls()) {
             foreach (const QUrl &url, dta->urls()) {
                 QByteArray fnba = url.toLocalFile().toLatin1();
                 const char *src = fnba.constData();
-                if (!src || !*src)
+                if (!src || !*src || !strcmp(src, dst))
                     continue;
-                if (!strcmp(src, dst))
-                    continue;
+
                 QTfileDlg::DoFileAction(this, src, dst, a);
             }
         }
-        else {
-            QByteArray bary = dta->data("text/plain");
+        else if (dta->hasFormat("text/twostring")) {
+            QByteArray bary = dta->data("text/twostring");
             const char *src = bary.constData();
-            if (src && *src) {
-                if (!strncmp(src, "File://", 7))
-                    src += 7;
-                char *pth = lstring::copy(src);
-                char *t = strchr(pth, '\n');
-                if (t) {
-                    // text/twostring, keep the first token only.
-                    *t = 0;
-                }
-                if (strcmp(pth, dst))
-                    QTfileDlg::DoFileAction(this, pth, dst, a);
-                delete [] pth;
+            char *pth = lstring::copy(src);
+            char *t = strchr(pth, '\n');
+            if (t) {
+                // text/twostring, keep the first token only.
+                *t = 0;
             }
+            if (strcmp(pth, dst)) {
+                QTfileDlg::DoFileAction(this, pth, dst, a);
+            }
+            delete [] pth;
         }
+        return;
     }
+    *accpt = -1;
 }
 
 

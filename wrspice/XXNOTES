@@ -47,3 +47,8 @@ setjmp/longjmp used in Windows version since c++ exceptions didn't work.
 Check current MSYS and get rid of setjmp if possible.
 
 setjmp/longjmp in graph.cc/graph.h.  Use exceptions?
+
+print/save etc from plot window seem not to work unless plot is from
+run data?  I.e., "plot 0" then print does nothing.
+
+I don't see any white/invisible text buttons.

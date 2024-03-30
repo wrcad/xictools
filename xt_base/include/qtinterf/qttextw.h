@@ -94,8 +94,8 @@ signals:
     void press_event(QMouseEvent*);
     void release_event(QMouseEvent*);
     void motion_event(QMouseEvent*);
-    void mime_data_handled(const QMimeData*, bool*) const;
-    void mime_data_delivered(const QMimeData*, bool*);
+    void mime_data_handled(const QMimeData*, int*) const;
+    void mime_data_delivered(const QMimeData*, int*);
     void key_press_event(QKeyEvent*);
 
 protected:

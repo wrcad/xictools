@@ -57,8 +57,10 @@
 
 //-----------------------------------------------------------------------------
 // QTprpInfoDlg:  Dialog to view object properties.
-// Called when the Property Editor (QTprpEditorDlg) is active and the user
-// clicks on an object.  This allows copy/paste of properties.
+// Called when the Property Editor (QTprpEditorDlg) is active and has
+// the Info button pressed and the user clicks on an object.  This
+// allows copy/paste of properties from the object to the current
+// selection in the Property Editor.
 
 // Static function.
 QTprpBase *
@@ -136,10 +138,10 @@ QTprpInfoDlg::QTprpInfoDlg(CDo *odesc) : QTprpBase(this)
     connect(wb_textarea, SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(mouse_motion_slot(QMouseEvent*)));
     connect(wb_textarea,
-        SIGNAL(mime_data_handled(const QMimeData*, bool*)),
-        this, SLOT(mime_data_habdled_slot(const QMimeData*)));
-    connect(wb_textarea, SIGNAL(mime_data_delivered(const QMimeData*, bool*)),
-        this, SLOT(mime_data_delivered_slot(const QMimeData*, bool*)));
+        SIGNAL(mime_data_handled(const QMimeData*, int*)),
+        this, SLOT(mime_data_handled_slot(const QMimeData*, int*)));
+    connect(wb_textarea, SIGNAL(mime_data_delivered(const QMimeData*, int*)),
+        this, SLOT(mime_data_delivered_slot(const QMimeData*, int*)));
 
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_FIXED))
@@ -233,16 +235,16 @@ QTprpInfoDlg::mouse_motion_slot(QMouseEvent *ev)
 
 
 void
-QTprpInfoDlg::mime_data_handled_slot(const QMimeData *d, bool *accpt) const
+QTprpInfoDlg::mime_data_handled_slot(const QMimeData *d, int *accpt) const
 {
-    *accpt = is_mime_data_handled(d);
+    *accpt = is_mime_data_handled(d) ? 1 : -1;
 }
 
 
 void
-QTprpInfoDlg::mime_data_delivered_slot(const QMimeData *d, bool *accpt)
+QTprpInfoDlg::mime_data_delivered_slot(const QMimeData *d, int *accpt)
 {
-    *accpt = is_mime_data_delivered(d);
+    *accpt = is_mime_data_delivered(d) ? 1 : -1;
 }
 
 

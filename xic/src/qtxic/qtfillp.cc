@@ -1122,6 +1122,7 @@ QTfillPatDlg::drop_event_slot(QDropEvent *ev)
             }
         }
         ev->accept();
+        return;
     }
     ev->ignore();
 }

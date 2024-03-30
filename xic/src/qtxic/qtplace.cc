@@ -131,6 +131,7 @@ QTplaceDlg::QTplaceDlg(bool noprompt)
 
     pl_str_editor = 0;
     pl_dropfile = 0;
+    pl_realname = 0;
 
     ED()->plInitMenuLen();
 
@@ -326,6 +327,10 @@ QTplaceDlg::~QTplaceDlg()
         ED()->setArrayParams(iap_t());
     if (pl_str_editor)
         pl_str_editor->popdown();
+    if (pl_dropfile)
+        delete [] pl_dropfile;
+    if (pl_realname)
+        delete [] pl_realname;
 }
 
 
@@ -365,9 +370,20 @@ QTplaceDlg::update()
 
 // Static function.
 ESret
-QTplaceDlg::pl_new_cb(const char *string, void*)
+QTplaceDlg::pl_new_cb(const char *string, void *realstart)
 {
     if (string && *string) {
+        // If the original string had a directory separator, we strip
+        // the path ahead of the final separator and pass only the file
+        // name, so only the name appears in the entry area.  In this
+        // case we also pass the real start of the string as the
+        // argument.  If the user has changed the entered input,
+        // only that will be used.
+
+        const char *rs = static_cast<const char*>(realstart);
+        if (realstart && !strcmp(string, lstring::strrdirsep(rs)+1))
+            string = rs;
+
         // If two tokens, the first is a library or archive file name,
         // the second is the cell name.
 
@@ -442,14 +458,8 @@ QTplaceDlg::dropEvent(QDropEvent *ev)
         QByteArray ba = ev->mimeData()->data("text/plain");
         const char *str = ba.constData() + strlen("File://");
         delete [] pl_dropfile;
-        pl_dropfile = 0;
-        if (pl_str_editor) {
-            pl_str_editor->update(0, str);
-        }
-        else {
-            pl_dropfile = lstring::copy(str);
-            master_menu_active_slot(0);
-        }
+        pl_dropfile = lstring::copy(str);
+        master_menu_active_slot(0);
         ev->accept();
         return;
     }
@@ -474,15 +484,8 @@ QTplaceDlg::dropEvent(QDropEvent *ev)
                 *t++ = 0;
         }
         delete [] pl_dropfile;
-        pl_dropfile = 0;
-        if (pl_str_editor) {
-            pl_str_editor->update(0, src);
-            delete [] src;
-        }
-        else {
-            pl_dropfile = src;
-            master_menu_active_slot(0);
-        }
+        pl_dropfile = src;
+        master_menu_active_slot(0);
         ev->accept();
         return;
     }
@@ -610,7 +613,7 @@ QTplaceDlg::master_menu_slot(int ix)
         const char *str = ba.constData();
         const char *aname = lstring::getqtok(&str);
         const char *cname = lstring::getqtok(&str);
-//        ED()->addMaster(aname, cname);
+        ED()->addMaster(aname, cname);
         delete [] aname;
         delete [] cname;
     }
@@ -638,6 +641,22 @@ QTplaceDlg::master_menu_active_slot(int ix)
                     defname = Tstring(cd->cellname());
             }
         }
+
+        // If the defname has a directory separator, pass only the
+        // file name as the name string, but pass the whole string as
+        // the argument.  This is so only the file name is shown in
+        // the string entry area.
+
+        if (pl_realname) {
+            delete [] pl_realname;
+            pl_realname = 0;
+        }
+        const char *ds = lstring::strrdirsep(defname);
+        if (ds) {
+            pl_realname = lstring::copy(defname);
+            defname = pl_realname + (ds - defname) + 1;
+        }
+
         if (pl_str_editor) {
             pl_str_editor->popdown();
             pl_str_editor = 0;
@@ -646,7 +665,7 @@ QTplaceDlg::master_menu_active_slot(int ix)
         QTdev::self()->Location(pl_masterbtn, &xx, &yy);
         pl_str_editor = DSPmainWbagRet(PopUpEditString(0,
             GRloc(LW_XYA, xx - 200, yy), "File or cell name of cell to place?",
-            defname, pl_new_cb, 0, 200, 0));
+            defname, pl_new_cb, (void*)pl_realname, 200, 0));
         if (pl_str_editor)
             pl_str_editor->register_usrptr((void**)&pl_str_editor);
     }
@@ -657,6 +676,7 @@ void
 QTplaceDlg::place_btn_slot(bool state)
 {
     bool mbstate = QTdev::GetStatus(pl_menu_placebtn);
+    QTmainwin::self()->activateWindow();
     if (state != mbstate)
         QTdev::CallCallback(pl_menu_placebtn);
 }

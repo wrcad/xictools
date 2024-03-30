@@ -145,6 +145,7 @@ private:
 
     GRledPopup  *pl_str_editor;
     char        *pl_dropfile;
+    char        *pl_realname;
 
     static QTplaceDlg *instPtr;
 

@@ -2461,16 +2461,33 @@ namespace {
 void
 QTsubwin::drag_enter_slot(QDragEnterEvent *ev)
 {
+    if (ev->mimeData()->hasFormat(QTltab::mime_type())) {
+        // Layer also has text/plain, ignore it if not editing.
+        if (!QTedit::self() || !QTedit::self()->is_active()) {
+            ev->ignore();
+            return;
+        }
+    }
+    else if (ev->mimeData()->hasFormat("text/property")) {
+        // Ignore if not editong.
+        if (QTedit::self() && QTedit::self()->is_active())
+            ev->accept();
+        else
+            ev->ignore();
+        return;
+    }
+    // Accept urls or plain text (should be file or cell names)
+    // anytime.  If not editing they will load a cell to edit
+    // in the main window.
     if (ev->mimeData()->hasUrls() ||
-            ev->mimeData()->hasFormat("text/property") ||
             ev->mimeData()->hasFormat("text/twostring") ||
             ev->mimeData()->hasFormat("text/cellname") ||
             ev->mimeData()->hasFormat("text/string") ||
             ev->mimeData()->hasFormat("text/plain")) {
         ev->accept();
+        return;
     }
-    else
-        ev->ignore();
+    ev->ignore();
 }
 
 
@@ -2484,7 +2501,14 @@ QTsubwin::drop_slot(QDropEvent *ev)
         ev->accept();
         return;
     }
-    if (ev->mimeData()->hasFormat("text/property")) {
+    if (ev->mimeData()->hasFormat(QTltab::mime_type())) {
+        // Layer also has text/plain, ignore it if not editing.
+        if (!QTedit::self() || !QTedit::self()->is_active()) {
+            ev->ignore();
+            return;
+        }
+    }
+    else if (ev->mimeData()->hasFormat("text/property")) {
         if (QTedit::self() && QTedit::self()->is_active()) {
             QByteArray bary = ev->mimeData()->data("text/property");
             const char *val = (const char*)bary.data() + sizeof(int);
@@ -2493,8 +2517,10 @@ QTsubwin::drop_slot(QDropEvent *ev)
             QTedit::self()->insert(hp);
             hyList::destroy(hp);
             QTedit::self()->set_focus();
+            ev->accept();
         }
-        ev->accept();
+        else
+            ev->ignore();
         return;
     }
     const char *fmt = 0;
