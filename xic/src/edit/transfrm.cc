@@ -188,6 +188,23 @@ cEdit::recallCurTransform(int reg)
 }
 
 
+void
+cEdit::swapCurTransform(int reg)
+{
+    if (reg < 0 || reg >= NREG)
+        reg = 0;
+    sCurTx &tb =
+        (DSP()->CurMode() == Physical ? PtfmBak[reg] : EtfmBak[reg]);
+    sCurTx tt(tb);
+    tb = *GEO()->curTx();
+    DSPmainDraw(ShowGhost(ERASE))
+    GEO()->setCurTx(tt);
+    DSPmainDraw(ShowGhost(DISPLAY))
+    PopUpTransform(0, MODE_UPD, 0, 0);
+    XM()->ShowParameters();
+}
+
+
 // Clear the current transform.
 //
 void

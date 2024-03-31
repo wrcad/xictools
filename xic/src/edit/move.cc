@@ -212,6 +212,9 @@ MoveState::b1down()
             XM()->SetCoordMode(CO_ABSOLUTE);
             Ulist()->CommitChanges(true);
             State = 4;
+            // Save/Reset current transform.
+            ED()->saveCurTransform(0);
+            ED()->clearCurTransform();
         }
     }
 }
@@ -243,6 +246,9 @@ MoveState::b1up()
                 Ulist()->CommitChanges(true);
                 XM()->SetCoordMode(CO_ABSOLUTE);
                 SetLevel1(true);
+                // Save/Reset current transform.
+                ED()->saveCurTransform(0);
+                ED()->clearCurTransform();
                 return;
             }
         }
@@ -271,6 +277,8 @@ MoveState::desel()
     GotOne = false;
     State = 0;
     SetLevel1(true);
+    ED()->saveCurTransform(0);
+    ED()->clearCurTransform();
 }
 
 
@@ -291,13 +299,21 @@ MoveState::esc()
     EV()->PopCallback(this);
     MainMenu()->Deselect(Caller);
     EV()->SetConstrained(false);
+    ED()->clearCurTransform();
     delete this;
 }
 
 
 bool
-MoveState::key(int code, const char*, int)
+MoveState::key(int code, const char *text, int)
 {
+    if (Level >= 1 && Level <= 4) {
+        if (*text == '/') {
+            ED()->swapCurTransform(0);
+            return (true);
+        }
+    }
+
     switch (code) {
     case SHIFTDN_KEY:
     case CTRLDN_KEY:

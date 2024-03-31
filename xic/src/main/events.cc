@@ -472,10 +472,12 @@ cEventHdlr::PushCallback(CmdState *cb)
     for (int i = CallStackDepth - 1; i > 0; i--)
         ev_callbacks[i] = ev_callbacks[i-1];
     ev_callbacks[0] = cb;
-    if (ev_main_cmd && ev_callbacks[1] == ev_main_cmd && !ev_in_coord_entry)
+    if (ev_main_cmd && ev_callbacks[1] == ev_main_cmd && !ev_in_coord_entry) {
         // Want to reset main state, except when entering coordinate
         // from the keyboard (^E).
         ev_main_cmd->esc();
+    }
+
     XM()->ShowParameters();
     return (true);
 }

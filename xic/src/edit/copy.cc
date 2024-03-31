@@ -249,6 +249,7 @@ CopyState::b1down()
         }
         if (ED()->replicateQueue(Refx, Refy, x, y, RepCount, ldold, ldnew,
                 AltSource)) {
+            ED()->saveCurTransform(0);
             Count++;
             Gst()->SetGhost(GFnone);
             GhostOn = false;
@@ -285,6 +286,7 @@ CopyState::b1up()
             EV()->CurrentWin()->Snap(&x, &y);
             ED()->findContact(&x, &y, Refx, Refy, false);
             if (ED()->replicateQueue(Refx, Refy, x, y, RepCount, 0, 0)) {
+                ED()->saveCurTransform(0);
                 Count++;
                 Gst()->SetGhost(GFnone);
                 GhostOn = false;
@@ -390,6 +392,7 @@ CopyState::b1up_altw()
             EV()->CurrentWin()->Snap(&x, &y);
             ED()->findContact(&x, &y, Refx, Refy, false);
             if (ED()->replicateQueue(Refx, Refy, x, y, 1, 0, 0, AltSource)) {
+                ED()->saveCurTransform(0);
                 Count++;
                 Gst()->SetGhost(GFnone);
                 GhostOn = false;
@@ -420,6 +423,8 @@ CopyState::desel()
     GotOne = false;
     State = 0;
     SetLevel1(true);
+    ED()->saveCurTransform(0);
+    ED()->clearCurTransform();
 }
 
 
@@ -438,13 +443,21 @@ CopyState::esc()
     MainMenu()->Deselect(Caller);
     EV()->SetConstrained(false);
     ED()->setMoveOrCopy(CDmove);
+    ED()->clearCurTransform();
     delete this;
 }
 
 
 bool
-CopyState::key(int code, const char*, int)
+CopyState::key(int code, const char *text, int)
 {
+    if (Level >= 1 && Level <= 3) {
+        if (*text == '/') {
+            ED()->swapCurTransform(0);
+            return (true);
+        }
+    }
+
     switch (code) {
     case SHIFTDN_KEY:
     case CTRLDN_KEY:

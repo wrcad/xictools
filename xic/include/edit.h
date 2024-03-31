@@ -474,6 +474,7 @@ public:
     void flipX();                                                   // export
     void saveCurTransform(int);                                     // export
     void recallCurTransform(int);                                   // export
+    void swapCurTransform(int);
     void clearCurTransform();                                       // export
     static bool cur_tf_cb(const char*, bool, const char*, void*);
 
