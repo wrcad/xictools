@@ -196,7 +196,7 @@ cMain::EditCell(const char *file_or_cell_name, bool noask,
             bool isvsm = cbin.phys() && cbin.phys()->isViaSubMaster();
             if (!ispsm && !isvsm && cbin.isModified())
                 asksv = true;
-            else if (cbin.phys()->isModified() &&
+            else if (cbin.phys()->countModified() &&
                     ((ispsm && (cbin.phys()->isPCellReadFromFile() ||
                         FIO()->IsKeepPCellSubMasters())) ||
                     (isvsm && FIO()->IsKeepViaSubMasters())))

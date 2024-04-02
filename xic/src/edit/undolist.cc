@@ -70,7 +70,7 @@
 // (1) Call ListCheck() or ListCheckPush() to initialize and check
 //     consistency.
 // (2) Call RecordObjectChange() on any objects created/deleted.  This
-//     is automatic if the CDs::newXXX() functions are used to create
+//     is automatic if the CDs::newxxx() functions are used to create
 //     the object.  Similarly, the analogous property list command
 //     RecordPrptyChange() should be called when properties are changed,
 //     but this is not necessary if the object is also being changed.
@@ -237,6 +237,7 @@ Oper::changed(bool *p_noupd) const
     if (!o_cell_desc)
         return (false);
 
+//XXX  This stinks.  Create an opertor== for properties.
     CDp *pold = o_cprop_list;
     CDp *pcur = o_cell_desc->prptyList();
     if (!pold && !pcur)

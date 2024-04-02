@@ -159,7 +159,7 @@ QTparam::print()
         if (cursd) {
             if (cursd->isImmutable())
                 p_text.append_string(" RO", DSP()->Color(PromptHighlightColor));
-            else if (cursd->isModified())
+            else if (cursd->countModified())
                 p_text.append_string(" Mod",DSP()->Color(PromptHighlightColor));
         }
         p_text.append_string("  ", c2);

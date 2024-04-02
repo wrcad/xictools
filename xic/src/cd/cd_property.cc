@@ -2900,10 +2900,14 @@ unsigned int
 CDp_snode::term_flags() const
 {
     unsigned int f = pxno_flags;
-    if (psno_term && psno_term->is_fixed())
-        f |= TE_FIXED;
-    else
-        f &= ~TE_FIXED;
+    if (psno_term) {
+        // Careful here!  Don't unset this flag before the terminal
+        // is set up, e.g. when doing electrical checking.
+        if (psno_term->is_fixed())
+            f |= TE_FIXED;
+        else if (!psno_term->is_uninit() && !psno_term->is_loc_set())
+            f &= ~TE_FIXED;
+    }
     if (psno_term && psno_term->is_uninit())
         f |= TE_UNINIT;
     else

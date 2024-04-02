@@ -553,12 +553,12 @@ CDs::decModified()
 }
 
 
-bool
-CDs::isModified() const
+int
+CDs::countModified() const
 {
     CDs *sd = owner();
     if (sd)
-        return (sd->isModified());
+        return (sd->countModified());
     return (db_mod_count);
 }
 
@@ -638,7 +638,7 @@ CDs::isSubcell() const
 bool
 CDs::isHierModified() const
 {
-    if (isModified())
+    if (countModified())
         return (true);
     CDm_gen mgen(this, GEN_MASTERS);
     for (CDm *mdesc = mgen.m_first(); mdesc; mdesc = mgen.m_next()) {
@@ -2974,7 +2974,7 @@ namespace {
             if (mark) {
                 char *s = new char[strlen(Tstring(sdesc->cellname())) + 3];
                 int j = 0;
-                if (sdesc->isModified())
+                if (sdesc->countModified())
                     s[j++] = '+';
                 if (!sdesc->isSubcell())
                     s[j++] = '*';
@@ -2995,7 +2995,7 @@ namespace {
             if (mark) {
                 char *s = new char[strlen(Tstring(sd->cellname())) + 2];
                 int j = 1;
-                if (sd->isModified()) {
+                if (sd->countModified()) {
                     *s = '+';
                     *(s+1) = '*';
                     j = 2;
@@ -3030,7 +3030,7 @@ CDs::listSubcells(int depth, bool incl_top, bool mark, const BBox *AOI)
             if (mark) {
                 char *s = new char[strlen(Tstring(cellname())) + 3];
                 int j = 0;
-                if (isModified())
+                if (countModified())
                     s[j++] = '+';
                 if (!isSubcell())
                     s[j++] = '*';
@@ -3053,7 +3053,7 @@ CDs::listSubcells(int depth, bool incl_top, bool mark, const BBox *AOI)
                 continue;
             if (mark) {
                 char *s = new char[strlen(Tstring(sd->cellname())) + 2];
-                if (sd->isModified())
+                if (sd->countModified())
                     *s = '+';
                 else
                     *s = ' ';
