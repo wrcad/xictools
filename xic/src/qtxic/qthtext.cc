@@ -224,26 +224,47 @@ namespace {
     class QTflashPop : public QDialog
     {
     public:
-        QTflashPop(const char *msg, QWidget *prnt = 0) : QDialog(prnt)
+        QTflashPop(int msec, const char *msg, QWidget *prnt = 0) :
+            QDialog(prnt)
         {
             setAttribute(Qt::WA_DeleteOnClose);
             setWindowFlags(Qt::Popup | Qt::FramelessWindowHint);
+
             QVBoxLayout *vbox = new QVBoxLayout(this);
             vbox->setContentsMargins(0, 0, 0, 0);
             vbox->setSpacing(2);
             QLabel *label = new QLabel(msg);
             vbox->addWidget(label);
-
+            QTdev::self()->SetPopupLocation(GRloc(LW_LL), this,
+                QTmainwin::self()->Viewport());
+            show();
+            if (msec > 0)
+                startTimer(msec);
         }       
 
-        static int timeout(void *arg)
+        QTflashPop(int xx, int yy, int msec, const char *msg,
+            QWidget *prnt = 0) : QDialog(prnt)
         {
-            QTflashPop *fp = static_cast<QTflashPop*>(arg);
-            delete fp;
-            return (0);
+            setAttribute(Qt::WA_DeleteOnClose);
+            setWindowFlags(Qt::Popup | Qt::FramelessWindowHint);
+
+            QVBoxLayout *vbox = new QVBoxLayout(this);
+            vbox->setContentsMargins(0, 0, 0, 0);
+            vbox->setSpacing(2);
+            QLabel *label = new QLabel(msg);
+            vbox->addWidget(label);
+            QTdev::self()->SetPopupLocation(GRloc(LW_XYA, xx, yy),
+                this, QTmainwin::self()->Viewport());
+            show();
+            if (msec > 0)
+                startTimer(msec);
+        }       
+
+        void timerEvent(QTimerEvent*)
+        {
+            close();
         }
     };
-
 }
 
 
@@ -259,11 +280,7 @@ QTedit::flash_msg(const char *msg, ...)
     vsnprintf(buf, 256, msg, args);
     va_end(args);
 
-    QTflashPop *pop = new QTflashPop(buf, QTmainwin::self());
-    QTdev::self()->SetPopupLocation(GRloc(LW_LL), pop,
-        QTmainwin::self()->Viewport());
-    pop->show();
-    QTdev::self()->AddTimer(2000, &QTflashPop::timeout, pop);
+    new QTflashPop(2000, buf, QTmainwin::self());
 }
 
 
@@ -279,11 +296,7 @@ QTedit::flash_msg_here(int xx, int yy, const char *msg, ...)
     vsnprintf(buf, 256, msg, args);
     va_end(args);
 
-    QTflashPop *pop = new QTflashPop(buf, QTmainwin::self());
-    QTdev::self()->SetPopupLocation(GRloc(LW_XYA, xx, yy),
-        pop, QTmainwin::self()->Viewport());
-    pop->show();
-    QTdev::self()->AddTimer(2000, &QTflashPop::timeout, pop);
+    new QTflashPop(xx, yy, 2000, buf, QTmainwin::self());
 }
 
 

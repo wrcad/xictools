@@ -1145,12 +1145,15 @@ cFIO::OpenNative(const char *spath, CDcbin *cbret, double scale, bool *divert)
                         if (!FIO()->IsNoOverwritePhys())
                             mi.overwrite_phys = true;
                         bool p_match = false;
-                        if (mi.overwrite_phys &&
-                                !cbin.phys()->countModified() &&
-                                cbin.phys()->fileType() == Fcif &&
-                                !strcmp(cbin.phys()->fileName(), pathname)) {
-                            mi.overwrite_phys = false;
-                            p_match = true;
+                        if (mi.overwrite_phys == true) {
+                            if (!cbin.phys())
+                                p_match = true;
+                            else if (!cbin.phys()->countModified() &&
+                                    cbin.phys()->fileType() == Fcif &&
+                                    !strcmp(cbin.phys()->fileName(), pathname))
+                                p_match = true;
+                            if (p_match)
+                                mi.overwrite_phys = false;
                         }
                         if (!FIO()->IsNoOverwriteElec())
                             mi.overwrite_elec = true;
