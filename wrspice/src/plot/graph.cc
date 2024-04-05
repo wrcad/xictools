@@ -2051,11 +2051,7 @@ cGraph::gr_writef(double d, const sUnits *units, int x, int y, bool limit)
             tmp = SPnum.printnum(d, (const char*)0, true, NUMDGT);
         // Will always fit now with NUMDGT=5 and VALBOX_WIDTH=14.
     }
-#if (defined (WITH_QT5) || defined (WITH_QT6))
-    gr_dev->Text(tmp, x, yinv(y) - 2, 0);
-#else
     gr_dev->Text(tmp, x, yinv(y), 0);
-#endif
 }
 
 
