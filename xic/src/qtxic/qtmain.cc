@@ -69,6 +69,7 @@
 #include "cd.h"
 #include "cd_celldb.h"
 #include "miscutil/pathlist.h"
+#include "miscutil/tvals.h"
 #include "help/help_context.h"
 #include "qtinterf/qtidleproc.h"
 #include "bitmaps/wr.xpm"
@@ -104,8 +105,6 @@
 #include <QScreen>
 #include <QWheelEvent>
 
-// Name clash with QT avoided with this placement.
-#include "miscutil/timer.h"
 
 #include "file_menu.h"
 #include "view_menu.h"
@@ -483,10 +482,11 @@ QTpkg::CheckForInterrupt()
         return (true);
 
     // Cut expense if called too frequently.
-    if (cTimer::self()->elapsed_msec() == lasttime)
+    if (Tvals::millisec() == lasttime)
         return (false);
-    lasttime = cTimer::self()->elapsed_msec();
+    lasttime = Tvals::millisec();
 
+    QApplication::sendPostedEvents();
     QApplication::processEvents();
     if (DSP()->Interrupt())
         return (true);

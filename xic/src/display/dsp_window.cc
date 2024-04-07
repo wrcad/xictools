@@ -1021,9 +1021,10 @@ WindowDesc::Display(const CDo *odesc)
 #endif
 box:
     {
-        if (w_attributes.showing_boxes())
+        if (w_attributes.showing_boxes()) {
             ShowBox(&odesc->oBB(), odesc->ldesc()->getAttrFlags(),
                 dsp_prm(odesc->ldesc())->fill());
+        }
         return;
     }
 poly:

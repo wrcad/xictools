@@ -644,8 +644,7 @@ WindowDesc::redisplay_cddb_zimg_rc(CDs *sdesc, int hierlev,
                 // Test for user interrupt
                 if (!(numgeom & 0xff) && numgeom) {
                     // Check every 256 objects for efficiency.
-                    DSPpkg::self()->CheckForInterrupt();
-                    if (DSP()->Interrupt()) {
+                    if (DSPpkg::self()->CheckForInterrupt()) {
                         if (magged)
                             DSP()->TPop();
                         DisableCache();
@@ -986,8 +985,7 @@ zimg_backend::write_box(const BBox *BB)
     if (!(zb_numgeom & 0xff)) {
         // check every 256 objects for efficiency
         if (zb_numgeom) {
-            DSPpkg::self()->CheckForInterrupt();
-            if (DSP()->Interrupt()) {
+            if (DSPpkg::self()->CheckForInterrupt()) {
                 DSP()->SetInterrupt(DSPinterNone);
                 be_abort = true;
                 return (false);
@@ -1011,8 +1009,7 @@ zimg_backend::write_poly(const Poly *poly)
     if (!(zb_numgeom & 0xff)) {
         // check every 256 objects for efficiency
         if (zb_numgeom) {
-            DSPpkg::self()->CheckForInterrupt();
-            if (DSP()->Interrupt()) {
+            if (DSPpkg::self()->CheckForInterrupt()) {
                 DSP()->SetInterrupt(DSPinterNone);
                 be_abort = true;
                 return (false);
@@ -1036,8 +1033,7 @@ zimg_backend::write_wire(const Wire *wire)
     if (!(zb_numgeom & 0xff)) {
         // check every 256 objects for efficiency
         if (zb_numgeom) {
-            DSPpkg::self()->CheckForInterrupt();
-            if (DSP()->Interrupt()) {
+            if (DSPpkg::self()->CheckForInterrupt()) {
                 DSP()->SetInterrupt(DSPinterNone);
                 be_abort = true;
                 return (false);
@@ -1061,8 +1057,7 @@ zimg_backend::write_text(const Text *text)
     if (!(zb_numgeom & 0xff)) {
         // check every 256 objects for efficiency
         if (zb_numgeom) {
-            DSPpkg::self()->CheckForInterrupt();
-            if (DSP()->Interrupt()) {
+            if (DSPpkg::self()->CheckForInterrupt()) {
                 DSP()->SetInterrupt(DSPinterNone);
                 be_abort = true;
                 return (false);

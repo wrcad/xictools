@@ -1394,6 +1394,7 @@ QTmenuConfig::file_open_menu_slot(QAction *a)
     if (!str || !*str)
         return;
 
+    QTmainwin::self()->activateWindow();
     int mstate = QApplication::keyboardModifiers();
     XM()->HandleOpenCellMenu(str, (mstate & Qt::ShiftModifier));
 }

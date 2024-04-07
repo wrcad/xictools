@@ -155,7 +155,7 @@ QToasisDlg::QToasisDlg(GRobject c)
     connect(oas_notrap, SIGNAL(stateChanged(int)),
         this, SLOT(nozoid_btn_slot(int)));
 
-    hbox->addSpacing(4);
+    hbox->addSpacing(60);
     QPushButton *btn = new QPushButton(tr("Help"));
     hbox->addWidget(btn);
     btn->setAutoDefault(false);
@@ -204,10 +204,12 @@ QToasisDlg::QToasisDlg(GRobject c)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
+    hbox->addSpacing(20);
     label = new QLabel(tr("Repetition Finder Configuration"));
     hbox->addWidget(label);
     label->setAlignment(Qt::AlignCenter);
 
+    hbox->addSpacing(40);
     oas_def = new QPushButton(tr("Restore Defaults"));
     hbox->addWidget(oas_def);
     oas_def->setAutoDefault(false);

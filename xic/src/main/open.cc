@@ -419,6 +419,7 @@ cMain::Load(WindowDesc *wdesc, const char *file_or_cell_name,
             wdesc->SetTopCellName(0);
         }
     }
+    const CDtptr *last_cur_cell = DSP()->CurCellName();
 
     // See if we have a named CHD given.
     if (file_or_cell_name && !chd) {
@@ -558,6 +559,8 @@ cMain::Load(WindowDesc *wdesc, const char *file_or_cell_name,
         return (EditOK);
     }
 
+    // Replacing the current cell.
+
     DrcIf()->clearCurError();   // DRC errors, do this here only, not in
                                 // context change.
 
@@ -596,7 +599,7 @@ cMain::Load(WindowDesc *wdesc, const char *file_or_cell_name,
     PC()->recordIfSubMaster(cbin.phys());
 
     ShowParameters();
-    PushOpenCellName(Tstring(DSP()->CurCellName()));
+    PushOpenCellName(DSP()->CurCellName(), last_cur_cell);
 
     if (oiret == OInew)
         PL()->ShowPromptV("Current cell is %s.", wdesc->CurCellName());
