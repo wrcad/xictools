@@ -94,7 +94,6 @@ namespace {
             cnmap_t *cvo_cnmap;
             wnd_t *cvo_wnd;
             GTKspinBtn sb_scale;
-            bool cvo_useallcells;
 
             static int cvo_fmt_type;
         };
@@ -182,7 +181,6 @@ sCvo::sCvo(GRobject c, CvoCallback callback, void *arg)
     cvo_arg = arg;
     cvo_cnmap = 0;
     cvo_wnd = 0;
-    cvo_useallcells = false;
 
     // Dangerous to leave this in effect, force user to turn in on
     // when needed.
@@ -524,6 +522,8 @@ sCvo::update()
         CDvdb()->getVariable(VA_ViaKeepSubMasters));
     GTKdev::SetStatus(cvo_noflvias,
         CDvdb()->getVariable(VA_NoFlattenStdVias));
+    GTKdev::SetStatus(cvo_allcells,
+        CDvdb()->getVariable(VA_OutAllCells));
     GTKdev::SetStatus(cvo_noflpcs,
         CDvdb()->getVariable(VA_NoFlattenPCells));
     GTKdev::SetStatus(cvo_nofllbs,
@@ -616,7 +616,10 @@ sCvo::cvo_action(GtkWidget *caller, void*)
         return;
     }
     if (!strcmp(name, "allcells")) {
-        Cvo->cvo_useallcells = GTKdev::GetStatus(caller);
+        if (GTKdev::GetStatus(caller))
+            CDvdb()->setVariable(VA_OutAllCells, "");
+        else
+            CDvdb()->clearVariable(VA_OutAllCells);
         return;
     }
     if (!strcmp(name, "noflvias")) {
@@ -682,7 +685,7 @@ sCvo::cvo_action(GtkWidget *caller, void*)
     if (!strcmp(name, "WriteFile")) {
         if (!Cvo->cvo_callback ||
                 !(*Cvo->cvo_callback)(fmtvals[cvo_fmt_type].filetype,
-                    Cvo->cvo_useallcells, Cvo->cvo_arg))
+                    FIO()->IsOutAllCells(), Cvo->cvo_arg))
             Cvt()->PopUpExport(0, MODE_OFF, 0, 0);
     }
 }

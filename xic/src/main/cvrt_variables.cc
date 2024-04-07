@@ -671,6 +671,14 @@ namespace {
     }
 
     bool
+    evOutAllCells(const char*, bool set)
+    {
+        FIO()->SetOutAllCells(set);
+        CDvdb()->registerPostFunc(postset);
+        return (true);
+    }
+
+    bool
     evOut32nodes(const char*, bool set)
     {
         CD()->SetOut32nodes(set);
@@ -1022,12 +1030,13 @@ cConvert::setupVariables()
     vsetup(VA_StripForExport,           0,  evStripForExport);
     vsetup(VA_WriteMacroProps,          0,  evWriteMacroProps);
     vsetup(VA_KeepLibMasters,           B,  evKeepLibMasters);
-    vsetup("WriteAllCells",             B,  evKeepLibMasters);  // Back compat.
+    vsetup("WriteAllCells",             B,  evKeepLibMasters);  // back compat
     vsetup(VA_SkipInvisible,            S,  evSkipInvisible);
     vsetup(VA_NoCompressContext,        B,  evNoCompressContext);
     vsetup(VA_RefCellAutoRename,        B,  evRefCellAutoRename);
     vsetup(VA_UseCellTab,               B,  evUseCellTab);
     vsetup(VA_SkipOverrideCells,        B,  evSkipOverrideCells);
+    vsetup(VA_OutAllCells,              B,  evOutAllCells);
     vsetup(VA_Out32nodes,               0,  evOut32nodes);
     vsetup(VA_OutToLower,               B,  evOutToLower);
     vsetup(VA_OutToUpper,               B,  evOutToUpper);

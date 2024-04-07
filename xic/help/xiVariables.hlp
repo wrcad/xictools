@@ -298,7 +298,7 @@ xiVariables.hlp
     <tr><td><b>OasPrintNoWrap</b></td><td>Use one line per record in OASIS ASCII output</td></tr>
     <tr><td><b>OasPrintOffset</b></td><td>Add file offsets to OASIS ASCII output</td></tr>
 
-!! 081318
+!! 040724
     <tr><th colspan=2><a href="!set:cvexport">Convert Menu - Output</a></th></tr>
     <tr><td><b>StripForExport</b></td><td>Strip all format extensions from output file</td></tr>
     <tr><td><b>WriteMacroProps</b></td><td>Include deprecated <b>macro</b> properties in output</td></tr>
@@ -308,6 +308,7 @@ xiVariables.hlp
     <tr><td><b>RefCellAutoRename</b></td><td>Use auto-rename when writing reference cell data</td></tr>
     <tr><td><b>UseCellTab</b></td><td>Enable use of the cell override table in CHD access</td></tr>
     <tr><td><b>SkipOverrideCells</b></td><td>Skip cells in override table in CHD access</td></tr>
+    <tr><td><b>OutAllCells</b></td><td>Output all cells in symbol table, not only current</td></tr>
     <tr><td><b>Out32nodes</b></td><td>Use old 3.2 node property syntax in output</td></tr>
     <tr><td><b>OutToLower</b></td><td>Map lower case cell names to upper in archive write</td></tr>
     <tr><td><b>OutToUpper</b></td><td>Map upper case cell names to lower in archive write</td></tr>
@@ -4373,6 +4374,7 @@ Convert Menu - Input and ASCII Output
 !!REDIRECT RefCellAutoRename    !set:cvexport#RefCellAutoRename
 !!REDIRECT UseCellTab           !set:cvexport#UseCellTab
 !!REDIRECT SkipOverrideCells    !set:cvexport#SkipOverrideCells
+!!REDIRECT OutAllCells          !set:cvexport#OutAllCells
 !!REDIRECT Out32nodes           !set:cvexport#Out32nodes
 !!REDIRECT OutToLower           !set:cvexport#OutToLower
 !!REDIRECT OutToUpper           !set:cvexport#OutToUpper
@@ -4733,6 +4735,23 @@ Convert Menu - Output
     <p>
     This variable tracks the state of the <b>Override</b> and
     <b>Skip</b> radio buttons in the <b>Cell Table Listing</b> panel.
+    </dl>
+
+!! 040724
+    <a name="OutAllCells"></a>
+    <dl>
+    <dt><b>OutAllCells</b><dd>
+    <b>Value:</b> boolean.<br>
+    When set, all cells in the current <a href="xic:stabs">symbol
+    table</a>, not just the hierarchy of the current cell, will be
+    output as if they were part of the hierarchy.  The usual filtering
+    of library and sub-master cells is retained.  The resulting file
+    may have multiple top-level cells.  This variable tracks the state
+    of the <b>Consider ALL cells in current symbol table for
+    output</b> check box in the <a href="xic:exprt"><b>Export
+    Control</b></a> panel from the <a
+    href="xic:cvrtmenu"><b>Convert</b></a> main menu <b>Export Cell
+    Data</b> button.
     </dl>
 
 !! 071415

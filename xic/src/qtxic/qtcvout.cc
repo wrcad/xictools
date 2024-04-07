@@ -130,7 +130,6 @@ QTconvertOutDlg::QTconvertOutDlg(GRobject c, CvoCallback callback, void *arg)
     cvo_cnmap = 0;
     cvo_callback = callback;
     cvo_arg = arg;
-    cvo_useallcells = false;
 
     // Dangerous to leave this in effect, force user to turn in on
     // when needed.
@@ -361,6 +360,8 @@ QTconvertOutDlg::update()
         CDvdb()->getVariable(VA_PCellKeepSubMasters));
     QTdev::SetStatus(cvo_viasub,
         CDvdb()->getVariable(VA_ViaKeepSubMasters));
+    QTdev::SetStatus(cvo_allcells,
+        CDvdb()->getVariable(VA_OutAllCells));
     QTdev::SetStatus(cvo_noflvias,
         CDvdb()->getVariable(VA_NoFlattenStdVias));
     QTdev::SetStatus(cvo_noflpcs,
@@ -502,7 +503,10 @@ QTconvertOutDlg::viasub_btn_slot(int state)
 void
 QTconvertOutDlg::allcells_btn_slot(int state)
 {
-    cvo_useallcells = state;
+    if (state)
+        CDvdb()->setVariable(VA_OutAllCells, "");
+    else
+        CDvdb()->clearVariable(VA_OutAllCells);
 }
 
 
@@ -559,7 +563,7 @@ QTconvertOutDlg::write_btn_slot()
 {
     if (!cvo_callback ||
             !(*cvo_callback)(cvo_fmtvals[cvo_fmt_type].filetype,
-                cvo_useallcells, cvo_arg))
+                FIO()->IsOutAllCells(), cvo_arg))
         Cvt()->PopUpExport(0, MODE_OFF, 0, 0);
 }
 

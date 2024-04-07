@@ -93,12 +93,13 @@
 // Convert Menu - Output
 #define VA_StripForExport           "StripForExport"
 #define VA_WriteMacroProps          "WriteMacroProps"
-#define VA_KeepLibMasters           "KeepLibMasters"  // was WriteAllCells
+#define VA_KeepLibMasters           "KeepLibMasters"
 #define VA_SkipInvisible            "SkipInvisible"
 #define VA_NoCompressContext        "NoCompressContext"
 #define VA_RefCellAutoRename        "RefCellAutoRename"
 #define VA_UseCellTab               "UseCellTab"
 #define VA_SkipOverrideCells        "SkipOverrideCells"
+#define VA_OutAllCells              "OutAllCells"
 #define VA_Out32nodes               "Out32nodes"
 #define VA_OutToLower               "OutToLower"
 #define VA_OutToUpper               "OutToUpper"

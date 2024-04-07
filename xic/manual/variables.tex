@@ -265,7 +265,7 @@ follow.
 \et OasPrintNoWrap & Use one line per record in OASIS ASCII output\\ \hline
 \et OasPrintOffset & Add file offsets to OASIS ASCII output\\ \hline
 
-% 081318
+% 040724
 \multicolumn{2}{|c|}{\kb Convert Menu -- Output}\\ \hline
 \et StripForExport & Strip all format extensions from output file\\ \hline
 \et WriteMacroProps & Include deprecated {\et macro} properties in output\\ \hline
@@ -277,6 +277,7 @@ follow.
   \hline
 \et UseCellTab & Enable use of the cell override table in CHD access\\ \hline
 \et SkipOverrideCells & Skip cells in override table in CHD access\\ \hline
+\et OutAllCells & Output all cells in symbol table, not only current\\ \hline
 \et Out32nodes & Use old 3.2 node property syntax in output\\ \hline
 \et OutToLower & Map lower case cell names to upper in archive write\\ \hline
 \et OutToUpper & Map upper case cell names to lower in archive write\\ \hline
@@ -3615,6 +3616,18 @@ can be satisfied by another source, such as a library.
 
 This variable tracks the state of the {\cb Override} and {\cb Skip}
 radio buttons in the {\cb Cell Table Listing} panel.
+
+% 040724
+\index{OutAllCells variable}
+\item{\et OutAllCells}\\
+{\bf Value:} boolean.\\
+When set, all cells in the current symbol table, not just the
+hierarchy of the current cell, will be output as if they were part of
+the hierarchy.  The usual filtering of library and sub-master cells is
+retained.  The resulting file may have multiple top-level cells.  This
+variable tracks the state of the {\cb Consider ALL cells in current
+symbol table for output} check box in the {\cb Export Control} panel
+from the {\cb Convert} main menu {\cb Export Cell Data} button.
 
 % 071415
 \index{Out32nodes variable}

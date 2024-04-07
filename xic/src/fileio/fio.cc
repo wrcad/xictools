@@ -137,6 +137,7 @@ cFIO::cFIO()
     fioRefCellAutoRename = false;
     fioUseCellTab = false;
     fioSkipOverrideCells = false;
+    fioOutAllCells = false;
     fioOutToLower = false;
     fioOutToUpper = false;
     fioOutUseAlias = UAnone;
