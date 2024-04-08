@@ -54,7 +54,7 @@
 using namespace qtinterf;
 
 
-QTtextEdit::QTtextEdit(QWidget *prnt) : QTextEdit(prnt)
+QTtextEdit::QTtextEdit(QWidget *prnt) : QTextBrowser(prnt)
 {
     // Set an arrow cursor rather than te default I-beam.
     viewport()->setCursor(Qt::ArrowCursor);

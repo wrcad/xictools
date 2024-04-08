@@ -338,6 +338,10 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     label = new QLabel(tr("Cursor:"));
     hb->addWidget(label);
 
+    // Weirdness:  When any input widget (including the spin buttons
+    // below) have the focus, the cursor reverts back to the QT
+    // default (QT6 on macOS).
+
     at_cursor = new QComboBox();
     hb->addWidget(at_cursor);
     for (int i = 0; cursvals[i]; i++)

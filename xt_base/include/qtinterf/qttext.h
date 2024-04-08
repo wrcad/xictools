@@ -128,6 +128,7 @@ private slots:
     void help_btn_slot();
     void activate_btn_slot(bool);
     void dismiss_btn_slot();
+    void anchor_clicked_slot(const QUrl&);
 
 private:
     static ESret tx_save_cb(const char*, void*);

@@ -38,6 +38,7 @@
  $Id:$
  *========================================================================*/
 
+#include "config.h"
 #include "qtinterf.h"
 #include "qttext.h"
 #include "qttextw.h"
@@ -45,6 +46,9 @@
 #include "qtinput.h"
 #include "qtmsg.h"
 #include "miscutil/filestat.h"
+#ifdef HAVE_MOZY
+#include "help/help_defs.h"
+#endif
 
 #include <QAction>
 #include <QGroupBox>
@@ -119,6 +123,9 @@ QTtextDlg::QTtextDlg(QTbag *owner, const char *message_str, PuType which,
     if (tx_style == STY_HTML) {
         // Wrap lines, this is not the default.
         tx_tbox->setLineWrapMode(QTextEdit::WidgetWidth);
+        tx_tbox->setOpenLinks(false);
+        connect(tx_tbox, SIGNAL(anchorClicked(const QUrl&)),
+            this, SLOT(anchor_clicked_slot(const QUrl&)));
     }
     tx_save = new QPushButton(tr("Save Text "));
     hbox->addWidget(tx_save);
@@ -371,5 +378,16 @@ void
 QTtextDlg::dismiss_btn_slot()
 {
     delete this;
+}
+
+
+void
+QTtextDlg::anchor_clicked_slot(const QUrl &url)
+{
+    // Assume that urls are help keywords, as for the !set pop-up in
+    // Xic.
+#ifdef HAVE_MOZY
+    HLP()->word(url.toString().toLatin1().constData());
+#endif
 }
 

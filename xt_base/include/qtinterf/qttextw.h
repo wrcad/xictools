@@ -41,7 +41,7 @@
 #ifndef QTTEXTW_H
 #define QTTEXTW_H
 
-#include <QTextEdit>
+#include <QTextBrowser>
 #include <QMimeData>
 #include <QDragEnterEvent>
 
@@ -55,7 +55,7 @@ namespace qtinterf {
     class QTtextEdit;
 }
 
-class qtinterf::QTtextEdit : public QTextEdit
+class qtinterf::QTtextEdit : public QTextBrowser
 {
     Q_OBJECT
 
