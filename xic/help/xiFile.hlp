@@ -130,7 +130,7 @@ File Select
 !!SEEALSO
 xic:filemenu
 
-!! 022716
+!! 040724
 !!KEYWORD
 xic:open
 !!TITLE
@@ -151,30 +151,32 @@ Open
     The <b>Open</b> button in the <b>File Menu</b> is used to read a
     file and/or load a cell for editing.  The button presents a
     drop-down menu containing the names of the last eight cells opened
-    for editing, plus "<b>new</b>" and "<b>temporary</b>" entries.
+    for editing, plus "<b>new</b>" and "<b>prev</b>" entries.  If
+    <b>prev</b> is clicked, the last opened cell (if any) will be
+    reopened in the main window.
 
     <p>
     If one holds down <b>Shift</b> while selecting one of cells from
     the history list, the <a href="xic:place">Cell Placement
     Control</a> panel will appear with that cell added as the current
     master.  This applies to cell names and not <b>new</b> or
-    <b>temporary</b>.  This is a quick backdoor for instantiating
+    <b>prev</b>.  This is a quick backdoor for instantiating
     cells recently edited.
 
     <p>
-    The <b>temporary</b> button in the menu opens a new cell with a
-    unique name.  This can be used for experimentation, or for other
-    purposes.  The <a href="xic:save"><b>Save As</b></a> command can
-    be used to save the contents to a cell with a more descriptive
-    name, if desired.
+    Selecting <b>new</b> with the <b>Shift<b> button held down opens a
+    new cell with a unique name.  This can be used for
+    experimentation, or for other purposes.  The <a
+    href="xic:save"><b>Save As</b></a> command can be used to save the
+    contents to a cell with a more descriptive name, if desired.
 
     <p>
-    Selecting <b>new</b> will use the <a href="promptline">prompt
-    line</a> to request a file or cell name to open.  The internal
-    keyword <tt>open</tt> is associated with this button.  The
-    accelerator actually maps to the <b>new</b> button in the pop-up
-    menu, i.e., the accelerator will cause prompting for the name of a
-    file or cell to open.
+    Otherwise, selecting <b>new</b> will use the <a
+    href="promptline">prompt line</a> to request a file or cell name
+    to open.  The internal keyword <tt>open</tt> is associated with
+    this button.  The accelerator actually maps to the <b>new</b>
+    button in the pop-up menu, i.e., the accelerator will cause
+    prompting for the name of a file or cell to open.
 
     <p>
     The default name used in the prompt for the cell to edit will be
