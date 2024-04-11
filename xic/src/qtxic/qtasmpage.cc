@@ -88,8 +88,7 @@ QTasmPagePathEdit::dropEvent(QDropEvent *ev)
 {
     if (ev->mimeData()->hasUrls()) {
         QByteArray ba = ev->mimeData()->data("text/plain");
-        const char *str = ba.constData() + strlen("File://");
-        setText(str);
+        setText(ba.constData());
         ev->accept();
         return;
     }
@@ -153,8 +152,7 @@ QTasmPageTreeWidget::dropEvent(QDropEvent *ev)
     }
     if (ev->mimeData()->hasUrls()) {
         QByteArray ba = ev->mimeData()->data("text/plain");
-        const char *str = ba.constData() + strlen("File://");
-        pg->add_instance(str);
+        pg->add_instance(ba.constData());
         ev->accept();
         return;
     }

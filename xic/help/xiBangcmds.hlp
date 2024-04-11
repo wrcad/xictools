@@ -636,7 +636,7 @@ keybang
 
     <p>
     The same digest can be obtained from the following command, which
-    is available on most Unix/Linux/OS X systems:
+    is available on most Unix/Linux/macOS systems:
     <blockquote>
     <tt>openssl dgst -md5</tt> <i>filepath</i>
     </blockquote>
@@ -2744,7 +2744,7 @@ keybang
 
     <p>
     This specifies the default proportional font family used in HTML
-    viewer (help) windows, and applies to Linux/OS X releases
+    viewer (help) windows, and applies to Linux/macOS releases
     only.  Under Microsoft Windows, this command does nothing.  This
     is the font used to render most text in the help windows.
 
@@ -2775,7 +2775,7 @@ keybang
 
     <p>
     This specifies the default fixed font family used in HTML viewer
-    (help) windows, in Linux/OS X releases only.  Under Microsoft
+    (help) windows, in Linux/macOS releases only.  Under Microsoft
     Windows, this command does nothing.  The fixed font is used to
     render typewriter and preformatted text.
 

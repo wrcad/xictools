@@ -2444,7 +2444,7 @@ File Menu - Printing
     <dl>
     <dt><b>DefaultPrintCommand</b><dd>
     <b>Value:</b> string.<br>
-    Under Unix/Linux/OS X, this variable overrides the default
+    Under Unix/Linux/macOS, this variable overrides the default
     operating system command string to print a file.  In Windows, this
     will be the printer name instead.
 

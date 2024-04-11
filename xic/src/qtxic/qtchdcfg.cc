@@ -132,7 +132,7 @@ QTchdCfgCellEdit::dropEvent(QDropEvent *ev)
 {
     if (ev->mimeData()->hasUrls()) {
         QByteArray ba = ev->mimeData()->data("text/plain");
-        const char *str = ba.constData() + strlen("File://");
+        const char *str = ba.constData();
         str = lstring::strip_path(str);
         setText(str);
         ev->accept();

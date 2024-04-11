@@ -2496,8 +2496,7 @@ QTsubwin::drop_slot(QDropEvent *ev)
 {
     if (ev->mimeData()->hasUrls()) {
         QByteArray ba = ev->mimeData()->data("text/plain");
-        const char *str = ba.constData() + strlen("File://");
-        load_file_proc("", str);
+        load_file_proc("", ba.constData());
         ev->accept();
         return;
     }

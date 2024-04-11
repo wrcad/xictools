@@ -456,9 +456,8 @@ QTplaceDlg::dropEvent(QDropEvent *ev)
 {
     if (ev->mimeData()->hasUrls()) {
         QByteArray ba = ev->mimeData()->data("text/plain");
-        const char *str = ba.constData() + strlen("File://");
         delete [] pl_dropfile;
-        pl_dropfile = lstring::copy(str);
+        pl_dropfile = lstring::copy(ba.constData());
         master_menu_active_slot(0);
         ev->accept();
         return;
