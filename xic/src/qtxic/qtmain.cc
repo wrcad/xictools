@@ -2059,7 +2059,8 @@ QTsubwin::button_up_slot(QMouseEvent *ev)
         while ((wd = wgen.next()) != 0) {
             if (wd == sw_windesc)
                 continue;
-            if (!wd->IsSimilar(sw_windesc))
+            // Allow different cells for copy.
+            if (!wd->IsSimilar(sw_windesc, WDsimXcell))
                 continue;
             QTsubwin *w = dynamic_cast<QTsubwin*>(wd->Wbag());
             if (w->Viewport() == cvs) {
@@ -2152,7 +2153,8 @@ QTsubwin::motion_slot(QMouseEvent *ev)
         while ((wd = wgen.next()) != 0) {
             if (wd == sw_windesc)
                 continue;
-            if (!wd->IsSimilar(sw_windesc))
+            // Allow different cells for copy.
+            if (!wd->IsSimilar(sw_windesc, WDsimXcell))
                 continue;
             QTsubwin *w = dynamic_cast<QTsubwin*>(wd->Wbag());
             if (w->Viewport() == cvs) {

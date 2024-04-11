@@ -367,7 +367,7 @@ CopyState::b1up_altw()
     if (!DSP()->MainWdesc()->IsSimilar(EV()->ButtonWin(true), WDsimXcell))
         return;
     if (Level == 1) {
-        int win_id;
+        uintptr_t win_id;
         if (!cEventHdlr::sel_b1up_altw(&AOI, 0, 0, &win_id))
             return;
         WindowDesc *wd = DSP()->Windesc(win_id);

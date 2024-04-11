@@ -133,13 +133,13 @@ struct CursorDesc
 
     int get_upstate()                   const { return (c_upstate); }
     int get_downstate()                 const { return (c_downstate); }
-    unsigned long get_window()          const { return (c_window); }
+    uintptr_t get_window()              const { return (c_window); }
 
     void get_alt_down(int *x, int *y) const { *x = c_raw_x_a; *y = c_raw_y_a; }
     void get_alt_up(int *x, int *y)     const { *x = c_up_x_a; *y = c_up_y_a; }
     int get_alt_downstate()             const { return (c_downstate_a); }
     int get_alt_upstate()               const { return (c_upstate_a); }
-    unsigned long get_alt_window()      const { return (c_window_a); }
+    uintptr_t get_alt_window()          const { return (c_window_a); }
     bool get_press_alt()                const { return (c_press_alt); }
     bool get_was_press_alt()            const { return (c_was_press_alt); }
 
@@ -161,11 +161,11 @@ private:
     void set_alt_up(int x, int y)       { c_up_x_a = x; c_up_y_a = y; }
     void set_alt_downstate(int s)       { c_downstate_a = s; }
     void set_alt_upstate(int s)         { c_upstate_a = s; }
-    void set_alt_window(unsigned long w){ c_window_a = w; }
+    void set_alt_window(uintptr_t w)    { c_window_a = w; }
     void set_press_alt(bool b)          { c_press_alt = b; }
     void set_was_press_alt(bool b)      { c_was_press_alt = b; }
 
-    void update_down(unsigned long winid, int xr, int yr, int xg, int yg,
+    void update_down(uintptr_t winid, int xr, int yr, int xg, int yg,
         int state)
         {
             c_window = winid;
@@ -197,14 +197,14 @@ private:
     int c_up_x, c_up_y;         // Release location.
     int c_upstate;              // Modifier state at press.
     int c_downstate;            // Modifier state at release.
-    unsigned long c_window;     // Window of press.
+    uintptr_t c_window;         // Window of press.
 
     // Save locations for press/release in non-similar window.
     int c_raw_x_a, c_raw_y_a;   // Down locs for alt window.
     int c_up_x_a, c_up_y_a;     // Up locs for alt window.
     int c_upstate_a;            // Modifier state at press.
     int c_downstate_a;          // Modifier state at release.
-    unsigned long c_window_a;   // Alternate window number of press.
+    uintptr_t c_window_a;       // Alternate window number of press.
 
     bool c_press_ok;            // Press within window.
     bool c_release_ok;          // Release within window.
@@ -363,7 +363,8 @@ public:
 
     static bool sel_b1up(BBox*, const char*, CDol**, bool = false);
     static void sel_b1down_altw();
-    static bool sel_b1up_altw(BBox*, const char*, CDol**, int*, bool = false);
+    static bool sel_b1up_altw(BBox*, const char*, CDol**, uintptr_t*,
+        bool = false);
     static void sel_esc();
     static bool sel_undo();
     static void sel_redo(bool = false);

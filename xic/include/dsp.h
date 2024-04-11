@@ -228,7 +228,7 @@ public:
     int OpenSubwin(const BBox*, WDdbType = WDcddb, const char* = 0,
         bool = false);
     int OpenSubwin(const CDs*, const hyEnt* = 0, bool = false);
-    WindowDesc *Windesc(unsigned long);
+    WindowDesc *Windesc(uintptr_t);
     void RedisplayArea(const BBox*, int = -1);
     void RedisplayAll(int = -1);
     void RedisplayAfterInterrupt();

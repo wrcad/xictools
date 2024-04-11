@@ -1282,7 +1282,7 @@ cEventHdlr::sel_b1down_altw()
 //
 bool
 cEventHdlr::sel_b1up_altw(BBox *AOI, const char *types, CDol **selection,
-    int *win_id, bool empty_click_desel)
+    uintptr_t *win_id, bool empty_click_desel)
 {
     selstate.id = 0;
     if (selstate.state < 0) {
