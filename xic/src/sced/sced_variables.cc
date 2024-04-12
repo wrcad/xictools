@@ -92,15 +92,22 @@ namespace {
     evShowDots(const char *vstring, bool set)
     {
         if (set) {
-            if (vstring && (*vstring == 'a' || *vstring == 'A'))
+            if (vstring && (*vstring == 'n' || *vstring == 'N')) {
+                SCD()->setShowDots(DotsNone);
+                SCD()->clearDots();
+            }
+            else if (vstring && (*vstring == 'a' || *vstring == 'A')) {
                 SCD()->setShowDots(DotsAll);
-            else
+                SCD()->recomputeDots();
+            }
+            else {
                 SCD()->setShowDots(DotsSome);
-            SCD()->recomputeDots();
+                SCD()->recomputeDots();
+            }
         }
         else {
-            SCD()->setShowDots(DotsNone);
-            SCD()->clearDots();
+            SCD()->setShowDots(DotsSome);
+            SCD()->recomputeDots();
         }
         DSP()->RedisplayAll(Electrical);
         CDvdb()->registerPostFunc(dots_postset);

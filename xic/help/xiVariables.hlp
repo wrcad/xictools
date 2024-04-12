@@ -234,7 +234,7 @@ xiVariables.hlp
     <tr><td><b>XSectNoAutoY</b></td><td>Disable cross-section automatic Y scaling</td></tr>
     <tr><td><b>XSectYScale</b></td><td>Set cross-section Y scale factor</td></tr>
 
-!! 101016
+!! 041224
     <tr><th colspan=2><a href="!set:attri">Attributes Menu Commands</a></th></tr>
     <tr><td><b>TechNoPrintPatMap</b></td><td>Use hex format for stipple maps when writing tech file</td></tr>
     <tr><td><b>TechPrintDefaults</b></td><td>Set printing of default values in tech file update</td></tr>
@@ -244,7 +244,7 @@ xiVariables.hlp
     <tr><td><b>EraseBehindTerms</b></td><td>Erase behind physical mode terminals marks</td></tr>
     <tr><td><b>TermTextSize</b></td><td>Pixel height of text used in terminal marks</td></tr>
     <tr><td><b>TermMarkSize</b></td><td>Pixel width of cross used for terminal marks</td></tr>
-    <tr><td><b>ShowDots</b></td><td>Show electrical connections</td></tr>
+    <tr><td><b>ShowDots</b></td><td>Control electrical connections display</td></tr>
     <tr><td><b>FullWinCursor</b></td><td>Enable full-window cursor</td></tr>
     <tr><td><b>CellThreshold</b></td><td>Min size in pixels of displayed subcell, integer >= 0</td></tr>
     <tr><td><b>GridNoCoarseOnly</b></td><td>Don't show coarse grid without fine grid</td></tr>
@@ -3367,30 +3367,38 @@ Attributes Menu Commands
     the <a href="xic:attrmenu"><b>Attributes Menu</b></a>.
     </dl>
 
-!! 042411
+!! 041224
     <a name="ShowDots"></a>
     <dl>
     <dt><b>ShowDots</b><dd>
-    <b>Value:</b> boolean or "<tt>a</tt>".<br>
-    This variable controls the mode used to add connection indications
-    (dots) to drawings in electrical mode.  It tracks and sets the
+    <b>Value:</b> boolean or "<tt>n</tt>" or "<tt>a</tt>".<br>
+    This variable sets the mode used to display connection indications
+    (dots) in schematics in electrical mode.  It tracks and sets the
     state of the buttons in the <b>Connection Points</b> panel
     available from the <a href="xic:dots"><b>Connection Dots</b></a>
     button in the <a href="xic:attrmenu"><b>Attributes Menu</b></a>.
 
     <p>
-    If not set, no connection point indication is used.  If set as a
-    boolean, or to any value that does not begin with '<tt>a</tt>' or
-    '<tt>A</tt>', the normal indication is used, whereby only
-    "ambiguous" connection points are marked.  These are wire vertices
-    common to two or more wires (except for common end vertices of two
-    wires), non-endpoint wire vertices common with device or
-    subcircuit terminals, and any point common to three or more
-    terminals or wire vertices.
+    If not set or set as a boolean, the normal indication is used,
+    whereby only "ambiguous" connection points are marked.  These are
+    wire vertices common to two or more wires (except for common end
+    vertices of two wires), non-endpoint wire vertices common with
+    device or subcircuit terminals, and any point common to three or
+    more terminals or wire vertices.  Note that the default for
+    release 4.3.13 and earlier was to not show connection dots.
 
     <p>
-    If set to a word starting with '<tt>a</tt>' or '<tt>A</tt>', all
-    connections are marked with a dot.
+    If set to "<tt>none</tt>" or any word starting with '<tt>n<\tt>'
+    or '<tt>N</tt>' no connection point indication is used.  If set to
+    "<tt>all</tt>" or any word starting with '<tt>a</tt>' or
+    '<tt>A</tt>', all connections are marked with a dot.  This is
+    sometimes useful to see if a connection actually exists at a given
+    location.
+
+    <p>
+    The computation of dot locations can be repeated by turning dots
+    off, then on again.  This may be needed occasionally to correct
+    misplaced dots.
     </dl>
 
 !! 012715

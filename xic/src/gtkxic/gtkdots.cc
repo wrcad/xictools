@@ -202,6 +202,11 @@ sDt::update()
 {
     const char *v = CDvdb()->getVariable(VA_ShowDots);
     if (!v) {
+        GTKdev::SetStatus(dt_none, false);
+        GTKdev::SetStatus(dt_norm, true);
+        GTKdev::SetStatus(dt_all, false);
+    }
+    else if (*v == 'n' || *v == 'N') {
         GTKdev::SetStatus(dt_none, true);
         GTKdev::SetStatus(dt_norm, false);
         GTKdev::SetStatus(dt_all, false);
@@ -236,9 +241,9 @@ sDt::dt_action(GtkWidget *caller, void*)
     if (!GTKdev::GetStatus(caller))
         return;
     if (caller == Dt->dt_none)
-        CDvdb()->clearVariable(VA_ShowDots);
+        CDvdb()->setVariable(VA_ShowDots, "none");
     else if (caller == Dt->dt_norm)
-        CDvdb()->setVariable(VA_ShowDots, "");
+        CDvdb()->clearVariable(VA_ShowDots);
     else if (caller == Dt->dt_all)
         CDvdb()->setVariable(VA_ShowDots, "all");
 }

@@ -196,7 +196,7 @@ follow.
 \et XSectNoAutoY & Disable cross-section automatic Y scaling\\ \hline
 \et XSectYScale & Set cross-section Y scale factor\\ \hline
 
-% 101016
+% 041224
 \multicolumn{2}{|c|}{\kb Attributes Menu Commands}\\ \hline
 \et TechNoPrintPatMap & Use hex format for stipple maps when writing tech
   file\\ \hline
@@ -207,7 +207,7 @@ follow.
 \et EraseBehindTerms & Erase behind physical mode terminals marks\\ \hline
 \et TermTextSize & Pixel height of text used in terminal marks\\ \hline
 \et TermMarkSize & Pixel width of cross used for terminal marks\\ \hline
-\et ShowDots & Show electrical connections\\ \hline
+\et ShowDots & Control electrical connections display\\ \hline
 \et FullWinCursor & Enable full-window cursor\\ \hline
 \et CellThreshold & Min size in pixels of displayed subcell, integer $>=$ 0\\
   \hline
@@ -2633,25 +2633,32 @@ This tracks the setting of the {\cb Terminal mark size} entry in the
 {\cb Terminals} page of the {\cb Window Attributes} panel from the
 {\cb Set Attributes} button in the {\cb Attributes Menu}.
 
-% 042411
+% 041224
 \index{ShowDots variable}
 \item{\et ShowDots}\\
-{\bf Value:} boolean or ``{\vt a}''.\\
-This variable controls the mode used to add connection indications
-(dots) to drawings in electrical mode.  It tracks and sets the state
+{\bf Value:} boolean or ``{\vt n}'' of ``{\vt a}''.\\
+This variable sets the mode used to display connection indications
+(dots) in schematics in electrical mode.  It tracks and sets the state
 of the buttons in the {\cb Connection Points} panel available from the
 {\cb Connection Dots} button in the {\cb Attributes Menu}.
 
-If not set, no connection point indication is used.  If set as a
-boolean, or to any value that does not begin with `{\vt a}' or `{\vt
-A}', the normal indication is used, whereby only ``ambiguous''
-connection points are marked.  These are wire vertices common to two
-or more wires (except for common end vertices of two wires),
-non-endpoint wire vertices common with device or subcircuit terminals,
-and any point common to three or more terminals or wire vertices.
+If not set or set as a boolean, the normal indication is used, whereby
+only ``ambiguous'' connection points are marked.  These are wire
+vertices common to two or more wires (except for common end vertices
+of two wires), non-endpoint wire vertices common with device or
+subcircuit terminals, and any point common to three or more terminals
+or wire vertices.  Note that the default for release 4.3.13 and
+earlier was to not show connection dots.
 
-If set to a word starting with `{\vt a}' or `{\vt A}', all connections
-are marked with a dot.
+If set to ``{\vt none}'' or any word starting with `{\vt n}' or `{\vt
+n}', no connection point indication is used.  If set to ``{\vt all}''
+of any word starting with `{\vt a}' or `{\vt A}', all connections are
+marked with a dot.  This is sometimes useful to see if a connection
+actually exists at a given location.
+
+The computation of dot locations can be repeated by turning dots off,
+then on again.  This may be needed occasionally to correct misplaced
+dots.
 
 % 012715
 \index{FullWinCursor variable}
