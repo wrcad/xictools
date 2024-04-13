@@ -2718,7 +2718,7 @@ QTmainwin::minimumSizeHint() const
 }
 
 
-//#ifdef QT_OS_X11
+//#ifdef Q_OS_X11
 #if 0
 namespace {
     // Load colors using the X resource mechanism.
@@ -2789,7 +2789,7 @@ QTmainwin::initialize()
     // This is done again in AppInit(), but it is needed for the menus.
     DSP()->SetCurMode(XM()->InitialMode());
 
-#ifdef QT_OS_X11
+#ifdef Q_OS_X11
     xrm_load_colors();
 #endif
     DSP()->ColorTab()->init();

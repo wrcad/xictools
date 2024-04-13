@@ -291,7 +291,7 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c) : QTbag(this)
     a = db_filemenu->addAction(tr("Paste from Clipboard"));
     a->setData(3);
     a->setShortcut(QKeySequence("Ctrl+V"));
-#ifdef QT_OS_LINUX
+#ifdef Q_OS_LINUX
     // Paste Primary, <alt>P, db_paste_prim_proc, 0, 0
     a = db_editmenu->addAction(tr("Paste Primary"));
     a->setData(4);

@@ -1224,7 +1224,7 @@ QTruleDlg::apply()
             }
             if (ru_opp_sb1->value() > 0.0 || ru_opp_sb2->value() > 0.0) {
                 lstr.add_c(' ');
-#ifdef QT_OS_X11
+#ifdef Q_OS_X11
 #undef Opposite
 // Stupid thing in X.h.
 #endif

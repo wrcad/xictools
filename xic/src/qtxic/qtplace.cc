@@ -46,6 +46,7 @@
 #include "qtmenu.h"
 #include "qtinterf/qtdblsb.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QLabel>
 #include <QPushButton>
@@ -295,6 +296,7 @@ QTplaceDlg::QTplaceDlg(bool noprompt)
     }
 
     btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -332,6 +334,29 @@ QTplaceDlg::~QTplaceDlg()
     if (pl_realname)
         delete [] pl_realname;
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTplaceDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss", Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            if (QApplication::activeWindow() == QTmainwin::self())
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 void
