@@ -70,7 +70,7 @@ enum locType { locStart, locPresent, locFollowCurrent };
 class QTreeWidget;
 class QTreeWidgetItem;
 class QLabel;
-class QPushButton;
+class QToolButton;
 class QMenu;
 class QAction;
 class QMouseEvent;
@@ -87,8 +87,12 @@ class QTdbgVarsDlg : public QDialog
     Q_OBJECT
 
 public:
-    QTdbgVarsDlg(void*);
+    QTdbgVarsDlg(void*, QWidget* = 0);
     ~QTdbgVarsDlg();
+
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
 
     void update(stringlist*);
 
@@ -96,7 +100,7 @@ public:
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -242,7 +246,7 @@ private:
     GRobject    db_caller;
     QLabel      *db_modelabel;
     QLabel      *db_title;
-    QPushButton *db_modebtn;
+    QToolButton *db_modebtn;
     QAction     *db_saveas;
     QAction     *db_undo;
     QAction     *db_redo;

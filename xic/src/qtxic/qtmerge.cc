@@ -223,6 +223,7 @@ QTmergeDlg::QTmergeDlg(mitem_t *mi)
     hbox->addWidget(btn);
     btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
+
     btn = new QPushButton(tr("Apply To Rest"));
     hbox->addWidget(btn);
     btn->setAutoDefault(false);

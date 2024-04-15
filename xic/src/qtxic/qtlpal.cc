@@ -52,7 +52,9 @@
 #include "qtinterf/qtfont.h"
 #include "qtinterf/qtcanvas.h"
 
+#include <QApplication>
 #include <QLayout>
+#include <QToolButton>
 #include <QPushButton>
 #include <QGroupBox>
 #include <QMenu>
@@ -153,7 +155,6 @@ QTlayerPaletteDlg::QTlayerPaletteDlg(GRobject caller) : QTdraw(XW_LPAL)
 
     setWindowTitle(tr("Layer Palette"));
     setAttribute(Qt::WA_DeleteOnClose);
-//    gtk_window_set_resizable(GTK_WINDOW(lp_shell), false);
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;
@@ -166,9 +167,9 @@ QTlayerPaletteDlg::QTlayerPaletteDlg(GRobject caller) : QTdraw(XW_LPAL)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    QPushButton *recall_btn = new QPushButton(tr("Recall"));
+    QToolButton *recall_btn = new QToolButton();
+    recall_btn->setText(tr("Recall"));
     hbox->addWidget(recall_btn);
-    recall_btn->setAutoDefault(false);
 
     lp_recall_menu = new QMenu();
     recall_btn->setMenu(lp_recall_menu);
@@ -181,9 +182,9 @@ QTlayerPaletteDlg::QTlayerPaletteDlg(GRobject caller) : QTdraw(XW_LPAL)
     connect(lp_recall_menu, SIGNAL(triggered(QAction*)),
         this, SLOT(recall_menu_slot(QAction*)));
 
-    QPushButton *save_btn = new QPushButton(tr("Save"));
+    QToolButton *save_btn = new QToolButton();
+    save_btn->setText(tr("Save"));
     hbox->addWidget(save_btn);
-    save_btn->setAutoDefault(false);
 
     lp_save_menu = new QMenu();
     save_btn->setMenu(lp_save_menu);
@@ -196,15 +197,15 @@ QTlayerPaletteDlg::QTlayerPaletteDlg(GRobject caller) : QTdraw(XW_LPAL)
     connect(lp_save_menu, SIGNAL(triggered(QAction*)),
         this, SLOT(save_menu_slot(QAction*)));
 
-    lp_remove = new QPushButton(tr("Remove"));
+    lp_remove = new QToolButton();
+    lp_remove->setText(tr("Remove"));
     hbox->addWidget(lp_remove);
     lp_remove->setCheckable(true);
-    lp_remove->setAutoDefault(false);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     QGroupBox *gb = new QGroupBox();
     vbox->addWidget(gb);
@@ -236,7 +237,8 @@ QTlayerPaletteDlg::QTlayerPaletteDlg(GRobject caller) : QTdraw(XW_LPAL)
     connect(Viewport(), SIGNAL(drop_event(QDropEvent*)),
         this, SLOT(drop_slot(QDropEvent*)));
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -253,6 +255,33 @@ QTlayerPaletteDlg::~QTlayerPaletteDlg()
     if (lp_caller)
         QTdev::Deselect(lp_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTlayerPaletteDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 // Update the info text.

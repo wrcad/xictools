@@ -47,6 +47,7 @@
 #include "errorlog.h"
 #include "qtinterf/qtdblsb.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QTabWidget>
 #include <QGroupBox>
@@ -55,6 +56,7 @@
 #include <QCheckBox>
 #include <QComboBox>
 #include <QSpinBox>
+#include <QToolButton>
 #include <QPushButton>
 #include <QRadioButton>
 #include <QMenu>
@@ -298,10 +300,10 @@ QTcompareDlg::QTcompareDlg(GRobject c)
     QLabel *label = new QLabel(tr("Compare Cells/Geometry Between Layouts"));
     hb->addWidget(label);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // Comparison mode selection notebook.
     //
@@ -400,11 +402,13 @@ QTcompareDlg::QTcompareDlg(GRobject c)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    btn = new QPushButton(tr("Go"));
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(go_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Go"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(go_btn_slot()));
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -422,6 +426,33 @@ QTcompareDlg::~QTcompareDlg()
     if (cmp_caller)
         QTdev::Deselect(cmp_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTcompareDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 void
@@ -663,10 +694,10 @@ QTcompareDlg::per_cell_obj_page()
     connect(cmp_p1_fltr, SIGNAL(currentIndexChanged(int)),
         this, SLOT(p1_fltr_menu_slot(int)));
 
-    cmp_p1_setup = new QPushButton(tr("Setup"));
+    cmp_p1_setup = new QToolButton();
+    cmp_p1_setup->setText(tr("Setup"));
     hb->addWidget(cmp_p1_setup);
     cmp_p1_setup->setCheckable(true);
-    cmp_p1_setup->setAutoDefault(false);
     connect(cmp_p1_setup, SIGNAL(toggled(bool)),
         this, SLOT(p1_setup_btn_slot(bool)));
 
@@ -721,9 +752,9 @@ QTcompareDlg::flat_geom_page()
     connect(cmp_p3_aoi_use, SIGNAL(stateChanged(int)),
         this, SLOT(p3_usewin_btn_slot(int)));
 
-    cmp_p3_s_btn = new QPushButton("S");
+    cmp_p3_s_btn = new QToolButton();
+    cmp_p3_s_btn->setText("S");
     grid->addWidget(cmp_p3_s_btn, 1, 0);
-    cmp_p3_s_btn->setAutoDefault(false);
     cmp_p3_s_menu = new QMenu();
     char buf[64];
     cmp_p3_s_btn->setMenu(cmp_p3_s_menu);
@@ -735,9 +766,9 @@ QTcompareDlg::flat_geom_page()
     connect(cmp_p3_s_menu, SIGNAL(triggered(QAction*)),
         this, SLOT(p3_s_menu_slot(QAction*)));
 
-    cmp_p3_r_btn = new QPushButton("R");
+    cmp_p3_r_btn = new QToolButton();
+    cmp_p3_r_btn->setText("R");
     grid->addWidget(cmp_p3_r_btn, 2, 0);
-    cmp_p3_r_btn->setAutoDefault(false);
     cmp_p3_r_menu = new QMenu();
     cmp_p3_r_btn->setMenu(cmp_p3_r_menu);
     for (int i = 0; i < FIO_NUM_BB_STORE; i++) {

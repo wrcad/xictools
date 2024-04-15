@@ -60,7 +60,6 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QToolBar>
-#include <QPushButton>
 #include <QToolButton>
 #include <QStatusBar>
 #include <QTextBlock>
@@ -538,16 +537,18 @@ QTeditDlg::set_caller(GRobject obj)
     if (obj) {
         QObject *o = (QObject*)obj;
         if (o->isWidgetType()) {
-            QPushButton *btn = dynamic_cast<QPushButton*>(o);
-            if (btn)
-                connect(btn, SIGNAL(clicked()),
-                    this, SLOT(quit_slot()));
+            QAbstractButton *btn = dynamic_cast<QAbstractButton*>(o);
+            if (btn) {
+                connect(btn, SIGNAL(clicked()), this, SLOT(quit_slot()));
+                return;
+            }
         }
         else {
             QAction *a = dynamic_cast<QAction*>(o);
-            if (a)
-                connect(a, SIGNAL(triggered()),
-                    this, SLOT(quit_slot()));
+            if (a) {
+                connect(a, SIGNAL(triggered()), this, SLOT(quit_slot()));
+                return;
+            }
         }
     }
 }

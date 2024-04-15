@@ -51,7 +51,7 @@
 // QTstabDlg:  Dialog to set current symbol table.
 
 class QComboBox;
-class QPushButton;
+class QToolButton;
 
 class QTstabDlg : public QDialog, public QTbag
 {
@@ -61,13 +61,17 @@ public:
     QTstabDlg(GRobject);
     ~QTstabDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update();
 
     void set_transient_for(QWidget *prnt)
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -97,9 +101,9 @@ private:
 
     GRobject    tb_caller;
     QComboBox   *tb_tables;
-    QPushButton *tb_add;
-    QPushButton *tb_clr;
-    QPushButton *tb_del;
+    QToolButton *tb_add;
+    QToolButton *tb_clr;
+    QToolButton *tb_del;
 
     GRledPopup  *tb_add_pop;
     GRaffirmPopup *tb_clr_pop;

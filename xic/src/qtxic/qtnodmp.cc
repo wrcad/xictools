@@ -63,7 +63,9 @@
 #include "regex/regex.h"
 #endif
 
+#include <QApplication>
 #include <QLayout>
+#include <QToolButton>
 #include <QPushButton>
 #include <QLineEdit>
 #include <QTreeWidget>
@@ -203,38 +205,38 @@ QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node) : QTbag(this)
 
     // button line
     //
-    nm_use_np = new QPushButton(tr("Use nophys"));
+    nm_use_np = new QToolButton();
+    nm_use_np->setText(tr("Use nophys"));
     hbox->addWidget(nm_use_np);
     nm_use_np->setCheckable(true);
-    nm_use_np->setAutoDefault(false);
     connect(nm_use_np, SIGNAL(toggled(bool)),
         this, SLOT(nophys_btn_slot(bool)));
 
-    nm_rename = new QPushButton(tr("Map Name"));
+    nm_rename = new QToolButton();
+    nm_rename->setText(tr("Map Name"));
     hbox->addWidget(nm_rename);
     nm_rename->setCheckable(true);
-    nm_rename->setAutoDefault(false);
     connect(nm_rename, SIGNAL(toggled(bool)),
         this, SLOT(mapname_btn_slot(bool)));
 
-    nm_remove = new QPushButton(tr("Unmap"));
+    nm_remove = new QToolButton();
+    nm_remove->setText(tr("Unmap"));
     hbox->addWidget(nm_remove);
     nm_remove->setCheckable(true);
-    nm_remove->setAutoDefault(false);
     connect(nm_remove, SIGNAL(toggled(bool)),
         this, SLOT(unmap_btn_slot(bool)));
 
-    nm_point_btn = new QPushButton(tr("Click-Select Mode"));
+    nm_point_btn = new QToolButton();
+    nm_point_btn->setText(tr("Click-Select Mode"));
     hbox->addWidget(nm_point_btn);
     nm_point_btn->setCheckable(true);
-    nm_point_btn->setAutoDefault(false);
     connect(nm_point_btn, SIGNAL(toggled(bool)),
         this, SLOT(click_btn_slot(bool)));
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // second button line
     //
@@ -246,10 +248,9 @@ QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node) : QTbag(this)
     QLabel *label = new QLabel(tr("Search"));
     hbox->addWidget(label);
 
-    nm_srch_btn = new QPushButton();
+    nm_srch_btn = new QToolButton();
     hbox->addWidget(nm_srch_btn);
     nm_srch_btn->setIcon(QIcon(QPixmap(lsearch_xpm)));
-    nm_srch_btn->setAutoDefault(false);
     connect(nm_srch_btn, SIGNAL(clicked()), this, SLOT(srch_btn_slot()));
 
     nm_srch_entry = new QLineEdit();
@@ -311,12 +312,13 @@ QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node) : QTbag(this)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    btn = new QPushButton(tr(" Deselect "));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(deselect_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr(" Deselect "));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(deselect_btn_slot()));
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -329,9 +331,9 @@ QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node) : QTbag(this)
     else
         nm_usex_btn->hide();
 
-    nm_find_btn = new QPushButton(tr("Find"));
+    nm_find_btn = new QToolButton();
+    nm_find_btn->setText(tr("Find"));
     hbox->addWidget(nm_find_btn);
-    nm_find_btn->setAutoDefault(false);
     connect(nm_find_btn, SIGNAL(clicked()), this, SLOT(find_btn_slot()));
 
     // If the group/node selection mode in extraction is enabled with
@@ -377,6 +379,33 @@ QTnodeMapDlg::~QTnodeMapDlg()
     }
     ExtIf()->PopUpExtSetup(0, MODE_UPD);
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTnodeMapDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 bool

@@ -53,7 +53,7 @@
 class QRadioButton;
 class QCheckBox;
 class QComboBox;
-class QPushButton;
+class QToolButton;
 namespace qtinterf {
     class QTdoubleSpinBox;
 }
@@ -66,6 +66,10 @@ public:
     QTlogoDlg(GRobject);
     ~QTlogoDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update();
     void update_fontsel();
     static const char *font(bool init=false);
@@ -74,7 +78,7 @@ public:
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -117,8 +121,8 @@ private:
     QComboBox   *lgo_endstyle;
     QComboBox   *lgo_pwidth;
     QCheckBox   *lgo_create;
-    QPushButton *lgo_dump;
-    QPushButton *lgo_sel;
+    QToolButton *lgo_dump;
+    QToolButton *lgo_sel;
     QTdoubleSpinBox *lgo_sb_pix;
     GRledPopup  *lgo_sav_pop;
     QTfontDlg   *lgo_fontsel;

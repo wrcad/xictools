@@ -49,7 +49,7 @@
 
 class QComboBox;
 class QLabel;
-class QPushButton;
+class QToolButton;
 
 // Max number of optional buttons.
 #define MC_MAXBTNS 3
@@ -65,6 +65,10 @@ class qtinterf::QTmcolDlg : public QDialog, public GRmcolPopup, public QTbag
 public:
     QTmcolDlg(QTbag*, stringlist*, const char*, const char**, int);
     ~QTmcolDlg();
+
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
 
     // GRpopup overrides
     void set_visible(bool visib)
@@ -116,7 +120,7 @@ private:
     static int mc_timeout(void*);
 
     QComboBox   *mc_pagesel;        // page selection menu if multicol
-    QPushButton *mc_buttons[MC_MAXBTNS];
+    QToolButton *mc_buttons[MC_MAXBTNS];
     QTledDlg    *mc_save_pop;
     QTmsgDlg    *mc_msg_pop;
     QLabel      *mc_label;          // title label

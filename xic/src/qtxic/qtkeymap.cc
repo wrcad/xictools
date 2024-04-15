@@ -70,7 +70,7 @@ static keymap kmap_dn[] = {
     { Qt::Key_Shift,        SHIFTDN_KEY,    0 },
     { Qt::Key_Control,      CTRLDN_KEY,     0 },
     { Qt::Key_Home,         HOME_KEY,       0 },
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
     // Mappings for MacBook Pro keyboard: fn-Enter and fn-Right.
     { Qt::Key_Enter,        NUPLUS_KEY,     0 },
     { Qt::Key_End,          NUMINUS_KEY,    0 },

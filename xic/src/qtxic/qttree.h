@@ -52,7 +52,7 @@
 
 class QTreeWidget;
 class QTreeWidgetItem;
-class QPushButton;
+class QToolButton;
 class QLabel;
 
 // Max number of user buttons.
@@ -66,6 +66,10 @@ public:
     QTtreeDlg(GRobject, const char*, TreeUpdMode);
     ~QTtreeDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update(const char*, const char*, TreeUpdMode);
     char *get_selection();
 
@@ -73,7 +77,7 @@ public:
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -114,7 +118,7 @@ private:
     QLabel  *t_label;           // label above listing
     QLabel  *t_info;            // label below listing
     QTreeWidget *t_tree;        // tree listing
-    QPushButton *t_buttons[TR_MAXBTNS]; // user buttons
+    QToolButton *t_buttons[TR_MAXBTNS]; // user buttons
     QTreeWidgetItem *t_curnode; // selected node
     char    *t_selection;       // selected text
     char    *t_root_cd;         // name of root cell

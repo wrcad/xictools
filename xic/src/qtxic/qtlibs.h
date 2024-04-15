@@ -50,7 +50,7 @@
 //-----------------------------------------------------------------------------
 // QTlibsDlg:  Libraries Listing dialog.
 
-class QPushButton;
+class QToolButton;
 class QTreeWidget;
 class QTreeWidgetItem;
 class QPixmap;
@@ -63,6 +63,10 @@ public:
     QTlibsDlg(GRobject);
     ~QTlibsDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     QSize sizeHint() const;
 
     char *get_selection();
@@ -72,7 +76,7 @@ public:
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -105,10 +109,10 @@ private:
     static stringlist *lb_add_dir(char*, stringlist*);
 
     GRobject    lb_caller;
-    QPushButton *lb_openbtn;
-    QPushButton *lb_contbtn;
+    QToolButton *lb_openbtn;
+    QToolButton *lb_contbtn;
     QTreeWidget *lb_list;
-    QPushButton *lb_noovr;
+    QToolButton *lb_noovr;
     GRmcolPopup *lb_content_pop;
     char        *lb_selection;
     char        *lb_contlib;

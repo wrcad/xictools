@@ -45,7 +45,7 @@
 #include <QLayout>
 #include <QCheckBox>
 #include <QLabel>
-#include <QPushButton>
+#include <QToolButton>
 #include <QMenu>
 
 
@@ -117,9 +117,9 @@ QTwindowCfg::QTwindowCfg(WndSensMode(sens_test)(), WndFuncMode fmode)
     QVBoxLayout *col = new QVBoxLayout();
     hbox->addLayout(col);
 
-    wnd_sbutton = new QPushButton("S");
+    wnd_sbutton = new QToolButton();
+    wnd_sbutton->setText("S");
     col->addWidget(wnd_sbutton);
-    wnd_sbutton->setAutoDefault(false);
 
     wnd_s_menu = new QMenu();
     wnd_sbutton->setMenu(wnd_s_menu);
@@ -133,9 +133,9 @@ QTwindowCfg::QTwindowCfg(WndSensMode(sens_test)(), WndFuncMode fmode)
     connect(wnd_s_menu, SIGNAL(triggered(QAction*)),
         this, SLOT(s_menu_slot(QAction*)));
 
-    wnd_rbutton = new QPushButton("R");
+    wnd_rbutton = new QToolButton();
+    wnd_rbutton->setText("R");
     col->addWidget(wnd_rbutton);
-    wnd_rbutton->setAutoDefault(false);
 
     wnd_r_menu = new QMenu();
     wnd_rbutton->setMenu(wnd_s_menu);

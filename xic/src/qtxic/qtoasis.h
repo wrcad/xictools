@@ -52,7 +52,7 @@
 
 class QCheckBox;
 class QComboBox;
-class QPushButton;
+class QToolButton;
 class QSpinBox;
 
 class QToasisDlg : public QDialog
@@ -63,13 +63,17 @@ public:
     QToasisDlg(GRobject);
     ~QToasisDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update();
 
     void set_transient_for(QWidget *prnt)
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -124,10 +128,10 @@ private:
     QCheckBox   *oas_objp;
     QCheckBox   *oas_objw;
     QCheckBox   *oas_objl;
-    QPushButton *oas_def;
-    QPushButton *oas_noruns;
-    QPushButton *oas_noarrs;
-    QPushButton *oas_nosim;
+    QToolButton *oas_def;
+    QToolButton *oas_noruns;
+    QToolButton *oas_noarrs;
+    QToolButton *oas_nosim;
     QSpinBox    *oas_sb_entm;
     QSpinBox    *oas_sb_enta;
     QSpinBox    *oas_sb_entx;

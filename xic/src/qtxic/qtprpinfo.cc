@@ -47,6 +47,7 @@
 #include "qtinterf/qtfont.h"
 #include "qtinterf/qttextw.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QPushButton>
 #include <QMouseEvent>
@@ -152,6 +153,7 @@ QTprpInfoDlg::QTprpInfoDlg(CDo *odesc) : QTprpBase(this)
     // dismiss button
     //
     QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -165,6 +167,33 @@ QTprpInfoDlg::~QTprpInfoDlg()
     if (pb_odesc)
         DSP()->ShowCurrentObject(ERASE, pb_odesc, HighlightingColor);
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTprpInfoDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 void

@@ -71,7 +71,7 @@
 // Help system keywords used:
 //  xic:dredt
 
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
 #define USE_QTOOLBAR
 #endif
 

@@ -51,10 +51,13 @@
 #include "qtltab.h"
 #include <iostream>
 
+#include <QApplication>
 #include <QLayout>
 #include <QSpinBox>
 #include <QGroupBox>
+#include <QToolButton>
 #include <QPushButton>
+#include <QToolButton>
 #include <QMouseEvent>
 #include <QDrag>
 #include <QMimeData>
@@ -230,24 +233,24 @@ QTfillPatDlg::QTfillPatDlg(GRobject c) : QTbag(this), QTdraw(XW_DRAWING)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    QPushButton *btn = new QPushButton(tr("Rot90"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(rot90_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Rot90"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(rot90_btn_slot()));
 
-    btn = new QPushButton("X");
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(x_btn_slot()));
-    btn = new QPushButton("Y");
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(y_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText("X");
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(x_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText("Y");
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(y_btn_slot()));
 
-    btn = new QPushButton(tr("Stores"));
-    vbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(stores_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Stores"));
+    vbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(stores_btn_slot()));
 
     // Stores display controls
     //
@@ -272,15 +275,15 @@ QTfillPatDlg::QTfillPatDlg(GRobject c) : QTbag(this), QTdraw(XW_DRAWING)
     connect(fp_defpats, SIGNAL(valueChanged(int)),
         this, SLOT(defpats_change_slot(int)));
 
-    btn = new QPushButton(tr("Dump Defs"));
-    vbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dump_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Dump Defs"));
+    vbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(dump_btn_slot()));
 
-    btn = new QPushButton(tr("Pixel Editor"));
-    vbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(pixed_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Pixel Editor"));
+    vbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(pixed_btn_slot()));
 
     // Sample area
     //
@@ -350,43 +353,41 @@ QTfillPatDlg::QTfillPatDlg(GRobject c) : QTbag(this), QTdraw(XW_DRAWING)
     hbox->setSpacing(2);
     top_vbox->addLayout(hbox);
 
-    btn = new QPushButton(tr("Load"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(load_btn_slot()));
+    fp_outl = new QToolButton();
+    fp_outl->setText(tr("Outline"));
+    hbox->addWidget(fp_outl);
+    fp_outl->setCheckable(true);
+    connect(fp_outl, SIGNAL(toggled(bool)), this, SLOT(outline_btn_slot(bool)));
 
-    btn = new QPushButton(tr("Apply"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
+    fp_fat = new QToolButton();
+    fp_fat->setText(tr("Fat"));
+    hbox->addWidget(fp_fat);
+    fp_fat->setCheckable(true);
+    connect(fp_fat, SIGNAL(toggled(bool)), this, SLOT(fat_btn_slot(bool)));
 
-    btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    fp_cut = new QToolButton();
+    fp_cut->setText(tr("Cut"));
+    hbox->addWidget(fp_cut);
+    fp_cut->setCheckable(true);
+    connect(fp_cut, SIGNAL(toggled(bool)), this, SLOT(cut_btn_slot(bool)));
 
-    btn = new QPushButton(tr("Outline"));
-    hbox->addWidget(btn);
-    btn->setCheckable(true);
-    btn->setAutoDefault(false);
-    fp_outl = btn;
-    connect(btn, SIGNAL(toggled(bool)), this, SLOT(outline_btn_slot(bool)));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
-    btn = new QPushButton(tr("Fat"));
-    hbox->addWidget(btn);
-    btn->setCheckable(true);
-    btn->setAutoDefault(false);
-    fp_fat = btn;;
-    connect(btn, SIGNAL(toggled(bool)), this, SLOT(fat_btn_slot(bool)));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Load"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(load_btn_slot()));
 
-    btn = new QPushButton(tr("Cut"));
-    hbox->addWidget(btn);
-    btn->setCheckable(true);
-    btn->setAutoDefault(false);
-    fp_cut = btn;
-    connect(btn, SIGNAL(toggled(bool)), this, SLOT(cut_btn_slot(bool)));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Apply"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -439,6 +440,33 @@ QTfillPatDlg::~QTfillPatDlg()
         delete fp_fp;
     }
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTfillPatDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 void

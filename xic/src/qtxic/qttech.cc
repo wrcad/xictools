@@ -46,8 +46,10 @@
 #include "errorlog.h"
 #include "miscutil/filestat.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QRadioButton>
+#include <QToolButton>
 #include <QPushButton>
 #include <QLabel>
 #include <QLineEdit>
@@ -131,11 +133,11 @@ QTwriteTechDlg::QTwriteTechDlg(GRobject caller)
     QLabel *label = new QLabel(tr("Technology File"));
     hbox->addWidget(label);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    btn->setMaximumWidth(60);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    tbtn->setMaximumWidth(60);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     char string[256];
     if (Tech()->TechExtension() && *Tech()->TechExtension())
@@ -153,16 +155,15 @@ QTwriteTechDlg::QTwriteTechDlg(GRobject caller)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    tc_write = new QPushButton(tr("Write File"));
+    tc_write = new QToolButton();
+    tc_write->setText(tr("Write File"));
     hbox->addWidget(tc_write);
     connect(tc_write, SIGNAL(clicked()), this, SLOT(write_btn_slot()));
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
-
-    // Enter will activate tc_write, uncommont below to dismiss instead.
-    //setTabOrder(btn, tc_write);
 
     update();
 }
@@ -174,6 +175,33 @@ QTwriteTechDlg::~QTwriteTechDlg()
     if (tc_caller)
         QTdev::Deselect(tc_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTwriteTechDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 void

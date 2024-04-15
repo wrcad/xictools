@@ -51,7 +51,7 @@
 // QTdeviceDlg:  The Device Parameters dialog.
 
 class QLineEdit;
-class QPushButton;
+class QToolButton;
 class QComboBox;
 class QCheckBox;
 
@@ -95,13 +95,17 @@ public:
     QTdeviceDlg(GRobject);
     ~QTdeviceDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void set_ref(int, int);
 
     void set_transient_for(QWidget *prnt)
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -134,7 +138,7 @@ private:
     QLineEdit   *de_model;
     QLineEdit   *de_value;
     QLineEdit   *de_param;
-    QPushButton *de_toggle;
+    QToolButton *de_toggle;
     QLineEdit   *de_branch;
     QCheckBox   *de_nophys;
     int         de_menustate;

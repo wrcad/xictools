@@ -54,7 +54,7 @@ class QTabWidget;
 class QLineEdit;
 class QComboBox;
 class QRadioButton;
-class QPushButton;
+class QToolButton;
 class QTcnameMap;
 
 class QTchdOpenDlg : public QDialog, public QTbag
@@ -66,11 +66,15 @@ public:
         void*, const char*, const char*);
     ~QTchdOpenDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void set_transient_for(QWidget *prnt)
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -103,7 +107,7 @@ private:
     QRadioButton *co_p2_file;
     QRadioButton *co_p2_none;
     QLineEdit   *co_idname;
-    QPushButton *co_apply;
+    QToolButton *co_apply;
 
     QTcnameMap  *co_p1_cnmap;
 

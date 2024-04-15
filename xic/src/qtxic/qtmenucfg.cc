@@ -160,7 +160,7 @@ QTmenuConfig::instantiateMainMenus()
     if (!menubar)
         return;
 
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
     // By default, Xic will use the Apple-style menu, but this can be
     // overridden by setting the environment variable.
     if (getenv("XIC_NO_MAC_MENU"))
@@ -738,7 +738,7 @@ QTmenuConfig::instantiateTopButtonMenu()
         hbox->setSpacing(2);
 
         set(mbox->menu[miscMenu], 0, 0);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
         // With Apple the WR button goes here, since there is no menu bar.
         set(mbox->menu[miscMenuMail], "Mail", 0);
 #endif
@@ -748,7 +748,7 @@ QTmenuConfig::instantiateTopButtonMenu()
         set(mbox->menu[miscMenuSelcp], "SelCP", 0);
         set(mbox->menu[miscMenuRdraw], "Rdraw", 0);
 
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
         for (MenuEnt *ent = mbox->menu + 1; ent->entry; ent++) {
 #else
         for (MenuEnt *ent = mbox->menu + 2; ent->entry; ent++) {

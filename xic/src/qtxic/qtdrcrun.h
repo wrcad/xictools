@@ -51,7 +51,7 @@
 // QTdrcRunDlg:  DRC Run dialog, allows initiation and control of
 // batch DRC runs.
 
-class QPushButon;
+class QToolButon;
 class QLineEdit;
 class QCheckBox;
 class QLabel;
@@ -67,6 +67,10 @@ public:
     QTdrcRunDlg(GRobject);
     ~QTdrcRunDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update();
     void update_jobs_list();
     void set_window(const BBox*);
@@ -76,7 +80,7 @@ public:
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -121,14 +125,14 @@ private:
     void dc_region_quit();
 
     GRobject    dc_caller;
-    QPushButton *dc_use;
+    QToolButton *dc_use;
     QLineEdit   *dc_chdname;
     QLineEdit   *dc_cname;
-    QPushButton *dc_none;
+    QToolButton *dc_none;
     QTdoubleSpinBox *dc_sb_part;
     QCheckBox   *dc_wind;
     QCheckBox   *dc_flat;
-    QPushButton *dc_set;
+    QToolButton *dc_set;
     QLabel      *dc_l_label;
     QLabel      *dc_b_label;
     QLabel      *dc_r_label;
@@ -137,10 +141,10 @@ private:
     QTdoubleSpinBox *dc_sb_bottom;
     QTdoubleSpinBox *dc_sb_right;
     QTdoubleSpinBox *dc_sb_top;
-    QPushButton *dc_check;
-    QPushButton *dc_checkbg;
+    QToolButton *dc_check;
+    QToolButton *dc_checkbg;
     QTtextEdit  *dc_jobs;
-    QPushButton *dc_kill;
+    QToolButton *dc_kill;
 
     int         dc_start;
     int         dc_end;

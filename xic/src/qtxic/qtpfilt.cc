@@ -43,8 +43,10 @@
 #include "cd_compare.h"
 #include "dsp_inlines.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 #include <QLineEdit>
 
@@ -111,10 +113,10 @@ QTcmpPrpFltDlg::QTcmpPrpFltDlg(GRobject c)
     //
     QLabel *label = new QLabel(tr("Physical property filter strings"));
     hbox->addWidget(label);
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     label = new QLabel(tr("Cell"));
     grid->addWidget(label, 1, 0);
@@ -163,7 +165,8 @@ QTcmpPrpFltDlg::QTcmpPrpFltDlg(GRobject c)
 
     // dismiss button
     //
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     grid->addWidget(btn, 8, 0, 1, 2);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -177,6 +180,33 @@ QTcmpPrpFltDlg::~QTcmpPrpFltDlg()
     if (pf_caller)
         QTdev::Deselect(pf_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTcmpPrpFltDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 void

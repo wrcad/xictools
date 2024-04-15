@@ -62,6 +62,7 @@
 #include <QLabel>
 #include <QGroupBox>
 #include <QComboBox>
+#include <QToolButton>
 #include <QPushButton>
 #include <QMouseEvent>
 #include <QResizeEvent>
@@ -291,6 +292,7 @@ QTfilesListDlg::QTfilesListDlg(GRobject c) : QTbag(this)
     // dismiss button
     //
     QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -315,6 +317,33 @@ QTfilesListDlg::~QTfilesListDlg()
     delete [] fl_contlib;
     delete fl_chd;
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTfilesListDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 void
@@ -386,12 +415,12 @@ QTfilesListDlg::update(const char *path, const char **buttons, int numbuttons)
             fl_buttons[i] = 0;
         }
         for (int i = 0; i < numbuttons; i++) {
-            QPushButton *btn = new QPushButton(tr(buttons[i]));
-            fl_button_box->addWidget(btn);
-            btn->setCheckable(true);
-            btn->setAutoDefault(false);
-            fl_buttons[i] = btn;
-            connect(btn, SIGNAL(toggled(bool)),
+            QToolButton *tbtn = new QToolButton();
+            tbtn->setText(tr(buttons[i]));
+            fl_button_box->addWidget(tbtn);
+            tbtn->setCheckable(true);
+            fl_buttons[i] = tbtn;
+            connect(tbtn, SIGNAL(toggled(bool)),
                 this, SLOT(button_slot(bool)));
         }
     }
@@ -1193,7 +1222,7 @@ QTfilesListDlg::fl_desel()
 void
 QTfilesListDlg::button_slot(bool)
 {
-    QPushButton *caller = qobject_cast<QPushButton*>(sender());
+    QAbstractButton *caller = qobject_cast<QAbstractButton*>(sender());
     if (!caller)
         return;
     if (!wb_textarea) {
@@ -1486,7 +1515,7 @@ QTfilesListDlg::mouse_motion_slot(QMouseEvent *ev)
     }
 
     Qt::KeyboardModifiers m = QGuiApplication::queryKeyboardModifiers();
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
     // alt == option on Apple's planet
     if ((m & Qt::ShiftModifier) && (m & Qt::AltModifier)) {
         drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction,

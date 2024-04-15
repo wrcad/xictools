@@ -58,7 +58,9 @@
 #include "qtinterf/qtinput.h"
 #include "miscutil/filestat.h"
 
+#include <QApplication>
 #include <QLayout>
+#include <QToolButton>
 #include <QPushButton>
 #include <QGroupBox>
 #include <QLabel>
@@ -223,83 +225,83 @@ QTcellsDlg::QTcellsDlg(GRobject c) : QTbag(this)
 
     // button column
     //
-    c_clearbtn = new QPushButton(tr("Clear"));
+    c_clearbtn = new QToolButton();
+    c_clearbtn->setText(tr("Clear"));
     col1->addWidget(c_clearbtn);
-    c_clearbtn->setAutoDefault(false);
     connect(c_clearbtn, SIGNAL(clicked()), this, SLOT(clear_btn_slot()));
     if (!EditIf()->hasEdit())
         c_clearbtn->hide();
 
-    c_treebtn = new QPushButton(tr("Tree"));
+    c_treebtn = new QToolButton();
+    c_treebtn->setText(tr("Tree"));
     col1->addWidget(c_treebtn);
-    c_treebtn->setAutoDefault(false);
     connect(c_treebtn, SIGNAL(clicked()), this, SLOT(tree_btn_slot()));
 
-    c_openbtn = new QPushButton(tr("Open"));
+    c_openbtn = new QToolButton();
+    c_openbtn->setText(tr("Open"));
     col1->addWidget(c_openbtn);
-    c_openbtn->setAutoDefault(false);
     connect(c_openbtn, SIGNAL(clicked()), this, SLOT(open_btn_slot()));
 
-    c_placebtn = new QPushButton(tr("Place"));
+    c_placebtn = new QToolButton();
+    c_placebtn->setText(tr("Place"));
     col1->addWidget(c_placebtn);
-    c_placebtn->setAutoDefault(false);
     connect(c_placebtn, SIGNAL(clicked()), this, SLOT(place_btn_slot()));
     if (!EditIf()->hasEdit())
         c_placebtn->hide();
 
-    c_copybtn = new QPushButton(tr("Copy"));
+    c_copybtn = new QToolButton();
+    c_copybtn->setText(tr("Copy"));
     col1->addWidget(c_copybtn);
-    c_copybtn->setAutoDefault(false);
     connect(c_copybtn, SIGNAL(clicked()), this, SLOT(copy_btn_slot()));
     if (!EditIf()->hasEdit())
         c_copybtn->hide();
 
-    c_replbtn = new QPushButton(tr("Replace"));;
+    c_replbtn = new QToolButton();
+    c_replbtn->setText(tr("Replace"));;
     col1->addWidget(c_replbtn);
-    c_replbtn->setAutoDefault(false);
     connect(c_replbtn, SIGNAL(clicked()), this, SLOT(repl_btn_slot()));
     if (!EditIf()->hasEdit())
         c_replbtn->hide();
 
-    c_renamebtn = new QPushButton(tr("Rename"));;
+    c_renamebtn = new QToolButton();
+    c_renamebtn->setText(tr("Rename"));;
     col1->addWidget(c_renamebtn);
-    c_renamebtn->setAutoDefault(false);
     connect(c_renamebtn, SIGNAL(clicked()), this, SLOT(rename_btn_slot()));
     if (!EditIf()->hasEdit())
         c_renamebtn->hide();
 
-    c_searchbtn = new QPushButton(tr("Search"));;
+    c_searchbtn = new QToolButton();
+    c_searchbtn->setText(tr("Search"));;
     col1->addWidget(c_searchbtn);
     c_searchbtn->setCheckable(true);
-    c_searchbtn->setAutoDefault(false);
     connect(c_searchbtn, SIGNAL(toggled(bool)),
         this, SLOT(search_btn_slot(bool)));
 
-    c_flagbtn = new QPushButton(tr("Flags"));
+    c_flagbtn = new QToolButton();
+    c_flagbtn->setText(tr("Flags"));
     col1->addWidget(c_flagbtn);
-    c_flagbtn->setAutoDefault(false);
     connect(c_flagbtn, SIGNAL(clicked()), this, SLOT(flag_btn_slot()));
 
-    c_infobtn = new QPushButton(tr("Info"));;
+    c_infobtn = new QToolButton();
+    c_infobtn->setText(tr("Info"));;
     col1->addWidget(c_infobtn);
-    c_infobtn->setAutoDefault(false);
     connect(c_infobtn, SIGNAL(clicked()), this, SLOT(info_btn_slot()));
 
-    c_showbtn = new QPushButton(tr("Show"));;
+    c_showbtn = new QToolButton();
+    c_showbtn->setText(tr("Show"));;
     col1->addWidget(c_showbtn);
-    c_showbtn->setAutoDefault(false);
     connect(c_showbtn, SIGNAL(toggled(bool)), this, SLOT(show_btn_slot(bool)));
 
-    c_fltrbtn = new QPushButton(tr("Filter"));
+    c_fltrbtn = new QToolButton();
+    c_fltrbtn->setText(tr("Filter"));
     col1->addWidget(c_fltrbtn);
     c_fltrbtn->setCheckable(true);
-    c_fltrbtn->setAutoDefault(false);
     connect(c_fltrbtn, SIGNAL(toggled(bool)), this, SLOT(fltr_btn_slot(bool)));
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    col1->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    col1->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // title label
     //
@@ -346,11 +348,11 @@ QTcellsDlg::QTcellsDlg(GRobject c) : QTbag(this)
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
-    btn = new QPushButton(tr("Save Text"));
-    hbox->addWidget(btn);
-    btn->setCheckable(true);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(toggled(bool)), this, SLOT(save_btn_slot(bool)));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Save Text"));
+    hbox->addWidget(tbtn);
+    tbtn->setCheckable(true);
+    connect(tbtn, SIGNAL(toggled(bool)), this, SLOT(save_btn_slot(bool)));
 
     c_page_combo = new QComboBox();
     hbox->addWidget(c_page_combo);
@@ -359,7 +361,8 @@ QTcellsDlg::QTcellsDlg(GRobject c) : QTbag(this)
 
     // dismiss button
     //
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -408,6 +411,33 @@ QTcellsDlg::~QTcellsDlg()
     delete [] c_replname;
     delete [] c_newname;
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTcellsDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 void

@@ -61,6 +61,7 @@
 #endif
 #endif
 
+#include <QApplication>
 #include <QLayout>
 #include <QPushButton>
 #include "qtinterf/qtcanvas.h"
@@ -121,6 +122,7 @@ QTmemMonDlg::QTmemMonDlg() : QTbag(this), QTdraw(XW_TEXT)
     // The dismiss button.
     //
     QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -147,6 +149,33 @@ QTmemMonDlg::~QTmemMonDlg()
     instPtr = 0;
     MainMenu()->MenuButtonSet(0, MenuALLOC, false);
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTmemMonDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 QSize

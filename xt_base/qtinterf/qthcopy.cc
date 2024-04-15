@@ -44,6 +44,8 @@
 #include "miscutil/filestat.h"
 
 #include <unistd.h>
+
+#include <QApplication>
 #include <QCheckBox>
 #include <QComboBox>
 #include <QDoubleSpinBox>
@@ -51,6 +53,7 @@
 #include <QLabel>
 #include <QLayout>
 #include <QLineEdit>
+#include <QToolButton>
 #include <QPushButton>
 
 
@@ -192,8 +195,6 @@ QTprintDlg::QTprintDlg(GRobject caller, HCcb *cb, HCmode textmode, QTbag *wbag) 
     pd_pgsmenu = 0;
     pd_frmbtn = 0;
     pd_hlpbtn = 0;
-    pd_printbtn = 0;
-    pd_dismissbtn = 0;
     pd_process = 0;
     pd_progress = 0;
     pd_printer_busy = false;
@@ -290,12 +291,13 @@ QTprintDlg::QTprintDlg(GRobject caller, HCcb *cb, HCmode textmode, QTbag *wbag) 
     int row1cnt = 0;
     if (pd_textmode == HCgraphical) {
         if (cb && cb->hcframe) {
-            pd_frmbtn = new QPushButton(tr("Frame"));
+            pd_frmbtn = new QToolButton();
+            pd_frmbtn->setText(tr("Frame"));
             hbox->addWidget(pd_frmbtn);
-            pd_frmbtn->setAutoDefault(false);
             connect(pd_frmbtn, SIGNAL(toggled(bool)),
                 this, SLOT(frame_slot(bool)));
             row1cnt++;
+            hbox->addSpacing(20);
         }
         pd_fitbtn = new QCheckBox(tr("Best Fit"));
         hbox->addWidget(pd_fitbtn);
@@ -362,9 +364,9 @@ QTprintDlg::QTprintDlg(GRobject caller, HCcb *cb, HCmode textmode, QTbag *wbag) 
     // Don't leave a lonely help button in the top row, move it to the
     // second row.
     if (row1cnt) {
-        pd_hlpbtn = new QPushButton(tr("Help"));
+        pd_hlpbtn = new QToolButton();
+        pd_hlpbtn->setText(tr("Help"));
         hbox->addWidget(pd_hlpbtn);
-        pd_hlpbtn->setAutoDefault(false);
         vbox->addLayout(hbox);
     }
     else
@@ -387,8 +389,8 @@ QTprintDlg::QTprintDlg(GRobject caller, HCcb *cb, HCmode textmode, QTbag *wbag) 
         hbox->setContentsMargins(qm);
         hbox->setSpacing(2);
         hbox->addWidget(gb);
-        pd_hlpbtn = new QPushButton(tr("Help"));
-        pd_hlpbtn->setAutoDefault(false);
+        pd_hlpbtn = new QToolButton();
+        pd_hlpbtn->setText(tr("Help"));
         hbox->addWidget(pd_hlpbtn);
         vbox->addLayout(hbox);
     }
@@ -546,18 +548,19 @@ QTprintDlg::QTprintDlg(GRobject caller, HCcb *cb, HCmode textmode, QTbag *wbag) 
     }
 
     hbox = new QHBoxLayout(0);
+    vbox->addLayout(hbox);
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
-    pd_printbtn = new QPushButton(tr("Print"));
-    hbox->addWidget(pd_printbtn);
-    pd_printbtn->setAutoDefault(false);
-    connect(pd_printbtn, SIGNAL(clicked()), this, SLOT(print_slot()));
-    pd_dismissbtn = new QPushButton(tr("Dismiss"));
-    vbox->addLayout(hbox);
-    connect(pd_dismissbtn, SIGNAL(clicked()), this, SLOT(quit_slot()));
-    hbox->addWidget(pd_dismissbtn);
-    pd_dismissbtn->setFocus(Qt::ActiveWindowFocusReason);
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Print"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(print_slot()));
+
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(quit_slot()));
 
     if (pd_cb && pd_cb->hcsetup)
         (*pd_cb->hcsetup)(true, pd_fmt, false, 0);
@@ -607,6 +610,33 @@ QTprintDlg::~QTprintDlg()
     if (pd_caller)
         QTdev::self()->SetStatus(pd_caller, false);
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTprintDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 // Function to query values for command text, resolution, etc.

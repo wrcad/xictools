@@ -44,6 +44,7 @@
 #include <QLayout>
 #include <QGroupBox>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 
 
@@ -93,12 +94,12 @@ QTsimRunDlg::QTsimRunDlg(const char *msg)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    QPushButton *btn = new QPushButton(tr("Pause"));
-    hbox->addWidget(btn); 
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(pause_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Pause"));
+    hbox->addWidget(tbtn); 
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(pause_btn_slot()));
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
     hbox->addWidget(btn); 
     btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));

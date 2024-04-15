@@ -47,7 +47,9 @@
 #include "qtinterf/qtfont.h"
 #include "qtinterf/qttextw.h"
 
+#include <QApplication>
 #include <QLayout>
+#include <QToolButton>
 #include <QPushButton>
 #include <QGroupBox>
 #include <QLabel>
@@ -168,17 +170,15 @@ QTcellInstSelectDlg::QTcellInstSelectDlg(CDol *l, bool filtmode) : QTbag(this)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    QPushButton *btn = new QPushButton(
-        tr(ci_filt ? "Choose All" : "Select All"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(sel_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr(ci_filt ? "Choose All" : "Select All"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(sel_btn_slot()));
 
-    btn = new QPushButton(tr(
-        ci_filt ? "Ignore All" : "Desel All"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(desel_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr(ci_filt ? "Ignore All" : "Desel All"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(desel_btn_slot()));
 
     QGroupBox *gb = new QGroupBox();
     vbox->addWidget(gb);
@@ -195,7 +195,8 @@ QTcellInstSelectDlg::QTcellInstSelectDlg(CDol *l, bool filtmode) : QTbag(this)
     connect(wb_textarea, SIGNAL(press_event(QMouseEvent*)),
         this, SLOT(mouse_press_slot(QMouseEvent*)));
 
-    btn = new QPushButton(tr(ci_filt ? "Continue" : "Dismiss"));
+    QPushButton *btn = new QPushButton(tr(ci_filt ? "Continue" : "Dismiss"));
+    btn->setObjectName("Dismiss");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -235,6 +236,33 @@ QTcellInstSelectDlg::~QTcellInstSelectDlg()
         QTdev::self()->BreakLoop();
     end_modal();
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTcellInstSelectDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 QSize

@@ -43,10 +43,12 @@
 #include "dsp_inlines.h"
 #include "qtllist.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QGroupBox>
 #include <QLabel>
 #include <QCheckBox>
+#include <QToolButton>
 #include <QPushButton>
 #include <QLineEdit>
 #include <QDragEnterEvent>
@@ -190,10 +192,10 @@ QTchdSaveDlg::QTchdSaveDlg(GRobject caller,
     cs_label = new QLabel(tr(buf));
     hb->addWidget(cs_label);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     cs_text = new QTchdSavePathEdit();
     vbox->addWidget(cs_text);
@@ -218,11 +220,13 @@ QTchdSaveDlg::QTchdSaveDlg(GRobject caller,
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    cs_apply = new QPushButton(tr("Apply"));
+    cs_apply = new QToolButton();
+    cs_apply->setText(tr("Apply"));
     hbox->addWidget(cs_apply);
     connect(cs_apply, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 }
@@ -234,6 +238,33 @@ QTchdSaveDlg::~QTchdSaveDlg()
     if (cs_caller)
         QTdev::Deselect(cs_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTchdSaveDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 void

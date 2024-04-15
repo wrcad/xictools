@@ -53,7 +53,8 @@
 // QTplaceDlg:  Dialog for managing the placing of subcells.
 
 class QLabel;
-class QPushButton;
+class QAbstractButton;
+class QToolButton;
 class QComboBox;
 class QSpinBox;
 class QDragEnterEvent;
@@ -128,17 +129,17 @@ private:
     static ESret pl_new_cb(const char*, void*);
     static int pl_timeout(void*);
 
-    QPushButton *pl_arraybtn;
-    QPushButton *pl_replbtn;
-    QPushButton *pl_smashbtn;
+    QToolButton *pl_arraybtn;
+    QToolButton *pl_replbtn;
+    QToolButton *pl_smashbtn;
     QComboBox   *pl_refmenu;
 
     QLabel      *pl_label_nxdx;
     QLabel      *pl_label_nydy;
 
     QComboBox   *pl_masterbtn;
-    QPushButton *pl_placebtn;
-    QPushButton *pl_menu_placebtn;
+    QToolButton *pl_placebtn;
+    QAbstractButton *pl_menu_placebtn;
 
     QSpinBox    *pl_nx;
     QSpinBox    *pl_ny;

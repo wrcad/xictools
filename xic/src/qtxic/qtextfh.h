@@ -55,7 +55,7 @@ class QCheckBox;
 class QLineEdit;
 class QComboBox;
 class QSpinBox;
-class QPushButton;
+class QToolButton;
 namespace qtinterf {
     class QTdoubleSpinBox;
 }
@@ -72,6 +72,10 @@ public:
     QTfastHenryDlg(GRobject);
     ~QTfastHenryDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update();
     void update_jobs_list();
     void update_label(const char*);
@@ -80,7 +84,7 @@ public:
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -157,7 +161,7 @@ private:
     QSpinBox    *fh_sb_volel_target;
 
     QTtextEdit  *fh_jobs;
-    QPushButton *fh_kill;
+    QToolButton *fh_kill;
 
     bool    fh_no_reset;
     int     fh_start;

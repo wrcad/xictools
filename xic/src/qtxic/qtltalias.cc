@@ -44,7 +44,9 @@
 #include "qtinterf/qtfont.h"
 #include <errno.h>
 
+#include <QApplication>
 #include <QLayout>
+#include <QToolButton>
 #include <QPushButton>
 #include <QTreeWidget>
 #include <QCheckBox>
@@ -129,42 +131,42 @@ QTlayerAliasDlg::QTlayerAliasDlg(GRobject c) : QTbag(this)
 
     // Translation to buttons from original menu bar.
     // _Open, <control>O, la_action_proc, OpenCode, 0
-    la_open = new QPushButton(tr("Open"));
+    la_open = new QToolButton();
+    la_open->setText(tr("Open"));
     hbox->addWidget(la_open);
-    la_open->setAutoDefault(false);
     connect(la_open, SIGNAL(clicked()), this, SLOT(open_btn_slot()));
 
     // _Save, <control>S, la_action_proc, SaveCode, 0
-    la_save = new QPushButton(tr("Save"));
+    la_save = new QToolButton();
+    la_save->setText(tr("Save"));
     hbox->addWidget(la_save);
-    la_save->setAutoDefault(false);
     connect(la_save, SIGNAL(clicked()), this, SLOT(save_btn_slot()));
 
     // _New, <control>N, la_action_proc, NewCode, 0
-    la_new = new QPushButton(tr("New"));
+    la_new = new QToolButton();
+    la_new->setText(tr("New"));
     hbox->addWidget(la_new);
-    la_new->setAutoDefault(false);
     connect(la_new, SIGNAL(clicked()), this, SLOT(new_btn_slot()));
 
     // _Delete, <control>D, la_action_proc, DeleteCode, 0
-    la_del = new QPushButton(tr("Delete"));
+    la_del = new QToolButton();
+    la_del->setText(tr("Delete"));
     la_del->setEnabled(false);
     hbox->addWidget(la_del);
-    la_del->setAutoDefault(false);
     connect(la_del, SIGNAL(clicked()), this, SLOT(del_btn_slot()));
 
     // _Edit, <control>E, la_action_proc, EditCode, 0
-    la_edit = new QPushButton(tr("Edit"));
+    la_edit = new QToolButton();
+    la_edit->setText(tr("Edit"));
     la_edit->setEnabled(false);
     hbox->addWidget(la_edit);
-    la_edit->setAutoDefault(false);
     connect(la_edit, SIGNAL(clicked()), this, SLOT(edit_btn_slot()));
 
     // Help menu.
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // Scrolled display window.
     la_list = new QTreeWidget();
@@ -194,7 +196,8 @@ QTlayerAliasDlg::QTlayerAliasDlg(GRobject c) : QTbag(this)
     connect(la_decimal, SIGNAL(stateChanged(int)),
         this, SLOT(decimal_btn_slot(int)));
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -208,6 +211,33 @@ QTlayerAliasDlg::~QTlayerAliasDlg()
     if (la_calling_btn)
         QTdev::Deselect(la_calling_btn);
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTlayerAliasDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 void

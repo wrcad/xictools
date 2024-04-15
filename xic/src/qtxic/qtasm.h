@@ -237,11 +237,15 @@ public:
     QTasmDlg(GRobject);
     ~QTasmDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void set_transient_for(QWidget *prnt)
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -326,6 +330,10 @@ class QTasmPrgDlg : public QDialog
 public:
     QTasmPrgDlg();
     ~QTasmPrgDlg();
+
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
 
     void update(const char*, ASMcode);
 

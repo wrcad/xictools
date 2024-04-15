@@ -44,10 +44,12 @@
 #include "dsp_inlines.h"
 #include "tech.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QGroupBox>
 #include <QLabel>
 #include <QCheckBox>
+#include <QToolButton>
 #include <QPushButton>
 #include <QSpinBox>
 #include <QComboBox>
@@ -143,10 +145,10 @@ QTeditSetupDlg::QTeditSetupDlg(GRobject c)
     QLabel *label = new QLabel(tr("Set editing flags and parameters"));
     hb->addWidget(label);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // check boxes
     //
@@ -237,7 +239,8 @@ QTeditSetupDlg::QTeditSetupDlg(GRobject c)
 
     // Dismiss button
     //
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -251,6 +254,33 @@ QTeditSetupDlg::~QTeditSetupDlg()
     if (ed_caller)
         QTdev::Deselect(ed_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTeditSetupDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 void

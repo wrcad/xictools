@@ -42,9 +42,11 @@
 #include "cvrt.h"
 #include "qtinterf/qtdblsb.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QGroupBox>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 
 
@@ -159,9 +161,9 @@ QTdisplayWinDlg::QTdisplayWinDlg(GRobject caller, const BBox *BB,
     dw_sb_wid->setValue(100.0);
     col2->addWidget(dw_sb_wid);
 
-    dw_apply = new QPushButton(tr("Apply"));
+    dw_apply = new QToolButton();
+    dw_apply->setText(tr("Apply"));
     col3->addWidget(dw_apply);
-    dw_apply->setAutoDefault(false);
     connect(dw_apply, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
 
     hbox = new QHBoxLayout(0);
@@ -169,12 +171,13 @@ QTdisplayWinDlg::QTdisplayWinDlg(GRobject caller, const BBox *BB,
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    dw_center = new QPushButton(tr("Center Full View"));
+    dw_center = new QToolButton();
+    dw_center->setText(tr("Center Full View"));
     hbox->addWidget(dw_center);
-    dw_center->setAutoDefault(false);
     connect(dw_center, SIGNAL(clicked()), this, SLOT(center_btn_slot()));
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -190,6 +193,33 @@ QTdisplayWinDlg::~QTdisplayWinDlg()
     if (dw_callback)
         (*dw_callback)(false, 0, dw_arg);
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTdisplayWinDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 void

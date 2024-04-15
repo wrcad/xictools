@@ -52,7 +52,7 @@
 
 class QRadioButton;
 class QCheckBox;
-class QPushButton;
+class QToolButton;
 
 class QTselectDlg : public QDialog, public QTbag
 {
@@ -62,13 +62,17 @@ public:
     QTselectDlg(GRobject);
     ~QTselectDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update();
 
     void set_transient_for(QWidget *prnt)
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -121,7 +125,7 @@ private:
     QCheckBox *sl_poly;
     QCheckBox *sl_wire;
     QCheckBox *sl_label;
-    QPushButton *sl_upbtn;
+    QToolButton *sl_upbtn;
 
     static QTselectDlg *instPtr;
 };

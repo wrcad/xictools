@@ -52,7 +52,7 @@
 // QTwriteTechDlg:  Dialog to control writing of a technology file.
 
 class QRadioButton;
-class QPushButton;
+class QToolButton;
 class QLineEdit;
 
 class QTwriteTechDlg : public QDialog
@@ -63,13 +63,17 @@ public:
     QTwriteTechDlg(GRobject);
     ~QTwriteTechDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update();
 
     void set_transient_for(QWidget *prnt)
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -98,7 +102,7 @@ private:
     QRadioButton *tc_cmt;
     QRadioButton *tc_use;
     QLineEdit   *tc_entry;
-    QPushButton *tc_write;
+    QToolButton *tc_write;
 
     static QTwriteTechDlg *instPtr;
 };

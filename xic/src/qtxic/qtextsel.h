@@ -50,7 +50,7 @@
 //-----------------------------------------------------------------------------
 // QTextNetSelDlg:  Dialog to control group/node/path selections.
 
-class QPushButton;
+class QToolButton;
 class QComboBox;
 class QSpinBox;
 class QCheckBox;
@@ -64,13 +64,17 @@ public:
     QTextNetSelDlg(GRobject);
     ~QTextNetSelDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update();
 
     void set_transient_for(QWidget *prnt)
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -111,22 +115,22 @@ private:
     static int es_redraw_idle(void*);
 
     GRobject    es_caller;
-    QPushButton *es_gnsel;
-    QPushButton *es_paths;
-    QPushButton *es_qpath;
+    QToolButton *es_gnsel;
+    QToolButton *es_paths;
+    QToolButton *es_qpath;
     QComboBox   *es_gpmnu;
     QSpinBox    *es_sb_depth;
     QCheckBox   *es_qpconn;
     QCheckBox   *es_blink;
     QCheckBox   *es_subpath;
-    QPushButton *es_antenna;
-    QPushButton *es_zoid;
-    QPushButton *es_tofile;
+    QToolButton *es_antenna;
+    QToolButton *es_zoid;
+    QToolButton *es_tofile;
     QCheckBox   *es_vias;
     QCheckBox   *es_vtree;
     QLabel      *es_rlab;
-    QPushButton *es_terms;
-    QPushButton *es_meas;
+    QToolButton *es_terms;
+    QToolButton *es_meas;
 
     static QTextNetSelDlg *instPtr;
 };

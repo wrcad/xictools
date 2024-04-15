@@ -50,7 +50,7 @@
 //-----------------------------------------------------------------------------
 // QTcgdListDlg::  Cell Geometry Digests list dialog.
 
-class QPushButton;
+class QToolButton;
 class QTreeWidget;
 class QTreeWidgetItem;
 
@@ -62,13 +62,17 @@ public:
     QTcgdListDlg(GRobject);
     ~QTcgdListDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update();
 
     void set_transient_for(QWidget *prnt)
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -105,11 +109,11 @@ private:
     static void cgl_cnt_cb(const char*, void*);
 
     GRobject        cgl_caller;
-    QPushButton     *cgl_addbtn;
-    QPushButton     *cgl_savbtn;
-    QPushButton     *cgl_delbtn;
-    QPushButton     *cgl_cntbtn;
-    QPushButton     *cgl_infbtn;
+    QToolButton     *cgl_addbtn;
+    QToolButton     *cgl_savbtn;
+    QToolButton     *cgl_delbtn;
+    QToolButton     *cgl_cntbtn;
+    QToolButton     *cgl_infbtn;
     QTreeWidget     *cgl_list;
     GRledPopup      *cgl_sav_pop;
     GRaffirmPopup   *cgl_del_pop;

@@ -65,7 +65,9 @@
 #endif
 #endif
 
+#include <QApplication>
 #include <QLayout>
+#include <QToolButton>
 #include <QPushButton>
 #include <QTreeWidget>
 #include <QPixmap>
@@ -169,20 +171,20 @@ QTlibsDlg::QTlibsDlg(GRobject c) : QTbag(this)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    lb_openbtn = new QPushButton(tr("Open/Close"));
+    lb_openbtn = new QToolButton();
+    lb_openbtn->setText(tr("Open/Close"));
     hbox->addWidget(lb_openbtn);
-    lb_openbtn->setAutoDefault(false);
     connect(lb_openbtn, SIGNAL(clicked()), this, SLOT(open_btn_slot()));
 
-    lb_contbtn = new QPushButton(tr("Contents"));
+    lb_contbtn = new QToolButton();
+    lb_contbtn->setText(tr("Contents"));
     hbox->addWidget(lb_contbtn);
-    lb_contbtn->setAutoDefault(false);
     connect(lb_contbtn, SIGNAL(clicked()), this, SLOT(cont_btn_slot()));
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // scrolled list
     //
@@ -213,14 +215,15 @@ QTlibsDlg::QTlibsDlg(GRobject c) : QTbag(this)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    lb_noovr = new QPushButton(tr("No Overwrite Lib Cells"));
+    lb_noovr = new QToolButton();
+    lb_noovr->setText(tr("No Overwrite Lib Cells"));
     hbox->addWidget(lb_noovr);
     lb_noovr->setCheckable(true);
-    lb_noovr->setAutoDefault(false);
     connect(lb_noovr, SIGNAL(toggled(bool)),
         this, SLOT(noovr_btn_slot(bool)));
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -247,6 +250,33 @@ QTlibsDlg::~QTlibsDlg()
     if (lb_close_pb)
         delete lb_close_pb;
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTlibsDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 QSize

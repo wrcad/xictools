@@ -65,6 +65,7 @@
 #include <QAction>
 #include <QLabel>
 #include <QGroupBox>
+#include <QToolButton>
 #include <QPushButton>
 #include <QToolButton>
 #include <QTreeWidget>
@@ -84,7 +85,7 @@
 // Help system keywords used:
 //  xic:debug
 
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
 #define USE_QTOOLBAR
 #endif
 
@@ -373,11 +374,11 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c) : QTbag(this)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    db_modebtn = new QPushButton(tr("Run"));
+    db_modebtn = new QToolButton();
+    db_modebtn->setText(tr("Run"));
     hbox->addWidget(db_modebtn);
     db_modebtn->setEnabled(false);
     db_modebtn->setMaximumWidth(80);
-    db_modebtn->setAutoDefault(false);
     connect(db_modebtn, SIGNAL(clicked()), this, SLOT(mode_btn_slot()));
 
     // labels in frame
@@ -1090,7 +1091,7 @@ QTscriptDebuggerDlg::monitor()
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
 
-    db_vars_pop = new QTdbgVarsDlg(&db_vars_pop);
+    db_vars_pop = new QTdbgVarsDlg(&db_vars_pop, this);
 
     QTdev::self()->SetPopupLocation(GRloc(LW_LR), db_vars_pop,
         wb_shell);
@@ -1823,7 +1824,7 @@ QTscriptDebuggerDlg::font_changed_slot(int fnum)
 // The variables monitor.
 //
 
-QTdbgVarsDlg::QTdbgVarsDlg(void *p)
+QTdbgVarsDlg::QTdbgVarsDlg(void *p, QWidget *prnt) : QDialog(prnt)
 {
     dv_pointer = p;
 
@@ -1864,6 +1865,7 @@ QTdbgVarsDlg::QTdbgVarsDlg(void *p)
     // Dismiss button
     //
     QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 }
@@ -1874,6 +1876,33 @@ QTdbgVarsDlg::~QTdbgVarsDlg()
     if (dv_pointer)
         *(void**)dv_pointer = 0;
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTdbgVarsDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 // Update the variables listing.

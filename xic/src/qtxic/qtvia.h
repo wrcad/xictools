@@ -52,7 +52,7 @@
 
 class QComboBox;
 class QLineEdit;
-class QPushButton;
+class QToolButton;
 class QSpinBox;
 namespace qtinterf {
     class QTdoubleSpinBox;
@@ -66,13 +66,17 @@ public:
     QTstdViaDlg(GRobject, CDc*);
     ~QTstdViaDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update(GRobject, CDc*);
 
     void set_transient_for(QWidget *prnt)
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -102,7 +106,7 @@ private:
     QComboBox       *stv_layerv;
     QLineEdit       *stv_imp1;
     QLineEdit       *stv_imp2;
-    QPushButton     *stv_apply;
+    QToolButton     *stv_apply;
 
     CDc             *stv_cdesc;
 

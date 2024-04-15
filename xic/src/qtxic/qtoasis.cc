@@ -48,9 +48,11 @@
 #include "qtcvofmt.h"
 #include "qtinterf/qtfont.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QCheckBox>
 #include <QComboBox>
+#include <QToolButton>
 #include <QPushButton>
 #include <QSpinBox>
 #include <QGroupBox>
@@ -156,10 +158,10 @@ QToasisDlg::QToasisDlg(GRobject c)
         this, SLOT(nozoid_btn_slot(int)));
 
     hbox->addSpacing(60);
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     oas_wtob = new QCheckBox(tr(
         "Convert Wire to Box records when possible"));
@@ -210,9 +212,9 @@ QToasisDlg::QToasisDlg(GRobject c)
     label->setAlignment(Qt::AlignCenter);
 
     hbox->addSpacing(40);
-    oas_def = new QPushButton(tr("Restore Defaults"));
+    oas_def = new QToolButton();
+    oas_def->setText(tr("Restore Defaults"));
     hbox->addWidget(oas_def);
-    oas_def->setAutoDefault(false);
     connect(oas_def, SIGNAL(clicked()), this, SLOT(def_btn_slot()));
 
     // Repetition Finder Configuration
@@ -261,10 +263,10 @@ QToasisDlg::QToasisDlg(GRobject c)
     label = new QLabel(tr("Run minimum"));
     grid->addWidget(label, 0, 1);
 
-    oas_noruns = new QPushButton(tr("None"));
+    oas_noruns = new QToolButton();
+    oas_noruns->setText(tr("None"));
     grid->addWidget(oas_noruns, 0, 2);
     oas_noruns->setCheckable(true);
-    oas_noruns->setAutoDefault(false);
     connect(oas_noruns, SIGNAL(toggled(bool)),
         this, SLOT(noruns_btn_slot(bool)));
 
@@ -279,10 +281,10 @@ QToasisDlg::QToasisDlg(GRobject c)
     label = new QLabel(tr("Array minimum"));
     grid->addWidget(label, 1, 1);
 
-    oas_noarrs = new QPushButton(tr("None"));
+    oas_noarrs = new QToolButton();
+    oas_noarrs->setText(tr("None"));
     grid->addWidget(oas_noarrs, 1, 2);
     oas_noarrs->setCheckable(true);
-    oas_noarrs->setAutoDefault(false);
     connect(oas_noarrs, SIGNAL(toggled(bool)),
         this, SLOT(noarrs_btn_slot(bool)));
 
@@ -308,10 +310,10 @@ QToasisDlg::QToasisDlg(GRobject c)
     label = new QLabel(tr("Max identical objects"));
     grid->addWidget(label, 3, 1);
 
-    oas_nosim = new QPushButton(tr("None"));
+    oas_nosim = new QToolButton();
+    oas_nosim->setText(tr("None"));
     grid->addWidget(oas_nosim, 3, 2);
     oas_nosim->setCheckable(true);
-    oas_nosim->setAutoDefault(false);
     connect(oas_nosim, SIGNAL(toggled(bool)),
         this, SLOT(nosim_btn_slot(bool)));
 
@@ -323,7 +325,8 @@ QToasisDlg::QToasisDlg(GRobject c)
     connect(oas_sb_entt, SIGNAL(valueChanged(int)),
         this, SLOT(entt_changed_slot(int)));
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -337,6 +340,33 @@ QToasisDlg::~QToasisDlg()
     if (oas_caller)
         QTdev::Deselect(oas_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QToasisDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 namespace {

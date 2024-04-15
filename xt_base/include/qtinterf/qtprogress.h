@@ -69,6 +69,10 @@ public:
     QTprogressDlg(QTbag*, prgMode);
     ~QTprogressDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     // GRpopup overrides
     void set_visible(bool visib)
         {
@@ -124,8 +128,6 @@ private:
     QTextEdit   *pg_te_info;
     QGroupBox   *pg_gb_etc;
     QLabel      *pg_label_etc;
-    QPushButton *pg_abort;
-    QPushButton *pg_cancel;
     QTactivity  *pg_pbar;
     int         pg_info_limit;
     int         pg_info_count;

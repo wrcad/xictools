@@ -53,7 +53,7 @@
 class QRadioButton;
 class QComboBox;
 class QCheckBox;
-class QPushButton;
+class QToolButton;
 class QLineEdit;
 class QMenu;
 class QAction;
@@ -70,13 +70,17 @@ public:
     QTlayerExpDlg(void*);
     ~QTlayerExpDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update();
 
     void set_transient_for(QWidget *prnt)
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -120,12 +124,12 @@ private:
     QCheckBox       *lx_recurse;
     QCheckBox       *lx_merge;
     QCheckBox       *lx_fast;
-    QPushButton     *lx_none;
+    QToolButton     *lx_none;
     QLineEdit       *lx_tolayer;
     QCheckBox       *lx_noclear;
     QLineEdit       *lx_lexpr;
-    QPushButton     *lx_save;
-    QPushButton     *lx_recall;
+    QToolButton     *lx_save;
+    QToolButton     *lx_recall;
     QMenu           *lx_save_menu;
     QMenu           *lx_recall_menu;
     QTdoubleSpinBox *lx_sb_part;

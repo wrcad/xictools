@@ -100,7 +100,7 @@ cMain::PopUpLayerParamEditor(GRobject caller, ShowMode mode, const char *msg,
 }
 // End of cMain functions.
 
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
 #define USE_QTOOLBAR
 #endif
 

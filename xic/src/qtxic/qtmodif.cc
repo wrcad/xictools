@@ -50,8 +50,9 @@
 #include "qtinterf/qtfont.h"
 #include "qtinterf/qttextw.h"
 
-#include <QWidget>
 #include <QLayout>
+#include <QToolButton>
+#include <QPushButton>
 #include <QGroupBox>
 #include <QLabel>
 #include <QMouseEvent>
@@ -230,15 +231,15 @@ QTmodifDlg::QTmodifDlg(stringlist *l, bool(*s)(const char*)) : QTbag(this)
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
-    QPushButton *btn = new QPushButton(tr("Save All"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(save_all_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Save All"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(save_all_slot()));
 
-    btn = new QPushButton(tr("Skip All"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(skip_all_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Skip All"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(skip_all_slot()));
 
     hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
@@ -252,10 +253,10 @@ QTmodifDlg::QTmodifDlg(stringlist *l, bool(*s)(const char*)) : QTbag(this)
     m_label = new QLabel(gb);
     hb->addWidget(m_label);
 
-    btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_slot()));
 
     m_text = new QTtextEdit();
     m_text->setReadOnly(true);
@@ -268,10 +269,11 @@ QTmodifDlg::QTmodifDlg(stringlist *l, bool(*s)(const char*)) : QTbag(this)
     vbox->addLayout(hbox);
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
-    btn = new QPushButton(tr("Apply - Continue"));
+    QPushButton *btn = new QPushButton(tr("Apply - Continue"));
     hbox->addWidget(btn);
     btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(apply_slot()));
+
     btn = new QPushButton(tr("ABORT"));
     hbox->addWidget(btn);
     btn->setAutoDefault(false);

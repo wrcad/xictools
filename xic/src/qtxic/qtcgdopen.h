@@ -51,7 +51,7 @@
 // QTcgdOpenDlg:  Dialog to creatte cell geometry digests (CGDs).
 
 class QLineEdit;
-class QPushButton;
+class QToolButton;
 class QTabWidget;
 class QTlayerList;
 class QTcnameMap;;
@@ -65,13 +65,17 @@ public:
         void*, const char*, const char*);
     ~QTcgdOpenDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update(const char*, const char*);
 
     void set_transient_for(QWidget *prnt)
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -103,7 +107,7 @@ private:
     QLineEdit   *cgo_p3_port;
     QLineEdit   *cgo_p3_idname;
     QLineEdit   *cgo_idname;
-    QPushButton *cgo_apply;
+    QToolButton *cgo_apply;
 
     QTlayerList *cgo_p1_llist;
     QTcnameMap  *cgo_p1_cnmap;

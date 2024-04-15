@@ -46,9 +46,11 @@
 #include "promptline.h"
 #include "qtinterf/qtdblsb.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QGroupBox>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 #include <QComboBox>
 #include <QLineEdit>
@@ -152,10 +154,10 @@ QTlayerExpDlg::QTlayerExpDlg(GRobject c)
         "Set parameters, evaluate layer expression"));
     hb->addWidget(label);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // depth option, recurse check box
     //
@@ -206,10 +208,10 @@ QTlayerExpDlg::QTlayerExpDlg(GRobject c)
     hbox->addSpacing(8);
     hbox->addWidget(label);
 
-    lx_none = new QPushButton(tr("None"));
+    lx_none = new QToolButton();
+    lx_none->setText(tr("None"));
     hbox->addWidget(lx_none);
     lx_none->setCheckable(true);
-    lx_none->setAutoDefault(false);
     connect(lx_none, SIGNAL(toggled(bool)),
         this, SLOT(none_btn_slot(bool)));
 
@@ -284,9 +286,9 @@ QTlayerExpDlg::QTlayerExpDlg(GRobject c)
     hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
-    lx_recall = new QPushButton(tr("Recall"));
+    lx_recall = new QToolButton();
+    lx_recall->setText(tr("Recall"));
     hb->addWidget(lx_recall);
-    lx_recall->setAutoDefault(false);
     lx_recall_menu = new QMenu();
     lx_recall->setMenu(lx_recall_menu);
     for (int i = 0; i < ED_LEXPR_STORES; i++) {
@@ -298,9 +300,9 @@ QTlayerExpDlg::QTlayerExpDlg(GRobject c)
     connect(lx_recall_menu, SIGNAL(triggered(QAction*)),
         this, SLOT(recall_menu_slot(QAction*)));
 
-    lx_save = new QPushButton(tr("Save"));
+    lx_save = new QToolButton();
+    lx_save->setText(tr("Save"));
     hb->addWidget(lx_save);
-    lx_save->setAutoDefault(false);
     lx_save_menu = new QMenu();
     lx_save->setMenu(lx_save_menu);
     for (int i = 0; i < ED_LEXPR_STORES; i++) {
@@ -339,11 +341,13 @@ QTlayerExpDlg::QTlayerExpDlg(GRobject c)
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
-    btn = new QPushButton(tr("Evaluate"));
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(eval_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Evaluate"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(eval_btn_slot()));
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -395,6 +399,33 @@ QTlayerExpDlg::~QTlayerExpDlg()
     if (lx_caller)
         QTdev::Deselect(lx_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTlayerExpDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 void

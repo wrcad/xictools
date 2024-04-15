@@ -71,6 +71,10 @@ public:
     QTlistDlg(QTbag*, stringlist*, const char*, const char*, bool, bool);
     ~QTlistDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     // GRpopup overrides
     void set_visible(bool visib)
         {

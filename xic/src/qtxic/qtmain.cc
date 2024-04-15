@@ -43,10 +43,11 @@
 #include "qtmenu.h"
 #include "qtcoord.h"
 #include "qtparam.h"
+#include "qtgrid.h"
 #include "qtexpand.h"
+#include "qtzoom.h"
 #include "qtltab.h"
 #include "qthtext.h"
-#include "qtzoom.h"
 #include "qtmenucfg.h"
 #include "qtinterf/qtfile.h"
 #include "qtinterf/qttext.h"
@@ -1480,8 +1481,8 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
 
 QTsubwin::~QTsubwin()
 {
-    PopUpExpand(0, MODE_OFF, 0, 0, 0, false);
     PopUpGrid(0, MODE_OFF);
+    PopUpExpand(0, MODE_OFF, 0, 0, 0, false);
     PopUpZoom(0, MODE_OFF);
     if (sw_win_number >= 0)
         GhostDrawCommon.gd_windows[sw_win_number] = 0;
@@ -1697,6 +1698,32 @@ QTsubwin::SetLabelText(const char*)
 
 
 void
+QTsubwin::PopUpGrid(GRobject caller, ShowMode mode)
+{
+    if (!QTdev::exists() || !QTmainwin::exists())
+        return;
+    if (mode == MODE_OFF) {
+        delete sw_gridpop;
+        return;
+    }
+    if (mode == MODE_UPD) {
+        if (sw_gridpop)
+            sw_gridpop->update();
+        return;
+    }
+    if (sw_gridpop)
+        return;
+
+    sw_gridpop = new QTgridDlg(this, sw_windesc);
+    sw_gridpop->set_transient_for(this);
+    sw_gridpop->register_usrptr((void**)&sw_gridpop);
+    sw_gridpop->register_caller(caller);
+    sw_gridpop->initialize();
+    sw_gridpop->set_visible(true);
+}
+
+
+void
 QTsubwin::PopUpExpand(GRobject caller, ShowMode mode,
     bool (*callback)(const char*, void*),
     void *arg, const char *string, bool nopeek)
@@ -1715,6 +1742,7 @@ QTsubwin::PopUpExpand(GRobject caller, ShowMode mode,
         return;
 
     sw_expand = new QTexpandDlg(this, string, nopeek, arg);
+    sw_expand->set_transient_for(this);
     sw_expand->register_caller(caller);
     sw_expand->register_callback(callback);
     sw_expand->set_visible(true);
@@ -1740,6 +1768,7 @@ QTsubwin::PopUpZoom(GRobject caller, ShowMode mode)
         return;
 
     sw_zoom = new QTzoomDlg(this, sw_windesc);
+    sw_zoom->set_transient_for(this);
     sw_zoom->register_usrptr((void**)&sw_zoom);
     sw_zoom->register_caller(caller);
     sw_zoom->initialize();
@@ -2589,7 +2618,7 @@ QTmainwin::QTmainwin(QWidget *prnt) : QTsubwin(0, prnt)
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     setWindowFlags(Qt::Window);
     setAttribute(Qt::WA_DeleteOnClose);
-#ifndef __APPLE__
+#ifdef Q_OS_MACOS
     QAction *a = mw_menubar->addAction(tr("wr"));
     a->setIcon(QIcon(QPixmap(wr_xpm)));
     connect(a, SIGNAL(triggered()), this, SLOT(wr_btn_slot()));
@@ -2600,7 +2629,7 @@ QTmainwin::QTmainwin(QWidget *prnt) : QTsubwin(0, prnt)
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->setContentsMargins(qmtop);
     vbox->setSpacing(2);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
     if (getenv("XIC_NO_MAC_MENU"))
         vbox->setMenuBar(mw_menubar);
 #else

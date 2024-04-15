@@ -76,7 +76,7 @@
 // Help system keywords used:
 //  dev:xxxxx   (device name)
 
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
 #define USE_QTOOLBAR
 #endif
 

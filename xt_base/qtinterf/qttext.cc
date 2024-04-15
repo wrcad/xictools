@@ -50,10 +50,12 @@
 #include "help/help_defs.h"
 #endif
 
+#include <QApplication>
 #include <QAction>
 #include <QGroupBox>
 #include <QLayout>
 #include <QTextEdit>
+#include <QToolButton>
 #include <QPushButton>
 
 
@@ -127,36 +129,36 @@ QTtextDlg::QTtextDlg(QTbag *owner, const char *message_str, PuType which,
         connect(tx_tbox, SIGNAL(anchorClicked(const QUrl&)),
             this, SLOT(anchor_clicked_slot(const QUrl&)));
     }
-    tx_save = new QPushButton(tr("Save Text "));
+    tx_save = new QToolButton();
+    tx_save->setText(tr("Save Text "));
     hbox->addWidget(tx_save);
     tx_save->setCheckable(true);
-    tx_save->setAutoDefault(false);
     connect(tx_save, SIGNAL(toggled(bool)),
         this, SLOT(save_btn_slot(bool)));
     if ((tx_which == PuErr || tx_which == PuErrAlso) &&
             tx_errlog && p_parent) {
-        QPushButton *btn = new QPushButton(tr("Show Error Log"));
-        hbox->addWidget(btn);
-        btn->setAutoDefault(false);
-        connect(btn, SIGNAL(clicked()),
-            this, SLOT(showlog_btn_slot()));
+        QToolButton *tbtn = new QToolButton();
+        tbtn->setText(tr("Show Error Log"));
+        hbox->addWidget(tbtn);
+        connect(tbtn, SIGNAL(clicked()), this, SLOT(showlog_btn_slot()));
     }
     if (tx_which == PuInfo2) {
-        QPushButton *btn = new QPushButton(tr("Help"));
-        hbox->addWidget(btn);
-        btn->setAutoDefault(false);
-        connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+        QToolButton *tbtn = new QToolButton();
+        tbtn->setText(tr("Help"));
+        hbox->addWidget(tbtn);
+        connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
-        tx_activate = new QPushButton(tr("Activate"));
+        tx_activate = new QToolButton();
+        tx_activate->setText(tr("Activate"));
         tx_activate->setCheckable(true);
         tx_activate->setChecked(true);
-        tx_activate->setAutoDefault(false);
         hbox->addWidget(tx_activate);
         connect(tx_activate, SIGNAL(toggled(bool)),
             this, SLOT(activate_btn_slot(bool)));
     }
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 }
@@ -180,6 +182,33 @@ QTtextDlg::~QTtextDlg()
     if (p_caller)
         QTdev::Deselect(p_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTtextDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 QSize

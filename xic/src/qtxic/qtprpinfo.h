@@ -59,6 +59,10 @@ public:
     QTprpInfoDlg(CDo*);
     ~QTprpInfoDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update(CDo*);
     void purge(CDo*, CDo*);
 
@@ -66,7 +70,7 @@ public:
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);

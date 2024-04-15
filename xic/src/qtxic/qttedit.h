@@ -56,7 +56,7 @@ class QLineEdit;
 class QComboBox;
 class QCheckBox;
 class QGroupBox;
-class QPushButton;
+class QToolButton;
 struct TermEditInfo;
 
 class QTelecTermEditDlg : public QDialog
@@ -68,13 +68,17 @@ public:
         CDp*);
     ~QTelecTermEditDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update(TermEditInfo*, CDp*);
 
     void set_transient_for(QWidget *prnt)
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -129,8 +133,8 @@ private:
     QCheckBox   *te_scinvis;
     QCheckBox   *te_syinvis;
     QGroupBox   *te_bitsgrp;
-    QPushButton *te_crtbits;
-    QPushButton *te_ordbits;
+    QToolButton *te_crtbits;
+    QToolButton *te_ordbits;
     QSpinBox    *te_sb_toindex;
 
     void        (*te_action)(TermEditInfo*, CDp*);

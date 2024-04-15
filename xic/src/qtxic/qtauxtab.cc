@@ -45,7 +45,9 @@
 #include "qtinterf/qtfont.h"
 #include "qtinterf/qttextw.h"
 
+#include <QApplication>
 #include <QLayout>
+#include <QToolButton>
 #include <QPushButton>
 #include <QRadioButton>
 #include <QGroupBox>
@@ -129,30 +131,31 @@ QTauxTabDlg::QTauxTabDlg(GRobject c) : QTbag(this)
 
     // Button row
     //
-    at_addbtn = new QPushButton(tr("Add"));
+    at_addbtn = new QToolButton();
+    at_addbtn->setText(tr("Add"));
     hbox->addWidget(at_addbtn);
     at_addbtn->setCheckable(true);
-    at_addbtn->setAutoDefault(false);
     connect(at_addbtn, SIGNAL(toggled(bool)),
         this, SLOT(add_btn_slot(bool)));
 
-    at_rembtn = new QPushButton(tr("Remove"));
+    at_rembtn = new QToolButton();
+    at_rembtn->setText(tr("Remove"));
     hbox->addWidget(at_rembtn);
     at_rembtn->setCheckable(true);
-    at_rembtn->setAutoDefault(false);
     connect(at_rembtn, SIGNAL(toggled(bool)),
         this, SLOT(rem_btn_slot(bool)));
 
-    at_clearbtn = new QPushButton(tr("Clear"));
+    at_clearbtn = new QToolButton();
+    at_clearbtn->setText(tr("Clear"));
     hbox->addWidget(at_clearbtn);
     at_clearbtn->setCheckable(true);
-    at_clearbtn->setAutoDefault(false);
     connect(at_clearbtn, SIGNAL(toggled(bool)),
         this, SLOT(clear_btn_slot(bool)));
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     hbox = new QHBoxLayout(0);
     hbox->setContentsMargins(qm);
@@ -209,7 +212,8 @@ QTauxTabDlg::QTauxTabDlg(GRobject c) : QTbag(this)
 
     // Dismiss button
     //
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -229,6 +233,33 @@ QTauxTabDlg::~QTauxTabDlg()
     if (at_clear_pop)
         at_clear_pop->popdown();
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTauxTabDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 void

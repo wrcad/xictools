@@ -42,57 +42,62 @@
 #include "qtsearch.h"
 #include "miscutil/lstring.h"
 
+#include <QApplication>
 #include <QAction>
 #include <QCheckBox>
 #include <QGroupBox>
 #include <QLabel>
 #include <QLayout>
 #include <QLineEdit>
+#include <QToolButton>
 #include <QPushButton>
 
-// XPM
-static const char * const up_xpm[] = {
-"32 16 2 1",
-" 	c none",
-".	c blue",
-"                                ",
-"               .                ",
-"              ...               ",
-"             .....              ",
-"            .......             ",
-"           .........            ",
-"          ...........           ",
-"         .............          ",
-"        ...............         ",
-"       .................        ",
-"      ...................       ",
-"                                ",
-"                                ",
-"                                ",
-"                                ",
-"                                "};
+namespace {
+    // XPM
+    const char * const up_xpm[] = {
+    "32 16 2 1",
+    " 	c none",
+    ".	c blue",
+    "                                ",
+    "               .                ",
+    "              ...               ",
+    "             .....              ",
+    "            .......             ",
+    "           .........            ",
+    "          ...........           ",
+    "         .............          ",
+    "        ...............         ",
+    "       .................        ",
+    "      ...................       ",
+    "                                ",
+    "                                ",
+    "                                ",
+    "                                ",
+    "                                "};
 
-// XPM
-static const char * const down_xpm[] = {
-"32 16 2 1",
-" 	c none",
-".	c blue",
-"                                ",
-"                                ",
-"                                ",
-"                                ",
-"      ...................       ",
-"       .................        ",
-"        ...............         ",
-"         .............          ",
-"          ...........           ",
-"           .........            ",
-"            .......             ",
-"             .....              ",
-"              ...               ",
-"               .                ",
-"                                ",
-"                                "};
+    // XPM
+    const char * const down_xpm[] = {
+    "32 16 2 1",
+    " 	c none",
+    ".	c blue",
+    "                                ",
+    "                                ",
+    "                                ",
+    "                                ",
+    "      ...................       ",
+    "       .................        ",
+    "        ...............         ",
+    "         .............          ",
+    "          ...........           ",
+    "           .........            ",
+    "            .......             ",
+    "             .....              ",
+    "              ...               ",
+    "               .                ",
+    "                                ",
+    "                                "};
+}
+
 
 QTsearchDlg::QTsearchDlg(QTbag *owner, const char *initstr) : se_timer(this)
 {
@@ -128,24 +133,23 @@ QTsearchDlg::QTsearchDlg(QTbag *owner, const char *initstr) : se_timer(this)
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
-    QPushButton *btn = new QPushButton();
-    btn->setAutoDefault(false);
-    btn->setIcon(QIcon(QPixmap(down_xpm)));
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(down_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setIcon(QIcon(QPixmap(down_xpm)));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(down_btn_slot()));
 
-    btn = new QPushButton();
-    btn->setAutoDefault(false);
-    btn->setIcon(QIcon(QPixmap(up_xpm)));
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(up_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setIcon(QIcon(QPixmap(up_xpm)));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(up_btn_slot()));
 
     se_nc = new QCheckBox(this);
     se_nc->setText(tr("No Case"));
     hbox->addWidget(se_nc);
     connect(se_nc, SIGNAL(toggled(bool)), this, SLOT(icase_btn_slot(bool)));
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -162,7 +166,7 @@ QTsearchDlg::~QTsearchDlg()
     if (p_caller) {
         QObject *o = (QObject*)p_caller;
         if (o->isWidgetType()) {
-            QPushButton *btn = dynamic_cast<QPushButton*>(o);
+            QAbstractButton *btn = dynamic_cast<QAbstractButton*>(o);
             if (btn)
                 btn->setChecked(false);
         }
@@ -179,6 +183,33 @@ QTsearchDlg::~QTsearchDlg()
     }
     delete [] se_label_string;
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTsearchDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 // GRpopup override

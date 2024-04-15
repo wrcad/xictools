@@ -54,9 +54,11 @@
 #include "miscutil/filestat.h"
 #include "qtinterf/qtdblsb.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QGroupBox>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 #include <QToolButton>
 #include <QTabWidget>
@@ -77,7 +79,7 @@
 // Help system keywords used:
 //  xic:excfg
 
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
 #define USE_QTOOLBAR
 #endif
 
@@ -201,10 +203,10 @@ QTextSetupDlg::QTextSetupDlg(GRobject c)
     QLabel *label = new QLabel(tr("Set parameters for extraction"));
     hb->addWidget(label);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     es_notebook = new QTabWidget();
     vbox->addWidget(es_notebook);
@@ -221,17 +223,18 @@ QTextSetupDlg::QTextSetupDlg(GRobject c)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    es_clrex = new QPushButton(tr("Clear Extraction"));
+    es_clrex = new QToolButton();
+    es_clrex->setText(tr("Clear Extraction"));
     hbox->addWidget(es_clrex);
-    es_clrex->setAutoDefault(false);
     connect(es_clrex, SIGNAL(clicked()), this, SLOT(clrex_btn_slot()));
 
-    es_doex = new QPushButton(tr("Do Extraction"));
+    es_doex = new QToolButton();
+    es_doex->setText(tr("Do Extraction"));
     hbox->addWidget(es_doex);
-    es_doex->setAutoDefault(false);
     connect(es_doex, SIGNAL(clicked()), this, SLOT(doex_btn_slot()));
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -250,6 +253,33 @@ QTextSetupDlg::~QTextSetupDlg()
     if (es_caller)
         QTdev::Deselect(es_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTextSetupDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 void
@@ -308,15 +338,15 @@ QTextSetupDlg::views_and_ops_page()
     hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
-    QPushButton *btn = new QPushButton(tr("Reset Terms"));
-    hb->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(p1_rsterms_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Reset Terms"));
+    hb->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(p1_rsterms_btn_slot()));
 
-    btn = new QPushButton(tr("Reset Subckts"));
-    hb->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(p1_rssubs_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Reset Subckts"));
+    hb->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(p1_rssubs_btn_slot()));
 
     hb->addSpacing(12);
     es_p1_recurs = new QCheckBox(tr("Recursive"));
@@ -329,17 +359,17 @@ QTextSetupDlg::views_and_ops_page()
     hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
-    es_p1_tedit = new QPushButton(tr("Edit Terminals"));
+    es_p1_tedit = new QToolButton();
+    es_p1_tedit->setText(tr("Edit Terminals"));
     hb->addWidget(es_p1_tedit);
     es_p1_tedit->setCheckable(true);
-    es_p1_tedit->setAutoDefault(false);
     connect(es_p1_tedit, SIGNAL(toggled(bool)),
         this, SLOT(p1_tedit_btn_slot(bool)));
 
-    es_p1_tfind = new QPushButton(tr("Find Terminal"));
+    es_p1_tfind = new QToolButton();
+    es_p1_tfind->setText(tr("Find Terminal"));
     hb->addWidget(es_p1_tfind);
     es_p1_tfind->setCheckable(true);
-    es_p1_tfind->setAutoDefault(false);
     connect(es_p1_tfind, SIGNAL(toggled(bool)),
         this, SLOT(p1_tfind_btn_slot(bool)));
 
@@ -353,20 +383,20 @@ QTextSetupDlg::views_and_ops_page()
     QLabel *label = new QLabel(tr("Select Unassociated"));
     hb->addWidget(label);
 
-    btn = new QPushButton(tr("Groups/Nodes"));
-    hb->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(p1_uagn_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Groups/Nodes"));
+    hb->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(p1_uagn_btn_slot()));
 
-    btn = new QPushButton(tr("Devices"));
-    hb->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(p1_uadev_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Devices"));
+    hb->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(p1_uadev_btn_slot()));
 
-    btn = new QPushButton(tr("Subckts"));
-    hb->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(p1_uasub_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Subckts"));
+    hb->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(p1_uasub_btn_slot()));
 }
 
 
@@ -393,10 +423,10 @@ QTextSetupDlg::net_and_cell_page()
     hb->setContentsMargins(qmtop);
     hb->setSpacing(2);
 
-    es_p2_nlprpset = new QPushButton(tr("Apply"));
+    es_p2_nlprpset = new QToolButton();
+    es_p2_nlprpset->setText(tr("Apply"));
     hb->addWidget(es_p2_nlprpset);
     es_p2_nlprpset->setCheckable(true);
-    es_p2_nlprpset->setAutoDefault(false);
     connect(es_p2_nlprpset, SIGNAL(toggled(bool)),
         this, SLOT(p2_papply_btn_slot(bool)));
 
@@ -409,10 +439,10 @@ QTextSetupDlg::net_and_cell_page()
     hb->setContentsMargins(qmtop);
     hb->setSpacing(2);
 
-    es_p2_nllset = new QPushButton(tr("Apply"));
+    es_p2_nllset = new QToolButton();
+    es_p2_nllset->setText(tr("Apply"));
     hb->addWidget(es_p2_nllset);
     es_p2_nllset->setCheckable(true);
-    es_p2_nllset->setAutoDefault(false);
     connect(es_p2_nllset, SIGNAL(toggled(bool)),
         this, SLOT(p2_lapply_btn_slot(bool)));
 
@@ -541,23 +571,23 @@ QTextSetupDlg::devs_page()
     es_p3_device_menu->addItem(tr("New"));
     es_p3_device_menu->setItemData(0, (qulonglong)0);
 
-    QPushButton *btn = new QPushButton(tr("Edit"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()),
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Edit"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()),
         this, SLOT(p3_edit_btn_slot()));
 
-    es_p3_delblk = new QPushButton(tr("Delete"));;
+    es_p3_delblk = new QToolButton();
+    es_p3_delblk->setText(tr("Delete"));;
     hbox->addWidget(es_p3_delblk);
     es_p3_delblk->setCheckable(true);
-    es_p3_delblk->setAutoDefault(false);
     connect(es_p3_delblk, SIGNAL(toggled(bool)),
         this, SLOT(p3_del_btn_slot(bool)));
 
-    es_p3_undblk = new QPushButton(tr("Undelete"));;
+    es_p3_undblk = new QToolButton();
+    es_p3_undblk->setText(tr("Undelete"));
     hbox->addWidget(es_p3_undblk);
     es_p3_undblk->setCheckable(true);
-    es_p3_undblk->setAutoDefault(false);
     connect(es_p3_undblk, SIGNAL(toggled(bool)),
         this, SLOT(p3_und_btn_slot(bool)));
 
@@ -673,10 +703,10 @@ QTextSetupDlg::misc_page()
     hbox->setContentsMargins(qmtop);
     hbox->setSpacing(2);
 
-    es_p4_flkeyset = new QPushButton(tr("Apply"));
+    es_p4_flkeyset = new QToolButton();
+    es_p4_flkeyset->setText(tr("Apply"));
     hbox->addWidget(es_p4_flkeyset);
     es_p4_flkeyset->setCheckable(true);
-    es_p4_flkeyset->setAutoDefault(false);
     connect(es_p4_flkeyset, SIGNAL(toggled(bool)),
         this, SLOT(p4_flapply_btn_slot(bool)));
 
@@ -702,10 +732,10 @@ QTextSetupDlg::misc_page()
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
-    es_p4_glbexset = new QPushButton(tr("Apply"));
+    es_p4_glbexset = new QToolButton();
+    es_p4_glbexset->setText(tr("Apply"));
     hbox->addWidget(es_p4_glbexset);
     es_p4_glbexset->setCheckable(true);
-    es_p4_glbexset->setAutoDefault(false);
     connect(es_p4_glbexset, SIGNAL(toggled(bool)),
         this, SLOT(p4_glapply_btn_slot(bool)));
 

@@ -43,9 +43,11 @@
 #include "dsp_inlines.h"
 #include "qtinterf/qtdblsb.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QGroupBox>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 #include <QLineEdit>
 #include <QCheckBox>
@@ -160,10 +162,10 @@ QTruleDlg::QTruleDlg(GRobject c, DRCtype type, const char *username,
     ru_label = new QLabel(tr("Set Design Rule parameters"));
     hb->addWidget(ru_label);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     QGridLayout *grid = new QGridLayout();
     vbox->addLayout(grid);
@@ -255,9 +257,9 @@ QTruleDlg::QTruleDlg(GRobject c, DRCtype type, const char *username,
     ru_use_st = new QCheckBox(tr("Use spacing table"));
     grid->addWidget(ru_use_st, 7, 0);
 
-    ru_edit_st = new QPushButton(tr("Edit Table"));
+    ru_edit_st = new QToolButton();
+    ru_edit_st->setText(tr("Edit Table"));
     grid->addWidget(ru_edit_st, 7, 1);
-    ru_edit_st->setAutoDefault(false);
     connect(ru_edit_st, SIGNAL(clicked()), this, SLOT(edit_table_slot()));
 
     // Dimension when target objects are fully enclosed.
@@ -317,11 +319,13 @@ QTruleDlg::QTruleDlg(GRobject c, DRCtype type, const char *username,
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
-    btn = new QPushButton(tr("Apply"));
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Apply"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -337,6 +341,33 @@ QTruleDlg::~QTruleDlg()
     if (ru_caller)
         QTdev::Deselect(ru_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTruleDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 void

@@ -45,7 +45,9 @@
 #include "promptline.h"
 #include "qtinterf/qtfont.h"
 
+#include <QApplication>
 #include <QLayout>
+#include <QToolButton>
 #include <QPushButton>
 #include <QLabel>
 #include <QLineEdit>
@@ -122,9 +124,9 @@ QTextDevDlg::QTextDevDlg(GRobject caller)
     grid->setContentsMargins(qmtop);
     grid->setSpacing(2);
 
-    ed_update = new QPushButton(tr("Update\nList"));
+    ed_update = new QToolButton();
+    ed_update->setText(tr("Update\nList"));
     grid->addWidget(ed_update, 0, 0, 2, 1);
-    ed_update->setAutoDefault(false);
     connect(ed_update, SIGNAL(clicked()), this, SLOT(update_btn_slot()));
 
     QHBoxLayout *hbox = new QHBoxLayout();
@@ -132,34 +134,34 @@ QTextDevDlg::QTextDevDlg(GRobject caller)
     hbox->setSpacing(2);
     grid->addLayout(hbox, 0, 1);
 
-    ed_show_all = new QPushButton(tr("Show All"));
+    ed_show_all = new QToolButton();
+    ed_show_all->setText(tr("Show All"));
     hbox->addWidget(ed_show_all);
-    ed_show_all->setAutoDefault(false);
     connect(ed_show_all, SIGNAL(clicked()), this, SLOT(showall_btn_slot()));
 
-    ed_erase_all = new QPushButton(tr("Erase All"));
+    ed_erase_all = new QToolButton();
+    ed_erase_all->setText(tr("Erase All"));
     hbox->addWidget(ed_erase_all);
-    ed_erase_all->setAutoDefault(false);
     connect(ed_erase_all, SIGNAL(clicked()), this, SLOT(eraseall_btn_slot()));
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     hbox = new QHBoxLayout();
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     grid->addLayout(hbox, 1, 1);
 
-    ed_show = new QPushButton(tr("Show"));
+    ed_show = new QToolButton();
+    ed_show->setText(tr("Show"));
     hbox->addWidget(ed_show);
-    btn->setAutoDefault(false);
     connect(ed_show, SIGNAL(clicked()), this, SLOT(show_btn_slot()));
 
-    ed_erase = new QPushButton(tr("Erase"));
+    ed_erase = new QToolButton();
+    ed_erase->setText(tr("Erase"));
     hbox->addWidget(ed_erase);
-    btn->setAutoDefault(false);
     connect(ed_erase, SIGNAL(clicked()), this, SLOT(erase_btn_slot()));
 
     hbox->addSpacing(4);
@@ -202,10 +204,10 @@ QTextDevDlg::QTextDevDlg(GRobject caller)
     grid->addWidget(gb, 3, 0, 1, 2);
     QGridLayout *gr = new QGridLayout(gb);
 
-    ed_select = new QPushButton(tr("Enable\nSelect"));
+    ed_select = new QToolButton();
+    ed_select->setText(tr("Enable\nSelect"));
     gr->addWidget(ed_select, 0, 0, 2, 1);
     ed_select->setCheckable(true);
-    ed_select->setAutoDefault(false);
     connect(ed_select, SIGNAL(toggled(bool)),
         this, SLOT(enablesel_btn_slot(bool)));
 
@@ -229,21 +231,22 @@ QTextDevDlg::QTextDevDlg(GRobject caller)
     hbox->setContentsMargins(qmtop);
     hbox->setSpacing(2);
 
-    ed_measbox = new QPushButton(tr("Enable Measure Box"));
+    ed_measbox = new QToolButton();
+    ed_measbox->setText(tr("Enable Measure Box"));
     hbox->addWidget(ed_measbox);
     ed_measbox->setCheckable(true);
-    ed_measbox->setAutoDefault(false);
     connect(ed_measbox, SIGNAL(toggled(bool)),
         this, SLOT(measbox_btn_slot(bool)));
 
-    ed_paint = new QPushButton(tr("Paint Box (use current layer)"));
+    ed_paint = new QToolButton();
+    ed_paint->setText(tr("Paint Box (use current layer)"));
     hbox->addWidget(ed_paint);
-    ed_paint->setAutoDefault(false);
     connect(ed_paint, SIGNAL(clicked()), this, SLOT(paint_btn_slot()));
 
     // Dismiss button.
     //
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     grid->addWidget(btn, 5, 0, 1, 2);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -273,6 +276,33 @@ QTextDevDlg::~QTextDevDlg()
         EX()->selectDevices(ed_select);
     }
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTextDevDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 // Call when 1) current cell changes, 2) selection mode termination.

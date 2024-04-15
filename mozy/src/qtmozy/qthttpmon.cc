@@ -125,7 +125,7 @@ QThttpmon::QThttpmon(QWidget *prnt) : QDialog(prnt)
     vbox->setSpacing(2);
     vbox->addWidget(g_label);
 
-    g_cancel = new QPushButton(tr("Cancel Download"), this);
+    g_cancel = new QPushButton(tr("Cancel Download"));
     vbox = new QVBoxLayout(this);
     vbox->setContentsMargins(2, 2, 2, 2);
     vbox->setSpacing(2);

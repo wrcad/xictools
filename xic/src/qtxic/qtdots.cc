@@ -43,6 +43,7 @@
 #include "menu.h"
 #include "attr_menu.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QRadioButton>
 #include <QPushButton>
@@ -111,6 +112,7 @@ QTdotsDlg::QTdotsDlg(GRobject caller)
     connect(dt_all, SIGNAL(toggled(bool)), this, SLOT(all_slot(bool)));
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_slot()));
 
@@ -124,6 +126,33 @@ QTdotsDlg::~QTdotsDlg()
     if (dt_caller)
         QTdev::SetStatus(dt_caller, false);
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTdotsDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 void

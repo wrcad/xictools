@@ -50,7 +50,7 @@
 //-----------------------------------------------------------------------------
 // QToaLibsDlg:  OpenAccess Libraries List dialog.
 
-class QPushButton;
+class QToolButton;
 class QRadioButton;
 class QTreeWidget;
 class QTreeWidgetItem;
@@ -66,6 +66,10 @@ public:
     QToaLibsDlg(GRobject);
     ~QToaLibsDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     QSize sizeHint() const;
 
     void get_selection(const char**, const char**);
@@ -75,7 +79,7 @@ public:
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -118,12 +122,12 @@ private:
     static void lb_content_cb(const char*, void*);
 
     GRobject    lb_caller;
-    QPushButton *lb_openbtn;
-    QPushButton *lb_writbtn;
-    QPushButton *lb_contbtn;
-    QPushButton *lb_defsbtn;
-    QPushButton *lb_techbtn;
-    QPushButton *lb_destbtn;
+    QToolButton *lb_openbtn;
+    QToolButton *lb_writbtn;
+    QToolButton *lb_contbtn;
+    QToolButton *lb_defsbtn;
+    QToolButton *lb_techbtn;
+    QToolButton *lb_destbtn;
     QRadioButton *lb_both;
     QRadioButton *lb_phys;
     QRadioButton *lb_elec;

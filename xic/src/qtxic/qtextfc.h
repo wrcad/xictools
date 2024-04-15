@@ -51,7 +51,7 @@
 // QTfastCapDlg:  Dialog to control FasterCap/FastCap-WR interface.
 
 class QLabel;
-class QPushButton;
+class QToolButton;
 class QLineEdit;
 class QComboBox;
 class QCheckBox;
@@ -73,6 +73,10 @@ public:
     QTfastCapDlg(GRobject);
     ~QTfastCapDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update();
     void update_jobs_list();
     void update_label(const char*);
@@ -83,7 +87,7 @@ public:
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -179,7 +183,7 @@ private:
     QCheckBox   *fc_dbg_dright;
 
     QTtextEdit  *fc_jobs;
-    QPushButton *fc_kill;
+    QToolButton *fc_kill;
 
     bool    fc_no_reset;
     bool    fc_frozen;

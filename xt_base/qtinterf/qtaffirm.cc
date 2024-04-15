@@ -41,10 +41,13 @@
 #include "qtinterf.h"
 #include "qtaffirm.h"
 
+#include <QApplication>
 #include <QAction>
 #include <QLayout>
+#include <QToolButton>
 #include <QPushButton>
 #include <QTextEdit>
+
 
 namespace qtinterf
 {
@@ -64,6 +67,7 @@ namespace qtinterf
         QSize sizeHint() const { return (QSize(200, 50)); }
     };
 }
+
 
 QTaffirmDlg::QTaffirmDlg(QTbag *owner, const char *question_str)
 {
@@ -95,11 +99,13 @@ QTaffirmDlg::QTaffirmDlg(QTbag *owner, const char *question_str)
     hbox->setContentsMargins(0, 0, 0, 0);
     hbox->setSpacing(2);
 
-    QPushButton *btn = new QPushButton(tr("Affirm"));
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(affirm_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Affirm"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(affirm_btn_slot()));
 
-    btn = new QPushButton(tr("Cancel"));
+    QPushButton *btn = new QPushButton(tr("Cancel"));
+    btn->setObjectName("Dismiss");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(cancel_btn_slot()));
 }
@@ -121,6 +127,33 @@ QTaffirmDlg::~QTaffirmDlg()
     // OK to emit a signal and die? Seems so.
     emit affirm(af_affirmed, p_cb_arg);
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTaffirmDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 // GRpopup override

@@ -48,9 +48,11 @@
 #include "menu.h"
 #include "promptline.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QGroupBox>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 #include <QComboBox>
 #include <QCheckBox>
@@ -146,10 +148,10 @@ QTphysTermDlg::QTphysTermDlg(GRobject caller, TermEditInfo *tinfo,
     QLabel *label = new QLabel(tr("Edit Terminal Properties"));
     hb->addWidget(label);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // Name Entry
     //
@@ -199,22 +201,22 @@ QTphysTermDlg::QTphysTermDlg(GRobject caller, TermEditInfo *tinfo,
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    btn = new QPushButton(tr("Prev"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(prev_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Prev"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(prev_btn_slot()));
 
-    btn = new QPushButton(tr("Next"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(next_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Next"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(next_btn_slot()));
 
     hbox->addStretch(1);
 
-    btn = new QPushButton(tr("To Index"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(toindedx_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("To Index"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(toindedx_btn_slot()));
 
     te_sb_toindex = new QSpinBox();
     hbox->addWidget(te_sb_toindex);
@@ -228,11 +230,13 @@ QTphysTermDlg::QTphysTermDlg(GRobject caller, TermEditInfo *tinfo,
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    btn = new QPushButton(tr("Apply"));
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Apply"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -249,6 +253,33 @@ QTphysTermDlg::~QTphysTermDlg()
         (*te_action)(0, te_term);
     delete [] te_lname;
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTphysTermDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 void

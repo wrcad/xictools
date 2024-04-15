@@ -51,7 +51,7 @@
 //-----------------------------------------------------------------------------
 // QTltabEditDlg:  Layer Editor dialog.
 
-class QPushButton;
+class QToolButton;
 class QComboBox;
 class QLabel;
 
@@ -63,6 +63,10 @@ public:
     QTltabEditDlg(GRobject);
     virtual ~QTltabEditDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     // virtual overrides
     void update(CDll*);
     char *layername();
@@ -73,7 +77,7 @@ public:
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -98,8 +102,8 @@ private:
     GRobject    le_caller;      // initiating button
 
     QLabel      *le_label;      // message area
-    QPushButton *le_add;        // add layer button
-    QPushButton *le_rem;        // remove layer button
+    QToolButton *le_add;        // add layer button
+    QToolButton *le_rem;        // remove layer button
     QComboBox   *le_opmenu;     // removed layers menu;
 
     static const char *initmsg;

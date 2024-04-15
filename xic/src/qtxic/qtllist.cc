@@ -49,7 +49,7 @@
 #include <QLayout>
 #include <QLabel>
 #include <QCheckBox>
-#include <QPushButton>
+#include <QToolButton>
 #include <QLineEdit>
 #include <QMimeData>
 #include <QDropEvent>
@@ -144,10 +144,10 @@ QTlayerList::QTlayerList()
     connect(ll_aluse, SIGNAL(stateChanged(int)),
         this, SLOT(aluse_btn_slot(int)));
 
-    ll_aledit = new QPushButton(tr("Edit Layer Aliases"));
+    ll_aledit = new QToolButton();
+    ll_aledit->setText(tr("Edit Layer Aliases"));
     hbox->addWidget(ll_aledit);
     ll_aledit->setCheckable(true);
-    ll_aledit->setAutoDefault(false);
     connect(ll_aledit, SIGNAL(toggled(bool)),
         this, SLOT(aledit_btn_slot(bool)));
 

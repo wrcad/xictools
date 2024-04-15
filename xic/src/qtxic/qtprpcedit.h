@@ -53,7 +53,7 @@
 class QAction;
 class QMouseEvent;
 class QMimeData;
-class QPushButton;
+class QToolButton;
 class QMenu;
 
 class QTcellPrpDlg : public QDialog, public QTbag
@@ -72,13 +72,17 @@ public:
     QTcellPrpDlg();
     ~QTcellPrpDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update();
 
     void set_transient_for(QWidget *prnt)
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -108,9 +112,9 @@ private:
     void update_display();
     void select_range(int, int);
 
-    QPushButton *pc_edit;
-    QPushButton *pc_del;
-    QPushButton *pc_add;
+    QToolButton *pc_edit;
+    QToolButton *pc_del;
+    QToolButton *pc_add;
     QMenu       *pc_addmenu;
     PrptyText   *pc_list;
 

@@ -50,7 +50,7 @@
 
 
 class QGroupBox;
-class QPushButton;
+class QToolButton;
 namespace qtinterf {
     class QTbag;
     class QTtextDlg;
@@ -69,6 +69,10 @@ public:
 
     QTtextDlg(QTbag*, const char*, PuType=PuInfo, STYtype=STY_NORM);
     ~QTtextDlg();
+
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
 
     QSize sizeHint() const;
 
@@ -135,8 +139,8 @@ private:
     static int tx_timeout(void*);
 
     QTtextEdit  *tx_tbox;
-    QPushButton *tx_save;
-    QPushButton *tx_activate;
+    QToolButton *tx_save;
+    QToolButton *tx_activate;
     QTledDlg    *tx_save_pop;
     QTmsgDlg    *tx_msg_pop;
     PuType      tx_which;

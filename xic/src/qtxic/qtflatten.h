@@ -51,7 +51,7 @@
 // QTflattenDlg:  Dialog for the Flatten command.
 
 class QCheckBox;
-class QPushButton;
+class QToolButton;
 class QAction;
 
 class QTflattenDlg : public QDialog
@@ -63,13 +63,17 @@ public:
         void*, int, bool, bool);
     ~QTflattenDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update();
 
     void set_transient_for(QWidget *prnt)
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -101,7 +105,7 @@ private:
     QCheckBox   *fl_nopcells;
     QCheckBox   *fl_nolabels;
     QCheckBox   *fl_merge;
-    QPushButton *fl_go;
+    QToolButton *fl_go;
 
     bool (*fl_callback)(const char*, bool, const char*, void*);
     void *fl_arg;

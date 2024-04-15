@@ -47,9 +47,11 @@
 #include "fio_cgd.h"
 #include "cd_digest.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QGroupBox>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 #include <QCheckBox>
 #include <QLineEdit>
@@ -209,10 +211,10 @@ QTchdCfgDlg::QTchdCfgDlg(GRobject caller, const char *chdname) : QTbag(this)
     cf_label = new QLabel("");
     hb->addWidget(cf_label);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // Frame and name group.
     //
@@ -228,9 +230,9 @@ QTchdCfgDlg::QTchdCfgDlg(GRobject caller, const char *chdname) : QTbag(this)
     ghbox->setContentsMargins(qm);
     ghbox->setSpacing(2);
 
-    cf_apply_tc = new QPushButton("");
+    cf_apply_tc = new QToolButton();
+    cf_apply_tc->setText("");
     ghbox->addWidget(cf_apply_tc);
-    cf_apply_tc->setAutoDefault(false);
     connect(cf_apply_tc, SIGNAL(clicked()), this, SLOT(apply_tc_btn_slot()));
 
     QLabel *label = new QLabel(tr("Set Default Cell"));
@@ -246,9 +248,9 @@ QTchdCfgDlg::QTchdCfgDlg(GRobject caller, const char *chdname) : QTbag(this)
     cf_dtc_label = new QLabel(tr("Default top cell"));
     ghbox->addWidget(cf_dtc_label);
 
-    cf_last = new QPushButton(tr("Last"));
+    cf_last = new QToolButton();
+    cf_last->setText(tr("Last"));
     ghbox->addWidget(cf_last);
-    cf_last->setAutoDefault(false);
     connect(cf_last, SIGNAL(clicked()), this, SLOT(last_btn_slot()));
 
     cf_text = new QLineEdit();
@@ -271,9 +273,9 @@ QTchdCfgDlg::QTchdCfgDlg(GRobject caller, const char *chdname) : QTbag(this)
     ghbox->setContentsMargins(qm);
     ghbox->setSpacing(2);
 
-    cf_apply_cgd = new QPushButton("");
+    cf_apply_cgd = new QToolButton();
+    cf_apply_cgd->setText("");
     ghbox->addWidget(cf_apply_cgd);
-    cf_apply_cgd->setAutoDefault(false);
     connect(cf_apply_cgd, SIGNAL(clicked()),
         this, SLOT(apply_cgd_btn_slot()));
 
@@ -301,7 +303,8 @@ QTchdCfgDlg::QTchdCfgDlg(GRobject caller, const char *chdname) : QTbag(this)
 
     // Dismiss button
     //
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -318,6 +321,33 @@ QTchdCfgDlg::~QTchdCfgDlg()
     if (cf_caller)
         QTdev::Deselect(cf_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTchdCfgDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 void

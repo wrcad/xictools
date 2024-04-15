@@ -65,6 +65,10 @@ public:
     QTnumDlg(QTbag*, const char*, double, double, double, double, int);
     ~QTnumDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     // GRpopup overrides
     void set_visible(bool visib)
         {
@@ -109,8 +113,6 @@ private slots:
 private:
     QTextEdit   *nu_label;
     QDoubleSpinBox *nu_spinbtn;
-    QPushButton *nu_yesbtn;
-    QPushButton *nu_nobtn;
     bool        nu_affirmed;
 };
 

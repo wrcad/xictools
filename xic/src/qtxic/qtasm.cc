@@ -49,6 +49,7 @@
 #include "qtinterf/qtdblsb.h"
 #include "miscutil/filestat.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QMenuBar>
 #include <QToolBar>
@@ -74,7 +75,7 @@
 // Help system keywords used:
 //  xic:assem
 
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
 #define USE_QTOOLBAR
 #endif
 
@@ -321,11 +322,13 @@ QTasmDlg::QTasmDlg(GRobject c) : QTbag(this)
     hbox->setSpacing(2);
 
 
-    QPushButton *btn = new QPushButton(tr("Create Layout File"));
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(crlayout_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Create Layout File"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(crlayout_btn_slot()));
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -348,6 +351,33 @@ QTasmDlg::~QTasmDlg()
     delete [] asm_sources;
     delete asm_fmt;
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTasmDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 void

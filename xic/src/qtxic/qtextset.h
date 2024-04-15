@@ -51,7 +51,7 @@
 // QTextSetupDlg:  Dialog to control misc. extraction variables.
 
 class QTabWidget;
-class QPushButton;
+class QToolButton;
 class QCheckBox;
 class QLineEdit;
 class QSpinBox;
@@ -69,13 +69,17 @@ public:
     QTextSetupDlg(void*);
     ~QTextSetupDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update();
 
     void set_transient_for(QWidget *prnt)
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -161,8 +165,8 @@ private:
 
     GRobject    es_caller;
     QTabWidget  *es_notebook;
-    QPushButton *es_clrex;
-    QPushButton *es_doex;
+    QToolButton *es_clrex;
+    QToolButton *es_doex;
 
     QCheckBox   *es_p1_extview;
     QCheckBox   *es_p1_groups;
@@ -170,12 +174,12 @@ private:
     QCheckBox   *es_p1_terms;
     QCheckBox   *es_p1_cterms;
     QCheckBox   *es_p1_recurs;
-    QPushButton *es_p1_tedit;
-    QPushButton *es_p1_tfind;
+    QToolButton *es_p1_tedit;
+    QToolButton *es_p1_tfind;
 
-    QPushButton *es_p2_nlprpset;
+    QToolButton *es_p2_nlprpset;
     QLineEdit   *es_p2_nlprp;
-    QPushButton *es_p2_nllset;
+    QToolButton *es_p2_nllset;
     QLineEdit   *es_p2_nll;
     QCheckBox   *es_p2_ignlab;
     QCheckBox   *es_p2_oldlab;
@@ -190,8 +194,8 @@ private:
     QComboBox   *es_p2_gpmthd;
 
     QComboBox   *es_p3_device_menu;
-    QPushButton *es_p3_delblk;
-    QPushButton *es_p3_undblk;
+    QToolButton *es_p3_delblk;
+    QToolButton *es_p3_undblk;
     QCheckBox   *es_p3_noseries;
     QCheckBox   *es_p3_nopara;
     QCheckBox   *es_p3_keepshrt;
@@ -207,11 +211,11 @@ private:
     QSpinBox    *es_p3_sb_maxpts;
     QSpinBox    *es_p3_sb_gridpts;
 
-    QPushButton *es_p4_flkeyset;
+    QToolButton *es_p4_flkeyset;
     QLineEdit   *es_p4_flkeys;
     QCheckBox   *es_p4_exopq;
     QCheckBox   *es_p4_vrbos;
-    QPushButton *es_p4_glbexset;
+    QToolButton *es_p4_glbexset;
     QLineEdit   *es_p4_glbex;
     QCheckBox   *es_p4_noperm;
     QCheckBox   *es_p4_apmrg;

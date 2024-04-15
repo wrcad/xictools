@@ -49,7 +49,6 @@
 
 
 class QTextEdit;
-class QPushButton;
 
 namespace qtinterf {
     class QTaffirmDlg;
@@ -63,6 +62,10 @@ class qtinterf::QTaffirmDlg : public QDialog, public GRaffirmPopup
 public:
     QTaffirmDlg(QTbag*, const char*);
     ~QTaffirmDlg();
+
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
 
     // GRpopup overrides
     void set_visible(bool visib)

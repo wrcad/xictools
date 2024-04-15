@@ -53,7 +53,7 @@
 
 #define MAX_BTNS 5
 
-class QPushButton;
+class QToolButton;
 class QHBoxLayout;
 class QComboBox;
 class QStackedWidget;
@@ -69,6 +69,10 @@ public:
     QTfilesListDlg(GRobject);
     ~QTfilesListDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     QSize sizeHint()                const { return (QSize(500, 400)); }
 
     void update();
@@ -79,7 +83,7 @@ public:
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -131,7 +135,7 @@ private:
     static void fl_desel();
 
     GRobject    fl_caller;
-    QPushButton *fl_buttons[MAX_BTNS];
+    QToolButton *fl_buttons[MAX_BTNS];
     QHBoxLayout *fl_button_box;
     QComboBox   *fl_menu;
     QStackedWidget *fl_notebook;

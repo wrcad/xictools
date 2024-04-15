@@ -52,7 +52,7 @@
 // OpenAccess library.
 
 class QLabel;
-class QPushButton;
+class QToolButton;
 class QLineEdit;
 
 class QToaTechAttachDlg : public QDialog
@@ -63,13 +63,17 @@ public:
     QToaTechAttachDlg(GRobject);
     ~QToaTechAttachDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update();
 
     void set_transient_for(QWidget *prnt)
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -96,12 +100,12 @@ private slots:
 private:
     GRobject    ot_caller;
     QLabel      *ot_label;
-    QPushButton *ot_unat;
-    QPushButton *ot_at;
+    QToolButton *ot_unat;
+    QToolButton *ot_at;
     QLineEdit   *ot_tech;
-    QPushButton *ot_def;
-    QPushButton *ot_dest;
-    QPushButton *ot_crt;
+    QToolButton *ot_def;
+    QToolButton *ot_dest;
+    QToolButton *ot_crt;
     QLabel      *ot_status;
 
     char        *ot_attachment;

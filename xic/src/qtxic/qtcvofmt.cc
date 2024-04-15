@@ -49,6 +49,7 @@
 #include <QLabel>
 #include <QComboBox>
 #include <QCheckBox>
+#include <QToolButton>
 #include <QPushButton>
 #include <QMenu>
 #include <QAction>
@@ -265,10 +266,10 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     hbox->addWidget(label);
     label->setAlignment(Qt::AlignCenter);
 
-    fmt_oasadv = new QPushButton(tr("Advanced"));
+    fmt_oasadv = new QToolButton();
+    fmt_oasadv->setText(tr("Advanced"));
     hbox->addWidget(fmt_oasadv);
     fmt_oasadv->setCheckable(true);
-    fmt_oasadv->setAutoDefault(false);
     connect(fmt_oasadv, SIGNAL(toggled(bool)),
         this, SLOT(oasadv_btn_slot(bool)));
 
@@ -339,10 +340,10 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     label->setAlignment(Qt::AlignCenter);
     hbox->addSpacing(20);
 
-    fmt_cifext = new QPushButton(tr("Extension Flags"));
+    fmt_cifext = new QToolButton();
+    fmt_cifext->setText(tr("Extension Flags"));
     hbox->addWidget(fmt_cifext);
     hbox->addSpacing(20);
-    fmt_cifext->setAutoDefault(false);
     fmt_cifflags = new QMenu();
     fmt_cifext->setMenu(fmt_cifflags);
 
@@ -361,11 +362,11 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     connect(fmt_cifflags, SIGNAL(triggered(QAction*)),
         this, SLOT(cif_flags_slot(QAction*)));
 
-    QPushButton *btn = new QPushButton(tr("Last Seen"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    btn->setMaximumWidth(100);
-    connect(btn, SIGNAL(clicked()), this, SLOT(ciflast_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Last Seen"));
+    hbox->addWidget(tbtn);
+    tbtn->setMaximumWidth(100);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(ciflast_btn_slot()));
 
     // next two rows in three columns
     hbox = new QHBoxLayout();

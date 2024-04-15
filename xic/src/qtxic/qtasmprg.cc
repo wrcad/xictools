@@ -42,9 +42,11 @@
 #include "cvrt.h"
 #include "qtinterf/qtactivity.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QGroupBox>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 
 
@@ -113,11 +115,13 @@ QTasmPrgDlg::QTasmPrgDlg()
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
-    QPushButton *btn = new QPushButton(tr("Abort"));
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(abort_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Abort"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(abort_btn_slot()));
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -132,6 +136,33 @@ QTasmPrgDlg::~QTasmPrgDlg()
     if (prg_refptr)
         *prg_refptr = 0;
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTasmPrgDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 void

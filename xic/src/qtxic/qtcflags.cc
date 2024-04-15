@@ -46,8 +46,10 @@
 #include "qtinterf/qtfont.h"
 #include "qtinterf/qttextw.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 #include <QGroupBox>
 #include <QScrollBar>
@@ -130,25 +132,25 @@ QTcflagsDlg::QTcflagsDlg(GRobject caller, const stringlist *sl, int dmode)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    QPushButton *btn = new QPushButton(tr("None"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(imm_none_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("None"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(imm_none_btn_slot()));
 
-    btn = new QPushButton(tr("All"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(imm_all_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("All"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(imm_all_btn_slot()));
 
-    btn = new QPushButton(tr("None"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(lib_none_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("None"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(lib_none_btn_slot()));
 
-    btn = new QPushButton(tr("All"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(lib_all_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("All"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(lib_all_btn_slot()));
 
     QGroupBox *gb = new QGroupBox();
     vbox->addWidget(gb);
@@ -181,11 +183,13 @@ QTcflagsDlg::QTcflagsDlg(GRobject caller, const stringlist *sl, int dmode)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    btn = new QPushButton(tr("Apply"));
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Apply"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -200,6 +204,33 @@ QTcflagsDlg::~QTcflagsDlg()
     if (cf_caller)
         QTdev::Deselect(cf_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTcflagsDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 void

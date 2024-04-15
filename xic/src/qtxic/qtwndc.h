@@ -52,7 +52,7 @@
 
 class QCheckBox;
 class QLabel;
-class QPushButton;
+class QToolButton;
 class QMenu;
 namespace qtinterf {
     class QTdoubleSpinBox;
@@ -109,8 +109,8 @@ private:
     QLabel      *wnd_b_label;
     QLabel      *wnd_r_label;
     QLabel      *wnd_t_label;
-    QPushButton *wnd_sbutton;
-    QPushButton *wnd_rbutton;
+    QToolButton *wnd_sbutton;
+    QToolButton *wnd_rbutton;
     QMenu       *wnd_s_menu;
     QMenu       *wnd_r_menu;
     QTdoubleSpinBox *wnd_sb_left;

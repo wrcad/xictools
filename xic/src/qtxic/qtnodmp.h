@@ -54,7 +54,7 @@
 namespace ns_nodmp {
     struct NmpState;
 }
-class QPushButton;
+class QToolButton;
 class QLineEdit;
 class QRadioButton;
 class QTreeWidget;
@@ -71,6 +71,10 @@ public:
     QTnodeMapDlg(GRobject, int);
     ~QTnodeMapDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     bool update(int);
     void show_node_terms(int);
     void update_map();
@@ -79,7 +83,7 @@ public:
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -125,17 +129,17 @@ private:
 
     GRobject    nm_caller;
     NmpState    *nm_cmd;
-    QPushButton *nm_use_np;;
-    QPushButton *nm_rename;
-    QPushButton *nm_remove;
-    QPushButton *nm_point_btn;
-    QPushButton *nm_srch_btn;
+    QToolButton *nm_use_np;;
+    QToolButton *nm_rename;
+    QToolButton *nm_remove;
+    QToolButton *nm_point_btn;
+    QToolButton *nm_srch_btn;
     QLineEdit   *nm_srch_entry;
     QRadioButton *nm_srch_nodes;
     QTreeWidget *nm_node_list;
     QTreeWidget *nm_term_list;
     QCheckBox   *nm_usex_btn;
-    QPushButton *nm_find_btn;
+    QToolButton *nm_find_btn;
 
     int         nm_showing_node;
     int         nm_showing_row;

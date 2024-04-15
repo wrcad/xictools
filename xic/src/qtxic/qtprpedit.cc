@@ -50,7 +50,9 @@
 #include "promptline.h"
 #include "qtinterf/qttextw.h"
 
+#include <QApplication>
 #include <QLayout>
+#include <QToolButton>
 #include <QPushButton>
 #include <QMenu>
 #include <QAction>
@@ -208,21 +210,21 @@ QTprpEditorDlg::QTprpEditorDlg(CDo *odesc, PRPmode activ) : QTprpBase(this)
 
     // top row buttons
     //
-    po_edit = new QPushButton(tr("Edit"));
+    po_edit = new QToolButton();
+    po_edit->setText(tr("Edit"));
     hbox->addWidget(po_edit);
     po_edit->setCheckable(true);
-    po_edit->setAutoDefault(false);
     connect(po_edit, SIGNAL(toggled(bool)), this, SLOT(edit_btn_slot(bool)));
 
-    po_del = new QPushButton(tr("Delete"));
+    po_del = new QToolButton();
+    po_del->setText(tr("Delete"));
     hbox->addWidget(po_del);
     po_del->setCheckable(true);
-    po_del->setAutoDefault(false);
     connect(po_del, SIGNAL(toggled(bool)), this, SLOT(del_btn_slot(bool)));
 
-    po_add = new QPushButton(tr("Add"));
+    po_add = new QToolButton();
+    po_add->setText(tr("Add"));
     po_add->setCheckable(true);
-    po_add->setAutoDefault(false);
     hbox->addWidget(po_add);
 
     po_addmenu = new QMenu();
@@ -230,24 +232,24 @@ QTprpEditorDlg::QTprpEditorDlg(CDo *odesc, PRPmode activ) : QTprpBase(this)
     connect(po_addmenu, SIGNAL(triggered(QAction*)),
         this, SLOT(add_menu_slot(QAction*)));
 
-    po_global = new QPushButton(tr("Global"));
+    po_global = new QToolButton();
+    po_global->setText(tr("Global"));
     hbox->addWidget(po_global);
     po_global->setCheckable(true);
-    po_global->setAutoDefault(false);
     connect(po_global, SIGNAL(toggled(bool)),
         this, SLOT(global_btn_slot(bool)));
 
-    po_info = new QPushButton(tr("Info"));
+    po_info = new QToolButton();
+    po_info->setText(tr("Info"));
     hbox->addWidget(po_info);
     po_info->setCheckable(true);
-    po_info->setAutoDefault(false);
     connect(po_info, SIGNAL(toggled(bool)),
         this, SLOT(info_btn_slot(bool)));
 
-    QPushButton *btn = new QPushButton(tr("help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // scrolled text area
     //
@@ -281,13 +283,15 @@ QTprpEditorDlg::QTprpEditorDlg(CDo *odesc, PRPmode activ) : QTprpBase(this)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    po_activ = new QPushButton(tr("Activate"));
+    po_activ = new QToolButton();
+    po_activ->setText(tr("Activate"));
     po_activ->setCheckable(true);
     hbox->addWidget(po_activ);
     connect(po_activ, SIGNAL(toggled(bool)),
         this, SLOT(activ_btn_slot(bool)));
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -304,6 +308,33 @@ QTprpEditorDlg::~QTprpEditorDlg()
             DSP()->ShowCurrentObject(ERASE, pb_odesc, MarkerColor);
     }
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTprpEditorDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 void

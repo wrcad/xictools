@@ -50,7 +50,9 @@
 #include "qtinterf/qtfont.h"
 #include "qtinterf/qttextw.h"
 
+#include <QApplication>
 #include <QLayout>
+#include <QToolButton>
 #include <QPushButton>
 #include <QMenu>
 #include <QAction>
@@ -149,21 +151,21 @@ QTcellPrpDlg::QTcellPrpDlg() : QTbag(this)
 
     // top row buttons
     //
-    pc_edit = new QPushButton(tr("Edit"));
+    pc_edit = new QToolButton();
+    pc_edit->setText(tr("Edit"));
     hbox->addWidget(pc_edit);
     pc_edit->setCheckable(true);
-    pc_edit->setAutoDefault(false);
     connect(pc_edit, SIGNAL(toggled(bool)), this, SLOT(edit_btn_slot(bool)));
 
-    pc_del = new QPushButton(tr("Delete"));
+    pc_del = new QToolButton();
+    pc_del->setText(tr("Delete"));
     hbox->addWidget(pc_del);
     pc_del->setCheckable(true);
-    pc_del->setAutoDefault(false);
     connect(pc_del, SIGNAL(toggled(bool)), this, SLOT(del_btn_slot(bool)));
 
-    pc_add = new QPushButton(tr("Add"));
+    pc_add = new QToolButton();
+    pc_add->setText(tr("Add"));
     pc_add->setCheckable(true);
-    pc_add->setAutoDefault(false);
     hbox->addWidget(pc_add);
 
     pc_addmenu = new QMenu();
@@ -171,10 +173,10 @@ QTcellPrpDlg::QTcellPrpDlg() : QTbag(this)
     connect(pc_addmenu, SIGNAL(triggered(QAction*)),
         this, SLOT(add_menu_slot(QAction*)));
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // scrolled text area
     //
@@ -195,7 +197,8 @@ QTcellPrpDlg::QTcellPrpDlg() : QTbag(this)
 
     // dismiss button
     //
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -214,6 +217,33 @@ QTcellPrpDlg::~QTcellPrpDlg()
     MainMenu()->MenuButtonSet(0, MenuCPROP, false);
     PL()->AbortLongText();
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTcellPrpDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 void

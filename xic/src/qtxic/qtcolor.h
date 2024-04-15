@@ -52,6 +52,7 @@
 
 class QColorDialog;
 class QComboBox;
+class QToolButton;
 
 class QTcolorDlg : public QDialog
 {
@@ -68,13 +69,17 @@ public:
     QTcolorDlg(GRobject);
     ~QTcolorDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update();
 
     void set_transient_for(QWidget *prnt)
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -106,7 +111,7 @@ private:
     QComboBox   *c_categmenu;
     QComboBox   *c_attrmenu;
     QColorDialog *c_clrd;
-    QPushButton *c_listbtn;
+    QToolButton *c_listbtn;
     GRlistPopup *c_listpop;
     DisplayMode c_display_mode;
     DisplayMode c_ref_mode;

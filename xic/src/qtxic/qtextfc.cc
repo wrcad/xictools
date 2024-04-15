@@ -54,10 +54,12 @@
 #include "qtinterf/qtdblsb.h"
 #include "qtinterf/qtexpsb.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QTabWidget>
 #include <QLabel>
 #include <QGroupBox>
+#include <QToolButton>
 #include <QPushButton>
 #include <QCheckBox>
 #include <QMouseEvent>
@@ -207,10 +209,10 @@ QTfastCapDlg::QTfastCapDlg(GRobject c) : QTbag(this)
     QLabel *label = new QLabel(tr("Fast[er]Cap Interface"));
     hb->addWidget(label);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     QTabWidget *nbook = new QTabWidget();
     vbox->addWidget(nbook);
@@ -256,10 +258,10 @@ QTfastCapDlg::QTfastCapDlg(GRobject c) : QTbag(this)
     hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
-    btn = new QPushButton(tr("Run File"));
-    hb->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(runfile_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Run File"));
+    hb->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(runfile_btn_slot()));
 
     fc_file = new QLineEdit();
     hb->addWidget(fc_file);;
@@ -269,15 +271,15 @@ QTfastCapDlg::QTfastCapDlg(GRobject c) : QTbag(this)
     hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
-    btn = new QPushButton("Run Extraction");
-    hb->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(runext_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Run Extraction"));
+    hb->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(runext_btn_slot()));
 
-    btn = new QPushButton(tr("Dump Unified List File"));
-    hb->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dumplist_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Dump Unified List File"));
+    hb->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(dumplist_btn_slot()));
 
     gb = new QGroupBox(tr("FcArgs"));
     vb->addWidget(gb);
@@ -507,9 +509,9 @@ QTfastCapDlg::QTfastCapDlg(GRobject c) : QTbag(this)
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
 
-    fc_kill = new QPushButton(tr("Abort job"));
+    fc_kill = new QToolButton();
+    fc_kill->setText(tr("Abort job"));
     vb->addWidget(fc_kill);
-    fc_kill->setAutoDefault(false);
     connect(fc_kill, SIGNAL(clicked()), this, SLOT(abort_btn_slot()));
 
     // End of pages.
@@ -527,7 +529,8 @@ QTfastCapDlg::QTfastCapDlg(GRobject c) : QTbag(this)
     delete [] s;
     hbox->addWidget(fc_label);
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -543,6 +546,33 @@ QTfastCapDlg::~QTfastCapDlg()
         QTdev::Deselect(fc_caller);
     FCif()->setPopUpVisible(false);
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTfastCapDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 void

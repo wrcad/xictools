@@ -46,11 +46,13 @@
 #include "miscutil/filestat.h"
 #include "qtinterf/qtdblsb.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QLabel>
 #include <QRadioButton>
 #include <QCheckBox>
 #include <QComboBox>
+#include <QToolButton>
 #include <QPushButton>
 
 
@@ -258,7 +260,7 @@ cEdit::polytext(const char *string, int psz, int x, int y)
 
 #define FB_SET          "Set Pretty Font"
 
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
 #define DEF_FONTNAME    "Menlo 18"
 #else
 #ifdef WIN32
@@ -342,10 +344,10 @@ QTlogoDlg::QTlogoDlg(GRobject c) : QTbag(this)
     connect(lgo_pretty, SIGNAL(toggled(bool)),
         this, SLOT(pretty_btn_slot(bool)));
 
-    QPushButton *btn = new QPushButton(tr("help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // second row
     hbox = new QHBoxLayout(0);
@@ -405,23 +407,24 @@ QTlogoDlg::QTlogoDlg(GRobject c) : QTbag(this)
     connect(lgo_create, SIGNAL(stateChanged(int)),
         this, SLOT(create_btn_slot(int)));
 
-    lgo_dump = new QPushButton(tr("Dump Vector Font "));
+    lgo_dump = new QToolButton();
+    lgo_dump->setText(tr("Dump Vector Font "));
     col2->addWidget(lgo_dump);
     lgo_dump->setCheckable(true);
-    lgo_dump->setAutoDefault(false);
     connect(lgo_dump, SIGNAL(toggled(bool)),
         this, SLOT(dump_btn_slot(bool)));
 
     // bottom row
-    lgo_sel = new QPushButton(tr("Select Pretty Font"));
+    lgo_sel = new QToolButton();
+    lgo_sel->setText(tr("Select Pretty Font"));
     col1->addSpacing(4);
     col1->addWidget(lgo_sel);
     lgo_sel->setCheckable(true);
-    lgo_sel->setAutoDefault(false);
     connect(lgo_sel, SIGNAL(toggled(bool)),
         this, SLOT(sel_btn_slot(bool)));
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     col2->addSpacing(4);
     col2->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
@@ -441,6 +444,33 @@ QTlogoDlg::~QTlogoDlg()
     if (lgo_sav_pop)
         lgo_sav_pop->popdown();
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTlogoDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 namespace {

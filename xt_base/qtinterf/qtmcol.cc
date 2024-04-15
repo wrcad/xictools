@@ -45,8 +45,10 @@
 #include "qtfont.h"
 #include "miscutil/filestat.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 #include <QComboBox>
 #include <QDrag>
@@ -163,29 +165,30 @@ QTmcolDlg::QTmcolDlg(QTbag *owner, stringlist *symlist,
     hbox->setContentsMargins(0, 0, 0, 0);
     hbox->setSpacing(2);
 
-    QPushButton *btn = new QPushButton(tr("Save Text "));
-    hbox->addWidget(btn);
-    btn->setCheckable(true);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(toggled(bool)), this, SLOT(save_btn_slot(bool)));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Save Text "));
+    hbox->addWidget(tbtn);
+    tbtn->setCheckable(true);
+    connect(tbtn, SIGNAL(toggled(bool)), this, SLOT(save_btn_slot(bool)));
 
     mc_pagesel = new QComboBox();
     hbox->addWidget(mc_pagesel);
 
     // Dismiss button.
     //
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     if (buttons) {
         for (int i = 0; i < MC_MAXBTNS && buttons[i]; i++) {
-            btn = new QPushButton(buttons[i]);
-            btn->setAutoDefault(false);
-            btn->setEnabled(false);
-            mc_buttons[i] = btn;
-            hbox->addWidget(btn);
-            connect(btn, SIGNAL(clicked()), this, SLOT(user_btn_slot()));
+            tbtn = new QToolButton();
+            tbtn->setText(buttons[i]);
+            tbtn->setEnabled(false);
+            mc_buttons[i] = tbtn;
+            hbox->addWidget(tbtn);
+            connect(tbtn, SIGNAL(clicked()), this, SLOT(user_btn_slot()));
         }
     }
 
@@ -212,6 +215,33 @@ QTmcolDlg::~QTmcolDlg()
         QTdev::Deselect(p_caller);
     stringlist::destroy(mc_strings);
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTmcolDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 // GRpopup override
@@ -445,7 +475,7 @@ QTmcolDlg::user_btn_slot()
     // Handle the auxiliary buttons:  call the callback with '/'
     // followed by button text.
 
-    QPushButton *b = qobject_cast<QPushButton*>(sender());
+    QAbstractButton *b = qobject_cast<QAbstractButton*>(sender());
     if (b) {
         sLstr lstr;
         lstr.add_c('/');

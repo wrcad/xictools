@@ -45,10 +45,12 @@
 #include "menu.h"
 #include "modf_menu.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QLabel>
 #include <QGroupBox>
 #include <QRadioButton>
+#include <QToolButton>
 #include <QPushButton>
 
 
@@ -120,10 +122,10 @@ QTmclChangeDlg::QTmclChangeDlg()
     QLabel *label = new QLabel(tr("Set layer change option for Move/Copy"));
     hb->addWidget(label);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     lcg_none = new QRadioButton(tr("Don't allow layer change"));
     vbox->addWidget(lcg_none);
@@ -142,7 +144,8 @@ QTmclChangeDlg::QTmclChangeDlg()
     connect(lcg_all, SIGNAL(toggled(bool)),
         this, SLOT(all_btn_slot(bool)));
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     vbox->addSpacing(4);
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
@@ -155,6 +158,33 @@ QTmclChangeDlg::~QTmclChangeDlg()
 {
     instPtr = 0;
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTmclChangeDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 void

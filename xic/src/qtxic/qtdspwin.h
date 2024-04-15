@@ -50,7 +50,7 @@
 //-----------------------------------------------------------------------------
 // QTdisplayWinDlg:  Dialog for the CHD Display command.
 
-class QPushButton;
+class QToolButton;
 namespace qtinterf {
     class QTdoubleSpinBox;
 }
@@ -64,13 +64,17 @@ public:
         bool(*)(bool, const BBox*, void*), void*);
     ~QTdisplayWinDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update(const BBox*);
 
     void set_transient_for(QWidget *prnt)
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -92,8 +96,8 @@ private slots:
 
 private:
     GRobject    dw_caller;
-    QPushButton *dw_apply;
-    QPushButton *dw_center;
+    QToolButton *dw_apply;
+    QToolButton *dw_center;
     QTdoubleSpinBox *dw_sb_x;
     QTdoubleSpinBox *dw_sb_y;
     QTdoubleSpinBox *dw_sb_wid;

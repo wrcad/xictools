@@ -53,7 +53,7 @@
 class QLabel;
 class QLineEdit;
 class QCheckBox;
-class QPushButton;
+class QToolButton;
 class QTlayerList;
 
 class QTchdSaveDlg : public QDialog
@@ -65,13 +65,17 @@ public:
         const char*);
     ~QTchdSaveDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update(const char*);
 
     void set_transient_for(QWidget *prnt)
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -97,7 +101,7 @@ private:
     QLabel      *cs_label;
     QLineEdit   *cs_text;
     QCheckBox   *cs_geom;
-    QPushButton *cs_apply;
+    QToolButton *cs_apply;
     QTlayerList *cs_llist;
 
     bool(*cs_callback)(const char*, bool, void*);

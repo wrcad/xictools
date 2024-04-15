@@ -46,6 +46,7 @@
 #include <QDialog>
 
 class QLineEdit;
+class QToolButton;
 
 // Default color selection pop-up.
 class QTmozyClrDlg : public QDialog, public GRpopup, public QTbag
@@ -77,7 +78,7 @@ private:
     QLineEdit *clr_actfglink;
     QLineEdit *clr_imgmap;
     QLineEdit *clr_sel;
-    QPushButton *clr_listbtn;
+    QToolButton *clr_listbtn;
     GRlistPopup *clr_listpop;
 
     static QTmozyClrDlg *instPtr;

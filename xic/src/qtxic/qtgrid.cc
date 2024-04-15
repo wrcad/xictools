@@ -46,10 +46,13 @@
 #include "qtinterf/qtcanvas.h"
 #include "qtinterf/qtdblsb.h"
 
+#include <QApplication>
+#include <QGuiApplication>
 #include <QLayout>
 #include <QAction>
 #include <QGroupBox>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 #include <QSpinBox>
 #include <QCheckBox>
@@ -58,7 +61,6 @@
 #include <QMenu>
 #include <QMouseEvent>
 #include <QResizeEvent>
-#include <QGuiApplication>
 #include <QDrag>
 #include <QMimeData>
 #include <QKeyEvent>
@@ -86,34 +88,6 @@ namespace {
 
 #define REVERT "revert"
 #define LASTAPPL "last appl"
-
-
-void
-QTsubwin::PopUpGrid(GRobject caller, ShowMode mode)
-{
-    if (!QTdev::exists() || !QTmainwin::exists())
-        return;
-    if (mode == MODE_OFF) {
-        delete sw_gridpop;
-        return;
-    }
-    if (mode == MODE_UPD) {
-        if (sw_gridpop)
-            sw_gridpop->update();
-        return;
-    }
-    if (sw_gridpop)
-        return;
-    if (!QTmainwin::self())
-        return;
-
-    sw_gridpop = new QTgridDlg(this, sw_windesc);
-    sw_gridpop->register_usrptr((void**)&sw_gridpop);
-    sw_gridpop->register_caller(caller);
-    sw_gridpop->initialize();
-    sw_gridpop->set_visible(true);
-}
-// End of QTsubwin functions.
 
 
 QTgridDlg *QTgridDlg::grid_pops[DSP_NUMWINS];
@@ -149,7 +123,6 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTbag(this),
     gd_crs = 0;
     gd_thresh = 0;
 
-    gd_apply = 0;
     gd_cancel = 0;
 
     if (wd)
@@ -197,10 +170,10 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTbag(this),
     QLabel *label = new QLabel(tr("Set grid parameters"));
     hb->addWidget(label);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     QTabWidget *nbook = new QTabWidget();
     vbox->addWidget(nbook);
@@ -307,27 +280,27 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTbag(this),
     hb->setSpacing(2);
 
     // Top buttons
-    gd_showbtn = new QPushButton(tr("Show"));
+    gd_showbtn = new QToolButton();
+    gd_showbtn->setText(tr("Show"));
     hb->addWidget(gd_showbtn);
     gd_showbtn->setCheckable(true);
-    gd_showbtn->setAutoDefault(false);
     connect(gd_showbtn, SIGNAL(toggled(bool)),
         this, SLOT(show_btn_slot(bool)));
     QTdev::SetStatus(gd_showbtn, gd_grid.displayed());
 
-    gd_topbtn = new QPushButton(tr("On Top"));
+    gd_topbtn = new QToolButton();
+    gd_topbtn->setText(tr("On Top"));
     hb->addWidget(gd_topbtn);
     gd_topbtn->setCheckable(true);
-    gd_topbtn->setAutoDefault(false);
     connect(gd_topbtn, SIGNAL(toggled(bool)),
         this, SLOT(top_btn_slot(bool)));
     QTdev::SetStatus(gd_topbtn, gd_grid.show_on_top());
 
-    btn = new QPushButton(tr("Store"));
-    hb->addWidget(btn);
-    btn->setAutoDefault(false);
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Store"));
+    hb->addWidget(tbtn);
     QMenu *menu = new QMenu();
-    btn->setMenu(menu);
+    tbtn->setMenu(menu);
     {
         char buf[64];
         for (int i = 1; i < TECH_NUM_GRIDS; i++) {
@@ -338,11 +311,11 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTbag(this),
             this, SLOT(store_menu_slot(QAction*)));
     }
 
-    btn = new QPushButton(tr("Recall"));
-    hb->addWidget(btn);
-    btn->setAutoDefault(false);
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Recall"));
+    hb->addWidget(tbtn);
     menu = new QMenu();
-    btn->setMenu(menu);
+    tbtn->setMenu(menu);
     {
         char buf[64];
 
@@ -515,18 +488,19 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTbag(this),
         this, SLOT(thresh_changed_slot(int)));
 
     // Apply and Dismiss buttons
-    //
 
     hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
-    gd_apply = new QPushButton(tr("Apply"));;
-    hbox->addWidget(gd_apply);
-    connect(gd_apply, SIGNAL(clicked()), this, SLOT(apply_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Apply"));;
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(apply_slot()));
 
     gd_cancel = new QPushButton(tr("Dismiss"));
+    gd_cancel->setObjectName("Dismiss");
     hbox->addWidget(gd_cancel);
     connect(gd_cancel, SIGNAL(clicked()), this, SLOT(dismiss_slot()));
 
@@ -549,6 +523,33 @@ QTgridDlg::~QTgridDlg()
     if (p_caller)
         QTdev::Deselect(p_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTgridDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 // GRpopup override
@@ -770,6 +771,8 @@ QTgridDlg::keyPressEvent(QKeyEvent *ev)
     // button, run the Apply callback and set focus to the Dismiss
     // button.  A second Enter press will then dismiss the pop-up.
 
+#ifndef Q_OS_MACOS
+//XXX how to support this in macOS?  Do I want to do this at all?
     if (ev->type() == QEvent::KeyPress && ev->key() == Qt::Key_Return) {
         QWidget *w = focusWidget();
         if (w != gd_cancel) {
@@ -778,6 +781,7 @@ QTgridDlg::keyPressEvent(QKeyEvent *ev)
             return;
         }
     }
+#endif
     QDialog::keyPressEvent(ev);
 }
 

@@ -986,7 +986,7 @@ QTfileDlg::~QTfileDlg()
     if (p_caller) {
         QObject *o = (QObject*)p_caller;
         if (o->isWidgetType()) {
-            QPushButton *btn = dynamic_cast<QPushButton*>(o);
+            QAbstractButton *btn = dynamic_cast<QAbstractButton*>(o);
             if (btn)
                 btn->setChecked(false);
         }
@@ -2192,7 +2192,7 @@ namespace {
 }
 
 
-/*
+#ifdef notused
 // File transfer dialog, choowe what to do with a dropped file.
 // Not used.
 
@@ -2202,6 +2202,10 @@ class QTfileActionDlg : public QDialog
 
 public:
     QTfileActionDlg(QTbag *bg, const char *src, const char *dst, xxx);
+
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
 
 private slots:
     void move_btn_slot();
@@ -2247,28 +2251,57 @@ QTfileActionDlg::QTfileActionDlg(QTbag *bg, const char *src, const char *dst,
     hb->setContentsMargins(0, 0, 0, 0);
     hb->setSpacing(2);
 
-    QPushButton *btn = new QPushButton(tr("Move"));
-    hb->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(move_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Move"));
+    hb->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(move_btn_slot()));
 
-    btn = new QPushButton(tr("Copy"));
-    hb->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(copy_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Copy"));
+    hb->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(copy_btn_slot()));
 
-    btn = new QPushButton(tr("Link"));
-    hb->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(link_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Link"));
+    hb->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(link_btn_slot()));
 
-    btn = new QPushButton(tr("Cancel"));
+    QPushButton *btn = new QPushButton(tr("Cancel"));
+    btn->setObjectName("Dismiss");
     hb->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(cancel_btn_slot()));
 
     GTKdev::self()->SetPopupLocation(GRloc(), popup, shell);
     gtk_widget_show(popup);
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTfileActionDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
+
 
 void
 QTfileActionDlg::move_btn_slot()
@@ -2297,5 +2330,5 @@ QTfileActionDlg::cancel_btn_slot()
     delete this;
 }
 
-*/
+#endif
 

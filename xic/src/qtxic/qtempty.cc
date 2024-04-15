@@ -46,8 +46,10 @@
 #include "dsp_inlines.h"
 #include "qtinterf/qtfont.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QGroupBox>
+#include <QToolButton>
 #include <QPushButton>
 #include <QLabel>
 #include <QScrollBar>
@@ -109,15 +111,15 @@ QTemptyDlg::QTemptyDlg(stringlist *l) : QTbag(this)
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
-    QPushButton *btn = new QPushButton(tr("Delete All"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(delete_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Delete All"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(delete_btn_slot()));
 
-    btn = new QPushButton(tr("Skip All"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(skip_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Skip All"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(skip_btn_slot()));
 
     QGroupBox *gb = new QGroupBox();
     vbox->addWidget(gb);
@@ -140,13 +142,13 @@ QTemptyDlg::QTemptyDlg(stringlist *l) : QTbag(this)
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
-    btn = new QPushButton();
-    btn->setText(tr("Apply"));
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Apply"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
 
-    btn = new QPushButton();
-    btn->setText(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -176,6 +178,33 @@ QTemptyDlg::~QTemptyDlg()
     delete [] ec_list;
     delete ec_tab;
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTemptyDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 QSize

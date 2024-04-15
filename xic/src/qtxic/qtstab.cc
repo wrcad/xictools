@@ -46,10 +46,12 @@
 #include "promptline.h"
 #include "events.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QGroupBox>
 #include <QLabel>
 #include <QComboBox>
+#include <QToolButton>
 #include <QPushButton>
 
 
@@ -127,10 +129,10 @@ QTstabDlg::QTstabDlg(GRobject c) : QTbag(this)
     hb->addWidget(label);
     hbox->addWidget(gb);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // Symbol tables list.
     //
@@ -150,27 +152,28 @@ QTstabDlg::QTstabDlg(GRobject c) : QTbag(this)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    tb_add = new QPushButton(tr("Add"));
+    tb_add = new QToolButton();
+    tb_add->setText(tr("Add"));
     hbox->addWidget(tb_add);
     tb_add->setCheckable(true);
-    tb_add->setAutoDefault(false);
     connect(tb_add, SIGNAL(toggled(bool)), this, SLOT(add_btn_slot(bool)));
 
-    tb_clr = new QPushButton(tr("Clear"));
+    tb_clr = new QToolButton();
+    tb_clr->setText(tr("Clear"));
     hbox->addWidget(tb_clr);
     tb_clr->setCheckable(true);
-    tb_clr->setAutoDefault(false);
     connect(tb_clr, SIGNAL(toggled(bool)), this, SLOT(clear_btn_slot(bool)));
 
-    tb_del = new QPushButton(tr("Destroy"));
+    tb_del = new QToolButton();
+    tb_del->setText(tr("Destroy"));
     hbox->addWidget(tb_del);
     tb_del->setCheckable(true);
-    tb_del->setAutoDefault(false);
     if (!tb_namelist || !strcmp(tb_namelist->string, CD_MAIN_ST_NAME))
         tb_del->setEnabled(false);
     connect(tb_del, SIGNAL(toggled(bool)), this, SLOT(destroy_btn_slot(bool)));
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 }
@@ -189,6 +192,33 @@ QTstabDlg::~QTstabDlg()
     if (tb_caller)
         QTdev::Deselect(tb_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTstabDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 void

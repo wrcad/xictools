@@ -42,6 +42,7 @@
 #include "qtmsg.h"
 #include "qtfont.h"
 
+#include <QApplication>
 #include <QAction>
 #include <QGroupBox>
 #include <QLayout>
@@ -85,9 +86,10 @@ QTmsgDlg::QTmsgDlg(QTbag *owner, const char *message_str,
     }
     setText(message_str);
 
-    tx_cancel = new QPushButton(tr("Dismiss"), this);
-    vbox->addWidget(tx_cancel);
-    connect(tx_cancel, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
+    vbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 }
 
 
@@ -103,6 +105,33 @@ QTmsgDlg::~QTmsgDlg()
     if (p_caller)
         QTdev::Deselect(p_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTmsgDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 QSize

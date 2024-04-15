@@ -67,6 +67,10 @@ public:
     QTsearchDlg(QTbag*, const char*);
     ~QTsearchDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     // GRpopup overrides
     void set_visible(bool visib)
         {

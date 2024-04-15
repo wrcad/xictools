@@ -43,9 +43,11 @@
 #include "dsp_inlines.h"
 #include "cvrt_variables.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QGroupBox>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 #include <QComboBox>
 #include <QCheckBox>
@@ -134,10 +136,10 @@ QTflattenDlg::QTflattenDlg(
     QLabel *label = new QLabel(tr("Selected subcells will be flattened"));
     hb->addWidget(label);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // depth option
     //
@@ -207,11 +209,13 @@ QTflattenDlg::QTflattenDlg(
     vbox->addSpacing(10);
     vbox->addLayout(hbox);
 
-    fl_go = new QPushButton(tr("Flatten"));
+    fl_go = new QToolButton();
+    fl_go->setText(tr("Flatten"));
     hbox->addWidget(fl_go);
     connect(fl_go, SIGNAL(clicked()), this, SLOT(go_btn_slot()));
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -227,6 +231,33 @@ QTflattenDlg::~QTflattenDlg()
     if (fl_callback)
         (*fl_callback)(0, false, 0, fl_arg);
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTflattenDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 void

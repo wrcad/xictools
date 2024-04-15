@@ -49,6 +49,7 @@
 #include <QApplication>
 #include <QLayout>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 #include <QComboBox>
 #include <QSpinBox>
@@ -153,24 +154,24 @@ QTplaceDlg::QTplaceDlg(bool noprompt)
 
     // First row buttons.
     //
-    pl_arraybtn = new QPushButton(tr("Use Array"));
+    pl_arraybtn = new QToolButton();
+    pl_arraybtn->setText(tr("Use Array"));
     hbox->addWidget(pl_arraybtn);
     pl_arraybtn->setCheckable(true);
-    pl_arraybtn->setAutoDefault(false);
     connect(pl_arraybtn, SIGNAL(toggled(bool)),
         this, SLOT(array_btn_slot(bool)));
 
-    pl_replbtn = new QPushButton(tr("Replace"));
+    pl_replbtn = new QToolButton();
+    pl_replbtn->setText(tr("Replace"));
     hbox->addWidget(pl_replbtn);
     pl_replbtn->setCheckable(true);
-    pl_replbtn->setAutoDefault(false);
     connect(pl_replbtn, SIGNAL(clicked(bool)),
         this, SLOT(replace_btn_slot(bool)));
 
-    pl_smashbtn = new QPushButton(tr("Smash"));
+    pl_smashbtn = new QToolButton();
+    pl_smashbtn->setText(tr("Smash"));
     hbox->addWidget(pl_smashbtn);
     pl_smashbtn->setCheckable(true);
-    pl_smashbtn->setAutoDefault(false);
 
     pl_refmenu = new QComboBox();
     pl_refmenu->addItem(tr("Origin"));
@@ -271,21 +272,21 @@ QTplaceDlg::QTplaceDlg(bool noprompt)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     MenuEnt *m = MainMenu()->FindEntry(MMside, MenuPLACE);
     if (m)
-        pl_menu_placebtn = (QPushButton*)m->cmd.caller;
+        pl_menu_placebtn = static_cast<QAbstractButton*>(m->cmd.caller);
     if (pl_menu_placebtn) {
         // pl_menu_placebtn is the menu "place" button, which
         // will be "connected" to the Place button in the widget.
 
-        pl_placebtn = new QPushButton(tr("Place"));;
+        pl_placebtn = new QToolButton();
+        pl_placebtn->setText(tr("Place"));;
         pl_placebtn->setCheckable(true);
-        pl_placebtn->setAutoDefault(false);
         bool status = QTdev::GetStatus(pl_menu_placebtn);
         pl_placebtn->setChecked(status);
         hbox->addWidget(pl_placebtn);
@@ -295,7 +296,7 @@ QTplaceDlg::QTplaceDlg(bool noprompt)
             this, SLOT(menu_placebtn_slot(bool)));
     }
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Dismiss");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
@@ -345,9 +346,13 @@ QTplaceDlg::event(QEvent *ev)
     // button when the main window has focus.
 
     if (ev->type() == QEvent::ActivationChange) {
-        QPushButton *dsm = findChild<QPushButton*>("Dismiss", Qt::FindDirectChildrenOnly);
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
         if (dsm) {
-            if (QApplication::activeWindow() == QTmainwin::self())
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
                 dsm->setDefault(false);
             else if (QApplication::activeWindow() == this)
                 dsm->setDefault(true);

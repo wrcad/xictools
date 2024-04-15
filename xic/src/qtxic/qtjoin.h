@@ -51,7 +51,7 @@
 // QTjoinDlg:  Dialog to control box/poly join/split operations.
 
 class QCheckBox;
-class QPushButton;
+class QToolButton;
 class QLabel;
 class QSpinBox;
 
@@ -63,13 +63,17 @@ public:
     QTjoinDlg(void*);
     ~QTjoinDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update();
 
     void set_transient_for(QWidget *prnt)
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -106,11 +110,11 @@ private:
     QCheckBox   *jn_nolimit;
     QCheckBox   *jn_clean;
     QCheckBox   *jn_wires;
-    QPushButton *jn_join;
-    QPushButton *jn_join_lyr;
-    QPushButton *jn_join_all;
-    QPushButton *jn_split_h;
-    QPushButton *jn_split_v;
+    QToolButton *jn_join;
+    QToolButton *jn_join_lyr;
+    QToolButton *jn_join_all;
+    QToolButton *jn_split_h;
+    QToolButton *jn_split_v;
     QLabel      *jn_mverts_label;
     QLabel      *jn_mgroup_label;
     QLabel      *jn_mqueue_label;

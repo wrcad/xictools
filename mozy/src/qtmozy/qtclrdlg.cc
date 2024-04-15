@@ -49,6 +49,7 @@
 #include <QClipboard>
 #include <QLayout>
 #include <QLineEdit>
+#include <QToolButton>
 #include <QPushButton>
 #include <QLabel>
 
@@ -128,17 +129,19 @@ QTmozyClrDlg::QTmozyClrDlg(QWidget *prnt) : QDialog(prnt), QTbag(this)
     QHBoxLayout *hbox = new QHBoxLayout();
     grid->addLayout(hbox, 8, 0, 1, 2);
 
-    clr_listbtn = new QPushButton(tr("Colors"));
+    clr_listbtn = new QToolButton();
+    clr_listbtn->setText(tr("Colors"));
     hbox->addWidget(clr_listbtn);
     clr_listbtn->setCheckable(true);
     connect(clr_listbtn, SIGNAL(toggled(bool)),
         this, SLOT(colors_btn_slot(bool)));
 
-    QPushButton *btn = new QPushButton(tr("Apply"));
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Apply"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(quit_btn_slot()));
 

@@ -42,6 +42,7 @@
 #include "qtfont.h"
 #include "miscutil/lstring.h"
 
+#include <QApplication>
 #include <QAction>
 #include <QFont>
 #include <QFontInfo>
@@ -51,6 +52,7 @@
 #include <QLayout>
 #include <QLabel>
 #include <QGroupBox>
+#include <QToolButton>
 #include <QPushButton>
 #include <QComboBox>
 #include <QTextEdit>
@@ -582,9 +584,10 @@ QTfontDlg::QTfontDlg(QTbag *owner, int indx, void *arg) :
     vbox->addLayout(hbox);
     hbox->setContentsMargins(qmtop);
     hbox->setSpacing(2);
-    ft_apply = new QPushButton(tr("Apply"));
+
+    ft_apply = new QToolButton();
+    ft_apply->setText(tr("Apply"));
     hbox->addWidget(ft_apply);
-    ft_apply->setAutoDefault(false);
     connect(ft_apply, SIGNAL(clicked()), this, SLOT(action_slot()));
 
     ft_menu = new QComboBox(this);
@@ -596,10 +599,10 @@ QTfontDlg::QTfontDlg(QTbag *owner, int indx, void *arg) :
     if (indx <= 0)
         ft_menu->hide();
 
-    ft_quit = new QPushButton(tr("Dismiss"));
-    hbox->addWidget(ft_quit);
-    ft_quit->setAutoDefault(false);
-    connect(ft_quit, SIGNAL(clicked()), this, SLOT(quit_slot()));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Dismiss");
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(quit_slot()));
 
     for (int i = 1; i < Fnt()->num_app_fonts; i++) {
         QFont *fnt;
@@ -631,6 +634,33 @@ QTfontDlg::~QTfontDlg()
     if (p_caller)
         QTdev::Deselect(p_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTfontDlg::event(QEvent *ev)
+{
+    // Fix for QT BUG 116674, text becomes invisible on autodefault
+    // button when the main window has focus.
+
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget())
+                top = top->parentWidget();
+            if (QApplication::activeWindow() == top)
+                dsm->setDefault(false);
+            else if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 // GRpopup override
