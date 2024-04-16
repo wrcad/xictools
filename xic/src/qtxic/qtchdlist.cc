@@ -208,6 +208,7 @@ QTchdListDlg::QTchdListDlg(GRobject c) : QTbag(this)
     hbox->addWidget(chl_qinfbtn);
     connect(chl_qinfbtn, SIGNAL(clicked()), this, SLOT(qinf_btn_slot()));
 
+    hbox->addStretch(1);
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);

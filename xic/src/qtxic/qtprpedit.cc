@@ -246,8 +246,9 @@ QTprpEditorDlg::QTprpEditorDlg(CDo *odesc, PRPmode activ) : QTprpBase(this)
     connect(po_info, SIGNAL(toggled(bool)),
         this, SLOT(info_btn_slot(bool)));
 
+    hbox->addStretch(1);
     QToolButton *tbtn = new QToolButton();
-    tbtn->setText(tr("help"));
+    tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
     connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 

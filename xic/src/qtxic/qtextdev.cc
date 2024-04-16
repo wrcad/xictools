@@ -144,6 +144,7 @@ QTextDevDlg::QTextDevDlg(GRobject caller)
     hbox->addWidget(ed_erase_all);
     connect(ed_erase_all, SIGNAL(clicked()), this, SLOT(eraseall_btn_slot()));
 
+    hbox->addStretch(1);
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);

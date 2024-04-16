@@ -173,6 +173,7 @@ QTcellPrpDlg::QTcellPrpDlg() : QTbag(this)
     connect(pc_addmenu, SIGNAL(triggered(QAction*)),
         this, SLOT(add_menu_slot(QAction*)));
 
+    hbox->addStretch(1);
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);

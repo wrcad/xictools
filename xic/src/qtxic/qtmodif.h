@@ -78,6 +78,8 @@ public:
 
     QSize sizeHint() const;
 
+    void closeEvent(QCloseEvent*);
+
     void set_transient_for(QWidget *prnt)
         {
             Qt::WindowFlags f = windowFlags();

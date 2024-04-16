@@ -239,6 +239,16 @@ QTmergeDlg::~QTmergeDlg()
 
 
 void
+QTmergeDlg::closeEvent(QCloseEvent *ev)
+{
+    // Closing the window is the same as pressing ...
+    Cvt()->PopUpMergeControl(MODE_UPD, 0);
+    ev->ignore();  // equiv. to Apply to All
+    //ev->accept(); // equiv. to Apply
+}
+
+
+void
 QTmergeDlg::query(mitem_t *mi)
 {
     mi->overwrite_phys = mc_do_phys;

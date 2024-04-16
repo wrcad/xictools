@@ -222,11 +222,14 @@ QTcellsDlg::QTcellsDlg(GRobject c) : QTbag(this)
     col1->setContentsMargins(qm);
     col1->setSpacing(2);
     hbox->addLayout(col1);
+    hbox->setStretch(0, 0);
 
     // button column
     //
     c_clearbtn = new QToolButton();
     c_clearbtn->setText(tr("Clear"));
+    c_clearbtn->setSizePolicy(QSizePolicy::MinimumExpanding,
+        QSizePolicy::Maximum);
     col1->addWidget(c_clearbtn);
     connect(c_clearbtn, SIGNAL(clicked()), this, SLOT(clear_btn_slot()));
     if (!EditIf()->hasEdit())
@@ -234,16 +237,22 @@ QTcellsDlg::QTcellsDlg(GRobject c) : QTbag(this)
 
     c_treebtn = new QToolButton();
     c_treebtn->setText(tr("Tree"));
+    c_treebtn->setSizePolicy(QSizePolicy::MinimumExpanding,
+        QSizePolicy::Maximum);
     col1->addWidget(c_treebtn);
     connect(c_treebtn, SIGNAL(clicked()), this, SLOT(tree_btn_slot()));
 
     c_openbtn = new QToolButton();
     c_openbtn->setText(tr("Open"));
+    c_openbtn->setSizePolicy(QSizePolicy::MinimumExpanding,
+        QSizePolicy::Maximum);
     col1->addWidget(c_openbtn);
     connect(c_openbtn, SIGNAL(clicked()), this, SLOT(open_btn_slot()));
 
     c_placebtn = new QToolButton();
     c_placebtn->setText(tr("Place"));
+    c_placebtn->setSizePolicy(QSizePolicy::MinimumExpanding,
+        QSizePolicy::Maximum);
     col1->addWidget(c_placebtn);
     connect(c_placebtn, SIGNAL(clicked()), this, SLOT(place_btn_slot()));
     if (!EditIf()->hasEdit())
@@ -251,6 +260,8 @@ QTcellsDlg::QTcellsDlg(GRobject c) : QTbag(this)
 
     c_copybtn = new QToolButton();
     c_copybtn->setText(tr("Copy"));
+    c_copybtn->setSizePolicy(QSizePolicy::MinimumExpanding,
+        QSizePolicy::Maximum);
     col1->addWidget(c_copybtn);
     connect(c_copybtn, SIGNAL(clicked()), this, SLOT(copy_btn_slot()));
     if (!EditIf()->hasEdit())
@@ -258,6 +269,8 @@ QTcellsDlg::QTcellsDlg(GRobject c) : QTbag(this)
 
     c_replbtn = new QToolButton();
     c_replbtn->setText(tr("Replace"));;
+    c_replbtn->setSizePolicy(QSizePolicy::MinimumExpanding,
+        QSizePolicy::Maximum);
     col1->addWidget(c_replbtn);
     connect(c_replbtn, SIGNAL(clicked()), this, SLOT(repl_btn_slot()));
     if (!EditIf()->hasEdit())
@@ -265,6 +278,8 @@ QTcellsDlg::QTcellsDlg(GRobject c) : QTbag(this)
 
     c_renamebtn = new QToolButton();
     c_renamebtn->setText(tr("Rename"));;
+    c_renamebtn->setSizePolicy(QSizePolicy::MinimumExpanding,
+        QSizePolicy::Maximum);
     col1->addWidget(c_renamebtn);
     connect(c_renamebtn, SIGNAL(clicked()), this, SLOT(rename_btn_slot()));
     if (!EditIf()->hasEdit())
@@ -272,6 +287,8 @@ QTcellsDlg::QTcellsDlg(GRobject c) : QTbag(this)
 
     c_searchbtn = new QToolButton();
     c_searchbtn->setText(tr("Search"));;
+    c_searchbtn->setSizePolicy(QSizePolicy::MinimumExpanding,
+        QSizePolicy::Maximum);
     col1->addWidget(c_searchbtn);
     c_searchbtn->setCheckable(true);
     connect(c_searchbtn, SIGNAL(toggled(bool)),
@@ -279,27 +296,37 @@ QTcellsDlg::QTcellsDlg(GRobject c) : QTbag(this)
 
     c_flagbtn = new QToolButton();
     c_flagbtn->setText(tr("Flags"));
+    c_flagbtn->setSizePolicy(QSizePolicy::MinimumExpanding,
+        QSizePolicy::Maximum);
     col1->addWidget(c_flagbtn);
     connect(c_flagbtn, SIGNAL(clicked()), this, SLOT(flag_btn_slot()));
 
     c_infobtn = new QToolButton();
     c_infobtn->setText(tr("Info"));;
+    c_infobtn->setSizePolicy(QSizePolicy::MinimumExpanding,
+        QSizePolicy::Maximum);
     col1->addWidget(c_infobtn);
     connect(c_infobtn, SIGNAL(clicked()), this, SLOT(info_btn_slot()));
 
     c_showbtn = new QToolButton();
     c_showbtn->setText(tr("Show"));;
+    c_showbtn->setSizePolicy(QSizePolicy::MinimumExpanding,
+        QSizePolicy::Maximum);
     col1->addWidget(c_showbtn);
     connect(c_showbtn, SIGNAL(toggled(bool)), this, SLOT(show_btn_slot(bool)));
 
     c_fltrbtn = new QToolButton();
     c_fltrbtn->setText(tr("Filter"));
+    c_fltrbtn->setSizePolicy(QSizePolicy::MinimumExpanding,
+        QSizePolicy::Maximum);
     col1->addWidget(c_fltrbtn);
     c_fltrbtn->setCheckable(true);
     connect(c_fltrbtn, SIGNAL(toggled(bool)), this, SLOT(fltr_btn_slot(bool)));
 
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
+    tbtn->setSizePolicy(QSizePolicy::MinimumExpanding,
+        QSizePolicy::Maximum);
     col1->addWidget(tbtn);
     connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
@@ -309,6 +336,7 @@ QTcellsDlg::QTcellsDlg(GRobject c) : QTbag(this)
     hbox->addLayout(col2);
     col2->setContentsMargins(qm);
     col2->setSpacing(2);
+    hbox->setStretch(1, 1);
 
     QGroupBox *gb = new QGroupBox();
     col2->addWidget(gb);

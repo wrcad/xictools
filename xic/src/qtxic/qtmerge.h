@@ -86,6 +86,8 @@ public:
     bool is_hidden()                    { return (mc_allflag); }
     static QTmergeDlg *self()           { return (instPtr); }
 
+    void closeEvent(QCloseEvent*);
+
     void query(mitem_t*);
     bool set_apply_to_all();
     bool refresh(mitem_t*);

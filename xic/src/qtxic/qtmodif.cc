@@ -298,6 +298,8 @@ QTmodifDlg::~QTmodifDlg()
 {
     instPtr = 0;
     delete [] m_list;
+    if (QTdev::self()->LoopLevel() > 1)
+        QTdev::self()->BreakLoop();
 }
 
 
@@ -312,6 +314,16 @@ QTmodifDlg::sizeHint() const
     ww += 15;  // scrollbar
     int hh = 8*QTfont::lineHeight(m_text);
     return (QSize(ww, hh));
+}
+
+
+void
+QTmodifDlg::closeEvent(QCloseEvent *ev)
+{
+    // Closing the window is tantamount to pressing ABORT.
+
+    m_retval = PMabort;
+    QDialog::closeEvent(ev);
 }
 
 
@@ -392,8 +404,6 @@ QTmodifDlg::apply_slot()
         }
         m_saveproc = 0;
     }
-    if (QTdev::self()->LoopLevel() > 1)
-        QTdev::self()->BreakLoop();
     delete this;
 }
 
@@ -402,8 +412,6 @@ void
 QTmodifDlg::abort_slot()
 {
     m_retval = PMabort;
-    if (QTdev::self()->LoopLevel() > 1)
-        QTdev::self()->BreakLoop();
     delete this;
 }
 

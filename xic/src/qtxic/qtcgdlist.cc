@@ -172,6 +172,7 @@ QTcgdListDlg::QTcgdListDlg(GRobject c) : QTbag(this)
     connect(cgl_infbtn, SIGNAL(toggled(bool)),
         this, SLOT(inf_btn_slot(bool)));
 
+    hbox->addStretch(1);
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);

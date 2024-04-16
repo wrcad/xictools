@@ -185,6 +185,7 @@ QToaLibsDlg::QToaLibsDlg(GRobject c) : QTbag(this)
     connect(lb_defsbtn, SIGNAL(toggled(bool)),
         this, SLOT(defs_btn_slot(bool)));
 
+    hbox->addSpacing(1);
     tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);

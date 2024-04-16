@@ -153,6 +153,7 @@ QTextNetSelDlg::QTextNetSelDlg(GRobject caller) : QTbag(this)
     connect(es_qpath, SIGNAL(toggled(bool)),
         this, SLOT(qpath_btn_slot(bool)));
 
+    hbox->addStretch(1);
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);

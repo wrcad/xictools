@@ -233,6 +233,7 @@ QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node) : QTbag(this)
     connect(nm_point_btn, SIGNAL(toggled(bool)),
         this, SLOT(click_btn_slot(bool)));
 
+    hbox->addStretch(1);
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);

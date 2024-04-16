@@ -181,6 +181,7 @@ QTlibsDlg::QTlibsDlg(GRobject c) : QTbag(this)
     hbox->addWidget(lb_contbtn);
     connect(lb_contbtn, SIGNAL(clicked()), this, SLOT(cont_btn_slot()));
 
+    hbox->addStretch(1);
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);

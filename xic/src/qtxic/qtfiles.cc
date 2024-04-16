@@ -417,6 +417,9 @@ QTfilesListDlg::update(const char *path, const char **buttons, int numbuttons)
         for (int i = 0; i < numbuttons; i++) {
             QToolButton *tbtn = new QToolButton();
             tbtn->setText(tr(buttons[i]));
+            // Right justify Help button.
+            if (!strcmp(buttons[i], FB_HELP))
+                fl_button_box->addStretch(1);
             fl_button_box->addWidget(tbtn);
             tbtn->setCheckable(true);
             fl_buttons[i] = tbtn;
