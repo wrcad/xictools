@@ -57,6 +57,7 @@
 #include <QLayout>
 #include <QLabel>
 #include <QGroupBox>
+#include <QToolButton>
 #include <QPushButton>
 #include <QMouseEvent>
 #include <QAction>
@@ -143,10 +144,10 @@ QTrunopListDlg::QTrunopListDlg(int xx, int yy, const char *s) : QTbag(this)
     QLabel *label = new QLabel(tr("Active Runops (traces, iplots, debugs)"));
     hb->addWidget(label);
 
-    QPushButton *btn = new QPushButton(tr("help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // scrolled text area
     //
@@ -175,15 +176,15 @@ QTrunopListDlg::QTrunopListDlg(int xx, int yy, const char *s) : QTbag(this)
     hbox->setSpacing(0);
 
     for (int n = 0; tl_btns[n]; n++) {
-        btn = new QPushButton(tr(tl_btns[n]));
-        btn->setCheckable(true);
-        btn->setAutoDefault(false);
-        hbox->addWidget(btn);
-        connect(btn, SIGNAL(toggled(bool)),
+        tbtn = new QToolButton();
+        tbtn->setText(tr(tl_btns[n]));
+        tbtn->setCheckable(true);
+        hbox->addWidget(tbtn);
+        connect(tbtn, SIGNAL(toggled(bool)),
             this, SLOT(button_slot(bool)));
     }
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -347,7 +348,7 @@ QTrunopListDlg::font_changed_slot(int fnum)
 void
 QTrunopListDlg::button_slot(bool state)
 {
-    QPushButton *btn = dynamic_cast<QPushButton*>(sender());
+    QAbstractButton *btn = dynamic_cast<QAbstractButton*>(sender());
     if (!btn)
         return;
     QString btxt = btn->text();

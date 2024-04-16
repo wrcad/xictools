@@ -47,7 +47,7 @@
 
 #include <QLayout>
 #include <QCheckBox>
-#include <QPushButton>
+#include <QToolButton>
 #include <QLineEdit>
 
 
@@ -123,9 +123,9 @@ QTkwent::QTkwent(EntryMode m, EntryCallback cb, xKWent *kwstr,
     if (ke_kwstruct->type != VTYP_BOOL &&
             !(ke_kwstruct->type == VTYP_LIST && ke_mode == KW_NO_CB)) {
         // second term is for "debug" button in debug panel
-        ke_deflt = new QPushButton(tr("Def"));
+        ke_deflt = new QToolButton();
+        ke_deflt->setText(tr("Def"));
         hbox->addWidget(ke_deflt);
-        ke_deflt->setAutoDefault(false);
         connect(ke_deflt, SIGNAL(clicked()), this, SLOT(def_btn_slot()));
     }
 

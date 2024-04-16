@@ -56,6 +56,7 @@
 #include <QLayout>
 #include <QLabel>
 #include <QGroupBox>
+#include <QToolButton>
 #include <QPushButton>
 #include <QMouseEvent>
 #include <QAction>
@@ -135,10 +136,10 @@ QTvarListDlg::QTvarListDlg(int xx, int yy, const char *s) : QTbag(this)
     QLabel *label = new QLabel(tr("Shell variables"));
     hb->addWidget(label);
 
-    QPushButton *btn = new QPushButton(tr("help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // scrolled text area
     //
@@ -168,7 +169,7 @@ QTvarListDlg::QTvarListDlg(int xx, int yy, const char *s) : QTbag(this)
     hbox->setContentsMargins(qm);
     hbox->setSpacing(0);
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 

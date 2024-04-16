@@ -52,6 +52,7 @@ typedef void ParseNode;
 #include <QLayout>
 #include <QTabWidget>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 #include <QLineEdit>
 #include <QAction>
@@ -115,11 +116,11 @@ QTdebugParamDlg::QTdebugParamDlg(int xx, int yy)
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
-    btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setCheckable(true);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(toggled(bool)), this, SLOT(help_btn_slot(bool)));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    tbtn->setCheckable(true);
+    connect(tbtn, SIGNAL(toggled(bool)), this, SLOT(help_btn_slot(bool)));
 
     QGridLayout *grid = new QGridLayout();
     grid->setContentsMargins(qmtop);
