@@ -123,6 +123,7 @@ QTwindowCfg::QTwindowCfg(WndSensMode(sens_test)(), WndFuncMode fmode)
 
     wnd_s_menu = new QMenu();
     wnd_sbutton->setMenu(wnd_s_menu);
+    wnd_sbutton->setPopupMode(QToolButton::InstantPopup);
 
     char buf[64];
     for (int i = 0; i < FIO_NUM_BB_STORE; i++) {
@@ -139,6 +140,7 @@ QTwindowCfg::QTwindowCfg(WndSensMode(sens_test)(), WndFuncMode fmode)
 
     wnd_r_menu = new QMenu();
     wnd_rbutton->setMenu(wnd_s_menu);
+    wnd_rbutton->setPopupMode(QToolButton::InstantPopup);
 
     wnd_r_menu = new QMenu();
     for (int i = 0; i < FIO_NUM_BB_STORE; i++) {

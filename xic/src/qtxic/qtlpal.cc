@@ -173,6 +173,7 @@ QTlayerPaletteDlg::QTlayerPaletteDlg(GRobject caller) : QTdraw(XW_LPAL)
 
     lp_recall_menu = new QMenu();
     recall_btn->setMenu(lp_recall_menu);
+    recall_btn->setPopupMode(QToolButton::InstantPopup);
     for (int i = 1; i < 8; i++) {
         char buf[16];
         snprintf(buf, sizeof(buf), "Reg %d", i);
@@ -188,6 +189,7 @@ QTlayerPaletteDlg::QTlayerPaletteDlg(GRobject caller) : QTdraw(XW_LPAL)
 
     lp_save_menu = new QMenu();
     save_btn->setMenu(lp_save_menu);
+    save_btn->setPopupMode(QToolButton::InstantPopup);
     for (int i = 1; i < 8; i++) {
         char buf[16];
         snprintf(buf, sizeof(buf), "Reg %d", i);
@@ -259,29 +261,8 @@ QTlayerPaletteDlg::~QTlayerPaletteDlg()
 
 
 #ifdef Q_OS_MACOS
-
-bool
-QTlayerPaletteDlg::event(QEvent *ev)
-{
-    // Fix for QT BUG 116674, text becomes invisible on autodefault
-    // button when the main window has focus.
-
-    if (ev->type() == QEvent::ActivationChange) {
-        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
-            Qt::FindDirectChildrenOnly);
-        if (dsm) {
-            QWidget *top = this;
-            while (top->parentWidget())
-                top = top->parentWidget();
-            if (QApplication::activeWindow() == top)
-                dsm->setDefault(false);
-            else if (QApplication::activeWindow() == this)
-                dsm->setDefault(true);
-        }
-    }
-    return (QDialog::event(ev));
-}
-
+#define DLGTYPE QTlayerPaletteDlg
+#include "qtinterf/qtmacos_event.h"
 #endif
 
 

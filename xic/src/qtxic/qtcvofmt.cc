@@ -346,6 +346,7 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     hbox->addSpacing(20);
     fmt_cifflags = new QMenu();
     fmt_cifext->setMenu(fmt_cifflags);
+    fmt_cifext->setPopupMode(QToolButton::InstantPopup);
 
     unsigned int flgs = fmt_strip ?
         FIO()->CifStyle().flags_export() : FIO()->CifStyle().flags();

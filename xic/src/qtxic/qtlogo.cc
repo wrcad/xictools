@@ -314,17 +314,16 @@ QTlogoDlg::QTlogoDlg(GRobject c) : QTbag(this)
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;
-    QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setContentsMargins(qmtop);
-    vbox->setSpacing(2);
-    vbox->setSizeConstraint(QLayout::SetFixedSize);
+    QGridLayout *grid = new QGridLayout(this);
+    grid->setContentsMargins(qmtop);
+    grid->setSpacing(2);
 
     // Font selection radio buttons
     //
     QHBoxLayout *hbox = new QHBoxLayout(0);
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
-    vbox->addLayout(hbox);
+    grid->addLayout(hbox, 0, 0, 1, 2);
 
     QLabel *label = new QLabel(tr("Font:  "));
     hbox->addWidget(label);
@@ -344,34 +343,20 @@ QTlogoDlg::QTlogoDlg(GRobject c) : QTbag(this)
     connect(lgo_pretty, SIGNAL(toggled(bool)),
         this, SLOT(pretty_btn_slot(bool)));
 
+    hbox->addStretch(1);
     QToolButton *tbtn = new QToolButton();
-    tbtn->setText(tr("help"));
+    tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
     connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // second row
-    hbox = new QHBoxLayout(0);
-    hbox->setContentsMargins(qm);
-    hbox->setSpacing(2);
-    vbox->addLayout(hbox);
-
-    QVBoxLayout *col1 = new QVBoxLayout();
-    col1->setContentsMargins(qm);
-    col1->setSpacing(2);
-    hbox->addLayout(col1);
-
-    QVBoxLayout *col2 = new QVBoxLayout();
-    col2->setContentsMargins(qm);
-    col2->setSpacing(2);
-    hbox->addLayout(col2);
-
     lgo_setpix = new QCheckBox(tr("Define \"pixel\" size"));
-    col1->addWidget(lgo_setpix);
+    grid->addWidget(lgo_setpix, 1, 0);
     connect(lgo_setpix, SIGNAL(stateChanged(int)),
         this, SLOT(pixel_btn_slot(int)));
 
     lgo_sb_pix = new QTdoubleSpinBox();
-    col2->addWidget(lgo_sb_pix);
+    grid->addWidget(lgo_sb_pix, 1, 1);
     lgo_sb_pix->setDecimals(CD()->numDigits());
     lgo_sb_pix->setMinimum(MICRONS(1));
     lgo_sb_pix->setMaximum(100.0);
@@ -381,10 +366,10 @@ QTlogoDlg::QTlogoDlg(GRobject c) : QTbag(this)
 
     // third row
     label = new QLabel(tr("     Vector end style"));
-    col1->addWidget(label);
+    grid->addWidget(label, 2, 0);
 
     lgo_endstyle = new QComboBox();
-    col2->addWidget(lgo_endstyle);
+    grid->addWidget(lgo_endstyle, 2, 1);
     for (int i = 0; lgo_endstyles[i]; i++)
         lgo_endstyle->addItem(tr(lgo_endstyles[i]));
     connect(lgo_endstyle, SIGNAL(currentIndexChanged(int)),
@@ -392,10 +377,10 @@ QTlogoDlg::QTlogoDlg(GRobject c) : QTbag(this)
 
     // fourth row
     label = new QLabel(tr("     Vector path width"));
-    col1->addWidget(label);
+    grid->addWidget(label, 3, 0);
 
     lgo_pwidth = new QComboBox();
-    col2->addWidget(lgo_pwidth);
+    grid->addWidget(lgo_pwidth, 3, 1);
     for (int i = 0; lgo_pathwidth[i]; i++)
         lgo_pwidth->addItem(tr(lgo_pathwidth[i]));
     connect(lgo_pwidth, SIGNAL(currentIndexChanged(int)),
@@ -403,30 +388,33 @@ QTlogoDlg::QTlogoDlg(GRobject c) : QTbag(this)
 
     // fifth row
     lgo_create = new QCheckBox(tr("Create cell for text"));
-    col1->addWidget(lgo_create);
+    grid->addWidget(lgo_create, 4, 0);
     connect(lgo_create, SIGNAL(stateChanged(int)),
         this, SLOT(create_btn_slot(int)));
 
+    // bottom row
+    hbox = new QHBoxLayout(0);
+    hbox->setContentsMargins(0, 8, 0, 0);
+    hbox->setSpacing(2);
+    grid->addLayout(hbox, 5, 0, 6, 2);
+
     lgo_dump = new QToolButton();
     lgo_dump->setText(tr("Dump Vector Font "));
-    col2->addWidget(lgo_dump);
+    hbox->addWidget(lgo_dump);
     lgo_dump->setCheckable(true);
     connect(lgo_dump, SIGNAL(toggled(bool)),
         this, SLOT(dump_btn_slot(bool)));
 
-    // bottom row
     lgo_sel = new QToolButton();
     lgo_sel->setText(tr("Select Pretty Font"));
-    col1->addSpacing(4);
-    col1->addWidget(lgo_sel);
+    hbox->addWidget(lgo_sel);
     lgo_sel->setCheckable(true);
     connect(lgo_sel, SIGNAL(toggled(bool)),
         this, SLOT(sel_btn_slot(bool)));
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Dismiss");
-    col2->addSpacing(4);
-    col2->addWidget(btn);
+    hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     update();
@@ -447,29 +435,8 @@ QTlogoDlg::~QTlogoDlg()
 
 
 #ifdef Q_OS_MACOS
-
-bool
-QTlogoDlg::event(QEvent *ev)
-{
-    // Fix for QT BUG 116674, text becomes invisible on autodefault
-    // button when the main window has focus.
-
-    if (ev->type() == QEvent::ActivationChange) {
-        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
-            Qt::FindDirectChildrenOnly);
-        if (dsm) {
-            QWidget *top = this;
-            while (top->parentWidget())
-                top = top->parentWidget();
-            if (QApplication::activeWindow() == top)
-                dsm->setDefault(false);
-            else if (QApplication::activeWindow() == this)
-                dsm->setDefault(true);
-        }
-    }
-    return (QDialog::event(ev));
-}
-
+#define DLGTYPE QTlogoDlg
+#include "qtinterf/qtmacos_event.h"
 #endif
 
 

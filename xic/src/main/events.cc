@@ -38,6 +38,7 @@
  $Id:$
  *========================================================================*/
 
+#include "config.h"
 #include "main.h"
 #include "editif.h"
 #include "drcif.h"
@@ -679,9 +680,16 @@ cEventHdlr::KeyActions(WindowDesc *wdesc, eKeyAction action, int *code)
         PL()->CheckExec(wdesc, true);
         return (true);
     case Grid_action:
-        // XM()->SetGrid(wdesc);
-        // This is now a no-op, ctrl-g is an accelerator to pop up the
-        // grid control panel.
+        // This is handled by the menu ctrl-g accelerator, except in
+        // QT in Apple, where the accelerator would appear in the main
+        // menu only, leaving out subwindow support.  In that case
+        // handle ctrl-g here, and leave out the ctrl-g menu accelerator.
+#ifdef __APPLE__
+#if defined(WITH_QT5) || defined(WITH_QT6)
+        PL()->SetKeys(wdesc, "grid");
+        PL()->CheckExec(wdesc, true);
+#endif
+#endif
         return (true);
     case ClearKeys_action:
         PL()->SetKeys(wdesc, 0);

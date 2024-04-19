@@ -291,6 +291,7 @@ QTlayerExpDlg::QTlayerExpDlg(GRobject c)
     hb->addWidget(lx_recall);
     lx_recall_menu = new QMenu();
     lx_recall->setMenu(lx_recall_menu);
+    lx_recall->setPopupMode(QToolButton::InstantPopup);
     for (int i = 0; i < ED_LEXPR_STORES; i++) {
         char buf[16];
         snprintf(buf, sizeof(buf), "Reg %d", i);
@@ -305,6 +306,7 @@ QTlayerExpDlg::QTlayerExpDlg(GRobject c)
     hb->addWidget(lx_save);
     lx_save_menu = new QMenu();
     lx_save->setMenu(lx_save_menu);
+    lx_save->setPopupMode(QToolButton::InstantPopup);
     for (int i = 0; i < ED_LEXPR_STORES; i++) {
         char buf[16];
         snprintf(buf, sizeof(buf), "Reg %d", i);
@@ -402,29 +404,8 @@ QTlayerExpDlg::~QTlayerExpDlg()
 
 
 #ifdef Q_OS_MACOS
-
-bool
-QTlayerExpDlg::event(QEvent *ev)
-{
-    // Fix for QT BUG 116674, text becomes invisible on autodefault
-    // button when the main window has focus.
-
-    if (ev->type() == QEvent::ActivationChange) {
-        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
-            Qt::FindDirectChildrenOnly);
-        if (dsm) {
-            QWidget *top = this;
-            while (top->parentWidget())
-                top = top->parentWidget();
-            if (QApplication::activeWindow() == top)
-                dsm->setDefault(false);
-            else if (QApplication::activeWindow() == this)
-                dsm->setDefault(true);
-        }
-    }
-    return (QDialog::event(ev));
-}
-
+#define DLGTYPE QTlayerExpDlg
+#include "qtinterf/qtmacos_event.h"
 #endif
 
 
@@ -489,8 +470,10 @@ QTlayerExpDlg::none_btn_slot(bool state)
         lx_last_part_size = lx_sb_part->value();
         CDvdb()->setVariable(VA_PartitionSize, "0");
     }
-    else
+    else {
         lx_sb_part->setValue(lx_last_part_size);
+        part_changed_slot(lx_last_part_size);
+    }
 }
 
 

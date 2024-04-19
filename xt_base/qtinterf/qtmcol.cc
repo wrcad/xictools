@@ -218,29 +218,8 @@ QTmcolDlg::~QTmcolDlg()
 
 
 #ifdef Q_OS_MACOS
-
-bool
-QTmcolDlg::event(QEvent *ev)
-{
-    // Fix for QT BUG 116674, text becomes invisible on autodefault
-    // button when the main window has focus.
-
-    if (ev->type() == QEvent::ActivationChange) {
-        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
-            Qt::FindDirectChildrenOnly);
-        if (dsm) {
-            QWidget *top = this;
-            while (top->parentWidget())
-                top = top->parentWidget();
-            if (QApplication::activeWindow() == top)
-                dsm->setDefault(false);
-            else if (QApplication::activeWindow() == this)
-                dsm->setDefault(true);
-        }
-    }
-    return (QDialog::event(ev));
-}
-
+#define DLGTYPE QTmcolDlg
+#include "qtmacos_event.h"
 #endif
 
 

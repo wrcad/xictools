@@ -301,6 +301,7 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTbag(this),
     hb->addWidget(tbtn);
     QMenu *menu = new QMenu();
     tbtn->setMenu(menu);
+    tbtn->setPopupMode(QToolButton::InstantPopup);
     {
         char buf[64];
         for (int i = 1; i < TECH_NUM_GRIDS; i++) {
@@ -316,6 +317,7 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTbag(this),
     hb->addWidget(tbtn);
     menu = new QMenu();
     tbtn->setMenu(menu);
+    tbtn->setPopupMode(QToolButton::InstantPopup);
     {
         char buf[64];
 
@@ -526,29 +528,8 @@ QTgridDlg::~QTgridDlg()
 
 
 #ifdef Q_OS_MACOS
-
-bool
-QTgridDlg::event(QEvent *ev)
-{
-    // Fix for QT BUG 116674, text becomes invisible on autodefault
-    // button when the main window has focus.
-
-    if (ev->type() == QEvent::ActivationChange) {
-        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
-            Qt::FindDirectChildrenOnly);
-        if (dsm) {
-            QWidget *top = this;
-            while (top->parentWidget())
-                top = top->parentWidget();
-            if (QApplication::activeWindow() == top)
-                dsm->setDefault(false);
-            else if (QApplication::activeWindow() == this)
-                dsm->setDefault(true);
-        }
-    }
-    return (QDialog::event(ev));
-}
-
+#define DLGTYPE QTgridDlg
+#include "qtinterf/qtmacos_event.h"
 #endif
 
 

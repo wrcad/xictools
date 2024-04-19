@@ -38,122 +38,34 @@
  $Id:$
  *========================================================================*/
 
-#include "qtinterf.h"
-#include "qtmsg.h"
-#include "qtfont.h"
-
-#include <QApplication>
-#include <QAction>
-#include <QGroupBox>
-#include <QLayout>
-#include <QTextEdit>
-#include <QPushButton>
+#ifndef QTMACOS_EVENT_H
+#define QTMACOS_EVENT_H
 
 
-QTmsgDlg::QTmsgDlg(QTbag *owner, const char *message_str,
-    bool err, STYtype sty) : QDialog(owner ? owner->Shell() : 0)
+bool
+DLGTYPE::event(QEvent *ev)
 {
-    p_parent = owner;
-    tx_display_style = sty;
-    tx_desens = false;
+    // Fix for QT BUG 116674, text becomes invisible on default
+    // or checked button when an ancestor window has focus.
 
-    if (owner)
-        owner->MonitorAdd(this);
-    setWindowTitle(err ? tr("ERROR") : tr("Message"));
-    setAttribute(Qt::WA_DeleteOnClose);
-
-    QMargins qmtop(2, 2, 2, 2);
-    QVBoxLayout *vbox = new QVBoxLayout(this);
-    vbox->setContentsMargins(qmtop);
-    vbox->setSpacing(2);
-
-    QGroupBox *gb = new QGroupBox();
-    vbox->addWidget(gb);
-    QVBoxLayout *vb = new QVBoxLayout(gb);
-    vb->setContentsMargins(qmtop);
-    vb->setSpacing(2);
-
-    tx_tbox = new QTextEdit();
-    tx_tbox->setReadOnly(true);
-    vb->addWidget(tx_tbox);
-
-    if (sty == STY_FIXED) {
-        QFont *f;
-        if (Fnt()->getFont(&f, FNT_FIXED)) {
-            tx_tbox->setCurrentFont(*f);
-            tx_tbox->setFont(*f);
+    if (ev->type() == QEvent::ActivationChange) {
+        QPushButton *dsm = this->findChild<QPushButton*>("Dismiss",
+            Qt::FindDirectChildrenOnly);
+        if (dsm) {
+            QWidget *top = this;
+            while (top->parentWidget()) {
+                top = top->parentWidget();
+                if (QApplication::activeWindow() == top) {
+                    dsm->setDefault(false);
+                    break;
+                }
+            }
+            if (QApplication::activeWindow() == this)
+                dsm->setDefault(true);
         }
     }
-    setText(message_str);
-
-    QPushButton *btn = new QPushButton(tr("Dismiss"));
-    btn->setObjectName("Dismiss");
-    vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    return (QDialog::event(ev));
 }
 
-
-QTmsgDlg::~QTmsgDlg()
-{
-    if (p_parent) {
-        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
-        if (owner)
-            owner->ClearPopup(this);
-    }
-    if (p_usrptr)
-        *p_usrptr = 0;
-    if (p_caller)
-        QTdev::Deselect(p_caller);
-}
-
-
-#ifdef Q_OS_MACOS
-#define DLGTYPE QTmsgDlg
-#include "qtmacos_event.h"
 #endif
-
-
-QSize
-QTmsgDlg::sizeHint() const
-{
-    return (QSize(400, 120));
-}
-
-
-// GRpopup override
-//
-void
-QTmsgDlg::popdown()
-{
-    if (p_parent) {
-        QTbag *owner = dynamic_cast<QTbag*>(p_parent);
-        if (!owner || !owner->MonitorActive(this))
-            return;
-    }
-    delete this;
-}
-
-
-void
-QTmsgDlg::setTitle(const char *title)
-{
-    setWindowTitle(title);
-}
-
-
-void
-QTmsgDlg::setText(const char *message_str)
-{
-    if (tx_display_style == STY_HTML)
-        tx_tbox->setHtml(message_str);
-    else
-        tx_tbox->setPlainText(message_str);
-}
-
-
-void
-QTmsgDlg::dismiss_btn_slot()
-{
-    delete this;
-}
 

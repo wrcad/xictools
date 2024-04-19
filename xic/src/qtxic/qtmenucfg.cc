@@ -459,7 +459,14 @@ QTmenuConfig::instantiateMainMenus()
         set(mbox->menu[subwAttrMenuObjs], "Objects Shown", 0);
         set(mbox->menu[subwAttrMenuTinyb], "Subthreshold &Boxes", 0);
         set(mbox->menu[subwAttrMenuNosym], "No Top &Symbolic", 0);
+        // Don't use the accelerator in Apple, since the main window will
+        // steal it from subwindows.  In this case the action processor
+        // handles ctrl-g.
+#ifdef Q_OS_MACOS
+        set(mbox->menu[subwAttrMenuGrid], "Set &Grid", 0);
+#else
         set(mbox->menu[subwAttrMenuGrid], "Set &Grid", "Ctrl+G");
+#endif
 
         // First elt is a dummy containing the menubar item.
         QMenu *newsubm = 0;
@@ -1023,7 +1030,14 @@ QTmenuConfig::instantiateSubwMenus(int wnum)
         set(mbox->menu[subwAttrMenuObjs], "Objects Shown", 0);
         set(mbox->menu[subwAttrMenuTinyb], "Subthreshold &Boxes", 0);
         set(mbox->menu[subwAttrMenuNosym], "No Top &Symbolic", 0);
+        // Don't use the accelerator in Apple, since the main window will
+        // steal it from subwindows.  In this case the action processor
+        // handles ctrl-g.  Actions don't show in the QToolBar anyway.
+#ifdef Q_OS_MACOS
+        set(mbox->menu[subwAttrMenuGrid], "Set &Grid", 0);
+#else
         set(mbox->menu[subwAttrMenuGrid], "Set &Grid", "Ctrl+G");
+#endif
 
         QMenu *subwin_attr_menu = new QMenu(sub_win);
         subwin_attr_menu->setTitle(tr(mbox->name));

@@ -229,6 +229,7 @@ QTprpEditorDlg::QTprpEditorDlg(CDo *odesc, PRPmode activ) : QTprpBase(this)
 
     po_addmenu = new QMenu();
     po_add->setMenu(po_addmenu);
+    po_add->setPopupMode(QToolButton::InstantPopup);
     connect(po_addmenu, SIGNAL(triggered(QAction*)),
         this, SLOT(add_menu_slot(QAction*)));
 
@@ -312,29 +313,8 @@ QTprpEditorDlg::~QTprpEditorDlg()
 
 
 #ifdef Q_OS_MACOS
-
-bool
-QTprpEditorDlg::event(QEvent *ev)
-{
-    // Fix for QT BUG 116674, text becomes invisible on autodefault
-    // button when the main window has focus.
-
-    if (ev->type() == QEvent::ActivationChange) {
-        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
-            Qt::FindDirectChildrenOnly);
-        if (dsm) {
-            QWidget *top = this;
-            while (top->parentWidget())
-                top = top->parentWidget();
-            if (QApplication::activeWindow() == top)
-                dsm->setDefault(false);
-            else if (QApplication::activeWindow() == this)
-                dsm->setDefault(true);
-        }
-    }
-    return (QDialog::event(ev));
-}
-
+#define DLGTYPE QTprpEditorDlg
+#include "qtinterf/qtmacos_event.h"
 #endif
 
 

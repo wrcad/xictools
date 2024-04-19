@@ -429,29 +429,8 @@ QTcompareDlg::~QTcompareDlg()
 
 
 #ifdef Q_OS_MACOS
-
-bool
-QTcompareDlg::event(QEvent *ev)
-{
-    // Fix for QT BUG 116674, text becomes invisible on autodefault
-    // button when the main window has focus.
-
-    if (ev->type() == QEvent::ActivationChange) {
-        QPushButton *dsm = findChild<QPushButton*>("Dismiss",
-            Qt::FindDirectChildrenOnly);
-        if (dsm) {
-            QWidget *top = this;
-            while (top->parentWidget())
-                top = top->parentWidget();
-            if (QApplication::activeWindow() == top)
-                dsm->setDefault(false);
-            else if (QApplication::activeWindow() == this)
-                dsm->setDefault(true);
-        }
-    }
-    return (QDialog::event(ev));
-}
-
+#define DLGTYPE QTcompareDlg
+#include "qtinterf/qtmacos_event.h"
 #endif
 
 
@@ -758,6 +737,7 @@ QTcompareDlg::flat_geom_page()
     cmp_p3_s_menu = new QMenu();
     char buf[64];
     cmp_p3_s_btn->setMenu(cmp_p3_s_menu);
+    cmp_p3_s_btn->setPopupMode(QToolButton::InstantPopup);
     for (int i = 0; i < FIO_NUM_BB_STORE; i++) {
         snprintf(buf, sizeof(buf), "Reg %d", i);
         QAction *a = cmp_p3_s_menu->addAction(buf);
@@ -771,6 +751,7 @@ QTcompareDlg::flat_geom_page()
     grid->addWidget(cmp_p3_r_btn, 2, 0);
     cmp_p3_r_menu = new QMenu();
     cmp_p3_r_btn->setMenu(cmp_p3_r_menu);
+    cmp_p3_r_btn->setPopupMode(QToolButton::InstantPopup);
     for (int i = 0; i < FIO_NUM_BB_STORE; i++) {
         snprintf(buf, sizeof(buf), "Reg %d", i);
         QAction *a = cmp_p3_r_menu->addAction(buf);
