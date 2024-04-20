@@ -162,7 +162,8 @@ QTlayerAliasDlg::QTlayerAliasDlg(GRobject c) : QTbag(this)
     hbox->addWidget(la_edit);
     connect(la_edit, SIGNAL(clicked()), this, SLOT(edit_btn_slot()));
 
-    // Help menu.
+    // Help button.
+    hbox->addStretch(1);
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);

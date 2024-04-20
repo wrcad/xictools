@@ -1434,9 +1434,8 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
     hbox->addWidget(sw_keys_pressed);
 
     vbox->addWidget(gd_viewport);
-    set_transient_for(QTmainwin::self());
 
-// Start of old init function.
+    // Start of old init function.
     char buf[32];
     snprintf(buf, sizeof(buf), "%s %d", XM()->Product(), wnum);
     setWindowTitle(buf);
@@ -2303,7 +2302,7 @@ QTsubwin::enter_slot(QEnterEvent *ev)
     }
     ev->accept();
 
-    gd_viewport->setFocus();
+//XXX    gd_viewport->setFocus();
 
     if (grabstate.widget(Qt::LeftButton) == gd_viewport) {
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
@@ -2710,6 +2709,35 @@ QTmainwin::QTmainwin(QWidget *prnt) : QTsubwin(0, prnt)
     connect(this, SIGNAL(update_coords(int, int)),
         this, SLOT(update_coords_slot(int, int)));
 }
+
+
+#ifdef Q_OS_MACOS
+
+bool
+QTmainwin::event(QEvent *ev)
+{
+    // This redraws the drawing subwindows when the main window gains
+    // focus, or the user clicks in a non-client main window area. 
+    // The subwindow may still disappear behind the main window when
+    // the user clicks in the main window client area, there seems to
+    // be no special event for this.  The user can then click in a
+    // non-client area to bring them back on top.
+
+    if (ev->type() == QEvent::ActivationChange ||
+            ev->type() == QEvent::NonClientAreaMouseButtonPress) {
+        if (QApplication::activeWindow() == this) {
+            WDgen wgen(WDgen::SUBW, WDgen::ALL);
+            WindowDesc *wd;
+            while ((wd = wgen.next()) != 0) {
+                QTsubwin *w = dynamic_cast<QTsubwin*>(wd->Wbag());
+                w->raise();
+            }
+        }
+    }
+    return (QDialog::event(ev));
+}
+
+#endif
 
 
 QSize

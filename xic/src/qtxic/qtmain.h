@@ -327,16 +327,6 @@ public:
     QTsubwin(int, QWidget* = 0);
     ~QTsubwin();
 
-    void set_transient_for(QWidget *prnt)
-        {
-            Qt::WindowFlags f = windowFlags();
-            setParent(prnt);
-#ifdef Q_OS_MACOS
-            f |= Qt::Tool;
-#endif
-            setWindowFlags(f);
-        }
-
     // Don't pop down from Esc press.
     void keyPressEvent(QKeyEvent *ev)
         {
@@ -458,9 +448,11 @@ public:
     QWidget *PhysButtonBox()    { return (mw_phys_button_box); }
     QWidget *ElecButtonBox()    { return (mw_elec_button_box); }
 
-
     // qtmain.cc
     QTmainwin(QWidget* = 0);
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
     QSize sizeHint() const;
     QSize minimumSizeHint() const;
     void initialize();
