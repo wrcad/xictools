@@ -139,6 +139,7 @@ QToasisDlg::QToasisDlg(GRobject c)
 
     setWindowTitle(tr("Advanced OASIS Export Parameters"));
     setAttribute(Qt::WA_DeleteOnClose);
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;

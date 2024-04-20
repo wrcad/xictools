@@ -268,7 +268,7 @@ QTconvertFmtDlg::QTconvertFmtDlg(GRobject c, int inp_type,
 
     // Layer list.
     //
-    cv_llist = new QTlayerList();;
+    cv_llist = new QTlayerList();
     vb->addWidget(cv_llist);
 
     // Cell name mapping.

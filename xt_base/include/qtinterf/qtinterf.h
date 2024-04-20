@@ -287,6 +287,7 @@ public:
     void SetPopupLocation(GRloc, QWidget*, QWidget*);
     void ComputePopupLocation(GRloc, QWidget*, QWidget*, int*, int*);
 
+    static QDialog *DlgOf(GRobject);
     static void Deselect(GRobject);
     static void Select(GRobject);
     static bool GetStatus(GRobject);

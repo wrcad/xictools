@@ -82,9 +82,11 @@ cMain::PopUpLayerAliases(GRobject caller, ShowMode mode)
 
     new QTlayerAliasDlg(caller);
 
-    QTlayerAliasDlg::self()->set_transient_for(QTmainwin::self());
-    QTdev::self()->SetPopupLocation(GRloc(), QTlayerAliasDlg::self(),
-        QTmainwin::self()->Viewport());
+    QDialog *prnt = QTdev::DlgOf(caller);
+    if (!prnt)
+        prnt = QTmainwin::self();
+    QTlayerAliasDlg::self()->set_transient_for(prnt);
+    QTdev::self()->SetPopupLocation(GRloc(), QTlayerAliasDlg::self(), prnt);
     QTlayerAliasDlg::self()->show();
 }
 // End of cMain functions.

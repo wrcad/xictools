@@ -117,6 +117,7 @@ QTauxTabDlg::QTauxTabDlg(GRobject c) : QTbag(this)
 
     setWindowTitle(tr("Cell Table Listing"));
     setAttribute(Qt::WA_DeleteOnClose);
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;
