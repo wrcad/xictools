@@ -119,6 +119,9 @@ QTlayerAliasDlg::QTlayerAliasDlg(GRobject c) : QTbag(this)
 
     setWindowTitle(tr("Layer Aliases"));
     setAttribute(Qt::WA_DeleteOnClose);
+#ifdef Q_OS_MACOS
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+#endif
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;

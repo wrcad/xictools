@@ -74,9 +74,11 @@ cConvert::PopUpDisplayWindow(GRobject caller, ShowMode mode, const BBox *BB,
 
     new QTdisplayWinDlg(caller, BB, cb, arg);
 
-    QTdisplayWinDlg::self()->set_transient_for(QTmainwin::self());
-    QTdev::self()->SetPopupLocation(GRloc(), QTdisplayWinDlg::self(),
-        QTmainwin::self()->Viewport());
+    QDialog *prnt = QTdev::DlgOf(caller);
+    if (!prnt)
+        prnt = QTmainwin::self();
+    QTdisplayWinDlg::self()->set_transient_for(prnt);
+    QTdev::self()->SetPopupLocation(GRloc(), QTdisplayWinDlg::self(), prnt);
     QTdisplayWinDlg::self()->show();
 }
 // End of cConvert functions.

@@ -87,9 +87,11 @@ cConvert::PopUpAuxTab(GRobject caller, ShowMode mode)
 
     new QTauxTabDlg(caller);
 
-    QTauxTabDlg::self()->set_transient_for(QTmainwin::self());
-    QTdev::self()->SetPopupLocation(GRloc(), QTauxTabDlg::self(),
-        QTmainwin::self()->Viewport());
+    QDialog *prnt = QTdev::DlgOf(caller);
+    if (!prnt)
+        prnt = QTmainwin::self();
+    QTauxTabDlg::self()->set_transient_for(prnt);
+    QTdev::self()->SetPopupLocation(GRloc(), QTauxTabDlg::self(), prnt);
     QTauxTabDlg::self()->show();
 }
 // End of cConvert functions.
@@ -117,7 +119,9 @@ QTauxTabDlg::QTauxTabDlg(GRobject c) : QTbag(this)
 
     setWindowTitle(tr("Cell Table Listing"));
     setAttribute(Qt::WA_DeleteOnClose);
+#ifdef Q_OS_MACOS
     setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+#endif
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;

@@ -84,9 +84,12 @@ cConvert::PopUpChdSave(GRobject caller, ShowMode mode,
 
     new QTchdSaveDlg(caller, callback, arg, chdname);
 
-    QTchdSaveDlg::self()->set_transient_for(QTmainwin::self());
-    QTdev::self()->SetPopupLocation(GRloc(LW_XYA, x, y),
-        QTchdSaveDlg::self(), QTmainwin::self()->Viewport());
+    QDialog *prnt = QTdev::DlgOf(caller);
+    if (!prnt)
+        prnt = QTmainwin::self();
+    QTchdSaveDlg::self()->set_transient_for(prnt);
+    QTdev::self()->SetPopupLocation(GRloc(LW_XYA, x, y), QTchdSaveDlg::self(),
+        prnt);
     QTchdSaveDlg::self()->show();
 }
 // End of cConvert functions.

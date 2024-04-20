@@ -89,9 +89,12 @@ cConvert::PopUpOasAdv(GRobject caller, ShowMode mode, int x, int y)
 
     new QToasisDlg(caller);
 
-    QToasisDlg::self()->set_transient_for(QTmainwin::self());
-    QTdev::self()->SetPopupLocation(GRloc(LW_XYA, x, y),
-        QToasisDlg::self(), QTmainwin::self()->Viewport());
+    QDialog *prnt = QTdev::DlgOf(caller);
+    if (!prnt)
+        prnt = QTmainwin::self();
+    QToasisDlg::self()->set_transient_for(prnt);
+    QTdev::self()->SetPopupLocation(GRloc(LW_XYA, x, y), QToasisDlg::self(),
+        prnt);
     QToasisDlg::self()->show();
 }
 // End of cConvert functions.
@@ -139,7 +142,9 @@ QToasisDlg::QToasisDlg(GRobject c)
 
     setWindowTitle(tr("Advanced OASIS Export Parameters"));
     setAttribute(Qt::WA_DeleteOnClose);
+#ifdef Q_OS_MACOS
     setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+#endif
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;
