@@ -52,3 +52,5 @@ print/save etc from plot window seem not to work unless plot is from
 run data?  I.e., "plot 0" then print does nothing.
 
 I don't see any white/invisible text buttons.
+
+Tool windows: put all tool buttons along top, only Dismiss on bottom.

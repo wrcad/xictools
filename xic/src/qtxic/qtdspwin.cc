@@ -80,6 +80,7 @@ cConvert::PopUpDisplayWindow(GRobject caller, ShowMode mode, const BBox *BB,
     QTdisplayWinDlg::self()->set_transient_for(prnt);
     QTdev::self()->SetPopupLocation(GRloc(), QTdisplayWinDlg::self(), prnt);
     QTdisplayWinDlg::self()->show();
+    QTdisplayWinDlg::self()->setEnabled(true);
 }
 // End of cConvert functions.
 
@@ -179,7 +180,7 @@ QTdisplayWinDlg::QTdisplayWinDlg(GRobject caller, const BBox *BB,
     connect(dw_center, SIGNAL(clicked()), this, SLOT(center_btn_slot()));
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
-    btn->setObjectName("Dismiss");
+    btn->setObjectName("Default");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 

@@ -161,7 +161,7 @@ QTwriteTechDlg::QTwriteTechDlg(GRobject caller)
     connect(tc_write, SIGNAL(clicked()), this, SLOT(write_btn_slot()));
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
-    btn->setObjectName("Dismiss");
+    btn->setObjectName("Default");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 

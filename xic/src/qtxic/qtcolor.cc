@@ -272,7 +272,7 @@ QTcolorDlg::QTcolorDlg(GRobject c)
     hbox->addWidget(tbtn);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
-    btn->setObjectName("Dismiss");
+    btn->setObjectName("Default");
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
     hbox->addWidget(btn);
 

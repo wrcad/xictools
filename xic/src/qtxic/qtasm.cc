@@ -328,7 +328,7 @@ QTasmDlg::QTasmDlg(GRobject c) : QTbag(this)
     connect(tbtn, SIGNAL(clicked()), this, SLOT(crlayout_btn_slot()));
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
-    btn->setObjectName("Dismiss");
+    btn->setObjectName("Default");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 

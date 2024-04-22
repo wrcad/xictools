@@ -202,7 +202,7 @@ QTzoomDlg::QTzoomDlg(QTbag *owner, WindowDesc *w)
     hbox->setSpacing(2);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
-    btn->setObjectName("Dismiss");
+    btn->setObjectName("Default");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 

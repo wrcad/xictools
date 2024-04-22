@@ -2380,44 +2380,42 @@ QTsubwin::focus_out_slot(QFocusEvent *ev)
 }
 
 
+#define LOCAL_FCT 0.2
+
 void
 QTsubwin::mouse_wheel_slot(QWheelEvent *ev)
 {
-    QPoint numDegrees = ev->angleDelta()/8;
+    QPoint numDegrees = ev->angleDelta();
     if (numDegrees.isNull() || numDegrees.y() == 0) {
         ev->ignore();
         return;
     }
     bool scroll_up = (numDegrees.y() > 0);
     ev->accept();
-    if (scroll_up) {
 
-        if (ev->modifiers() & Qt::ControlModifier) {
-            if (DSP()->MouseWheelZoomFactor() > 0.0)
-                sw_windesc->Zoom(1.0 - DSP()->MouseWheelZoomFactor());
-        }
-        else if (ev->modifiers() & Qt::ShiftModifier) {
-            if (DSP()->MouseWheelPanFactor() > 0.0)
-                sw_windesc->Pan(DirEast, DSP()->MouseWheelPanFactor());
-        }
-        else {
-            if (DSP()->MouseWheelPanFactor() > 0.0)
-                sw_windesc->Pan(DirNorth, DSP()->MouseWheelPanFactor());
-        }
+    double del;
+    if (ev->modifiers() & Qt::ControlModifier)
+        del = LOCAL_FCT*DSP()->MouseWheelZoomFactor();
+    else
+        del = LOCAL_FCT*DSP()->MouseWheelPanFactor();
+    if (del < 1e-9)
+        return;
+
+    if (scroll_up) {
+        if (ev->modifiers() & Qt::ControlModifier)
+            sw_windesc->Zoom(1.0 - del);
+        else if (ev->modifiers() & Qt::ShiftModifier)
+            sw_windesc->Pan(DirEast, del);
+        else
+            sw_windesc->Pan(DirNorth, del);
     }
     else {
-        if (ev->modifiers() & Qt::ControlModifier) {
-            if (DSP()->MouseWheelZoomFactor() > 0.0)
-                sw_windesc->Zoom(1.0 + DSP()->MouseWheelZoomFactor());
-        }
-        else if (ev->modifiers() & Qt::ShiftModifier) {
-            if (DSP()->MouseWheelPanFactor() > 0.0)
-                sw_windesc->Pan(DirWest, DSP()->MouseWheelPanFactor());
-        }
-        else {
-            if (DSP()->MouseWheelPanFactor() > 0.0)
-                sw_windesc->Pan(DirSouth, DSP()->MouseWheelPanFactor());
-        }
+        if (ev->modifiers() & Qt::ControlModifier)
+            sw_windesc->Zoom(1.0 + del);
+        else if (ev->modifiers() & Qt::ShiftModifier)
+            sw_windesc->Pan(DirWest, del);
+        else
+            sw_windesc->Pan(DirSouth, del);
     }
 }
 
@@ -2716,21 +2714,24 @@ QTmainwin::QTmainwin(QWidget *prnt) : QTsubwin(0, prnt)
 bool
 QTmainwin::event(QEvent *ev)
 {
-    // This redraws the drawing subwindows when the main window gains
-    // focus, or the user clicks in a non-client main window area. 
-    // The subwindow may still disappear behind the main window when
-    // the user clicks in the main window client area, there seems to
-    // be no special event for this.  The user can then click in a
-    // non-client area to bring them back on top.
+    // This raises the non-Tool windows (drawing and help subwindows)
+    // when the main window gains focus, or the user clicks in a
+    // non-client main window area.  The subwindow may still disappear
+    // behind the main window when the user clicks in the main window
+    // client area, there seems to be no special event for this.  The
+    // user can then click in a non-client area to bring them back on
+    // top.
+    // All of this crap is courtesy of Apple.
 
     if (ev->type() == QEvent::ActivationChange ||
             ev->type() == QEvent::NonClientAreaMouseButtonPress) {
         if (QApplication::activeWindow() == this) {
-            WDgen wgen(WDgen::SUBW, WDgen::ALL);
-            WindowDesc *wd;
-            while ((wd = wgen.next()) != 0) {
-                QTsubwin *w = dynamic_cast<QTsubwin*>(wd->Wbag());
-                w->raise();
+            QObjectList objs = children();
+            int sz = objs.size();
+            for (int i = 0; i < sz; i++) {
+                QDialog *dlg = qobject_cast<QDialog*>(objs[i]);
+                if (dlg && dlg->windowFlags() & Qt::Tool)
+                    dlg->raise();
             }
         }
     }

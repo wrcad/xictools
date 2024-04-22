@@ -269,7 +269,7 @@ QToaLibsDlg::QToaLibsDlg(GRobject c) : QTbag(this)
     // dismiss button line
     //
     QPushButton *btn = new QPushButton(tr("Dismiss"));
-    btn->setObjectName("Dismiss");
+    btn->setObjectName("Default");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 

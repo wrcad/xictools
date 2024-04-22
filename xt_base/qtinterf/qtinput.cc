@@ -107,7 +107,7 @@ QTledDlg::QTledDlg(QTbag *owner, const char *label_str,
     connect(tbtn, SIGNAL(clicked()), this, SLOT(action_slot()));
 
     QPushButton *btn = new QPushButton(tr("Cancel"));
-    btn->setObjectName("Dismiss");
+    btn->setObjectName("Default");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(cancel_btn_slot()));
 }

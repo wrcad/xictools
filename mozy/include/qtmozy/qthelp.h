@@ -48,6 +48,7 @@
 
 #include <QVariant>
 #include <QDialog>
+#include <QKeyEvent>
 
 
 // This implements a help/html viewer dialog, providing menus and
@@ -59,6 +60,9 @@ class QMenu;
 class QMenuBar;
 class QResizeEvent;
 class QTmozyClrDlg;
+namespace qtinterf {
+    class QTsearchDlg;
+}
 
 struct htmAnchorCallbackStruct;
 struct htmFormCallbackStruct;
@@ -90,6 +94,19 @@ public:
 
     QThelpDlg(bool, QWidget*);
     ~QThelpDlg();
+
+    void set_transient_for(QWidget *prnt)
+        {
+            setParent(prnt);
+        }
+
+    // Don't pop down from Esc press.
+    void keyPressEvent(QKeyEvent *ev)
+        {
+            if (ev->key() != Qt::Key_Escape)
+                QDialog::keyPressEvent(ev);
+        }
+
     void menu_sens_set(bool);
 
     // ViewWidget and HelpWidget interface
@@ -159,7 +176,7 @@ private slots:
     void config_slot();
     void proxy_slot();
     void search_slot();
-    void find_slot();
+    void find_text_slot();
     void colors_slot(bool);
     void set_font_slot(bool);
     void dont_cache_slot(bool);
@@ -187,7 +204,9 @@ private slots:
     void do_open_slot(const char*, void*);
     void do_save_slot(const char*, void*);
     void do_search_slot(const char*, void*);
-    void do_find_text_slot(const char*, void*);
+    void search_down_slot();
+    void search_up_slot();
+    void ignore_case_slot(bool);
 
 private:
     void set_frame_parent(QThelpDlg *p) { h_frame_parent = p; }
@@ -228,9 +247,12 @@ private:
 
     QThelpDlg   **h_frame_array;    // array of frame children
     int         h_frame_array_size;
+    bool        h_ign_case;
     QThelpDlg   *h_frame_parent;    // pointer to frame parent
     char        *h_frame_name;      // frame name if frame
 
+    QTsearchDlg *h_searcher;
+    char        *h_last_search;
 
     // menu actions
     QAction     *h_Backward;

@@ -44,6 +44,7 @@
 #include "qtinterf/qtinterf.h"
 
 #include <QDialog>
+#include <QKeyEvent>
 
 class QLineEdit;
 class QToolButton;
@@ -57,10 +58,31 @@ public:
     QTmozyClrDlg(QWidget* = 0);
     ~QTmozyClrDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update();
 
     void set_visible(bool b)    { setVisible(b); }
     void popdown()              { delete this; }
+
+    void set_transient_for(QWidget *prnt)
+        {
+            Qt::WindowFlags f = windowFlags();
+            setParent(prnt);
+#ifdef Q_OS_MACOS
+            f |= Qt::Tool;
+#endif
+            setWindowFlags(f);
+        }
+
+    // Don't pop down from Esc press.
+    void keyPressEvent(QKeyEvent *ev)
+        {
+            if (ev->key() != Qt::Key_Escape)
+                QDialog::keyPressEvent(ev);
+        }
 
 private slots:
     void colors_btn_slot(bool);

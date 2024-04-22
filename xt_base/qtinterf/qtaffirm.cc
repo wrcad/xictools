@@ -105,7 +105,7 @@ QTaffirmDlg::QTaffirmDlg(QTbag *owner, const char *question_str)
     connect(tbtn, SIGNAL(clicked()), this, SLOT(affirm_btn_slot()));
 
     QPushButton *btn = new QPushButton(tr("Cancel"));
-    btn->setObjectName("Dismiss");
+    btn->setObjectName("Default");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(cancel_btn_slot()));
 }

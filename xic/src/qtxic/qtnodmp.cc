@@ -259,10 +259,40 @@ QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node) : QTbag(this)
     connect(nm_srch_entry, SIGNAL(textChanged(const QString&)),
         this, SLOT(srch_text_changed_slot(const QString&)));
 
+    hbox->addSpacing(20);
     nm_srch_nodes = new QRadioButton(tr("Nodes"));
     hbox->addWidget(nm_srch_nodes);
     QRadioButton *rbtn = new QRadioButton(tr("Terminals"));
     hbox->addWidget(rbtn);
+    nm_srch_nodes->setChecked(true);
+
+    // button row
+    //
+    hbox = new QHBoxLayout();
+    hbox->setContentsMargins(qm);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
+
+    tbtn = new QToolButton();
+    tbtn->setText(tr(" Deselect "));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(deselect_btn_slot()));
+
+
+    hbox->addSpacing(40);
+    nm_usex_btn = new QCheckBox(tr("Use Extract"));
+    hbox->addWidget(nm_usex_btn);
+    connect(nm_usex_btn, SIGNAL(stateChanged(int)),
+        this, SLOT(usex_btn_slot(int)));
+    if (ExtIf()->hasExtract())
+        nm_usex_btn->show();
+    else
+        nm_usex_btn->hide();
+
+    nm_find_btn = new QToolButton();
+    nm_find_btn->setText(tr("Find"));
+    hbox->addWidget(nm_find_btn);
+    connect(nm_find_btn, SIGNAL(clicked()), this, SLOT(find_btn_slot()));
 
     hbox = new QHBoxLayout();
     hbox->setContentsMargins(qm);
@@ -306,36 +336,11 @@ QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node) : QTbag(this)
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
 
-    // cancel button row
-    //
-    hbox = new QHBoxLayout();
-    hbox->setContentsMargins(qm);
-    hbox->setSpacing(2);
-    vbox->addLayout(hbox);
-
-    tbtn = new QToolButton();
-    tbtn->setText(tr(" Deselect "));
-    hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(deselect_btn_slot()));
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
-    btn->setObjectName("Dismiss");
-    hbox->addWidget(btn);
+    btn->setObjectName("Default");
+    vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
-
-    nm_usex_btn = new QCheckBox(tr("Use Extract"));
-    hbox->addWidget(nm_usex_btn);
-    connect(nm_usex_btn, SIGNAL(stateChanged(int)),
-        this, SLOT(usex_btn_slot(int)));
-    if (ExtIf()->hasExtract())
-        nm_usex_btn->show();
-    else
-        nm_usex_btn->hide();
-
-    nm_find_btn = new QToolButton();
-    nm_find_btn->setText(tr("Find"));
-    hbox->addWidget(nm_find_btn);
-    connect(nm_find_btn, SIGNAL(clicked()), this, SLOT(find_btn_slot()));
 
     // If the group/node selection mode in extraction is enabled with
     // a selection, configure the pop-up to have that node selected.

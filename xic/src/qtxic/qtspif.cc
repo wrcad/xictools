@@ -239,7 +239,7 @@ QTspiceIfDlg::QTspiceIfDlg(GRobject c)
     // Dismiss button
     //
     QPushButton *btn = new QPushButton(tr("Dismiss"));
-    btn->setObjectName("Dismiss");
+    btn->setObjectName("Default");
     grid->addWidget(btn, 11, 0, 1, 2);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 

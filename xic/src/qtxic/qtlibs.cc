@@ -224,7 +224,7 @@ QTlibsDlg::QTlibsDlg(GRobject c) : QTbag(this)
         this, SLOT(noovr_btn_slot(bool)));
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
-    btn->setObjectName("Dismiss");
+    btn->setObjectName("Default");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 

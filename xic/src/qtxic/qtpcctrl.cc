@@ -189,7 +189,7 @@ QTpcellCtrlDlg::QTpcellCtrlDlg(GRobject c)
     // Dismiss button
     //
     QPushButton *btn = new QPushButton(tr("Dismiss"));
-    btn->setObjectName("Dismiss");
+    btn->setObjectName("Default");
     vbox->addSpacing(4);
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));

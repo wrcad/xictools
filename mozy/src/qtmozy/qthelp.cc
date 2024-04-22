@@ -45,6 +45,7 @@
 #include "qtinterf/qtfont.h"
 #include "qtinterf/qtinput.h"
 #include "qtinterf/qtlist.h"
+#include "qtinterf/qtsearch.h"
 #include "queue_timer.h"
 
 #include "help/help_startup.h"
@@ -343,7 +344,7 @@ namespace {
 }
 
 
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
 #define USE_QTOOLBAR
 #endif
 
@@ -371,8 +372,11 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QDialog(prnt),
     h_clrdlg = 0;
     h_frame_array = 0;
     h_frame_array_size = 0;
+    h_ign_case = false;
     h_frame_parent = 0;
     h_frame_name = 0;
+    h_searcher = 0;
+    h_last_search = 0;
 
     wb_sens_set = ::sens_set;
 
@@ -494,7 +498,7 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QDialog(prnt),
     h_Search = h_main_menus[1]->addAction(tr("&Search Database"),
         this, SLOT(search_slot()));
     h_FindText = h_main_menus[1]->addAction(tr("Find &Text"),
-        this, SLOT(find_slot()));
+        this, SLOT(find_text_slot()));
     h_DefaultColors = h_main_menus[1]->addAction(tr("Default Colors"),
         this, SLOT(colors_slot(bool)));
     h_DefaultColors->setCheckable(true);
@@ -654,6 +658,8 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QDialog(prnt),
     h_Backward->setEnabled(false);
     h_Forward->setEnabled(false);
     h_Stop->setEnabled(false);
+    if (prnt)
+        set_transient_for(prnt);
 }
 
 
@@ -681,7 +687,6 @@ QThelpDlg::menu_sens_set(bool set)
     h_Search->setEnabled(set);
     h_Save->setEnabled(set);
     h_Open->setEnabled(set);
-    h_FindText->setEnabled(set);
 }
 
 
@@ -1424,11 +1429,22 @@ QThelpDlg::search_slot()
 
 
 void
-QThelpDlg::find_slot()
+QThelpDlg::find_text_slot()
 {
-    PopUpInput("Enter word for text search:", "", "Find Text", 0, 0);
-    connect(wb_input, SIGNAL(action_call(const char*, void*)), this,
-        SLOT(do_find_text_slot(const char*, void*)));
+    if (!h_searcher) {
+        h_searcher = new QTsearchDlg(this, h_last_search);
+        h_searcher->register_usrptr((void**)&h_searcher);
+        h_searcher->set_transient_for(this);
+        h_searcher->set_visible(true);
+
+        h_searcher->set_ign_case(h_ign_case);
+        connect(h_searcher, SIGNAL(search_down()),
+            this, SLOT(search_down_slot()));
+        connect(h_searcher, SIGNAL(search_up()),
+            this, SLOT(search_up_slot()));
+        connect(h_searcher, SIGNAL(ignore_case(bool)),
+            this, SLOT(ignore_case_slot(bool)));
+    }
 }
 
 
@@ -1438,6 +1454,7 @@ QThelpDlg::colors_slot(bool state)
     if (state) {
         if (!h_clrdlg) {
             h_clrdlg = new QTmozyClrDlg(this);
+            h_clrdlg->set_transient_for(this);
             h_clrdlg->register_caller(sender());
             h_clrdlg->register_usrptr((void**)&h_clrdlg);
             QTdev::self()->SetPopupLocation(GRloc(LW_CENTER), h_clrdlg, this);
@@ -1808,10 +1825,35 @@ QThelpDlg::do_search_slot(const char *target, void*)
 
 
 void
-QThelpDlg::do_find_text_slot(const char *target, void*)
+QThelpDlg::search_down_slot()
 {
-    if (target && *target)
-        h_viewer->find_words(target, false, false);
+    QString target = h_searcher->get_target();
+    if (!target.isNull() && !target.isEmpty()) {
+        delete [] h_last_search;
+        h_last_search = lstring::copy(target.toLatin1().constData());
+        if (!h_viewer->find_words(h_last_search, false, h_ign_case))
+            h_searcher->set_transient_message("Not found!");
+    }
+}
+
+
+void
+QThelpDlg::search_up_slot()
+{
+    QString target = h_searcher->get_target();
+    if (!target.isNull() && !target.isEmpty()) {
+        delete [] h_last_search;
+        h_last_search = lstring::copy(target.toLatin1().constData());
+        if (!h_viewer->find_words(h_last_search, true, h_ign_case))
+            h_searcher->set_transient_message("Not found!");
+    }
+}
+
+
+void
+QThelpDlg::ignore_case_slot(bool ign)
+{
+    h_ign_case = ign;
 }
 
 

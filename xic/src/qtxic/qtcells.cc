@@ -387,13 +387,6 @@ QTcellsDlg::QTcellsDlg(GRobject c) : QTbag(this)
     connect(c_page_combo, SIGNAL(currentIndexChanged(int)),
         this, SLOT(page_menu_slot(int)));
 
-    // dismiss button
-    //
-    QPushButton *btn = new QPushButton(tr("Dismiss"));
-    btn->setObjectName("Dismiss");
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
-
     // mode menu
     //
     c_mode_combo = new QComboBox();
@@ -403,6 +396,13 @@ QTcellsDlg::QTcellsDlg(GRobject c) : QTbag(this)
     c_mode_combo->setCurrentIndex(c_mode);
     connect(c_mode_combo, SIGNAL(currentIndexChanged(int)),
         this, SLOT(mode_changed_slot(int)));
+
+    // dismiss button
+    //
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     update();
 }

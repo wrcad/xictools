@@ -2267,7 +2267,7 @@ QTfileActionDlg::QTfileActionDlg(QTbag *bg, const char *src, const char *dst,
     connect(tbtn, SIGNAL(clicked()), this, SLOT(link_btn_slot()));
 
     QPushButton *btn = new QPushButton(tr("Cancel"));
-    btn->setObjectName("Dismiss");
+    btn->setObjectName("Default");
     hb->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(cancel_btn_slot()));
 

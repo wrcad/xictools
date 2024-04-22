@@ -196,7 +196,7 @@ QTselectDlg::QTselectDlg(GRobject c) : QTbag(this)
     connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
-    btn->setObjectName("Dismiss");
+    btn->setObjectName("Default");
     grid->addWidget(btn, 2, 1, 1, 3);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 

@@ -144,6 +144,16 @@ QTrunopListDlg::QTrunopListDlg(int xx, int yy, const char *s) : QTbag(this)
     QLabel *label = new QLabel(tr("Active Runops (traces, iplots, debugs)"));
     hb->addWidget(label);
 
+    for (int n = 0; tl_btns[n]; n++) {
+        QToolButton *tbtn = new QToolButton();
+        tbtn->setText(tr(tl_btns[n]));
+        tbtn->setCheckable(true);
+        hbox->addWidget(tbtn);
+        connect(tbtn, SIGNAL(toggled(bool)),
+            this, SLOT(button_slot(bool)));
+    }
+
+    hbox->addStretch(1);
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("help"));
     hbox->addWidget(tbtn);
@@ -174,15 +184,6 @@ QTrunopListDlg::QTrunopListDlg(int xx, int yy, const char *s) : QTbag(this)
     vbox->addLayout(hbox);
     hbox->setContentsMargins(qm);
     hbox->setSpacing(0);
-
-    for (int n = 0; tl_btns[n]; n++) {
-        tbtn = new QToolButton();
-        tbtn->setText(tr(tl_btns[n]));
-        tbtn->setCheckable(true);
-        hbox->addWidget(tbtn);
-        connect(tbtn, SIGNAL(toggled(bool)),
-            this, SLOT(button_slot(bool)));
-    }
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     hbox->addWidget(btn);

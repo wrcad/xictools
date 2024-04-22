@@ -174,13 +174,6 @@ QTmcolDlg::QTmcolDlg(QTbag *owner, stringlist *symlist,
     mc_pagesel = new QComboBox();
     hbox->addWidget(mc_pagesel);
 
-    // Dismiss button.
-    //
-    QPushButton *btn = new QPushButton(tr("Dismiss"));
-    btn->setObjectName("Dismiss");
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
-
     if (buttons) {
         for (int i = 0; i < MC_MAXBTNS && buttons[i]; i++) {
             tbtn = new QToolButton();
@@ -191,6 +184,13 @@ QTmcolDlg::QTmcolDlg(QTbag *owner, stringlist *symlist,
             connect(tbtn, SIGNAL(clicked()), this, SLOT(user_btn_slot()));
         }
     }
+
+    // Dismiss button.
+    //
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     relist();
 }

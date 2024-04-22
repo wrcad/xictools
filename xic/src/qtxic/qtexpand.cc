@@ -174,13 +174,14 @@ QTexpandDlg::QTexpandDlg(QTbag *owner, const char *string, bool nopeek,
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
-    tbtn = new QToolButton();
-    tbtn->setText(tr("Apply"));
-    hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(apply_slot()));
+    QPushButton *btn = new QPushButton(tr("Apply"));
+    btn->setAutoDefault(true);
+    btn->setObjectName("Default");
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(apply_slot()));
 
-    QPushButton *btn = new QPushButton(tr("Dismiss"));
-    btn->setObjectName("Dismiss");
+    btn = new QPushButton(tr("Dismiss"));
+    btn->setAutoDefault(false);
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_slot()));
 }

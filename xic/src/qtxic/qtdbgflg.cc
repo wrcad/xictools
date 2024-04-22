@@ -270,7 +270,7 @@ QTdbgFlagsDlg::QTdbgFlagsDlg(GRobject c)
     // dismiss button
     //
     QPushButton *btn = new QPushButton(tr("Dismiss"));
-    btn->setObjectName("Dismiss");
+    btn->setObjectName("Default");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()),
         this, SLOT(dismiss_btn_slot()));

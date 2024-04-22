@@ -1148,7 +1148,7 @@ QTfilesListDlg::mouse_motion_slot(QMouseEvent *ev)
     }
 
     Qt::KeyboardModifiers m = QGuiApplication::queryKeyboardModifiers();
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
     // alt == option on Apple's planet
     if ((m & Qt::ShiftModifier) && (m & Qt::AltModifier)) {
         drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction,

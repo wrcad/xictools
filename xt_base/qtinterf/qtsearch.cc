@@ -107,7 +107,6 @@ QTsearchDlg::QTsearchDlg(QTbag *owner, const char *initstr) : se_timer(this)
         owner->MonitorAdd(this);
 
     setWindowTitle(QString(tr("Search")));
-    setWindowFlags(Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_DeleteOnClose);
 
     QMargins qmtop(2, 2, 2, 2);
@@ -143,13 +142,15 @@ QTsearchDlg::QTsearchDlg(QTbag *owner, const char *initstr) : se_timer(this)
     hbox->addWidget(tbtn);
     connect(tbtn, SIGNAL(clicked()), this, SLOT(up_btn_slot()));
 
+    hbox->addSpacing(20);
     se_nc = new QCheckBox(this);
     se_nc->setText(tr("No Case"));
     hbox->addWidget(se_nc);
     connect(se_nc, SIGNAL(toggled(bool)), this, SLOT(icase_btn_slot(bool)));
 
+    hbox->addSpacing(20);
     QPushButton *btn = new QPushButton(tr("Dismiss"));
-    btn->setObjectName("Dismiss");
+    btn->setObjectName("Default");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 

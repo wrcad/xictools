@@ -452,7 +452,7 @@ QTviewer::tk_claim_selection(const char*)
 htmFont *
 QTviewer::tk_alloc_font(const char *family, int sz, unsigned char sty)
 {
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
     // In QT, if a font doesn't exist, a long annoying message is printed
     // on-screen.  Sans doesn't exist in Apple at present (Sonoma).
     if (!strcasecmp(family, "sans"))

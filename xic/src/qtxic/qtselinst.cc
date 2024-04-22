@@ -196,7 +196,7 @@ QTcellInstSelectDlg::QTcellInstSelectDlg(CDol *l, bool filtmode) : QTbag(this)
         this, SLOT(mouse_press_slot(QMouseEvent*)));
 
     QPushButton *btn = new QPushButton(tr(ci_filt ? "Continue" : "Dismiss"));
-    btn->setObjectName("Dismiss");
+    btn->setObjectName("Default");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 

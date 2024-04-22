@@ -100,6 +100,12 @@ public:
             setWindowFlags(f);
         }
 
+    void keyPressEvent(QKeyEvent *ev)
+        {
+            if (ev->key() != Qt::Key_Escape)
+                QDialog::keyPressEvent(ev);
+        }
+
     void popdown();
     void update(bool = false);
     void initialize();
@@ -140,7 +146,6 @@ private slots:
 
 private:
     void redraw();
-    void keyPressEvent(QKeyEvent*);
 
     QGroupBox   *gd_snapbox;
     QTdoubleSpinBox *gd_resol;

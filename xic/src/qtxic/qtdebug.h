@@ -113,7 +113,7 @@ public:
                 QDialog::keyPressEvent(ev);
         }
 
-    void popdown()                  { deleteLater(); }
+    void popdown()                  { delete this; }
 
 private slots:
     void current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*);
@@ -192,7 +192,17 @@ public:
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
+#ifdef Q_OS_MACOS
+            f |= Qt::Tool;
+#endif
             setWindowFlags(f);
+        }
+
+    // Don't pop down from Esc press.
+    void keyPressEvent(QKeyEvent *ev)
+        {
+            if (ev->key() != Qt::Key_Escape)
+                QDialog::keyPressEvent(ev);
         }
 
     static QTscriptDebuggerDlg *self()          { return (instPtr); }

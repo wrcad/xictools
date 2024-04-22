@@ -71,11 +71,11 @@ QTbag::PopUpList(stringlist *symlist, const char *title,
 {
     QTlistDlg *list = new QTlistDlg(this, symlist, title, header,
         usepix, use_apply);
-    if (wb_shell)
-       list->set_transient_for(wb_shell);
     list->register_callback(callback);
     list->set_callback_arg(arg);
 
+    if (wb_shell)
+       list->set_transient_for(wb_shell);
     list->set_visible(true);
     return (list);
 }
@@ -189,7 +189,7 @@ QTlistDlg::QTlistDlg(QTbag *owner, stringlist *symlist, const char *title,
     }
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
-    btn->setObjectName("Dismiss");
+    btn->setObjectName("Default");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 }

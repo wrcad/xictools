@@ -259,7 +259,7 @@ QTjoinDlg::QTjoinDlg(GRobject c)
     // Dismiss button
     //
     QPushButton *btn = new QPushButton(tr("Dismiss"));
-    btn->setObjectName("Dismiss");
+    btn->setObjectName("Default");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(delete_btn_slot()));
 

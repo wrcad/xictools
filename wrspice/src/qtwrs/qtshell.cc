@@ -58,8 +58,6 @@
  * Shell parameter setting dialog.
  **************************************************************************/
 
-
-
 // The plot defaults popup, initiated from the toolbar.
 //
 void
@@ -148,10 +146,6 @@ QTshellParamDlg::QTshellParamDlg(int xx, int yy)
     hb->setSpacing(2);
     QLabel *label = new QLabel(tr("Shell Options"));
     hb->addWidget(label);
-
-    QPushButton *btn = new QPushButton(tr("Dismiss"));
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
@@ -277,6 +271,10 @@ QTshellParamDlg::QTshellParamDlg(int xx, int yy)
         grid->addWidget(entry->qtent(), 6, 0, 1, 4);
         delete [] s;
     }
+
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    vbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     if (xx || yy) {
         TB()->FixLoc(&xx, &yy);

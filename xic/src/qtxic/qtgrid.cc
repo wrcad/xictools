@@ -502,7 +502,7 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTbag(this),
     connect(tbtn, SIGNAL(clicked()), this, SLOT(apply_slot()));
 
     gd_cancel = new QPushButton(tr("Dismiss"));
-    gd_cancel->setObjectName("Dismiss");
+    gd_cancel->setObjectName("Default");
     hbox->addWidget(gd_cancel);
     connect(gd_cancel, SIGNAL(clicked()), this, SLOT(dismiss_slot()));
 
@@ -737,33 +737,6 @@ QTgridDlg::redraw()
         gd_viewport = tmp;
         gd_sample->repaint(0, 0, gd_sample->width(), gd_sample->height());
     }
-}
-
-
-void
-QTgridDlg::keyPressEvent(QKeyEvent *ev)
-{
-    // Don't pop down from Esc press.
-
-    if (ev->key() != Qt::Key_Escape)
-        QDialog::keyPressEvent(ev);
-
-    // Look only at Enter key events.  If not focussed on the Dismiss
-    // button, run the Apply callback and set focus to the Dismiss
-    // button.  A second Enter press will then dismiss the pop-up.
-
-#ifndef Q_OS_MACOS
-//XXX how to support this in macOS?  Do I want to do this at all?
-    if (ev->type() == QEvent::KeyPress && ev->key() == Qt::Key_Return) {
-        QWidget *w = focusWidget();
-        if (w != gd_cancel) {
-            apply_slot();
-            gd_cancel->setFocus();
-            return;
-        }
-    }
-#endif
-    QDialog::keyPressEvent(ev);
 }
 
 

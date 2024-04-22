@@ -182,6 +182,16 @@ QTplotListDlg::QTplotListDlg(int xx, int yy, const char *s) : QTbag(this)
     QLabel *label = new QLabel(tr("Currently active plots"));
     hb->addWidget(label);
 
+    for (int n = 0; pl_btns[n]; n++) {
+        QToolButton *tbtn = new QToolButton();
+        tbtn->setText(tr(pl_btns[n]));
+        hbox->addWidget(tbtn);
+        tbtn->setCheckable(true);
+        connect(tbtn, SIGNAL(toggled(bool)),
+            this, SLOT(button_slot(bool)));
+    }
+
+    hbox->addStretch(1);
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("help"));
     hbox->addWidget(tbtn);
@@ -212,15 +222,6 @@ QTplotListDlg::QTplotListDlg(int xx, int yy, const char *s) : QTbag(this)
     vbox->addLayout(hbox);
     hbox->setContentsMargins(qm);
     hbox->setSpacing(0);
-
-    for (int n = 0; pl_btns[n]; n++) {
-        tbtn = new QToolButton();
-        tbtn->setText(tr(pl_btns[n]));
-        hbox->addWidget(tbtn);
-        tbtn->setCheckable(true);
-        connect(tbtn, SIGNAL(toggled(bool)),
-            this, SLOT(button_slot(bool)));
-    }
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     hbox->addWidget(btn);

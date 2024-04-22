@@ -301,7 +301,7 @@ QTchdListDlg::QTchdListDlg(GRobject c) : QTbag(this)
     // dismiss button
     //
     QPushButton *btn = new QPushButton(tr("Dismiss"));
-    btn->setObjectName("Dismiss");
+    btn->setObjectName("Default");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -825,8 +825,8 @@ QTchdListDlg::dsp_btn_slot(bool state)
         }
         BBox BB = *p->get_bb();
         BB.scale(1.1);
-        Cvt()->PopUpDisplayWindow(0, MODE_ON, &BB, chl_display_cb, 0);
         setEnabled(false);
+        Cvt()->PopUpDisplayWindow(chl_dspbtn, MODE_ON, &BB, chl_display_cb, 0);
     }
     else {
         XM()->SetHierDisplayMode(0, 0, 0);

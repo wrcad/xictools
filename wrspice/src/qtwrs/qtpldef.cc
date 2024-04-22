@@ -110,10 +110,6 @@ QTplotParamDlg::QTplotParamDlg(int xx, int yy)
     QLabel *label = new QLabel(tr("Set plot options"));
     hb->addWidget(label);
 
-    QPushButton *btn = new QPushButton(tr("Dismiss"));
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
-
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
@@ -472,6 +468,11 @@ QTplotParamDlg::QTplotParamDlg(int xx, int yy)
         entry->qtent()->setup(1.0, 1.0, 0.0, 0.0, 0);
     }
     grid->setRowStretch(2, 1);
+
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    vbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+
 
     if (xx || yy) {
         TB()->FixLoc(&xx, &yy);

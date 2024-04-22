@@ -355,7 +355,7 @@ QTextCmdDlg::QTextCmdDlg(GRobject c, sExtCmd *cmd,
     connect(cmd_go, SIGNAL(toggled(bool)), this, SLOT(go_btn_slot(bool)));
 
     QPushButton *btn = new QPushButton(tr("Cancel"));
-    btn->setObjectName("Dismiss");
+    btn->setObjectName("Default");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(cancel_btn_slot()));
 }

@@ -272,7 +272,7 @@ QTxformDlg::QTxformDlg(GRobject c,
     vbox->addLayout(hbox);
 
     tf_cancel = new QPushButton(tr("Dismiss"));
-    tf_cancel->setObjectName("Dismiss");
+    tf_cancel->setObjectName("Default");
     hbox->addWidget(tf_cancel);
     connect(tf_cancel, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 

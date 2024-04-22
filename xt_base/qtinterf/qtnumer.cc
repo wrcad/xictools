@@ -115,7 +115,7 @@ QTnumDlg::QTnumDlg(QTbag *owner, const char *prompt_str, double initd,
     connect(tbtn, SIGNAL(clicked()), this, SLOT(action_slot()));
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
-    btn->setObjectName("Dismiss");
+    btn->setObjectName("Default");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 }

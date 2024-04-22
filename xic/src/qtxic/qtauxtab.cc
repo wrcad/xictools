@@ -157,6 +157,7 @@ QTauxTabDlg::QTauxTabDlg(GRobject c) : QTbag(this)
     connect(at_clearbtn, SIGNAL(toggled(bool)),
         this, SLOT(clear_btn_slot(bool)));
 
+    hbox->addStretch(1);
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
@@ -218,7 +219,7 @@ QTauxTabDlg::QTauxTabDlg(GRobject c) : QTbag(this)
     // Dismiss button
     //
     QPushButton *btn = new QPushButton(tr("Dismiss"));
-    btn->setObjectName("Dismiss");
+    btn->setObjectName("Default");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 

@@ -332,7 +332,7 @@ QToasisDlg::QToasisDlg(GRobject c)
         this, SLOT(entt_changed_slot(int)));
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
-    btn->setObjectName("Dismiss");
+    btn->setObjectName("Default");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 

@@ -112,7 +112,7 @@ QTdotsDlg::QTdotsDlg(GRobject caller)
     connect(dt_all, SIGNAL(toggled(bool)), this, SLOT(all_slot(bool)));
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
-    btn->setObjectName("Dismiss");
+    btn->setObjectName("Default");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_slot()));
 

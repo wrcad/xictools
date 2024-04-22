@@ -289,7 +289,7 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c) : QTbag(this)
     a->setData(2);
     a->setShortcut(QKeySequence("Ctrl+C"));
     // Paste from Clipboard, <control>V, db_paste_proc, 0, 0
-    a = db_filemenu->addAction(tr("Paste from Clipboard"));
+    a = db_editmenu->addAction(tr("Paste from Clipboard"));
     a->setData(3);
     a->setShortcut(QKeySequence("Ctrl+V"));
 #ifdef Q_OS_LINUX
@@ -1865,7 +1865,7 @@ QTdbgVarsDlg::QTdbgVarsDlg(void *p, QWidget *prnt) : QDialog(prnt)
     // Dismiss button
     //
     QPushButton *btn = new QPushButton(tr("Dismiss"));
-    btn->setObjectName("Dismiss");
+    btn->setObjectName("Default");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 }

@@ -45,6 +45,7 @@
 #include "help/help_cache.h"
 #include "help/help_topic.h"
 
+#include <QApplication>
 #include <QGuiApplication>
 #include <QClipboard>
 #include <QLayout>
@@ -142,6 +143,7 @@ QTmozyClrDlg::QTmozyClrDlg(QWidget *prnt) : QDialog(prnt), QTbag(this)
     connect(tbtn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(quit_btn_slot()));
 
@@ -156,6 +158,12 @@ QTmozyClrDlg::~QTmozyClrDlg()
     if (p_usrptr)
         *p_usrptr = 0;
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTmozyClrDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 namespace {

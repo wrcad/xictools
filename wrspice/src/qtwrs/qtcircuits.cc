@@ -146,6 +146,16 @@ QTcircuitListDlg::QTcircuitListDlg(int xx, int yy, const char *s)
     QLabel *label = new QLabel(tr("Currently active circuits"));
     hb->addWidget(label);
 
+    for (int n = 0; cl_btns[n]; n++) {
+        QToolButton *tbtn = new QToolButton();
+        tbtn->setText(tr(cl_btns[n]));
+        tbtn->setCheckable(true);
+        hbox->addWidget(tbtn);
+        connect(tbtn, SIGNAL(toggled(bool)),
+            this, SLOT(button_slot(bool)));
+    }
+
+    hbox->addStretch(1);
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("help"));
     hbox->addWidget(tbtn);
@@ -176,15 +186,6 @@ QTcircuitListDlg::QTcircuitListDlg(int xx, int yy, const char *s)
     vbox->addLayout(hbox);
     hbox->setContentsMargins(qm);
     hbox->setSpacing(0);
-
-    for (int n = 0; cl_btns[n]; n++) {
-        tbtn = new QToolButton();
-        tbtn->setText(tr(cl_btns[n]));
-        tbtn->setCheckable(true);
-        hbox->addWidget(tbtn);
-        connect(tbtn, SIGNAL(toggled(bool)),
-            this, SLOT(button_slot(bool)));
-    }
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     hbox->addWidget(btn);

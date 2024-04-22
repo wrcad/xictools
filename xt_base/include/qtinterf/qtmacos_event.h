@@ -49,19 +49,19 @@ DLGTYPE::event(QEvent *ev)
     // or checked button when an ancestor window has focus.
 
     if (ev->type() == QEvent::ActivationChange) {
-        QPushButton *dsm = this->findChild<QPushButton*>("Dismiss",
+        QPushButton *dflt = this->findChild<QPushButton*>("Default",
             Qt::FindDirectChildrenOnly);
-        if (dsm) {
+        if (dflt) {
             QWidget *top = this;
             while (top->parentWidget()) {
                 top = top->parentWidget();
                 if (QApplication::activeWindow() == top) {
-                    dsm->setDefault(false);
+                    dflt->setDefault(false);
                     break;
                 }
             }
             if (QApplication::activeWindow() == this)
-                dsm->setDefault(true);
+                dflt->setDefault(true);
         }
     }
     return (QDialog::event(ev));

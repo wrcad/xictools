@@ -600,7 +600,7 @@ QTfontDlg::QTfontDlg(QTbag *owner, int indx, void *arg) :
         ft_menu->hide();
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
-    btn->setObjectName("Dismiss");
+    btn->setObjectName("Default");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(quit_slot()));
 

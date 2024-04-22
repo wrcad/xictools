@@ -124,10 +124,6 @@ QTcmdParamDlg::QTcmdParamDlg(int xx, int yy)
     QLabel *label = new QLabel(tr("Command Defaults"));
     hb->addWidget(label);
 
-    QPushButton *btn = new QPushButton(tr("Dismiss"));
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
-
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
@@ -624,6 +620,10 @@ QTcmdParamDlg::QTcmdParamDlg(int xx, int yy)
         grid->addWidget(entry->qtent(), 1, 0);
     }
     grid->setRowStretch(2, 1);
+
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    vbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     if (xx || yy) {
         TB()->FixLoc(&xx, &yy);
