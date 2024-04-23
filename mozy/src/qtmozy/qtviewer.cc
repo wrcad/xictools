@@ -906,6 +906,7 @@ QTviewer::tk_draw_line(int x1, int y1, int x2, int y2)
 void
 QTviewer::tk_draw_text(int xx, int yy, const char *str, int len)
 {
+    yy += 4; // Offset needed to get position correct in tables, why?
     v_darea->draw_text(xx, yy, str, len);
 }
 
