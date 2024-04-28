@@ -60,7 +60,9 @@
 #include "miscutil/filestat.h"
 #include "miscutil/pathlist.h"
 
+#include <QApplication>
 #include <QLayout>
+#include <QToolButton>
 #include <QPushButton>
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
@@ -137,43 +139,44 @@ QTcgdListDlg::QTcgdListDlg(GRobject c) : QTbag(this)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    cgl_addbtn = new QPushButton(tr("Add"));
+    cgl_addbtn = new QToolButton();
+    cgl_addbtn->setText(tr("Add"));
     hbox->addWidget(cgl_addbtn);
     cgl_addbtn->setCheckable(true);
-    cgl_addbtn->setAutoDefault(false);
     connect(cgl_addbtn, SIGNAL(toggled(bool)),
         this, SLOT(add_btn_slot(bool)));
 
-    cgl_savbtn = new QPushButton(tr("Save"));
+    cgl_savbtn = new QToolButton();
+    cgl_savbtn->setText(tr("Save"));
     hbox->addWidget(cgl_savbtn);
     cgl_savbtn->setCheckable(true);
-    cgl_savbtn->setAutoDefault(false);
     connect(cgl_savbtn, SIGNAL(toggled(bool)),
         this, SLOT(sav_btn_slot(bool)));
 
-    cgl_delbtn = new QPushButton(tr("Delete"));
+    cgl_delbtn = new QToolButton();
+    cgl_delbtn->setText(tr("Delete"));
     hbox->addWidget(cgl_delbtn);
     cgl_delbtn->setCheckable(true);
-    cgl_delbtn->setAutoDefault(false);
     connect(cgl_delbtn, SIGNAL(toggled(bool)),
         this, SLOT(del_btn_slot(bool)));
 
-    cgl_cntbtn = new QPushButton(tr("Contents"));
+    cgl_cntbtn = new QToolButton();
+    cgl_cntbtn->setText(tr("Contents"));
     hbox->addWidget(cgl_cntbtn);
-    cgl_cntbtn->setAutoDefault(false);
     connect(cgl_cntbtn, SIGNAL(clicked()), this, SLOT(cont_btn_slot()));
 
-    cgl_infbtn = new QPushButton(tr("Info"));
+    cgl_infbtn = new QToolButton();
+    cgl_infbtn->setText(tr("Info"));
     hbox->addWidget(cgl_infbtn);
     cgl_infbtn->setCheckable(true);
-    cgl_infbtn->setAutoDefault(false);
     connect(cgl_infbtn, SIGNAL(toggled(bool)),
         this, SLOT(inf_btn_slot(bool)));
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    hbox->addStretch(1);
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // scrolled list
     //
@@ -194,14 +197,15 @@ QTcgdListDlg::QTcgdListDlg(GRobject c) : QTbag(this)
         this, SLOT(item_selection_changed()));
 
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_PROP))
+    if (Fnt()->getFont(&fnt, FNT_PROP))
         cgl_list->setFont(*fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
 
     // dismiss button
     //
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -228,6 +232,12 @@ QTcgdListDlg::~QTcgdListDlg()
     if (cgl_inf_pop)
         cgl_inf_pop->popdown();
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTcgdListDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 // Update the listing.
@@ -594,7 +604,7 @@ QTcgdListDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_PROP) {
         QFont *fnt;
-        if (FC.getFont(&fnt, fnum))
+        if (Fnt()->getFont(&fnt, fnum))
             cgl_list->setFont(*fnt);
         update();
     }

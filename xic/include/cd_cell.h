@@ -899,7 +899,7 @@ struct CDs : public CDdb
     void clear(bool);
     void incModified();
     void decModified();
-    bool isModified() const;
+    int countModified() const;
     void clearModified();
     bool isEmpty(const CDl* = 0) const;
     bool isSubcell() const;

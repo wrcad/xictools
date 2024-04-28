@@ -2005,6 +2005,8 @@ IFtranData(PTF_tPWL)
     td_pwlRstart = Rix;
     td_pwlindex = 0;
     td_pwldelay = TDval;
+    if (!list)
+        return;
 
     // Add the delay, if any.
     if (td_pwldelay > 0.0) {
@@ -2300,18 +2302,29 @@ again:
         if (!feq(Rval, list[0]) && Rval < list[0])
             Rix = -1;
         else { 
-            for (int j = 0; j < num-1; j++) {
+            int n2 = num/2;
+            for (int j = 0; j < n2; j++) {
                 if (feq(Rval, list[2*j])) {
                     Rix = j;
                     break;
                 }
             }
         }
+        if (Rix == num/2 - 1) {
+            *error = E_BADPARM;
+            Errs()->add_error(
+                "Bad value for R, can not be the final time value.");
+        }
         if (Rix == -2) {
             *error = E_BADPARM;
             Errs()->add_error(
                 "Bad value for R, doesn't match a PWL time value.");
         }
+    }
+    if (TDval < 0.0) {
+        *error = E_BADPARM;
+        Errs()->add_error(
+            "Bad value for Td, negative delay value not allowed.");
     }
     p->v.td = new IFpwlData(list, num, hasR, Rix, TDval);
 }
@@ -2350,7 +2363,10 @@ IFpwlData::setup(sCKT *ckt, double step, double finaltime, bool skipbr)
             }
             if (!td_pwlRgiven)
                 break;
-            ta += td_coeffs[2*(n-1)] - td_coeffs[2*td_pwlRstart];
+            double dd = td_coeffs[2*(n-1)] - td_coeffs[2*td_pwlRstart];
+            if (dd == 0.0)
+                return;
+            ta += dd;
             istart = td_pwlRstart + 1;
         }
     }
@@ -2369,6 +2385,9 @@ IFpwlData::eval_func(double t)
     if (!tv)
         return (0.0);
     int nvals = td_numcoeffs/2;
+
+    if (nvals == 2 && td_coeffs[3] == td_coeffs[1])
+        return (td_coeffs[1]);
 
     if (t >= tv[nvals-1].x) {
         if (!td_pwlRgiven)
@@ -2407,6 +2426,9 @@ IFpwlData::eval_deriv(double t)
     if (!tv)
         return (0.0);
     int nvals = td_numcoeffs/2;
+
+    if (nvals == 2 && td_coeffs[3] == td_coeffs[1])
+        return (0.0);
 
     if (t >= tv[nvals-1].x) {
         if (!td_pwlRgiven)

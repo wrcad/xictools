@@ -699,7 +699,7 @@ Simulation Option Variables
     </table>
     </dl>
 
-!! 082015
+!! 022224
     <a name="gmin"></a>
     <dl>
     <dt><tt>gmin</tt><dd>
@@ -710,7 +710,7 @@ Simulation Option Variables
     <table border=1 cellpadding=2 bgcolor="#ffffee">
     <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
       <th>Set From</th></tr>
-    <tr><td>1e-12</td> <td>1e-15</td> <td>1e-6</td>
+    <tr><td>1e-12</td> <td>1e-18</td> <td>1e-6</td>
       <th>Simultion Defaults/Tolerance</th></tr>
     </table>
     </dl>

@@ -78,6 +78,7 @@ namespace {
 
     // Entries in Open pop-up menu.
     const char *menu_list[MENU_SIZE+2];
+    const CDtptr *last_open;
     int menu_list_offset;
 
 
@@ -137,17 +138,10 @@ cMain::createFileMenu()
     FileMenu[fileMenu_END] =
         MenuEnt();
 
-    if (EditIf()->hasEdit()) {
-        menu_list[0] = "new";
-        menu_list[1] = "temporary";
-        menu_list[2] = MENU_SEP_STRING;
-        menu_list_offset = 3;
-    }
-    else {
-        menu_list[0] = "new";
-        menu_list[1] = MENU_SEP_STRING;
-        menu_list_offset = 2;
-    }
+    menu_list[0] = "new";
+    menu_list[1] = "prev";
+    menu_list[2] = MENU_SEP_STRING;
+    menu_list_offset = 3;
 
     FileMenuBox.name = "File";
     FileMenuBox.menu = FileMenu;
@@ -166,8 +160,9 @@ cMain::OpenCellMenuList()
 // Add name to drop down menu.
 //
 void
-cMain::PushOpenCellName(const char *name)
+cMain::PushOpenCellName(const CDtptr *tname, const CDtptr *tprev)
 {
+    const char *name = Tstring(tname);
     MenuEnt *ent = MainMenu()->FindEntry(MMfile, MenuOPEN);
     if (!ent || !ent->cmd.caller)
         return;
@@ -184,6 +179,7 @@ cMain::PushOpenCellName(const char *name)
             menu_list[menu_list_offset] = s;
             MainMenu()->SetDDentry(ent->cmd.caller, menu_list_offset,
                 menu_list[menu_list_offset]);
+            last_open = tprev;
             return;
         }
     }
@@ -200,23 +196,29 @@ cMain::PushOpenCellName(const char *name)
     menu_list[menu_list_offset] = lstring::copy(name);
     MainMenu()->SetDDentry(ent->cmd.caller, menu_list_offset,
         menu_list[menu_list_offset]);
+    last_open = tprev;
 }
 
 
 // Rename the drop pown menu entry for oldname to newname.
 //
 void
-cMain::ReplaceOpenCellName(const char *newname, const char *oldname)
+cMain::ReplaceOpenCellName(const CDtptr *nname, const CDtptr *oname)
 {
+    if (!oname)
+        return;
     for (int i = menu_list_offset; i <= MENU_SIZE && menu_list[i]; i++) {
-        if (!strcmp(menu_list[i], oldname)) {
-            if (newname && *newname) {
+        if (!strcmp(menu_list[i], Tstring(oname))) {
+            if (nname) {
                 delete [] menu_list[i];
-                menu_list[i] = lstring::copy(newname);
+                menu_list[i] = lstring::copy(Tstring(nname));
                 MenuEnt *ent = MainMenu()->FindEntry(MMfile, MenuOPEN);
                 if (!ent || !ent->cmd.caller)
                     return;
                 MainMenu()->SetDDentry(ent->cmd.caller, i, menu_list[i]);
+                if (last_open == oname) {
+                    last_open = nname;
+                }
             }
             break;
         }
@@ -235,9 +237,9 @@ namespace {
     // Nope, it f's up event handling in QT.
     //
     int
-    edit_idle_proc(void*)
+    edit_idle_proc(void *arg)
     {
-        XM()->EditCell(0, false);
+        XM()->EditCell((const char*)arg, false);
         return (false);
     }
 }
@@ -257,17 +259,31 @@ cMain::HandleOpenCellMenu(const char *entry, bool shift)
         // new
         // Prompt to open a new cell.
 #if defined(WITH_GTK2) || defined(WITH_GTK3)
-        DSPpkg::self()->RegisterIdleProc(&edit_idle_proc, 0);
+        if (shift) {
+            // Open a unique new cell.
+            char *s = XM()->NewCellName();
+            DSPpkg::self()->RegisterIdleProc(&edit_idle_proc, s);
+            delete [] s;
+        }
+        else
+            DSPpkg::self()->RegisterIdleProc(&edit_idle_proc, 0);
 #else
-        XM()->EditCell(0, false);
+        if (shift) {
+            // Open a unique new cell.
+            char *s = XM()->NewCellName();
+            EditCell(s, false);
+            delete [] s;
+        }
+        else
+            XM()->EditCell(0, false);
 #endif
     }
     else if (!strcmp(entry, menu_list[1])) {
-        // temporary
-        // Open a unique new cell.
-        char *s = XM()->NewCellName();
-        EditCell(s, false);
-        delete [] s;
+        // prev
+        // Open the previous cell, if any.
+        if (last_open)
+            EditCell(Tstring(last_open), false);
+        else PL()->ShowPrompt("No previous cell!");
     }
     else {
         if (shift && EditIf()->hasEdit())

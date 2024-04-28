@@ -839,6 +839,9 @@ public:
     bool IsSkipOverrideCells()          { return (fioSkipOverrideCells); }
     void SetSkipOverrideCells(bool b)   { fioSkipOverrideCells = b; }
 
+    bool IsOutAllCells()                { return (fioOutAllCells); }
+    void SetOutAllCells(bool b)         { fioOutAllCells = b; }
+
     bool IsOutToLower()                 { return (fioOutToLower); }
     void SetOutToLower(bool b)          { fioOutToLower = b; }
 
@@ -1153,7 +1156,7 @@ private:
 
     bool fioKeepLibMasters;
         // When set, user library cells are written to output when
-        // writing and archive file.  Normally, library cells are not
+        // writing an archive file.  Normally, library cells are not
         // included, and references are expected to be resolved
         // through the library mechanism when the file is read by Xic.
 
@@ -1192,6 +1195,11 @@ private:
     bool fioSkipOverrideCells;
         // If fioUseCellTab is set, cells found in the table will
         // not appear in output.
+
+    bool fioOutAllCells;
+        // When set, all cells in the current symbol table will be
+        // considered when writing to an archive, not just the cells
+        // in the hierarchy of the current cell.
 
     bool fioOutToLower;
         // Convert upper case cell names to lower case when writing

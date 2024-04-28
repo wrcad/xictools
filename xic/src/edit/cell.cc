@@ -547,7 +547,7 @@ cEdit::renameSymbol(const char *name, const char *newname)
     ScedIf()->updateDotsCellName(oldname, nname);
 
     plChangeMenuEnt(newname, Tstring(oldname));
-    XM()->ReplaceOpenCellName(newname, Tstring(oldname));
+    XM()->ReplaceOpenCellName(nname, oldname);
     WDgen gen(WDgen::MAIN, WDgen::CDDB);
     WindowDesc *wd;
     while ((wd = gen.next()) != 0) {

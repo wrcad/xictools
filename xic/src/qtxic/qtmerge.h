@@ -70,7 +70,7 @@ public:
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -85,6 +85,8 @@ public:
 
     bool is_hidden()                    { return (mc_allflag); }
     static QTmergeDlg *self()           { return (instPtr); }
+
+    void closeEvent(QCloseEvent*);
 
     void query(mitem_t*);
     bool set_apply_to_all();

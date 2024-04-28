@@ -43,9 +43,11 @@
 #include "dsp_inlines.h"
 #include "errorlog.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QGroupBox>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 #include <QLineEdit>
 #include <QCheckBox>
@@ -127,10 +129,10 @@ QToaDefsDlg::QToaDefsDlg(GRobject c)
     QLabel *label = new QLabel(tr("Set interface defaults and options"));
     hb->addWidget(label);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     gb = new QGroupBox(tr("Library Path"));
     vbox->addWidget(gb);
@@ -203,7 +205,8 @@ QToaDefsDlg::QToaDefsDlg(GRobject c)
 
     // Dismiss button
     //
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -217,6 +220,12 @@ QToaDefsDlg::~QToaDefsDlg()
     if (od_caller)
         QTdev::Deselect(od_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QToaDefsDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 void

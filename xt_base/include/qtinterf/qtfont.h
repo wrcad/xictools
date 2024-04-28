@@ -46,6 +46,7 @@
 
 #include <QVariant>
 #include <QDialog>
+#include <QKeyEvent>
 
 
 //
@@ -57,7 +58,8 @@ class QListWidget;
 class QListWidgetItem;
 class QTextEdit;
 class QFontDatabase;
-class QPushButton;
+class QTextButton;
+class QToolButton;
 class QComboBox;
 
 namespace qtinterf {
@@ -133,14 +135,25 @@ public:
     QTfontDlg(QTbag*, int, void*);
     ~QTfontDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void set_transient_for(QWidget *prnt)
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
+        }
+
+    // Don't pop down from Esc press.
+    void keyPressEvent(QKeyEvent *ev)
+        {
+            if (ev->key() != Qt::Key_Escape)
+                QDialog::keyPressEvent(ev);
         }
 
     // GRpopup overrides
@@ -186,8 +199,7 @@ private:
     QListWidget *ft_style_list;
     QListWidget *ft_size_list;
     QTextEdit   *ft_preview;
-    QPushButton *ft_apply;
-    QPushButton *ft_quit;
+    QToolButton *ft_apply;
     QComboBox   *ft_menu;
     QFontDatabase *ft_fdb;
 

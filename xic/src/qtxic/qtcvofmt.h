@@ -52,7 +52,7 @@
 
 class QComboBox;
 class QCheckBox;
-class QPushButton;
+class QToolButton;
 class QLabel;
 class QComboBox;
 class QMenu;
@@ -131,10 +131,10 @@ private:
     QCheckBox   *fmt_oassum;
     QCheckBox   *fmt_oasoff;
     QCheckBox   *fmt_oasnwp;
-    QPushButton *fmt_oasadv;
+    QToolButton *fmt_oasadv;
     QLabel      *fmt_gdsftlab;
     QComboBox   *fmt_gdsftopt;
-    QPushButton *fmt_cifext;
+    QToolButton *fmt_cifext;
     QMenu       *fmt_cifflags;
     QComboBox   *fmt_cifcname;
     QComboBox   *fmt_ciflayer;

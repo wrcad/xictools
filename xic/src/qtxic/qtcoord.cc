@@ -80,6 +80,8 @@ QTcoord::QTcoord(QWidget *prnt) : QWidget(prnt), QTdraw(XW_TEXT)
     co_rel = false;
     co_snap = true;
 
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
     gd_viewport = new QTcanvas();
     QHBoxLayout *hbox = new QHBoxLayout(this);
     hbox->setContentsMargins(0, 0, 0, 0);
@@ -95,7 +97,7 @@ QTcoord::QTcoord(QWidget *prnt) : QWidget(prnt), QTdraw(XW_TEXT)
         this, SLOT(redraw_slot()), Qt::QueuedConnection);
 
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_SCREEN))
+    if (Fnt()->getFont(&fnt, FNT_SCREEN))
         gd_viewport->set_font(fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
@@ -151,7 +153,7 @@ QTcoord::print(int xc, int yc, int upd)
     int fwid, fhei;
     TextExtent(0, &fwid, &fhei);
     int xx = 2;
-    int yy = (height() - fhei)/2 + fhei;
+    int yy = (height() + fhei)/2 - 2;
 
     if (co_snap)
         EV()->CurrentWin()->Snap(&xc, &yc);
@@ -267,7 +269,7 @@ QTcoord::font_changed_slot(int fnum)
 {
     if (fnum == FNT_SCREEN) {
         QFont *fnt;
-        if (FC.getFont(&fnt, FNT_SCREEN))
+        if (Fnt()->getFont(&fnt, FNT_SCREEN))
             gd_viewport->set_font(fnt);
         int xx, yy;
         EV()->Cursor().get_xy(&xx, &yy);

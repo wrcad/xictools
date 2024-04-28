@@ -84,6 +84,8 @@ QTparam::QTparam(QTmainwin *prnt) : QWidget(prnt), QTdraw(XW_TEXT)
     p_width = 0;
     p_height = 0;
 
+    setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
+
     gd_viewport = new QTcanvas();
     QHBoxLayout *hbox = new QHBoxLayout(this);
     hbox->setContentsMargins(0, 0, 0, 0);
@@ -91,7 +93,7 @@ QTparam::QTparam(QTmainwin *prnt) : QWidget(prnt), QTdraw(XW_TEXT)
     hbox->addWidget(gd_viewport);
 
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_SCREEN))
+    if (Fnt()->getFont(&fnt, FNT_SCREEN))
         gd_viewport->set_font(fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
@@ -122,7 +124,7 @@ QTparam::print()
     TextExtent(0, &fwid, &fhei);
 
     p_xval = 2;
-    p_yval = fhei + 1;
+    p_yval = (height() + fhei)/2 - 2;
 
     unsigned int selectno;
     Selections.countQueue(CurCell(), &selectno, 0);
@@ -157,7 +159,7 @@ QTparam::print()
         if (cursd) {
             if (cursd->isImmutable())
                 p_text.append_string(" RO", DSP()->Color(PromptHighlightColor));
-            else if (cursd->isModified())
+            else if (cursd->countModified())
                 p_text.append_string(" Mod",DSP()->Color(PromptHighlightColor));
         }
         p_text.append_string("  ", c2);
@@ -328,9 +330,11 @@ QTparam::font_changed_slot(int fnum)
 {
     if (fnum == FNT_SCREEN) {
         QFont *fnt;
-        if (FC.getFont(&fnt, FNT_SCREEN))
+        if (Fnt()->getFont(&fnt, FNT_SCREEN)) {
             gd_viewport->set_font(fnt);
-        print();
+            setFixedHeight(QFontMetrics(*fnt).height());
+            print();
+        }
     }
 }
 
@@ -488,7 +492,9 @@ ptext_t::setup(QTparam *prm)
         else
             pt_chars[i].pc_posn = pt_chars[i-1].pc_posn +
                 pt_chars[i-1].pc_width;
-        pt_chars[i].pc_width = QTfont::stringWidth(bf, prm->Viewport());
+        int w;
+        prm->TextExtent(bf, &w, 0);
+        pt_chars[i].pc_width = w;
     }
     pt_sel_start = 0;
     pt_sel_end = 0;

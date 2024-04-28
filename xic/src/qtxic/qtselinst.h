@@ -79,6 +79,10 @@ public:
     QTcellInstSelectDlg(CDol*, bool = false);
     ~QTcellInstSelectDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     QSize sizeHint() const;
     void update(CDol*);
 
@@ -86,7 +90,7 @@ public:
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);

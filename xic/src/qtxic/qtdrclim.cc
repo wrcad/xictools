@@ -43,9 +43,11 @@
 #include "dsp_inlines.h"
 #include "qtllist.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QGroupBox>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 #include <QCheckBox>
 #include <QLineEdit>
@@ -133,10 +135,10 @@ QTdrcSetupDlg::QTdrcSetupDlg(GRobject c)
     QLabel *label = new QLabel(tr("Set DRC parameters and limits"));
     hb->addWidget(label);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // Layer list.
     //
@@ -265,7 +267,8 @@ QTdrcSetupDlg::QTdrcSetupDlg(GRobject c)
 
     // Dismiss button
     //
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -285,6 +288,12 @@ QTdrcSetupDlg::~QTdrcSetupDlg()
     if (dl_caller)
         QTdev::Deselect(dl_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTdrcSetupDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 void

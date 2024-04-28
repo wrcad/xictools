@@ -304,7 +304,7 @@ GTKdev::Init(int *argc, char **argv)
         return (true);
     }
 
-    FC.initFonts();
+    Fnt()->initFonts();
 
     // Here's a bit of a hack - some themes leave a lot of white space
     // around button content, taking a lot of area, and possibly

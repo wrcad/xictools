@@ -63,7 +63,9 @@
 #include "regex/regex.h"
 #endif
 
+#include <QApplication>
 #include <QLayout>
+#include <QToolButton>
 #include <QPushButton>
 #include <QLineEdit>
 #include <QTreeWidget>
@@ -203,38 +205,39 @@ QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node) : QTbag(this)
 
     // button line
     //
-    nm_use_np = new QPushButton(tr("Use nophys"));
+    nm_use_np = new QToolButton();
+    nm_use_np->setText(tr("Use nophys"));
     hbox->addWidget(nm_use_np);
     nm_use_np->setCheckable(true);
-    nm_use_np->setAutoDefault(false);
     connect(nm_use_np, SIGNAL(toggled(bool)),
         this, SLOT(nophys_btn_slot(bool)));
 
-    nm_rename = new QPushButton(tr("Map Name"));
+    nm_rename = new QToolButton();
+    nm_rename->setText(tr("Map Name"));
     hbox->addWidget(nm_rename);
     nm_rename->setCheckable(true);
-    nm_rename->setAutoDefault(false);
     connect(nm_rename, SIGNAL(toggled(bool)),
         this, SLOT(mapname_btn_slot(bool)));
 
-    nm_remove = new QPushButton(tr("Unmap"));
+    nm_remove = new QToolButton();
+    nm_remove->setText(tr("Unmap"));
     hbox->addWidget(nm_remove);
     nm_remove->setCheckable(true);
-    nm_remove->setAutoDefault(false);
     connect(nm_remove, SIGNAL(toggled(bool)),
         this, SLOT(unmap_btn_slot(bool)));
 
-    nm_point_btn = new QPushButton(tr("Click-Select Mode"));
+    nm_point_btn = new QToolButton();
+    nm_point_btn->setText(tr("Click-Select Mode"));
     hbox->addWidget(nm_point_btn);
     nm_point_btn->setCheckable(true);
-    nm_point_btn->setAutoDefault(false);
     connect(nm_point_btn, SIGNAL(toggled(bool)),
         this, SLOT(click_btn_slot(bool)));
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    hbox->addStretch(1);
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // second button line
     //
@@ -246,10 +249,9 @@ QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node) : QTbag(this)
     QLabel *label = new QLabel(tr("Search"));
     hbox->addWidget(label);
 
-    nm_srch_btn = new QPushButton();
+    nm_srch_btn = new QToolButton();
     hbox->addWidget(nm_srch_btn);
     nm_srch_btn->setIcon(QIcon(QPixmap(lsearch_xpm)));
-    nm_srch_btn->setAutoDefault(false);
     connect(nm_srch_btn, SIGNAL(clicked()), this, SLOT(srch_btn_slot()));
 
     nm_srch_entry = new QLineEdit();
@@ -257,10 +259,40 @@ QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node) : QTbag(this)
     connect(nm_srch_entry, SIGNAL(textChanged(const QString&)),
         this, SLOT(srch_text_changed_slot(const QString&)));
 
+    hbox->addSpacing(20);
     nm_srch_nodes = new QRadioButton(tr("Nodes"));
     hbox->addWidget(nm_srch_nodes);
     QRadioButton *rbtn = new QRadioButton(tr("Terminals"));
     hbox->addWidget(rbtn);
+    nm_srch_nodes->setChecked(true);
+
+    // button row
+    //
+    hbox = new QHBoxLayout();
+    hbox->setContentsMargins(qm);
+    hbox->setSpacing(2);
+    vbox->addLayout(hbox);
+
+    tbtn = new QToolButton();
+    tbtn->setText(tr(" Deselect "));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(deselect_btn_slot()));
+
+
+    hbox->addSpacing(40);
+    nm_usex_btn = new QCheckBox(tr("Use Extract"));
+    hbox->addWidget(nm_usex_btn);
+    connect(nm_usex_btn, SIGNAL(stateChanged(int)),
+        this, SLOT(usex_btn_slot(int)));
+    if (ExtIf()->hasExtract())
+        nm_usex_btn->show();
+    else
+        nm_usex_btn->hide();
+
+    nm_find_btn = new QToolButton();
+    nm_find_btn->setText(tr("Find"));
+    hbox->addWidget(nm_find_btn);
+    connect(nm_find_btn, SIGNAL(clicked()), this, SLOT(find_btn_slot()));
 
     hbox = new QHBoxLayout();
     hbox->setContentsMargins(qm);
@@ -297,42 +329,18 @@ QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node) : QTbag(this)
     spl->setSizes(QList<int>() << 0.8*width() << 0.2*width());
 
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_PROP)) {
+    if (Fnt()->getFont(&fnt, FNT_PROP)) {
         nm_node_list->setFont(*fnt);
         nm_term_list->setFont(*fnt);
     }
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
 
-    // cancel button row
-    //
-    hbox = new QHBoxLayout();
-    hbox->setContentsMargins(qm);
-    hbox->setSpacing(2);
-    vbox->addLayout(hbox);
 
-    btn = new QPushButton(tr(" Deselect "));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(deselect_btn_slot()));
-
-    btn = new QPushButton(tr("Dismiss"));
-    hbox->addWidget(btn);
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
+    vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
-
-    nm_usex_btn = new QCheckBox(tr("Use Extract"));
-    hbox->addWidget(nm_usex_btn);
-    connect(nm_usex_btn, SIGNAL(stateChanged(int)),
-        this, SLOT(usex_btn_slot(int)));
-    if (ExtIf()->hasExtract())
-        nm_usex_btn->show();
-    else
-        nm_usex_btn->hide();
-
-    nm_find_btn = new QPushButton(tr("Find"));
-    hbox->addWidget(nm_find_btn);
-    nm_find_btn->setAutoDefault(false);
-    connect(nm_find_btn, SIGNAL(clicked()), this, SLOT(find_btn_slot()));
 
     // If the group/node selection mode in extraction is enabled with
     // a selection, configure the pop-up to have that node selected.
@@ -377,6 +385,12 @@ QTnodeMapDlg::~QTnodeMapDlg()
     }
     ExtIf()->PopUpExtSetup(0, MODE_UPD);
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTnodeMapDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 bool
@@ -1210,7 +1224,7 @@ QTnodeMapDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_PROP) {
         QFont *fnt;
-        if (FC.getFont(&fnt, fnum)) {
+        if (Fnt()->getFont(&fnt, fnum)) {
             nm_node_list->setFont(*fnt);
             nm_term_list->setFont(*fnt);
         }

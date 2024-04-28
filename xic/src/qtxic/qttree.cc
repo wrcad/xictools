@@ -55,6 +55,7 @@
 #include <QLayout>
 #include <QGroupBox>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 #include <QTreeWidget>
 #include <QClipboard>
@@ -254,10 +255,10 @@ QTtreeDlg::QTtreeDlg(GRobject c, const char *root, TreeUpdMode dmode)
     t_label = new QLabel("");
     hb->addWidget(t_label);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // scrolled tree
     //
@@ -272,7 +273,7 @@ QTtreeDlg::QTtreeDlg(GRobject c, const char *root, TreeUpdMode dmode)
         this, SLOT(item_selection_changed_slot()));
 
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_PROP))
+    if (Fnt()->getFont(&fnt, FNT_PROP))
         t_tree->setFont(*fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
@@ -299,30 +300,29 @@ QTtreeDlg::QTtreeDlg(GRobject c, const char *root, TreeUpdMode dmode)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    btn = new QPushButton(tr("Dismiss"));
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
-
     const char *buttons[5];
-    buttons[0] = TR_INFO_BTN;
-    buttons[1] = TR_OPEN_BTN;
-    if (EditIf()->hasEdit()) {
-        buttons[2] = TR_PLACE_BTN;
-        buttons[3] = TR_UPD_BTN;
-    }
-    else {
-        buttons[2] = 0;
-        buttons[3] = 0;
-    }
-    buttons[4] = 0;
+    int n = 0;
+    if (EditIf()->hasEdit())
+        buttons[n++] = TR_UPD_BTN;
+    buttons[n++] = TR_INFO_BTN;
+    buttons[n++] = TR_OPEN_BTN;
+    if (EditIf()->hasEdit())
+        buttons[n++] = TR_PLACE_BTN;
+    while (n < 5)
+        buttons[n++] = 0;
 
     for (int i = 0; i < TR_MAXBTNS && buttons[i]; i++) {
-        btn = new QPushButton(tr(buttons[i]));
-        btn->setAutoDefault(false);
-        connect(btn, SIGNAL(clicked()), this, SLOT(user_btn_slot()));
-        t_buttons[i] = btn;
-        hbox->addWidget(btn);
+        tbtn = new QToolButton();
+        tbtn->setText(tr(buttons[i]));
+        connect(tbtn, SIGNAL(clicked()), this, SLOT(user_btn_slot()));
+        t_buttons[i] = tbtn;
+        hbox->addWidget(tbtn);
     }
+
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     update(0, 0, dmode);
 }
@@ -335,11 +335,15 @@ QTtreeDlg::~QTtreeDlg()
     delete [] t_root_cd;
     delete [] t_root_db;
     delete [] t_selection;
-//    if (t_curnode)
-//        gtk_tree_path_free(t_curnode);
     if (t_caller)
         QTdev::Deselect(t_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTtreeDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 void
@@ -714,7 +718,7 @@ QTtreeDlg::dismiss_btn_slot()
 void
 QTtreeDlg::user_btn_slot()
 {
-    QString name = qobject_cast<QPushButton*>(sender())->text();
+    QString name = qobject_cast<QAbstractButton*>(sender())->text();
     if (name == TR_INFO_BTN) {
         if (!t_selection)
             return;
@@ -804,7 +808,7 @@ QTtreeDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_PROP) {
         QFont *fnt;
-        if (FC.getFont(&fnt, fnum))
+        if (Fnt()->getFont(&fnt, fnum))
             t_tree->setFont(*fnt);
     }
 }

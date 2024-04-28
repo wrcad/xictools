@@ -44,9 +44,11 @@
 #include "dsp_inlines.h"
 #include "errorlog.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QGroupBox>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 #include <QLineEdit>
 
@@ -129,32 +131,32 @@ QToaTechAttachDlg::QToaTechAttachDlg(GRobject c)
     ot_label = new QLabel(tr("Set technology for library"));
     hb->addWidget(ot_label);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     hbox = new QHBoxLayout();
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    ot_unat = new QPushButton(tr("Unattach"));
+    ot_unat = new QToolButton();
+    ot_unat->setText(tr("Unattach"));
     hbox->addWidget(ot_unat);
-    ot_unat->setAutoDefault(false);
     connect(ot_unat, SIGNAL(clicked()), this, SLOT(unat_btn_slot()));
 
-    ot_at = new QPushButton(tr("Attach"));
+    ot_at = new QToolButton();
+    ot_at->setText(tr("Attach"));
     hbox->addWidget(ot_at);
-    ot_at->setAutoDefault(false);
     connect(ot_at, SIGNAL(clicked()), this, SLOT(at_btn_slot()));
 
     ot_tech = new QLineEdit();
     hbox->addWidget(ot_tech);
 
-    ot_def = new QPushButton(tr("Default"));
+    ot_def = new QToolButton();
+    ot_def->setText(tr("Default"));
     hbox->addWidget(ot_def);
-    ot_def->setAutoDefault(false);
     connect(ot_def, SIGNAL(clicked()), this, SLOT(def_btn_slot()));
 
     hbox = new QHBoxLayout();
@@ -162,14 +164,14 @@ QToaTechAttachDlg::QToaTechAttachDlg(GRobject c)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    ot_dest = new QPushButton(tr("Destroy Tech"));
+    ot_dest = new QToolButton();
+    ot_dest->setText(tr("Destroy Tech"));
     hbox->addWidget(ot_dest);
-    ot_dest->setAutoDefault(false);
     connect(ot_dest, SIGNAL(clicked()), this, SLOT(dest_btn_slot()));
 
-    ot_crt = new QPushButton(tr("Create New Tech"));
+    ot_crt = new QToolButton();
+    ot_crt->setText(tr("Create New Tech"));
     hbox->addWidget(ot_crt);
-    ot_crt->setAutoDefault(false);
     connect(ot_crt, SIGNAL(clicked()), this, SLOT(crt_btn_slot()));
 
     gb = new QGroupBox();
@@ -183,7 +185,8 @@ QToaTechAttachDlg::QToaTechAttachDlg(GRobject c)
 
     // Dismiss button
     //
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -198,6 +201,12 @@ QToaTechAttachDlg::~QToaTechAttachDlg()
         QTdev::Deselect(ot_caller);
     delete [] ot_attachment;
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QToaTechAttachDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 void

@@ -127,6 +127,18 @@ cptest:
 	cd devlib/include; make cptest
 	cd devlib/adms/include; make cptest
 
+# Target to edit ADMS files for correct SyntaxLevel (same as release level).
+syntaxlevel:
+	@a=$$(./release.sh) \
+	IFS=. ; set $$a; IFS= ; \
+	lvlstr1="SyntaxLevel = $$3"; \
+	lvlstr2="SyntaxLevel $$3"; \
+	f1=devlib/adms/Makefile; \
+	sed -e s/"SyntaxLevel = 0"/"$$lvlstr1"/ < $$f1 > $$f1.tmp; \
+	mv -f $$f1.tmp $$f1; \
+	f2=devlib/adms/admst/device.xml; \
+	sed -e s/"SyntaxLevel 0"/"$$lvlstr2"/ < $$f2.sed > $$f2; \
+
 $(TARGETS)::
 	$(MAKE) bin/$@
 
@@ -290,7 +302,7 @@ bin/wrspiced.o: bin/wrspiced.cc
 CCFILES = bin/wrspice.cc bin/wrspiced.cc bin/multidec.cc bin/proc2mod.cc \
   bin/printtoraw.cc
 
-depend:
+depend: syntaxlevel
 	@(cd devlib/adms/examples; $(MAKE) make);
 	@for a in include $(SUBDIRS) devlib help startup; do \
 	    (cd $$a; $(MAKE) depend) \
@@ -332,6 +344,7 @@ distclean: eclean
 	-@cd mmjco; $(MAKE) distclean
 	-@rm -f bin/*.o wrspice_ipc_demo.tar.gz Makefile
 	-@rm -f examples/wrspice_ipc_demo.tar.gz
+	-@rm -f devlib/adms/admst/device.xml
 
 ifdef GRPREF
 grclean:

@@ -50,8 +50,10 @@
 #include "menu.h"
 #include "miscutil/filestat.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 #include <QLineEdit>
 #include <QComboBox>
@@ -195,10 +197,10 @@ QTdeviceDlg::QTdeviceDlg(GRobject caller)
         de_prefix->setText(lstr.string());
     }
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    grid->addWidget(btn, 0, 2, 2, 1);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    grid->addWidget(tbtn, 0, 2, 2, 1);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     label = new QLabel(tr("Default Model"));
     grid->addWidget(label, 2, 0);
@@ -242,10 +244,10 @@ QTdeviceDlg::QTdeviceDlg(GRobject caller)
     QHBoxLayout *hbox = new QHBoxLayout();
     grid->addLayout(hbox, 5, 0);
 
-    de_toggle = new QPushButton(tr("Hot Spot"));
+    de_toggle = new QToolButton();
+    de_toggle->setText(tr("Hot Spot"));
     hbox->addWidget(de_toggle);
     de_toggle->setCheckable(true);
-    de_toggle->setAutoDefault(false);
     connect(de_toggle, SIGNAL(toggled(bool)),
         this, SLOT(hotspot_btn_slot(bool)));
 
@@ -298,15 +300,18 @@ QTdeviceDlg::QTdeviceDlg(GRobject caller)
     hbox->setContentsMargins(qmtop);
     hbox->setSpacing(2);
 
-    btn = new QPushButton(tr("Save in Library"));
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(savlib_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Save in Library"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(savlib_btn_slot()));
 
-    btn = new QPushButton(tr("Save as Cell File"));
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(savfile_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Save as Cell File"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(savfile_btn_slot()));
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 }
@@ -320,6 +325,12 @@ QTdeviceDlg::~QTdeviceDlg()
     if (Bcmd)
         Bcmd->esc();
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTdeviceDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 void
@@ -401,7 +412,7 @@ QTdeviceDlg::do_save(bool tofile)
 {
     CDs *cursde = CurCell(Electrical);
     if (!cursde) {
-        Log()->PopUpErr("No curent cell!");
+        Log()->PopUpErr("No current cell!");
         return;
     }
 

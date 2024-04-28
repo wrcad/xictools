@@ -56,9 +56,11 @@
 #endif
 #include <signal.h>
 
+#include <QApplication>
 #include <QLayout>
 #include <QGroupBox>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 #include <QTabWidget>
 #include <QLineEdit>
@@ -192,10 +194,10 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
     QLabel *label = new QLabel(tr("Initiate batch DRC run"));
     hb->addWidget(label);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     QTabWidget *nbook = new QTabWidget();
     vbox->addWidget(nbook);
@@ -223,10 +225,10 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
     hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
-    dc_use = new QPushButton(tr("Use"));
+    dc_use = new QToolButton();
+    dc_use->setText(tr("Use"));
     hb->addWidget(dc_use);
     dc_use->setCheckable(true);
-    dc_use->setAutoDefault(false);
     connect(dc_use, SIGNAL(toggled(bool)), this, SLOT(use_btn_slot(bool)));
 
     dc_chdname = new QLineEdit();
@@ -253,10 +255,10 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
     hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
-    dc_none = new QPushButton(tr("None"));
+    dc_none = new QToolButton();
+    dc_none->setText(tr("None"));
     hb->addWidget(dc_none);
     dc_none->setCheckable(true);
-    dc_none->setAutoDefault(false);
     connect(dc_none, SIGNAL(toggled(bool)), this, SLOT(none_btn_slot(bool)));
 
     dc_sb_part = new QTdoubleSpinBox();
@@ -289,11 +291,11 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
     hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
-    dc_set = new QPushButton(tr("Set"));
+    dc_set = new QToolButton();
+    dc_set->setText(tr("Set"));
     hb->addSpacing(20);
     hb->addWidget(dc_set);
     dc_set->setCheckable(true);
-    dc_set->setAutoDefault(false);
     dc_set->setMaximumWidth(60);
     connect(dc_set, SIGNAL(toggled(bool)), this, SLOT(set_btn_slot(bool)));
 
@@ -347,10 +349,10 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
 
     // Check, Check Bg buttons
     //
-    dc_check = new QPushButton(tr("Check\n"));
+    dc_check = new QToolButton();
+    dc_check->setText(tr("Check\n"));
     grid->addWidget(dc_check, 3, 0, 1, 2);
     dc_check->setCheckable(true);
-    dc_check->setAutoDefault(false);
     connect(dc_check, SIGNAL(toggled(bool)), this, SLOT(check_btn_slot(bool)));
 
     // This is to allow button pressess/releases to be
@@ -360,10 +362,10 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
     // Tested in the event dispatch loop.
     QTpkg::self()->EventMonitor()->add_busy_allow(dc_check);
 
-    dc_checkbg = new QPushButton(tr("Check in\nBackground"));
+    dc_checkbg = new QToolButton();
+    dc_checkbg->setText(tr("Check in\nBackground"));
     grid->addWidget(dc_checkbg, 3, 2, 1, 2);
     dc_checkbg->setCheckable(true);
-    dc_checkbg->setAutoDefault(false);
     connect(dc_checkbg, SIGNAL(toggled(bool)),
         this, SLOT(checkbg_btn_slot(bool)));
 
@@ -383,19 +385,20 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
         this, SLOT(mouse_press_slot(QMouseEvent*)));
 
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_FIXED))
+    if (Fnt()->getFont(&fnt, FNT_FIXED))
         dc_jobs->setFont(*fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
 
-    dc_kill = new QPushButton(tr("Abort job"));
+    dc_kill = new QToolButton();
+    dc_kill->setText(tr("Abort job"));
     vb->addWidget(dc_kill);
-    dc_kill->setAutoDefault(false);
     connect(dc_kill, SIGNAL(clicked()), this, SLOT(abort_btn_slot()));
 
     // Dismiss button
     //
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -411,6 +414,12 @@ QTdrcRunDlg::~QTdrcRunDlg()
     if (dc_caller)
         QTdev::Deselect(dc_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTdrcRunDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 void
@@ -916,7 +925,7 @@ QTdrcRunDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_FIXED) {
         QFont *fnt;
-        if (FC.getFont(&fnt, FNT_FIXED))
+        if (Fnt()->getFont(&fnt, FNT_FIXED))
             dc_jobs->setFont(*fnt);
         update_jobs_list();
     }

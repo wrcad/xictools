@@ -52,7 +52,7 @@
 // various modes and operations.
 
 class QLabel;
-class QPushButton;
+class QToolButton;
 class QComboBox;
 class QMouseEvent;
 class QResizeEvent;
@@ -66,6 +66,10 @@ public:
     QTcellsDlg(GRobject);
     ~QTcellsDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update();
     char *get_selection();
 
@@ -73,7 +77,7 @@ public:
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -141,18 +145,18 @@ private:
     QTledDlg    *c_save_pop;
     QTmsgDlg    *c_msg_pop;
     QLabel      *c_label;
-    QPushButton *c_clearbtn;
-    QPushButton *c_treebtn;
-    QPushButton *c_openbtn;
-    QPushButton *c_placebtn;
-    QPushButton *c_copybtn;
-    QPushButton *c_replbtn;
-    QPushButton *c_renamebtn;
-    QPushButton *c_searchbtn;
-    QPushButton *c_flagbtn;
-    QPushButton *c_infobtn;
-    QPushButton *c_showbtn;
-    QPushButton *c_fltrbtn;
+    QToolButton *c_clearbtn;
+    QToolButton *c_treebtn;
+    QToolButton *c_openbtn;
+    QToolButton *c_placebtn;
+    QToolButton *c_copybtn;
+    QToolButton *c_replbtn;
+    QToolButton *c_renamebtn;
+    QToolButton *c_searchbtn;
+    QToolButton *c_flagbtn;
+    QToolButton *c_infobtn;
+    QToolButton *c_showbtn;
+    QToolButton *c_fltrbtn;
     QComboBox   *c_page_combo;
     QComboBox   *c_mode_combo;
     cfilter_t   *c_pfilter;

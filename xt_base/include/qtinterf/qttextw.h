@@ -41,7 +41,7 @@
 #ifndef QTTEXTW_H
 #define QTTEXTW_H
 
-#include <QTextEdit>
+#include <QTextBrowser>
 #include <QMimeData>
 #include <QDragEnterEvent>
 
@@ -55,7 +55,7 @@ namespace qtinterf {
     class QTtextEdit;
 }
 
-class qtinterf::QTtextEdit : public QTextEdit
+class qtinterf::QTtextEdit : public QTextBrowser
 {
     Q_OBJECT
 
@@ -94,8 +94,8 @@ signals:
     void press_event(QMouseEvent*);
     void release_event(QMouseEvent*);
     void motion_event(QMouseEvent*);
-    void mime_data_handled(const QMimeData*, bool*) const;
-    void mime_data_delivered(const QMimeData*, bool*);
+    void mime_data_handled(const QMimeData*, int*) const;
+    void mime_data_delivered(const QMimeData*, int*);
     void key_press_event(QKeyEvent*);
 
 protected:

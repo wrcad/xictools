@@ -84,6 +84,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/types.h>
+#include <unistd.h>
 
 // Default horizontal & vertical marginwidth.
 //
@@ -801,12 +802,11 @@ htmWidget::leaveAnchor()
         end->anchor_state = ANCHOR_UNSELECTED;
         r.add(end->area);
     }
+    htm_armed_anchor = 0;
 
     // Due to anti-aliased fonts, have to redisplay the area, not simply
     // repaint the text with paint(start, end).
     repaint(r.x, r.y, r.width, r.height);
-
-    htm_armed_anchor = 0;
 }
 
 

@@ -42,6 +42,7 @@
 #include "qtmsg.h"
 #include "qtfont.h"
 
+#include <QApplication>
 #include <QAction>
 #include <QGroupBox>
 #include <QLayout>
@@ -78,16 +79,17 @@ QTmsgDlg::QTmsgDlg(QTbag *owner, const char *message_str,
 
     if (sty == STY_FIXED) {
         QFont *f;
-        if (FC.getFont(&f, FNT_FIXED)) {
+        if (Fnt()->getFont(&f, FNT_FIXED)) {
             tx_tbox->setCurrentFont(*f);
             tx_tbox->setFont(*f);
         }
     }
     setText(message_str);
 
-    tx_cancel = new QPushButton(tr("Dismiss"), this);
-    vbox->addWidget(tx_cancel);
-    connect(tx_cancel, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
+    vbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 }
 
 
@@ -103,6 +105,12 @@ QTmsgDlg::~QTmsgDlg()
     if (p_caller)
         QTdev::Deselect(p_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTmsgDlg
+#include "qtmacos_event.h"
+#endif
 
 
 QSize

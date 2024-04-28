@@ -47,10 +47,12 @@
 #include "qtcvofmt.h"
 #include "qtinterf/qtdblsb.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QGroupBox>
 #include <QLabel>
 #include <QTabWidget>
+#include <QToolButton>
 #include <QPushButton>
 #include <QCheckBox>
 
@@ -130,7 +132,6 @@ QTconvertOutDlg::QTconvertOutDlg(GRobject c, CvoCallback callback, void *arg)
     cvo_cnmap = 0;
     cvo_callback = callback;
     cvo_arg = arg;
-    cvo_useallcells = false;
 
     // Dangerous to leave this in effect, force user to turn in on
     // when needed.
@@ -163,10 +164,10 @@ QTconvertOutDlg::QTconvertOutDlg(GRobject c, CvoCallback callback, void *arg)
 
     hbox->addStretch(1);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // Format selection notebook.
     //
@@ -324,14 +325,16 @@ QTconvertOutDlg::QTconvertOutDlg(GRobject c, CvoCallback callback, void *arg)
 
     // Write File button
     //
-    btn = new QPushButton(tr("Write File"));
-    pvbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(write_btn_slot()));
-    btn->setMaximumWidth(140);
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Write File"));
+    pvbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(write_btn_slot()));
+    tbtn->setMaximumWidth(140);
 
     // Dismiss button
     //
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -349,6 +352,12 @@ QTconvertOutDlg::~QTconvertOutDlg()
 }
 
 
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTconvertOutDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
+
+
 void
 QTconvertOutDlg::update()
 {
@@ -361,6 +370,8 @@ QTconvertOutDlg::update()
         CDvdb()->getVariable(VA_PCellKeepSubMasters));
     QTdev::SetStatus(cvo_viasub,
         CDvdb()->getVariable(VA_ViaKeepSubMasters));
+    QTdev::SetStatus(cvo_allcells,
+        CDvdb()->getVariable(VA_OutAllCells));
     QTdev::SetStatus(cvo_noflvias,
         CDvdb()->getVariable(VA_NoFlattenStdVias));
     QTdev::SetStatus(cvo_noflpcs,
@@ -502,7 +513,10 @@ QTconvertOutDlg::viasub_btn_slot(int state)
 void
 QTconvertOutDlg::allcells_btn_slot(int state)
 {
-    cvo_useallcells = state;
+    if (state)
+        CDvdb()->setVariable(VA_OutAllCells, "");
+    else
+        CDvdb()->clearVariable(VA_OutAllCells);
 }
 
 
@@ -559,7 +573,7 @@ QTconvertOutDlg::write_btn_slot()
 {
     if (!cvo_callback ||
             !(*cvo_callback)(cvo_fmtvals[cvo_fmt_type].filetype,
-                cvo_useallcells, cvo_arg))
+                FIO()->IsOutAllCells(), cvo_arg))
         Cvt()->PopUpExport(0, MODE_OFF, 0, 0);
 }
 

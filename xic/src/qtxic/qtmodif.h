@@ -78,11 +78,13 @@ public:
 
     QSize sizeHint() const;
 
+    void closeEvent(QCloseEvent*);
+
     void set_transient_for(QWidget *prnt)
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);

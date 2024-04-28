@@ -340,9 +340,8 @@ WindowDesc::redisplay_cddb(const BBox *AOI)
             if (DSP()->SlowMode()) {
                 // Show the initial cleared state.
                 cTimer::milli_sleep(DSP()->SleepTimeMs());
-                DSPpkg::self()->CheckForInterrupt();
                 w_draw->Update();
-                if (DSP()->Interrupt())
+                if (DSPpkg::self()->CheckForInterrupt())
                     goto finished;
             }
 
@@ -395,8 +394,8 @@ WindowDesc::redisplay_cddb(const BBox *AOI)
                     lstr->add(ld->name());
                     DSP()->show_message(lstr->string());
                     cTimer::milli_sleep(DSP()->SleepTimeMs());
-                    DSPpkg::self()->CheckForInterrupt();
                     w_draw->Update();
+                    DSPpkg::self()->CheckForInterrupt();
                 }
                 if (DSP()->Interrupt())
                     break;
@@ -486,8 +485,7 @@ WindowDesc::redisplay_blist(const BBox *AOI)
                 if (!(numgeom & 0xff)) {
                     // check every 256 objects for efficiency
                     if (numgeom) {
-                        DSPpkg::self()->CheckForInterrupt();
-                        if (DSP()->Interrupt()) {
+                        if (DSPpkg::self()->CheckForInterrupt()) {
                             DisableCache();
                             goto done;
                         }
@@ -540,8 +538,7 @@ WindowDesc::redisplay_sdb(const BBox *AOI)
                     if (!(numgeom & 0xff)) {
                         // check every 256 objects for efficiency
                         if (numgeom) {
-                            DSPpkg::self()->CheckForInterrupt();
-                            if (DSP()->Interrupt()) {
+                            if (DSPpkg::self()->CheckForInterrupt()) {
                                 DisableCache();
                                 goto done;
                             }
@@ -567,8 +564,7 @@ WindowDesc::redisplay_sdb(const BBox *AOI)
                     if (!(numgeom & 0xff)) {
                         // check every 256 objects for efficiency
                         if (numgeom) {
-                            DSPpkg::self()->CheckForInterrupt();
-                            if (DSP()->Interrupt()) {
+                            if (DSPpkg::self()->CheckForInterrupt()) {
                                 DisableCache();
                                 goto done;
                             }
@@ -593,8 +589,7 @@ WindowDesc::redisplay_sdb(const BBox *AOI)
                     if (!(numgeom & 0xff)) {
                         // check every 256 objects for efficiency
                         if (numgeom) {
-                            DSPpkg::self()->CheckForInterrupt();
-                            if (DSP()->Interrupt()) {
+                            if (DSPpkg::self()->CheckForInterrupt()) {
                                 DisableCache();
                                 goto done;
                             }
@@ -631,8 +626,7 @@ WindowDesc::redisplay_sdb(const BBox *AOI)
                             if (!(numgeom & 0xff)) {
                                 // check every 256 objects for efficiency
                                 if (numgeom) {
-                                    DSPpkg::self()->CheckForInterrupt();
-                                    if (DSP()->Interrupt()) {
+                                    if (DSPpkg::self()->CheckForInterrupt()) {
                                         DisableCache();
                                         goto done;
                                     }
@@ -773,8 +767,7 @@ WindowDesc::redisplay_layer_rc(CDs *sdesc, int hierlev,
                 if (!(numgeom & 0xff)) {
                     // check every 256 objects for efficiency
                     if (numgeom) {
-                        DSPpkg::self()->CheckForInterrupt();
-                        if (DSP()->Interrupt()) {
+                        if (DSPpkg::self()->CheckForInterrupt()) {
                             if (magged)
                                 DSP()->TPop();
                             DisableCache();

@@ -48,16 +48,21 @@
 
 #include <QVariant>
 #include <QDialog>
+#include <QKeyEvent>
 
 
 // This implements a help/html viewer dialog, providing menus and
 // interfaces to the QTviewer viewing area.  This derives from QDialog
 // and the HelpWidget and QTbag interfaces.
 
-class QStatusBar;
+class QLabel;
 class QMenu;
 class QMenuBar;
 class QResizeEvent;
+class QTmozyClrDlg;
+namespace qtinterf {
+    class QTsearchDlg;
+}
 
 struct htmAnchorCallbackStruct;
 struct htmFormCallbackStruct;
@@ -84,8 +89,24 @@ class qtinterf::QThelpDlg : public QDialog, public HelpWidget,
     Q_OBJECT
 
 public:
+    // Return from newtopic().
+    enum NTtype { NTnone, NTnew, NThandled };
+
     QThelpDlg(bool, QWidget*);
     ~QThelpDlg();
+
+    void set_transient_for(QWidget *prnt)
+        {
+            setParent(prnt);
+        }
+
+    // Don't pop down from Esc press.
+    void keyPressEvent(QKeyEvent *ev)
+        {
+            if (ev->key() != Qt::Key_Escape)
+                QDialog::keyPressEvent(ev);
+        }
+
     void menu_sens_set(bool);
 
     // ViewWidget and HelpWidget interface
@@ -139,6 +160,8 @@ public:
         { return (QSize(HLP_DEF_WIDTH, HLP_DEF_HEIGHT)); }
     QSize minimumSizeHint() const { return (QSize(260, 175)); }
 
+    QTviewer *viewer()      { return (h_viewer); }
+
 private slots:
     void backward_slot();
     void forward_slot();
@@ -148,11 +171,14 @@ private slots:
     void save_slot();
     void print_slot();
     void reload_slot();
+    void make_fifo_slot(bool);
     void quit_slot();
+    void config_slot();
+    void proxy_slot();
     void search_slot();
-    void find_slot();
+    void find_text_slot();
+    void colors_slot(bool);
     void set_font_slot(bool);
-    void font_down_slot();
     void dont_cache_slot(bool);
     void clear_cache_slot();
     void reload_cache_slot();
@@ -175,39 +201,58 @@ private slots:
     void help_slot();
     void cache_choice_slot(const char*);
 
-    void anchor_track_slot(htmAnchorCallbackStruct*);
-    void newtopic_slot(htmAnchorCallbackStruct*);
-    void form_slot(htmFormCallbackStruct*);
-    void frame_slot(htmFrameCallbackStruct*);
-
     void do_open_slot(const char*, void*);
     void do_save_slot(const char*, void*);
     void do_search_slot(const char*, void*);
-    void do_find_text_slot(const char*, void*);
+    void search_down_slot();
+    void search_up_slot();
+    void ignore_case_slot(bool);
 
 private:
     void set_frame_parent(QThelpDlg *p) { h_frame_parent = p; }
     void set_frame_name(const char *n) { h_frame_name = strdup(n); }
 
-    void newtopic(const char*, bool, bool, bool);
+    void htm_activate_proc(htmAnchorCallbackStruct*);
+    void htm_frame_proc(htmFrameCallbackStruct*);
+    NTtype newtopic(const char*, bool, bool, bool);
+    NTtype newtopic(const char*, FILE*, bool);
     void stop_image_download();
+    static void h_proxy_proc(const char*, void*);
+    bool register_fifo(const char*);
+    void unregister_fifo();
+#ifdef WIN32
+    static void pipe_thread_proc(void*);
+#endif
+    static int fifo_check_proc(void*);
 
     QTviewer    *h_viewer;
 
     QMenu       *h_main_menus[4];
-    QStatusBar  *h_status_bar;
+    QLabel      *h_status_bar;
 
     HLPparams   *h_params;          // default parameters
     HLPtopic    *h_root_topic;      // root (original) topic
     HLPtopic    *h_cur_topic;       // current topic
     bool        h_stop_btn_pressed; // stop download flag
     bool        h_is_frame;         // true for frames
+    const char  *h_fifo_name;       // FIFO name
+    int         h_fifo_fd;          // FIFO file id
+    int         h_fifo_tid;         // FIFO poll timer id
+#ifdef WIN32
+    void        *h_fifo_pipe;       // pipe to FIFO for MSW
+    stringlist  *h_fifo_tfiles;     // list of temp files
+#endif
     GRlistPopup *h_cache_list;      // hook for pop-up cache list
+    QTmozyClrDlg *h_clrdlg;         // hook for colors listing
 
     QThelpDlg   **h_frame_array;    // array of frame children
     int         h_frame_array_size;
+    bool        h_ign_case;
     QThelpDlg   *h_frame_parent;    // pointer to frame parent
     char        *h_frame_name;      // frame name if frame
+
+    QTsearchDlg *h_searcher;
+    char        *h_last_search;
 
     // menu actions
     QAction     *h_Backward;
@@ -218,9 +263,13 @@ private:
     QAction     *h_Save;
     QAction     *h_Print;
     QAction     *h_Reload;
+    QAction     *h_MkFIFO;
     QAction     *h_Quit;
+    QAction     *h_Config;
+    QAction     *h_Proxy;
     QAction     *h_Search;
     QAction     *h_FindText;
+    QAction     *h_DefaultColors;
     QAction     *h_SetFont;
     QAction     *h_DontCache;
     QAction     *h_ClearCache;

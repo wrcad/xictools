@@ -50,7 +50,7 @@
 //-----------------------------------------------------------------------------
 // QTchdListDlg:   Cell Hierarchy Digests Listing dialog.
 
-class QPushButton;
+class QToolButton;
 class QTreeWidget;
 class QTreeWidgetItem;
 class QCheckBox;
@@ -64,13 +64,17 @@ public:
     QTchdListDlg(GRobject);
     ~QTchdListDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update();
 
     void set_transient_for(QWidget *prnt)
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -117,20 +121,20 @@ private:
     static ESret chl_cel_cb(const char*, void*);
 
     GRobject    chl_caller;
-    QPushButton *chl_addbtn;
-    QPushButton *chl_savbtn;
-    QPushButton *chl_delbtn;
-    QPushButton *chl_cfgbtn;
-    QPushButton *chl_dspbtn;
-    QPushButton *chl_cntbtn;
-    QPushButton *chl_celbtn;
-    QPushButton *chl_infbtn;
-    QPushButton *chl_qinfbtn;
+    QToolButton *chl_addbtn;
+    QToolButton *chl_savbtn;
+    QToolButton *chl_delbtn;
+    QToolButton *chl_cfgbtn;
+    QToolButton *chl_dspbtn;
+    QToolButton *chl_cntbtn;
+    QToolButton *chl_celbtn;
+    QToolButton *chl_infbtn;
+    QToolButton *chl_qinfbtn;
     QTreeWidget *chl_list;
     QCheckBox   *chl_loadtop;
     QCheckBox   *chl_rename;
     QCheckBox   *chl_usetab;
-    QPushButton *chl_showtab;
+    QToolButton *chl_showtab;
     QCheckBox   *chl_failres;
     QComboBox   *chl_geomenu;
     GRledPopup  *chl_cel_pop;

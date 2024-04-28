@@ -48,9 +48,11 @@
 #include "qtcvofmt.h"
 #include "qtinterf/qtfont.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QCheckBox>
 #include <QComboBox>
+#include <QToolButton>
 #include <QPushButton>
 #include <QSpinBox>
 #include <QGroupBox>
@@ -87,9 +89,12 @@ cConvert::PopUpOasAdv(GRobject caller, ShowMode mode, int x, int y)
 
     new QToasisDlg(caller);
 
-    QToasisDlg::self()->set_transient_for(QTmainwin::self());
-    QTdev::self()->SetPopupLocation(GRloc(LW_XYA, x, y),
-        QToasisDlg::self(), QTmainwin::self()->Viewport());
+    QDialog *prnt = QTdev::DlgOf(caller);
+    if (!prnt)
+        prnt = QTmainwin::self();
+    QToasisDlg::self()->set_transient_for(prnt);
+    QTdev::self()->SetPopupLocation(GRloc(LW_XYA, x, y), QToasisDlg::self(),
+        prnt);
     QToasisDlg::self()->show();
 }
 // End of cConvert functions.
@@ -137,6 +142,9 @@ QToasisDlg::QToasisDlg(GRobject c)
 
     setWindowTitle(tr("Advanced OASIS Export Parameters"));
     setAttribute(Qt::WA_DeleteOnClose);
+#ifdef Q_OS_MACOS
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+#endif
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;
@@ -155,11 +163,11 @@ QToasisDlg::QToasisDlg(GRobject c)
     connect(oas_notrap, SIGNAL(stateChanged(int)),
         this, SLOT(nozoid_btn_slot(int)));
 
-    hbox->addSpacing(4);
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    hbox->addSpacing(60);
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     oas_wtob = new QCheckBox(tr(
         "Convert Wire to Box records when possible"));
@@ -204,13 +212,15 @@ QToasisDlg::QToasisDlg(GRobject c)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
+    hbox->addSpacing(20);
     label = new QLabel(tr("Repetition Finder Configuration"));
     hbox->addWidget(label);
     label->setAlignment(Qt::AlignCenter);
 
-    oas_def = new QPushButton(tr("Restore Defaults"));
+    hbox->addSpacing(40);
+    oas_def = new QToolButton();
+    oas_def->setText(tr("Restore Defaults"));
     hbox->addWidget(oas_def);
-    oas_def->setAutoDefault(false);
     connect(oas_def, SIGNAL(clicked()), this, SLOT(def_btn_slot()));
 
     // Repetition Finder Configuration
@@ -259,10 +269,10 @@ QToasisDlg::QToasisDlg(GRobject c)
     label = new QLabel(tr("Run minimum"));
     grid->addWidget(label, 0, 1);
 
-    oas_noruns = new QPushButton(tr("None"));
+    oas_noruns = new QToolButton();
+    oas_noruns->setText(tr("None"));
     grid->addWidget(oas_noruns, 0, 2);
     oas_noruns->setCheckable(true);
-    oas_noruns->setAutoDefault(false);
     connect(oas_noruns, SIGNAL(toggled(bool)),
         this, SLOT(noruns_btn_slot(bool)));
 
@@ -277,10 +287,10 @@ QToasisDlg::QToasisDlg(GRobject c)
     label = new QLabel(tr("Array minimum"));
     grid->addWidget(label, 1, 1);
 
-    oas_noarrs = new QPushButton(tr("None"));
+    oas_noarrs = new QToolButton();
+    oas_noarrs->setText(tr("None"));
     grid->addWidget(oas_noarrs, 1, 2);
     oas_noarrs->setCheckable(true);
-    oas_noarrs->setAutoDefault(false);
     connect(oas_noarrs, SIGNAL(toggled(bool)),
         this, SLOT(noarrs_btn_slot(bool)));
 
@@ -306,10 +316,10 @@ QToasisDlg::QToasisDlg(GRobject c)
     label = new QLabel(tr("Max identical objects"));
     grid->addWidget(label, 3, 1);
 
-    oas_nosim = new QPushButton(tr("None"));
+    oas_nosim = new QToolButton();
+    oas_nosim->setText(tr("None"));
     grid->addWidget(oas_nosim, 3, 2);
     oas_nosim->setCheckable(true);
-    oas_nosim->setAutoDefault(false);
     connect(oas_nosim, SIGNAL(toggled(bool)),
         this, SLOT(nosim_btn_slot(bool)));
 
@@ -321,7 +331,8 @@ QToasisDlg::QToasisDlg(GRobject c)
     connect(oas_sb_entt, SIGNAL(valueChanged(int)),
         this, SLOT(entt_changed_slot(int)));
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -335,6 +346,12 @@ QToasisDlg::~QToasisDlg()
     if (oas_caller)
         QTdev::Deselect(oas_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QToasisDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 namespace {

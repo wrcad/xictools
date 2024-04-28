@@ -38,6 +38,7 @@
  $Id:$
  *========================================================================*/
 
+#include "config.h"
 #include "main.h"
 #include "editif.h"
 #include "drcif.h"
@@ -472,10 +473,12 @@ cEventHdlr::PushCallback(CmdState *cb)
     for (int i = CallStackDepth - 1; i > 0; i--)
         ev_callbacks[i] = ev_callbacks[i-1];
     ev_callbacks[0] = cb;
-    if (ev_main_cmd && ev_callbacks[1] == ev_main_cmd && !ev_in_coord_entry)
+    if (ev_main_cmd && ev_callbacks[1] == ev_main_cmd && !ev_in_coord_entry) {
         // Want to reset main state, except when entering coordinate
         // from the keyboard (^E).
         ev_main_cmd->esc();
+    }
+
     XM()->ShowParameters();
     return (true);
 }
@@ -677,9 +680,16 @@ cEventHdlr::KeyActions(WindowDesc *wdesc, eKeyAction action, int *code)
         PL()->CheckExec(wdesc, true);
         return (true);
     case Grid_action:
-        // XM()->SetGrid(wdesc);
-        // This is now a no-op, ctrl-g is an accelerator to pop up the
-        // grid control panel.
+        // This is handled by the menu ctrl-g accelerator, except in
+        // QT in Apple, where the accelerator would appear in the main
+        // menu only, leaving out subwindow support.  In that case
+        // handle ctrl-g here, and leave out the ctrl-g menu accelerator.
+#ifdef __APPLE__
+#if defined(WITH_QT5) || defined(WITH_QT6)
+        PL()->SetKeys(wdesc, "grid");
+        PL()->CheckExec(wdesc, true);
+#endif
+#endif
         return (true);
     case ClearKeys_action:
         PL()->SetKeys(wdesc, 0);
@@ -1280,7 +1290,7 @@ cEventHdlr::sel_b1down_altw()
 //
 bool
 cEventHdlr::sel_b1up_altw(BBox *AOI, const char *types, CDol **selection,
-    int *win_id, bool empty_click_desel)
+    uintptr_t *win_id, bool empty_click_desel)
 {
     selstate.id = 0;
     if (selstate.state < 0) {

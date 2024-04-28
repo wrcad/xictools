@@ -234,7 +234,7 @@ xiVariables.hlp
     <tr><td><b>XSectNoAutoY</b></td><td>Disable cross-section automatic Y scaling</td></tr>
     <tr><td><b>XSectYScale</b></td><td>Set cross-section Y scale factor</td></tr>
 
-!! 101016
+!! 041224
     <tr><th colspan=2><a href="!set:attri">Attributes Menu Commands</a></th></tr>
     <tr><td><b>TechNoPrintPatMap</b></td><td>Use hex format for stipple maps when writing tech file</td></tr>
     <tr><td><b>TechPrintDefaults</b></td><td>Set printing of default values in tech file update</td></tr>
@@ -244,7 +244,7 @@ xiVariables.hlp
     <tr><td><b>EraseBehindTerms</b></td><td>Erase behind physical mode terminals marks</td></tr>
     <tr><td><b>TermTextSize</b></td><td>Pixel height of text used in terminal marks</td></tr>
     <tr><td><b>TermMarkSize</b></td><td>Pixel width of cross used for terminal marks</td></tr>
-    <tr><td><b>ShowDots</b></td><td>Show electrical connections</td></tr>
+    <tr><td><b>ShowDots</b></td><td>Control electrical connections display</td></tr>
     <tr><td><b>FullWinCursor</b></td><td>Enable full-window cursor</td></tr>
     <tr><td><b>CellThreshold</b></td><td>Min size in pixels of displayed subcell, integer >= 0</td></tr>
     <tr><td><b>GridNoCoarseOnly</b></td><td>Don't show coarse grid without fine grid</td></tr>
@@ -298,7 +298,7 @@ xiVariables.hlp
     <tr><td><b>OasPrintNoWrap</b></td><td>Use one line per record in OASIS ASCII output</td></tr>
     <tr><td><b>OasPrintOffset</b></td><td>Add file offsets to OASIS ASCII output</td></tr>
 
-!! 081318
+!! 040724
     <tr><th colspan=2><a href="!set:cvexport">Convert Menu - Output</a></th></tr>
     <tr><td><b>StripForExport</b></td><td>Strip all format extensions from output file</td></tr>
     <tr><td><b>WriteMacroProps</b></td><td>Include deprecated <b>macro</b> properties in output</td></tr>
@@ -308,6 +308,7 @@ xiVariables.hlp
     <tr><td><b>RefCellAutoRename</b></td><td>Use auto-rename when writing reference cell data</td></tr>
     <tr><td><b>UseCellTab</b></td><td>Enable use of the cell override table in CHD access</td></tr>
     <tr><td><b>SkipOverrideCells</b></td><td>Skip cells in override table in CHD access</td></tr>
+    <tr><td><b>OutAllCells</b></td><td>Output all cells in symbol table, not only current</td></tr>
     <tr><td><b>Out32nodes</b></td><td>Use old 3.2 node property syntax in output</td></tr>
     <tr><td><b>OutToLower</b></td><td>Map lower case cell names to upper in archive write</td></tr>
     <tr><td><b>OutToUpper</b></td><td>Map upper case cell names to lower in archive write</td></tr>
@@ -2443,7 +2444,7 @@ File Menu - Printing
     <dl>
     <dt><b>DefaultPrintCommand</b><dd>
     <b>Value:</b> string.<br>
-    Under Unix/Linux/OS X, this variable overrides the default
+    Under Unix/Linux/macOS, this variable overrides the default
     operating system command string to print a file.  In Windows, this
     will be the printer name instead.
 
@@ -3366,30 +3367,38 @@ Attributes Menu Commands
     the <a href="xic:attrmenu"><b>Attributes Menu</b></a>.
     </dl>
 
-!! 042411
+!! 041224
     <a name="ShowDots"></a>
     <dl>
     <dt><b>ShowDots</b><dd>
-    <b>Value:</b> boolean or "<tt>a</tt>".<br>
-    This variable controls the mode used to add connection indications
-    (dots) to drawings in electrical mode.  It tracks and sets the
+    <b>Value:</b> boolean or "<tt>n</tt>" or "<tt>a</tt>".<br>
+    This variable sets the mode used to display connection indications
+    (dots) in schematics in electrical mode.  It tracks and sets the
     state of the buttons in the <b>Connection Points</b> panel
     available from the <a href="xic:dots"><b>Connection Dots</b></a>
     button in the <a href="xic:attrmenu"><b>Attributes Menu</b></a>.
 
     <p>
-    If not set, no connection point indication is used.  If set as a
-    boolean, or to any value that does not begin with '<tt>a</tt>' or
-    '<tt>A</tt>', the normal indication is used, whereby only
-    "ambiguous" connection points are marked.  These are wire vertices
-    common to two or more wires (except for common end vertices of two
-    wires), non-endpoint wire vertices common with device or
-    subcircuit terminals, and any point common to three or more
-    terminals or wire vertices.
+    If not set or set as a boolean, the normal indication is used,
+    whereby only "ambiguous" connection points are marked.  These are
+    wire vertices common to two or more wires (except for common end
+    vertices of two wires), non-endpoint wire vertices common with
+    device or subcircuit terminals, and any point common to three or
+    more terminals or wire vertices.  Note that the default for
+    release 4.3.13 and earlier was to not show connection dots.
 
     <p>
-    If set to a word starting with '<tt>a</tt>' or '<tt>A</tt>', all
-    connections are marked with a dot.
+    If set to "<tt>none</tt>" or any word starting with '<tt>n<\tt>'
+    or '<tt>N</tt>' no connection point indication is used.  If set to
+    "<tt>all</tt>" or any word starting with '<tt>a</tt>' or
+    '<tt>A</tt>', all connections are marked with a dot.  This is
+    sometimes useful to see if a connection actually exists at a given
+    location.
+
+    <p>
+    The computation of dot locations can be repeated by turning dots
+    off, then on again.  This may be needed occasionally to correct
+    misplaced dots.
     </dl>
 
 !! 012715
@@ -4373,6 +4382,7 @@ Convert Menu - Input and ASCII Output
 !!REDIRECT RefCellAutoRename    !set:cvexport#RefCellAutoRename
 !!REDIRECT UseCellTab           !set:cvexport#UseCellTab
 !!REDIRECT SkipOverrideCells    !set:cvexport#SkipOverrideCells
+!!REDIRECT OutAllCells          !set:cvexport#OutAllCells
 !!REDIRECT Out32nodes           !set:cvexport#Out32nodes
 !!REDIRECT OutToLower           !set:cvexport#OutToLower
 !!REDIRECT OutToUpper           !set:cvexport#OutToUpper
@@ -4733,6 +4743,23 @@ Convert Menu - Output
     <p>
     This variable tracks the state of the <b>Override</b> and
     <b>Skip</b> radio buttons in the <b>Cell Table Listing</b> panel.
+    </dl>
+
+!! 040724
+    <a name="OutAllCells"></a>
+    <dl>
+    <dt><b>OutAllCells</b><dd>
+    <b>Value:</b> boolean.<br>
+    When set, all cells in the current <a href="xic:stabs">symbol
+    table</a>, not just the hierarchy of the current cell, will be
+    output as if they were part of the hierarchy.  The usual filtering
+    of library and sub-master cells is retained.  The resulting file
+    may have multiple top-level cells.  This variable tracks the state
+    of the <b>Consider ALL cells in current symbol table for
+    output</b> check box in the <a href="xic:exprt"><b>Export
+    Control</b></a> panel from the <a
+    href="xic:cvrtmenu"><b>Convert</b></a> main menu <b>Export Cell
+    Data</b> button.
     </dl>
 
 !! 071415

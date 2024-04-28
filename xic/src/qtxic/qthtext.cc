@@ -39,6 +39,7 @@
  *========================================================================*/
 
 #include "qthtext.h"
+#include "qtltab.h"
 #include "qtinterf/qtfont.h"
 #include "cd_property.h"
 #include "dsp_inlines.h"
@@ -89,14 +90,20 @@ QTedit::QTedit(bool nogr) : QTdraw(XW_TEXT)
     if (nogr)
         return;
 
+    setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
+
+    // Put the three tool buttons into an intermediate parent.  This
+    // prevents visual oddities appearing between the buttons (i.e.,
+    // in the background) when the buttons are shown.  Not sure what
+    // is going on, but putting the buttons in their own container
+    // seems to fix the problem.
+
+    QWidget *foobox = new QWidget();
+
     QMargins qm;
-    QHBoxLayout *hbox = new QHBoxLayout(this);
+    QHBoxLayout *hbox = new QHBoxLayout(foobox);
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
-
-    pe_keys = new cKeys(0, 0);
-    pe_keys->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    hbox->addWidget(pe_keys);
 
     // Recall button and menu.
     pe_rcl_btn = new QToolButton();
@@ -141,6 +148,7 @@ QTedit::QTedit(bool nogr) : QTdraw(XW_TEXT)
 
     // Long Text button.
     pe_ltx_btn = new QToolButton();
+    pe_ltx_btn->hide();
     pe_ltx_btn->setText("L");
     pe_ltx_btn->setToolTip(tr(
         "Associate a block of text with the label - pop up an editor."));
@@ -148,12 +156,23 @@ QTedit::QTedit(bool nogr) : QTdraw(XW_TEXT)
     connect(pe_ltx_btn, SIGNAL(clicked()),
         this, SLOT(long_text_slot()));
 
+    hbox = new QHBoxLayout(this);
+    hbox->setContentsMargins(qm);
+    hbox->setSpacing(2);
+
+    pe_keys = new cKeys(0, 0);
+    pe_keys->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    hbox->addWidget(pe_keys);
+
+    hbox->addWidget(foobox);
+
     gd_viewport = new QTcanvas();
-    hbox->addWidget(Viewport());
-    Viewport()->setAcceptDrops(true);
+    hbox->addWidget(gd_viewport);
+    hbox->setStretch(2, 100);
+    gd_viewport->setAcceptDrops(true);
 
     QFont *tfont;
-    if (FC.getFont(&tfont, FNT_SCREEN)) {
+    if (Fnt()->getFont(&tfont, FNT_SCREEN)) {
         gd_viewport->set_font(tfont);
         pe_rcl_btn->setFont(*tfont);
         pe_sto_btn->setFont(*tfont);
@@ -163,21 +182,21 @@ QTedit::QTedit(bool nogr) : QTdraw(XW_TEXT)
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)));
 
-    connect(Viewport(), SIGNAL(resize_event(QResizeEvent*)),
+    connect(gd_viewport, SIGNAL(resize_event(QResizeEvent*)),
         this, SLOT(resize_slot(QResizeEvent*)));
-    connect(Viewport(), SIGNAL(press_event(QMouseEvent*)),
+    connect(gd_viewport, SIGNAL(press_event(QMouseEvent*)),
         this, SLOT(press_slot(QMouseEvent*)));
-    connect(Viewport(), SIGNAL(release_event(QMouseEvent*)),
+    connect(gd_viewport, SIGNAL(release_event(QMouseEvent*)),
         this, SLOT(release_slot(QMouseEvent*)));
-    connect(Viewport(), SIGNAL(enter_event(QEnterEvent*)),
+    connect(gd_viewport, SIGNAL(enter_event(QEnterEvent*)),
         this, SLOT(enter_slot(QEnterEvent*)));
-    connect(Viewport(), SIGNAL(leave_event(QEvent*)),
+    connect(gd_viewport, SIGNAL(leave_event(QEvent*)),
         this, SLOT(leave_slot(QEvent*)));
-    connect(Viewport(), SIGNAL(motion_event(QMouseEvent*)),
+    connect(gd_viewport, SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(motion_slot(QMouseEvent*)));
-    connect(Viewport(), SIGNAL(drag_enter_event(QDragEnterEvent*)),
+    connect(gd_viewport, SIGNAL(drag_enter_event(QDragEnterEvent*)),
         this, SLOT(drag_enter_slot(QDragEnterEvent*)));
-    connect(Viewport(), SIGNAL(drop_event(QDropEvent*)),
+    connect(gd_viewport, SIGNAL(drop_event(QDropEvent*)),
         this, SLOT(drop_slot(QDropEvent*)));
 
     connect(pe_keys, SIGNAL(press_event(QMouseEvent*)),
@@ -205,26 +224,47 @@ namespace {
     class QTflashPop : public QDialog
     {
     public:
-        QTflashPop(const char *msg, QWidget *prnt = 0) : QDialog(prnt)
+        QTflashPop(int msec, const char *msg, QWidget *prnt = 0) :
+            QDialog(prnt)
         {
             setAttribute(Qt::WA_DeleteOnClose);
             setWindowFlags(Qt::Popup | Qt::FramelessWindowHint);
+
             QVBoxLayout *vbox = new QVBoxLayout(this);
             vbox->setContentsMargins(0, 0, 0, 0);
             vbox->setSpacing(2);
             QLabel *label = new QLabel(msg);
             vbox->addWidget(label);
-
+            QTdev::self()->SetPopupLocation(GRloc(LW_LL), this,
+                QTmainwin::self()->Viewport());
+            show();
+            if (msec > 0)
+                startTimer(msec);
         }       
 
-        static int timeout(void *arg)
+        QTflashPop(int xx, int yy, int msec, const char *msg,
+            QWidget *prnt = 0) : QDialog(prnt)
         {
-            QTflashPop *fp = static_cast<QTflashPop*>(arg);
-            delete fp;
-            return (0);
+            setAttribute(Qt::WA_DeleteOnClose);
+            setWindowFlags(Qt::Popup | Qt::FramelessWindowHint);
+
+            QVBoxLayout *vbox = new QVBoxLayout(this);
+            vbox->setContentsMargins(0, 0, 0, 0);
+            vbox->setSpacing(2);
+            QLabel *label = new QLabel(msg);
+            vbox->addWidget(label);
+            QTdev::self()->SetPopupLocation(GRloc(LW_XYA, xx, yy),
+                this, QTmainwin::self()->Viewport());
+            show();
+            if (msec > 0)
+                startTimer(msec);
+        }       
+
+        void timerEvent(QTimerEvent*)
+        {
+            close();
         }
     };
-
 }
 
 
@@ -239,13 +279,8 @@ QTedit::flash_msg(const char *msg, ...)
     va_start(args, msg);
     vsnprintf(buf, 256, msg, args);
     va_end(args);
-    puts(buf);
 
-    QTflashPop *pop = new QTflashPop(buf, QTmainwin::self());
-    QTdev::self()->SetPopupLocation(GRloc(LW_LL), pop,
-        QTmainwin::self()->Viewport());
-    pop->show();
-    QTdev::self()->AddTimer(2000, &QTflashPop::timeout, pop);
+    new QTflashPop(2000, buf, QTmainwin::self());
 }
 
 
@@ -260,13 +295,8 @@ QTedit::flash_msg_here(int xx, int yy, const char *msg, ...)
     va_start(args, msg);
     vsnprintf(buf, 256, msg, args);
     va_end(args);
-    puts(buf);
 
-    QTflashPop *pop = new QTflashPop(buf, QTmainwin::self());
-    QTdev::self()->SetPopupLocation(GRloc(LW_XYA, xx, yy),
-        pop, QTmainwin::self()->Viewport());
-    pop->show();
-    QTdev::self()->AddTimer(2000, &QTflashPop::timeout, pop);
+    new QTflashPop(xx, yy, 2000, buf, QTmainwin::self());
 }
 
 
@@ -329,13 +359,8 @@ QTedit::set_indicate()
 void
 QTedit::show_lt_button(bool show_btn)
 {
-    // Don't show/hide, use enable/disable instead to avoid text moving.
-    if (!pe_disabled) {
-        if (show_btn)
-            pe_ltx_btn->setEnabled(true);
-        else
-            pe_ltx_btn->setEnabled(false);
-    }
+    if (!pe_disabled)
+        pe_ltx_btn->setEnabled(show_btn);
 }
 
 
@@ -418,7 +443,7 @@ QTedit::font_changed_slot(int fnum)
 {
     if (fnum == FNT_SCREEN) {
         QFont *fnt;
-        if (FC.getFont(&fnt, FNT_SCREEN)) {
+        if (Fnt()->getFont(&fnt, FNT_SCREEN)) {
             gd_viewport->set_font(fnt);
             init();
             redraw();
@@ -670,13 +695,31 @@ namespace {
 void
 QTedit::drag_enter_slot(QDragEnterEvent *ev)
 {
+    if (ev->mimeData()->hasFormat(QTltab::mime_type())) {
+        // Layer also has text/plain, ignore it if not editing.
+        if (!is_active()) {
+            ev->ignore();
+            return;
+        }
+    }
+    else if (ev->mimeData()->hasFormat("text/property")) {
+        // Ignore if not editong.
+        if (is_active())
+            ev->accept();
+        else
+            ev->ignore();
+        return;
+    }
+    // Accept urls or plain text (should be file or cell names)
+    // anytime.  If not editing they will load a cell to edit
+    // in the main window.
     if (ev->mimeData()->hasUrls() ||
-            ev->mimeData()->hasFormat("text/property") ||
             ev->mimeData()->hasFormat("text/twostring") ||
             ev->mimeData()->hasFormat("text/cellname") ||
             ev->mimeData()->hasFormat("text/string") ||
             ev->mimeData()->hasFormat("text/plain")) {
         ev->accept();
+        return;
     }
     ev->ignore();
 }
@@ -687,12 +730,18 @@ QTedit::drop_slot(QDropEvent *ev)
 {
     if (ev->mimeData()->hasUrls()) {
         QByteArray ba = ev->mimeData()->data("text/plain");
-        const char *str = ba.constData() + strlen("File://");
-        load_file_proc("", str);
+        load_file_proc("", ba.constData());
         ev->accept();
         return;
     }
-    if (ev->mimeData()->hasFormat("text/property")) {
+    if (ev->mimeData()->hasFormat(QTltab::mime_type())) {
+        // Layer also has text/plain, ignore it if not editing.
+        if (!is_active()) {
+            ev->ignore();
+            return;
+        }
+    }
+    else if (ev->mimeData()->hasFormat("text/property")) {
         if (is_active()) {
             QByteArray bary = ev->mimeData()->data("text/property");
             const char *val = (const char*)bary.data() + sizeof(int);
@@ -700,8 +749,11 @@ QTedit::drop_slot(QDropEvent *ev)
             hyList *hp = new hyList(cursd, val, HYcvAscii);
             insert(hp);
             hyList::destroy(hp);
+            set_focus();
+            ev->accept();
         }
-        ev->accept();
+        else
+            ev->ignore();
         return;
     }
     const char *fmt = 0;

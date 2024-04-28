@@ -107,6 +107,7 @@ namespace {
             void b1up();
             void b1down_altw();
             void b1up_altw();
+            void desel();
             void esc();
             bool key(int, const char*, int);
             void undo();
@@ -257,14 +258,17 @@ MainState::b1down()
                         ldold = 0;
                     }
                 }
+                ED()->saveCurTransform(0);
                 if (CopyMode == CDcopy) {
                     int repcnt = rep_count();
                     ED()->copyObjects(Refx, Refy, x, y, ldold, ldnew, repcnt);
                     Ncopies++;
                     Nundo = 0;
                 }
-                else
+                else {
                     ED()->moveObjects(Refx, Refy, x, y, ldold, ldnew);
+                    ED()->clearCurTransform();
+                }
             }
         }
         else if (x != Refx || y != Refy) {
@@ -556,14 +560,17 @@ click:
                 Gst()->SetGhost(GFnone);
                 XM()->SetCoordMode(CO_ABSOLUTE);
                 OperState = URundo;
+                ED()->saveCurTransform(0);
                 if (CopyMode == CDcopy) {
                     int repcnt = rep_count();
                     ED()->copyObjects(Refx, Refy, x, y, 0, 0, repcnt);
                     Ncopies++;
                     Nundo = 0;
                 }
-                else
+                else {
                     ED()->moveObjects(Refx, Refy, x, y, 0, 0);
+                    ED()->clearCurTransform();
+                }
                 if (CopyMode == CDcopy) {
                     SetLevel2();
                     Gst()->SetGhostAt(GFmove, Refx, Refy);
@@ -709,6 +716,18 @@ MainState::b1up_altw()
 }
 
 
+// Desel pressed, reset.
+//
+void
+MainState::desel()
+{
+    // Reset any active operation, otherwise desel can leave Copy (at
+    // least) in a strange logic state.
+    ED()->saveCurTransform(0);
+    esc();
+}
+
+
 // Esc entered, abort any pending operation.
 //
 void
@@ -734,6 +753,7 @@ MainState::esc()
     set_op(Inactive);
     ED()->setMoveOrCopy(CDmove);
     ED()->resetGrips(true);
+    ED()->clearCurTransform();
 }
 
 
@@ -743,6 +763,13 @@ MainState::esc()
 bool
 MainState::key(int code, const char *text, int)
 {
+    if (Level == 1 || Level == 2) {
+        if (*text == '/') {
+            ED()->swapCurTransform(0);
+            return (true);
+        }
+    }
+
     if (Level == 1) {
         switch (code) {
         case CTRLDN_KEY:

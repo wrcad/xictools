@@ -38,10 +38,12 @@
  $Id:$
  *========================================================================*/
 
+#include <QApplication>
 #include <QAction>
 #include <QGroupBox>
 #include <QLabel>
 #include <QLayout>
+#include <QToolButton>
 #include <QPushButton>
 #include <QTextEdit>
 
@@ -61,8 +63,6 @@ QTprogressDlg::QTprogressDlg(QTbag *owner, prgMode mode)
     pg_te_info = 0;
     pg_gb_etc = 0;
     pg_label_etc = 0;
-    pg_abort = 0;
-    pg_cancel = 0;
     pg_pbar = 0;
     pg_info_limit = 0;
     pg_info_count = 0;
@@ -127,13 +127,15 @@ QTprogressDlg::QTprogressDlg(QTbag *owner, prgMode mode)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    pg_abort = new QPushButton(tr("Abort"));
-    hbox->addWidget(pg_abort);
-    connect(pg_abort, SIGNAL(clicked()), this, SLOT(abort_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Abort"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(abort_btn_slot()));
 
-    pg_cancel = new QPushButton(tr("Dismiss"));
-    hbox->addWidget(pg_cancel);
-    connect(pg_cancel, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     pg_pbar = new QTactivity();
     hbox->addWidget(pg_pbar);
@@ -147,7 +149,7 @@ QTprogressDlg::~QTprogressDlg()
     if (p_caller) {
         QObject *o = (QObject*)p_caller;
         if (o->isWidgetType()) {
-            QPushButton *btn = dynamic_cast<QPushButton*>(o);
+            QAbstractButton *btn = dynamic_cast<QAbstractButton*>(o);
             if (btn)
                 btn->setChecked(false);
         }
@@ -163,6 +165,12 @@ QTprogressDlg::~QTprogressDlg()
             owner->MonitorRemove(this);
     }
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTprogressDlg
+#include "qtmacos_event.h"
+#endif
 
 
 // GRpopup override

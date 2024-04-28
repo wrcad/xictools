@@ -51,7 +51,7 @@
 #include <QLineEdit>
 
 class QCheckBox;
-class QPushButton;
+class QToolButton;
 class QTkwent;
 namespace qtinterf {
     class QTdoubleSpinBox;
@@ -160,7 +160,7 @@ private:
     const char  *ke_defstr;             // default string
 
     QCheckBox   *ke_active;             // "set" check box
-    QPushButton *ke_deflt;              // "def" button
+    QToolButton *ke_deflt;              // "def" button
     QLineEdit   *ke_entry;              // entry area
     QLineEdit   *ke_entry2;             // second entry area
     QTdoubleSpinBox *ke_spbox;          // spin box

@@ -47,9 +47,11 @@
 #include "menu.h"
 #include "errorlog.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QGroupBox>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 #include <QSpinBox>
 #include <QLineEdit>
@@ -157,10 +159,10 @@ QTelecTermEditDlg::QTelecTermEditDlg(GRobject caller, TermEditInfo *tinfo,
     te_lab_top = new QLabel("");
     hb->addWidget(te_lab_top);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // Bus Term Indices.
     //
@@ -216,10 +218,10 @@ QTelecTermEditDlg::QTelecTermEditDlg(GRobject caller, TermEditInfo *tinfo,
     connect(te_phys, SIGNAL(stateChanged(int)),
         this, SLOT(has_phys_term_slot(int)));
 
-    btn = new QPushButton("Delete");
-    hbox->addWidget(te_phys);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(destroy_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText("Delete");
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(destroy_btn_slot()));
 
     // Physical Group
     //
@@ -267,14 +269,14 @@ QTelecTermEditDlg::QTelecTermEditDlg(GRobject caller, TermEditInfo *tinfo,
     hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
-    te_crtbits = new QPushButton(tr("Check/Create Bits"));
+    te_crtbits = new QToolButton();
+    te_crtbits->setText(tr("Check/Create Bits"));
     hb->addWidget(te_crtbits);
-    btn->setAutoDefault(false);
     connect(te_crtbits, SIGNAL(clicked()), this, SLOT(crbits_btn_slot()));
 
-    te_ordbits = new QPushButton(tr("Reorder to Index"));
+    te_ordbits = new QToolButton();
+    te_ordbits->setText(tr("Reorder to Index"));
     hb->addWidget(te_ordbits);
-    btn->setAutoDefault(false);
     connect(te_ordbits, SIGNAL(clicked()), this, SLOT(ordbits_btn_slot()));
 
     hb = new QHBoxLayout();
@@ -282,27 +284,27 @@ QTelecTermEditDlg::QTelecTermEditDlg(GRobject caller, TermEditInfo *tinfo,
     hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
-    btn = new QPushButton(tr("Schem Vis"));
-    hb->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(scvis_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Schem Vis"));
+    hb->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(scvis_btn_slot()));
 
-    btn = new QPushButton(tr("Invis"));
-    hb->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(scinvis_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Invis"));
+    hb->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(scinvis_btn_slot()));
 
     hb->addStretch(1);
 
-    btn = new QPushButton(tr("Symbol Vis"));
-    hb->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(syvis_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Symbol Vis"));
+    hb->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(syvis_btn_slot()));
 
-    btn = new QPushButton(tr("Invis"));
-    hb->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(syinvis_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Invis"));
+    hb->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(syinvis_btn_slot()));
 
     // Prev, Next buttons
     //
@@ -311,22 +313,22 @@ QTelecTermEditDlg::QTelecTermEditDlg(GRobject caller, TermEditInfo *tinfo,
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    btn = new QPushButton(tr("Prev"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(prev_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Prev"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(prev_btn_slot()));
 
-    btn = new QPushButton(tr("Next"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(next_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Next"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(next_btn_slot()));
 
     hbox->addStretch(1);
 
-    btn = new QPushButton(tr("To Index"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(toindex_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("To Index"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(toindex_btn_slot()));
 
     te_sb_toindex = new QSpinBox();
     hbox->addWidget(te_sb_toindex);
@@ -341,12 +343,13 @@ QTelecTermEditDlg::QTelecTermEditDlg(GRobject caller, TermEditInfo *tinfo,
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    btn = new QPushButton(tr("Apply"));
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
-    btn->setDefault(true);
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Apply"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -364,6 +367,12 @@ QTelecTermEditDlg::~QTelecTermEditDlg()
         (*te_action)(0, te_prp);
     delete [] te_lname;
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTelecTermEditDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 void
@@ -466,6 +475,7 @@ QTelecTermEditDlg::update(TermEditInfo *tinfo, CDp *prp)
         te_physgrp->setEnabled(tinfo->has_phys());
     }
     te_prp = prp;
+    te_name->setFocus();
 }
 
 

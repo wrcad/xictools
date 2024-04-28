@@ -130,7 +130,7 @@ QTdev::Init(int *argc, char **argv)
         *argc = ac;
     }
 
-    FC.initFonts();
+    Fnt()->initFonts();
 
     // set correct information
     width = 1;
@@ -407,7 +407,6 @@ QTdev::HCmessage(const char *str)
 // Remaining functions are unique to class.
 //
 
-
 // Return the root window coordinates x+width, y of obj.
 //
 void
@@ -550,6 +549,29 @@ QTdev::ComputePopupLocation(GRloc loc, QWidget *widget, QWidget *shell,
     else if (loc.code == LW_XYA) {
         *px = loc.xpos;
         *py = loc.ypos;
+    }
+}
+
+
+// Static function.
+// Return the first ancestor of btn that is a QDialog derivative.
+//
+QDialog *
+QTdev::DlgOf(GRobject  btn)
+{
+    QWidget *w = static_cast<QWidget*>(btn);
+    if (!w)
+        return (0);
+    for (;;) {
+        QWidget *p = w->parentWidget();
+        if (!p)
+            return (0);
+        QDialog *d = dynamic_cast<QDialog*>(p);
+        if (!d) {
+            w = p;
+            continue;
+        }
+        return (d);
     }
 }
 

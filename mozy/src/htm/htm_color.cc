@@ -151,8 +151,8 @@ htmColorManager::initialize()
             getPixelByName(DEFCLR(DefFgLink,        "blue"), 0);
         cm_anchor_visited_fg_save =
             getPixelByName(DEFCLR(DefFgVisitedLink, "steel blue"), 0);
-        cm_anchor_target_fg_save =
-            getPixelByName(DEFCLR(DefFgTargetLink,  "blue"), 0);
+        // compute default target_fg
+        cm_anchor_target_fg_save = anchor_fg_pixel(cm_anchor_fg_save);
         cm_anchor_activated_fg_save =
             getPixelByName(DEFCLR(DefFgActiveLink,  "red"), 0);
         cm_body_bg_save =

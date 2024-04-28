@@ -63,11 +63,9 @@ Authors: 1988 Jeffrey M. Hsu
 #include "miscutil/filestat.h"
 #include "spnumber/spnumber.h"
 
-#ifndef WIN32
 #include "../../icons/wrspice_16x16.xpm"
 #include "../../icons/wrspice_32x32.xpm"
 #include "../../icons/wrspice_48x48.xpm"
-#endif
 
 #include <QApplication>
 #include <QLayout>
@@ -96,7 +94,8 @@ QTplotDlg::sizeHint() const
     int wid, hei;
     if (pb_graph->apptype() == GR_PLOT) {
         wid = 500;
-        hei = 300;
+        hei = pb_graph->gr_win_ht(300);
+
     
         variable *v = Sp.GetRawVar(kw_plotgeom);
         if (v) {
@@ -145,7 +144,7 @@ QTplotDlg::sizeHint() const
 
 
 bool
-QTplotDlg::init(sGraph *gr)
+QTplotDlg::init(cGraph *gr)
 {
     wb_sens_set = sens_set;
     pb_graph = gr;
@@ -176,7 +175,7 @@ QTplotDlg::init(sGraph *gr)
     gd_viewport->setAcceptDrops(true);
 
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_SCREEN))
+    if (Fnt()->getFont(&fnt, FNT_SCREEN))
         gd_viewport->set_font(fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
@@ -691,7 +690,7 @@ QTplotDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_SCREEN) {
         QFont *fnt;
-        if (FC.getFont(&fnt, fnum)) {
+        if (Fnt()->getFont(&fnt, fnum)) {
             gd_viewport->set_font(fnt);
             pb_graph->set_dirty(true);
         }

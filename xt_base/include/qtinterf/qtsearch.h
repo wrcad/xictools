@@ -67,6 +67,10 @@ public:
     QTsearchDlg(QTbag*, const char*);
     ~QTsearchDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     // GRpopup overrides
     void set_visible(bool visib)
         {
@@ -84,7 +88,7 @@ public:
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);

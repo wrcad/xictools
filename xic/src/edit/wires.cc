@@ -252,6 +252,13 @@ cEdit::makeWiresExec(CmdDesc *cmd)
     if (!XM()->CheckCurCell(true, true, DSP()->CurMode()))
         return;
 
+    // If Electrical mode and the current layer is not a wiring layer,
+    // switch to the SCED wiring layer.
+    if (DSP()->CurMode() == Electrical) {
+        if (!LT()->CurLayer()->isWireActive())
+            LT()->SetCurLayer(CDldb()->findLayer("SCED", Electrical));
+    }
+
     WireCmd = new WireState("WIRE", "xic:wire");
     WireCmd->setCaller(cmd ? cmd->caller : 0);
     Ulist()->ListCheck(WireCmd->Name(), CurCell(), false);

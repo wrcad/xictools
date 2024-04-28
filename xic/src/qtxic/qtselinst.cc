@@ -47,7 +47,9 @@
 #include "qtinterf/qtfont.h"
 #include "qtinterf/qttextw.h"
 
+#include <QApplication>
 #include <QLayout>
+#include <QToolButton>
 #include <QPushButton>
 #include <QGroupBox>
 #include <QLabel>
@@ -168,17 +170,15 @@ QTcellInstSelectDlg::QTcellInstSelectDlg(CDol *l, bool filtmode) : QTbag(this)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    QPushButton *btn = new QPushButton(
-        tr(ci_filt ? "Choose All" : "Select All"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(sel_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr(ci_filt ? "Choose All" : "Select All"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(sel_btn_slot()));
 
-    btn = new QPushButton(tr(
-        ci_filt ? "Ignore All" : "Desel All"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(desel_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr(ci_filt ? "Ignore All" : "Desel All"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(desel_btn_slot()));
 
     QGroupBox *gb = new QGroupBox();
     vbox->addWidget(gb);
@@ -195,14 +195,15 @@ QTcellInstSelectDlg::QTcellInstSelectDlg(CDol *l, bool filtmode) : QTbag(this)
     connect(wb_textarea, SIGNAL(press_event(QMouseEvent*)),
         this, SLOT(mouse_press_slot(QMouseEvent*)));
 
-    btn = new QPushButton(tr(ci_filt ? "Continue" : "Dismiss"));
+    QPushButton *btn = new QPushButton(tr(ci_filt ? "Continue" : "Dismiss"));
+    btn->setObjectName("Default");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     // Use a fixed font in the label, same as the text area, so can
     // match columns.
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_FIXED)) {
+    if (Fnt()->getFont(&fnt, FNT_FIXED)) {
         wb_textarea->setFont(*fnt);
         ci_label->setFont(*fnt);
     }
@@ -235,6 +236,12 @@ QTcellInstSelectDlg::~QTcellInstSelectDlg()
         QTdev::self()->BreakLoop();
     end_modal();
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTcellInstSelectDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 QSize
@@ -481,7 +488,7 @@ QTcellInstSelectDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_FIXED) {
         QFont *fnt;
-        if (FC.getFont(&fnt, FNT_FIXED)) {
+        if (Fnt()->getFont(&fnt, FNT_FIXED)) {
             wb_textarea->setFont(*fnt);
             ci_label->setFont(*fnt);
         }

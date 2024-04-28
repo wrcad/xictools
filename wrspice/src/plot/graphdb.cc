@@ -58,7 +58,7 @@ Authors: 1987 UCB
 
 // linked list of graphs
 //
-struct sGlist : public sGraph
+struct sGlist : public cGraph
 {
     sGlist(int gid)
         {
@@ -80,7 +80,7 @@ namespace { sGbucket GBucket[NUMGBUCKETS]; }
 
 // Returns 0 on error.
 //
-sGraph *
+cGraph *
 SPgraphics::NewGraph()
 {
     int BucketId = spg_running_id % NUMGBUCKETS;
@@ -97,10 +97,10 @@ SPgraphics::NewGraph()
 }
 
 
-sGraph *
+cGraph *
 SPgraphics::NewGraph(int type, const char *name)
 {
-    sGraph *graph = NewGraph();
+    cGraph *graph = NewGraph();
     if (!graph->gr_setup_dev(type, name)) {
         GRpkg::self()->ErrPrintf(ET_ERROR,
             "can't open viewport for graphics.\n");
@@ -113,7 +113,7 @@ SPgraphics::NewGraph(int type, const char *name)
 
 // Given graph id, return graph.
 //
-sGraph *
+cGraph *
 SPgraphics::FindGraph(int id)
 {
     sGlist *list;
@@ -201,7 +201,7 @@ struct sGstack
             next = 0;
         }
 
-    static void push(sGraph *graph, sGraph **curptr)
+    static void push(cGraph *graph, cGraph **curptr)
         {
             sGstack *gcstack = new sGstack;
             if (!gcstacktop)
@@ -214,7 +214,7 @@ struct sGstack
             *curptr = graph;
         }
 
-    static void pop(sGraph **curptr)
+    static void pop(cGraph **curptr)
         {
             if (gcstacktop) {
                 *curptr = gcstacktop->pgraph;
@@ -225,7 +225,7 @@ struct sGstack
         }
 
 private:
-    sGraph *pgraph;
+    cGraph *pgraph;
     sGstack *next;
 
     static sGstack *gcstacktop;
@@ -241,7 +241,7 @@ sGstack *sGstack::gcstacktop;
 // tell the rendering functions which graph to draw on.
 
 void
-SPgraphics::PushGraphContext(sGraph *graph)
+SPgraphics::PushGraphContext(cGraph *graph)
 {
     sGstack::push(graph, &spg_cur);
 }
@@ -353,7 +353,7 @@ SPgraphics::InitGgen()
 
 // Generator: return a graph on each call
 //
-sGraph *
+cGraph *
 sGgen::next()
 {
     const sGgen *thisgen = this;
@@ -364,7 +364,7 @@ sGgen::next()
         delete this;
         return (0);
     }
-    sGraph *g = graph;
+    cGraph *g = graph;
     graph = 0;
     sGlist *l = (sGlist*)g;
     if (l->next)

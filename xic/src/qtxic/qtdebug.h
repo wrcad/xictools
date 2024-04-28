@@ -70,7 +70,7 @@ enum locType { locStart, locPresent, locFollowCurrent };
 class QTreeWidget;
 class QTreeWidgetItem;
 class QLabel;
-class QPushButton;
+class QToolButton;
 class QMenu;
 class QAction;
 class QMouseEvent;
@@ -87,8 +87,12 @@ class QTdbgVarsDlg : public QDialog
     Q_OBJECT
 
 public:
-    QTdbgVarsDlg(void*);
+    QTdbgVarsDlg(void*, QWidget* = 0);
     ~QTdbgVarsDlg();
+
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
 
     void update(stringlist*);
 
@@ -96,7 +100,7 @@ public:
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -109,7 +113,7 @@ public:
                 QDialog::keyPressEvent(ev);
         }
 
-    void popdown()                  { deleteLater(); }
+    void popdown()                  { delete this; }
 
 private slots:
     void current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*);
@@ -188,7 +192,17 @@ public:
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
+#ifdef Q_OS_MACOS
+            f |= Qt::Tool;
+#endif
             setWindowFlags(f);
+        }
+
+    // Don't pop down from Esc press.
+    void keyPressEvent(QKeyEvent *ev)
+        {
+            if (ev->key() != Qt::Key_Escape)
+                QDialog::keyPressEvent(ev);
         }
 
     static QTscriptDebuggerDlg *self()          { return (instPtr); }
@@ -205,8 +219,8 @@ private slots:
     void key_press_slot(QKeyEvent*);
     void text_changed_slot();
     void text_change_slot(int, int, int);
-    void mime_data_handled_slot(const QMimeData*, bool*) const;
-    void mime_data_delivered_slot(const QMimeData*, bool*);
+    void mime_data_handled_slot(const QMimeData*, int*) const;
+    void mime_data_delivered_slot(const QMimeData*, int*);
     void font_changed_slot(int);
 
 private:
@@ -242,7 +256,7 @@ private:
     GRobject    db_caller;
     QLabel      *db_modelabel;
     QLabel      *db_title;
-    QPushButton *db_modebtn;
+    QToolButton *db_modebtn;
     QAction     *db_saveas;
     QAction     *db_undo;
     QAction     *db_redo;

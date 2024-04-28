@@ -45,7 +45,9 @@
 #include "qtinterf/qtfont.h"
 #include "qtinterf/qttextw.h"
 
+#include <QApplication>
 #include <QLayout>
+#include <QToolButton>
 #include <QPushButton>
 #include <QRadioButton>
 #include <QGroupBox>
@@ -85,9 +87,11 @@ cConvert::PopUpAuxTab(GRobject caller, ShowMode mode)
 
     new QTauxTabDlg(caller);
 
-    QTauxTabDlg::self()->set_transient_for(QTmainwin::self());
-    QTdev::self()->SetPopupLocation(GRloc(), QTauxTabDlg::self(),
-        QTmainwin::self()->Viewport());
+    QDialog *prnt = QTdev::DlgOf(caller);
+    if (!prnt)
+        prnt = QTmainwin::self();
+    QTauxTabDlg::self()->set_transient_for(prnt);
+    QTdev::self()->SetPopupLocation(GRloc(), QTauxTabDlg::self(), prnt);
     QTauxTabDlg::self()->show();
 }
 // End of cConvert functions.
@@ -115,6 +119,9 @@ QTauxTabDlg::QTauxTabDlg(GRobject c) : QTbag(this)
 
     setWindowTitle(tr("Cell Table Listing"));
     setAttribute(Qt::WA_DeleteOnClose);
+#ifdef Q_OS_MACOS
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+#endif
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;
@@ -129,30 +136,32 @@ QTauxTabDlg::QTauxTabDlg(GRobject c) : QTbag(this)
 
     // Button row
     //
-    at_addbtn = new QPushButton(tr("Add"));
+    at_addbtn = new QToolButton();
+    at_addbtn->setText(tr("Add"));
     hbox->addWidget(at_addbtn);
     at_addbtn->setCheckable(true);
-    at_addbtn->setAutoDefault(false);
     connect(at_addbtn, SIGNAL(toggled(bool)),
         this, SLOT(add_btn_slot(bool)));
 
-    at_rembtn = new QPushButton(tr("Remove"));
+    at_rembtn = new QToolButton();
+    at_rembtn->setText(tr("Remove"));
     hbox->addWidget(at_rembtn);
     at_rembtn->setCheckable(true);
-    at_rembtn->setAutoDefault(false);
     connect(at_rembtn, SIGNAL(toggled(bool)),
         this, SLOT(rem_btn_slot(bool)));
 
-    at_clearbtn = new QPushButton(tr("Clear"));
+    at_clearbtn = new QToolButton();
+    at_clearbtn->setText(tr("Clear"));
     hbox->addWidget(at_clearbtn);
     at_clearbtn->setCheckable(true);
-    at_clearbtn->setAutoDefault(false);
     connect(at_clearbtn, SIGNAL(toggled(bool)),
         this, SLOT(clear_btn_slot(bool)));
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    hbox->addStretch(1);
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     hbox = new QHBoxLayout(0);
     hbox->setContentsMargins(qm);
@@ -196,20 +205,21 @@ QTauxTabDlg::QTauxTabDlg(GRobject c) : QTbag(this)
     connect(wb_textarea, SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(mouse_motion_slot(QMouseEvent*)));
     connect(wb_textarea,
-        SIGNAL(mime_data_handled(const QMimeData*, bool*)),
-        this, SLOT(mime_data_handled_slot(const QMimeData*, bool*)));
-    connect(wb_textarea, SIGNAL(mime_data_delivered(const QMimeData*, bool*)),
-        this, SLOT(mime_data_delivered_slot(const QMimeData*, bool*)));
+        SIGNAL(mime_data_handled(const QMimeData*, int*)),
+        this, SLOT(mime_data_handled_slot(const QMimeData*, int*)));
+    connect(wb_textarea, SIGNAL(mime_data_delivered(const QMimeData*, int*)),
+        this, SLOT(mime_data_delivered_slot(const QMimeData*, int*)));
 
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_FIXED))
+    if (Fnt()->getFont(&fnt, FNT_FIXED))
         wb_textarea->setFont(*fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
 
     // Dismiss button
     //
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -229,6 +239,12 @@ QTauxTabDlg::~QTauxTabDlg()
     if (at_clear_pop)
         at_clear_pop->popdown();
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTauxTabDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 void
@@ -536,16 +552,19 @@ QTauxTabDlg::mouse_motion_slot(QMouseEvent *ev)
 
 
 void
-QTauxTabDlg::mime_data_handled_slot(const QMimeData *dta, bool *accpt) const
+QTauxTabDlg::mime_data_handled_slot(const QMimeData *dta, int *accpt) const
 {
     if (dta->hasFormat("text/twostring") || dta->hasFormat("text/plain"))
-        *accpt = true;
+        *accpt = 1;
+    else
+        *accpt = -1;
 }
 
 
 void
-QTauxTabDlg::mime_data_delivered_slot(const QMimeData *dta, bool *accpt)
+QTauxTabDlg::mime_data_delivered_slot(const QMimeData *dta, int *accpt)
 {
+    *accpt = -1;
     if (!CDcdb()->auxCellTab())
         return;
 
@@ -556,7 +575,6 @@ QTauxTabDlg::mime_data_delivered_slot(const QMimeData *dta, bool *accpt)
         data_ba = dta->data("text/plain");
     else
         return;
-    *accpt = true;
     char *src = lstring::copy(data_ba.constData());
     if (!src)
         return;
@@ -576,6 +594,7 @@ QTauxTabDlg::mime_data_delivered_slot(const QMimeData *dta, bool *accpt)
             update();
     }
     delete [] src;
+    *accpt = 1;
 }
 
 
@@ -584,7 +603,7 @@ QTauxTabDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_FIXED) {
         QFont *fnt;
-        if (FC.getFont(&fnt, FNT_FIXED))
+        if (Fnt()->getFont(&fnt, FNT_FIXED))
             wb_textarea->setFont(*fnt);
         update();
     }

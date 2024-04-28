@@ -334,8 +334,8 @@ public:
     // file_menu.cc
     MenuBox *createFileMenu();
     const char *const *OpenCellMenuList();
-    void PushOpenCellName(const char*);
-    void ReplaceOpenCellName(const char*, const char*);
+    void PushOpenCellName(const CDtptr*, const CDtptr*);
+    void ReplaceOpenCellName(const CDtptr*, const CDtptr*);
     void HandleOpenCellMenu(const char*, bool);
 
     // grcalls.cc

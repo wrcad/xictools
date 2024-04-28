@@ -51,7 +51,7 @@
 // QTchdCfgDlg:  Dialog to configure a cell hierarchy digest (CHD).
 
 class QLabel;
-class QPushButton;
+class QToolButton;
 class QLineEdit;
 class QCheckBox;;
 
@@ -63,13 +63,17 @@ public:
     QTchdCfgDlg(GRobject, const char*);
     ~QTchdCfgDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update(const char*);
 
     void set_transient_for(QWidget *prnt)
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -98,13 +102,13 @@ private:
     GRobject    cf_caller;
     QLabel      *cf_label;
     QLabel      *cf_dtc_label;
-    QPushButton *cf_last;
+    QToolButton *cf_last;
     QLineEdit   *cf_text;
-    QPushButton *cf_apply_tc;
+    QToolButton *cf_apply_tc;
     QCheckBox   *cf_newcgd;
     QLineEdit   *cf_cgdentry;
     QLabel      *cf_cgdlabel;
-    QPushButton *cf_apply_cgd;
+    QToolButton *cf_apply_cgd;
 
     char *cf_chdname;
     char *cf_lastname;

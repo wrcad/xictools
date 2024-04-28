@@ -355,7 +355,7 @@ HLPparams::update()
             if (ignore_fonts)
                 fputs(buf, gp);
             else {
-                char *nm = FC.getFamilyName(FNT_MOZY);
+                char *nm = Fnt()->getFamilyName(FNT_MOZY);
                 if (nm) {
                     fprintf(gp, "%s %s\n", name, nm);
                     delete [] nm;
@@ -366,7 +366,7 @@ HLPparams::update()
             if (ignore_fonts)
                 fputs(buf, gp);
             else {
-                char *nm = FC.getFamilyName(FNT_MOZY_FIXED);
+                char *nm = Fnt()->getFamilyName(FNT_MOZY_FIXED);
                 if (nm) {
                     fprintf(gp, "%s %s\n", name, nm);
                     delete [] nm;
@@ -624,13 +624,13 @@ HLPparams::dump()
 
     fprintf(fp, "%s %d\n", "AnchorHighlight", AnchorHighlight);
 
-    if (FC.getType() == GRfontX)
+    if (Fnt()->getType() == GRfontX)
         fprintf(fp,
 "\n"
 "# The default font families.  This is the XLFD family name with \"-size\"\n"
 "# appended.  Defaults:  adobe-times-normal-p-14   misc-fixed-normal-c-14\n");
 
-    else if (FC.getType() == GRfontP)
+    else if (Fnt()->getType() == GRfontP)
         fprintf(fp,
 "\n"
 "# The font families, defaults are Sans 9 and Monospace 9.\n");
@@ -640,14 +640,14 @@ HLPparams::dump()
 "\n"
 "# The font families.\n");
 
-    char *nm = FC.getFamilyName(FNT_MOZY);
+    char *nm = Fnt()->getFamilyName(FNT_MOZY);
     if (nm) {
         fprintf(fp, "%s %s\n", "FontFamily", nm);
         delete [] nm;
     }
     else
         fprintf(fp, "%s %s\n", "#FontFamily", "???");
-    nm = FC.getFamilyName(FNT_MOZY_FIXED);
+    nm = Fnt()->getFamilyName(FNT_MOZY_FIXED);
     if (nm) {
         fprintf(fp, "%s %s\n", "FixedFontFamily", nm);
         delete [] nm;

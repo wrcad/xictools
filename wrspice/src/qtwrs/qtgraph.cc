@@ -64,14 +64,14 @@ Authors: 1988 Jeffrey M. Hsu
 #include <QLabel>
 
 //
-// The graphics-package (QT) dependent part of the sGraph class.
+// The graphics-package (QT) dependent part of the cGraph class.
 //
 
 
 // Return a new graphics context struct.
 //
 GRwbag *
-sGraph::gr_new_gx(int type)
+cGraph::gr_new_gx(int type)
 {
     return (new QTplotDlg(type));
 }
@@ -80,7 +80,7 @@ sGraph::gr_new_gx(int type)
 // Initialization of graphics, return false on success.
 //
 int
-sGraph::gr_pkg_init()
+cGraph::gr_pkg_init()
 {
     if (!gr_dev)
         return (true);
@@ -94,10 +94,10 @@ sGraph::gr_pkg_init()
 // which is updated.
 //
 void
-sGraph::gr_pkg_init_colors()
+cGraph::gr_pkg_init_colors()
 {
     SpGrPkg::SetDefaultColors();
-    const sGraph *tgraph = this;
+    const cGraph *tgraph = this;
     if (!tgraph)
         return;
 
@@ -116,7 +116,7 @@ sGraph::gr_pkg_init_colors()
 // return is true if the button count changes
 //
 bool
-sGraph::gr_init_btns()
+cGraph::gr_init_btns()
 {
     QTplotDlg *w = dynamic_cast<QTplotDlg*>(gr_dev);
     if (w)
@@ -129,7 +129,7 @@ sGraph::gr_init_btns()
 // press or exposure event is detected for the plot window, return true.
 //
 bool
-sGraph::gr_check_plot_events()
+cGraph::gr_check_plot_events()
 {
     QTplotDlg *w = dynamic_cast<QTplotDlg*>(dev());
     if (!w)
@@ -142,7 +142,7 @@ sGraph::gr_check_plot_events()
 
 
 void
-sGraph::gr_redraw()
+cGraph::gr_redraw()
 {
     if (GRpkg::self()->CurDev()->devtype == GRhardcopy) {
         gr_redraw_direct();
@@ -170,7 +170,7 @@ sGraph::gr_redraw()
 
 
 void
-sGraph::gr_refresh(int left, int bottom, int right, int top, bool notxt)
+cGraph::gr_refresh(int left, int bottom, int right, int top, bool notxt)
 {
     if (gr_dirty) {
         gr_redraw();
@@ -191,7 +191,7 @@ sGraph::gr_refresh(int left, int bottom, int right, int top, bool notxt)
 // Pop down and destroy.
 //
 void
-sGraph::gr_popdown()
+cGraph::gr_popdown()
 {
     QTplotDlg *w = dynamic_cast<QTplotDlg*>(dev());
     delete w;
@@ -226,9 +226,9 @@ namespace {
 // Timeout function, start dragging a trace.
 //
 int
-sGraph::drag_trace(void *arg)
+cGraph::drag_trace(void *arg)
 {
-    sGraph *graph = (sGraph*)arg;
+    cGraph *graph = (cGraph*)arg;
     QTplotDlg *wb = dynamic_cast<QTplotDlg*>(graph->gr_dev);
 
     GP.SetSourceGraph(graph);
@@ -250,9 +250,9 @@ sGraph::drag_trace(void *arg)
 // Timeout function, start dragging text.
 //
 int
-sGraph::drag_text(void *arg)
+cGraph::drag_text(void *arg)
 {
-    sGraph *graph = (sGraph*)arg;
+    cGraph *graph = (cGraph*)arg;
     QTplotDlg *wb = dynamic_cast<QTplotDlg*>(graph->gr_dev);
 
     GP.SetSourceGraph(graph);
@@ -281,5 +281,5 @@ sGraph::drag_text(void *arg)
 
     return (0);
 }
-// End of sGraph functions.
+// End of cGraph functions.
 

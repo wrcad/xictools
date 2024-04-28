@@ -44,10 +44,12 @@
 #include "geo_zlist.h"
 #include "errorlog.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QGroupBox>
 #include <QLabel>
 #include <QCheckBox>
+#include <QToolButton>
 #include <QPushButton>
 #include <QSpinBox>
 
@@ -138,10 +140,10 @@ QTjoinDlg::QTjoinDlg(GRobject c)
         "Set parameters or initiate join/split operation"));
     hb->addWidget(label);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // no limit check box
     //
@@ -229,34 +231,35 @@ QTjoinDlg::QTjoinDlg(GRobject c)
     vbox->addSpacing(8);
     vbox->addLayout(hbox);
 
-    jn_join = new QPushButton(tr("Join"));
+    jn_join = new QToolButton();
+    jn_join->setText(tr("Join"));
     hbox->addWidget(jn_join);
-    jn_join->setAutoDefault(false);
     connect(jn_join, SIGNAL(clicked()), this, SLOT(join_btn_slot()));
 
-    jn_join_lyr = new QPushButton(tr("Join Lyr"));
+    jn_join_lyr = new QToolButton();
+    jn_join_lyr->setText(tr("Join Lyr"));
     hbox->addWidget(jn_join_lyr);
-    jn_join_lyr->setAutoDefault(false);
     connect(jn_join_lyr, SIGNAL(clicked()), this, SLOT(join_lyr_btn_slot()));
 
-    jn_join_all = new QPushButton(tr("Join All"));
+    jn_join_all = new QToolButton();
+    jn_join_all->setText(tr("Join All"));
     hbox->addWidget(jn_join_all);
-    jn_join_all->setAutoDefault(false);
     connect(jn_join_all, SIGNAL(clicked()), this, SLOT(join_all_btn_slot()));
 
-    jn_split_h = new QPushButton(tr("Split Horiz"));
+    jn_split_h = new QToolButton();
+    jn_split_h->setText(tr("Split Horiz"));
     hbox->addWidget(jn_split_h);
-    jn_split_h->setAutoDefault(false);
     connect(jn_split_h, SIGNAL(clicked()), this, SLOT(split_h_btn_slot()));
 
-    jn_split_v = new QPushButton(tr("Split Vert"));
+    jn_split_v = new QToolButton();
+    jn_split_v->setText(tr("Split Vert"));
     hbox->addWidget(jn_split_v);
-    jn_split_v->setAutoDefault(false);
     connect(jn_split_v, SIGNAL(clicked()), this, SLOT(split_v_btn_slot()));
 
     // Dismiss button
     //
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(delete_btn_slot()));
 
@@ -270,6 +273,12 @@ QTjoinDlg::~QTjoinDlg()
     if (jn_caller)
         QTdev::Deselect(jn_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTjoinDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 void

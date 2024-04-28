@@ -43,10 +43,12 @@
 #include "dsp_inlines.h"
 #include "qtllist.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QGroupBox>
 #include <QLabel>
 #include <QCheckBox>
+#include <QToolButton>
 #include <QPushButton>
 #include <QLineEdit>
 #include <QDragEnterEvent>
@@ -82,9 +84,12 @@ cConvert::PopUpChdSave(GRobject caller, ShowMode mode,
 
     new QTchdSaveDlg(caller, callback, arg, chdname);
 
-    QTchdSaveDlg::self()->set_transient_for(QTmainwin::self());
-    QTdev::self()->SetPopupLocation(GRloc(LW_XYA, x, y),
-        QTchdSaveDlg::self(), QTmainwin::self()->Viewport());
+    QDialog *prnt = QTdev::DlgOf(caller);
+    if (!prnt)
+        prnt = QTmainwin::self();
+    QTchdSaveDlg::self()->set_transient_for(prnt);
+    QTdev::self()->SetPopupLocation(GRloc(LW_XYA, x, y), QTchdSaveDlg::self(),
+        prnt);
     QTchdSaveDlg::self()->show();
 }
 // End of cConvert functions.
@@ -120,8 +125,7 @@ QTchdSavePathEdit::dropEvent(QDropEvent *ev)
 {
     if (ev->mimeData()->hasUrls()) {
         QByteArray ba = ev->mimeData()->data("text/plain");
-        const char *str = ba.constData() + strlen("File://");
-        setText(str);
+        setText(ba.constData());
         ev->accept();
         return;
     }
@@ -191,10 +195,10 @@ QTchdSaveDlg::QTchdSaveDlg(GRobject caller,
     cs_label = new QLabel(tr(buf));
     hb->addWidget(cs_label);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     cs_text = new QTchdSavePathEdit();
     vbox->addWidget(cs_text);
@@ -219,11 +223,13 @@ QTchdSaveDlg::QTchdSaveDlg(GRobject caller,
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    cs_apply = new QPushButton(tr("Apply"));
+    cs_apply = new QToolButton();
+    cs_apply->setText(tr("Apply"));
     hbox->addWidget(cs_apply);
     connect(cs_apply, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 }
@@ -235,6 +241,12 @@ QTchdSaveDlg::~QTchdSaveDlg()
     if (cs_caller)
         QTdev::Deselect(cs_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTchdSaveDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 void

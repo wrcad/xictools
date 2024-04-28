@@ -48,11 +48,13 @@
 #include "qtwndc.h"
 #include "qtinterf/qtdblsb.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QGroupBox>
 #include <QLabel>
 #include <QTabWidget>
 #include <QCheckBox>
+#include <QToolButton>
 #include <QPushButton>
 #include <QComboBox>
 
@@ -154,10 +156,10 @@ QTconvertFmtDlg::QTconvertFmtDlg(GRobject c, int inp_type,
     cv_label = new QLabel("");
     hb->addWidget(cv_label);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // Input selection menu
     //
@@ -266,7 +268,7 @@ QTconvertFmtDlg::QTconvertFmtDlg(GRobject c, int inp_type,
 
     // Layer list.
     //
-    cv_llist = new QTlayerList();;
+    cv_llist = new QTlayerList();
     vb->addWidget(cv_llist);
 
     // Cell name mapping.
@@ -286,10 +288,10 @@ QTconvertFmtDlg::QTconvertFmtDlg(GRobject c, int inp_type,
     hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
-    btn = new QPushButton(tr("Convert"));
-    hb->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(convert_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Convert"));
+    hb->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(convert_btn_slot()));
 
     // Conversion scale
     //
@@ -307,7 +309,8 @@ QTconvertFmtDlg::QTconvertFmtDlg(GRobject c, int inp_type,
 
     // Dismiss button
     //
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -325,6 +328,12 @@ QTconvertFmtDlg::~QTconvertFmtDlg()
     if (cv_callback)
         (*cv_callback)(-1, cv_arg);
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTconvertFmtDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 void

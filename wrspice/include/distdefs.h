@@ -187,7 +187,15 @@ struct sDISTOAN : public sJOB
 
     ~sDISTOAN();
 
-    sJOB *dup() { return (0); }  // XXX fixme
+    sJOB *dup()
+        {
+            return (0);
+            //XXX finish me
+            sDISTOAN *d = new sDISTOAN(*this);
+            d->JOBoutdata = new sOUTdata(*JOBoutdata);
+            return (d);
+        }
+
 
     double DstartF1;   // the start value of the higher frequency for
                        //  distortion analysis

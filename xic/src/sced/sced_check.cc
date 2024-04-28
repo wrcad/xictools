@@ -55,6 +55,7 @@
 #include "promptline.h"
 #include "oa_if.h"
 
+//#define CHDEBUG
 
 // Check the electrical properties of the cells in the hierarchy.
 // Any errors are appended to the log file, which is popped up
@@ -92,6 +93,10 @@ cSced::checkElectrical(CDcbin *cbin)
             continue;
         if (sd->isEmpty())
             continue;
+#ifdef CHDEBUG
+        printf("%s\n", Tstring(sd->cellname()));
+        int nm = sd->countModified();
+#endif
         sd->unsetConnected();
 
         // Add vertices at cell connection points.
@@ -103,6 +108,12 @@ cSced::checkElectrical(CDcbin *cbin)
                 SCD()->addConnection(sd, x, y, 0);
             }
         }
+#ifdef CHDEBUG
+        if (sd->countModified() != nm) {
+            printf("  c1\n");
+            nm = sd->countModified();
+        }
+#endif
 
         int chgcnt = 0;
         CDm_gen mgen(sd, GEN_MASTERS);
@@ -124,12 +135,24 @@ cSced::checkElectrical(CDcbin *cbin)
             sd->setBBvalid(false);
             sd->computeBB();
         }
+#ifdef CHDEBUG
+    if (sd->countModified() != nm) {
+        printf("  c2\n");
+        nm = sd->countModified();
+    }
+#endif
 
         if (!prptyCheck(sd,
                 Cvt()->LogFp() ? Cvt()->LogFp() : stderr, false) &&
                 Cvt()->LogFp())
             Cvt()->SetShowLog(true);
 
+#ifdef CHDEBUG
+        if (sd->countModified() != nm) {
+            printf("  c3\n");
+            nm = sd->countModified();
+        }
+#endif
         // If the cell is a terminal, make sure that it has a label
         // location property so that the label can be modified to
         // change the terminal name internally.
@@ -141,6 +164,12 @@ cSced::checkElectrical(CDcbin *cbin)
             if (!pl)
                 sd->prptyAdd(P_LABLOC, "name 2");
         }
+#ifdef CHDEBUG
+        if (sd->countModified() != nm) {
+            printf("  c4\n");
+            nm = sd->countModified();
+        }
+#endif
     }
 
     FILE *fp = Cvt()->LogFp();
@@ -200,6 +229,14 @@ cSced::prptyCheck(CDs *sdesc, FILE* fp, bool select_labels)
     if (tsd)
         sdesc = tsd;
 
+#ifdef CHDEBUG
+    int nm = Ulist()->HasChanged();
+    if (Ulist()->HasChanged() != nm) {
+        printf("  pc1\n");
+        nm = Ulist()->HasChanged();
+    }
+#endif
+
     if (sdesc != CurCell())
         select_labels = false;
     const bool nofix = sdesc->isImmutable();
@@ -209,11 +246,26 @@ cSced::prptyCheck(CDs *sdesc, FILE* fp, bool select_labels)
     bool neednl = false;
     if (select_labels)
         Selections.deselectTypes(sdesc, 0);
+
+#ifdef CHDEBUG
+    if (Ulist()->HasChanged() != nm) {
+        printf("  pc2\n");
+        nm = Ulist()->HasChanged();
+    }
+#endif
+
     if (!nofix)
         Ulist()->ListCheckPush("check", sdesc, false, true);
     fprintf(fp, "Checking electrical properties in cell %s...",
         Tstring(sdesc->cellname()));
     neednl = true;
+
+#ifdef CHDEBUG
+    if (Ulist()->HasChanged() != nm) {
+        printf("  pc3\n");
+        nm = Ulist()->HasChanged();
+    }
+#endif
 
     char *str;
     if (!prptyCheckCell(sdesc, &str)) {
@@ -223,6 +275,14 @@ cSced::prptyCheck(CDs *sdesc, FILE* fp, bool select_labels)
         neednl = false;
         ret = false;
     }
+
+#ifdef CHDEBUG
+    if (Ulist()->HasChanged() != nm) {
+        printf("  pc4\n");
+        nm = Ulist()->HasChanged();
+    }
+#endif
+
     bool headpr = false;
     CDp *pd, *pnext;
     for (pd = sdesc->prptyList(); pd; pd = pnext) {
@@ -245,6 +305,13 @@ cSced::prptyCheck(CDs *sdesc, FILE* fp, bool select_labels)
         }
     }
 
+#ifdef CHDEBUG
+    if (Ulist()->HasChanged() != nm) {
+        printf("  pc5\n");
+        nm = Ulist()->HasChanged();
+    }
+#endif
+
     CDg gdesc;
     CDo *pointer;
     headpr = false;
@@ -261,6 +328,14 @@ cSced::prptyCheck(CDs *sdesc, FILE* fp, bool select_labels)
 
             if (!prptyCheckLabel(sdesc, OLABEL(pointer), &str))
                 ret = false;
+
+#ifdef CHDEBUG
+            if (Ulist()->HasChanged() != nm) {
+                printf("  pc6\n");
+                nm = Ulist()->HasChanged();
+            }
+#endif
+
             if (str) {
                 if (!headpr) {
                     if (neednl) {
@@ -291,6 +366,14 @@ cSced::prptyCheck(CDs *sdesc, FILE* fp, bool select_labels)
         for (CDc *cdesc = cgen.c_first(); cdesc; cdesc = cgen.c_next()) {
             if (!prptyCheckInst(sdesc, cdesc, &str))
                 ret = false;
+
+#ifdef CHDEBUG
+            if (Ulist()->HasChanged() != nm) {
+                printf("  pc7\n");
+                nm = Ulist()->HasChanged();
+            }
+#endif
+
             if (str) {
                 if (!headpr) {
                     if (neednl) {
@@ -318,6 +401,13 @@ cSced::prptyCheck(CDs *sdesc, FILE* fp, bool select_labels)
             }
         }
     }
+
+#ifdef CHDEBUG
+    if (Ulist()->HasChanged() != nm) {
+        printf("  pc8\n");
+        nm = Ulist()->HasChanged();
+    }
+#endif
 
     if (!nofix)
         Ulist()->ListPop();
@@ -368,6 +458,14 @@ cSced::prptyCheckCell(CDs *sdesc, char **str)
 
     const int prpmax = P_MAX_PRP_NUM + 1;
 
+#ifdef CHDEBUG
+int nm = Ulist()->HasChanged();
+    if (Ulist()->HasChanged() != nm) {
+        printf("  pcc1\n");
+        nm = Ulist()->HasChanged();
+    }
+#endif
+
     // Remove obsolete P_MACRO properties, set flag in name property.
     // This is redundant, also done in CDs::prptyAdd.
     CDp_sname *pns = (CDp_sname*)sdesc->prpty(P_NAME);
@@ -377,6 +475,13 @@ cSced::prptyCheckCell(CDs *sdesc, char **str)
             sdesc->prptyRemove(P_MACRO);
         }
     }
+
+#ifdef CHDEBUG
+    if (Ulist()->HasChanged() != nm) {
+        printf("  pcc2\n");
+        nm = Ulist()->HasChanged();
+    }
+#endif
 
     // Check property counts.
     int pcnts[prpmax];

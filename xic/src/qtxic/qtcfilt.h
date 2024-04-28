@@ -53,6 +53,7 @@
 
 class QCheckBox;
 class QLineEdit;
+class QToolButton;
 
 class QTcfiltDlg : public QDialog
 {
@@ -62,13 +63,17 @@ public:
     QTcfiltDlg(GRobject, DisplayMode, void(*)(cfilter_t*, void*), void*);
     ~QTcfiltDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update(DisplayMode);
 
     void set_transient_for(QWidget *prnt)
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -160,7 +165,7 @@ private:
     QCheckBox *cf_nftp;
     QCheckBox *cf_ftp;
     QLineEdit *cf_ftpent;
-    QPushButton *cf_apply;
+    QToolButton *cf_apply;
 
     void(*cf_cb)(cfilter_t*, void*);
     void *cf_arg;

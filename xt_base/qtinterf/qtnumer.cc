@@ -41,9 +41,11 @@
 #include "qtinterf.h"
 #include "qtnumer.h"
 
+#include <QApplication>
 #include <QAction>
 #include <QDoubleSpinBox>
 #include <QLayout>
+#include <QToolButton>
 #include <QPushButton>
 #include <QTextEdit>
 
@@ -66,6 +68,7 @@ namespace qtinterf
         QSize sizeHint() const { return (QSize(200, 50)); }
     };
 }
+
 
 QTnumDlg::QTnumDlg(QTbag *owner, const char *prompt_str, double initd,
     double mind, double maxd, double del, int numd)
@@ -106,14 +109,15 @@ QTnumDlg::QTnumDlg(QTbag *owner, const char *prompt_str, double initd,
     hbox->setContentsMargins(0, 0, 0, 0);
     hbox->setSpacing(2);
 
-    nu_yesbtn = new QPushButton(tr("Apply"));
-    nu_yesbtn->setDefault(true);
-    hbox->addWidget(nu_yesbtn);
-    connect(nu_yesbtn, SIGNAL(clicked()), this, SLOT(action_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Apply"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(action_slot()));
 
-    nu_nobtn = new QPushButton(tr("Dismiss"));
-    hbox->addWidget(nu_nobtn);
-    connect(nu_nobtn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 }
 
 
@@ -131,6 +135,12 @@ QTnumDlg::~QTnumDlg()
     if (p_caller && !p_no_desel)
         QTdev::Deselect(p_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTnumDlg
+#include "qtmacos_event.h"
+#endif
 
 
 // GRpopup override

@@ -56,7 +56,7 @@ class QTabWidget;
 class QLineEdit;
 class QCheckBox;
 class QSpinBox;
-class QPushButton;
+class QToolButton;
 class QRadioButton;
 class QMenu;
 namespace qtinterf {
@@ -120,13 +120,17 @@ public:
     QTcompareDlg(GRobject);
     ~QTcompareDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update();
 
     void set_transient_for(QWidget *prnt)
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -202,7 +206,7 @@ private:
     QRadioButton *cmp_p1_elec;
     QCheckBox   *cmp_p1_cell_prp;
     QComboBox   *cmp_p1_fltr;
-    QPushButton *cmp_p1_setup;
+    QToolButton *cmp_p1_setup;
     PrpFltMode  cmp_p1_fltr_mode;
 
     QCheckBox   *cmp_p2_expand_arrays;
@@ -210,8 +214,8 @@ private:
     QCheckBox   *cmp_p2_insts;
 
     QCheckBox   *cmp_p3_aoi_use;
-    QPushButton *cmp_p3_s_btn;
-    QPushButton *cmp_p3_r_btn;
+    QToolButton *cmp_p3_s_btn;
+    QToolButton *cmp_p3_r_btn;
     QMenu       *cmp_p3_s_menu;
     QMenu       *cmp_p3_r_menu;
     QTdoubleSpinBox *cmp_sb_p3_aoi_left;

@@ -52,7 +52,7 @@
 
 class QTreeWidgetItem;
 class QTreeWidget;
-class QPushButton;
+class QToolButton;
 class QLineEdit;
 class QCheckBox;
 
@@ -64,6 +64,10 @@ public:
     QTextDevDlg(GRobject);
     ~QTextDevDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update();
     void relist();
 
@@ -71,7 +75,7 @@ public:
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -107,18 +111,18 @@ private slots:
 
 private:
     GRobject    ed_caller;
-    QPushButton *ed_update;
-    QPushButton *ed_show;
-    QPushButton *ed_erase;
-    QPushButton *ed_show_all;
-    QPushButton *ed_erase_all;
+    QToolButton *ed_update;
+    QToolButton *ed_show;
+    QToolButton *ed_erase;
+    QToolButton *ed_show_all;
+    QToolButton *ed_erase_all;
     QLineEdit   *ed_indices;
     QTreeWidget *ed_list;
-    QPushButton *ed_select;
+    QToolButton *ed_select;
     QCheckBox   *ed_compute;
     QCheckBox   *ed_compare;
-    QPushButton *ed_measbox;
-    QPushButton *ed_paint;
+    QToolButton *ed_measbox;
+    QToolButton *ed_paint;
 
     char        *ed_selection;
     CDs         *ed_sdesc;

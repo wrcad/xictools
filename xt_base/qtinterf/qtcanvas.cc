@@ -45,6 +45,7 @@
 #include <QPainter>
 #include <QEnterEvent>
 #include <QFocusEvent>
+#include <QWheelEvent>
 #include <QGuiApplication>
 
 
@@ -78,14 +79,20 @@ QTcanvas::QTcanvas(QWidget *prnt) : QWidget(prnt)
     da_olw = 0;
     da_olh = 0;
     da_call_count = 0;
+    da_font = font();
 
     // Ghost drawing.
     da_ghost_overlay_bg = 0;
     da_ghost_draw_ptr = &da_local;
     da_local.gd_windows[0] = this;
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,6,0)
     da_bg = QColor::fromString("white");
     da_fg = QColor::fromString("black");
+#else
+    da_bg.setNamedColor("white");
+    da_fg.setNamedColor("black");
+#endif
     da_brush.setStyle(Qt::SolidPattern);
     da_pen.setStyle(Qt::NoPen);
     initialize();
@@ -838,6 +845,8 @@ QTcanvas::draw_boxes(GRmultiPt *p, int n)
 void
 QTcanvas::draw_arc(int x0, int y0, int r, int, double a1, double a2)
 {
+    if (r < 0)
+        r = -r;
     if (da_overlay_count) {
         bb_add(x0-r, y0-r);
         bb_add(x0+r, y0+r);
@@ -848,8 +857,7 @@ QTcanvas::draw_arc(int x0, int y0, int r, int, double a1, double a2)
     int t2 = (int)(16 * (180.0 / M_PI) * a2 - t1);
     if (t2 == 0)
         return;
-    int dim = 2*r;
-    da_painter->drawPie(x0 - r, y0 - r, dim, dim, t1, t2);
+    da_painter->drawPie(x0, y0, r, r, t1, t2);
 }
 
 
@@ -914,12 +922,18 @@ QTcanvas::draw_image(const GRimage *im, int xx, int yy, int w, int h)
 }
 
 
-// Set the font used for rendering in the drawing area.
+// Set the font used for rendering in the drawing area.  This is
+// different from the widget font (set with QWidget::setFont), the
+// changing of which may propagate to child widgets (used in forms for
+// the HTML viewer, for example).
 //
 void
 QTcanvas::set_font(QFont *fnt)
 {
-    setFont(*fnt);
+    if (fnt)
+        da_font = *fnt;
+    else
+        da_font = font();
 }
 
 
@@ -950,8 +964,7 @@ QTcanvas::text_extent(const char *str, int *w, int *h)
         *w = 0;
     if (h)
         *h = 0;
-    const QFont &f = font();
-    QFontMetrics fm(f);
+    QFontMetrics fm(da_font);
     if (w)
 #if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
         *w = fm.horizontalAdvance(QString(str));
@@ -973,16 +986,15 @@ QTcanvas::draw_text(int x0, int y0, const char *str, int len)
     if (len >= 0)
         qs.truncate(len);
 
-    // The y0 is the bottom of the text box so subtract off the descent().
-    QFontMetrics fm(font());
-    y0 -= fm.descent();;
+    y0 -= 2;
+    QFontMetrics fm(da_font);
     if (da_overlay_count) {
         QRect r = fm.boundingRect(qs);
         bb_add(x0 + r.x(), y0);
         bb_add(x0 + r.x() + r.width(), y0 + r.height());
     }
 
-    da_painter->setFont(font());
+    da_painter->setFont(da_font);
     da_pen.setStyle(Qt::SolidLine);
     da_painter->setPen(da_pen);
     da_painter->drawText(x0, y0, qs);
@@ -1105,6 +1117,9 @@ QTcanvas::draw_rectangle(bool filled, int x0, int y0, int w, int h)
         Qt::BrushStyle st = da_brush.style();
         da_brush.setStyle(Qt::NoBrush);
         da_painter->setBrush(da_brush);
+        da_pen.setStyle(Qt::SolidLine);
+        da_pen.setColor(da_fg);
+        da_painter->setPen(da_pen);
         da_painter->drawRect(x0, y0, w, h);
         da_brush.setStyle(st);
         da_painter->setBrush(da_brush);
@@ -1117,10 +1132,20 @@ QTcanvas::draw_rectangle(bool filled, int x0, int y0, int w, int h)
 void
 QTcanvas::draw_arc(bool filled, int x0, int y0, int w, int h, int st, int sp)
 {
-    if (filled)
-        da_painter->drawPie(x0, y0, w, h, st/4, sp/4);
-    else
-        da_painter->drawArc(x0, y0, w, h, st/4, sp/4);
+    if (filled) {
+        da_painter->drawPie(x0, y0, w, h, st, sp);
+    }
+    else {
+        Qt::BrushStyle sty = da_brush.style();
+        da_brush.setStyle(Qt::NoBrush);
+        da_painter->setBrush(da_brush);
+        da_pen.setStyle(Qt::SolidLine);
+        da_pen.setColor(da_fg);
+        da_painter->setPen(da_pen);
+        da_painter->drawArc(x0, y0, w, h, st, sp);
+        da_brush.setStyle(sty);
+        da_painter->setBrush(da_brush);
+    }
 }
 
 
@@ -1135,6 +1160,9 @@ QTcanvas::draw_polygon(bool filled, QPoint *points, int numpts)
         Qt::BrushStyle st = da_brush.style();
         da_brush.setStyle(Qt::NoBrush);
         da_painter->setBrush(da_brush);
+        da_pen.setStyle(Qt::SolidLine);
+        da_pen.setColor(da_fg);
+        da_painter->setPen(da_pen);
         da_painter->drawPolygon(points, numpts);
         da_brush.setStyle(st);
         da_painter->setBrush(da_brush);
@@ -1279,6 +1307,13 @@ void
 QTcanvas::focusOutEvent(QFocusEvent *ev)
 {
     emit focus_out_event(ev);
+}
+
+
+void
+QTcanvas::wheelEvent(QWheelEvent *ev)
+{
+    emit mouse_wheel_event(ev);
 }
 
 

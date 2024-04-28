@@ -160,7 +160,7 @@ QTmenuConfig::instantiateMainMenus()
     if (!menubar)
         return;
 
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
     // By default, Xic will use the Apple-style menu, but this can be
     // overridden by setting the environment variable.
     if (getenv("XIC_NO_MAC_MENU"))
@@ -168,7 +168,7 @@ QTmenuConfig::instantiateMainMenus()
 #endif
 
     // File memu
-    MenuBox *mbox = MainMenu()->FindMainMenu("file");
+    MenuBox *mbox = MainMenu()->FindMainMenu(MMfile);
     if (mbox && mbox->menu) {
         QMenu *file_menu = menubar->addMenu(tr(mbox->name));
         file_menu->setToolTipsVisible(true);
@@ -221,7 +221,7 @@ QTmenuConfig::instantiateMainMenus()
     }
 
     // Cell menu
-    mbox = MainMenu()->FindMainMenu("cell");
+    mbox = MainMenu()->FindMainMenu(MMcell);
     if (mbox && mbox->menu) {
         QMenu *cell_menu = menubar->addMenu(tr(mbox->name));
         cell_menu->setToolTipsVisible(true);
@@ -256,7 +256,7 @@ QTmenuConfig::instantiateMainMenus()
     }
 
     // Edit menu
-    mbox = MainMenu()->FindMainMenu("edit");
+    mbox = MainMenu()->FindMainMenu(MMedit);
     if (mbox && mbox->menu) {
         QMenu *edit_menu = menubar->addMenu(tr(mbox->name));
         edit_menu->setToolTipsVisible(true);
@@ -296,7 +296,7 @@ QTmenuConfig::instantiateMainMenus()
     }
 
     // Modify menu
-    mbox = MainMenu()->FindMainMenu("mod");
+    mbox = MainMenu()->FindMainMenu(MMmod);
     if (mbox && mbox->menu) {
         QMenu *modf_menu = menubar->addMenu(tr(mbox->name));
         modf_menu->setToolTipsVisible(true);
@@ -335,7 +335,7 @@ QTmenuConfig::instantiateMainMenus()
     }
 
     // View menu
-    mbox = MainMenu()->FindMainMenu("view");
+    mbox = MainMenu()->FindMainMenu(MMview);
     if (mbox && mbox->menu) {
         QMenu *view_menu = menubar->addMenu(tr(mbox->name));
         view_menu->setToolTipsVisible(true);
@@ -391,7 +391,7 @@ QTmenuConfig::instantiateMainMenus()
 
     // Attributes menu
     QMenu *submenu = 0;
-    mbox = MainMenu()->FindMainMenu("attr");
+    mbox = MainMenu()->FindMainMenu(MMattr);
     if (mbox && mbox->menu) {
         QMenu *attr_menu = menubar->addMenu(tr(mbox->name));
         attr_menu->setToolTipsVisible(true);
@@ -459,7 +459,14 @@ QTmenuConfig::instantiateMainMenus()
         set(mbox->menu[subwAttrMenuObjs], "Objects Shown", 0);
         set(mbox->menu[subwAttrMenuTinyb], "Subthreshold &Boxes", 0);
         set(mbox->menu[subwAttrMenuNosym], "No Top &Symbolic", 0);
+        // Don't use the accelerator in Apple, since the main window will
+        // steal it from subwindows.  In this case the action processor
+        // handles ctrl-g.
+#ifdef Q_OS_MACOS
+        set(mbox->menu[subwAttrMenuGrid], "Set &Grid", 0);
+#else
         set(mbox->menu[subwAttrMenuGrid], "Set &Grid", "Ctrl+G");
+#endif
 
         // First elt is a dummy containing the menubar item.
         QMenu *newsubm = 0;
@@ -531,7 +538,7 @@ QTmenuConfig::instantiateMainMenus()
     submenu = 0;
 
     // Convert menu
-    mbox = MainMenu()->FindMainMenu("conv");
+    mbox = MainMenu()->FindMainMenu(MMconv);
     if (mbox && mbox->menu) {
         QMenu *cvrt_menu = menubar->addMenu(tr(mbox->name));
         cvrt_menu->setToolTipsVisible(true);
@@ -568,7 +575,7 @@ QTmenuConfig::instantiateMainMenus()
     }
 
     // Drc menu
-    mbox = MainMenu()->FindMainMenu("drc");
+    mbox = MainMenu()->FindMainMenu(MMdrc);
     if (mbox && mbox->menu) {
         QMenu *drc_menu = menubar->addMenu(tr(mbox->name));
         drc_menu->setToolTipsVisible(true);
@@ -651,7 +658,7 @@ QTmenuConfig::instantiateMainMenus()
     }
 
     // User menu
-    mbox = MainMenu()->FindMainMenu("user");
+    mbox = MainMenu()->FindMainMenu(MMuser);
     if (mbox && mbox->menu) {
         QMenu *user_menu = menubar->addMenu(tr(mbox->name));
         user_menu->setToolTipsVisible(true);
@@ -683,7 +690,7 @@ QTmenuConfig::instantiateMainMenus()
     }
 
     // Help menu
-    mbox = MainMenu()->FindMainMenu("help");
+    mbox = MainMenu()->FindMainMenu(MMhelp);
     if (mbox && mbox->menu) {
         menubar->addSeparator();
         QMenu *help_menu = menubar->addMenu(tr(mbox->name));
@@ -738,7 +745,7 @@ QTmenuConfig::instantiateTopButtonMenu()
         hbox->setSpacing(2);
 
         set(mbox->menu[miscMenu], 0, 0);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
         // With Apple the WR button goes here, since there is no menu bar.
         set(mbox->menu[miscMenuMail], "Mail", 0);
 #endif
@@ -748,7 +755,7 @@ QTmenuConfig::instantiateTopButtonMenu()
         set(mbox->menu[miscMenuSelcp], "SelCP", 0);
         set(mbox->menu[miscMenuRdraw], "Rdraw", 0);
 
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
         for (MenuEnt *ent = mbox->menu + 1; ent->entry; ent++) {
 #else
         for (MenuEnt *ent = mbox->menu + 2; ent->entry; ent++) {
@@ -934,7 +941,7 @@ QTmenuConfig::instantiateSubwMenus(int wnum)
     int wincode = wnum << 16;
 
     // Subwin View Menu
-    MenuBox *mbox = MainMenu()->FindSubwMenu("view", wnum);
+    MenuBox *mbox = MainMenu()->FindSubwMenu(MMview, wnum);
     if (mbox && mbox->menu) {
 
         set(mbox->menu[subwViewMenu], "&View", 0);
@@ -1008,7 +1015,7 @@ QTmenuConfig::instantiateSubwMenus(int wnum)
     }
 
     // Subwin Attr Menu
-    mbox = MainMenu()->FindSubwMenu("attr", wnum);
+    mbox = MainMenu()->FindSubwMenu(MMattr, wnum);
     if (mbox && mbox->menu) {
 
         set(mbox->menu[subwAttrMenu], "&Attributes", 0);
@@ -1023,7 +1030,14 @@ QTmenuConfig::instantiateSubwMenus(int wnum)
         set(mbox->menu[subwAttrMenuObjs], "Objects Shown", 0);
         set(mbox->menu[subwAttrMenuTinyb], "Subthreshold &Boxes", 0);
         set(mbox->menu[subwAttrMenuNosym], "No Top &Symbolic", 0);
+        // Don't use the accelerator in Apple, since the main window will
+        // steal it from subwindows.  In this case the action processor
+        // handles ctrl-g.  Actions don't show in the QToolBar anyway.
+#ifdef Q_OS_MACOS
+        set(mbox->menu[subwAttrMenuGrid], "Set &Grid", 0);
+#else
         set(mbox->menu[subwAttrMenuGrid], "Set &Grid", "Ctrl+G");
+#endif
 
         QMenu *subwin_attr_menu = new QMenu(sub_win);
         subwin_attr_menu->setTitle(tr(mbox->name));
@@ -1066,7 +1080,7 @@ QTmenuConfig::instantiateSubwMenus(int wnum)
     }
 
     // Subwin Help Menu
-    mbox = MainMenu()->FindSubwMenu("help", wnum);
+    mbox = MainMenu()->FindSubwMenu(MMhelp, wnum);
     if (mbox && mbox->menu) {
 
         set(mbox->menu[subwHelpMenu], "&Help", 0);
@@ -1117,7 +1131,7 @@ QTmenuConfig::instantiateSubwMenus(int wnum)
 void
 QTmenuConfig::updateDynamicMenus()
 {
-    MenuBox *mbox = MainMenu()->FindMainMenu("user");
+    MenuBox *mbox = MainMenu()->FindMainMenu(MMuser);
     if (!mbox)
         return;
     if (!mbox->menu || !mbox->isDynamic())
@@ -1219,7 +1233,7 @@ QTmenuConfig::switch_menu_mode(DisplayMode mode, int wnum)
         QWidget *elec_button_box = main_win->ElecButtonBox();
 
         if (mode == Physical) {
-            MenuBox *mbox = MainMenu()->FindMainMenu("view");
+            MenuBox *mbox = MainMenu()->FindMainMenu(MMview);
             if (mbox && mbox->menu) {
                 action(&mbox->menu[viewMenuPhys])->setVisible(false);
                 action(&mbox->menu[viewMenuSced])->setVisible(true);
@@ -1230,7 +1244,7 @@ QTmenuConfig::switch_menu_mode(DisplayMode mode, int wnum)
                 action(&mbox->menu[subwAttrMenuNosym])->setVisible(false);
 
             // Desensitize the DRC menu in electrical mode.
-            mbox = MainMenu()->FindMainMenu("drc");
+            mbox = MainMenu()->FindMainMenu(MMdrc);
             if (mbox && mbox->menu) {
                 QWidget *w = (QWidget*)mbox->menu[0].cmd.caller;
                 if (w)
@@ -1243,7 +1257,7 @@ QTmenuConfig::switch_menu_mode(DisplayMode mode, int wnum)
                 phys_button_box->show();
         }
         else {
-            MenuBox *mbox = MainMenu()->FindMainMenu("view");
+            MenuBox *mbox = MainMenu()->FindMainMenu(MMview);
             if (mbox && mbox->menu) {
                 action(&mbox->menu[viewMenuSced])->setVisible(false);
                 action(&mbox->menu[viewMenuPhys])->setVisible(true);
@@ -1254,7 +1268,7 @@ QTmenuConfig::switch_menu_mode(DisplayMode mode, int wnum)
                 action(&mbox->menu[subwAttrMenuNosym])->setVisible(true);
 
             // Desensitize the DRC menu in electrical mode.
-            mbox = MainMenu()->FindMainMenu("drc");
+            mbox = MainMenu()->FindMainMenu(MMdrc);
             if (mbox && mbox->menu) {
                 QWidget *w = (QWidget*)mbox->menu[0].cmd.caller;
                 if (w)
@@ -1273,7 +1287,7 @@ QTmenuConfig::switch_menu_mode(DisplayMode mode, int wnum)
         if (!DSP()->Window(wnum))
             return;
 
-        MenuBox *mbox = MainMenu()->FindSubwMenu("view", wnum);
+        MenuBox *mbox = MainMenu()->FindSubwMenu(MMview, wnum);
         if (mbox && mbox->menu) {
             if (mode == Physical) {
                 action(&mbox->menu[subwViewMenuSced])->setVisible(true);
@@ -1285,7 +1299,7 @@ QTmenuConfig::switch_menu_mode(DisplayMode mode, int wnum)
             }
         }
 
-        mbox = MainMenu()->FindSubwMenu("attr", wnum);
+        mbox = MainMenu()->FindSubwMenu(MMattr, wnum);
         if (mbox && mbox->menu) {
             action(&mbox->menu[subwAttrMenuNosym])->setVisible(
                 mode != Physical);
@@ -1304,14 +1318,26 @@ QTmenuConfig::set_main_global_sens(const MenuList *list, bool sens)
     //
     // The View/Allocation button qualifies, are there others?
 
+    if (QTmainwin::self() && QTmainwin::self()->TopButtonBox())
+        QTmainwin::self()->TopButtonBox()->setEnabled(sens);
+    if (QTmainwin::self() && QTmainwin::self()->PhysButtonBox())
+        QTmainwin::self()->PhysButtonBox()->setEnabled(sens);
+    if (QTmainwin::self() && QTmainwin::self()->ElecButtonBox())
+        QTmainwin::self()->ElecButtonBox()->setEnabled(sens);
+
     mc_menu_disabled = !sens;
     for (const MenuList *ml = list; ml; ml = ml->next) {
         if (!ml->menubox || !ml->menubox->menu)
             continue;
         MenuEnt *ent = ml->menubox->menu;
         QMenu *topmenu = (QMenu*)ent[0].cmd.caller;
+        if (!topmenu) {
+            fprintf(stderr,
+                "Error (internal): set_main_global_sens, %s caller is null.\n",
+                ml->menubox->name);
+        }
 
-        if (lstring::ciprefix("view", ml->menubox->name)) {
+        if (lstring::ciprefix(MMview, ml->menubox->name)) {
             // For the View Menu, keep Allocation button sensitive.
             for (ent++; ent->entry; ent++) {
                 if (ent - ml->menubox->menu == viewMenuAlloc)
@@ -1320,7 +1346,25 @@ QTmenuConfig::set_main_global_sens(const MenuList *list, bool sens)
                     action(ent)->setEnabled(sens);
             }
         }
-        else
+        else if (lstring::ciprefix(MMattr, ml->menubox->name)) {
+            // for Attributes Menu, keep Main Window/Freeze button sensitive.
+            for (ent++; ent->entry; ent++) {
+                if (ent - ml->menubox->menu == attrMenuMainWin) {
+                    action(ent)->setEnabled(true);
+                    MenuBox *sbox = MainMenu()->GetAttrSubMenu();
+                    MenuEnt *se = sbox->menu;
+                    for (se++; se->entry; se++) {
+                        if (se - sbox->menu == subwAttrMenuFreez)
+                            action(se)->setEnabled(true);
+                        else
+                            action(se)->setEnabled(sens);
+                    }
+                }
+                else
+                    action(ent)->setEnabled(sens);
+            }
+        }
+        else if (topmenu)
             topmenu->setEnabled(sens);
     }
 }
@@ -1335,7 +1379,9 @@ void
 QTmenuConfig::file_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
-    MenuBox *mbox = MainMenu()->FindMainMenu("file");
+    if (i <= 0)
+        return;
+    MenuBox *mbox = MainMenu()->FindMainMenu(MMfile);
     if (!mbox)
         return;
     MenuEnt *ent = &mbox->menu[i];
@@ -1362,6 +1408,7 @@ QTmenuConfig::file_open_menu_slot(QAction *a)
     if (!str || !*str)
         return;
 
+    QTmainwin::self()->activateWindow();
     int mstate = QApplication::keyboardModifiers();
     XM()->HandleOpenCellMenu(str, (mstate & Qt::ShiftModifier));
 }
@@ -1373,7 +1420,9 @@ void
 QTmenuConfig::cell_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
-    MenuBox *mbox = MainMenu()->FindMainMenu("cell");
+    if (i <= 0)
+        return;
+    MenuBox *mbox = MainMenu()->FindMainMenu(MMcell);
     if (!mbox)
         return;
     MenuEnt *ent = &mbox->menu[i];
@@ -1388,7 +1437,9 @@ void
 QTmenuConfig::edit_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
-    MenuBox *mbox = MainMenu()->FindMainMenu("edit");
+    if (i <= 0)
+        return;
+    MenuBox *mbox = MainMenu()->FindMainMenu(MMedit);
     if (!mbox)
         return;
     MenuEnt *ent = &mbox->menu[i];
@@ -1403,7 +1454,9 @@ void
 QTmenuConfig::modf_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
-    MenuBox *mbox = MainMenu()->FindMainMenu("mod");
+    if (i <= 0)
+        return;
+    MenuBox *mbox = MainMenu()->FindMainMenu(MMmod);
     if (!mbox)
         return;
     MenuEnt *ent = &mbox->menu[i];
@@ -1418,7 +1471,9 @@ void
 QTmenuConfig::view_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
-    MenuBox *mbox = MainMenu()->FindMainMenu("view");
+    if (i <= 0)
+        return;
+    MenuBox *mbox = MainMenu()->FindMainMenu(MMview);
     if (!mbox)
         return;
     MenuEnt *ent = &mbox->menu[i];
@@ -1452,7 +1507,9 @@ void
 QTmenuConfig::attr_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
-    MenuBox *mbox = MainMenu()->FindMainMenu("attr");
+    if (i <= 0)
+        return;
+    MenuBox *mbox = MainMenu()->FindMainMenu(MMattr);
     if (!mbox)
         return;
     MenuEnt *ent = &mbox->menu[i];
@@ -1467,6 +1524,8 @@ void
 QTmenuConfig::attr_main_win_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
+    if (i <= 0)
+        return;
     MenuBox *mbox = MainMenu()->GetAttrSubMenu();
     if (!mbox)
         return;
@@ -1482,6 +1541,8 @@ void
 QTmenuConfig::attr_main_win_obj_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
+    if (i <= 0)
+        return;
     MenuBox *mbox = MainMenu()->GetObjSubMenu();
     if (!mbox)
         return;
@@ -1497,7 +1558,9 @@ void
 QTmenuConfig::cvrt_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
-    MenuBox *mbox = MainMenu()->FindMainMenu("conv");
+    if (i <= 0)
+        return;
+    MenuBox *mbox = MainMenu()->FindMainMenu(MMconv);
     if (!mbox)
         return;
     MenuEnt *ent = &mbox->menu[i];
@@ -1512,7 +1575,9 @@ void
 QTmenuConfig::drc_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
-    MenuBox *mbox = MainMenu()->FindMainMenu("drc");
+    if (i <= 0)
+        return;
+    MenuBox *mbox = MainMenu()->FindMainMenu(MMdrc);
     if (!mbox)
         return;
     MenuEnt *ent = &mbox->menu[i];
@@ -1527,6 +1592,8 @@ void
 QTmenuConfig::ext_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
+    if (i <= 0)
+        return;
     MenuBox *mbox = MainMenu()->FindMainMenu("ext");
     if (!mbox)
         return;
@@ -1542,7 +1609,9 @@ void
 QTmenuConfig::user_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
-    MenuBox *mbox = MainMenu()->FindMainMenu("user");
+    if (i <= 0)
+        return;
+    MenuBox *mbox = MainMenu()->FindMainMenu(MMuser);
     if (!mbox)
         return;
     MenuEnt *ent = &mbox->menu[i];
@@ -1557,7 +1626,9 @@ void
 QTmenuConfig::help_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
-    MenuBox *mbox = MainMenu()->FindMainMenu("help");
+    if (i <= 0)
+        return;
+    MenuBox *mbox = MainMenu()->FindMainMenu(MMhelp);
     if (!mbox)
         return;
     MenuEnt *ent = &mbox->menu[i];
@@ -1572,9 +1643,11 @@ void
 QTmenuConfig::subwin_view_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
+    if (i <= 0)
+        return;
     int wnum = i >> 16;  // Decode window number.
     i &= 0xffff;
-    MenuBox *mbox = MainMenu()->FindSubwMenu("view", wnum);
+    MenuBox *mbox = MainMenu()->FindSubwMenu(MMview, wnum);
     if (!mbox)
         return;
     MenuEnt *ent = &mbox->menu[i];
@@ -1605,6 +1678,8 @@ QTmenuConfig::subwin_view_view_menu_slot(QAction *a)
     DSP()->MainWdesc()->SetView(string);
 
     int i = a->data().toInt();
+    if (i <= 0)
+        return;
     int wnum = i >> 16;  // Decode window number.
     if (wnum <= 0 || wnum >= DSP_NUMWINS)
         return;
@@ -1620,9 +1695,11 @@ void
 QTmenuConfig::subwin_attr_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
+    if (i <= 0)
+        return;
     int wnum = i >> 16;  // Decode window number.
     i &= 0xffff;
-    MenuBox *mbox = MainMenu()->FindSubwMenu("attr", wnum);
+    MenuBox *mbox = MainMenu()->FindSubwMenu(MMattr, wnum);
     if (!mbox)
         return;
     MenuEnt *ent = &mbox->menu[i];
@@ -1637,9 +1714,11 @@ void
 QTmenuConfig::subwin_help_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
+    if (i <= 0)
+        return;
     int wnum = i >> 16;  // Decode window number.
     i &= 0xffff;
-    MenuBox *mbox = MainMenu()->FindSubwMenu("help", wnum);
+    MenuBox *mbox = MainMenu()->FindSubwMenu(MMhelp, wnum);
     if (!mbox)
         return;
     MenuEnt *ent = &mbox->menu[i];

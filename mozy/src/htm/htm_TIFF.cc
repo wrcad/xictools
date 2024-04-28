@@ -127,7 +127,8 @@ htmImageManager::readTIFF(ImageBuffer *ib)
 
     fwrite(ib->buffer, 1, ib->size, fp);
     fclose(fp);
-    char *tiffile = strdup(buf);
+    char *tiffile = new char[strlen(buf)+1];
+    strcpy(tiffile, buf);
 
     snprintf(buf, sizeof(buf), "%s/moz%d-%s.tmp", path, getpid(), "png");
     fp = fopen(buf, "wb");

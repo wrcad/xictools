@@ -56,7 +56,9 @@
 #include "miscutil/filestat.h"
 #include "miscutil/pathlist.h"
 
+#include <QApplication>
 #include <QLayout>
+#include <QToolButton>
 #include <QPushButton>
 #include <QLabel>
 #include <QTreeWidget>
@@ -148,68 +150,69 @@ QTchdListDlg::QTchdListDlg(GRobject c) : QTbag(this)
 
     // upper buttons
     //
-    chl_addbtn = new QPushButton(tr("Add"));
+    chl_addbtn = new QToolButton();
+    chl_addbtn->setText(tr("Add"));
     hbox->addWidget(chl_addbtn);
     chl_addbtn->setCheckable(true);
-    chl_addbtn->setAutoDefault(false);
     connect(chl_addbtn, SIGNAL(toggled(bool)),
         this, SLOT(add_btn_slot(bool)));
 
-    chl_savbtn = new QPushButton(tr("Save"));
+    chl_savbtn = new QToolButton();
+    chl_savbtn->setText(tr("Save"));
     hbox->addWidget(chl_savbtn);
     chl_savbtn->setCheckable(true);
-    chl_savbtn->setAutoDefault(false);
     connect(chl_savbtn, SIGNAL(toggled(bool)),
         this, SLOT(sav_btn_slot(bool)));
 
-    chl_delbtn = new QPushButton(tr("Delete"));
+    chl_delbtn = new QToolButton();
+    chl_delbtn->setText(tr("Delete"));
     hbox->addWidget(chl_delbtn);
     chl_delbtn->setCheckable(true);
-    chl_delbtn->setAutoDefault(false);
     connect(chl_delbtn, SIGNAL(toggled(bool)),
         this, SLOT(del_btn_slot(bool)));
 
-    chl_cfgbtn = new QPushButton(tr("Config"));
+    chl_cfgbtn = new QToolButton();
+    chl_cfgbtn->setText(tr("Config"));
     hbox->addWidget(chl_cfgbtn);
     chl_cfgbtn->setCheckable(true);
-    chl_cfgbtn->setAutoDefault(false);
     connect(chl_cfgbtn, SIGNAL(toggled(bool)),
         this, SLOT(cfg_btn_slot(bool)));
 
-    chl_dspbtn = new QPushButton(tr("Display"));
+    chl_dspbtn = new QToolButton();
+    chl_dspbtn->setText(tr("Display"));
     hbox->addWidget(chl_dspbtn);
     chl_dspbtn->setCheckable(true);
-    chl_dspbtn->setAutoDefault(false);
     connect(chl_dspbtn, SIGNAL(toggled(bool)),
         this, SLOT(dsp_btn_slot(bool)));
 
-    chl_cntbtn = new QPushButton(tr("Contents"));
+    chl_cntbtn = new QToolButton();
+    chl_cntbtn->setText(tr("Contents"));
     hbox->addWidget(chl_cntbtn);
-    chl_cntbtn->setAutoDefault(false);
     connect(chl_cntbtn, SIGNAL(clicked()),
         this, SLOT(cnt_btn_slot()));
 
-    chl_celbtn = new QPushButton(tr("Cell"));
+    chl_celbtn = new QToolButton();
+    chl_celbtn->setText(tr("Cell"));
     hbox->addWidget(chl_celbtn);
     chl_celbtn->setCheckable(true);
-    chl_celbtn->setAutoDefault(false);
     connect(chl_celbtn, SIGNAL(toggled(bool)),
         this, SLOT(cel_btn_slot(bool)));
 
-    chl_infbtn = new QPushButton(tr("Info"));
+    chl_infbtn = new QToolButton();
+    chl_infbtn->setText(tr("Info"));
     hbox->addWidget(chl_infbtn);
-    chl_infbtn->setAutoDefault(false);
     connect(chl_infbtn, SIGNAL(clicked()), this, SLOT(inf_btn_slot()));
 
-    chl_qinfbtn = new QPushButton("?");
+    chl_qinfbtn = new QToolButton();
+    chl_qinfbtn->setText("?");
     hbox->addWidget(chl_qinfbtn);
-    chl_qinfbtn->setAutoDefault(false);
     connect(chl_qinfbtn, SIGNAL(clicked()), this, SLOT(qinf_btn_slot()));
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    hbox->addStretch(1);
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     if (DSP()->MainWdesc()->DbType() == WDchd)
         QTdev::SetStatus(chl_dspbtn, true);
@@ -231,7 +234,7 @@ QTchdListDlg::QTchdListDlg(GRobject c) : QTbag(this)
         SLOT(current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*)));
 
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_PROP))
+    if (Fnt()->getFont(&fnt, FNT_PROP))
         chl_list->setFont(*fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
@@ -274,10 +277,10 @@ QTchdListDlg::QTchdListDlg(GRobject c) : QTbag(this)
     connect(chl_usetab, SIGNAL(stateChanged(int)),
         this, SLOT(usetab_btn_slot(int)));
 
-    chl_showtab = new QPushButton(tr("Edit Cell Table"));
+    chl_showtab = new QToolButton();
+    chl_showtab->setText(tr("Edit Cell Table"));
     col2->addWidget(chl_showtab);
     chl_showtab->setCheckable(true);
-    chl_showtab->setAutoDefault(false);
     connect(chl_showtab, SIGNAL(toggled(bool)),
         this, SLOT(showtab_btn_slot(bool)));
 
@@ -297,7 +300,8 @@ QTchdListDlg::QTchdListDlg(GRobject c) : QTbag(this)
 
     // dismiss button
     //
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -324,6 +328,12 @@ QTchdListDlg::~QTchdListDlg()
         chl_del_pop->popdown();
     Cvt()->PopUpDisplayWindow(0, MODE_OFF, 0, 0, 0);
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTchdListDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 // Update the listing.
@@ -815,8 +825,8 @@ QTchdListDlg::dsp_btn_slot(bool state)
         }
         BBox BB = *p->get_bb();
         BB.scale(1.1);
-        Cvt()->PopUpDisplayWindow(0, MODE_ON, &BB, chl_display_cb, 0);
         setEnabled(false);
+        Cvt()->PopUpDisplayWindow(chl_dspbtn, MODE_ON, &BB, chl_display_cb, 0);
     }
     else {
         XM()->SetHierDisplayMode(0, 0, 0);
@@ -1106,7 +1116,7 @@ QTchdListDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_PROP) {
         QFont *fnt;
-        if (FC.getFont(&fnt, FNT_PROP))
+        if (Fnt()->getFont(&fnt, FNT_PROP))
             chl_list->setFont(*fnt);
         update();
     }

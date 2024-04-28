@@ -5987,8 +5987,10 @@ namespace {
     PTretType pointTo()
     {
         if (!DSPpkg::self()->MainDev() ||
-                DSPpkg::self()->MainDev()->ident != _devGTK_)
+                (DSPpkg::self()->MainDev()->ident != _devQT_ &&
+                DSPpkg::self()->MainDev()->ident != _devGTK_))
              return (PTesc);
+        
         PointCmd = new PointState("POINT", "Point");
         PL()->SavePrompt();
         Gst()->SaveGhost();
@@ -6020,13 +6022,13 @@ bool PointState::got_abort;
 // (int) Point(array)
 //
 // The argument is the name of a two component (or larger) real array. 
-// This function blocks until mouse button 1 (left button) is pressed, or the Esc
-// key is pressed, while the pointer is in a drawing window.  The
-// coordinates of the pointer at the time of the press are returned in
-// the array.  The return value is 0 if Esc was pressed, or 1 for a
-// button 1 press.  Buttons 2 and 3 have their normal effects while
-// this function is active, i.e., they are not handled in this
-// function.
+// This function blocks until mouse button 1 (left button) is pressed,
+// or the Esc key is pressed, while the pointer is in a drawing
+// window.  The coordinates of the pointer at the time of the press
+// are returned in the array.  The return value is 0 if Esc was
+// pressed, or 1 for a button 1 press.  Buttons 2 and 3 have their
+// normal effects while this function is active, i.e., they are not
+// handled in this function.
 //
 // Example:
 //     a[2]

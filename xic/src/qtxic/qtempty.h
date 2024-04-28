@@ -73,6 +73,10 @@ public:
     QTemptyDlg(stringlist*);
     ~QTemptyDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     QSize sizeHint() const;
     void update(stringlist*);
 
@@ -80,7 +84,7 @@ public:
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);

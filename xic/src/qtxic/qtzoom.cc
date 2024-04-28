@@ -45,8 +45,10 @@
 #include "qtinterf/qtdblsb.h"
 #include <math.h>
 
+#include <QApplication>
 #include <QLayout>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 #include <QCheckBox>
 #include <QGroupBox>
@@ -95,10 +97,10 @@ QTzoomDlg::QTzoomDlg(QTbag *owner, WindowDesc *w)
     hb->addWidget(lbl);
     hbox->addWidget(gb);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     if (w->IsXSect()) {
         // Showing cross-section, add a control set for the Y-scale.
@@ -128,10 +130,10 @@ QTzoomDlg::QTzoomDlg(QTbag *owner, WindowDesc *w)
         zm_yscale->setValue(1.0);
         zm_yscale->setDecimals(5);
         hbox->addWidget(zm_yscale);
-        btn = new QPushButton(tr("Apply"));
-        hbox->addWidget(btn);
-        btn->setAutoDefault(false);
-        connect(btn, SIGNAL(clicked()), this, SLOT(y_apply_btn_slot()));
+        tbtn = new QToolButton();
+        tbtn->setText(tr("Apply"));
+        hbox->addWidget(tbtn);
+        connect(tbtn, SIGNAL(clicked()), this, SLOT(y_apply_btn_slot()));
     }
 
     hbox = new QHBoxLayout(0);
@@ -148,10 +150,10 @@ QTzoomDlg::QTzoomDlg(QTbag *owner, WindowDesc *w)
     zm_zoom->setValue(1.0);
     zm_zoom->setDecimals(5);
     hbox->addWidget(zm_zoom);
-    btn = new QPushButton(tr("Apply"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(z_apply_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Apply"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(z_apply_btn_slot()));
 
     hbox = new QHBoxLayout(0);
     vbox->addLayout(hbox);
@@ -189,17 +191,18 @@ QTzoomDlg::QTzoomDlg(QTbag *owner, WindowDesc *w)
     zm_wid->setValue(100.0);
     zm_wid->setDecimals(ndgt);
     hbox->addWidget(zm_wid);
-    btn = new QPushButton(tr("Apply"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(window_apply_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Apply"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(window_apply_btn_slot()));
 
     hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -221,6 +224,12 @@ QTzoomDlg::~QTzoomDlg()
 }
 
 
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTzoomDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
+
+
 // GRpopup override
 //
 void
@@ -229,6 +238,8 @@ QTzoomDlg::popdown()
     if (!p_parent)
         return;
     QTbag *owner = dynamic_cast<QTbag*>(p_parent);
+    if (owner->Shell())
+        owner->Shell()->activateWindow();
     if (!owner || !owner->MonitorActive(this))
         return;
 

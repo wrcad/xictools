@@ -58,7 +58,9 @@
 #include "qtinterf/qtinput.h"
 #include "miscutil/filestat.h"
 
+#include <QApplication>
 #include <QLayout>
+#include <QToolButton>
 #include <QPushButton>
 #include <QGroupBox>
 #include <QLabel>
@@ -220,86 +222,113 @@ QTcellsDlg::QTcellsDlg(GRobject c) : QTbag(this)
     col1->setContentsMargins(qm);
     col1->setSpacing(2);
     hbox->addLayout(col1);
+    hbox->setStretch(0, 0);
 
     // button column
     //
-    c_clearbtn = new QPushButton(tr("Clear"));
+    c_clearbtn = new QToolButton();
+    c_clearbtn->setText(tr("Clear"));
+    c_clearbtn->setSizePolicy(QSizePolicy::MinimumExpanding,
+        QSizePolicy::Maximum);
     col1->addWidget(c_clearbtn);
-    c_clearbtn->setAutoDefault(false);
     connect(c_clearbtn, SIGNAL(clicked()), this, SLOT(clear_btn_slot()));
     if (!EditIf()->hasEdit())
         c_clearbtn->hide();
 
-    c_treebtn = new QPushButton(tr("Tree"));
+    c_treebtn = new QToolButton();
+    c_treebtn->setText(tr("Tree"));
+    c_treebtn->setSizePolicy(QSizePolicy::MinimumExpanding,
+        QSizePolicy::Maximum);
     col1->addWidget(c_treebtn);
-    c_treebtn->setAutoDefault(false);
     connect(c_treebtn, SIGNAL(clicked()), this, SLOT(tree_btn_slot()));
 
-    c_openbtn = new QPushButton(tr("Open"));
+    c_openbtn = new QToolButton();
+    c_openbtn->setText(tr("Open"));
+    c_openbtn->setSizePolicy(QSizePolicy::MinimumExpanding,
+        QSizePolicy::Maximum);
     col1->addWidget(c_openbtn);
-    c_openbtn->setAutoDefault(false);
     connect(c_openbtn, SIGNAL(clicked()), this, SLOT(open_btn_slot()));
 
-    c_placebtn = new QPushButton(tr("Place"));
+    c_placebtn = new QToolButton();
+    c_placebtn->setText(tr("Place"));
+    c_placebtn->setSizePolicy(QSizePolicy::MinimumExpanding,
+        QSizePolicy::Maximum);
     col1->addWidget(c_placebtn);
-    c_placebtn->setAutoDefault(false);
     connect(c_placebtn, SIGNAL(clicked()), this, SLOT(place_btn_slot()));
     if (!EditIf()->hasEdit())
         c_placebtn->hide();
 
-    c_copybtn = new QPushButton(tr("Copy"));
+    c_copybtn = new QToolButton();
+    c_copybtn->setText(tr("Copy"));
+    c_copybtn->setSizePolicy(QSizePolicy::MinimumExpanding,
+        QSizePolicy::Maximum);
     col1->addWidget(c_copybtn);
-    c_copybtn->setAutoDefault(false);
     connect(c_copybtn, SIGNAL(clicked()), this, SLOT(copy_btn_slot()));
     if (!EditIf()->hasEdit())
         c_copybtn->hide();
 
-    c_replbtn = new QPushButton(tr("Replace"));;
+    c_replbtn = new QToolButton();
+    c_replbtn->setText(tr("Replace"));;
+    c_replbtn->setSizePolicy(QSizePolicy::MinimumExpanding,
+        QSizePolicy::Maximum);
     col1->addWidget(c_replbtn);
-    c_replbtn->setAutoDefault(false);
     connect(c_replbtn, SIGNAL(clicked()), this, SLOT(repl_btn_slot()));
     if (!EditIf()->hasEdit())
         c_replbtn->hide();
 
-    c_renamebtn = new QPushButton(tr("Rename"));;
+    c_renamebtn = new QToolButton();
+    c_renamebtn->setText(tr("Rename"));;
+    c_renamebtn->setSizePolicy(QSizePolicy::MinimumExpanding,
+        QSizePolicy::Maximum);
     col1->addWidget(c_renamebtn);
-    c_renamebtn->setAutoDefault(false);
     connect(c_renamebtn, SIGNAL(clicked()), this, SLOT(rename_btn_slot()));
     if (!EditIf()->hasEdit())
         c_renamebtn->hide();
 
-    c_searchbtn = new QPushButton(tr("Search"));;
+    c_searchbtn = new QToolButton();
+    c_searchbtn->setText(tr("Search"));;
+    c_searchbtn->setSizePolicy(QSizePolicy::MinimumExpanding,
+        QSizePolicy::Maximum);
     col1->addWidget(c_searchbtn);
     c_searchbtn->setCheckable(true);
-    c_searchbtn->setAutoDefault(false);
     connect(c_searchbtn, SIGNAL(toggled(bool)),
         this, SLOT(search_btn_slot(bool)));
 
-    c_flagbtn = new QPushButton(tr("Flags"));
+    c_flagbtn = new QToolButton();
+    c_flagbtn->setText(tr("Flags"));
+    c_flagbtn->setSizePolicy(QSizePolicy::MinimumExpanding,
+        QSizePolicy::Maximum);
     col1->addWidget(c_flagbtn);
-    c_flagbtn->setAutoDefault(false);
     connect(c_flagbtn, SIGNAL(clicked()), this, SLOT(flag_btn_slot()));
 
-    c_infobtn = new QPushButton(tr("Info"));;
+    c_infobtn = new QToolButton();
+    c_infobtn->setText(tr("Info"));;
+    c_infobtn->setSizePolicy(QSizePolicy::MinimumExpanding,
+        QSizePolicy::Maximum);
     col1->addWidget(c_infobtn);
-    c_infobtn->setAutoDefault(false);
     connect(c_infobtn, SIGNAL(clicked()), this, SLOT(info_btn_slot()));
 
-    c_showbtn = new QPushButton(tr("Show"));;
+    c_showbtn = new QToolButton();
+    c_showbtn->setText(tr("Show"));;
+    c_showbtn->setSizePolicy(QSizePolicy::MinimumExpanding,
+        QSizePolicy::Maximum);
     col1->addWidget(c_showbtn);
-    c_showbtn->setAutoDefault(false);
     connect(c_showbtn, SIGNAL(toggled(bool)), this, SLOT(show_btn_slot(bool)));
 
-    c_fltrbtn = new QPushButton(tr("Filter"));
+    c_fltrbtn = new QToolButton();
+    c_fltrbtn->setText(tr("Filter"));
+    c_fltrbtn->setSizePolicy(QSizePolicy::MinimumExpanding,
+        QSizePolicy::Maximum);
     col1->addWidget(c_fltrbtn);
     c_fltrbtn->setCheckable(true);
-    c_fltrbtn->setAutoDefault(false);
     connect(c_fltrbtn, SIGNAL(toggled(bool)), this, SLOT(fltr_btn_slot(bool)));
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    col1->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    tbtn->setSizePolicy(QSizePolicy::MinimumExpanding,
+        QSizePolicy::Maximum);
+    col1->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // title label
     //
@@ -307,6 +336,7 @@ QTcellsDlg::QTcellsDlg(GRobject c) : QTbag(this)
     hbox->addLayout(col2);
     col2->setContentsMargins(qm);
     col2->setSpacing(2);
+    hbox->setStretch(1, 1);
 
     QGroupBox *gb = new QGroupBox();
     col2->addWidget(gb);
@@ -334,7 +364,7 @@ QTcellsDlg::QTcellsDlg(GRobject c) : QTbag(this)
         this, SLOT(mouse_motion_slot(QMouseEvent*)));
 
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_FIXED))
+    if (Fnt()->getFont(&fnt, FNT_FIXED))
         wb_textarea->setFont(*fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
@@ -346,22 +376,16 @@ QTcellsDlg::QTcellsDlg(GRobject c) : QTbag(this)
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
-    btn = new QPushButton(tr("Save Text"));
-    hbox->addWidget(btn);
-    btn->setCheckable(true);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(toggled(bool)), this, SLOT(save_btn_slot(bool)));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Save Text"));
+    hbox->addWidget(tbtn);
+    tbtn->setCheckable(true);
+    connect(tbtn, SIGNAL(toggled(bool)), this, SLOT(save_btn_slot(bool)));
 
     c_page_combo = new QComboBox();
     hbox->addWidget(c_page_combo);
     connect(c_page_combo, SIGNAL(currentIndexChanged(int)),
         this, SLOT(page_menu_slot(int)));
-
-    // dismiss button
-    //
-    btn = new QPushButton(tr("Dismiss"));
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     // mode menu
     //
@@ -372,6 +396,13 @@ QTcellsDlg::QTcellsDlg(GRobject c) : QTbag(this)
     c_mode_combo->setCurrentIndex(c_mode);
     connect(c_mode_combo, SIGNAL(currentIndexChanged(int)),
         this, SLOT(mode_changed_slot(int)));
+
+    // dismiss button
+    //
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     update();
 }
@@ -408,6 +439,12 @@ QTcellsDlg::~QTcellsDlg()
     delete [] c_replname;
     delete [] c_newname;
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTcellsDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 void
@@ -730,13 +767,13 @@ QTcellsDlg::raw_cell_list(int *pcnt, int *ppgs, bool nomark)
                     int j = 0;
                     char buf[128];
                     if (c_mode == Physical) {
-                        if (cbin.phys()->isModified())
+                        if (cbin.phys()->countModified())
                             buf[j++] = '+';
                         if (!cbin.phys()->isSubcell())
                             buf[j++] = '*';
                     }
                     else {
-                        if (cbin.elec()->isModified())
+                        if (cbin.elec()->countModified())
                             buf[j++] = '+';
                         if (!cbin.elec()->isSubcell())
                             buf[j++] = '*';
@@ -1551,7 +1588,7 @@ QTcellsDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_FIXED) {
         QFont *fnt;
-        if (FC.getFont(&fnt, FNT_FIXED))
+        if (Fnt()->getFont(&fnt, FNT_FIXED))
             wb_textarea->setFont(*fnt);
         int cols = (wb_textarea->width()-4)/
             QTfont::stringWidth(0, wb_textarea) - 2;

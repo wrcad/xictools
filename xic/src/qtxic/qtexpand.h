@@ -52,7 +52,6 @@
 
 class QLabel;
 class QLineEdit;
-class QPushButton;
 class QToolButton;
 
 class QTexpandDlg : public QDialog, public GRpopup
@@ -64,6 +63,10 @@ public:
 
     QTexpandDlg(QTbag*, const char *, bool, void*);
     ~QTexpandDlg();
+
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
 
     // GRpopup overrides
     void set_visible(bool visib)
@@ -84,7 +87,7 @@ public:
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -120,7 +123,6 @@ private slots:
 private:
     QLabel      *b_label;
     QLineEdit   *b_edit;
-    QPushButton *b_help;
     QToolButton *b_plus;
     QToolButton *b_minus;
     QToolButton *b_all;
@@ -130,9 +132,6 @@ private:
     QToolButton *b_3;
     QToolButton *b_4;
     QToolButton *b_5;
-    QPushButton *b_peek;
-    QPushButton *b_apply;
-    QPushButton *b_dismiss;
 
     void *p_cb_arg;
     ExpandCallback p_callback;

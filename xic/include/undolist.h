@@ -379,10 +379,9 @@ public:
     void *GetPcPrmChanges();
     void ResetPcPrmChanges(void*);
 
-public:
-    bool HasChanged()
+    bool HasChanged() const
         {
-            for (Oper *cur = &ul_curop; cur; cur = cur->next_in_group()) {
+            for (const Oper *cur = &ul_curop; cur; cur = cur->next_in_group()) {
                 if (!cur->celldesc())
                     continue;
                 if (cur->changed())
@@ -391,11 +390,12 @@ public:
             return (false);
         }
 
-    bool HasUndo() { return (ul_operations != 0); }
-    bool HasRedo() { return (ul_redo_list != 0); }
-    bool HasOneRedo() { return (ul_redo_list && !ul_redo_list->next_op()); }
+    bool HasUndo()                  const { return (ul_operations != 0); }
+    bool HasRedo()                  const { return (ul_redo_list != 0); }
+    bool HasOneRedo() 
+        const { return (ul_redo_list && !ul_redo_list->next_op()); }
 
-    int CountRedo()
+    int CountRedo() const
         {
             int cnt = 0;
             for (Oper *o = ul_redo_list; o; o = o->next_op())
@@ -408,13 +408,13 @@ public:
     Oper *RotateRedo(Oper *op)
         { Oper *tmp = ul_redo_list; ul_redo_list = op; return (tmp); }
 
-    const Oper &CurOp() { return (ul_curop); }
+    const Oper &CurOp()             { return (ul_curop); }
 
-    void SetUndoLength(int l) { if (l >= 0) ul_undo_length = l; }
-    int UndoLength() { return (ul_undo_length); }
+    void SetUndoLength(int l)       { if (l >= 0) ul_undo_length = l; }
+    int UndoLength()                const { return (ul_undo_length); }
 
-    Oper *UndoList() { return (ul_operations); }
-    Oper *RedoList() { return (ul_redo_list); }
+    Oper *UndoList()                { return (ul_operations); }
+    Oper *RedoList()                { return (ul_redo_list); }
 
 private:
     // undolist.cc

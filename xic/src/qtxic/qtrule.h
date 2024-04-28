@@ -54,7 +54,7 @@
 class QLabel;
 class QLineEdit;
 class QCheckBox;
-class QPushButton;
+class QToolButton;
 namespace qtinterf {
     class QTdoubleSpinBox;
 }
@@ -68,13 +68,17 @@ public:
         void*, const DRCtestDesc*);
     ~QTruleDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update(DRCtype, const char*, const DRCtestDesc*);
 
     void set_transient_for(QWidget *prnt)
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -124,7 +128,7 @@ private:
     QLabel      *ru_net_la;
     QTdoubleSpinBox *ru_net_sb;
     QCheckBox   *ru_use_st;
-    QPushButton *ru_edit_st;
+    QToolButton *ru_edit_st;
     QLabel      *ru_enc_la;
     QTdoubleSpinBox *ru_enc_sb;
     QLabel      *ru_opp_la;

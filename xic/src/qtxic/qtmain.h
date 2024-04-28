@@ -327,16 +327,6 @@ public:
     QTsubwin(int, QWidget* = 0);
     ~QTsubwin();
 
-    void set_transient_for(QWidget *prnt)
-        {
-            Qt::WindowFlags f = windowFlags();
-            setParent(prnt);
-#ifdef __APPLE__
-            f |= Qt::Tool;
-#endif
-            setWindowFlags(f);
-        }
-
     // Don't pop down from Esc press.
     void keyPressEvent(QKeyEvent *ev)
         {
@@ -392,8 +382,6 @@ public:
     // in Xic.
     bool focusNextPrevChild(bool);
 
-    void wheelEvent(QWheelEvent*);
-
     bool keypress_handler(unsigned int, unsigned int, const char*, bool, bool);
 
 signals:
@@ -411,6 +399,7 @@ protected slots:
     void leave_slot(QEvent*);
     void focus_in_slot(QFocusEvent*);
     void focus_out_slot(QFocusEvent*);
+    void mouse_wheel_slot(QWheelEvent*);
     void drag_enter_slot(QDragEnterEvent*);
     void drop_slot(QDropEvent*);
     void font_changed(int);
@@ -459,9 +448,11 @@ public:
     QWidget *PhysButtonBox()    { return (mw_phys_button_box); }
     QWidget *ElecButtonBox()    { return (mw_elec_button_box); }
 
-
     // qtmain.cc
     QTmainwin(QWidget* = 0);
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
     QSize sizeHint() const;
     QSize minimumSizeHint() const;
     void initialize();

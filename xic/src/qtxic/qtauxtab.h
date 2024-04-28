@@ -50,7 +50,7 @@
 //-----------------------------------------------------------------------------
 // QTauxTabDlg:  Dialog to manage Override Cell Table.
 
-class QPushButton;
+class QToolButton;
 class QRadioButton;
 class QResizeEvent;
 class QMouseEvent;
@@ -64,13 +64,17 @@ public:
     QTauxTabDlg(GRobject);
     ~QTauxTabDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update();
 
     void set_transient_for(QWidget *prnt)
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -96,8 +100,8 @@ private slots:
     void resize_slot(QResizeEvent*);
     void mouse_press_slot(QMouseEvent*);
     void mouse_motion_slot(QMouseEvent*);
-    void mime_data_handled_slot(const QMimeData*, bool*) const;
-    void mime_data_delivered_slot(const QMimeData*, bool*);
+    void mime_data_handled_slot(const QMimeData*, int*) const;
+    void mime_data_delivered_slot(const QMimeData*, int*);
     void font_changed_slot(int);
 
 private:
@@ -108,9 +112,9 @@ private:
     static void at_clear_cb(bool, void*);
 
     GRobject    at_caller;
-    QPushButton *at_addbtn;
-    QPushButton *at_rembtn;
-    QPushButton *at_clearbtn;
+    QToolButton *at_addbtn;
+    QToolButton *at_rembtn;
+    QToolButton *at_clearbtn;
     QRadioButton *at_over;
     QRadioButton *at_skip;
     GRledPopup  *at_add_pop;

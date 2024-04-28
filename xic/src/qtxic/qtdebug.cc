@@ -65,6 +65,7 @@
 #include <QAction>
 #include <QLabel>
 #include <QGroupBox>
+#include <QToolButton>
 #include <QPushButton>
 #include <QToolButton>
 #include <QTreeWidget>
@@ -84,7 +85,7 @@
 // Help system keywords used:
 //  xic:debug
 
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
 #define USE_QTOOLBAR
 #endif
 
@@ -288,10 +289,10 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c) : QTbag(this)
     a->setData(2);
     a->setShortcut(QKeySequence("Ctrl+C"));
     // Paste from Clipboard, <control>V, db_paste_proc, 0, 0
-    a = db_filemenu->addAction(tr("Paste from Clipboard"));
+    a = db_editmenu->addAction(tr("Paste from Clipboard"));
     a->setData(3);
     a->setShortcut(QKeySequence("Ctrl+V"));
-#ifdef QT_OS_LINUX
+#ifdef Q_OS_LINUX
     // Paste Primary, <alt>P, db_paste_prim_proc, 0, 0
     a = db_editmenu->addAction(tr("Paste Primary"));
     a->setData(4);
@@ -373,11 +374,11 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c) : QTbag(this)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    db_modebtn = new QPushButton(tr("Run"));
+    db_modebtn = new QToolButton();
+    db_modebtn->setText(tr("Run"));
     hbox->addWidget(db_modebtn);
     db_modebtn->setEnabled(false);
     db_modebtn->setMaximumWidth(80);
-    db_modebtn->setAutoDefault(false);
     connect(db_modebtn, SIGNAL(clicked()), this, SLOT(mode_btn_slot()));
 
     // labels in frame
@@ -405,10 +406,10 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c) : QTbag(this)
     connect(wb_textarea, SIGNAL(textChanged()),
         this, SLOT(text_changed_slot()));
     connect(wb_textarea,
-        SIGNAL(mime_data_handled(const QMimeData*, bool*)),
-        this, SLOT(mime_data_handled_slot(const QMimeData*, bool*)));
-    connect(wb_textarea, SIGNAL(mime_data_delivered(const QMimeData*, bool*)),
-        this, SLOT(mime_data_delivered_slot(const QMimeData*, bool*)));
+        SIGNAL(mime_data_handled(const QMimeData*, int*)),
+        this, SLOT(mime_data_handled_slot(const QMimeData*, int*)));
+    connect(wb_textarea, SIGNAL(mime_data_delivered(const QMimeData*, int*)),
+        this, SLOT(mime_data_delivered_slot(const QMimeData*, int*)));
     connect(wb_textarea, SIGNAL(key_press_event(QKeyEvent*)),
         this, SLOT(key_press_slot(QKeyEvent*)));
 
@@ -417,7 +418,7 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c) : QTbag(this)
         this, SLOT(text_change_slot(int, int, int)));
 
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_FIXED))
+    if (Fnt()->getFont(&fnt, FNT_FIXED))
         wb_textarea->setFont(*fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
@@ -594,9 +595,7 @@ QTscriptDebuggerDlg::step()
         start();
         PL()->RestorePrompt();
         // Get focus back in case it was lost.
-        show();
         activateWindow();
-        raise();
         wb_textarea->setFocus();
         return;
     }
@@ -621,9 +620,7 @@ QTscriptDebuggerDlg::step()
     set_sens(true);
     update_variables();
     // Get focus back in case it was lost.
-    show();
     activateWindow();
-    raise();
     wb_textarea->setFocus();
 }
 
@@ -1094,7 +1091,7 @@ QTscriptDebuggerDlg::monitor()
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
 
-    db_vars_pop = new QTdbgVarsDlg(&db_vars_pop);
+    db_vars_pop = new QTdbgVarsDlg(&db_vars_pop, this);
 
     QTdev::self()->SetPopupLocation(GRloc(LW_LR), db_vars_pop,
         wb_shell);
@@ -1743,19 +1740,22 @@ QTscriptDebuggerDlg::text_change_slot(int strt, int nch_rm, int nch_add)
 
 
 void
-QTscriptDebuggerDlg::mime_data_handled_slot(const QMimeData *dta, bool *accpt)
+QTscriptDebuggerDlg::mime_data_handled_slot(const QMimeData *dta, int *accpt)
 const
 {
     if (dta->hasFormat("text/twostring") || dta->hasFormat("text/plain"))
-        *accpt = true;
+        *accpt = 1;
+    else
+        *accpt = -1;
 }
 
 
 void
-QTscriptDebuggerDlg::mime_data_delivered_slot(const QMimeData *dta, bool *accpt)
+QTscriptDebuggerDlg::mime_data_delivered_slot(const QMimeData *dta, int *accpt)
 {
     // Receive drop data (a path name).
 
+    *accpt = -1;
     QByteArray data_ba;
     if (dta->hasFormat("text/twostring"))
         data_ba = dta->data("text/twostring");
@@ -1763,7 +1763,6 @@ QTscriptDebuggerDlg::mime_data_delivered_slot(const QMimeData *dta, bool *accpt)
         data_ba = dta->data("text/plain");
     else
         return;
-    *accpt = true;
     char *src = lstring::copy(data_ba.constData());
     if (!src)
         return;
@@ -1792,6 +1791,7 @@ QTscriptDebuggerDlg::mime_data_delivered_slot(const QMimeData *dta, bool *accpt)
         db_dropfile = lstring::copy(src);
         if (db_load_pop) {
             db_load_pop->popdown();
+            delete [] src;
             return;
         }
         if (check_save(LoadCode))
@@ -1803,6 +1803,7 @@ QTscriptDebuggerDlg::mime_data_delivered_slot(const QMimeData *dta, bool *accpt)
             db_load_pop->register_usrptr((void**)&db_load_pop);
     }
     delete [] src;
+    *accpt = 1;
 }
 
 
@@ -1811,7 +1812,7 @@ QTscriptDebuggerDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_FIXED) {
         QFont *fnt;
-        if (FC.getFont(&fnt, fnum))
+        if (Fnt()->getFont(&fnt, fnum))
             wb_textarea->setFont(*fnt);
         refresh(false, locPresent, true);
     }
@@ -1823,7 +1824,7 @@ QTscriptDebuggerDlg::font_changed_slot(int fnum)
 // The variables monitor.
 //
 
-QTdbgVarsDlg::QTdbgVarsDlg(void *p)
+QTdbgVarsDlg::QTdbgVarsDlg(void *p, QWidget *prnt) : QDialog(prnt)
 {
     dv_pointer = p;
 
@@ -1856,7 +1857,7 @@ QTdbgVarsDlg::QTdbgVarsDlg(void *p)
         this, SLOT(item_selection_changed()));
 
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_FIXED))
+    if (Fnt()->getFont(&fnt, FNT_FIXED))
         dv_list->setFont(*fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
@@ -1864,6 +1865,7 @@ QTdbgVarsDlg::QTdbgVarsDlg(void *p)
     // Dismiss button
     //
     QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 }
@@ -1874,6 +1876,12 @@ QTdbgVarsDlg::~QTdbgVarsDlg()
     if (dv_pointer)
         *(void**)dv_pointer = 0;
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTdbgVarsDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 // Update the variables listing.
@@ -1963,7 +1971,7 @@ QTdbgVarsDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_FIXED) {
         QFont *fnt;
-        if (FC.getFont(&fnt, FNT_FIXED))
+        if (Fnt()->getFont(&fnt, FNT_FIXED))
             dv_list->setFont(*fnt);
     }
 }

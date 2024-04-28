@@ -42,6 +42,7 @@
 #include "qtexpand.h"
 #include "dsp_inlines.h"
 
+#include <QApplication>
 #include <QAction>
 #include <QGroupBox>
 #include <QLabel>
@@ -64,7 +65,6 @@ QTexpandDlg::QTexpandDlg(QTbag *owner, const char *string, bool nopeek,
 
     b_label = 0;
     b_edit = 0;
-    b_help = 0;
     b_plus = 0;
     b_minus = 0;
     b_all = 0;
@@ -74,9 +74,6 @@ QTexpandDlg::QTexpandDlg(QTbag *owner, const char *string, bool nopeek,
     b_3 = 0;
     b_4 = 0;
     b_5 = 0;
-    b_peek = 0;
-    b_apply = 0;
-    b_dismiss = 0;
 
     if (owner)
         owner->MonitorAdd(this);
@@ -104,11 +101,11 @@ QTexpandDlg::QTexpandDlg(QTbag *owner, const char *string, bool nopeek,
     b_label = new QLabel(tr("Set Expansion Control String"));
     hb->addWidget(b_label);
 
-    b_help = new QPushButton(tr("Help"));
-    hbox->addWidget(b_help);
-    b_help->setAutoDefault(false);
-    b_help->setMaximumWidth(70);
-    connect(b_help, SIGNAL(clicked()), this, SLOT(help_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    tbtn->setMaximumWidth(70);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_slot()));
 
     hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
@@ -166,26 +163,27 @@ QTexpandDlg::QTexpandDlg(QTbag *owner, const char *string, bool nopeek,
     connect(b_5, SIGNAL(clicked()), this, SLOT(b5_slot()));
 
     if (!nopeek) {
-        b_peek = new QPushButton(tr("Peek Mode"));
-        b_peek->setAutoDefault(false);
-        hbox->addWidget(b_peek);
-        connect(b_peek, SIGNAL(clicked()), this, SLOT(peek_slot()));
+        tbtn = new QToolButton();
+        tbtn->setText(tr("Peek Mode"));
+        hbox->addWidget(tbtn);
+        connect(tbtn, SIGNAL(clicked()), this, SLOT(peek_slot()));
     }
-    else
-        b_peek = 0;
 
     hbox = new QHBoxLayout(0);
     vbox->addLayout(hbox);
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
-    b_apply = new QPushButton(tr("Apply"));
-    hbox->addWidget(b_apply);
-    connect(b_apply, SIGNAL(clicked()), this, SLOT(apply_slot()));
+    QPushButton *btn = new QPushButton(tr("Apply"));
+    btn->setAutoDefault(true);
+    btn->setObjectName("Default");
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(apply_slot()));
 
-    b_dismiss = new QPushButton(tr("Dismiss"));
-    hbox->addWidget(b_dismiss);
-    connect(b_dismiss, SIGNAL(clicked()), this, SLOT(dismiss_slot()));
+    btn = new QPushButton(tr("Dismiss"));
+    btn->setAutoDefault(false);
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_slot()));
 }
 
 
@@ -218,6 +216,12 @@ QTexpandDlg::~QTexpandDlg()
 }
 
 
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTexpandDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
+
+
 // GRpopup override
 //
 void
@@ -226,6 +230,8 @@ QTexpandDlg::popdown()
     if (!p_parent)
         return;
     QTbag *owner = dynamic_cast<QTbag*>(p_parent);
+    if (owner && owner->Shell())
+        owner->Shell()->activateWindow();
     if (!owner || !owner->MonitorActive(this))
         return;
 

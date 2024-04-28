@@ -289,8 +289,8 @@ CDcbin::isSubcell() const
 bool
 CDcbin::isModified() const
 {
-    return ((cbPhysDesc && cbPhysDesc->isModified()) ||
-        (cbElecDesc && cbElecDesc->isModified()));
+    return ((cbPhysDesc && cbPhysDesc->countModified()) ||
+        (cbElecDesc && cbElecDesc->countModified()));
 }
 
 

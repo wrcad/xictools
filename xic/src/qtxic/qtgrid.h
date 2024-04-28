@@ -54,6 +54,7 @@
 class QAction;
 class QGroupBox;
 class QLabel;
+class QToolButton;
 class QPushButton;
 class QSpinBox;
 class QCheckBox;
@@ -76,6 +77,10 @@ public:
     QTgridDlg(QTbag*, WindowDesc*);
     ~QTgridDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     // GRpopup override
     void set_visible(bool visib)
         {
@@ -89,10 +94,16 @@ public:
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
+        }
+
+    void keyPressEvent(QKeyEvent *ev)
+        {
+            if (ev->key() != Qt::Key_Escape)
+                QDialog::keyPressEvent(ev);
         }
 
     void popdown();
@@ -135,7 +146,6 @@ private slots:
 
 private:
     void redraw();
-    void keyPressEvent(QKeyEvent*);
 
     QGroupBox   *gd_snapbox;
     QTdoubleSpinBox *gd_resol;
@@ -149,8 +159,8 @@ private:
     QCheckBox   *gd_wire_edge;
     QCheckBox   *gd_wire_path;
 
-    QPushButton *gd_showbtn;
-    QPushButton *gd_topbtn;
+    QToolButton *gd_showbtn;
+    QToolButton *gd_topbtn;
     QRadioButton *gd_noaxesbtn;
     QRadioButton *gd_plaxesbtn;
     QRadioButton *gd_oraxesbtn;
@@ -164,7 +174,6 @@ private:
     QSpinBox    *gd_crs;
     QSpinBox    *gd_thresh;
 
-    QPushButton *gd_apply;
     QPushButton *gd_cancel;
 
     GridDesc gd_grid;

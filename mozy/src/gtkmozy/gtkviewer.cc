@@ -304,8 +304,8 @@ gtk_viewer::gtk_viewer(int wid, int hei, htmDataInterface *d) :
     g_signal_connect(G_OBJECT(v_draw_area), "style-set",
         G_CALLBACK(v_font_change_hdlr), this);
 
-    set_font(FC.getName(FNT_MOZY));
-    set_fixed_font(FC.getName(FNT_MOZY_FIXED));
+    set_font(Fnt()->getName(FNT_MOZY));
+    set_fixed_font(Fnt()->getName(FNT_MOZY_FIXED));
 
     g_log_set_handler("Pango", G_LOG_LEVEL_WARNING, pango_warning_hdlr, NULL);
 }
@@ -434,7 +434,7 @@ gtk_viewer::set_font(const char *fontspec)
 {
     char *family;
     int sz;
-    FC.parse_freeform_font_string(fontspec, &family, 0, &sz, 0);
+    Fnt()->parse_freeform_font_string(fontspec, &family, 0, &sz, 0);
     setFontFamily(family, sz);
     delete [] family;
 }
@@ -445,7 +445,7 @@ gtk_viewer::set_fixed_font(const char *fontspec)
 {
     char *family;
     int sz;
-    FC.parse_freeform_font_string(fontspec, &family, 0, &sz, 0);
+    Fnt()->parse_freeform_font_string(fontspec, &family, 0, &sz, 0);
     setFixedFontFamily(family, sz);
     delete [] family;
 }
@@ -2727,21 +2727,21 @@ gtk_viewer::font_change_handler(int indx)
 {
     if (indx == FNT_MOZY) {
 
-        const char *fontname = FC.getName(FNT_MOZY);
+        const char *fontname = Fnt()->getName(FNT_MOZY);
         int position = scroll_position(false);
         set_font(fontname);
         set_scroll_position(position, false);
 
-        const char *fixedname = FC.getName(FNT_MOZY_FIXED);
+        const char *fixedname = Fnt()->getName(FNT_MOZY_FIXED);
         char *family;
         int sz1, sz2;
-        FC.parse_freeform_font_string(fontname, &family, 0, &sz1, 0);
+        Fnt()->parse_freeform_font_string(fontname, &family, 0, &sz1, 0);
         delete [] family;
-        FC.parse_freeform_font_string(fixedname, &family, 0, &sz2, 0);
+        Fnt()->parse_freeform_font_string(fixedname, &family, 0, &sz2, 0);
         if (sz1 != sz2) {
             char buf[256];
             snprintf(buf, sizeof(buf), "%s %d", family, sz1);
-            FC.setName(buf, FNT_MOZY_FIXED);
+            Fnt()->setName(buf, FNT_MOZY_FIXED);
             GTKfontPopup::update_all(FNT_MOZY_FIXED);
         }
         delete [] family;
@@ -2749,7 +2749,7 @@ gtk_viewer::font_change_handler(int indx)
     else if (indx == FNT_MOZY_FIXED) {
 
         int position = scroll_position(false);
-        set_fixed_font(FC.getName(FNT_MOZY_FIXED));
+        set_fixed_font(Fnt()->getName(FNT_MOZY_FIXED));
         set_scroll_position(position, false);
     }
 }
@@ -3037,7 +3037,7 @@ gtk_viewer::v_font_change_hdlr(GtkWidget*, void*, void *a2)
 {
     gtk_viewer *w = (gtk_viewer*)a2;
     if (w) {
-        GTKfont *fc = dynamic_cast<GTKfont*>(&FC);
+        GTKfont *fc = dynamic_cast<GTKfont*>(Fnt());
         if (fc)
             w->font_change_handler(fc->last_index_for_update());
     }

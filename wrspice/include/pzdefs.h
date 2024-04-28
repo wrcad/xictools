@@ -66,6 +66,18 @@ struct PZtrial
             seq_num = 0;
             count = 0;
         }
+
+    static PZtrial *dup(PZtrial *t)
+        {
+            if (!t)
+                return (0);
+            PZtrial *tx = new PZtrial(*t);
+            if (tx->next) {
+                tx->next = dup(tx->next);
+                tx->next->prev = tx;
+            }
+            return (tx);
+        }
         
     cIFcomplex s, f_raw, f_def;
     PZtrial *next, *prev;
@@ -117,7 +129,17 @@ struct sPZAN : public sACAN
 
     ~sPZAN() { }
 
-    sJOB *dup() { return (0); }  // XXX fixme
+    sJOB *dup()
+        {
+            sPZAN *pz           = new sPZAN(*this);
+            pz->JOBoutdata      = new sOUTdata(*JOBoutdata);
+            pz->JOBdc.uninit();
+            pz->PZpoleList      = PZtrial::dup(PZpoleList);
+            pz->PZzeroList      = PZtrial::dup(PZzeroList);
+            pz->ZeroTrial       = PZtrial::dup(ZeroTrial);
+            pz->Trials          = PZtrial::dup(Trials);
+            return (pz);
+        }
 
     int PZsetup(sCKT*, int);
     int PZfindZeros(sCKT*, PZtrial**, int*);

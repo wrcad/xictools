@@ -49,9 +49,6 @@ Authors: 1985 Wayne A. Christopher
 #include "cshell.h"
 #include "miscutil/filestat.h"
 #include "ginterf/graphics.h"
-#ifdef WIN32
-#include <setjmp.h>
-#endif
 
 
 //
@@ -188,10 +185,7 @@ CshPar::BackEval(const char *string)
         bool intr = cp_flags[CP_INTERACTIVE];
         cp_flags[CP_INTERACTIVE] = false;
 
-#ifdef WIN32
-        extern jmp_buf msw_jbf[4];
-        extern int msw_jbf_sp;
-
+#ifdef USE_SETJMP_EXP
         bool dopop = false;
         if (msw_jbf_sp < 3) {
             msw_jbf_sp++;

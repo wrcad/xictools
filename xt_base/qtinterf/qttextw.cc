@@ -54,7 +54,7 @@
 using namespace qtinterf;
 
 
-QTtextEdit::QTtextEdit(QWidget *prnt) : QTextEdit(prnt)
+QTtextEdit::QTtextEdit(QWidget *prnt) : QTextBrowser(prnt)
 {
     // Set an arrow cursor rather than te default I-beam.
     viewport()->setCursor(Qt::ArrowCursor);
@@ -434,10 +434,13 @@ QTtextEdit::dropEvent(QDropEvent *ev)
 bool
 QTtextEdit::canInsertFromMimeData(const QMimeData *source) const
 {
-    bool handled = false;
+    // handled: if > 0 accept, if < 0 reject, if == 0 default action.
+    int handled = 0;
     emit mime_data_handled(source, &handled);
-    if (handled)
+    if (handled > 0)
         return (true);
+    if (handled < 0)
+        return (false);
     return (QTextEdit::canInsertFromMimeData(source));
 }
 
@@ -445,7 +448,7 @@ QTtextEdit::canInsertFromMimeData(const QMimeData *source) const
 void
 QTtextEdit::insertFromMimeData(const QMimeData *source)
 {
-    bool handled = false;
+    int handled = 0;
     emit mime_data_delivered(source, &handled);
     if (!handled)
         QTextEdit::insertFromMimeData(source);

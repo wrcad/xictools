@@ -55,7 +55,7 @@ struct sExtCmd;
 class QComboBox;
 class QLabel;
 class QLineEdit;
-class QPushButton;
+class QToolButton;
 class QCheckBox;
 
 class QTextCmdDlg : public QDialog
@@ -68,6 +68,10 @@ public:
         void*, int);
     ~QTextCmdDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     sExtCmd *excmd()                    { return (cmd_excmd); }
 
     static QTextCmdDlg *self()          { return (instPtr); }
@@ -76,7 +80,7 @@ public:
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -103,8 +107,7 @@ private:
     QComboBox   *cmd_depth;
     QLabel      *cmd_label;
     QLineEdit   *cmd_text;
-    QPushButton *cmd_go;
-    QPushButton *cmd_cancel;
+    QToolButton *cmd_go;
     QCheckBox   **cmd_bx;
 
     sExtCmd *cmd_excmd;

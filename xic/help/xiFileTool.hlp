@@ -47,7 +47,7 @@ The FileTool Utility
     all respects as described in this documentation.
 
     <p>
-    Under Unix/Linux/OS X, the best way is to use a symbolic link. 
+    Under Unix/Linux/macOS, the best way is to use a symbolic link. 
     For example, in the same directory as the <tt>xic</tt>
     executable, become root and type (for example)
     <blockquote>

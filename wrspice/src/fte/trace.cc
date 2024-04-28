@@ -205,7 +205,7 @@ IFoutput::iplotCmd(wordlist *wl)
 namespace {
     // Compute the last entry, and grow the iplot's dvecs.
     //
-    void update_dvecs(sGraph *graph, sRunop *rc, sDataVec *xs, bool *vs_flag,
+    void update_dvecs(cGraph *graph, sRunop *rc, sDataVec *xs, bool *vs_flag,
         sRunDesc *run)
     {
         const char *msg = "iplot #%d.\n";
@@ -405,7 +405,7 @@ namespace {
     }
 
 
-    void update_dims(sPlot *pl, sGraph *graph)
+    void update_dims(sPlot *pl, cGraph *graph)
     {
         if (!pl || !graph)
             return;
@@ -448,7 +448,7 @@ IFoutput::iplot(sRunopIplot *rc, sRunDesc *run)
             run->pointCount());
     }
 
-    sGraph *graph;
+    cGraph *graph;
     sDvList *dl0, *dl;
     if (!rc->graphid()) {
         // Draw the grid for the first time, and plot everything
@@ -835,7 +835,7 @@ IFoutput::endIplot(sRunDesc *run)
             d->set_reuseid(0);
             if (d->type() == RO_IPLOT && !d->bad()) {
                 if (d->graphid()) {
-                    sGraph *graph = GP.FindGraph(d->graphid());
+                    cGraph *graph = GP.FindGraph(d->graphid());
                     graph->dev()->Clear();
                     graph->clear_selections();
                     update_dims(run->runPlot(), graph);

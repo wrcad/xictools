@@ -43,7 +43,7 @@
 #include "edit.h"
 #include "dsp_inlines.h"
 
-#include <QDialog>
+#include <QApplication>
 #include <QLayout>
 #include <QGroupBox>
 #include <QLabel>
@@ -147,9 +147,9 @@ QTxformDlg::QTxformDlg(GRobject c,
     hb->addWidget(lbl);
     hbox->addWidget(gb);
 
-    QPushButton *hbtn = new QPushButton(tr("Help"));
+    QToolButton *hbtn = new QToolButton();
+    hbtn->setText(tr("Help"));
     hbox->addWidget(hbtn);
-    hbtn->setAutoDefault(false);
     connect(hbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // Rotation entry and mirror buttons
@@ -201,14 +201,14 @@ QTxformDlg::QTxformDlg(GRobject c,
     hbox->setContentsMargins(qm);
     vbox->addLayout(hbox);
 
-    tf_id = new QPushButton(tr("Identity Transform"));
+    tf_id = new QToolButton();
+    tf_id->setText(tr("Identity Transform"));
     hbox->addWidget(tf_id);
-    tf_id->setAutoDefault(false);
     connect(tf_id, SIGNAL(clicked()), this, SLOT(identity_btn_slot()));
 
-    tf_last = new QPushButton(tr("Last Transform"));
+    tf_last = new QToolButton();
+    tf_last->setText(tr("Last Transform"));
     hbox->addWidget(tf_last);
-    tf_last->setAutoDefault(false);
     connect(tf_last, SIGNAL(clicked()), this, SLOT(last_btn_slot()));
 
     // Store buttons
@@ -272,6 +272,7 @@ QTxformDlg::QTxformDlg(GRobject c,
     vbox->addLayout(hbox);
 
     tf_cancel = new QPushButton(tr("Dismiss"));
+    tf_cancel->setObjectName("Default");
     hbox->addWidget(tf_cancel);
     connect(tf_cancel, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -287,6 +288,12 @@ QTxformDlg::~QTxformDlg()
     if (tf_callback)
         (*tf_callback)(0, false, 0, tf_arg);
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTxformDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 void

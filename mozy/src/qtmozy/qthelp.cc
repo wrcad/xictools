@@ -40,10 +40,12 @@
 
 #include "qthelp.h"
 #include "qtviewer.h"
+#include "qtclrdlg.h"
 #include "qtinterf/qtfile.h"
 #include "qtinterf/qtfont.h"
 #include "qtinterf/qtinput.h"
 #include "qtinterf/qtlist.h"
+#include "qtinterf/qtsearch.h"
 #include "queue_timer.h"
 
 #include "help/help_startup.h"
@@ -52,6 +54,7 @@
 #include "httpget/transact.h"
 #include "miscutil/pathlist.h"
 #include "miscutil/filestat.h"
+#include "miscutil/proxy.h"
 
 #include <QApplication>
 #include <QLayout>
@@ -59,7 +62,7 @@
 #include <QMenuBar>
 #include <QToolBar>
 #include <QToolButton>
-#include <QStatusBar>
+#include <QLabel>
 #include <QResizeEvent>
 #include <QScrollBar>
 #include <QActionGroup>
@@ -68,6 +71,13 @@
 #include <sys/stat.h>
 #include <errno.h>
 #include <unistd.h>
+#ifdef HAVE_PWD_H
+#include <pwd.h>
+#include <sys/wait.h>
+#endif
+#ifdef WIN32
+#include <windows.h>
+#endif
 
 
 /*=======================================================================
@@ -88,7 +98,7 @@
 // set to point to the topic.  Topics linked to lastborn do not have
 // the context field set.
 
-static queue_timer QueueTimer;
+namespace { queue_timer QueueTimer; }
 QueueLoop &HLPcontext::hcxImageQueueLoop = QueueTimer;
 
 // Initiate queue processing.
@@ -173,77 +183,79 @@ namespace qtinterf
 //-----------------------------------------------------------------------------
 // Local declarations
 
-// XPM 
-static const char * const forward_xpm[] = {
-"16 16 4 1",
-" 	c none",
-".	c #0000dd",
-"x	c #0000ee",
-"+  c #0000ff",
-"                ",
-"    .+          ",
-"    .x+         ",
-"    .xx+        ",
-"    .xxx+       ",
-"    .xxxx+      ",
-"    .xxxxx+     ",
-"    .xxxxxx.    ",
-"    .xxxxx.     ",
-"    .xxxx.      ",
-"    .xxx.       ",
-"    .xx.        ",
-"    .x.         ",
-"    ..          ",
-"                ",
-"                "};
+namespace {
+    // XPM 
+    const char * const forward_xpm[] = {
+    "16 16 4 1",
+    " 	c none",
+    ".	c #0000dd",
+    "x	c #0000ee",
+    "+  c #0000ff",
+    "                ",
+    "    .+          ",
+    "    .x+         ",
+    "    .xx+        ",
+    "    .xxx+       ",
+    "    .xxxx+      ",
+    "    .xxxxx+     ",
+    "    .xxxxxx.    ",
+    "    .xxxxx.     ",
+    "    .xxxx.      ",
+    "    .xxx.       ",
+    "    .xx.        ",
+    "    .x.         ",
+    "    ..          ",
+    "                ",
+    "                "};
 
-// XPM 
-static const char * const backward_xpm[] = {
-"16 16 4 1",
-" 	c none",
-".	c #0000dd",
-"x	c #0000ee",
-"+  c #0000ff",
-"                ",
-"          +.    ",
-"         +x.    ",
-"        +xx.    ",
-"       +xxx.    ",
-"      +xxxx.    ",
-"     +xxxxx.    ",
-"    .xxxxxx.    ",
-"     .xxxxx.    ",
-"      .xxxx.    ",
-"       .xxx.    ",
-"        .xx.    ",
-"         .x.    ",
-"          ..    ",
-"                ",
-"                "};
+    // XPM 
+    const char * const backward_xpm[] = {
+    "16 16 4 1",
+    " 	c none",
+    ".	c #0000dd",
+    "x	c #0000ee",
+    "+  c #0000ff",
+    "                ",
+    "          +.    ",
+    "         +x.    ",
+    "        +xx.    ",
+    "       +xxx.    ",
+    "      +xxxx.    ",
+    "     +xxxxx.    ",
+    "    .xxxxxx.    ",
+    "     .xxxxx.    ",
+    "      .xxxx.    ",
+    "       .xxx.    ",
+    "        .xx.    ",
+    "         .x.    ",
+    "          ..    ",
+    "                ",
+    "                "};
 
-// XPM
-static const char * const stop_xpm[] = {
-"16 16 4 1",
-" 	c none",
-".	c red",
-"x  c pink",
-"+  c black",
-"                ",
-"     xxxxxx     ",
-"    x......x    ",
-"   x........x   ",
-"  x..........x  ",
-" x............x ",
-" x............x ",
-" x............x ",
-" x............x ",
-" x............x ",
-" x............x ",
-"  x..........x  ",
-"   x........x   ",
-"    x......x    ",
-"     xxxxxx     ",
-"                "};
+    // XPM
+    const char * const stop_xpm[] = {
+    "16 16 4 1",
+    " 	c none",
+    ".	c red",
+    "x  c pink",
+    "+  c black",
+    "                ",
+    "     xxxxxx     ",
+    "    x......x    ",
+    "   x........x   ",
+    "  x..........x  ",
+    " x............x ",
+    " x............x ",
+    " x............x ",
+    " x............x ",
+    " x............x ",
+    " x............x ",
+    "  x..........x  ",
+    "   x........x   ",
+    "    x......x    ",
+    "     xxxxxx     ",
+    "                "};
+}
 
 //-----------------------------------------------------------------------------
 // Exports
@@ -332,7 +344,7 @@ namespace {
 }
 
 
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
 #define USE_QTOOLBAR
 #endif
 
@@ -349,11 +361,22 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QDialog(prnt),
     h_cur_topic = 0;
     h_stop_btn_pressed = false;
     h_is_frame = !has_menu;
+    h_fifo_name = 0;
+    h_fifo_fd = -1;
+    h_fifo_tid = 0;
+#ifdef WIN32
+    h_fifo_pipe = 0;
+    h_fifo_tfiles = 0;
+#endif
     h_cache_list = 0;
+    h_clrdlg = 0;
     h_frame_array = 0;
     h_frame_array_size = 0;
+    h_ign_case = false;
     h_frame_parent = 0;
     h_frame_name = 0;
+    h_searcher = 0;
+    h_last_search = 0;
 
     wb_sens_set = ::sens_set;
 
@@ -385,7 +408,8 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QDialog(prnt),
 
     h_viewer = new QTviewer(HLP_DEF_WIDTH, HLP_DEF_HEIGHT, this, this);
     vbox->addWidget(h_viewer);
-    h_status_bar = new QStatusBar(this);
+    h_status_bar = new QLabel();
+    h_status_bar->setAlignment(Qt::AlignCenter);
     vbox->addWidget(h_status_bar);
     if (!has_menu)
         h_status_bar->hide();
@@ -428,6 +452,11 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QDialog(prnt),
         this, SLOT(print_slot()));
     h_Reload = h_main_menus[0]->addAction(tr("&Reload"), Qt::CTRL|Qt::Key_R,
         this, SLOT(reload_slot()));
+    // "Old Charset" 8859 support removed.
+    h_MkFIFO = h_main_menus[0]->addAction(tr("&Make FIFO"), Qt::CTRL|Qt::Key_M,
+        this, SLOT(make_fifo_slot(bool)));
+    h_MkFIFO->setCheckable(true);
+
     h_main_menus[0]->addSeparator();
     h_Quit = h_main_menus[0]->addAction(tr("&Quit"), Qt::CTRL|Qt::Key_Q,
         this, SLOT(quit_slot()));
@@ -442,6 +471,11 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QDialog(prnt),
         SLOT(print_slot()), Qt::CTRL|Qt::Key_P);
     h_Reload = h_main_menus[0]->addAction(tr("&Reload"), this,
         SLOT(reload_slot()), Qt::CTRL|Qt::Key_R);
+    // "Old Charset" 8859 support removed.
+    h_MkFIFO = h_main_menus[0]->addAction(tr("&Make FIFO"), this,
+        SLOT(make_fifo_slot(bool)), Qt::CTRL|Qt::Key_M);
+    h_MkFIFO->setCheckable(true);
+
     h_main_menus[0]->addSeparator();
     h_Quit = h_main_menus[0]->addAction(tr("&Quit"), this,
         SLOT(quit_slot()), Qt::CTRL|Qt::Key_Q);
@@ -457,10 +491,17 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QDialog(prnt),
 #else
     h_main_menus[1] = menubar->addMenu(tr("&Options"));
 #endif
-    h_Search = h_main_menus[1]->addAction(tr("S&earch"),
+    h_Config = h_main_menus[1]->addAction(tr("Save Config"),
+        this, SLOT(config_slot()));
+    h_Proxy = h_main_menus[1]->addAction(tr("Set Proxy"),
+        this, SLOT(proxy_slot()));
+    h_Search = h_main_menus[1]->addAction(tr("&Search Database"),
         this, SLOT(search_slot()));
-    h_FindText = h_main_menus[1]->addAction(tr("Find Text"),
-        this, SLOT(find_slot()));
+    h_FindText = h_main_menus[1]->addAction(tr("Find &Text"),
+        this, SLOT(find_text_slot()));
+    h_DefaultColors = h_main_menus[1]->addAction(tr("Default Colors"),
+        this, SLOT(colors_slot(bool)));
+    h_DefaultColors->setCheckable(true);
     h_SetFont = h_main_menus[1]->addAction(tr("Set &Font"));
     h_SetFont->setCheckable(true);
     connect(h_SetFont, SIGNAL(toggled(bool)),
@@ -617,14 +658,15 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QDialog(prnt),
     h_Backward->setEnabled(false);
     h_Forward->setEnabled(false);
     h_Stop->setEnabled(false);
+    if (prnt)
+        set_transient_for(prnt);
 }
 
 
 QThelpDlg::~QThelpDlg()
 {
+    unregister_fifo();
     HLP()->context()->quitHelp();
-    FC.unregisterCallback(h_viewer, FNT_MOZY);
-    FC.unregisterCallback(h_viewer, FNT_MOZY_FIXED);
     halt_images();
     HLP()->context()->removeTopic(h_root_topic);
     if (!h_is_frame)
@@ -645,7 +687,6 @@ QThelpDlg::menu_sens_set(bool set)
     h_Search->setEnabled(set);
     h_Save->setEnabled(set);
     h_Open->setEnabled(set);
-    h_FindText->setEnabled(set);
 }
 
 
@@ -733,7 +774,7 @@ QThelpDlg::set_status_line(const char *msg)
     if (h_frame_parent)
         h_frame_parent->set_status_line(msg);
     else
-        h_status_bar->showMessage(QString(msg));
+        h_status_bar->setText(msg);
 }
 
 
@@ -862,8 +903,8 @@ QThelpDlg::reuse(HLPtopic *newtop, bool newlink)
     if (!newtop)
         newtop = h_root_topic;
 
-    char *anchor = 0;
-    newtop->set_show_plain(HLP()->context()->isPlain(newtop->keyword()));
+    if (!newtop->is_html())
+        newtop->set_show_plain(HLP()->context()->isPlain(newtop->keyword()));
     if (newtop != h_root_topic) {
         h_root_topic->set_text(newtop->get_text());
         newtop->clear_text();
@@ -871,7 +912,9 @@ QThelpDlg::reuse(HLPtopic *newtop, bool newlink)
     else
         h_root_topic->get_text();
     h_cur_topic = newtop;
+
     const char *t = HLP()->context()->findAnchorRef(newtop->keyword());
+    char *anchor = 0;
     if (t)
         anchor = lstring::copy(t);
     if (newlink && newtop != h_root_topic) {
@@ -992,34 +1035,56 @@ QThelpDlg::emit_signal(SignalID id, void *payload)
 {
     switch (id) {
     case S_ARM:
-        // emit arm_slot(static_cast<htmCallbackInfo*>(payload));
+        // htm_arm_proc(static_cast<htmCallbackInfo*>(payload));
         break;
     case S_ACTIVATE:
-        newtopic_slot(static_cast<htmAnchorCallbackStruct*>(payload));
+        htm_activate_proc(static_cast<htmAnchorCallbackStruct*>(payload));
         break;
     case S_ANCHOR_TRACK:
-        anchor_track_slot(static_cast<htmAnchorCallbackStruct*>(payload));
+        {
+            htmAnchorCallbackStruct *cbs =
+                static_cast<htmAnchorCallbackStruct*>(payload);
+            if (cbs && cbs->href)
+                h_status_bar->setText(cbs->href);
+            else
+                h_status_bar->setText(h_cur_topic->keyword());
+        }
         break;
     case S_ANCHOR_VISITED:
-        // anchor_visited_slot(static_cast<htmVisitedCallbackStruct*>(payload));
+        {
+            htmVisitedCallbackStruct *cbs =
+                static_cast<htmVisitedCallbackStruct*>(payload);
+            if (cbs)
+                cbs->visited = HLP()->context()->isVisited(cbs->url);
+        }
         break;
     case S_DOCUMENT:
-        // document_slot(static_cast<htmDocumentCallbackStruct*>(payload));
+        // htm_document_proc(static_cast<htmDocumentCallbackStruct*>(payload));
         break;
     case S_LINK:
-        // link_slot(static_cast<htmLinkCallbackStruct*>(payload));
+        // htm_link_proc(static_cast<htmLinkCallbackStruct*>(payload));
         break;
     case S_FRAME:
-        frame_slot(static_cast<htmFrameCallbackStruct*>(payload));
+        htm_frame_proc(static_cast<htmFrameCallbackStruct*>(payload));
         break;
     case S_FORM:
-        form_slot(static_cast<htmFormCallbackStruct*>(payload));
+        {
+            // Handle the "submit" request for an html form.  The form
+            // return is always downloaded and never taken from the
+            // cache, since this prevents multiple submissions of the
+            // same form.
+
+            htmFormCallbackStruct *cbs =
+                static_cast<htmFormCallbackStruct*>(payload);
+            if (cbs)
+                HLP()->context()->formProcess(cbs, this);
+        }
         break;
     case S_IMAGEMAP:
-        // imagemap_slot(static_cast<htmImagemapCallbackStruct*>(payload));
+        // htm_imagemap_proc(static_cast<htmImagemapCallbackStruct*>(payload));
         break;
     case S_HTML_EVENT:
-        // html_event_slot(static_cast<htmEventCallbackStruct*>(payload));
+        // htm_html_event_proc(static_cast<htmEventCallbackStruct*>(payload));
         break;
     default:
         break;
@@ -1312,9 +1377,45 @@ QThelpDlg::reload_slot()
 
 
 void
+QThelpDlg::make_fifo_slot(bool state)
+{
+    if (state) {
+        if (register_fifo(0)) {
+            sLstr tstr;
+            tstr.add("Listening for input on pipe named\n");
+            tstr.add(h_fifo_name);
+            PopUpMessage(tstr.string(), false);
+        }
+    }
+    else
+        unregister_fifo();
+}
+
+
+void
 QThelpDlg::quit_slot()
 {
     deleteLater();
+}
+
+
+void
+QThelpDlg::config_slot()
+{
+    if (!h_params->dump())
+        PopUpErr(MODE_ON,
+            "Failed to write .mozyrc file, permission problem?");
+    else
+        PopUpMessage("Saved .mozyrc file.", false);
+}
+
+
+void
+QThelpDlg::proxy_slot()
+{
+    char *pxy = proxy::get_proxy();
+    PopUpInput("Enter proxy url:", pxy, "Proxy", h_proxy_proc, this);
+    delete [] pxy;
 }
 
 
@@ -1328,32 +1429,50 @@ QThelpDlg::search_slot()
 
 
 void
-QThelpDlg::find_slot()
+QThelpDlg::find_text_slot()
 {
-    PopUpInput("Enter word for text search:", "", "Find Text", 0, 0);
-    connect(wb_input, SIGNAL(action_call(const char*, void*)), this,
-        SLOT(do_find_text_slot(const char*, void*)));
+    if (!h_searcher) {
+        h_searcher = new QTsearchDlg(this, h_last_search);
+        h_searcher->register_usrptr((void**)&h_searcher);
+        h_searcher->set_transient_for(this);
+        h_searcher->set_visible(true);
+
+        h_searcher->set_ign_case(h_ign_case);
+        connect(h_searcher, SIGNAL(search_down()),
+            this, SLOT(search_down_slot()));
+        connect(h_searcher, SIGNAL(search_up()),
+            this, SLOT(search_up_slot()));
+        connect(h_searcher, SIGNAL(ignore_case(bool)),
+            this, SLOT(ignore_case_slot(bool)));
+    }
+}
+
+
+void
+QThelpDlg::colors_slot(bool state)
+{
+    if (state) {
+        if (!h_clrdlg) {
+            h_clrdlg = new QTmozyClrDlg(this);
+            h_clrdlg->set_transient_for(this);
+            h_clrdlg->register_caller(sender());
+            h_clrdlg->register_usrptr((void**)&h_clrdlg);
+            QTdev::self()->SetPopupLocation(GRloc(LW_CENTER), h_clrdlg, this);
+            h_clrdlg->show();
+        }
+    }
+    else if (h_clrdlg)
+        h_clrdlg->popdown();
 }
 
 
 void
 QThelpDlg::set_font_slot(bool set)
 {
-    if (set) {
-        PopUpFontSel(0, GRloc(), MODE_ON, 0, 0, FNT_MOZY);
-        connect(wb_fontsel, SIGNAL(dismiss()), this, SLOT(font_down_slot()));
-    }
+    if (set)
+        PopUpFontSel(h_SetFont, GRloc(), MODE_ON, 0, 0, FNT_MOZY);
     else
         PopUpFontSel(0, GRloc(), MODE_OFF, 0, 0, 0);
-}
-
-
-// Handle font selector dismissal.
-//
-void
-QThelpDlg::font_down_slot()
-{
-    h_SetFont->setChecked(false);
 }
 
 
@@ -1594,42 +1713,185 @@ QThelpDlg::cache_choice_slot(const char *string)
 }
 
 
-// Print the current anchor href in the status label.
+// Callback for the "Open" and "Open File" menu commands, opens a new
+// keyword or file
 //
 void
-QThelpDlg::anchor_track_slot(htmAnchorCallbackStruct *c)
+QThelpDlg::do_open_slot(const char *name, void*)
 {
-    if (c && c->href)
-        h_status_bar->showMessage(QString(c->href));
-    else
-        h_status_bar->showMessage(QString(h_cur_topic->keyword()));
+    if (name) {
+        while (isspace(*name))
+            name++;
+        if (*name) {
+            char *url = 0;
+            const char *t = strrchr(name, '.');
+            if (t) {
+                t++;
+                if (lstring::cieq(t, "html") || lstring::cieq(t, "htm") ||
+                        lstring::cieq(t, "jpg") || lstring::cieq(t, "gif") ||
+                        lstring::cieq(t, "png")) {
+                    if (!lstring::is_rooted(name)) {
+                        char *cwd = getcwd(0, 256);
+                        if (cwd) {
+                            int len = strlen(cwd) + strlen(name) + 2;
+                            url = new char[len];
+                            snprintf(url, len, "%s/%s", cwd, name);
+                            free(cwd);
+                            if (access(url, R_OK)) {
+                                // no such file
+                                delete [] url;
+                                url = 0;
+                            }
+                        }
+                    }
+                }
+            }
+            if (!url)
+                url = lstring::copy(name);
+            if (newtopic(url, false, false, true) != QThelpDlg::NTnone) {
+                if (wb_input)
+                    wb_input->popdown();
+            }
+            delete [] url;
+        }
+    }
 }
 
 
-// Handle clicking on an anchor.
+// Callback passed to PopUpInput to actually save the text in a file.
 //
 void
-QThelpDlg::newtopic_slot(htmAnchorCallbackStruct *c)
+QThelpDlg::do_save_slot(const char *fnamein, void*)
 {
-    if (c == 0 || c->href == 0)
+    char *fname = pathlist::expand_path(fnamein, false, true);
+    if (!fname)
         return;
-    c->visited = true;
+    if (filestat::check_file(fname, W_OK) == NOGO) {
+        PopUpMessage(filestat::error_msg(), true);
+        delete [] fname;
+        return;
+    }
+
+    FILE *fp = fopen(fname, "w");
+    if (!fp) {
+        char tbuf[256];
+        if (strlen(fname) > 64)
+            strcpy(fname + 60, "...");
+        snprintf(tbuf, 256, "Error: can't open file %s", fname);
+        PopUpMessage(tbuf, true);
+        delete [] fname;
+        return;
+    }
+    char *tptr = h_viewer->get_plain_text();
+    const char *mesg;
+    if (tptr) {
+        if (fputs(tptr, fp) == EOF) {
+            PopUpMessage("Error: block write error", true);
+            delete [] tptr;
+            fclose(fp);
+            delete [] fname;
+            return;
+        }
+        delete [] tptr;
+        mesg = "Text saved";
+    }
+    else
+        mesg = "Text file is empty";
+
+    fclose(fp);
+    if (wb_input)
+        wb_input->popdown();
+    PopUpMessage(mesg, false);
+    delete [] fname;
+}
+
+
+// Callback passed to PopUpInput to actually perform a database keyword
+// search.
+//
+void
+QThelpDlg::do_search_slot(const char *target, void*)
+{
+    if (target && *target) {
+        HLPtopic *newtop = HLP()->search(target);
+        if (!newtop)
+            PopUpErr(MODE_ON, "Unresolved link.");
+        else
+            newtop->link_new_and_show(false, h_cur_topic);
+    }
+    if (wb_input)
+        wb_input->popdown();
+}
+
+
+void
+QThelpDlg::search_down_slot()
+{
+    QString target = h_searcher->get_target();
+    if (!target.isNull() && !target.isEmpty()) {
+        delete [] h_last_search;
+        h_last_search = lstring::copy(target.toLatin1().constData());
+        if (!h_viewer->find_words(h_last_search, false, h_ign_case))
+            h_searcher->set_transient_message("Not found!");
+    }
+}
+
+
+void
+QThelpDlg::search_up_slot()
+{
+    QString target = h_searcher->get_target();
+    if (!target.isNull() && !target.isEmpty()) {
+        delete [] h_last_search;
+        h_last_search = lstring::copy(target.toLatin1().constData());
+        if (!h_viewer->find_words(h_last_search, true, h_ign_case))
+            h_searcher->set_transient_message("Not found!");
+    }
+}
+
+
+void
+QThelpDlg::ignore_case_slot(bool ign)
+{
+    h_ign_case = ign;
+}
+
+
+//-----------------------------------------------------------------------------
+// Private functions
+
+
+// Handle htm signam from clicking on an anchor.
+//
+void
+QThelpDlg::htm_activate_proc(htmAnchorCallbackStruct *cbs)
+{
+    if (cbs == 0 || cbs->href == 0)
+        return;
+    HLPtopic *parent = h_cur_topic;
+    cbs->visited = true;
+
+    // add link to visited table
+    HLP()->context()->addVisited(cbs->href);
 
     // download if shift pressed
     bool force_download = false;
-    QMouseEvent *qme = static_cast<QMouseEvent*>(c->event);
+
+    QMouseEvent *qme = static_cast<QMouseEvent*>(cbs->event);
     if (qme && (qme->modifiers() & Qt::ShiftModifier))
         force_download = true;
 
     bool spawn = false;
     if (!force_download) {
-        if (c->target) {
-            if (!h_cur_topic->target() ||
-                    strcmp(h_cur_topic->target(), c->target)) {
-                HLPtopic *t = HLP()->context()->findUrlTopic(c->target);
-                if (t) {
-                    newtopic(c->href, false, false, false);
-                    return;
+        if (cbs->target) {
+            if (!parent->target() ||
+                    strcmp(parent->target(), cbs->target)) {
+                for (HLPtopic *t = HLP()->context()->topList(); t;
+                        t = t->sibling()) {
+                    if (t->target() && !strcmp(t->target(), cbs->target)) {
+                        newtopic(cbs->href, false, false, false);
+                        return;
+                    }
                 }
                 // Special targets:
                 //  _top    reuse same window, no frames
@@ -1637,12 +1899,12 @@ QThelpDlg::newtopic_slot(htmAnchorCallbackStruct *c)
                 //  _blank  put in new window
                 //  _parent put in parent frame (nested framesets)
 
-                if (!strcmp(c->target, "_top")) {
-                    newtopic(c->href, false, false, false);
+                if (!strcmp(cbs->target, "_top")) {
+                    newtopic(cbs->href, false, false, false);
                     return;
                 }
                 // note: _parent not handled, use new window
-                if (strcmp(c->target, "_self"))
+                if (strcmp(cbs->target, "_self"))
                     spawn = true;
             }
         }
@@ -1654,31 +1916,23 @@ QThelpDlg::newtopic_slot(htmAnchorCallbackStruct *c)
             spawn = true;
     }
 
-    newtopic(c->href, spawn, force_download, false);
+    newtopic(cbs->href, spawn, force_download, false);
 
-    if (c->target && spawn) {
-        HLPtopic *t = HLP()->context()->findKeywordTopic(c->href);
-        if (t)
-            t->set_target(c->target);
+    if (cbs->target && spawn) {
+        for (HLPtopic *t = HLP()->context()->topList(); t; t = t->sibling()) {
+            if (!strcmp(t->keyword(), cbs->href)) {
+                t->set_target(cbs->target);
+                break;
+            }
+        }
     }
 }
 
 
-// Handle the "submit" request for an html form.  The form return is
-// always downloaded and never taken from the cache, since this
-// prevents multiple submissions of the same form.
+// Handle htm signal for frames.
 //
 void
-QThelpDlg::form_slot(htmFormCallbackStruct *cbs)
-{
-    HLP()->context()->formProcess(cbs, this);
-}
-
-
-// Handle frames.
-//
-void
-QThelpDlg::frame_slot(htmFrameCallbackStruct *cbs)
+QThelpDlg::htm_frame_proc(htmFrameCallbackStruct *cbs)
 {
     if (cbs->reason == HTM_FRAMECREATE) {
         h_viewer->hide_drawing_area(true);
@@ -1760,130 +2014,9 @@ QThelpDlg::frame_slot(htmFrameCallbackStruct *cbs)
 }
 
 
-// Callback for the "Open" and "Open File" menu commands, opens a new
-// keyword or file
+// Function to display a new topic, or respond to a link.
 //
-void
-QThelpDlg::do_open_slot(const char *name, void*)
-{
-    if (name) {
-        while (isspace(*name))
-            name++;
-        if (*name) {
-            char *url = 0;
-            const char *t = strrchr(name, '.');
-            if (t) {
-                t++;
-                if (lstring::cieq(t, "html") || lstring::cieq(t, "htm") ||
-                        lstring::cieq(t, "jpg") || lstring::cieq(t, "gif") ||
-                        lstring::cieq(t, "png")) {
-                    if (!lstring::is_rooted(name)) {
-                        char *cwd = getcwd(0, 256);
-                        if (cwd) {
-                            int len = strlen(cwd) + strlen(name) + 2;
-                            url = new char[len];
-                            snprintf(url, len, "%s/%s", cwd, name);
-                            delete [] cwd;
-                            if (access(url, R_OK)) {
-                                // no such file
-                                delete [] url;
-                                url = 0;
-                            }
-                        }
-                    }
-                }
-            }
-            if (!url)
-                url = lstring::copy(name);
-            newtopic(url, false, false, true);
-            if (wb_input)
-                wb_input->popdown();
-            delete [] url;
-        }
-    }
-}
-
-
-// Callback passed to PopUpInput to actually save the text in a file.
-//
-void
-QThelpDlg::do_save_slot(const char *fnamein, void*)
-{
-    char *fname = pathlist::expand_path(fnamein, false, true);
-    if (!fname)
-        return;
-    if (filestat::check_file(fname, W_OK) == NOGO) {
-        PopUpMessage(filestat::error_msg(), true);
-        delete [] fname;
-        return;
-    }
-
-    FILE *fp = fopen(fname, "w");
-    if (!fp) {
-        char tbuf[256];
-        if (strlen(fname) > 64)
-            strcpy(fname + 60, "...");
-        snprintf(tbuf, 256, "Error: can't open file %s", fname);
-        PopUpMessage(tbuf, true);
-        delete [] fname;
-        return;
-    }
-    char *tptr = h_viewer->get_plain_text();
-    const char *mesg;
-    if (tptr) {
-        if (fputs(tptr, fp) == EOF) {
-            PopUpMessage("Error: block write error", true);
-            delete [] tptr;
-            fclose(fp);
-            delete [] fname;
-            return;
-        }
-        delete [] tptr;
-        mesg = "Text saved";
-    }
-    else
-        mesg = "Text file is empty";
-
-    fclose(fp);
-    if (wb_input)
-        wb_input->popdown();
-    PopUpMessage(mesg, false);
-    delete [] fname;
-}
-
-
-// Callback passed to PopUpInput to actually perform a database keyword
-// search.
-//
-void
-QThelpDlg::do_search_slot(const char *target, void*)
-{
-    if (target && *target) {
-        HLPtopic *newtop = HLP()->search(target);
-        if (!newtop)
-            PopUpErr(MODE_ON, "Unresolved link.");
-        else
-            newtop->link_new_and_show(false, h_cur_topic);
-    }
-    if (wb_input)
-        wb_input->popdown();
-}
-
-
-void
-QThelpDlg::do_find_text_slot(const char *target, void*)
-{
-    if (target && *target)
-        h_viewer->find_words(target, false, false);
-}
-
-
-//-----------------------------------------------------------------------------
-// Private functions
-
-// Function to display a new topic, or respond to a link
-//
-void
+QThelpDlg::NTtype
 QThelpDlg::newtopic(const char *href, bool spawn, bool force_download,
     bool nonrelative)
 {
@@ -1891,15 +2024,36 @@ QThelpDlg::newtopic(const char *href, bool spawn, bool force_download,
     char hanchor[128];
     if (HLP()->context()->resolveKeyword(href, &newtop, hanchor, this,
             h_cur_topic, force_download, nonrelative))
-        return;
+        return (NThandled);
     if (!newtop) {
         char buf[256];
-        snprintf(buf, 256, "Unresolved link: %s.", href);
+        snprintf(buf, sizeof(buf), "Unresolved link: %s.", href);
         PopUpErr(MODE_ON, buf);
-        return;
+        return (NTnone);
     }
-    newtop->set_context(this);
+    if (spawn)
+        newtop->set_context(0);
+    else
+        newtop->set_context(this);
+
     newtop->link_new_and_show(spawn, h_cur_topic);
+    return (NTnew);
+}
+
+
+QThelpDlg::NTtype
+QThelpDlg::newtopic(const char *fname, FILE *fp, bool spawn)
+{
+    HLPtopic *top = new HLPtopic(fname, "");
+    top->get_file(fp, fname);
+
+    if (spawn)
+        top->set_context(0);
+    else
+        top->set_context(this);
+
+    top->link_new_and_show(spawn, h_cur_topic);
+    return (QThelpDlg::NTnew);
 }
 
 
@@ -1912,5 +2066,381 @@ QThelpDlg::stop_image_download()
     if (h_params->LoadMode == HLPparams::LoadProgressive)
         h_viewer->progressive_kill();
     HLP()->context()->abortImageDownload(this);
+}
+
+
+// Static function.
+// Callback passed to PopUpInput to set a proxy url.
+//
+// The string is in the form "url [port]", where the port can be part
+// of the url, separated by a colon.  In this case, the second token
+// should not be given.  An explicit port number must be provided by
+// either means.
+//
+void
+QThelpDlg::h_proxy_proc(const char *str, void *hlpptr)
+{
+    QThelpDlg *w = static_cast<QThelpDlg*>(hlpptr);
+    if (!w || !str)
+        return;
+    char buf[256];
+    char *addr = lstring::getqtok(&str);
+
+    // If not address given, convert to "-", which indicates to move
+    // .wrproxy -> .wrproxy.bak
+    if (!addr)
+        addr = lstring::copy("-");
+    else if (!*addr) {
+        delete [] addr;
+        addr = lstring::copy("-");
+    }
+    if (*addr == '-' || *addr == '+') {
+        const char *err = proxy::move_proxy(addr);
+        if (err) {
+            snprintf(buf, 256, "Operation failed: %s.", err);
+            w->PopUpErr(MODE_ON, buf);
+        }
+        else {
+            const char *t = addr+1;
+            if (!*t)
+                t = "bak";
+            if (*addr == '-') {
+                snprintf(buf, 256,
+                    "Move .wrproxy file to .wrproxy.%s succeeded.\n", t);
+                w->PopUpMessage(buf, false);
+            }
+            else {
+                snprintf(buf, 256,
+                    "Move .wrproxy.%s to .wrproxy file succeeded.\n", t);
+                w->PopUpMessage(buf, false);
+            }
+        }
+        delete [] addr;
+        if (w->wb_input)
+            w->wb_input->popdown();
+        return;
+    }
+    if (!lstring::prefix("http:", addr)) {
+        w->PopUpMessage("Error: \"http:\" prefix required in address.", true);
+        delete [] addr;
+        if (w->wb_input)
+            w->wb_input->popdown();
+        return;
+    }
+
+    bool a_has_port = false;
+    const char *e = strrchr(addr, ':');
+    if (e) {
+        e++;
+        if (isdigit(*e)) {
+            e++;
+            while (isdigit(*e))
+                e++;
+        }
+        if (!*e)
+            a_has_port = true;
+    }
+
+    char *port = lstring::gettok(&str, ":");
+    if (!a_has_port && !port) {
+        // Default to port 80.
+        port = lstring::copy("80");
+    }
+    if (port) {
+        for (const char *c = port; *c; c++) {
+            if (!isdigit(*c)) {
+                w->PopUpMessage("Error: port is not numeric.", true);
+                delete [] addr;
+                delete [] port;
+                if (w->wb_input)
+                    w->wb_input->popdown();
+                return;
+            }
+        }
+    }
+
+    const char *err = proxy::set_proxy(addr, port);
+    if (err) {
+        snprintf(buf, 256, "Operation failed: %s.", err);
+        w->PopUpErr(MODE_ON, buf);
+    }
+    else if (port) {
+        snprintf(buf, 256, "Created .wrproxy file for %s:%s.\n", addr, port);
+        w->PopUpMessage(buf, false);
+    }
+    else {
+        snprintf(buf, 256, "Created .wrproxy file for %s.\n", addr);
+        w->PopUpMessage(buf, false);
+    }
+    delete [] addr;
+    delete [] port;
+    if (w->wb_input)
+        w->wb_input->popdown();
+}
+
+
+#define MOZY_FIFO "mozyfifo"
+
+// Experimental new feature:  create a named pipe and set up a
+// listener.  When anything is written to the pipe, grab it and show
+// it.  This is intended for displaying HTML messages from an email
+// client.
+//
+bool 
+QThelpDlg::register_fifo(const char *fname)
+{
+    if (!fname)
+        fname = getenv("MOZY_FIFO");
+    if (!fname)
+        fname = MOZY_FIFO;
+        
+    bool ret = false;
+#ifdef WIN32
+    if (fname)
+        fname = lstring::strip_path(fname);
+    sLstr lstr;
+    lstr.add("\\\\.\\pipe\\");
+    lstr.add(fname);
+    int len = lstr.length();
+    int cnt = 1;
+    for (;;) {
+        if (access(lstr.string(), F_OK) < 0)
+            break;
+        lstr.truncate(len, 0);
+        lstr.add_i(cnt);
+        cnt++;
+    }
+    SECURITY_DESCRIPTOR sd;
+    InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION);
+    SECURITY_ATTRIBUTES sa;
+    sa.nLength = sizeof(SECURITY_ATTRIBUTES);
+    sa.lpSecurityDescriptor = &sd;
+    sa.bInheritHandle = false;
+
+    // Convert to WCHAR, didn't need this in GTK!
+    len = strlen(lstr.string());
+    WCHAR *wcbuf = new WCHAR[len+1];
+    mbstowcs(wcbuf, lstr.string(), len+1);
+    HANDLE hpipe = CreateNamedPipe(wcbuf,
+        PIPE_ACCESS_INBOUND,
+        PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT,
+        PIPE_UNLIMITED_INSTANCES,
+        2048,
+        2048,
+        NMPWAIT_USE_DEFAULT_WAIT,
+        &sa);
+    delete [] wcbuf;
+
+    if (hpipe != INVALID_HANDLE_VALUE) {
+        ret = true;
+        delete [] h_fifo_name;
+        h_fifo_name = lstr.string_trim();
+        h_fifo_pipe = hpipe;
+        _beginthread(pipe_thread_proc, 0, this);
+    }
+#else
+    sLstr lstr;
+    passwd *pw = getpwuid(getuid());
+    if (pw == 0) {
+        GRpkg::self()->Perror("getpwuid");
+        char *cwd = getcwd(0, 0);
+        lstr.add(cwd);
+        if (strcmp(cwd, "/"))
+            lstr.add_c('/');
+        free(cwd);
+    }
+    else {
+        lstr.add(pw->pw_dir);
+        lstr.add_c('/');
+    }
+    lstr.add(fname);
+    int len = lstr.length();
+    int cnt = 1;
+    for (;;) {
+        if (access(lstr.string(), F_OK) < 0)
+            break;
+        lstr.truncate(len, 0);
+        lstr.add_i(cnt);
+        cnt++;
+    }
+    if (!mkfifo(lstr.string(), 0666)) {
+        ret = true;
+        delete [] h_fifo_name;
+        h_fifo_name = lstr.string_trim();
+        filestat::queue_deletion(h_fifo_name);
+    }
+#endif
+
+    if (h_fifo_tid)
+        QTdev::self()->RemoveTimer(h_fifo_tid);
+    h_fifo_tid = QTdev::self()->AddTimer(100, fifo_check_proc, this);
+
+    return (ret);
+}
+
+
+void 
+QThelpDlg::unregister_fifo()
+{
+    if (h_fifo_tid) {
+        QTdev::self()->RemoveTimer(h_fifo_tid);
+        h_fifo_tid = 0;
+    }
+    if (h_fifo_name) {
+#ifdef WIN32
+        unlink(h_fifo_name);
+        delete [] h_fifo_name;
+        h_fifo_name = 0;
+        if (h_fifo_pipe) {
+            CloseHandle(h_fifo_pipe);
+            h_fifo_pipe = 0;
+        }
+#else
+        if (h_fifo_fd > 0)
+            ::close(h_fifo_fd);
+        h_fifo_fd = -1;
+        unlink(h_fifo_name);
+        delete [] h_fifo_name;
+        h_fifo_name = 0;
+#endif
+    }
+#ifdef WIN32
+    stringlist *sl = h_fifo_tfiles;
+    h_fifo_tfiles = 0;
+    while (sl) {
+        stringlist *sx = sl;
+        sl = sl->next;
+        unlink(sx->string);
+        delete [] sx->string;
+        delete sx;
+    }
+#endif
+}
+
+
+#ifdef WIN32
+
+// Static function.
+// Thread procedure to listen on the named pipe.
+//
+void
+QThelpDlg::pipe_thread_proc(void *arg)
+{
+    QThelpDlg *hw = (QThelpDlg*)arg;
+    if (!hw)
+        return;
+
+    for (;;) {
+        HANDLE hpipe = hw->h_fifo_pipe;
+        if (!hpipe)
+            return;
+
+        if (ConnectNamedPipe(hpipe, 0)) {
+
+            if (hw->h_fifo_name) {
+                char *tempfile = filestat::make_temp("mz");
+                FILE *fp = fopen(tempfile, "w");
+                if (fp) {
+                    unsigned int total = 0;
+                    char buf[2048];
+                    for (;;) {
+                        DWORD bytes_read;
+                        bool ok = ReadFile(hpipe, buf, 2048, &bytes_read, 0);
+                        if (!ok)
+                            break;
+                        if (bytes_read > 0) {
+                            fwrite(buf, 1, bytes_read, fp);
+                            total += bytes_read;
+                        }
+                    }
+                    fclose(fp);
+                    if (total > 0) {
+                        hw->h_fifo_tfiles =
+                            new stringlist(tempfile, hw->h_fifo_tfiles);
+                        tempfile = 0;
+                    }
+                }
+                else
+                    perror(tempfile);
+                delete [] tempfile;
+            }
+            DisconnectNamedPipe(hpipe);
+        }
+    }
+}
+
+#endif
+
+
+// Static timer callback function.
+//
+int 
+QThelpDlg::fifo_check_proc(void *arg)
+{
+    QThelpDlg *hw = (QThelpDlg*)arg;
+    if (!hw)
+        return (0);
+
+#ifdef WIN32
+    if (hw->h_fifo_tfiles) {
+        stringlist *sl = hw->h_fifo_tfiles;
+        hw->h_fifo_tfiles = sl->next;
+        char *tempfile = sl->string;
+        delete sl;
+        FILE *fp = fopen(tempfile, "r");
+        if (fp) {
+            hw->newtopic("fifo", fp, false);
+            fclose(fp);
+        }
+        unlink(tempfile);
+        delete [] tempfile;
+    }
+    return (1);
+
+#else
+    // Unfortunately, the stat and open calls appear to fail with
+    // Mingw, so can't use this.
+
+    struct stat st;
+    if (stat(hw->h_fifo_name, &st) < 0 || !(st.st_mode & S_IFIFO))
+        return (1);
+
+    if (hw->h_fifo_fd < 0) {
+        if (hw->h_fifo_name)
+            hw->h_fifo_fd = ::open(hw->h_fifo_name, O_RDONLY | O_NONBLOCK);
+        if (hw->h_fifo_fd < 0) {
+            hw->h_fifo_tid = 0;
+            return (0);
+        }
+    }
+    fd_set readfds;
+    FD_ZERO(&readfds);
+    FD_SET(hw->h_fifo_fd, &readfds);
+    timeval timeout;
+    timeout.tv_sec = 0;
+    timeout.tv_usec = 500;
+    int i = select(hw->h_fifo_fd + 1, &readfds, 0, 0, &timeout);
+    if (i < 0) {
+        // interrupted
+        return (1);
+    }
+    if (i == 0) {
+        // nothing to read
+        // return (1);
+    }
+    if (FD_ISSET(hw->h_fifo_fd, &readfds)) {
+        FILE *fp = fdopen(hw->h_fifo_fd, "r");
+        if (!fp) {
+            // Something wrong, close the fd and try again.
+            ::close(hw->h_fifo_fd);
+            hw->h_fifo_fd = -1;
+            return (1);
+        }
+        hw->newtopic("fifo", fp, false);
+        fclose(fp);  // closes fd, too
+        hw->h_fifo_fd = -1;
+    }
+    return (1);
+#endif
 }
 

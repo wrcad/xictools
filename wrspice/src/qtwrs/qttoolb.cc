@@ -96,7 +96,7 @@ CommandTab::com_setfont(wordlist *wl)
         case FNT_EDITOR:
         case FNT_MOZY:
         case FNT_MOZY_FIXED:
-            FC.setName(fn, n);
+            Fnt()->setName(fn, n);
         }
         delete [] fn;
     }
@@ -652,32 +652,32 @@ QTtoolbar::ConfigString()
     lstr.add_c('\n');
 
     // Add the fonts
-    const char *fn = FC.getName(FNT_FIXED);
+    const char *fn = Fnt()->getName(FNT_FIXED);
     if (fn) {
         snprintf(buf, sizeof(buf), "setfont 1 %s\n", fn);
         lstr.add(buf);
     }
-    fn = FC.getName(FNT_PROP);
+    fn = Fnt()->getName(FNT_PROP);
     if (fn) {
         snprintf(buf, sizeof(buf), "setfont 2 %s\n", fn);
         lstr.add(buf);
     }
-    fn = FC.getName(FNT_SCREEN);
+    fn = Fnt()->getName(FNT_SCREEN);
     if (fn) {
         snprintf(buf, sizeof(buf), "setfont 3 %s\n", fn);
         lstr.add(buf);
     }
-    fn = FC.getName(FNT_EDITOR);
+    fn = Fnt()->getName(FNT_EDITOR);
     if (fn) {
         snprintf(buf, sizeof(buf), "setfont 4 %s\n", fn);
         lstr.add(buf);
     }
-    fn = FC.getName(FNT_MOZY);
+    fn = Fnt()->getName(FNT_MOZY);
     if (fn) {
         snprintf(buf, sizeof(buf), "setfont 5 %s\n", fn);
         lstr.add(buf);
     }
-    fn = FC.getName(FNT_MOZY_FIXED);
+    fn = Fnt()->getName(FNT_MOZY_FIXED);
     if (fn) {
         snprintf(buf, sizeof(buf), "setfont 6 %s\n", fn);
         lstr.add(buf);

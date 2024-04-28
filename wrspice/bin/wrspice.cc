@@ -814,7 +814,7 @@ namespace {
 }
 
 
-#ifdef WIN32
+#ifdef USE_SETJMP_EXP
 // The c++ exceptions don't seem to work in Windows, so back to
 // setjmp/longjmp.
 jmp_buf msw_jbf[4];
@@ -825,6 +825,7 @@ int msw_jbf_sp;
 int
 main(int argc, char **argv)
 {
+#ifdef USE_SETJMP_EXP
     // Test for bad longjmp (MFB used to do this).
     static bool started;
     if (started) {
@@ -832,6 +833,7 @@ main(int argc, char **argv)
         succumb(EXIT_BAD, true);
     }
     started = true;
+#endif
 
     // Something for Cadence PSF writer.
     cPSFout::vo_init(&argc, argv);
@@ -1092,7 +1094,7 @@ main(int argc, char **argv)
     Sp.PreInit();
 
     bool read_err;
-#ifdef WIN32
+#ifdef USE_SETJMP_EXP
     if (setjmp(msw_jbf[msw_jbf_sp]) == 0) {
 #else
     try {
@@ -1143,7 +1145,7 @@ main(int argc, char **argv)
             }
         }
     }
-#ifdef WIN32
+#ifdef USE_SETJMP_EXP
     else {
 #else
     catch (int) {
@@ -1321,7 +1323,7 @@ main(int argc, char **argv)
             dup2(fileno(stderr), fileno(stdout));
 
             for (;;) {
-#ifdef WIN32
+#ifdef USE_SETJMP_EXP
                 if (setjmp(msw_jbf[msw_jbf_sp]) == 1)
                     break;
 #endif
@@ -1333,7 +1335,7 @@ main(int argc, char **argv)
         else {
             for (;;) {
                 CP.SetupTty(fileno(stdin), false);
-#ifdef WIN32
+#ifdef USE_SETJMP_EXP
                 setjmp(msw_jbf[msw_jbf_sp]);
 #endif
                 CP.Reset(true);
@@ -2311,7 +2313,7 @@ IFsimulator::StartupFileName(char **p)
 
 #ifdef HAVE_SIGNAL
 
-#ifdef WIN32
+#ifdef USE_SETJMP_EXP
 namespace {
     int idle_id;
 
@@ -2326,6 +2328,43 @@ namespace {
     }
 }
 #endif
+
+
+/* XXX
+namespace {
+    jmp_buf cont_jbuf;
+
+    void catch_signal(int sig)
+    {
+        signal(sig, catch_signal);
+        longjmp(cont_jbuf, sig);
+    }
+
+    // In init_sigs()
+    if (setjmp(cont_jbuf) == 0) {
+        signal(SIGCONT, catch_signal);
+        return;
+    }
+    if (!Sp.GetFlag(FT_BATCHMODE)) {
+        if (expiring)
+            return;
+        if (TTY.getpgrp() != getpid()) {
+            // we're in the background
+            return;
+        }
+        CP.SetupTty(fileno(stdin), false);
+#ifdef HAVE_SIGACTION
+        sigaction(SIGTSTP, &sa, 0);
+#else
+        signal(SIGTSTP, SIG_HDLR);
+#endif
+        // Throw an exception, this will provide a prompt.  This is
+        // OK here since we are in program address space.
+        if (CP.GetFlag(CP_CWAIT))
+            throw SIGCONT;
+    }
+}
+*/
 
 
 // Static function.
@@ -2371,7 +2410,7 @@ IFsimulator::SigHdlr(int sig)
         }
 #endif
 
-#ifdef WIN32
+#ifdef USE_SETJMP_EXP
         // XXX Can we rid this win32 special case?
         // Must use an idle function to throw the exception, as
         // throwing an exception in a signal handler produces
@@ -2437,12 +2476,16 @@ IFsimulator::SigHdlr(int sig)
 #else
             signal(SIGTSTP, SIG_HDLR);
 #endif
+#if (!defined(WITH_QT5) && !defined(WITH_QT6))
+            // QT will terminate on exception from here.  All this does
+            // is provide a new prompt.
 #ifdef __linux
             // Throwing an exception from a signal handler produces
             // undefined results, but seems to work ok in linux.
             // OS X will terminate.
             if (CP.GetFlag(CP_CWAIT))
                 throw SIGCONT;
+#endif
 #endif
         }
     }

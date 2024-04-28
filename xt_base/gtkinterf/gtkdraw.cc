@@ -1217,7 +1217,7 @@ GTKdraw::TextExtent(const char *text, int *wid, int *hei)
         pc = gdk_pango_context_get();
         pl = pango_layout_new(pc);
         PangoFontDescription *pfd =
-            pango_font_description_from_string(FC.getName(FNT_SCREEN));
+            pango_font_description_from_string(Fnt()->getName(FNT_SCREEN));
         pango_layout_set_font_description(pl, pfd);
         pango_font_description_free(pfd);
         pango_layout_set_text(pl, text, -1);

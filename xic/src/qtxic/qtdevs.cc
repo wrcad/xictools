@@ -76,7 +76,7 @@
 // Help system keywords used:
 //  dev:xxxxx   (device name)
 
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
 #define USE_QTOOLBAR
 #endif
 
@@ -336,7 +336,7 @@ QTdevMenuDlg::QTdevMenuDlg(GRobject caller, stringlist *wl) :
         gd_viewport = new QTcanvas();
 
         QFont *fnt;
-        if (FC.getFont(&fnt, FNT_SCREEN))
+        if (Fnt()->getFont(&fnt, FNT_SCREEN))
             gd_viewport->set_font(fnt);
         connect(QTfont::self(), SIGNAL(fontChanged(int)),
             this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
@@ -927,8 +927,8 @@ QTdevMenuDlg::menu_slot(QAction *a)
         DSPmainWbag(PopUpHelp(tbuf))
         return;
     }
-    // give focus to main window
-//    GTKdev::SetFocus(GTKmainwin::self()->Shell());
+    // Give focus to main window.
+    QTmainwin::self()->activateWindow();
     EV()->InitCallback();
     if (!strcmp(string, MUT_DUMMY)) {
         CmdDesc cmd;
@@ -972,7 +972,7 @@ QTdevMenuDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_SCREEN) {
         QFont *fnt;
-        if (FC.getFont(&fnt, FNT_SCREEN))
+        if (Fnt()->getFont(&fnt, FNT_SCREEN))
             gd_viewport->set_font(fnt);
         // Compute new field widths on font change.
         init_sizes();
@@ -1005,6 +1005,8 @@ QTdevMenuDlg::button_down_slot(QMouseEvent *ev)
     int lp = dv_pressed;
     EV()->InitCallback();  // sets pressed to -1
     if (lp != n) {
+        // Give focus to main window.
+        QTmainwin::self()->activateWindow();
         render_cell(n, true);
         dv_pressed = n;
         if (!strcmp(dv_entries[n].name, MUT_DUMMY)) {

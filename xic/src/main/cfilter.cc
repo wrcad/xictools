@@ -159,11 +159,11 @@ cfilter_t::inlist(const CDcbin *cbin) const
             return (false);
     }
     if (cf_flags & CF_MODIFIED) {
-        if (!sdesc->isModified())
+        if (!sdesc->countModified())
             return (false);
     }
     if (cf_flags & CF_NOTMODIFIED) {
-        if (sdesc->isModified())
+        if (sdesc->countModified())
             return (false);
     }
     if (cf_flags & CF_REFERENCE) {

@@ -109,6 +109,14 @@ GFXLOC = --enable-gtk2=yes
 #
 #MINGW  = --enable-mingw=/mingw64
 
+# The system will attempt to set the paths to Python and Tcl, but
+# this may not be reliable.  These can be uncommented and set to
+# provide the correct paths on your system.
+#
+#PYTHON = --enable-pylib="/usr/lib64 -lpython2.7"  --enable-pyinc="-I/usr/include/python2.7"
+#TCL = --enable-tcllib=no  --enable-tclinc=no
+#TK = --enable-tklib=no  --enable-tkinc=no
+
 # If you don't want to build all the tools, you can choose what to
 # build below.  The xt_base is required for everything, other
 # dependencies are represented by the two lines below.  You can change
@@ -130,7 +138,7 @@ SUBDIRS = xt_base $(SECURE) $(MOZY) $(WRSPICE) $(XIC) fastcap fasthenry
 
 #######################################################################
 CFARGS = $(PREFIX) $(TOOLROOT) $(ITOPOK) $(HVSECURE) $(NOMOZY) $(32BIT) \
-  $(OALOC) $(KITLOC) $(MINGW) $(GFXLOC)
+  $(OALOC) $(CNILOC) $(KITLOC) $(MINGW) $(GFXLOC) $(PYTHON) $(TCL) $(TK)
 
 FLAGFILE = .configured
 

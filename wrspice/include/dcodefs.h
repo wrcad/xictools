@@ -57,7 +57,13 @@ Authors: 1985 Thomas L. Quarles
 
 struct sDCOAN : public sJOB
 {
-    ~sDCOAN();
+    virtual ~sDCOAN();
+
+    virtual sJOB *dup()
+        {
+            sDCOAN *dco = new sDCOAN(*this);
+            return (dco);
+        }
 };
 
 struct DCOanalysis : public IFanalysis

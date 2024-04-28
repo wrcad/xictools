@@ -21,13 +21,18 @@ MOC_INCLUDE = ../../include/qtmozy
 LIB_TARGET = ../../lib/qtmozy.a
 
 CCFILES = \
+    qtclrdlg.cc \
+    qtform_button.cc \
+    qtform_combo.cc \
     qtform_file.cc \
+    qtform_list.cc \
     qthelp.cc \
     qthttpmon.cc \
     qtviewer.cc \
     qtviewmon.cc
 
 MOCFILES = \
+    moc_clrdlg.cpp \
     moc_form_button.cpp \
     moc_form_combo.cpp \
     moc_form_file.cpp \
@@ -53,6 +58,7 @@ $(LIB_TARGET): $(LIBOBJS)
 .cc.o:
 	$(CXX) -c $(CFLAGS) $(INCLUDE) -o $@ $<
 
+moc_clrdlg.o: moc_clrdlg.cpp  $(MOC_INCLUDE)/qtclrdlg.h 
 moc_form_button.o: moc_form_button.cpp  $(MOC_INCLUDE)/qtform_button.h 
 moc_form_combo.o: moc_form_combo.cpp  $(MOC_INCLUDE)/qtform_combo.h 
 moc_form_file.o: moc_form_file.cpp  $(MOC_INCLUDE)/qtform_file.h 
@@ -63,6 +69,8 @@ moc_queue_timer.o: moc_queue_timer.cpp  $(MOC_INCLUDE)/queue_timer.h
 moc_viewer.o: moc_viewer.cpp  $(MOC_INCLUDE)/qtviewer.h 
 moc_viewmon.o: moc_viewmon.cpp  $(MOC_INCLUDE)/qtviewmon.h 
 
+moc_clrdlg.cpp: $(MOC) $(MOC_INCLUDE)/qtclrdlg.h
+	$(MOC) $(MOC_INCLUDE)/qtclrdlg.h -o moc_clrdlg.cpp
 moc_form_button.cpp: $(MOC) $(MOC_INCLUDE)/qtform_button.h
 	$(MOC) $(MOC_INCLUDE)/qtform_button.h -o moc_form_button.cpp
 moc_form_combo.cpp: $(MOC) $(MOC_INCLUDE)/qtform_combo.h

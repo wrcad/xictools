@@ -65,6 +65,9 @@ public:
     QTmsgDlg(QTbag*, const char*, bool err=false, STYtype style=STY_NORM);
     ~QTmsgDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
     QSize sizeHint() const;
 
     // GRpopup overrides
@@ -89,7 +92,7 @@ public:
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -112,7 +115,6 @@ private slots:
 private:
     QGroupBox   *tx_gbox;
     QTextEdit   *tx_tbox;
-    QPushButton *tx_cancel;
     STYtype     tx_display_style;
     bool        tx_desens;      // If true, parent->wb_inout is disabled.
 };

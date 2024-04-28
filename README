@@ -143,30 +143,82 @@ fasthenry
 
 3.  Building the XicTools
 
+3.1  Graphics Toolkit
 
-3.1.  Prerequisites
+The Xic, WRspice and other graphical programs have historically used
+the GTK-2.0 toolkit.  This, however, is rather old and obsolete. 
+After an abortive effort to migrate to GTK-3.0 (which is also obsolete
+but less so) it became clear that a major change of direction was
+required, and a huge effort was initiated to switch to the Qt toolkit. 
+This is mostly done, but details are still being fixed and probably a
+lot of issues will be uncovered in use.
 
-CentOS/RedHat Linux is the reference platform.  You should have
-success building the tools on Linux and Linux-like operating systems
-and environments.  These include Cygwin and MSYS2 on Windows, and OSX
-with MacPorts.
+Status as of April 27, 2024
+- The GTK-2.0 remains as the "reference".
+- Pre-built packages use the GTK-2.0 toolkit.
+- The GTK version should be considered as approaching "end of life".
+- Qt releases are equivalent and users are encouraged to try them.
+- New features will be developed in the Qt branch, and may not be
+  ported to the GTK branch.
 
-You will need to be familiar with makefiles, compilers, and the tools
-needed to build Linux programs.
+3.2  Packages vs. Building from Source
 
-You will need to have the development versions of lots of different
-libraries installed, including GTK.  As you encounter missing headers,
-etc., these should be installed on your system from your operating
-system source repositories.  You of course need the basic software
-development tools installed.  It can be a bit of a challenge to
-figure out which packages to install, Google is your friend.
+Historically, pre-built packages were available for various operating
+systems on wrcad.com.  However, due to time constraints the packages
+have not kept up with operating system or code changes, and only
+Windows has up-to-date packages available at this point.
+
+The plan is to drop packages entirely, and instead users will build
+from source.  By providing detailed information and possibly
+automation scripts, building from source should be easy for most
+users.  This will provide several advantages for users:
+
+1. The tools can be updated through a simple command, and rebuilt.
+2. If the operating system is updated, the tools can be rebuilt if
+   necessary.
+3. Users can track either the "master" branch, which is stable, or
+   the "devel" branch, which contains the latest code (or both).
+4. Users can control aspects of the build, such as file locations,
+   GTK vs. Qt, etc.
+5. We at the factory can focus on improving the programs instead of
+   churning out and uploading package files.
+6. The make system used to build the programs can also generate
+   package files, so if anyone wants to produce their own, this is
+   possible.
+
+3.3  Building from Source, Prerequisites
+
+The XicTools can be built on macOS with MacPorts, Windows with MSYS2,
+of any reasonably current Linux system.
+
+In general, it will be helpful to have some familiarity with building
+open-source software, with makefiles, compilers, and the tools needed
+to build and maintain Linux programs.  However, this is mostly for
+cases when something goes wrong, so the user can diagnose an fix a
+problem.  Eventually, we hope to make everything "just work" with no
+intervention required, but this will take time to evolve.
+
+Your system will need to have the standard software development tools
+and utilities.  You will also need to have the development versions of
+several different libraries installed.  As you encounter missing
+header files, etc., these should be installed on your system from your
+operating system source repositories.  It can be a bit of a challenge
+to figure out which packages to install, Google is your friend. 
+Requirements are partially listed below for various operting systems.
+
+To install system software as above on Linux, you will need root
+permission, or an IT department that can do this for you.  If you
+are already in a corporate software development environment, then
+this software will quite likely be installed already, is it is at
+Synopsys, for example.
 
 Programs and Utilities:
 There may be a meta-package containing the development toolchain,
 which should be installed.  These programs may be missing and would
 require installation.
 
-  git, autoconf, flex, bison, pkg-config
+  git, autoconf, flex, bison,
+  pkg-config for GTK only
 
 Libraries and Development Packages:
 Often, the basic libraries are provided, but a separate "devel"
@@ -178,14 +230,21 @@ both the library and development packages should be installed.
 Install the devel version, which will also install the bare library if
 necessary.
 
-  libgsl, libjpeg, libtiff, gtk2, ncurses
+  libgsl, libjpeg, libtiff, ncurses
+  gtk2, (GTK only)
 
 The gtk2 package will bring in a large number of dependent packages.
 
-Below are lists of package names that I had to install on some operating
-systems.
+Below are lists of package names that I had to install on some
+operating systems.  Note that I've specified the Qt-5 libraries here. 
+These may well be already installed, and seemed to be the standard. 
+You should also be able to build with the newer Qt-6 libraries if
+available.  These would have the same form as below but with "qt5" ->
+"qt6".
 
-You must have root permission to install packages on Linux.
+I've indicated the requirements for GTK and Qt below. You can choose
+either one or both, depending on the tools version(s) you intend to
+build.
 
 Ubuntu 20
 Debian 11
@@ -195,34 +254,78 @@ Debian 11
    individually or in smaller groups.
 
    apt install build-essential autoconf automake flex bison gpp git
-   libgtk2.0-dev libgsl-dev libtiff-dev libjpeg-dev libncurses5-dev
+   apt-install libgsl-dev libtiff-dev libjpeg-dev libncurses5-dev
+   apt-install libgtk2.0-dev  (for GTK)
+   apt-install qt5-qtbase-devel  (for Qt)
 
 Fedora 35/36
     In Fedora, the development tools are preinstalled, but you have
     to install g++ to get C++ support.  Again, packages can be installed
     one at a time or in groups.
 
-    dnf install autoconf automake flex bison patch g++ gpp gtk2-devel
-    gsl-devel rpm-build libjpeg-turbo-devel ncurses-devel
+    dnf install autoconf automake flex bison patch g++ gpp
+    dnf install gsl-devel rpm-build libjpeg-turbo-devel ncurses-devel
+    dnf install gtk2-devel  (for GTK)
+    dnf install qt5-qtbase-devel  (for Qt)
 
-CentOS 8 Stream / Rocky 8/ Red Hat 8
+CentOS 8 Stream/ Rocky 8/ Red Hat 8
     The first line installs the development tools, including for C++.
 
-    COMMON| dnf group install "Development Tools"
-          | dnf install gsl-devel ncurses-devel libtiff-devel libjpeg-devel
-    GTK   | dnf install gtk2-devel
-    QT-5  | dnf install qt5-qtbase-devel
+    dnf group install "Development Tools"
+    dnf install gsl-devel ncurses-devel libtiff-devel libjpeg-devel
+    dnf install gtk2-devel  (for GTK)
+    dnf install qt5-qtbase-devel  (for Qt)
 
 
-3.2.  Build Procedure for Linux
+3.4  Obtaining the Git Repository
+
+The file you are presently reading (README) is at the top level of the
+XicTools source tree.  It may or may not be part of a git repository
+depending on how the files were obtained.  You really want to have a
+git repository, and not just a collection of files from a zip or tar
+file.  The "git" program is a software management tool, and using a
+git repository allows you to update the files from the primary
+repository on github.com with a simple command.
+
+If there is a subdirectory named ".git" in the directory containing this
+file, then you probably have a git repository.  If not, lets start over.
+Go to the parent directory containing this one, and "rm -rf" to delete
+this directory and everything under it (which will include this file unless
+you save a copy some place).
+
+Next, give the following command to clone the xictools repository into
+the current directory:
+
+git clone https://github.com/wrcad/xictools.git
+
+If this fails because "git" is not found, then you will need to install
+it (see previous section).  This would be uncommon to not find git
+installed on a Linux system, however you will need to instal the MSYS2
+version on Windows or the MacPorts version on macOS, see instructions
+that follow.
+
+Otherwise, you should have a subdirectory named "xictools" which contains
+this README file, and a whole lot more.
+  
+
+3.4  Build Procedure for Linux
+
+This section assumes that you are in the directory containing this
+README file in your xictools git repository.  It assumes that you have
+installed the software build tools and development libraries as listed
+above, or a best guess depending on your system.
 
 The procedure is as follows.
 
-    1.  Copy Makefile.sample into Makefile, edit Makefile to set the
+    1.  Copy Makefile.sample into "Makefile", edit Makefile to set the
         configuration flags, as described in the Makefile.
-    2.  "make config" will configure the source tree to your build
-        environment.
-    3.  "make all" will build all of the programs.
+    2.  Give the command "make config" to configure the source tree to
+        your build environment.  You may see errors and early termination
+        if there are missing utilities or libraries.  This should take
+        maybe 5 minutes.
+    3.  Give "make all" to build all of the programs.  If all went
+        right for Xic and WRspice, there should be files present:
+        xic/bin/xic and wrspice/bin/wrspice
     4.  Thereafter, after changes, do "make reconfig" followed by
         "make all".
 
@@ -253,7 +356,7 @@ Currently the MSYS2/MINGWx64 environment is used to build and run on
 Windows.  The user will have to install this environment, or at least
 the run-time components.  This replaces the "gtk2-bundle" which
 provided the needed libraries previously and was distributed with the
-programs.
+program packages.
 
 Go to msys2.org, download and run the installer, and follow the
 instructions, using the defaults.  When done you will have a shell
@@ -268,8 +371,19 @@ the mingw64 versions of the gtk2 and gsl libraries.
 
     pacman -S vim
     pacman -S winpty
-    pacman -S mingw_w64-x86_64-gtk2
     pacman -S mingw_w64-x86_64-gsl
+    pacman -S mingw_w64-x86_64-gtk2  (for GTK)
+    pacman -S mingw_w64-x86_64-qt6  (for Qt)
+
+Add some other needed utilities
+
+    pacman -S autoconf-wrapper
+    pacman -S bison
+    pacman -S flex
+    pacman -S make
+    pacman -S patch
+    pacman -S libiconv-devel
+    pacman -S ncurses-devel
 
 Use the vim editor to edit the .bash_profile file that exists in the
 current (and home) directory adding the following lines to the bottom
@@ -306,10 +420,12 @@ to add packages needed later.
 The actual build procedure follows the Linux procedure above.
 
 
-3.4  OS X
+3.4  macOS
 
-You will need xcode, the X-Quartz X-Windows server, and the MacPorts
-gtk2 libraries.
+The Qt versions of the tools are "native" masOS applications.  Other
+than not needing an X-server, the main difference is that the
+application main menus appear in the Mac location at the top of the
+screen, and not in the application window.
 
 1.  Install xcode
     This is Apple's development package, available as a download from the
@@ -323,11 +439,14 @@ gtk2 libraries.
     Give the following command and agree to the terms:
       xcodebuild -license
 
-4.  To run the programs you will need an X11 server.  The recommended
-    server is XQuartz (www.xquartz.org).  This is the "official" X
-    server for the Mac, however others are available, including one
-    through macports.  Follow the instructions to install and start
-    the server.
+4.  To run the GTK versions of the programs you will need an X11
+    server.  The recommended server is XQuartz (www.xquartz.org). 
+    This is the "official" X server for the Mac, however others are
+    available, including one through macports.  Follow the
+    instructions to install and start the server.
+
+    If you will build and run the Qt versions only, you do not need
+    XQuartz.
 
 5.  Download the MacPorts installer from macports.org.  This provides
     the graphical libraries used by the programs.  Following the
@@ -339,15 +458,16 @@ gtk2 libraries.
     commands:
 
     port -v selfupdate
-    port install gtk2
+    port install gtk2  (for GTK)
+    port install pkgconfig  (for GTK)
+    port install qt6  (for Qt)
     port install gsl
     port install python2_select
     port install python27
     port install autoconf
-    port install pkgconfig
 
 6.  Set your shell search path to include /usr/local/xictools/bin.
 
-You should now be able to build XicTools folling the procedure above
+You should now be able to build XicTools following the procedure above
 for Linux.
 

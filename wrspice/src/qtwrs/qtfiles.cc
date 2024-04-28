@@ -63,6 +63,7 @@
 #include <QLabel>
 #include <QGroupBox>
 #include <QComboBox>
+#include <QToolButton>
 #include <QPushButton>
 #include <QMouseEvent>
 #include <QResizeEvent>
@@ -336,12 +337,14 @@ QTfilesListDlg::update(const char *path, const char **buttons, int numbuttons)
             fl_buttons[i] = 0;
         }
         for (int i = 0; i < numbuttons; i++) {
-            QPushButton *btn = new QPushButton(tr(buttons[i]));
-            fl_button_box->addWidget(btn);
-            btn->setCheckable(true);
-            btn->setAutoDefault(false);
-            fl_buttons[i] = btn;
-            connect(btn, SIGNAL(toggled(bool)),
+            QToolButton *tbtn = new QToolButton();
+            tbtn->setText(tr(buttons[i]));
+            if (!strcmp(buttons[i], FB_HELP))
+                fl_button_box->addStretch(1);
+            fl_button_box->addWidget(tbtn);
+            tbtn->setCheckable(true);
+            fl_buttons[i] = tbtn;
+            connect(tbtn, SIGNAL(toggled(bool)),
                 this, SLOT(button_slot(bool)));
         }
     }
@@ -589,7 +592,7 @@ QTfilesListDlg::create_page(sDirList *dl)
     nbtext->set_chars(dl->dirfiles());
 
     QFont *tfont;
-    if (FC.getFont(&tfont, FNT_SCREEN))
+    if (Fnt()->getFont(&tfont, FNT_SCREEN))
         nbtext->setFont(*tfont);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)));
@@ -602,10 +605,10 @@ QTfilesListDlg::create_page(sDirList *dl)
         this, SLOT(mouse_release_slot(QMouseEvent*)));
     connect(nbtext, SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(mouse_motion_slot(QMouseEvent*)));
-    connect(nbtext, SIGNAL(mime_data_handled(const QMimeData*, bool*)),
-        this, SLOT(mime_data_handled_slot(const QMimeData*, bool*)));
-    connect(nbtext, SIGNAL(mime_data_delivered(const QMimeData*, bool*)),
-        this, SLOT(mime_data_delivered_slot(const QMimeData*, bool*)));
+    connect(nbtext, SIGNAL(mime_data_handled(const QMimeData*, int*)),
+        this, SLOT(mime_data_handled_slot(const QMimeData*, int*)));
+    connect(nbtext, SIGNAL(mime_data_delivered(const QMimeData*, int*)),
+        this, SLOT(mime_data_delivered_slot(const QMimeData*, int*)));
     connect(nbtext, SIGNAL(key_press_event(QKeyEvent*)),
         this, SLOT(key_press_slot(QKeyEvent*)));
 
@@ -869,7 +872,7 @@ QTfilesListDlg::fl_desel()
 void
 QTfilesListDlg::button_slot(bool state)
 {
-    QPushButton *caller = qobject_cast<QPushButton*>(sender());
+    QAbstractButton *caller = qobject_cast<QAbstractButton*>(sender());
     if (!caller)
         return;
     if (!wb_textarea) {
@@ -944,7 +947,7 @@ QTfilesListDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_FIXED) {
         QFont *fnt;
-        if (FC.getFont(&fnt, FNT_FIXED))
+        if (Fnt()->getFont(&fnt, FNT_FIXED))
             qobject_cast<QTtextEdit*>(sender())->setFont(*fnt);
     }
 }
@@ -1145,7 +1148,7 @@ QTfilesListDlg::mouse_motion_slot(QMouseEvent *ev)
     }
 
     Qt::KeyboardModifiers m = QGuiApplication::queryKeyboardModifiers();
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
     // alt == option on Apple's planet
     if ((m & Qt::ShiftModifier) && (m & Qt::AltModifier)) {
         drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction,
@@ -1177,7 +1180,7 @@ QTfilesListDlg::mouse_motion_slot(QMouseEvent *ev)
 
 
 void
-QTfilesListDlg::mime_data_handled_slot(const QMimeData *dta, bool *accpt) const
+QTfilesListDlg::mime_data_handled_slot(const QMimeData *dta, int *accpt) const
 {
     if (dta->hasFormat("text/twostring") || dta->hasFormat("text/plain"))
         *accpt = true;
@@ -1185,7 +1188,7 @@ QTfilesListDlg::mime_data_handled_slot(const QMimeData *dta, bool *accpt) const
 
 
 void
-QTfilesListDlg::mime_data_delivered_slot(const QMimeData *dta, bool *accpt)
+QTfilesListDlg::mime_data_delivered_slot(const QMimeData *dta, int *accpt)
 {
     if (dta->hasFormat("text/twostring") || dta->hasFormat("text/plain")) {
         *accpt = true;

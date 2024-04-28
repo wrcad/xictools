@@ -45,8 +45,10 @@
 #include "qtfont.h"
 #include "miscutil/filestat.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 #include <QComboBox>
 #include <QDrag>
@@ -153,7 +155,7 @@ QTmcolDlg::QTmcolDlg(QTbag *owner, stringlist *symlist,
         this, SLOT(mouse_motion_slot(QMouseEvent*)));
 
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_FIXED))
+    if (Fnt()->getFont(&fnt, FNT_FIXED))
         wb_textarea->setFont(*fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
@@ -163,31 +165,32 @@ QTmcolDlg::QTmcolDlg(QTbag *owner, stringlist *symlist,
     hbox->setContentsMargins(0, 0, 0, 0);
     hbox->setSpacing(2);
 
-    QPushButton *btn = new QPushButton(tr("Save Text "));
-    hbox->addWidget(btn);
-    btn->setCheckable(true);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(toggled(bool)), this, SLOT(save_btn_slot(bool)));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Save Text "));
+    hbox->addWidget(tbtn);
+    tbtn->setCheckable(true);
+    connect(tbtn, SIGNAL(toggled(bool)), this, SLOT(save_btn_slot(bool)));
 
     mc_pagesel = new QComboBox();
     hbox->addWidget(mc_pagesel);
 
-    // Dismiss button.
-    //
-    btn = new QPushButton(tr("Dismiss"));
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
-
     if (buttons) {
         for (int i = 0; i < MC_MAXBTNS && buttons[i]; i++) {
-            btn = new QPushButton(buttons[i]);
-            btn->setAutoDefault(false);
-            btn->setEnabled(false);
-            mc_buttons[i] = btn;
-            hbox->addWidget(btn);
-            connect(btn, SIGNAL(clicked()), this, SLOT(user_btn_slot()));
+            tbtn = new QToolButton();
+            tbtn->setText(buttons[i]);
+            tbtn->setEnabled(false);
+            mc_buttons[i] = tbtn;
+            hbox->addWidget(tbtn);
+            connect(tbtn, SIGNAL(clicked()), this, SLOT(user_btn_slot()));
         }
     }
+
+    // Dismiss button.
+    //
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     relist();
 }
@@ -212,6 +215,12 @@ QTmcolDlg::~QTmcolDlg()
         QTdev::Deselect(p_caller);
     stringlist::destroy(mc_strings);
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTmcolDlg
+#include "qtmacos_event.h"
+#endif
 
 
 // GRpopup override
@@ -445,7 +454,7 @@ QTmcolDlg::user_btn_slot()
     // Handle the auxiliary buttons:  call the callback with '/'
     // followed by button text.
 
-    QPushButton *b = qobject_cast<QPushButton*>(sender());
+    QAbstractButton *b = qobject_cast<QAbstractButton*>(sender());
     if (b) {
         sLstr lstr;
         lstr.add_c('/');
@@ -629,7 +638,7 @@ QTmcolDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_FIXED) {
         QFont *fnt;
-        if (FC.getFont(&fnt, fnum)) {
+        if (Fnt()->getFont(&fnt, fnum)) {
             wb_textarea->setFont(*fnt);
             relist();
         }

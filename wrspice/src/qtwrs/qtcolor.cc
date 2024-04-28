@@ -65,6 +65,7 @@
 
 #include <QLayout>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 #include <QLineEdit>
 #include <QAction>
@@ -287,20 +288,17 @@ QTcolorParamDlg::QTcolorParamDlg(int xx, int yy)
     QLabel *label = new QLabel(tr("Plotting Colors"));
     hb->addWidget(label);
 
-    QPushButton *btn = new QPushButton(tr("Dismiss"));
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
-
-    btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     QGridLayout *grid = new QGridLayout();
     grid->setContentsMargins(qmtop);
     grid->setSpacing(2);
     vbox->addLayout(grid);
 
+    int nc2 = NUMPLOTCOLORS/2;
     for (int i = 0; i < NUMPLOTCOLORS; i++) {
         char buf[64];
         xKWent *entry = static_cast<xKWent*>(KW.color(i));
@@ -314,9 +312,17 @@ QTcolorParamDlg::QTcolorParamDlg(int xx, int yy)
             }
             entry->ent = new QTkwent(KW_NO_SPIN, QTkwent::ke_string_func,
                 entry, SpGrPkg::DefColorNames[i]);
-            grid->addWidget(entry->qtent(), i/2, i%2);
+            if (i < nc2)
+                grid->addWidget(entry->qtent(), i, 0);
+            else
+                grid->addWidget(entry->qtent(), i-nc2, 1);
         }
     }
+
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    vbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+
 
     if (xx || yy) {
         TB()->FixLoc(&xx, &yy);

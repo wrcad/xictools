@@ -50,6 +50,7 @@ Author: 1985 Wayne A. Christopher, U. C. Berkeley CAD Group
 // General stuff for the C-shell parser.
 //
 
+#include "config.h"
 #include "misc.h"
 #include "ttyio.h"
 #include "wlist.h"
@@ -60,6 +61,15 @@ struct variable;
 struct tmpFileList;
 struct sControl;
 struct sVarDb;
+
+// The Windows version used to need setjmp, make sure this is no longer
+// true.  If so, remove all setjmp stuff and don't include setjmp.h above.
+//#define USE_SETJMP_EXP
+#if defined(USE_SETJMP_EXP) && defined(HAVE_SETJMP_H)
+#include <setjmp.h>
+extern jmp_buf msw_jbf[4];
+extern int msw_jbf_sp;
+#endif
 
 #define MAXWORDS 512  // maximum global matches
 #define CP_DefHistLen 1000  // default history list length

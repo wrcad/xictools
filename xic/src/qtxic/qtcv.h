@@ -59,7 +59,6 @@ class QTwindowCfg;
 class QLabel;
 class QTabWidget;
 class QCheckBox;
-class QPushButton;
 namespace qtinterf {
     class QTdoubleSpinBox;
 }
@@ -79,13 +78,17 @@ public:
     QTconvertFmtDlg(GRobject, int, bool(*)(int, void*), void*);
     ~QTconvertFmtDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update(int);
 
     void set_transient_for(QWidget *prnt)
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);

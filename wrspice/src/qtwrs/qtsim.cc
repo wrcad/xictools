@@ -49,6 +49,7 @@
 #include <QLayout>
 #include <QTabWidget>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 #include <QLineEdit>
 #include <QAction>
@@ -117,15 +118,11 @@ QTsimParamDlg::QTsimParamDlg(int xx, int yy)
     QLabel *label = new QLabel(tr("Set simulation parameters"));
     hb->addWidget(label);
 
-    QPushButton *btn = new QPushButton(tr("Dismiss"));
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
-
-    btn = new QPushButton(tr("Help"));
-    btn->setCheckable(true);
-    btn->setAutoDefault(false);
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(toggled(bool)), this, SLOT(help_btn_slot(bool)));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    tbtn->setCheckable(true);
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(toggled(bool)), this, SLOT(help_btn_slot(bool)));
 
     si_notebook = new QTabWidget();
     vbox->addWidget(si_notebook);
@@ -734,6 +731,10 @@ QTsimParamDlg::QTsimParamDlg(int xx, int yy)
         grid->addWidget(entry->qtent(), 5, 0);
     }
     grid->setRowStretch(6, 1);
+
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    vbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     if (xx || yy) {
         TB()->FixLoc(&xx, &yy);

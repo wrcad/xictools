@@ -45,9 +45,11 @@
 #include "dsp_inlines.h"
 #include "qtmain.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QGroupBox>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 #include <QCheckBox>
 #include <QComboBox>
@@ -133,10 +135,10 @@ QTpcellCtrlDlg::QTpcellCtrlDlg(GRobject c)
     QLabel *label = new QLabel(tr("Control Parameterized Cell Options"));
     hb->addWidget(label);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     hbox = new QHBoxLayout(0);
     hbox->setContentsMargins(qm);
@@ -186,7 +188,8 @@ QTpcellCtrlDlg::QTpcellCtrlDlg(GRobject c)
 
     // Dismiss button
     //
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
     vbox->addSpacing(4);
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
@@ -201,6 +204,12 @@ QTpcellCtrlDlg::~QTpcellCtrlDlg()
     if (pcc_caller)
         QTdev::Deselect(pcc_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTpcellCtrlDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 void

@@ -110,27 +110,19 @@ struct sDCTprms;
 // HSPICE.
 // #define wrsREFTEMP          300.15  // 27 degrees C
 #define wrsREFTEMP          298.15  // 25 degrees C
-#define wrsCHARGE           1.602176634e-19
 
+// Valuse from NIST updated 03/02/2024
+#define wrsCHARGE           1.602176634e-19
 #define wrsCONSTCtoK        273.15
-#define wrsCONSTboltz       1.3806226e-23
+#define wrsCONSTboltz       1.380649-23
 #define wrsCONSTvt0         (wrsCONSTboltz*wrsREFTEMP/wrsCHARGE)
 #define wrsCONSTKoverQ      (wrsCONSTboltz/wrsCHARGE)
 #define wrsCONSTroot2       M_SQRT2
 #define wrsCONSTe           M_E
-#define wrsCONSTc           2.997925e8
-#define wrsCONSTphi0        2.067833848461929e-15
+#define wrsCONSTc           2.99792458e8
+#define wrsCONSTphi0        2.067833848e-15
 #define wrsCONSTphi0_2pi    (wrsCONSTphi0/(2*M_PI))
 #define wrsCONSTplanck      6.62607015e-34
-
-// New values for wrsCHARGE and wrsCONSTplanck were supplied by Paul
-// Dresselhaus of NIST, May 9 2019 (effective May 20).  wrsCONSTphi0
-// (h/2e) was updated from these.
-//
-// Previous values:
-// #define wrsCHARGE           1.60217646e-19
-// #define wrsCONSTplanck      6.62606896e-34
-// #define wrsCONSTphi0        2.067833667e-15
 
 //
 // General macros.
@@ -433,11 +425,8 @@ struct sJOB : public cBase
 
     virtual sJOB *dup()
         {
-            sJOB *j = new sJOB;
-            j->b_name = b_name;
-            j->b_type = b_type;
+            sJOB *j = new sJOB(*this);
             j->JOBoutdata = new sOUTdata(*JOBoutdata);
-            j->JOBrun = JOBrun;
             return (j);
         }
 
@@ -511,7 +500,7 @@ enum OMRG_TYPE { OMRG_GLOBAL, OMRG_LOCAL, OMRG_NOSHELL };
 #define DEF_gmax_MAX            1e9
 
 #define DEF_gmin                1e-12
-#define DEF_gmin_MIN            1e-15
+#define DEF_gmin_MIN            1e-18
 #define DEF_gmin_MAX            1e-6
 
 #define DEF_maxData             256000

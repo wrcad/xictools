@@ -999,7 +999,7 @@ GTKpkg::SetFont(const char *fname, int fnum, FNT_FMT fmt)
         return;
 
     if (!xfd_t::is_xfd(fname))
-        FC.setName(fname, fnum);
+        Fnt()->setName(fname, fnum);
 }
 
 
@@ -1009,7 +1009,7 @@ const char *
 GTKpkg::GetFont(int fnum)
 {
     // valid for null graphics also
-    return (FC.getName(fnum));
+    return (Fnt()->getName(fnum));
 }
 
 

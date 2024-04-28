@@ -43,11 +43,13 @@
 #include "dsp_inlines.h"
 #include "qtinterf/qtfont.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QComboBox>
 #include <QGroupBox>
 #include <QLabel>
 #include <QCheckBox>
+#include <QToolButton>
 #include <QPushButton>
 #include <QLineEdit>
 #include <QDragEnterEvent>
@@ -141,8 +143,7 @@ QTextCmdPathEdit::dropEvent(QDropEvent *ev)
 {
     if (ev->mimeData()->hasUrls()) {
         QByteArray ba = ev->mimeData()->data("text/plain");
-        const char *str = ba.constData() + strlen("File://");
-        setText(str);
+        setText(ba.constData());
         ev->accept();
         return;
     }
@@ -185,7 +186,6 @@ QTextCmdDlg::QTextCmdDlg(GRobject c, sExtCmd *cmd,
     cmd_label = 0;
     cmd_text = 0;
     cmd_go = 0;
-    cmd_cancel = 0;
 
     cmd_excmd = cmd;
     cmd_bx = new QCheckBox*[cmd->num_buttons()];
@@ -243,10 +243,10 @@ QTextCmdDlg::QTextCmdDlg(GRobject c, sExtCmd *cmd,
     QLabel *label = new QLabel(tr(titlemsg));
     hb->addWidget(label);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     gb = new QGroupBox(tr(cmd_excmd->btntitle()));
     vbox->addWidget(gb);
@@ -348,15 +348,16 @@ QTextCmdDlg::QTextCmdDlg(GRobject c, sExtCmd *cmd,
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    cmd_go = new QPushButton(tr(cmd_excmd->gotext()));
+    cmd_go = new QToolButton();
+    cmd_go->setText(tr(cmd_excmd->gotext()));
     hbox->addWidget(cmd_go);
     cmd_go->setCheckable(true);
-    cmd_go->setAutoDefault(false);
     connect(cmd_go, SIGNAL(toggled(bool)), this, SLOT(go_btn_slot(bool)));
 
-    cmd_cancel = new QPushButton(tr("Cancel"));
-    hbox->addWidget(cmd_cancel);
-    connect(cmd_cancel, SIGNAL(clicked()), this, SLOT(cancel_btn_slot()));
+    QPushButton *btn = new QPushButton(tr("Cancel"));
+    btn->setObjectName("Default");
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(cancel_btn_slot()));
 }
 
 
@@ -371,6 +372,11 @@ QTextCmdDlg::~QTextCmdDlg()
     delete [] cmd_bx;
 }
 
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTextCmdDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 void

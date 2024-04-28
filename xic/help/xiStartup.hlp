@@ -15,7 +15,7 @@ xiStartup.hlp
 
 !!SUBTOPICS
 xic:graphics
-macosx
+macos
 mswindows
 xic:cmdline
 xic:env
@@ -23,69 +23,80 @@ initfiles
 logfiles
 
 
-!! 110613
+!! 040824
 !!KEYWORD
 xic:graphics
 !!TITLE
-Graphics Support and Requirements
+Graphics Support
 !!HTML
     Starting with Generation 4, <i>Xic</i> and all other Whiteley
-    Research products use the <a href="http://www.gtk.org">GTK-2</a>
-    graphical user interface toolkit exclusively.  The toolkit must be
-    provided by the user's installation.  This is almost certain to be
-    the case under Linux, as GTK is a default part of virtually all
-    Linux distributions.  In FreeBSD, it will have to be installed
-    from the ports or packages collection, if it wasn't automatically
-    installed from the distribution DVD.  For Windows, a complete
-    GTK-2 installation package is available from Whiteley Research,
-    which is a self-extracting <tt>.exe</tt> version of the zip
-    distribution provided from <tt>www.gtk.org</tt>.  One of these
-    packages must now be installed on a Windows host.  Similarly,
-    GTK-2 must be installed on the Mac.  This makes use of the
-    X-window system, which also must be installed and running on the
-    Mac.  Although there is a version of GTK-2 that uses the native
-    Quartz screen interface instead of X-windows, it has very serious
-    flaws and is unusable at present.
+    Research products used the <a href="http://www.gtk.org">GTK-2</a>
+    graphical user interface toolkit exclusively.  This replaced the
+    Win32 graphical interface previously used under Windows and the
+    GTK-1 interface used for other systems.  Thus, all releases had
+    precisely the same graphical interface, which greatly simplified
+    documentation, maintenance, and development.
 
     <p>
-    The Win32 graphical interface previously used under Windows is now
-    retired, as is the GTK-1 interface used in some earlier releases.
-    Thus, all present releases will have precisely the same graphical
-    interface, which will greatly simplify documentation, maintenance,
-    and future development.
+    Presently (April 2024) GTK-2 is still the reference toolkit, but
+    it is being replaced by QT, another popular toolkit.  The user
+    interface is very similar, most of the changes are "under the
+    hood".  The tremendous amount of work to bring in a different
+    toolkit is about complete, and QT releases are in "beta" testing.
 
     <p>
-    The GTK-2 toolkit handles the interface to the screen, window
-    manager, keyboard, and mouse.  It is not likely that there will
-    be serious incompatibilities.
+    The reasons for the change are as follows.
+    <ul>
+    <li>Starting with GTK-3, a new drawing layer named Cairo was
+    introduced, and the previous drawing layer, which was a vaneer over
+    the X-windows system, was eliminated.  The problem was that the new
+    drawing layer was not at all compatible with <i>Xic</i>, or any
+    CAD type of tool requiring rendering precision and high performance.
+    Cairo is geared for PowerPoint-type applications.
+    <li>GTK-2 is long-obsolete, and it will likely disappear at some
+    point soon.  The current GTK is GTK-4, which is not supported by
+    <i>Xic</i> and probably never will be.  <i>Xic</i> can build with
+    GTK-3, but the result has serious flaws and shortcomings, and
+    further development with GTK has stopped.
+    <li>GTK is a C library and <i>Xic</i> and <i>WRspice</i> are C++
+    programs, whereas QT is also C++.  The internal organization of
+    the QT version of the programs is far nicer and more concise and
+    will be esier to maintain and extend.
+    <li>QT has very good compatibility with Windows and macOS.  There
+    is no need to run an X server like XQuartz with the macOS QT
+    versions.
+    <li>QT is contemporary software under active development, GTK-2
+    is very old.
+    </ul>
 
 !!SEEALSO
-macosx
+macos
 mswindows
 
 !! 093017
 !!KEYWORD
-macosx mac osx
+macos macosx
 !!TITLE
-Apple OS X Notes
+Apple macOS Notes
 !!HTML
-    In OS X, lurking beneath the pretty graphics is a complete Unix
+    <font color=red>Section needs updating.</font><br>
+    In macOS, lurking beneath the pretty graphics is a complete Unix
     operating system based on FreeBSD, including support for
     X-windows.  Most of the open-source software developed for
-    Linux/FreeBSD has been ported to OS X, so for the Unix fans (like
+    Linux/FreeBSD has been ported to macOS, so for the Unix fans (like
     me), the operating system can look like Unix with a great
     graphical interface that also runs Macintosh applications. 
-    Overall, OS X is a very impressive desktop/laptop operating
+    Overall, macOS is a very impressive desktop/laptop operating
     system.
 
     <p>
-    All Generation 4 OS X distributions require OS X 10.910 (Yosemite)
+    All Generation 4 macOS distributions require macOS 10.910 (Yosemite)
     or later.
 
     <p>
     The Whiteley Research programs presently require that the
     X-windows server be running, as X is used for graphics.  Unlike in
-    some earlier OS X releases, it is not installed automatically in
+    some earlier macOS releases, it is not installed automatically in
     Yosemite.  The Apple-sponsored X-server is called "XQuartz" and
     is available for download from the project web site (google
     "XQuartz download").
@@ -110,7 +121,7 @@ Apple OS X Notes
     display, which is supplied in a separate
     "<tt>gtk2-bundle-x11</tt>" distribution file.  As in Windows, the
     bundle supplies all of the libraries and supporting files needed,
-    as they are not native to OS X.  The user will need to download
+    as they are not native to macOS.  The user will need to download
     and install the bundle package.  Once installed, it should rarely
     if ever need to be upgraded.  The bundle can be installed with the
     <tt>wr_install</tt> script, or with Apple's installer, the same as
@@ -158,7 +169,7 @@ Apple OS X Notes
 
     <p>
     The X-Windows server must be running for successful execution of
-    the programs that use graphics.  In OS X Mavericks the Apple
+    the programs that use graphics.  In macOS Mavericks the Apple
     "XQuartz" X-server will start automatically when needed (remember
     that this must be downloaded, as it is not installed automatically
     in Mavericks), however this causes the initial program startup
@@ -261,6 +272,7 @@ mswindows
 !!TITLE
 Microsoft Windows Notes
 !!HTML
+    <font color=red>Section needs updating.</font><br>
     <table border=0>
     <tr><td valign=top><b>jump to</b></td> <td>
     <a href="mswindows#setup"><b>Installation and Setup</b></a><br>
@@ -294,7 +306,7 @@ Microsoft Windows Notes
 
     <p>
     The distributions are available from the <tt>wrcad.com</tt> web
-    site, along with the distributions for Linux and OS X.  The
+    site, along with the distributions for Linux and macOS.  The
     distributions come in self-extracting <tt>.exe</tt> files.  Simply
     run the files to do the installation.  The programs can later be
     uninstalled, either from the <b>Control Panel</b> or by clicking
@@ -1172,7 +1184,7 @@ Environment Variables
     has meaning if set to one of the keywords "<tt>Server</tt>" or
     "<tt>Local</tt>".  If set to "<tt>Server</tt>" on a Windows
     system, <i>Xic</i> and <i>WRspice</i> can by authenticated from a
-    license server.  If set to "<tt>Local</tt>" on a Linux/OS X
+    license server.  If set to "<tt>Local</tt>" on a Linux/macOS
     system, <i>Xic</i> and <i>WRspice</i> will be self-validating.
 
     <p>
@@ -1614,7 +1626,7 @@ Environment Variables
     <a name="XIC_LIBRARY_PATH"></a>
     <dl>
     <dt><b>XIC_LIBRARY_PATH</b><dd>
-    This applies to Linux and OS X only.  If set, the value will be
+    This applies to Linux and macOS only.  If set, the value will be
     prepended to the <tt>LD_LIBRARY_PATH</tt> in the <i>Xic</i>
     wrapper script.
     This can be used to point to installed libraries needed
@@ -1688,7 +1700,7 @@ Environment Variables
     programs by looking in standard places, however, if the programs
     exist but can't be located, this variable can be set to a
     colon-separated list of directories to search for the executables. 
-    This applies to Unix/Linux/OS X only.  See the description of the
+    This applies to Unix/Linux/macOS only.  See the description of the
     <a href="hcopyfmt#image">Image</a> print driver for more
     information.
     </dl>

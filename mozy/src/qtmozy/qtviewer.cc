@@ -56,150 +56,11 @@
 #include <QHBoxLayout>
 #include <QLineEdit>
 #include <QPainter>
-#include <QPushButton>
 #include <QResizeEvent>
 #include <QScrollBar>
 #include <QTextEdit>
 
-
 using namespace qtinterf;
-
-//-----------------------------------------------------------------------------
-// Special widgets for forms
-
-QTform_button::QTform_button(htmForm *entry, QWidget *prnt) :
-    QPushButton(prnt)
-{
-    form_entry = entry;
-    setAutoDefault(false);
-
-    QFontMetrics fm(font());
-    if (entry->type == FORM_RESET || entry->type == FORM_SUBMIT) {
-        const char *str = entry->value ? entry->value : entry->name;
-        if (!str || !*str)
-            str = "X";
-        else
-            setText(QString(str));
-#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
-        entry->width = fm.horizontalAdvance(str) + 4;
-#else
-        entry->width = fm.width(str) + 4;
-#endif
-        entry->height = fm.height() + 4;
-    }
-    else {
-#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
-        entry->width = fm.horizontalAdvance("X") + 4;
-#else
-        entry->width = fm.width("X") + 4;
-#endif
-        entry->height = entry->width;
-        setCheckable(true);
-        setChecked(entry->checked);
-    }
-    setFixedSize(QSize(entry->width, entry->height));
-
-    connect(this, SIGNAL(pressed()), this, SLOT(pressed_slot()));
-    connect(this, SIGNAL(released()), this, SLOT(released_slot()));
-}
-
-
-void
-QTform_button::pressed_slot()
-{
-    if (form_entry->type == FORM_RADIO) {
-        // get start of this radiobox
-        htmForm *tmp;
-        for (tmp = form_entry->parent->components; tmp;
-                tmp = tmp->next)
-            if (tmp->type == FORM_RADIO &&
-                    !(strcasecmp(tmp->name, form_entry->name)))
-                break;
-
-        if (tmp == 0)
-            return;
-
-        // unset all other toggle buttons in this radiobox
-        for ( ; tmp != 0; tmp = tmp->next) {
-            if (tmp->type == FORM_RADIO && tmp != form_entry) {
-                if (!strcasecmp(tmp->name, form_entry->name)) {
-                    // same group, unset it
-                    QTform_button *btn = (QTform_button*)tmp->widget;
-                    btn->setChecked(false);
-                }
-                else
-                    // Not a member of this group, we processed all
-                    // elements in this radio box, break out.
-                    break;
-            }
-        }
-        form_entry->checked = true;
-    }
-    emit pressed(form_entry);
-}
-
-
-void
-QTform_button::released_slot()
-{
-    if (form_entry->type == FORM_RADIO)
-        setChecked(true);
-}
-
-
-QTform_combo::QTform_combo(htmForm *entry, QWidget *prnt) :
-    QComboBox(prnt)
-{
-    form_entry = entry;
-    setEditable(false);
-}
-
-
-void
-QTform_combo::setSize()
-{
-    QFontMetrics fm(font());
-    form_entry->height = form_entry->size * fm.height();
-    form_entry->width = 0;
-    for (htmForm *f = form_entry->options; f; f = f->next) {
-#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
-        unsigned int w = fm.horizontalAdvance(f->name);
-#else
-        unsigned int w = fm.width(f->name);
-#endif
-        if (w > form_entry->width)
-            form_entry->width = w;
-    }
-    form_entry->width += 30;  // drop button
-    setFixedSize(QSize(form_entry->width, form_entry->height));
-}
-
-
-QTform_list::QTform_list(htmForm *entry, QWidget *prnt) :
-    QListWidget(prnt)
-{
-    form_entry = entry;
-}
-
-
-void
-QTform_list::setSize()
-{
-    QFontMetrics fm(font());
-    form_entry->height = form_entry->size * fm.height();
-    form_entry->width = 0;
-    for (htmForm *f = form_entry->options; f; f = f->next) {
-#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
-        unsigned int w = fm.horizontalAdvance(f->name);
-#else
-        unsigned int w = fm.width(f->name);
-#endif
-        if (w > form_entry->width)
-            form_entry->width = w;
-    }
-    form_entry->width += 30;  // scrollbar
-    setFixedSize(QSize(form_entry->width, form_entry->height));
-}
 
 
 //-----------------------------------------------------------------------------
@@ -223,6 +84,8 @@ QTviewer::QTviewer(int wid, int hei, htmDataInterface *dta, QWidget *prnt) :
         this, SLOT(release_event_slot(QMouseEvent*)));
     connect(v_darea, SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(motion_event_slot(QMouseEvent*)));
+    connect(v_darea, SIGNAL(mouse_wheel_event(QWheelEvent*)),
+        this, SLOT(mouse_wheel_slot(QWheelEvent*)));
 
     v_timers = 0;
 
@@ -232,17 +95,15 @@ QTviewer::QTviewer(int wid, int hei, htmDataInterface *dta, QWidget *prnt) :
     v_btn_timer.setSingleShot(true);
     connect(&v_btn_timer, SIGNAL(timeout()), this, SLOT(btn_timer_slot()));
 
-    const char *fn = FC.getName(FNT_MOZY);
+    const char *fn = Fnt()->getName(FNT_MOZY);
     if (fn)
         set_font(fn);
-    fn = FC.getName(FNT_MOZY_FIXED);
+    fn = Fnt()->getName(FNT_MOZY_FIXED);
     if (fn)
         set_fixed_font(fn);
     // Listen for font family names under FNT_MOZY and FNT_MOZY_FIXED.
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
-
-    setReady();
 }
 
 
@@ -357,7 +218,7 @@ QTviewer::set_font(const char *fontspec)
 {
     char *family;
     int sz;
-    FC.parse_freeform_font_string(fontspec, &family, 0, &sz, 0);
+    Fnt()->parse_freeform_font_string(fontspec, &family, 0, &sz, 0);
     setFontFamily(family, sz);
     delete [] family;
 }
@@ -368,7 +229,7 @@ QTviewer::set_fixed_font(const char *fontspec)
 {
     char *family;
     int sz;
-    FC.parse_freeform_font_string(fontspec, &family, 0, &sz, 0);
+    Fnt()->parse_freeform_font_string(fontspec, &family, 0, &sz, 0);
     setFixedFontFamily(family, sz);
     delete [] family;
 }
@@ -591,6 +452,12 @@ QTviewer::tk_claim_selection(const char*)
 htmFont *
 QTviewer::tk_alloc_font(const char *family, int sz, unsigned char sty)
 {
+#ifdef Q_OS_MACOS
+    // In QT, if a font doesn't exist, a long annoying message is printed
+    // on-screen.  Sans doesn't exist in Apple at present (Sonoma).
+    if (!strcasecmp(family, "sans"))
+        family = "Arial";
+#endif
     QFont *xfont = new QFont(QString(family), sz);
     if (sty & FONT_FIXED)
         xfont->setFixedPitch(true);
@@ -608,10 +475,11 @@ QTviewer::tk_alloc_font(const char *family, int sz, unsigned char sty)
 
     fnt->ascent = fm.ascent();
     fnt->descent = fm.descent();
-    fnt->width = fm.maxWidth();
 #if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
+    fnt->width = fm.horizontalAdvance('x');
     fnt->lbearing = fm.horizontalAdvance(' ');
 #else
+    fnt->width = fm.width('x');
     fnt->lbearing = fm.width(' ');
 #endif
     fnt->rbearing = 0;
@@ -623,8 +491,8 @@ QTviewer::tk_alloc_font(const char *family, int sz, unsigned char sty)
 #else
     fnt->isp = fm.width(' ');
 #endif
-    fnt->sup_yoffset = (int)(fnt->ascent  * -.4);
-    fnt->sub_yoffset = (int)(fnt->descent * .8);
+    fnt->sup_yoffset = (int)(fnt->ascent  * -0.4);
+    fnt->sub_yoffset = (int)(fnt->descent * 0.8);
 
     fnt->ul_offset = fm.underlinePos();
     fnt->ul_thickness = 1;
@@ -854,7 +722,12 @@ bool
 QTviewer::tk_parse_color(const char *name, htmColor *c)
 {
     QtMessageHandler h = qInstallMessageHandler(messageOutput);
-    QColor q(QColor::fromString(name));
+#if QT_VERSION >= QT_VERSION_CHECK(6,6,0)
+    QColor q = QColor::fromString(name);
+#else
+    QColor q;
+    q.setNamedColor(name);
+#endif
     qInstallMessageHandler(h);
     if (!q.isValid())
         return (false);
@@ -928,8 +801,12 @@ QTviewer::tk_get_pixels(unsigned short *r, unsigned short *g,
 void
 QTviewer::tk_set_clip_mask(htmPixmap *pix, htmBitmap *bits)
 {
-    if (pix && bits)
+    if (!pix)
+        return;
+    if ( bits)
         ((QPixmap*)pix)->setMask(*(QBitmap*)bits);
+    else
+        ((QPixmap*)pix)->setMask(QBitmap());
 }
 
 
@@ -940,8 +817,12 @@ QTviewer::tk_set_clip_origin(int, int)
 
 
 void
-QTviewer::tk_set_clip_rectangle(htmRect*)
+QTviewer::tk_set_clip_rectangle(htmRect *r)
 {
+    if (r)
+        v_darea->set_clipping(r->x, r->y, r->width, r->height);
+    else
+        v_darea->set_clipping(0, 0, 0, 0);
 }
 
 
@@ -1025,6 +906,7 @@ QTviewer::tk_draw_line(int x1, int y1, int x2, int y2)
 void
 QTviewer::tk_draw_text(int xx, int yy, const char *str, int len)
 {
+    yy += 4; // Offset needed to get position correct in tables, why?
     v_darea->draw_text(xx, yy, str, len);
 }
 
@@ -1107,7 +989,7 @@ QTviewer::tk_add_widget(htmForm *entry, htmForm *prnt)
     case FORM_CHECK:
     case FORM_RADIO:
         {
-            QPushButton *cb = new QTform_button(entry, v_darea);
+            QToolButton *cb = new QTform_button(entry, v_darea);
             entry->widget = cb;
         }
         break;
@@ -1119,7 +1001,7 @@ QTviewer::tk_add_widget(htmForm *entry, htmForm *prnt)
     case FORM_RESET:
     case FORM_SUBMIT:
         {
-            QPushButton *btn = new QTform_button(entry, v_darea);
+            QToolButton *btn = new QTform_button(entry, v_darea);
             entry->widget = btn;
 
             if (entry->type == FORM_SUBMIT)
@@ -1415,12 +1297,12 @@ void
 QTviewer::font_changed_slot(int fnum)
 {
     if (fnum == FNT_MOZY) {
-        const char *fn = FC.getName(FNT_MOZY);
+        const char *fn = Fnt()->getName(FNT_MOZY);
         if (fn)
             set_font(fn);
     }
     else if (fnum == FNT_MOZY_FIXED) {
-        const char *fn = FC.getName(FNT_MOZY_FIXED);
+        const char *fn = Fnt()->getName(FNT_MOZY_FIXED);
         if (fn)
             set_fixed_font(fn);
     }
@@ -1571,6 +1453,15 @@ QTviewer::motion_event_slot(QMouseEvent *ev)
 }
 
 
+void
+QTviewer::mouse_wheel_slot(QWheelEvent *ev)
+{
+    QScrollBar *sb = verticalScrollBar();
+    if (sb)
+        sb->event(ev);
+}
+
+
 // This is called a short time after a button press.  It signals the
 // end of a "click" and starts the rectangle sprite for selection if
 // the mouse button is still down.
@@ -1605,20 +1496,14 @@ void
 QTviewer::resizeEvent(QResizeEvent *ev)
 {
     QScrollArea::resizeEvent(ev);
-
-    // If the size increases, resize the drawing area immediately so it
-    // won't look strange while reformatting.  The reformatting will
-    // resize it again.
-    QSize dasize = v_darea->size();
-    if (dasize.width() < ev->size().width())
-        dasize.setWidth(ev->size().width());
-    if (dasize.height() < ev->size().height())
-        dasize.setHeight(ev->size().height());
-    if (dasize != v_darea->size())
-        v_darea->resize(dasize);
-
     htmWidget::resize();
-    if (!htm_in_layout && htm_initialized)
+    if (!isReady()) {
+        // I don't know why but this is needed for the initial window
+        // to have correct layout.
+        QWidget::resize(width() + 1, height());
+        setReady();
+    }
+    else if (!htm_in_layout && htm_initialized)
         trySync();
 }
 

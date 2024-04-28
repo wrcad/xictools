@@ -53,9 +53,11 @@
 #include "qtinterf/qtfont.h"
 #include "miscutil/pathlist.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QColorDialog>
 #include <QComboBox>
+#include <QToolButton>
 #include <QPushButton>
 #include <QKeyEvent>
 
@@ -252,23 +254,25 @@ QTcolorDlg::QTcolorDlg(GRobject c)
 
     // Help, Colors, Apply, and Dismiss buttons.
     //
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
-    c_listbtn = new QPushButton(tr("Named Colors"));
+    c_listbtn = new QToolButton();
+    c_listbtn->setText(tr("Named Colors"));
     hbox->addWidget(c_listbtn);
     c_listbtn->setCheckable(true);
-    c_listbtn->setAutoDefault(false);
     connect(c_listbtn, SIGNAL(toggled(bool)),
         this, SLOT(colors_btn_slot(bool)));
 
-    btn = new QPushButton(tr("Apply"));
-    connect(btn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
-    hbox->addWidget(btn);
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Apply"));
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
+    hbox->addWidget(tbtn);
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
     hbox->addWidget(btn);
 
@@ -284,6 +288,12 @@ QTcolorDlg::~QTcolorDlg()
     if (c_listpop)
         c_listpop->popdown();
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTcolorDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 void

@@ -268,7 +268,7 @@ cMain::Info(CDs *sdesc, int level)
     lstr.add(buf);
 
     if (level > 0) {
-        if (sdesc->isModified())
+        if (sdesc->countModified())
             lstr.add("Cell is modified\n");
 
         lstr.add("Source file type: ");

@@ -92,6 +92,11 @@ public:
             return (instancePtr);
         }
 
+    QSize sizeHint() const
+        {
+            return (QSize(200, QFontMetrics(font()).height()));
+        }
+
 private slots:
     void font_changed_slot(int);
     void recall_menu_slot(QAction*);

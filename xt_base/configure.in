@@ -131,6 +131,68 @@ if test ! -d ../secure; then
     havesecure=no
 fi
 
+dnl Overrides for Python/Tcl.
+
+dnl --enable-pylib=/python/shared/lib/path
+dnl Path to Python2 libraries
+pylib=
+AC_ARG_ENABLE(pylib,
+    [  ]--enable_pylib=path_to_python_libs     Python shared library,
+if test "$enable_pylib" != no; then
+    pylib="$enable_pylib"
+fi
+)
+
+dnl --enable-pyinc=/python/include/files
+dnl Path to Python2 includes
+pyinc=
+AC_ARG_ENABLE(pyinc,
+    [  ]--enable_pyinc=path_to_python_includes Python include files,
+if test "$enable_pyinc" != no; then
+    pyinc="$enable_pyinc"
+fi
+)
+
+dnl --enable-tcllib=/tcl/shared/lib/path
+dnl Path to tcl libraries
+tcllib=
+AC_ARG_ENABLE(tcllib,
+    [  ]--enable_tcllib=path_to_tcl_libs       Tcl shared library,
+if test "$enable_tcllib" != no; then
+    tcllib="$enable_tcllib"
+fi
+)
+
+dnl --enable-tclinc=/tcl/include/files
+dnl Path to tcl includes
+tclinc=
+AC_ARG_ENABLE(tclinc,
+    [  ]--enable_tclinc=path_to_tcl_includes   Tcl include files,
+if test "$enable_tclinc" != no; then
+    tclinc="$enable_tclinc"
+fi
+)
+
+dnl --enable-tklib=/tk/shared/lib/path
+dnl Path to tk libraries
+tklib=
+AC_ARG_ENABLE(tklib,
+    [  ]--enable_tklib=path_to_kl_libs         Tk shared library,
+if test "$enable_tklib" != no; then
+    tklib="$enable_tklib"
+fi
+)
+
+dnl --enable-tkinc=/tk/include/files
+dnl Path to tk includes
+tkinc=
+AC_ARG_ENABLE(tkinc,
+    [  ]--enable_tkinc=path_to_tk_includes     Tk include files,
+if test "$enable_tkinc" != no; then
+    tkinc="$enable_tkinc"
+fi
+)
+
 dnl  Enable OpenAccess support, i.e., enable and build the OA plugin.  This
 dnl  requires the presence of an OpenAccess source tree (for the include
 dnl  files) and the shared libraries in order to run.  The source code is
@@ -958,12 +1020,12 @@ elif test ${OSNAME:0:5} = "Linux"; then
         PY_LIBS="-L$cni_loc/linux64/3rd/Python/lib -lpython2.6"
         PY_TARGETS="py26.so"
         echo '#define HAVE_PYTHON 1'>> confdefs.h
-    elif test -d /usr/include/python2.7; then
+    elif test -f /usr/include/python2.7/Python.h; then
         PY_INCLUDE="-I/usr/include/python2.7"
         PY_LIBS="-lpython2.7"
         PY_TARGETS="py27.so"
         echo '#define HAVE_PYTHON 1'>> confdefs.h
-    elif test -d /usr/include/python2.6; then
+    elif test -f /usr/include/python2.6/Python.h; then
         PY_INCLUDE="-I/usr/include/python2.6"
         PY_LIBS="-lpython2.6"
         PY_TARGETS="py26.so"
@@ -980,6 +1042,28 @@ elif test ${OSNAME:0:5} = "Linux"; then
             echo '#define HAVE_TK 1'>> confdefs.h
         fi
     fi
+fi
+
+dnl Override Python/Tcl paths.
+if test $with_cni == no; then
+    if test -n "$pyinc"; then
+        PY_INCLUDE="$pyinc"
+    fi
+    if test -n "$pylib"; then
+        PY_LIBS="$pylib"
+    fi
+fi
+if test -n "$tclinc"; then
+    TCL_INCLUDE="$tclinc"
+fi
+if test -n "$tcllib"; then
+    TCL_LIBS="$tcllib"
+fi
+if test -n "$tkinc"; then
+    TK_INCLUDE="$tkinc"
+fi
+if test -n "$tklib"; then
+    TK_LIBS="$tklib"
 fi
 
 AC_SUBST(PY_TARGETS)

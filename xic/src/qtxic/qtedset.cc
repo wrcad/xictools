@@ -44,10 +44,12 @@
 #include "dsp_inlines.h"
 #include "tech.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QGroupBox>
 #include <QLabel>
 #include <QCheckBox>
+#include <QToolButton>
 #include <QPushButton>
 #include <QSpinBox>
 #include <QComboBox>
@@ -143,10 +145,10 @@ QTeditSetupDlg::QTeditSetupDlg(GRobject c)
     QLabel *label = new QLabel(tr("Set editing flags and parameters"));
     hb->addWidget(label);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // check boxes
     //
@@ -237,7 +239,8 @@ QTeditSetupDlg::QTeditSetupDlg(GRobject c)
 
     // Dismiss button
     //
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -251,6 +254,12 @@ QTeditSetupDlg::~QTeditSetupDlg()
     if (ed_caller)
         QTdev::Deselect(ed_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTeditSetupDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 void

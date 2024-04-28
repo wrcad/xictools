@@ -223,6 +223,7 @@ QTmergeDlg::QTmergeDlg(mitem_t *mi)
     hbox->addWidget(btn);
     btn->setAutoDefault(false);
     connect(btn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
+
     btn = new QPushButton(tr("Apply To Rest"));
     hbox->addWidget(btn);
     btn->setAutoDefault(false);
@@ -234,6 +235,16 @@ QTmergeDlg::~QTmergeDlg()
 {
     instPtr = 0;
     delete mc_names;
+}
+
+
+void
+QTmergeDlg::closeEvent(QCloseEvent *ev)
+{
+    // Closing the window is the same as pressing ...
+    Cvt()->PopUpMergeControl(MODE_UPD, 0);
+    ev->ignore();  // equiv. to Apply to All
+    //ev->accept(); // equiv. to Apply
 }
 
 

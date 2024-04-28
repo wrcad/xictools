@@ -50,7 +50,7 @@
 //-----------------------------------------------------------------------------
 // QTlayerPaletteDlg:  The Layer Palette.
 
-class QPushButton;
+class QToolButton;
 class QAction;
 class QResizeEvent;
 class QMouseEvent;
@@ -72,6 +72,10 @@ public:
     QTlayerPaletteDlg(GRobject);
     ~QTlayerPaletteDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update_info(CDl*);
     void update_layer(CDl*);
 
@@ -79,7 +83,7 @@ public:
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -118,7 +122,7 @@ private:
     bool remove(int, int);
 
     GRobject lp_caller;
-    QPushButton *lp_remove;
+    QToolButton *lp_remove;
     QMenu *lp_recall_menu;
     QMenu *lp_save_menu;
 

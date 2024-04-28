@@ -48,6 +48,7 @@
 
 #include <QLayout>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 #include <QLineEdit>
 #include <QAction>
@@ -56,8 +57,6 @@
 /**************************************************************************
  * Shell parameter setting dialog.
  **************************************************************************/
-
-
 
 // The plot defaults popup, initiated from the toolbar.
 //
@@ -148,15 +147,11 @@ QTshellParamDlg::QTshellParamDlg(int xx, int yy)
     QLabel *label = new QLabel(tr("Shell Options"));
     hb->addWidget(label);
 
-    QPushButton *btn = new QPushButton(tr("Dismiss"));
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
-
-    btn = new QPushButton(tr("Help"));
-    btn->setCheckable(true);
-    btn->setAutoDefault(false);
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(toggled(bool)), this, SLOT(help_btn_slot(bool)));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    tbtn->setCheckable(true);
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(toggled(bool)), this, SLOT(help_btn_slot(bool)));
 
     QGridLayout *grid = new QGridLayout();
     grid->setContentsMargins(qmtop);
@@ -276,6 +271,10 @@ QTshellParamDlg::QTshellParamDlg(int xx, int yy)
         grid->addWidget(entry->qtent(), 6, 0, 1, 4);
         delete [] s;
     }
+
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    vbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     if (xx || yy) {
         TB()->FixLoc(&xx, &yy);

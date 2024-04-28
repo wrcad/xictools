@@ -1131,13 +1131,13 @@ sCells::raw_cell_list(int *pcnt, int *ppgs, bool nomark)
                     int j = 0;
                     char buf[128];
                     if (c_mode == Physical) {
-                        if (cbin.phys()->isModified())
+                        if (cbin.phys()->countModified())
                             buf[j++] = '+';
                         if (!cbin.phys()->isSubcell())
                             buf[j++] = '*';
                     }
                     else {
-                        if (cbin.elec()->isModified())
+                        if (cbin.elec()->countModified())
                             buf[j++] = '+';
                         if (!cbin.elec()->isSubcell())
                             buf[j++] = '*';

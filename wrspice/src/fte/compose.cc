@@ -141,9 +141,9 @@ namespace {
 //  center      Where to center the range of points.
 //  span        The size of the range of points.
 //  gauss       The number of points in the gaussian distribution.
-//  mean        The mean value for the gass. dist.
-//  sd          The standard deviation for the gauss. dist.
-//  random      The number of randomly selected points.
+//  mean        The mean value for the gaussian dist.
+//  sd          The standard deviation for the gaussian dist.
+//  random      The number of random value points.
 //
 // The case 'compose name values val val ...' takes the values and creates a
 // new vector -- the vals may be arbitrary expressions.

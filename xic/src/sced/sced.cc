@@ -61,7 +61,7 @@ cSced::cSced()
     sc_plot_hpr_list            = 0;
     sc_iplot_hpr_list           = 0;
 
-    sc_show_dots                = DotsNone;
+    sc_show_dots                = DotsSome;
     sc_doing_plot               = false;
     sc_doing_iplot              = false;
     sc_iplot_status_changed     = false;

@@ -61,6 +61,7 @@ class QDragEnterEvent;
 class QDragEvent;
 class QEnterEvent;
 class QFocusEvent;
+class QWheelEvent;;
 
 namespace qtinterf {
     class cGhostDrawCommon;
@@ -102,6 +103,11 @@ public:
     QPixmap *pixmap()           
         {
             return (da_pixmap_bak ? da_pixmap_bak : da_pixmap);
+        }
+
+    bool event(QEvent *ev)
+        {
+            return (QWidget::event(ev));
         }
 
     void switch_to_pixmap2(QPixmap* = 0);
@@ -276,6 +282,7 @@ signals:
     void leave_event(QEvent*);
     void focus_in_event(QFocusEvent*);
     void focus_out_event(QFocusEvent*);
+    void mouse_wheel_event(QWheelEvent*);
     void drag_enter_event(QDragEnterEvent*);
     void drop_event(QDropEvent*);
 
@@ -296,6 +303,7 @@ protected:
     void leaveEvent(QEvent*);
     void focusInEvent(QFocusEvent*);
     void focusOutEvent(QFocusEvent*);
+    void wheelEvent(QWheelEvent*);
     void dragEnterEvent(QDragEnterEvent*);
     void dropEvent(QDropEvent*);
 
@@ -370,6 +378,8 @@ private:
 
     int         da_olx, da_oly;     // Previous accumulated overlay
     int         da_olw, da_olh;     //  bounding box.
+
+    QFont       da_font;            // Font used for draw_text.
 
     // Ghost drawing.
     QPixmap     *da_ghost_overlay_bg;   // Ghost drawing background.

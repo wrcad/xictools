@@ -2294,9 +2294,29 @@ gds_in::a_bgnstr()
                 else {
                     if (!FIO()->IsNoOverwritePhys())
                         mi.overwrite_phys = true;
+                    bool p_match = false;
+                    if (mi.overwrite_phys && !sd->countModified() &&
+                            sd->fileType() == Fgds &&
+                            !strcmp(sd->fileName(), in_filename)) {
+                        mi.overwrite_phys = false;
+                        p_match = true;
+                    }
                     if (!FIO()->IsNoOverwriteElec())
                         mi.overwrite_elec = true;
-                    FIO()->ifMergeControl(&mi);
+                    bool e_match = false;
+                    if (mi.overwrite_elec == true) {
+                        CDs *esd = CDcdb()->findCell(in_cbuf, Electrical);
+                        if (!esd)
+                            e_match = true;
+                        else if (!esd->countModified() &&
+                                esd->fileType() == Fgds &&
+                                !strcmp(sd->fileName(), in_filename))
+                            e_match = true;
+                        if (e_match)
+                            mi.overwrite_elec = false;
+                    }
+                    if (!p_match || !e_match)
+                        FIO()->ifMergeControl(&mi);
                 }
                 if (mi.overwrite_phys) {
                     sd->setImmutable(false);
@@ -2359,11 +2379,18 @@ gds_in::a_bgnstr()
                         mi.overwrite_elec = true;
                     }
                     else if (!mi.skip_elec) {
-                        if (!FIO()->IsNoOverwritePhys())
-                            mi.overwrite_phys = true;
                         if (!FIO()->IsNoOverwriteElec())
                             mi.overwrite_elec = true;
-                        FIO()->ifMergeControl(&mi);
+                        if (mi.overwrite_elec && !sd->countModified() &&
+                                sd->fileType() == Fgds &&
+                                !strcmp(sd->fileName(), in_filename)) {
+                            mi.overwrite_elec = false;
+                        }
+                        else {
+                            if (!FIO()->IsNoOverwritePhys())
+                                mi.overwrite_phys = true;
+                            FIO()->ifMergeControl(&mi);
+                        }
                     }
                     if (mi.overwrite_phys) {
                         if (!get_symref(Tstring(sd->cellname()),

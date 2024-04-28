@@ -42,6 +42,7 @@
 #include "qtfont.h"
 #include "miscutil/lstring.h"
 
+#include <QApplication>
 #include <QAction>
 #include <QFont>
 #include <QFontInfo>
@@ -51,13 +52,14 @@
 #include <QLayout>
 #include <QLabel>
 #include <QGroupBox>
+#include <QToolButton>
 #include <QPushButton>
 #include <QComboBox>
 #include <QTextEdit>
 
 
 namespace { QTfont _qt_font_; }
-GRfont &FC = _qt_font_;
+ginterf::GRfont *Fnt()      { return (_qt_font_.self()); }
 
 
 #ifdef __APPLE__
@@ -183,7 +185,7 @@ QTfont::getFamilyName(int fnum)
     if (fnum > 0 && fnum < num_app_fonts) {
         char *family;
         int sz;
-        parse_freeform_font_string(fonts[fnum].name, &family, 0, &sz, 0);
+        parse_freeform_font_string(getName(fnum), &family, 0, &sz, 0);
         if (family) {
             int len = strlen(family) + 8;
             char *str = new char[len];
@@ -272,9 +274,9 @@ QTfont::new_font(const char *name, bool fixed)
     parse_freeform_font_string(name, &family, &style, &size);
     if (!family) {
         if (fixed)
-            family = lstring::copy("courier");
+            family = lstring::copy(DEF_FIXED_FACE);
         else
-            family = lstring::copy("helvetica");
+            family = lstring::copy(DEF_PROP_FACE);
     }
     if (style) {
         sty = stringlist::flatten(style, " ");
@@ -313,7 +315,7 @@ bool
 QTfont::stringBounds(const char *string, int fnum, int *w, int *h)
 {
     QFont *f;
-    if (FC.getFont(&f, fnum)) {
+    if (Fnt()->getFont(&f, fnum)) {
         QFontMetrics fm(*f);
         if (!string)
             string = "X";
@@ -362,7 +364,7 @@ int
 QTfont::stringWidth(const char *string, int fnum)
 {
     QFont *f;
-    if (FC.getFont(&f, fnum)) {
+    if (Fnt()->getFont(&f, fnum)) {
         QFontMetrics fm(*f);
         if (!string)
             string = "X";
@@ -403,7 +405,7 @@ int
 QTfont::lineHeight(int fnum)
 {
     QFont *f;
-    if (FC.getFont(&f, fnum)) {
+    if (Fnt()->getFont(&f, fnum)) {
         QFontMetrics fm(*f);
         return (fm.height());
     }
@@ -582,9 +584,10 @@ QTfontDlg::QTfontDlg(QTbag *owner, int indx, void *arg) :
     vbox->addLayout(hbox);
     hbox->setContentsMargins(qmtop);
     hbox->setSpacing(2);
-    ft_apply = new QPushButton(tr("Apply"));
+
+    ft_apply = new QToolButton();
+    ft_apply->setText(tr("Apply"));
     hbox->addWidget(ft_apply);
-    ft_apply->setAutoDefault(false);
     connect(ft_apply, SIGNAL(clicked()), this, SLOT(action_slot()));
 
     ft_menu = new QComboBox(this);
@@ -596,15 +599,15 @@ QTfontDlg::QTfontDlg(QTbag *owner, int indx, void *arg) :
     if (indx <= 0)
         ft_menu->hide();
 
-    ft_quit = new QPushButton(tr("Dismiss"));
-    hbox->addWidget(ft_quit);
-    ft_quit->setAutoDefault(false);
-    connect(ft_quit, SIGNAL(clicked()), this, SLOT(quit_slot()));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
+    hbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(quit_slot()));
 
-    for (int i = 1; i < FC.num_app_fonts; i++) {
+    for (int i = 1; i < Fnt()->num_app_fonts; i++) {
         QFont *fnt;
-        FC.getFont(&fnt, i);
-        add_choice(fnt, FC.getLabel(i));
+        Fnt()->getFont(&fnt, i);
+        add_choice(fnt, Fnt()->getLabel(i));
     }
     ft_menu->setCurrentIndex(indx-1);
     menu_choice_slot(indx - 1);
@@ -631,6 +634,12 @@ QTfontDlg::~QTfontDlg()
     if (p_caller)
         QTdev::Deselect(p_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTfontDlg
+#include "qtmacos_event.h"
+#endif
 
 
 // GRpopup override
@@ -906,9 +915,9 @@ QTfontDlg::action_slot()
     }
     else {
         int fnum = ft_menu->currentIndex() + 1;
-        FC.setName(lstr.string(), fnum);
+        Fnt()->setName(lstr.string(), fnum);
         if (p_callback)
-            (*p_callback)(FC.getLabel(fnum), lstr.string(), p_cb_arg);
+            (*p_callback)(Fnt()->getLabel(fnum), lstr.string(), p_cb_arg);
         emit select_action(fnum, lstr.string(), p_cb_arg);
     }
 }
@@ -1081,12 +1090,12 @@ QTfontDlg::menu_choice_slot(int indx)
 #endif
         bool fixed = (w1 >= w2);
 
-        if (!FC.isFixed(indx) || fixed)
+        if (!Fnt()->isFixed(indx) || fixed)
             ft_face_list->addItem(families.at(i));
     }
     if (indx > 0) {
         QFont *fnt;
-        FC.getFont(&fnt, indx);
+        Fnt()->getFont(&fnt, indx);
         select_font(fnt);
     }
 }

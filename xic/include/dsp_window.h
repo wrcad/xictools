@@ -623,7 +623,7 @@ struct WindowDesc
     void SetRatio(double r)                 { w_ratio = r; }
     double Aspect() const           { return (((double)w_width)/w_height); }
 
-    unsigned long WindowId() const          { return (w_windowid); }
+    uintptr_t WindowId() const              { return (w_windowid); }
 
     unsigned int DisplFlags() const         { return (w_displflag); }
     void SetDisplFlags(unsigned int f)      { w_displflag = f; }
@@ -767,7 +767,7 @@ private:
     bool w_old_image;           // using old image composition logic
 
     w_win_str w_win;            // window view alternate mode store
-    unsigned long w_windowid;   // window identifier
+    uintptr_t w_windowid;       // window identifier
 
     WDaccumMode w_accum_mode;   // deferred refresh state
     BBox w_accum_rect;          // deferred refresh area

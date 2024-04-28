@@ -61,7 +61,7 @@ public:
 
 
 class QCheckBox;
-class QPushButton;
+class QToolButton;
 
 class QTlayerList : public QGroupBox
 {
@@ -85,7 +85,7 @@ private:
     QCheckBox   *ll_lskip;
     QLineEdit   *ll_laylist;
     QCheckBox   *ll_aluse;
-    QPushButton *ll_aledit;
+    QToolButton *ll_aledit;
 };
 
 #endif

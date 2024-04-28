@@ -41,11 +41,13 @@
 #include "qtinput.h"
 #include "miscutil/lstring.h"
 
+#include <QApplication>
 #include <QAction>
 #include <QGroupBox>
 #include <QLabel>
 #include <QLayout>
 #include <QLineEdit>
+#include <QToolButton>
 #include <QPushButton>
 #include <QTextEdit>
 
@@ -99,11 +101,13 @@ QTledDlg::QTledDlg(QTbag *owner, const char *label_str,
 
     if (!action_str)
         action_str = "Apply";
-    QPushButton *btn = new QPushButton(tr(action_str));
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(action_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr(action_str));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(action_slot()));
 
-    btn = new QPushButton(tr("Cancel"));
+    QPushButton *btn = new QPushButton(tr("Cancel"));
+    btn->setObjectName("Default");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(cancel_btn_slot()));
 }
@@ -123,6 +127,12 @@ QTledDlg::~QTledDlg()
     if (p_caller && !p_no_desel)
         QTdev::Deselect(p_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTledDlg
+#include "qtmacos_event.h"
+#endif
 
 
 // GRpopup override

@@ -42,10 +42,12 @@
 #include "dsp_inlines.h"
 #include "qtinterf/qtdblsb.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QTabWidget>
 #include <QGroupBox>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 #include <QCheckBox>
 #include <QComboBox>
@@ -315,9 +317,10 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     QLabel *label = new QLabel(tr("Set misc. window attributes"));
     hb->addWidget(label);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     QTabWidget *nbook = new QTabWidget();
     vbox->addWidget(nbook);
@@ -337,6 +340,10 @@ QTattributesDlg::QTattributesDlg(GRobject c)
 
     label = new QLabel(tr("Cursor:"));
     hb->addWidget(label);
+
+    // Weirdness:  When any input widget (including the spin buttons
+    // below) have the focus, the cursor reverts back to the QT
+    // default (QT6 on macOS).
 
     at_cursor = new QComboBox();
     hb->addWidget(at_cursor);
@@ -522,7 +529,8 @@ QTattributesDlg::QTattributesDlg(GRobject c)
 
     // Dismiss button
     //
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -536,6 +544,12 @@ QTattributesDlg::~QTattributesDlg()
     if (at_caller)
         QTdev::Deselect(at_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTattributesDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 void

@@ -46,8 +46,10 @@
 #include "qtmenu.h"
 #include "qtinterf/qtdblsb.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 #include <QComboBox>
 #include <QSpinBox>
@@ -99,7 +101,8 @@ cEdit::PopUpPlace(ShowMode mode, bool noprompt)
         QTmainwin::self()->Viewport());
     QTplaceDlg::self()->show();
 
-    QTmainwin::self()->setFocus();
+    // Give focus to main window.
+    QTmainwin::self()->activateWindow();
 }
 // End of cEdit functions.
 
@@ -130,6 +133,7 @@ QTplaceDlg::QTplaceDlg(bool noprompt)
 
     pl_str_editor = 0;
     pl_dropfile = 0;
+    pl_realname = 0;
 
     ED()->plInitMenuLen();
 
@@ -150,24 +154,24 @@ QTplaceDlg::QTplaceDlg(bool noprompt)
 
     // First row buttons.
     //
-    pl_arraybtn = new QPushButton(tr("Use Array"));
+    pl_arraybtn = new QToolButton();
+    pl_arraybtn->setText(tr("Use Array"));
     hbox->addWidget(pl_arraybtn);
     pl_arraybtn->setCheckable(true);
-    pl_arraybtn->setAutoDefault(false);
     connect(pl_arraybtn, SIGNAL(toggled(bool)),
         this, SLOT(array_btn_slot(bool)));
 
-    pl_replbtn = new QPushButton(tr("Replace"));
+    pl_replbtn = new QToolButton();
+    pl_replbtn->setText(tr("Replace"));
     hbox->addWidget(pl_replbtn);
     pl_replbtn->setCheckable(true);
-    pl_replbtn->setAutoDefault(false);
     connect(pl_replbtn, SIGNAL(clicked(bool)),
         this, SLOT(replace_btn_slot(bool)));
 
-    pl_smashbtn = new QPushButton(tr("Smash"));
+    pl_smashbtn = new QToolButton();
+    pl_smashbtn->setText(tr("Smash"));
     hbox->addWidget(pl_smashbtn);
     pl_smashbtn->setCheckable(true);
-    pl_smashbtn->setAutoDefault(false);
 
     pl_refmenu = new QComboBox();
     pl_refmenu->addItem(tr("Origin"));
@@ -235,6 +239,10 @@ QTplaceDlg::QTplaceDlg(bool noprompt)
     //
     pl_masterbtn = new QComboBox();
     vbox->addWidget(pl_masterbtn);
+    connect(pl_masterbtn, SIGNAL(activated(int)),
+        this, SLOT(master_menu_active_slot(int)));
+    connect(pl_masterbtn, SIGNAL(currentIndexChanged(int)),
+        this, SLOT(master_menu_slot(int)));
     rebuild_menu();
 
     // Only prompt if we don't already have a cell.
@@ -264,21 +272,21 @@ QTplaceDlg::QTplaceDlg(bool noprompt)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     MenuEnt *m = MainMenu()->FindEntry(MMside, MenuPLACE);
     if (m)
-        pl_menu_placebtn = (QPushButton*)m->cmd.caller;
+        pl_menu_placebtn = static_cast<QAbstractButton*>(m->cmd.caller);
     if (pl_menu_placebtn) {
         // pl_menu_placebtn is the menu "place" button, which
         // will be "connected" to the Place button in the widget.
 
-        pl_placebtn = new QPushButton(tr("Place"));;
+        pl_placebtn = new QToolButton();
+        pl_placebtn->setText(tr("Place"));;
         pl_placebtn->setCheckable(true);
-        pl_placebtn->setAutoDefault(false);
         bool status = QTdev::GetStatus(pl_menu_placebtn);
         pl_placebtn->setChecked(status);
         hbox->addWidget(pl_placebtn);
@@ -288,7 +296,8 @@ QTplaceDlg::QTplaceDlg(bool noprompt)
             this, SLOT(menu_placebtn_slot(bool)));
     }
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -321,7 +330,17 @@ QTplaceDlg::~QTplaceDlg()
         ED()->setArrayParams(iap_t());
     if (pl_str_editor)
         pl_str_editor->popdown();
+    if (pl_dropfile)
+        delete [] pl_dropfile;
+    if (pl_realname)
+        delete [] pl_realname;
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTplaceDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 void
@@ -360,9 +379,20 @@ QTplaceDlg::update()
 
 // Static function.
 ESret
-QTplaceDlg::pl_new_cb(const char *string, void*)
+QTplaceDlg::pl_new_cb(const char *string, void *realstart)
 {
     if (string && *string) {
+        // If the original string had a directory separator, we strip
+        // the path ahead of the final separator and pass only the file
+        // name, so only the name appears in the entry area.  In this
+        // case we also pass the real start of the string as the
+        // argument.  If the user has changed the entered input,
+        // only that will be used.
+
+        const char *rs = static_cast<const char*>(realstart);
+        if (realstart && !strcmp(string, lstring::strrdirsep(rs)+1))
+            string = rs;
+
         // If two tokens, the first is a library or archive file name,
         // the second is the cell name.
 
@@ -372,6 +402,8 @@ QTplaceDlg::pl_new_cb(const char *string, void*)
         delete [] aname;
         delete [] cname;
     }
+    // give focus to main window.
+    QTmainwin::self()->activateWindow();
     return (ESTR_DN);
 }
 
@@ -397,19 +429,17 @@ QTplaceDlg::rebuild_menu()
 {
     if (!pl_masterbtn)
         return;
+    disconnect(pl_masterbtn, SIGNAL(currentIndexChanged(int)),
+        this, SLOT(master_menu_slot(int)));
     pl_masterbtn->clear();
     pl_masterbtn->addItem(tr("New"));
-    for (stringlist *p = ED()->plMenu(); p; p = p->next) {
+    pl_masterbtn->setCurrentIndex(0);
+    for (stringlist *p = ED()->plMenu(); p; p = p->next)
         pl_masterbtn->addItem(tr(p->string));
-    }
     if (ED()->plMenu())
         pl_masterbtn->setCurrentIndex(1);
-    else
-        pl_masterbtn->setCurrentIndex(0);
     connect(pl_masterbtn, SIGNAL(currentIndexChanged(int)),
         this, SLOT(master_menu_slot(int)));
-    connect(pl_masterbtn, SIGNAL(activated(int)),
-        this, SLOT(master_menu_active_slot(int)));
 }
 
 
@@ -435,16 +465,9 @@ QTplaceDlg::dropEvent(QDropEvent *ev)
 {
     if (ev->mimeData()->hasUrls()) {
         QByteArray ba = ev->mimeData()->data("text/plain");
-        const char *str = ba.constData() + strlen("File://");
         delete [] pl_dropfile;
-        pl_dropfile = 0;
-        if (pl_str_editor) {
-            pl_str_editor->update(0, str);
-        }
-        else {
-            pl_dropfile = lstring::copy(str);
-            master_menu_active_slot(0);
-        }
+        pl_dropfile = lstring::copy(ba.constData());
+        master_menu_active_slot(0);
         ev->accept();
         return;
     }
@@ -469,15 +492,8 @@ QTplaceDlg::dropEvent(QDropEvent *ev)
                 *t++ = 0;
         }
         delete [] pl_dropfile;
-        pl_dropfile = 0;
-        if (pl_str_editor) {
-            pl_str_editor->update(0, src);
-            delete [] src;
-        }
-        else {
-            pl_dropfile = src;
-            master_menu_active_slot(0);
-        }
+        pl_dropfile = src;
+        master_menu_active_slot(0);
         ev->accept();
         return;
     }
@@ -600,11 +616,11 @@ QTplaceDlg::dismiss_btn_slot()
 void
 QTplaceDlg::master_menu_slot(int ix)
 {
-    if (ix != 0) {
-        const char *tok = (const char*)pl_masterbtn->currentText().toLatin1();
-        const char *string = tok;
-        const char *aname = lstring::getqtok(&string);
-        const char *cname = lstring::getqtok(&string);
+    if (ix > 0) {
+        QByteArray ba = pl_masterbtn->currentText().toLatin1();
+        const char *str = ba.constData();
+        const char *aname = lstring::getqtok(&str);
+        const char *cname = lstring::getqtok(&str);
         ED()->addMaster(aname, cname);
         delete [] aname;
         delete [] cname;
@@ -633,6 +649,22 @@ QTplaceDlg::master_menu_active_slot(int ix)
                     defname = Tstring(cd->cellname());
             }
         }
+
+        // If the defname has a directory separator, pass only the
+        // file name as the name string, but pass the whole string as
+        // the argument.  This is so only the file name is shown in
+        // the string entry area.
+
+        if (pl_realname) {
+            delete [] pl_realname;
+            pl_realname = 0;
+        }
+        const char *ds = lstring::strrdirsep(defname);
+        if (ds) {
+            pl_realname = lstring::copy(defname);
+            defname = pl_realname + (ds - defname) + 1;
+        }
+
         if (pl_str_editor) {
             pl_str_editor->popdown();
             pl_str_editor = 0;
@@ -641,7 +673,7 @@ QTplaceDlg::master_menu_active_slot(int ix)
         QTdev::self()->Location(pl_masterbtn, &xx, &yy);
         pl_str_editor = DSPmainWbagRet(PopUpEditString(0,
             GRloc(LW_XYA, xx - 200, yy), "File or cell name of cell to place?",
-            defname, pl_new_cb, 0, 200, 0));
+            defname, pl_new_cb, (void*)pl_realname, 200, 0));
         if (pl_str_editor)
             pl_str_editor->register_usrptr((void**)&pl_str_editor);
     }
@@ -652,6 +684,7 @@ void
 QTplaceDlg::place_btn_slot(bool state)
 {
     bool mbstate = QTdev::GetStatus(pl_menu_placebtn);
+    QTmainwin::self()->activateWindow();
     if (state != mbstate)
         QTdev::CallCallback(pl_menu_placebtn);
 }

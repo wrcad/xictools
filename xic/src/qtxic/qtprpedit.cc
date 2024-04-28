@@ -50,7 +50,9 @@
 #include "promptline.h"
 #include "qtinterf/qttextw.h"
 
+#include <QApplication>
 #include <QLayout>
+#include <QToolButton>
 #include <QPushButton>
 #include <QMenu>
 #include <QAction>
@@ -208,46 +210,48 @@ QTprpEditorDlg::QTprpEditorDlg(CDo *odesc, PRPmode activ) : QTprpBase(this)
 
     // top row buttons
     //
-    po_edit = new QPushButton(tr("Edit"));
+    po_edit = new QToolButton();
+    po_edit->setText(tr("Edit"));
     hbox->addWidget(po_edit);
     po_edit->setCheckable(true);
-    po_edit->setAutoDefault(false);
     connect(po_edit, SIGNAL(toggled(bool)), this, SLOT(edit_btn_slot(bool)));
 
-    po_del = new QPushButton(tr("Delete"));
+    po_del = new QToolButton();
+    po_del->setText(tr("Delete"));
     hbox->addWidget(po_del);
     po_del->setCheckable(true);
-    po_del->setAutoDefault(false);
     connect(po_del, SIGNAL(toggled(bool)), this, SLOT(del_btn_slot(bool)));
 
-    po_add = new QPushButton(tr("Add"));
+    po_add = new QToolButton();
+    po_add->setText(tr("Add"));
     po_add->setCheckable(true);
-    po_add->setAutoDefault(false);
     hbox->addWidget(po_add);
 
     po_addmenu = new QMenu();
     po_add->setMenu(po_addmenu);
+    po_add->setPopupMode(QToolButton::InstantPopup);
     connect(po_addmenu, SIGNAL(triggered(QAction*)),
         this, SLOT(add_menu_slot(QAction*)));
 
-    po_global = new QPushButton(tr("Global"));
+    po_global = new QToolButton();
+    po_global->setText(tr("Global"));
     hbox->addWidget(po_global);
     po_global->setCheckable(true);
-    po_global->setAutoDefault(false);
     connect(po_global, SIGNAL(toggled(bool)),
         this, SLOT(global_btn_slot(bool)));
 
-    po_info = new QPushButton(tr("Info"));
+    po_info = new QToolButton();
+    po_info->setText(tr("Info"));
     hbox->addWidget(po_info);
     po_info->setCheckable(true);
-    po_info->setAutoDefault(false);
     connect(po_info, SIGNAL(toggled(bool)),
         this, SLOT(info_btn_slot(bool)));
 
-    QPushButton *btn = new QPushButton(tr("help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    hbox->addStretch(1);
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // scrolled text area
     //
@@ -263,13 +267,13 @@ QTprpEditorDlg::QTprpEditorDlg(CDo *odesc, PRPmode activ) : QTprpBase(this)
     connect(wb_textarea, SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(mouse_motion_slot(QMouseEvent*)));
     connect(wb_textarea,
-        SIGNAL(mime_data_handled(const QMimeData*, bool*)),
-        this, SLOT(mime_data_handled_slot(const QMimeData*, bool*)));
-    connect(wb_textarea, SIGNAL(mime_data_delivered(const QMimeData*, bool*)),
-        this, SLOT(mime_data_delivered_slot(const QMimeData*, bool*)));
+        SIGNAL(mime_data_handled(const QMimeData*, int*)),
+        this, SLOT(mime_data_handled_slot(const QMimeData*, int*)));
+    connect(wb_textarea, SIGNAL(mime_data_delivered(const QMimeData*, int*)),
+        this, SLOT(mime_data_delivered_slot(const QMimeData*, int*)));
 
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_FIXED))
+    if (Fnt()->getFont(&fnt, FNT_FIXED))
         wb_textarea->setFont(*fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
@@ -281,13 +285,15 @@ QTprpEditorDlg::QTprpEditorDlg(CDo *odesc, PRPmode activ) : QTprpBase(this)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    po_activ = new QPushButton(tr("Activate"));
+    po_activ = new QToolButton();
+    po_activ->setText(tr("Activate"));
     po_activ->setCheckable(true);
     hbox->addWidget(po_activ);
     connect(po_activ, SIGNAL(toggled(bool)),
         this, SLOT(activ_btn_slot(bool)));
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -304,6 +310,12 @@ QTprpEditorDlg::~QTprpEditorDlg()
             DSP()->ShowCurrentObject(ERASE, pb_odesc, MarkerColor);
     }
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTprpEditorDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 void
@@ -648,16 +660,16 @@ QTprpEditorDlg::mouse_motion_slot(QMouseEvent *ev)
  
 
 void
-QTprpEditorDlg::mime_data_handled_slot(const QMimeData *d, bool *accpt) const
+QTprpEditorDlg::mime_data_handled_slot(const QMimeData *d, int *accpt) const
 {
-    *accpt = is_mime_data_handled(d);
+    *accpt = is_mime_data_handled(d) ? 1 : -1;
 }
 
 
 void
-QTprpEditorDlg::mime_data_delivered_slot(const QMimeData *d, bool *accpt)
+QTprpEditorDlg::mime_data_delivered_slot(const QMimeData *d, int *accpt)
 {
-    *accpt = is_mime_data_delivered(d);
+    *accpt = is_mime_data_delivered(d) ? 1 : -1;
 }
 
 
@@ -666,7 +678,7 @@ QTprpEditorDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_FIXED) {
         QFont *fnt;
-        if (FC.getFont(&fnt, FNT_FIXED))
+        if (Fnt()->getFont(&fnt, FNT_FIXED))
             wb_textarea->setFont(*fnt);
     }
 }

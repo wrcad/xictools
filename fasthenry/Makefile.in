@@ -20,7 +20,7 @@ INSTALL_SCRIPT = $(INSTALL) -c -m 0755
 INSTALL_LIB    = $(INSTALL) -c -m 0644
 INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 
-FASTHENRY = fasthenry-3.0wr-010524.tar.gz
+FASTHENRY = fasthenry-3.0wr-031424.tar.gz
 
 FASTHENRY_DIR = fasthenry-3.0wr
 SRCDIR = $(FASTHENRY_DIR)/src/fasthenry

@@ -52,10 +52,12 @@
 #include "qtinterf/qtinput.h"
 #include "qtinterf/qtdblsb.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QTabWidget>
 #include <QGroupBox>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 #include <QComboBox>
 #include <QCheckBox>
@@ -173,10 +175,10 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c) : QTbag(this)
     QLabel *label = new QLabel(tr("FastHenry Interface"));
     hb->addWidget(label);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     QTabWidget *nbook = new QTabWidget();
     vbox->addWidget(nbook);
@@ -210,10 +212,10 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c) : QTbag(this)
     hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
-    btn = new QPushButton(tr("Run File"));
-    hb->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(runfile_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Run File"));
+    hb->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(runfile_btn_slot()));
 
     fh_file = new QLineEdit();
     hb->addWidget(fh_file);
@@ -223,15 +225,15 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c) : QTbag(this)
     hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
-    btn = new QPushButton(tr("Run FastHenry"));
-    hb->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(runext_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Run FastHenry"));
+    hb->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(runext_btn_slot()));
 
-    btn = new QPushButton(tr("Dump FastHenry File"));
-    hb->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dumplist_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Dump FastHenry File"));
+    hb->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(dumplist_btn_slot()));
 
     gb = new QGroupBox("FhArgs");
     vb->addWidget(gb);
@@ -440,16 +442,15 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c) : QTbag(this)
         this, SLOT(mouse_press_slot(QMouseEvent*)));
 
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_FIXED))
+    if (Fnt()->getFont(&fnt, FNT_FIXED))
         fh_jobs->setFont(*fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
 
-    fh_kill = new QPushButton(tr("Abort job"));
+    fh_kill = new QToolButton();
+    fh_kill->setText(tr("Abort job"));
     vb->addWidget(fh_kill);
-    fh_kill->setAutoDefault(false);
     connect(fh_kill, SIGNAL(clicked()), this, SLOT(abort_btn_slot()));
-
 
     // End of pages.
     // Status line and Dismiss button
@@ -466,7 +467,8 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c) : QTbag(this)
     delete [] s;
     hbox->addWidget(fh_label);
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -481,6 +483,12 @@ QTfastHenryDlg::~QTfastHenryDlg()
         QTdev::Deselect(fh_caller);
     FHif()->setPopUpVisible(false);
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTfastHenryDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 void
@@ -1207,7 +1215,7 @@ QTfastHenryDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_FIXED) {
         QFont *fnt;
-        if (FC.getFont(&fnt, FNT_FIXED))
+        if (Fnt()->getFont(&fnt, FNT_FIXED))
             fh_jobs->setFont(*fnt);
         update_jobs_list();
     }

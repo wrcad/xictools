@@ -52,7 +52,7 @@ class QComboBox;
 class QDoubleSpinBox;
 class QLabel;
 class QLineEdit;
-class QPushButton;
+class QToolButton;
 class QProcess;
 
 namespace qtinterf {
@@ -80,6 +80,9 @@ public:
     QTprintDlg(GRobject, HCcb*, HCmode, QTbag* = 0);
     ~QTprintDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
     void update(HCcb*);
     void set_message(const char*);
     void disable_progress();
@@ -94,7 +97,7 @@ public:
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -186,10 +189,8 @@ private:
     QComboBox       *pd_fmtmenu;
     QComboBox       *pd_resmenu;
     QComboBox       *pd_pgsmenu;
-    QPushButton     *pd_frmbtn;
-    QPushButton     *pd_hlpbtn;
-    QPushButton     *pd_printbtn;
-    QPushButton     *pd_dismissbtn;
+    QToolButton     *pd_frmbtn;
+    QToolButton     *pd_hlpbtn;
     QProcess        *pd_process;
     QTprogressDlg   *pd_progress;
 

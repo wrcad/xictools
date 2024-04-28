@@ -1639,9 +1639,6 @@ GTKhelpPopup::newtopic(const char *href, bool spawn, bool force_download,
 GTKhelpPopup::NTtype
 GTKhelpPopup::newtopic(const char *fname, FILE *fp, bool spawn)
 {
-//    topic *top = checkImage(url, this);
-//    if (top)
-//        return (top);
     HLPtopic *top = new HLPtopic(fname, "");
     top->get_file(fp, fname);
 

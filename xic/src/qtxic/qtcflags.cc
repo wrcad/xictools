@@ -46,8 +46,10 @@
 #include "qtinterf/qtfont.h"
 #include "qtinterf/qttextw.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 #include <QGroupBox>
 #include <QScrollBar>
@@ -130,25 +132,25 @@ QTcflagsDlg::QTcflagsDlg(GRobject caller, const stringlist *sl, int dmode)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    QPushButton *btn = new QPushButton(tr("None"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(imm_none_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("None"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(imm_none_btn_slot()));
 
-    btn = new QPushButton(tr("All"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(imm_all_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("All"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(imm_all_btn_slot()));
 
-    btn = new QPushButton(tr("None"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(lib_none_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("None"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(lib_none_btn_slot()));
 
-    btn = new QPushButton(tr("All"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(lib_all_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("All"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(lib_all_btn_slot()));
 
     QGroupBox *gb = new QGroupBox();
     vbox->addWidget(gb);
@@ -169,7 +171,7 @@ QTcflagsDlg::QTcflagsDlg(GRobject caller, const stringlist *sl, int dmode)
     // Use a fixed font in the label, same as the text area, so can
     // match columns.
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_FIXED)) {
+    if (Fnt()->getFont(&fnt, FNT_FIXED)) {
         wb_textarea->setFont(*fnt);
         cf_label->setFont(*fnt);
     }
@@ -181,11 +183,13 @@ QTcflagsDlg::QTcflagsDlg(GRobject caller, const stringlist *sl, int dmode)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    btn = new QPushButton(tr("Apply"));
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Apply"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -200,6 +204,12 @@ QTcflagsDlg::~QTcflagsDlg()
     if (cf_caller)
         QTdev::Deselect(cf_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTcflagsDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 void
@@ -458,7 +468,7 @@ QTcflagsDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_FIXED) {
         QFont *fnt;
-        if (FC.getFont(&fnt, FNT_FIXED)) {
+        if (Fnt()->getFont(&fnt, FNT_FIXED)) {
             wb_textarea->setFont(*fnt);
             cf_label->setFont(*fnt);
         }

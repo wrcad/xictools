@@ -52,6 +52,7 @@ typedef void ParseNode;
 #include <QLayout>
 #include <QTabWidget>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 #include <QLineEdit>
 #include <QAction>
@@ -111,15 +112,11 @@ QTdebugParamDlg::QTdebugParamDlg(int xx, int yy)
     QLabel *label = new QLabel(tr("Debug Options"));
     hb->addWidget(label);
 
-    QPushButton *btn = new QPushButton(tr("Dismiss"));
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
-
-    btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setCheckable(true);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(toggled(bool)), this, SLOT(help_btn_slot(bool)));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    tbtn->setCheckable(true);
+    connect(tbtn, SIGNAL(toggled(bool)), this, SLOT(help_btn_slot(bool)));
 
     QGridLayout *grid = new QGridLayout();
     grid->setContentsMargins(qmtop);
@@ -262,6 +259,10 @@ QTdebugParamDlg::QTdebugParamDlg(int xx, int yy)
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_bool_func, entry, 0);
         grid->addWidget(entry->qtent(), 5, 2, 1, 2);
     }
+
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    vbox->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     if (xx || yy) {
         TB()->FixLoc(&xx, &yy);

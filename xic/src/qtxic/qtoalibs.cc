@@ -50,7 +50,9 @@
 #include "qtinterf/qtfont.h"
 #include "qtinterf/qtinput.h"
 
+#include <QApplication>
 #include <QLayout>
+#include <QToolButton>
 #include <QPushButton>
 #include <QRadioButton>
 #include <QTreeWidget>
@@ -156,53 +158,54 @@ QToaLibsDlg::QToaLibsDlg(GRobject c) : QTbag(this)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    lb_openbtn = new QPushButton(tr("Open/Close"));
+    lb_openbtn = new QToolButton();
+    lb_openbtn->setText(tr("Open/Close"));
     hbox->addWidget(lb_openbtn);
-    lb_openbtn->setAutoDefault(false);
     connect(lb_openbtn, SIGNAL(clicked()), this, SLOT(open_btn_slot()));
 
-    lb_writbtn = new QPushButton(tr("Writable Y/N"));
+    lb_writbtn = new QToolButton();
+    lb_writbtn->setText(tr("Writable Y/N"));
     hbox->addWidget(lb_writbtn);
-    lb_writbtn->setAutoDefault(false);
     connect(lb_writbtn, SIGNAL(clicked()), this, SLOT(write_btn_slot()));
 
-    lb_contbtn = new QPushButton(tr("Contents"));
+    lb_contbtn = new QToolButton();
+    lb_contbtn->setText(tr("Contents"));
     hbox->addWidget(lb_contbtn);
-    lb_contbtn->setAutoDefault(false);
     connect(lb_contbtn, SIGNAL(clicked()), this, SLOT(cont_btn_slot()));
 
-    QPushButton *btn = new QPushButton(tr("Create"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(create_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Create"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(create_btn_slot()));
 
-    lb_defsbtn = new QPushButton(tr("Defaults"));
+    lb_defsbtn = new QToolButton();
+    lb_defsbtn->setText(tr("Defaults"));
     hbox->addWidget(lb_defsbtn);
     lb_defsbtn->setCheckable(true);
-    lb_defsbtn->setAutoDefault(false);
     connect(lb_defsbtn, SIGNAL(toggled(bool)),
         this, SLOT(defs_btn_slot(bool)));
 
-    btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    hbox->addSpacing(1);
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     hbox = new QHBoxLayout(0);
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    lb_techbtn = new QPushButton(tr("Tech"));
+    lb_techbtn = new QToolButton();
+    lb_techbtn->setText(tr("Tech"));
     hbox->addWidget(lb_techbtn);
     lb_techbtn->setCheckable(true);
-    lb_techbtn->setAutoDefault(false);
     connect(lb_techbtn, SIGNAL(toggled(bool)),
         this, SLOT(tech_btn_slot(bool)));
 
-    lb_destbtn = new QPushButton(tr("Destroy"));
+    lb_destbtn = new QToolButton();
+    lb_destbtn->setText(tr("Destroy"));
     hbox->addWidget(lb_destbtn);
-    lb_destbtn->setAutoDefault(false);
     connect(lb_destbtn, SIGNAL(clicked()), this, SLOT(dest_btn_slot()));
 
     sLstr lstr;
@@ -258,14 +261,15 @@ QToaLibsDlg::QToaLibsDlg(GRobject c) : QTbag(this)
         this, SLOT(item_selection_changed_slot()));
 
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_PROP))
+    if (Fnt()->getFont(&fnt, FNT_PROP))
         lb_list->setFont(*fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
 
     // dismiss button line
     //
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -293,6 +297,12 @@ QToaLibsDlg::~QToaLibsDlg()
     delete lb_open_pm;
     delete lb_close_pm;
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QToaLibsDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 QSize
@@ -855,7 +865,7 @@ QToaLibsDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_PROP) {
         QFont *fnt;
-        if (FC.getFont(&fnt, fnum))
+        if (Fnt()->getFont(&fnt, fnum))
             lb_list->setFont(*fnt);
         update();
     }

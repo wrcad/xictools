@@ -59,6 +59,10 @@ public:
     QTprpInfoDlg(CDo*);
     ~QTprpInfoDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update(CDo*);
     void purge(CDo*, CDo*);
 
@@ -66,7 +70,7 @@ public:
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -85,8 +89,8 @@ private slots:
     void mouse_press_slot(QMouseEvent*);
     void mouse_release_slot(QMouseEvent*);
     void mouse_motion_slot(QMouseEvent*);
-    void mime_data_handled_slot(const QMimeData*, bool*) const;
-    void mime_data_delivered_slot(const QMimeData*, bool*);
+    void mime_data_handled_slot(const QMimeData*, int*) const;
+    void mime_data_delivered_slot(const QMimeData*, int*);
     void dismiss_btn_slot();
     void font_changed_slot(int);
 

@@ -43,6 +43,7 @@
 #include "menu.h"
 #include "attr_menu.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QRadioButton>
 #include <QPushButton>
@@ -111,6 +112,7 @@ QTdotsDlg::QTdotsDlg(GRobject caller)
     connect(dt_all, SIGNAL(toggled(bool)), this, SLOT(all_slot(bool)));
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_slot()));
 
@@ -126,11 +128,22 @@ QTdotsDlg::~QTdotsDlg()
 }
 
 
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTdotsDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
+
+
 void
 QTdotsDlg::update()
 {
     const char *v = CDvdb()->getVariable(VA_ShowDots);
     if (!v) {
+        QTdev::SetStatus(dt_none, false);
+        QTdev::SetStatus(dt_norm, true);
+        QTdev::SetStatus(dt_all, false);
+    }
+    else if (*v == 'n' || *v == 'N') {
         QTdev::SetStatus(dt_none, true);
         QTdev::SetStatus(dt_norm, false);
         QTdev::SetStatus(dt_all, false);
@@ -152,7 +165,8 @@ void
 QTdotsDlg::none_slot(bool state)
 {
     if (state)
-        CDvdb()->clearVariable(VA_ShowDots);
+        CDvdb()->setVariable(VA_ShowDots, "none");
+
 }
 
 
@@ -160,7 +174,7 @@ void
 QTdotsDlg::norm_slot(bool state)
 {
     if (state)
-        CDvdb()->setVariable(VA_ShowDots, "");
+        CDvdb()->clearVariable(VA_ShowDots);
 }
 
 

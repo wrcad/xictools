@@ -50,6 +50,7 @@
 //-----------------------------------------------------------------------------
 // QTfillPatDlg:  Fill pattern editing dialog.
 
+class QToolButton;
 class QHBoxLayout;
 class QGroupBox;
 class QSpinBox;
@@ -67,6 +68,10 @@ public:
     QTfillPatDlg(GRobject);
     ~QTfillPatDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update();
     void drag_load(LayerFillData*, CDl*);
 
@@ -74,7 +79,7 @@ public:
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -136,9 +141,9 @@ private:
     static int fp_update_idle_proc(void*);
 
     GRobject    fp_caller;
-    QPushButton *fp_outl;
-    QPushButton *fp_fat;
-    QPushButton *fp_cut;
+    QToolButton *fp_outl;
+    QToolButton *fp_fat;
+    QToolButton *fp_cut;
     QTcanvas    *fp_editor;
     QTcanvas    *fp_sample;
     QGroupBox   *fp_editframe;

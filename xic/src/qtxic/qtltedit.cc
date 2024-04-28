@@ -42,9 +42,11 @@
 #include "dsp_inlines.h"
 #include "cd_strmdata.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QGroupBox>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 #include <QComboBox>
 #include <QLineEdit>
@@ -108,10 +110,10 @@ QTltabEditDlg::QTltabEditDlg(GRobject c)
     le_label = new QLabel(tr(initmsg));
     hb->addWidget(le_label);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     hbox = new QHBoxLayout();
     hbox->setContentsMargins(qm);
@@ -131,19 +133,20 @@ QTltabEditDlg::QTltabEditDlg(GRobject c)
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
-    le_add = new QPushButton(tr("Add Layer"));
+    le_add = new QToolButton();
+    le_add->setText(tr("Add Layer"));
     hbox->addWidget(le_add);
     le_add->setCheckable(true);
-    le_add->setAutoDefault(false);
     connect(le_add, SIGNAL(toggled(bool)), this, SLOT(add_layer_slot(bool)));
 
-    le_rem = new QPushButton(tr("Remove Layer"));
+    le_rem = new QToolButton();
+    le_rem->setText(tr("Remove Layer"));
     hbox->addWidget(le_rem);
     le_rem->setCheckable(true);
-    le_rem->setAutoDefault(false);
     connect(le_rem, SIGNAL(toggled(bool)), this, SLOT(rem_layer_slot(bool)));
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_slot()));
 }
@@ -155,6 +158,12 @@ QTltabEditDlg::~QTltabEditDlg()
         QTdev::Deselect(le_caller);
     quit_cb();
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTltabEditDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 // Update the list of removed layers

@@ -139,26 +139,20 @@ xeditor
 !!KEYWORD
 mozy mozyhelp
 !!TITLE
-Welcome To Mozy!
+mozy
 !!HTML
-    <table border=1 width=100% bgcolor=#ffffff cellpadding=4 rules=none>
+    <table border=0 width=100%>
     <tr><td align=center>
-    <font face=helvetica>
-    <b>456 Flora Vista Avenue, Sunnyvale CA 94086</b>
+    <font face=helvetica color="#000090">
+    <b>Sunnyvale California</b>
     </font>
     <table border=0 width=80%>
      <tr><td align=left>
-     <font face=helvetica color="#dd0000">
-     (408) 735-8973
-     </font>
      </td><td align=right>
-     <font face=helvetica color="#dd0000">
-     (408) 245-4033 (fax)
-     </font>
      </td></tr>
      <tr><td align=left>
      <font face=helvetica>
-     <a href="http://www.wrcad.com">www.wrcad.com</a>
+     <a href="http://wrcad.com">wrcad.com</a>
      </font>
      </td><td align=right>
      <font face=helvetica>
@@ -168,6 +162,11 @@ Welcome To Mozy!
      </table>
     </td></tr>
     </table>
+
+    <p>
+    <center>
+    <h3><font color=red>Welcome to <i>Mozy</i>!</font></h3>
+    </center>
 
     <p>
     <b><i>Mozy</i></b> is a multi-purpose <a href="helpview">HTML

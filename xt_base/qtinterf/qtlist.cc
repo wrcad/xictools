@@ -38,10 +38,12 @@
  $Id:$
  *========================================================================*/
 
+#include <QApplication>
 #include <QAction>
 #include <QEvent>
 #include <QLabel>
 #include <QLayout>
+#include <QToolButton>
 #include <QPushButton>
 
 #include "qtlist.h"
@@ -69,11 +71,11 @@ QTbag::PopUpList(stringlist *symlist, const char *title,
 {
     QTlistDlg *list = new QTlistDlg(this, symlist, title, header,
         usepix, use_apply);
-    if (wb_shell)
-       list->set_transient_for(wb_shell);
     list->register_callback(callback);
     list->set_callback_arg(arg);
 
+    if (wb_shell)
+       list->set_transient_for(wb_shell);
     list->set_visible(true);
     return (list);
 }
@@ -180,12 +182,14 @@ QTlistDlg::QTlistDlg(QTbag *owner, stringlist *symlist, const char *title,
     hbox->setSpacing(2);
 
     if (li_use_apply) {
-        QPushButton *btn = new QPushButton(tr("Apply"));
-        hbox->addWidget(btn);
-        connect(btn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
+        QToolButton *tbtn = new QToolButton();
+        tbtn->setText(tr("Apply"));
+        hbox->addWidget(tbtn);
+        connect(tbtn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
     }
 
-    QPushButton *btn = new QPushButton(tr("Dismiss"), this);
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 }
@@ -198,7 +202,7 @@ QTlistDlg::~QTlistDlg()
     if (p_caller) {
         QObject *o = (QObject*)p_caller;
         if (o->isWidgetType()) {
-            QPushButton *btn = dynamic_cast<QPushButton*>(o);
+            QAbstractButton *btn = dynamic_cast<QAbstractButton*>(o);
             if (btn)
                 btn->setChecked(false);
         }
@@ -218,6 +222,12 @@ QTlistDlg::~QTlistDlg()
     delete li_open_pm;
     delete li_close_pm;
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTlistDlg
+#include "qtmacos_event.h"
+#endif
 
 
 // GRpopup override

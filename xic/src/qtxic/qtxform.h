@@ -50,6 +50,7 @@
 
 class QCheckBox;
 class QComboBox;
+class QToolButton;
 class QPushButton;
 namespace qtinterf {
     class QTdoubleSpinBox;
@@ -64,13 +65,17 @@ public:
         bool (*)(const char*, bool, const char*, void*), void*);
     ~QTxformDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update();
 
     void set_transient_for(QWidget *prnt)
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -103,8 +108,8 @@ private:
     QCheckBox   *tf_rfly;
     QComboBox   *tf_ang;
     QTdoubleSpinBox *tf_mag;
-    QPushButton *tf_id;
-    QPushButton *tf_last;
+    QToolButton *tf_id;
+    QToolButton *tf_last;
     QPushButton *tf_cancel;
 
     bool (*tf_callback)(const char*, bool, const char*, void*);

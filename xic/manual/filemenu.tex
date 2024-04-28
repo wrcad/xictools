@@ -68,7 +68,7 @@ current directory, but this can be changed from the panel.
 
 
 % -----------------------------------------------------------------------------
-% xic:open 022716
+% xic:open 040724
 \section{The {\cb Open} Button: Open Cell or File}
 \label{editbut}
 \index{Open button}
@@ -77,24 +77,25 @@ current directory, but this can be changed from the panel.
 The {\cb Open} button in the {\cb File Menu} is used to read a file
 and/or load a cell for editing.  The button presents a drop-down menu
 containing the names of the last eight cells opened for editing, plus
-``{\cb new}'' and ``{\cb temporary}'' entries.
+``{\cb new}'' and ``{\cb prev}'' entries.  If {\cb prev} is clicked,
+the last opened cell (if any) will be reopened in the main window.
 
 If one holds down {\kb Shift} while selecting one of cells from the
 history list, the {\cb Cell Placement Control} panel will appear with
 that cell added as the current master.  This applies to cell names and
-not {\cb new} or {\cb temporary}.  This is a quick backdoor for
+not {\cb new} or {\cb prev}.  This is a quick backdoor for
 instantiating cells recently edited.
 
-The {\cb temporary} button in the menu opens a new cell with a unique
-name.  This can be used for experimentation, or for other purposes. 
-The {\cb Save As} command can be used to save the contents to a cell
-with a more descriptive name, if desired.
+Selecting {\cb new} with the {\kb Shift} button held down opens a new
+cell with a unique name.  This can be used for experimentation, or for
+other purposes.  The {\cb Save As} command can be used to save the
+contents to a cell with a more descriptive name, if desired.
 
-Selecting {\cb new} will use the prompt line to request a file or cell
-name to open.  The internal keyword {\vt open} is associated with this
-button.  The accelerator actually maps to the {\cb new} button in the
-pop-up menu, i.e., the accelerator will cause prompting for the name
-of a file or cell to open.
+Otherwise selecting {\cb new} will use the prompt line to request a
+file or cell name to open.  The internal keyword {\vt open} is
+associated with this button.  The accelerator actually maps to the
+{\cb new} button in the pop-up menu, i.e., the accelerator will cause
+prompting for the name of a file or cell to open.
 
 The default name used in the prompt of the cell to edit will be one of
 the following.  Each of these sources is tested in order, and the

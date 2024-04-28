@@ -67,6 +67,7 @@
 #include <QScrollBar>
 #include <QLineEdit>
 #include <QSplitter>
+#include <QWheelEvent>
 
 
 //-----------------------------------------------------------------------------
@@ -160,7 +161,7 @@ QTltab::QTltab(bool nogr) : QTdraw(XW_LTAB)
     vb->addLayout(hbox);
 
     QFont *scfont;
-    if (FC.getFont(&scfont, FNT_SCREEN))
+    if (Fnt()->getFont(&scfont, FNT_SCREEN))
         gd_viewport->set_font(scfont);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed(int)), Qt::QueuedConnection);
@@ -173,6 +174,8 @@ QTltab::QTltab(bool nogr) : QTdraw(XW_LTAB)
         this, SLOT(button_release_slot(QMouseEvent*)));
     connect(gd_viewport, SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(motion_slot(QMouseEvent*)));
+    connect(gd_viewport, SIGNAL(mouse_wheel_event(QWheelEvent*)),
+        this, SLOT(mouse_wheel_slot(QWheelEvent*)));
     connect(ltab_scrollbar, SIGNAL(valueChanged(int)),
         this, SLOT(ltab_scroll_value_changed_slot(int)));
     connect(gd_viewport, SIGNAL(drag_enter_event(QDragEnterEvent*)),
@@ -518,6 +521,7 @@ QTltab::motion_slot(QMouseEvent *ev)
             QMimeData *mimedata = new QMimeData();
             QByteArray qdata((const char*)&dd, sizeof(LayerFillData));
             mimedata->setData(mime_type(), qdata);
+            mimedata->setText(ld->name());
             drag->setMimeData(mimedata);
             drag->exec(Qt::CopyAction);
         }
@@ -580,6 +584,13 @@ QTltab::drop_event_slot(QDropEvent *ev)
 
 
 void
+QTltab::mouse_wheel_slot(QWheelEvent *ev)
+{
+    ltab_scrollbar->event(ev);
+}
+
+
+void
 QTltab::ltab_scroll_value_changed_slot(int val)
 {
     if (val != first_visible()) {
@@ -594,7 +605,7 @@ QTltab::font_changed(int fnum)
 {
     if (fnum == FNT_SCREEN) {
         QFont *fnt;
-        if (FC.getFont(&fnt, FNT_SCREEN))
+        if (Fnt()->getFont(&fnt, FNT_SCREEN))
             gd_viewport->set_font(fnt);
         init();
     }

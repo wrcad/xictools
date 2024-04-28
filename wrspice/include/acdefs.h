@@ -61,13 +61,8 @@ struct sACAN : public sDCTAN
     virtual sJOB *dup()
         {
             sACAN *ac = new sACAN;
-            ac->b_name = b_name;
-            ac->b_type = b_type;
             ac->JOBoutdata = new sOUTdata(*JOBoutdata);
-            ac->JOBrun = JOBrun;
-            ac->JOBdc = JOBdc;
             ac->JOBdc.uninit();
-            ac->JOBac = JOBac;
             return (ac);
         }
 

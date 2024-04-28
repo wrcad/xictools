@@ -122,9 +122,11 @@ GRfont::parse_freeform_font_string(const char *string, char **family,
         *style = 0;
     // Tokenize the string, in reverse order.
     stringlist *s0 = 0;
-    char *tok;
-    while ((tok = lstring::gettok(&string)) != 0)
-        s0 = new stringlist(tok, s0);
+    if (string) {
+        char *tok;
+        while ((tok = lstring::gettok(&string)) != 0)
+            s0 = new stringlist(tok, s0);
+    }
 
     // The first (actually last) token should be the size.  If so,
     // save the size and advance s0.
@@ -159,12 +161,15 @@ GRfont::parse_freeform_font_string(const char *string, char **family,
         last = last->next;
     // If the last (actually first) token is quoted, take it as the
     // face name, and any other tokens are taken as status words.
-    if (*last->string == '\"' || *last->string == '\'') {
-        while (s0 != last) {
-            stringlist *st = s0;
-            s0 = s0->next;
-            st->next = sx;
-            sx = st;
+    sx = 0;
+    if (last) {
+        if (*last->string == '\"' || *last->string == '\'') {
+            while (s0 != last) {
+                stringlist *st = s0;
+                s0 = s0->next;
+                st->next = sx;
+                sx = st;
+            }
         }
     }
     if (style)
@@ -301,6 +306,12 @@ namespace {
 bool
 xfd_t::is_xfd(const char *fname)
 {
+    if (!fname)
+        return (false);
+    while (isspace(*fname))
+        fname++;
+    if (!*fname)
+        return (false);
     if (strchr(fname, '*'))
         return (true);
     if (!strcasecmp(fname, "fixed"))

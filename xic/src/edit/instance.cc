@@ -119,6 +119,7 @@ namespace {
 
             void b1down();
             void b1up();
+            void desel();
             void esc();
             bool key(int, const char*, int);
             void undo() { cEventHdlr::sel_undo(); }
@@ -203,6 +204,14 @@ PlaceState::b1up()
 }
 
 
+void
+PlaceState::desel()
+{
+    ED()->saveCurTransform(0);
+    ED()->clearCurTransform();
+}
+
+
 // Exit code, called if Esc is pressed.
 //
 void
@@ -217,13 +226,19 @@ PlaceState::esc()
         cEventHdlr::sel_esc();
     ScedIf()->DevsEscCallback();
     ED()->plEscCallback();
+    ED()->saveCurTransform(0);
     delete this;
 }
 
 
 bool
-PlaceState::key(int code, const char*, int)
+PlaceState::key(int code, const char *text, int)
 {
+    if (*text == '/') {
+        ED()->swapCurTransform(0);
+        return (true);
+    }
+
     switch (code) {
     case SHIFTDN_KEY:
     case CTRLDN_KEY:
@@ -331,7 +346,7 @@ PlaceState::doit_idle(void*)
 
 // Menu command for the Place function.  Pop up the Place entry panel,
 // and attach the current master to the pointer.  New cell instances
-// will be located where the user points, except in replace mode where
+// will be located where the user clicks, except in replace mode where
 // existing cell instances pointed to will be replaced with the current
 // master.
 //
@@ -354,6 +369,8 @@ cEdit::placeExec(CmdDesc *cmd)
         return;
     }
     PlaceCmd->message();
+    // Reset current transform.
+    ED()->clearCurTransform();
 
     PlaceState::Sym.reset();
     const char *mname = plGetMasterName();
@@ -491,9 +508,7 @@ namespace {
 
 // This adds mname to the master list.  If the Place popup is not
 // visible, it will be popped.  If mname is an archive, cname is the
-// cell to open.  If chd is given, then mnamein is ignored.  If
-// is_pcell is true, then mname is the database name for the
-// super-master.
+// cell to open.  If chd is given, then mnamein is ignored.
 //
 void
 cEdit::addMaster(const char *mnamein, const char *cname, cCHD *chd)
@@ -779,6 +794,8 @@ cEdit::placeDev(GRobject caller, const char *name, bool smash)
         return;
     }
     PlaceCmd->message();
+    // Reset current transform.
+    ED()->clearCurTransform();
     Gst()->SetGhost(GFplace);
 }
 

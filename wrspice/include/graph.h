@@ -52,8 +52,9 @@ Authors: 1985 Wayne A. Christopher
 #include "datavec.h"
 #include "ginterf/graphics.h"
 
-#if defined (HAVE_SETJMP_H) && defined (HAVE_SIGNAL)
-#include <signal.h>
+// XXX get rid of setjmp, don't include config.h above.
+//#define GRAPH_SETJMP
+#if defined(GRAPH_SETJMP) && defined (HAVE_SETJMP_H)
 #include <setjmp.h>
 #endif
 
@@ -282,9 +283,10 @@ struct sGrInit;
 
 // Device-independent data structure for plots.
 //
-struct sGraph
+class cGraph
 {
-    sGraph()
+public:
+    cGraph()
     {
         gr_id           = 0;
         gr_apptype      = 0;
@@ -374,10 +376,6 @@ struct sGraph
         gr_npage        = 0;
 
         gr_in_redraw    = 0;
-
-#if defined (HAVE_SETJMP_H) && defined (HAVE_SIGNAL)
-        oldhdlr         = 0;
-#endif
     }
 
     // No destructor, don't explicitly delete, gr_reset deallocates.
@@ -399,9 +397,10 @@ struct sGraph
     // graph.cc
     bool gr_setup_dev(int, const char*);
     int gr_dev_init();
+    int gr_win_ht(int);
     void gr_reset();
-    sGraph* gr_copy();
-    void gr_update_keyed(sGraph*, bool);
+    cGraph* gr_copy();
+    void gr_update_keyed(cGraph*, bool);
     void gr_abort();
     bool gr_redraw_direct();
     void gr_redraw_keyed();
@@ -780,9 +779,8 @@ private:
 
     int gr_in_redraw;               // redrawing call depth
 
-#if defined (HAVE_SETJMP_H) && defined (HAVE_SIGNAL)
+#if defined(GRAPH_SETJMP) && defined (HAVE_SETJMP_H)
 public:
-    void(*oldhdlr)(int);            // old FPE handler
     jmp_buf jmpbuf;
 #endif
 };
@@ -945,11 +943,11 @@ struct sGrInit
 // Generator
 struct sGgen
 {
-    sGgen(int i, sGraph *l) { num = i; graph = l; }
-    sGraph *next();
+    sGgen(int i, cGraph *l) { num = i; graph = l; }
+    cGraph *next();
 
 private:
-    sGraph *graph;
+    cGraph *graph;
     int num;
 };
 
@@ -967,11 +965,11 @@ struct SPgraphics
     };
 
     // doplot.cc
-    bool Plot(wordlist*, sGraph*, const char*, const char*, int);
+    bool Plot(wordlist*, cGraph*, const char*, const char*, int);
 
     // grsetup.cc
     bool Setup(sGrInit*, sDvList**, const char*, sDataVec*, const char*);
-    sGraph *Init(sDvList*, sGrInit*, sGraph* = 0);
+    cGraph *Init(sDvList*, sGrInit*, cGraph* = 0);
 
     // asciplot.cc
     void AsciiPlot(sDvList*, const char*);
@@ -980,13 +978,13 @@ struct SPgraphics
     void Xgraph(sDvList*, sGrInit*);
 
     // graphdb.cc
-    sGraph *NewGraph();
-    sGraph *NewGraph(int, const char*);
-    sGraph *FindGraph(int);
+    cGraph *NewGraph();
+    cGraph *NewGraph(int, const char*);
+    cGraph *FindGraph(int);
     bool DestroyGraph(int);
     void FreeGraphs();
     void SetGraphContext(int);
-    void PushGraphContext(sGraph*);
+    void PushGraphContext(cGraph*);
     void PopGraphContext();
     void PlotPosition(int*, int*);
     sGgen *InitGgen();
@@ -1006,23 +1004,23 @@ struct SPgraphics
     void HaltFullScreenGraphics();
     int PopUpXterm(const char*);
 
-    sGraph *Cur()               { return (spg_cur); }
-    sGraph *SourceGraph()       { return (spg_sourceGraph); }
-    sGraph *TmpGraph()          { return (spg_tmpGraph); }
+    cGraph *Cur()               { return (spg_cur); }
+    cGraph *SourceGraph()       { return (spg_sourceGraph); }
+    cGraph *TmpGraph()          { return (spg_tmpGraph); }
     int RunningId()             { return (spg_running_id); }
 
-    void SetSourceGraph(sGraph *g)  { spg_sourceGraph = g; }
-    void SetTmpGraph(sGraph *g)     { spg_tmpGraph = g; }
+    void SetSourceGraph(cGraph *g)  { spg_sourceGraph = g; }
+    void SetTmpGraph(cGraph *g)     { spg_tmpGraph = g; }
     void SetMplotOn(bool b)         { spg_mplotOn = b; }
 
 private:
-    sGraph *spg_cur;            // the current sGraph
-    sGraph *spg_echogr;         // used to route text during iplot
-    sGraph *spg_sourceGraph;    // graph with button-down selection
-    sGraph *spg_tmpGraph;       // parent of zoomin
+    cGraph *spg_cur;            // the current cGraph
+    cGraph *spg_echogr;         // used to route text during iplot
+    cGraph *spg_sourceGraph;    // graph with button-down selection
+    cGraph *spg_tmpGraph;       // parent of zoomin
     void   *spg_mainThread;     // main application thread id
     bool spg_mplotOn;           // margin plot while running
-    int spg_running_id;         // counter for sGraph id assignment
+    int spg_running_id;         // counter for cGraph id assignment
 };
 
 // Definitions for external symbols for output graphics.

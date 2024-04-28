@@ -52,7 +52,7 @@
 
 class QTreeWidget;
 class QTreeWidgetItem;
-class QPushButton;
+class QToolButton;
 class QCheckBox;
 
 class QTlayerAliasDlg : public QDialog, public QTbag
@@ -63,13 +63,17 @@ public:
     QTlayerAliasDlg(GRobject);
     ~QTlayerAliasDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update();
 
     void set_transient_for(QWidget *prnt)
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -101,11 +105,11 @@ private:
     static ESret str_cb(const char*, void*);
     static void yn_cb(bool, void*);
 
-    QPushButton *la_open;
-    QPushButton *la_save;
-    QPushButton *la_new;
-    QPushButton *la_del;
-    QPushButton *la_edit;
+    QToolButton *la_open;
+    QToolButton *la_save;
+    QToolButton *la_new;
+    QToolButton *la_del;
+    QToolButton *la_edit;
     QTreeWidget *la_list;
     QCheckBox   *la_decimal;
 

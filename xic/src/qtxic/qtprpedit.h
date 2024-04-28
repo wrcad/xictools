@@ -49,7 +49,7 @@
 //-----------------------------------------------------------------------------
 // QTprpEditorDlg:  Dialog to modify proerties of objects.
 
-class QPushButton;
+class QToolButton;
 class QMenu;
 class QAction;
 class QMimeData;
@@ -70,6 +70,10 @@ public:
     QTprpEditorDlg(CDo*, PRPmode);
     ~QTprpEditorDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update(CDo*, PRPmode);
     void purge(CDo*, CDo*);
     PrptyText *select(int);
@@ -80,7 +84,7 @@ public:
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);
@@ -107,8 +111,8 @@ private slots:
     void mouse_press_slot(QMouseEvent*);
     void mouse_release_slot(QMouseEvent*);
     void mouse_motion_slot(QMouseEvent*);
-    void mime_data_handled_slot(const QMimeData*, bool*) const;
-    void mime_data_delivered_slot(const QMimeData*, bool*);
+    void mime_data_handled_slot(const QMimeData*, int*) const;
+    void mime_data_delivered_slot(const QMimeData*, int*);
     void font_changed_slot(int);
 
 private:
@@ -117,13 +121,13 @@ private:
     void call_prpty_edit(PrptyText*);
     void call_prpty_del(PrptyText*);
 
-    QPushButton *po_activ;
-    QPushButton *po_edit;
-    QPushButton *po_del;
-    QPushButton *po_add;
+    QToolButton *po_activ;
+    QToolButton *po_edit;
+    QToolButton *po_del;
+    QToolButton *po_add;
     QMenu       *po_addmenu;
-    QPushButton *po_global;
-    QPushButton *po_info;
+    QToolButton *po_global;
+    QToolButton *po_info;
     QAction     *po_name_btn;
 
     int po_dspmode;

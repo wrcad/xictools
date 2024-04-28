@@ -47,9 +47,11 @@
 #include "qtcnmap.h"
 #include "qtinterf/qtfont.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QGroupBox>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 #include <QTabWidget>
 #include <QLineEdit>
@@ -88,9 +90,12 @@ cConvert::PopUpChdOpen(GRobject caller, ShowMode mode,
 
     new QTchdOpenDlg(caller, callback, arg, init_idname, init_str);
 
-    QTchdOpenDlg::self()->set_transient_for(QTmainwin::self());
-    QTdev::self()->SetPopupLocation(GRloc(LW_XYA, x, y),
-        QTchdOpenDlg::self(), QTmainwin::self()->Viewport());
+    QDialog *prnt = QTdev::DlgOf(caller);
+    if (!prnt)
+        prnt = QTmainwin::self();
+    QTchdOpenDlg::self()->set_transient_for(prnt);
+    QTdev::self()->SetPopupLocation(GRloc(LW_XYA, x, y), QTchdOpenDlg::self(),
+        prnt);
     QTchdOpenDlg::self()->show();
 }
 // End of cConvert functions.
@@ -126,8 +131,7 @@ QTchdOpenPathEdit::dropEvent(QDropEvent *ev)
 {
     if (ev->mimeData()->hasUrls()) {
         QByteArray ba = ev->mimeData()->data("text/plain");
-        const char *str = ba.constData() + strlen("File://");
-        setText(str);
+        setText(ba.constData());
         ev->accept();
         return;
     }
@@ -201,10 +205,10 @@ QTchdOpenDlg::QTchdOpenDlg(GRobject caller,
         "Enter path to layout or saved digest file"));
     hb->addWidget(label);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     co_nbook = new QTabWidget();
     vbox->addWidget(co_nbook);
@@ -316,11 +320,13 @@ QTchdOpenDlg::QTchdOpenDlg(GRobject caller,
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
-    co_apply = new QPushButton(tr("Apply"));
+    co_apply = new QToolButton();
+    co_apply->setText(tr("Apply"));
     hbox->addWidget(co_apply);
     connect(co_apply, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -334,6 +340,12 @@ QTchdOpenDlg::~QTchdOpenDlg()
     if (co_caller)
         QTdev::Deselect(co_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTchdOpenDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 void

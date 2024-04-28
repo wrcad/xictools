@@ -101,7 +101,7 @@ cMain::FixupColors(void *dp)
         return;
     static enum { enc_none, enc_x, enc_triples } encoding;
 
-#ifdef QT_OS_X11
+#ifdef Q_OS_X11
     bool use_triples = false;
     Display *display = (Display*)dp;
     // If a display was passed, the pixels will be X values, otherwise the
@@ -123,7 +123,7 @@ cMain::FixupColors(void *dp)
         return;
     encoding = (use_triples ? enc_triples : enc_x);
 
-#ifdef QT_OS_X11
+#ifdef Q_OS_X11
     for (unsigned i = 0; i < ColorTableEnd; i++) {
         sColorTab::sColorTabEnt *c = DSP()->ColorTab()->color_ent(i);
         if (!c)

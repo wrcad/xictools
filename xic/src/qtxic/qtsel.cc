@@ -45,10 +45,12 @@
 #include "select.h"
 #include "qtltab.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QGroupBox>
 #include <QRadioButton>
 #include <QCheckBox>
+#include <QToolButton>
 #include <QPushButton>
 
 
@@ -158,10 +160,10 @@ QTselectDlg::QTselectDlg(GRobject c) : QTbag(this)
     connect(sl_am_all, SIGNAL(toggled(bool)),
         this, SLOT(am_all_slot(bool)));
 
-    sl_upbtn = new QPushButton(tr("Search Bottom to Top"));
+    sl_upbtn = new QToolButton();
+    sl_upbtn->setText(tr("Search Bottom to Top"));
     grid->addWidget(sl_upbtn, 1, 0, 1, 3);
     sl_upbtn->setCheckable(true);
-    sl_upbtn->setAutoDefault(false);
     connect(sl_upbtn, SIGNAL(toggled(bool)), this, SLOT(up_btn_slot(bool)));
 
     // addition mode radio group
@@ -188,11 +190,13 @@ QTselectDlg::QTselectDlg(GRobject c) : QTbag(this)
     connect(sl_sel_rem, SIGNAL(toggled(bool)),
         this, SLOT(sl_rem_slot(bool)));
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    grid->addWidget(btn, 2, 0);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
-    btn = new QPushButton(tr("Dismiss"));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    grid->addWidget(tbtn, 2, 0);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
     grid->addWidget(btn, 2, 1, 1, 3);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -234,6 +238,12 @@ QTselectDlg::~QTselectDlg()
     if (sl_caller)
         QTdev::Deselect(sl_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTselectDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 void

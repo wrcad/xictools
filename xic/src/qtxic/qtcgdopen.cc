@@ -46,11 +46,13 @@
 #include "qtcnmap.h"
 #include "qtltab.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QLabel>
 #include <QGroupBox>
 #include <QLineEdit>
 #include <QTabWidget>
+#include <QToolButton>
 #include <QPushButton>
 #include <QDragEnterEvent>
 #include <QMimeData>
@@ -122,8 +124,7 @@ QTcgdOpenPathEdit::dropEvent(QDropEvent *ev)
 {
     if (ev->mimeData()->hasUrls()) {
         QByteArray ba = ev->mimeData()->data("text/plain");
-        const char *str = ba.constData() + strlen("File://");
-        setText(str);
+        setText(ba.constData());
         ev->accept();
         return;
     }
@@ -208,10 +209,10 @@ QTcgdOpenDlg::QTcgdOpenDlg(GRobject caller,
         "Enter parameters to create new Cell Geometry Digest"));
     hb->addWidget(label);
 
-    QPushButton *btn = new QPushButton(tr("Help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     cgo_nbook = new QTabWidget();
     vbox->addWidget(cgo_nbook);
@@ -346,11 +347,13 @@ QTcgdOpenDlg::QTcgdOpenDlg(GRobject caller,
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
-    cgo_apply = new QPushButton(tr("Apply"));
+    cgo_apply = new QToolButton();
+    cgo_apply->setText(tr("Apply"));
     hbox->addWidget(cgo_apply);
     connect(cgo_apply, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -366,6 +369,12 @@ QTcgdOpenDlg::~QTcgdOpenDlg()
     if (cgo_caller)
         QTdev::Deselect(cgo_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTcgdOpenDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 void

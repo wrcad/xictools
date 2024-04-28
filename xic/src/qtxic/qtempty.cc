@@ -46,8 +46,10 @@
 #include "dsp_inlines.h"
 #include "qtinterf/qtfont.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QGroupBox>
+#include <QToolButton>
 #include <QPushButton>
 #include <QLabel>
 #include <QScrollBar>
@@ -109,15 +111,15 @@ QTemptyDlg::QTemptyDlg(stringlist *l) : QTbag(this)
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
-    QPushButton *btn = new QPushButton(tr("Delete All"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(delete_btn_slot()));
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Delete All"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(delete_btn_slot()));
 
-    btn = new QPushButton(tr("Skip All"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(skip_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Skip All"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(skip_btn_slot()));
 
     QGroupBox *gb = new QGroupBox();
     vbox->addWidget(gb);
@@ -140,20 +142,20 @@ QTemptyDlg::QTemptyDlg(stringlist *l) : QTbag(this)
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
-    btn = new QPushButton();
-    btn->setText(tr("Apply"));
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Apply"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
 
-    btn = new QPushButton();
-    btn->setText(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
     // Use a fixed font in the label, same as the text area, so can
     // match columns.
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_FIXED)) {
+    if (Fnt()->getFont(&fnt, FNT_FIXED)) {
         ec_text->setFont(*fnt);
         ec_label->setFont(*fnt);
     }
@@ -176,6 +178,12 @@ QTemptyDlg::~QTemptyDlg()
     delete [] ec_list;
     delete ec_tab;
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTemptyDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 QSize
@@ -330,7 +338,7 @@ QTemptyDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_FIXED) {
         QFont *fnt;
-        if (FC.getFont(&fnt, FNT_FIXED)) {
+        if (Fnt()->getFont(&fnt, FNT_FIXED)) {
             ec_text->setFont(*fnt);
             ec_label->setFont(*fnt);
         }

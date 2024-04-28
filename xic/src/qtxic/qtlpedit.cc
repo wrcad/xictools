@@ -100,7 +100,7 @@ cMain::PopUpLayerParamEditor(GRobject caller, ShowMode mode, const char *msg,
 }
 // End of cMain functions.
 
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
 #define USE_QTOOLBAR
 #endif
 
@@ -504,7 +504,7 @@ QTlayerParamDlg::QTlayerParamDlg(GRobject c, const char *msg,
         lp_undo->setEnabled(false);
 
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_FIXED))
+    if (Fnt()->getFont(&fnt, FNT_FIXED))
         lp_text->setFont(*fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
@@ -1368,7 +1368,7 @@ QTlayerParamDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_FIXED) {
         QFont *fnt;
-        if (FC.getFont(&fnt, FNT_FIXED))
+        if (Fnt()->getFont(&fnt, FNT_FIXED))
             lp_text->setFont(*fnt);
         update();
     }

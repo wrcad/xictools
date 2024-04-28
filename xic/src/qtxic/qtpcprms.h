@@ -64,13 +64,17 @@ public:
     QTpcellParamsDlg(GRobject, PCellParam*, const char*, pcpMode);
     ~QTpcellParamsDlg();
 
+#ifdef Q_OS_MACOS
+    bool event(QEvent*);
+#endif
+
     void update(const char*, PCellParam*);
 
     void set_transient_for(QWidget *prnt)
         {
             Qt::WindowFlags f = windowFlags();
             setParent(prnt);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             f |= Qt::Tool;
 #endif
             setWindowFlags(f);

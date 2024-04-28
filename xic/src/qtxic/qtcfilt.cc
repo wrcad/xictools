@@ -43,7 +43,9 @@
 #include "errorlog.h"
 #include "cfilter.h"
 
+#include <QApplication>
 #include <QLayout>
+#include <QToolButton>
 #include <QPushButton>
 #include <QMenu>
 #include <QGroupBox>
@@ -153,9 +155,9 @@ QTcfiltDlg::QTcfiltDlg(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*),
 
     // store/recall menus, label in frame plus help btn
     //
-    QPushButton *btn = new QPushButton(tr("Store"));
-    btn->setAutoDefault(false);
-    hbox->addWidget(btn);
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("Store"));
+    hbox->addWidget(tbtn);
     {
         char buf[16];
         QMenu *menu = new QMenu;
@@ -164,13 +166,14 @@ QTcfiltDlg::QTcfiltDlg(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*),
             QAction *a = menu->addAction(buf);
             a->setData(i);
         }
-        btn->setMenu(menu);
+        tbtn->setMenu(menu);
+        tbtn->setPopupMode(QToolButton::InstantPopup);
         connect(menu, SIGNAL(triggered(QAction*)),
             this, SLOT(store_menu_slot(QAction*)));
     }
-    btn = new QPushButton(tr("Recall"));
-    btn->setAutoDefault(false);
-    hbox->addWidget(btn);
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Recall"));
+    hbox->addWidget(tbtn);
     {
         char buf[16];
         QMenu *menu = new QMenu;
@@ -179,7 +182,8 @@ QTcfiltDlg::QTcfiltDlg(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*),
             QAction *a = menu->addAction(buf);
             a->setData(i);
         }
-        btn->setMenu(menu);
+        tbtn->setMenu(menu);
+        tbtn->setPopupMode(QToolButton::InstantPopup);
         connect(menu, SIGNAL(triggered(QAction*)),
             this, SLOT(recall_menu_slot(QAction*)));
     }
@@ -192,10 +196,10 @@ QTcfiltDlg::QTcfiltDlg(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*),
     QLabel *label = new QLabel(tr("Set filtering for cells list"));
     hb->addWidget(label);
 
-    btn = new QPushButton(tr("Help"));
-    btn->setAutoDefault(false);
-    hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    tbtn = new QToolButton();
+    tbtn->setText(tr("Help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // Two colums
     hbox = new QHBoxLayout(0);
@@ -404,11 +408,13 @@ QTcfiltDlg::QTcfiltDlg(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*),
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
-    cf_apply = new QPushButton(tr("Apply"));
+    cf_apply = new QToolButton();
+    cf_apply->setText(tr("Apply"));
     hbox->addWidget(cf_apply);
     connect(cf_apply, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
 
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -422,6 +428,12 @@ QTcfiltDlg::~QTcfiltDlg()
     if (cf_caller)
         QTdev::Deselect(cf_caller);
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTcfiltDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 // This is called when the listing mode changes in the Cells Listing

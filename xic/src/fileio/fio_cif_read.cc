@@ -1142,11 +1142,34 @@ cFIO::OpenNative(const char *spath, CDcbin *cbret, double scale, bool *divert)
                         mi.overwrite_elec = false;
                     }
                     else {
-                        if (!IsNoOverwritePhys())
+                        if (!FIO()->IsNoOverwritePhys())
                             mi.overwrite_phys = true;
-                        if (!IsNoOverwriteElec())
+                        bool p_match = false;
+                        if (mi.overwrite_phys == true) {
+                            if (!cbin.phys())
+                                p_match = true;
+                            else if (!cbin.phys()->countModified() &&
+                                    cbin.phys()->fileType() == Fcif &&
+                                    !strcmp(cbin.phys()->fileName(), pathname))
+                                p_match = true;
+                            if (p_match)
+                                mi.overwrite_phys = false;
+                        }
+                        if (!FIO()->IsNoOverwriteElec())
                             mi.overwrite_elec = true;
-                        ifMergeControl(&mi);
+                        bool e_match = false;
+                        if (mi.overwrite_elec == true) {
+                            if (!cbin.elec())
+                                e_match = true;
+                            else if (!cbin.elec()->countModified() &&
+                                    cbin.elec()->fileType() == Fcif &&
+                                    !strcmp(cbin.elec()->fileName(), pathname))
+                                e_match = true;
+                            if (e_match)
+                                mi.overwrite_elec = false;
+                        }
+                        if (!p_match || !e_match)
+                            FIO()->ifMergeControl(&mi);
                     }
                     if (mi.overwrite_phys) {
                         overwrite_phys = true;
@@ -2513,9 +2536,29 @@ cif_in::a_symbol_db(const char *unalias_name, int sym_num)
                 else {
                     if (!FIO()->IsNoOverwritePhys())
                         mi.overwrite_phys = true;
+                    bool p_match = false;
+                    if (mi.overwrite_phys && !sd->countModified() &&
+                            sd->fileType() == Fcif &&
+                            !strcmp(sd->fileName(), in_filename)) {
+                        mi.overwrite_phys = false;
+                        p_match = true;
+                    }
                     if (!FIO()->IsNoOverwriteElec())
                         mi.overwrite_elec = true;
-                    FIO()->ifMergeControl(&mi);
+                    bool e_match = false;
+                    if (mi.overwrite_elec == true) {
+                        CDs *tsd = CDcdb()->findCell(sd->cellname(), Electrical);
+                        if (!tsd)
+                            e_match = true;
+                        else if (!tsd->countModified() &&
+                                tsd->fileType() == Fcif &&
+                                !strcmp(tsd->fileName(), in_filename))
+                            e_match = true;
+                        if (e_match)
+                            mi.overwrite_elec = false;
+                    }
+                    if (!p_match || !e_match)
+                        FIO()->ifMergeControl(&mi);
                 }
                 if (mi.overwrite_phys) {
                     sd->setImmutable(false);
@@ -2578,11 +2621,18 @@ cif_in::a_symbol_db(const char *unalias_name, int sym_num)
                         mi.overwrite_elec = true;
                     }
                     else if (!mi.skip_elec) {
-                        if (!FIO()->IsNoOverwritePhys())
-                            mi.overwrite_phys = true;
                         if (!FIO()->IsNoOverwriteElec())
                             mi.overwrite_elec = true;
-                        FIO()->ifMergeControl(&mi);
+                        if (mi.overwrite_elec && !sd->countModified() &&
+                                sd->fileType() == Fcif &&
+                                !strcmp(sd->fileName(), in_filename)) {
+                            mi.overwrite_elec = false;
+                        }
+                        else {
+                            if (!FIO()->IsNoOverwritePhys())
+                                mi.overwrite_phys = true;
+                            FIO()->ifMergeControl(&mi);
+                        }
                     }
                     if (mi.overwrite_phys) {
                         if (!get_symref(Tstring(sd->cellname()), Physical)) {

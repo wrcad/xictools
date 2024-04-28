@@ -41,17 +41,15 @@
 #ifndef QTFORM_BUTTON_H
 #define QTFORM_BUTTON_H
 
-#include <QPushButton>
+#include <QToolButton>
 
 
 struct htmForm;
-namespace qtinterf {
-    class QTform_button;
-}
+namespace qtinterf { class QTform_button; }
 
-// Subclass QPushButton for use in forms.
+// Subclass QToolButton for use in forms.
 //
-class qtinterf::QTform_button : public QPushButton
+class qtinterf::QTform_button : public QToolButton
 {
     Q_OBJECT
 

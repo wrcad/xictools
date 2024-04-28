@@ -739,7 +739,7 @@ command.
 
 
 % -----------------------------------------------------------------------------
-% xic:exprt 022418
+% xic:exprt 040724
 \section{The {\cb Export Cell Data} Button: {\cb Export Control} Panel}
 \index{Export Cell Data button}
 
@@ -1102,6 +1102,7 @@ When checked, all cells in the current symbol table, not just the
 hierarchy of the current cell, will be output as if they were part of
 the hierarchy.  The usual filtering of library and sub-master cells is
 retained.  The resulting file may have multiple top-level cells.
+This mirrors the state of the {\vt OutAllCells} boolean varible.
 
 \item{\cb Don't flatten standard vias, keep as instance at top level}\\
 This mode may apply when flattening a physical cell hierarchy.  When

@@ -57,6 +57,7 @@
 #include <QLayout>
 #include <QLabel>
 #include <QGroupBox>
+#include <QToolButton>
 #include <QPushButton>
 #include <QMouseEvent>
 #include <QAction>
@@ -145,10 +146,20 @@ QTcircuitListDlg::QTcircuitListDlg(int xx, int yy, const char *s)
     QLabel *label = new QLabel(tr("Currently active circuits"));
     hb->addWidget(label);
 
-    QPushButton *btn = new QPushButton(tr("help"));
-    hbox->addWidget(btn);
-    btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    for (int n = 0; cl_btns[n]; n++) {
+        QToolButton *tbtn = new QToolButton();
+        tbtn->setText(tr(cl_btns[n]));
+        tbtn->setCheckable(true);
+        hbox->addWidget(tbtn);
+        connect(tbtn, SIGNAL(toggled(bool)),
+            this, SLOT(button_slot(bool)));
+    }
+
+    hbox->addStretch(1);
+    QToolButton *tbtn = new QToolButton();
+    tbtn->setText(tr("help"));
+    hbox->addWidget(tbtn);
+    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
 
     // scrolled text area
     //
@@ -162,7 +173,7 @@ QTcircuitListDlg::QTcircuitListDlg(int xx, int yy, const char *s)
     connect(wb_textarea, SIGNAL(motion_event(QMouseEvent*)),
         this, SLOT(mouse_motion_slot(QMouseEvent*)));
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_FIXED))
+    if (Fnt()->getFont(&fnt, FNT_FIXED))
         wb_textarea->setFont(*fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
@@ -176,16 +187,7 @@ QTcircuitListDlg::QTcircuitListDlg(int xx, int yy, const char *s)
     hbox->setContentsMargins(qm);
     hbox->setSpacing(0);
 
-    for (int n = 0; cl_btns[n]; n++) {
-        btn = new QPushButton(tr(cl_btns[n]));
-        btn->setCheckable(true);
-        btn->setAutoDefault(false);
-        hbox->addWidget(btn);
-        connect(btn, SIGNAL(toggled(bool)),
-            this, SLOT(button_slot(bool)));
-    }
-
-    btn = new QPushButton(tr("Dismiss"));
+    QPushButton *btn = new QPushButton(tr("Dismiss"));
     hbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -327,7 +329,7 @@ QTcircuitListDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_FIXED) {
         QFont *fnt;
-        if (FC.getFont(&fnt, fnum))
+        if (Fnt()->getFont(&fnt, fnum))
             wb_textarea->setFont(*fnt);
     }
 }

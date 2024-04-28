@@ -5939,6 +5939,7 @@ misc1_funcs::IFexec(Variable *res, Variable *args, void*)
     res->type = TYP_SCALAR;
     res->content.value = 0;
     stringlist *sl;
+    // If sl is returned, it is a saved tech script, don't delete!
     XM()->OpenScript(func, &sfp, &sl);
     if (sfp || sl) {
         SI()->Interpret(sfp, sl, 0, (siVariable*)res);

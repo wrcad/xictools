@@ -61,6 +61,7 @@
 #endif
 #endif
 
+#include <QApplication>
 #include <QLayout>
 #include <QPushButton>
 #include "qtinterf/qtcanvas.h"
@@ -121,6 +122,7 @@ QTmemMonDlg::QTmemMonDlg() : QTbag(this), QTdraw(XW_TEXT)
     // The dismiss button.
     //
     QPushButton *btn = new QPushButton(tr("Dismiss"));
+    btn->setObjectName("Default");
     vbox->addWidget(btn);
     connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
 
@@ -130,7 +132,7 @@ QTmemMonDlg::QTmemMonDlg() : QTbag(this), QTdraw(XW_TEXT)
     // Font setup.
     //
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_FIXED)) {
+    if (Fnt()->getFont(&fnt, FNT_FIXED)) {
         gd_viewport->setFont(*fnt);
     }
     setMinimumWidth(sizeHint().width());
@@ -147,6 +149,12 @@ QTmemMonDlg::~QTmemMonDlg()
     instPtr = 0;
     MainMenu()->MenuButtonSet(0, MenuALLOC, false);
 }
+
+
+#ifdef Q_OS_MACOS
+#define DLGTYPE QTmemMonDlg
+#include "qtinterf/qtmacos_event.h"
+#endif
 
 
 QSize
@@ -319,7 +327,7 @@ QTmemMonDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_FIXED) {
         QFont *fnt;
-        if (FC.getFont(&fnt, FNT_FIXED))
+        if (Fnt()->getFont(&fnt, FNT_FIXED))
             gd_viewport->setFont(*fnt);
         XM()->PopUpMemory(MODE_UPD);
     }

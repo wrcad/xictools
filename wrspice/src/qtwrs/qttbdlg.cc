@@ -69,11 +69,10 @@
 
 #ifdef WIN32
 #include <windows.h>
-#else
+#endif
 #include "../../icons/wrspice_16x16.xpm"
 #include "../../icons/wrspice_32x32.xpm"
 #include "../../icons/wrspice_48x48.xpm"
-#endif
 
 
 void
@@ -374,7 +373,7 @@ QTtbDlg::QTtbDlg(int xx, int yy) : QTdraw(0)
     btn->setToolTip(tr("Pause current analysis"));
     connect(btn, SIGNAL(clicked()), this, SLOT(stop_btn_slot()));
 
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
     hbox->addWidget(new QWidget());
     hbox->setStretch(3, 1);
 #else
@@ -386,7 +385,7 @@ QTtbDlg::QTtbDlg(int xx, int yy) : QTdraw(0)
     vbox->addWidget(gd_viewport);
 
     QFont *fnt;
-    if (FC.getFont(&fnt, FNT_SCREEN))
+    if (Fnt()->getFont(&fnt, FNT_SCREEN))
         gd_viewport->set_font(fnt);
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
@@ -488,7 +487,7 @@ QTtbDlg::update(ResUpdType updt)
         TextExtent(0, &fwid, &dy);
         SetWindowBackground(SpGrPkg::DefColors[0].pixel);
         SetBackground(SpGrPkg::DefColors[0].pixel);
-        int yy = dy + 2;
+        int yy = dy;
         int xx = 4;
         int ux = 18*fwid;
         int vx = ux + 14*fwid;
@@ -997,7 +996,7 @@ QTtbDlg::font_changed_slot(int fnum)
 {
     if (fnum == FNT_SCREEN) {
         QFont *fnt;
-        if (FC.getFont(&fnt, fnum)) {
+        if (Fnt()->getFont(&fnt, fnum)) {
             gd_viewport->set_font(fnt);
             int fw, fh;
             TextExtent(0, &fw, &fh);
