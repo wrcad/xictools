@@ -767,7 +767,7 @@ CshPar::GetCommand(const char *string)
             char *s = lstring::copy(wl->wl_word);
             Strip(s);
             GRpkg::self()->ErrPrintf(ET_MSGS, "%s ", s);
-            delete s;
+            delete [] s;
         }
         GRpkg::self()->ErrPrintf(ET_MSGS, "\n");
     }

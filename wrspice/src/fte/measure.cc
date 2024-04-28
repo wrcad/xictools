@@ -952,13 +952,13 @@ sMpoint::parse(const char **pstr, char **errstr, const char *kw)
     const char *last = s;
     while ((tok = gtok(&s)) != 0) {
         if (lstring::cieq(tok, mkw_td) || lstring::cieq(tok, mkw_ts)) {
-            delete [] tok;
             const char *erkw = mkw_td;
             if (lstring::cieq(tok, mkw_ts)) {
                 t_strobe = true;
                 t_dstrobe = true;
                 erkw = mkw_ts;
             }
+            delete [] tok;
             tok = gtok(&s);
             if (!tok) {
                 listerr(errstr, erkw);

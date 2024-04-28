@@ -73,7 +73,9 @@
 #include "miscutil/tvals.h"
 #include "help/help_context.h"
 #include "qtinterf/qtidleproc.h"
+#ifdef Q_OS_MACOS
 #include "bitmaps/wr.xpm"
+#endif
 #ifdef HAVE_MOZY
 #include "editif.h"
 #include "si_parsenode.h"
