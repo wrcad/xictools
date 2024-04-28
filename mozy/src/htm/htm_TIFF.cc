@@ -153,7 +153,7 @@ htmImageManager::readTIFF(ImageBuffer *ib)
         unlink(buf);
     }
     unlink(tiffile);
-    delete [] tiffile;
+    free(tiffile);
 
     if (ib->type == IMAGE_PNG)
         return (readPNG(ib));

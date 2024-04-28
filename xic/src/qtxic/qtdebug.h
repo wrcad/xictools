@@ -271,7 +271,7 @@ private:
     bool        db_in_undo;
     histlist    *db_undo_list;
     histlist    *db_redo_list;
-    struct      sBp db_breaks[NUMBKPTS];
+    sBp         db_breaks[NUMBKPTS];
 
     static QTscriptDebuggerDlg *instPtr;
 };

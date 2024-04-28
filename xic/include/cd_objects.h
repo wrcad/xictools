@@ -190,6 +190,7 @@ struct CDo : public RTelem
 {
 #ifdef CD_USE_MANAGER
     void *operator new(size_t);
+    void operator delete(void*, size_t);
 #endif
 
     CDo(CDl *ld, const BBox *BB = 0)
@@ -367,6 +368,7 @@ struct CDpo : public CDo
 {
 #ifdef CD_USE_MANAGER
     void *operator new(size_t);
+    void operator delete(void*, size_t);
 #endif
 
     CDpo(CDl* ld, Poly* poly = 0) : CDo(ld)
@@ -548,6 +550,7 @@ struct CDw : public CDo
 {
 #ifdef CD_USE_MANAGER
     void *operator new(size_t);
+    void operator delete(void*, size_t);
 #endif
 
     CDw(CDl* ld, Wire* wire = 0) : CDo(ld)
@@ -751,6 +754,7 @@ struct CDla : public CDo
 {
 #ifdef CD_USE_MANAGER
     void *operator new(size_t);
+    void operator delete(void*, size_t);
 #endif
 
     CDla(CDl* ld , Label* ladesc = 0) : CDo(ld)

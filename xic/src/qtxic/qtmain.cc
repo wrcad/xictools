@@ -1148,7 +1148,14 @@ cKeys::set_keys(const char *text)
     while (k_keypos)
         k_keys[--k_keypos] = '\0';
     if (text) {
-        strncpy(k_keys, text, CBUFMAX);
+        int i = 0;
+        for (; i < CBUFMAX; i++) {
+            if (!text[i])
+                break;
+            k_keys[i] = text[i];
+        }
+        for (; i <= CBUFMAX; i++)
+            k_keys[i] = 0;
         k_keypos = strlen(k_keys);
     }
 }

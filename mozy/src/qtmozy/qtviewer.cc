@@ -853,9 +853,8 @@ messageOutput(QtMsgType type, const QMessageLogContext&, const QString &msg)
 bool
 QTviewer::tk_parse_color(const char *name, htmColor *c)
 {
-    QColor q;
     QtMessageHandler h = qInstallMessageHandler(messageOutput);
-    q.setNamedColor(name);
+    QColor q(QColor::fromString(name));
     qInstallMessageHandler(h);
     if (!q.isValid())
         return (false);

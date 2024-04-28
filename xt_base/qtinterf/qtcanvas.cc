@@ -84,8 +84,8 @@ QTcanvas::QTcanvas(QWidget *prnt) : QWidget(prnt)
     da_ghost_draw_ptr = &da_local;
     da_local.gd_windows[0] = this;
 
-    da_bg.setNamedColor(QString("white"));
-    da_fg.setNamedColor(QString("black"));
+    da_bg = QColor::fromString("white");
+    da_fg = QColor::fromString("black");
     da_brush.setStyle(Qt::SolidPattern);
     da_pen.setStyle(Qt::NoPen);
     initialize();

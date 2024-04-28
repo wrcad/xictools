@@ -504,10 +504,10 @@ cSpiceIPC::RunSpice(CmdDesc *cmd)
             save_analysis(SCD()->setAnalysisList(anl));
         }
         else if (tok) {
-            delete [] tok;
             delete [] analysis_str;
             hyList::destroy(anl);
             PL()->ShowPromptV("Unknown analysis type %s.", tok);
+            delete [] tok;
             return (false);
         }
         else {

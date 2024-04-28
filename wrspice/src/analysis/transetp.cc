@@ -201,17 +201,17 @@ transpec_t::new_transpec(double ts, int num, const double *v)
     num *= 2;
     for (int i = 0; i < num; i++) {
         if (v[i] <= 0.0) {
-            delete t;
+            delete [] t;
             return (0);
         }
         if (i == 1) {
             if (v[i] <= ts) {
-                delete t;
+                delete [] t;
                 return (0);
             }
         }
         else if (i > 2 && (i & 1) && v[i] <= v[i-2]) {
-            delete t;
+            delete [] t;
             return (0);
         }
         t->vals[i] = v[i];

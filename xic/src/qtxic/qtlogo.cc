@@ -551,7 +551,6 @@ QTlogoDlg::lgo_sav_cb(const char *fname, void*)
         return (ESTR_IGN);
     if (filestat::create_bak(tok)) {
         FILE *fp = fopen(tok, "w");
-        delete [] tok;
         if (fp) {
             ED()->logoFont()->dumpFont(fp);
             fclose(fp);
@@ -560,6 +559,7 @@ QTlogoDlg::lgo_sav_cb(const char *fname, void*)
         }
         else
             QTpkg::self()->Perror(lstring::strip_path(tok));
+        delete [] tok;
     }
     else
         QTpkg::self()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());

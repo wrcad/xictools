@@ -2898,7 +2898,6 @@ cEdit::acceptBoxPseudoProp(CDo *odesc, CDs *sdesc, int val,
                 CDo *newo = sdesc->newBox(odesc, &BB, odesc->ldesc(),
                     odesc->prpty_list());
                 if (!newo) {
-                    delete [] p;
                     Errs()->add_error("newBox failed");
                     return (false);
                 }

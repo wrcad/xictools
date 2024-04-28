@@ -210,25 +210,45 @@ void *
 CDo::operator new(size_t)
     { return (CDmmgr()->CDo_db.newElem()); }
 
+void
+CDo::operator delete(void *p, size_t)
+    { if (p) CDmmgr()->CDo_db.delElem(p); }
+
 
 void *
 CDpo::operator new(size_t)
     { return (CDmmgr()->CDpo_db.newElem()); }
+
+void
+CDpo::operator delete(void *p, size_t)
+    { if (p) CDmmgr()->CDpo_db.delElem(p); }
 
 
 void *
 CDw::operator new(size_t)
     { return (CDmmgr()->CDw_db.newElem()); }
 
+void
+CDw::operator delete(void *p, size_t)
+    { if (p) CDmmgr()->CDw_db.delElem(p); }
+
 
 void *
 CDla::operator new(size_t)
     { return (CDmmgr()->CDla_db.newElem()); }
 
+void
+CDla::operator delete(void *p, size_t)
+    { if (p) CDmmgr()->CDla_db.delElem(p); }
+
 
 void *
 CDc::operator new(size_t)
     { return (CDmmgr()->CDc_db.newElem()); }
+
+void
+CDc::operator delete(void *p, size_t)
+    { if (p) CDmmgr()->CDc_db.delElem(p); }
 
 
 //---------------------------------------

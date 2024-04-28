@@ -1970,7 +1970,7 @@ geom1_funcs::IFmakeObjectCopy(Variable *res, Variable *args, void*)
     CDo *cdo;
     if (poly.is_rect()) {
         BBox BB(poly.points);
-        delete poly.points;
+        delete [] poly.points;
         cdo = new CDo(LT()->CurLayer(), &BB);
     }
     else

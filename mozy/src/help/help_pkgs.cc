@@ -536,7 +536,7 @@ pkgs::local_pkgs()
             char *s;
             while ((s = fgets(buf, 256, fp)) != 0)
                 list = new stringlist(lstring::copy(s), list);
-            fclose(fp);
+            pclose(fp);
         }
     }
 
@@ -567,7 +567,7 @@ pkgs::local_pkgs()
                 delete [] vers;
                 list = new stringlist(lstring::copy(buf), list);
             }
-            fclose(fp);
+            pclose(fp);
         }
     }
     if (list && list->next)
