@@ -178,7 +178,7 @@ struct CDc : public CDo
 
 #ifdef CD_USE_MANAGER
     void *operator new(size_t);
-    void operator delete(void*, size_t);
+    void operator delete(void*, size_t) { }
 #endif
 
     CDc(CDl *ld) : CDo(ld)

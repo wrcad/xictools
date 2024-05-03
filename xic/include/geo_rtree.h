@@ -80,8 +80,7 @@ struct RTelem
             e_flags = 0;            // not used
         }
 
-    // This should explicitly call subclass destructors.
-    ~RTelem();
+    virtual ~RTelem();
 
     // Free the element and its descendents.
     static void destroy(RTelem *rte)
