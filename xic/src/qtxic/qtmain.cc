@@ -49,6 +49,7 @@
 #include "qtltab.h"
 #include "qthtext.h"
 #include "qtmenucfg.h"
+#include "qtkeymacro.h"
 #include "qtinterf/qtfile.h"
 #include "qtinterf/qttext.h"
 #include "qtinterf/qttextw.h"
@@ -73,9 +74,6 @@
 #include "miscutil/tvals.h"
 #include "help/help_context.h"
 #include "qtinterf/qtidleproc.h"
-#ifdef Q_OS_MACOS
-#include "bitmaps/wr.xpm"
-#endif
 #ifdef HAVE_MOZY
 #include "editif.h"
 #include "si_parsenode.h"
@@ -134,7 +132,6 @@
 //  button2
 //  button3
 //  keyspresd
-//  xic:wrbtn
 
 // Create and export the graphics package.
 namespace { QTpkg _qt_; }
@@ -873,7 +870,7 @@ namespace {
         // Here, obj can be two things.
         // 1.  An object with no parent that has a name derived from
         // the source top-level widget name, either
-        // "QTmainwinClassWindow" or similar for the modal window". 
+        // "QTmainwinClassWindow" or similar for the modal window. 
         // Accept the event if it is not from the main window.
         // 2.  An object whose parent is a pointer to the modal
         // widget.  Accept these.
@@ -894,12 +891,12 @@ QTeventMonitor::eventFilter(QObject *obj, QEvent *ev)
 {
     // Handle events here, return true to indicate handled.
 //XXX
-    if (ev->type() == QEvent::MouseMove) { 
+//    if (ev->type() == QEvent::MouseMove) { 
 //    printf("%p %x\n", qApp->widgetAt(QCursor::pos()), ev->type());
-    }
+//    }
 
     if (em_event_handler)
-        return (em_event_handler(obj, ev, 0));
+        return (em_event_handler(obj, ev, em_event_handler_arg));
 
     // When the application is busy, all button presses and all key
     // presses except for Ctrl-C are locked out, and upon receipt a
@@ -1060,7 +1057,8 @@ QTeventMonitor::log_event(const QObject *obj, const QEvent *ev)
             else
                 fprintf(fp, "# %s\n", "");
 
-            char *wname = qt_keyb::object_path(obj);
+            const QWidget *widg = qobject_cast<const QWidget*>(obj);
+            char *wname = qt_keyb::widget_path(widg);
             if (!wname)
                 wname = lstring::copy("unknown");
             fprintf(fp, "%s(%d, %x, \"%s\")\n",
@@ -1083,7 +1081,8 @@ QTeventMonitor::log_event(const QObject *obj, const QEvent *ev)
             if (!ccnt)
                 log_init(fp);
             const QMouseEvent *mev = static_cast<const QMouseEvent*>(ev);
-            char *wname = qt_keyb::object_path(obj);
+            const QWidget *widg = qobject_cast<const QWidget*>(obj);
+            char *wname = qt_keyb::widget_path(widg);
             if (!wname)
                 wname = lstring::copy("unknown");
             fprintf(fp, "%s(%d, %d, %d, %d, \"%s\")\n",
@@ -1412,9 +1411,17 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
     connect(gd_viewport, SIGNAL(drop_event(QDropEvent*)),
         this, SLOT(drop_slot(QDropEvent*)));
 
-    if (sw_win_number == 0)
+    if (sw_win_number == 0) {
         // being subclassed for main window
+        gd_viewport->setObjectName("MainDrawingWin");
+        setObjectName("XicMainWin");
         return;
+    }
+    char bf[16];
+    snprintf(bf, sizeof(bf), "DrawingWin%d", sw_win_number);
+    gd_viewport->setObjectName(bf);
+    snprintf(bf, sizeof(bf), "SubWin%d", sw_win_number);
+    setObjectName(bf);
 
     sw_keys_pressed = new cKeys(sw_win_number, this);
     sw_keys_pressed->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -2617,11 +2624,6 @@ QTmainwin::QTmainwin(QWidget *prnt) : QTsubwin(0, prnt)
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     setWindowFlags(Qt::Window);
     setAttribute(Qt::WA_DeleteOnClose);
-#ifdef Q_OS_MACOS
-    QAction *a = mw_menubar->addAction(tr("wr"));
-    a->setIcon(QIcon(QPixmap(wr_xpm)));
-    connect(a, SIGNAL(triggered()), this, SLOT(wr_btn_slot()));
-#endif
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;
@@ -2655,6 +2657,7 @@ QTmainwin::QTmainwin(QWidget *prnt) : QTsubwin(0, prnt)
     hbox->setStretch(1, 0);
 
     mw_top_button_box = new QWidget();
+    mw_top_button_box->setObjectName("TopBtns");
     hbox->addWidget(mw_top_button_box);
     hbox->setStretch(2, 0);
 
@@ -2667,8 +2670,10 @@ QTmainwin::QTmainwin(QWidget *prnt) : QTsubwin(0, prnt)
     hbox->setSpacing(2);
 
     mw_phys_button_box = new QWidget(this);
+    mw_phys_button_box->setObjectName("PhysSideBtns");
     hbox->addWidget(mw_phys_button_box);
     mw_elec_button_box = new QWidget(this);
+    mw_elec_button_box->setObjectName("ElecSideBtns");
     hbox->addWidget(mw_elec_button_box);
 
     mw_layertab = new QTltab(false);
@@ -2909,22 +2914,6 @@ QTmainwin::closeEvent(QCloseEvent *ev)
     }
     if (!QTmenu::self()->IsGlobalInsensitive())
         QTpkg::self()->RegisterIdleProc(close_idle, 0);
-}
-
-
-// Handler for the "WR" button.
-//
-void
-QTmainwin::wr_btn_slot()
-{
-    if (XM()->IsDoingHelp() && !is_shift_down()) {
-        PopUpHelp("xic:wrbtn");
-        return;
-    }
-    char buf[128];
-    snprintf(buf, sizeof(buf), "%s-%s bug", XM()->Product(),
-        XM()->VersionString());
-    PopUpMail(buf, Log()->MailAddress());
 }
 
 

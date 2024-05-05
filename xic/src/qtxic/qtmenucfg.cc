@@ -172,6 +172,7 @@ QTmenuConfig::instantiateMainMenus()
     if (mbox && mbox->menu) {
         QMenu *file_menu = menubar->addMenu(tr(mbox->name));
         file_menu->setToolTipsVisible(true);
+        file_menu->setObjectName("FileMenu");
 
         set(mbox->menu[fileMenu], "&File", 0);
         set(mbox->menu[fileMenuFsel], "F&ile Select", "Alt+O");
@@ -225,6 +226,7 @@ QTmenuConfig::instantiateMainMenus()
     if (mbox && mbox->menu) {
         QMenu *cell_menu = menubar->addMenu(tr(mbox->name));
         cell_menu->setToolTipsVisible(true);
+        cell_menu->setObjectName("CellMenu");
 
         set(mbox->menu[cellMenu], "&Cel", 0);
         set(mbox->menu[cellMenuPush], "&Push", "Alt+G");
@@ -260,6 +262,7 @@ QTmenuConfig::instantiateMainMenus()
     if (mbox && mbox->menu) {
         QMenu *edit_menu = menubar->addMenu(tr(mbox->name));
         edit_menu->setToolTipsVisible(true);
+        edit_menu->setObjectName("EditMenu");
 
         set(mbox->menu[editMenu], "&Edit", 0);
         set(mbox->menu[editMenuCedit], "&Enable Editing", 0);
@@ -300,6 +303,7 @@ QTmenuConfig::instantiateMainMenus()
     if (mbox && mbox->menu) {
         QMenu *modf_menu = menubar->addMenu(tr(mbox->name));
         modf_menu->setToolTipsVisible(true);
+        modf_menu->setObjectName("ModfMenu");
 
         set(mbox->menu[modfMenu], "&Modify", 0);
         set(mbox->menu[modfMenuUndo], "&Undo", 0);
@@ -339,6 +343,7 @@ QTmenuConfig::instantiateMainMenus()
     if (mbox && mbox->menu) {
         QMenu *view_menu = menubar->addMenu(tr(mbox->name));
         view_menu->setToolTipsVisible(true);
+        view_menu->setObjectName("ViewMenu");
 
         set(mbox->menu[viewMenu], "&View", 0);
         set(mbox->menu[viewMenuView], "Vie&w", 0);
@@ -375,6 +380,7 @@ QTmenuConfig::instantiateMainMenus()
             if (ent - mbox->menu == viewMenuView) {
                 MainMenu()->NewDDmenu(ent->user_action, XM()->ViewList());
                 QMenu *submenu = action(ent)->menu();
+                submenu->setObjectName("ViewSubMenu");
                 connect(submenu, SIGNAL(triggered(QAction*)),
                     this, SLOT(view_view_menu_slot(QAction*)));
             }
@@ -395,6 +401,7 @@ QTmenuConfig::instantiateMainMenus()
     if (mbox && mbox->menu) {
         QMenu *attr_menu = menubar->addMenu(tr(mbox->name));
         attr_menu->setToolTipsVisible(true);
+        attr_menu->setObjectName("AttrMenu");
 
         set(mbox->menu[attrMenu], "&Attributes", 0);
         set(mbox->menu[attrMenuUpdat], "Save &Tech", 0);
@@ -435,6 +442,7 @@ QTmenuConfig::instantiateMainMenus()
                 if (!newsubm) {
                     newsubm = new QMenu();
                     newsubm->setToolTipsVisible(true);
+                    newsubm->setObjectName("MainWinSubMenu");
                     a->setMenu(newsubm);
                 }
                 newsubm->clear();
@@ -446,6 +454,7 @@ QTmenuConfig::instantiateMainMenus()
     }
 
     // Attributes Main Window sub-menu.
+#define AT_MW_OS 100
     mbox = MainMenu()->GetAttrSubMenu();
     if (submenu && mbox && mbox->menu) {
         set(mbox->menu[subwAttrMenuFreez], "Freeze &Display", 0);
@@ -479,7 +488,7 @@ QTmenuConfig::instantiateMainMenus()
             }
             action(ent)->setShortcut(QKeySequence(ent->accel));
             action(ent)->setToolTip(tr(ent->description));
-            action(ent)->setData((int)(ent - mbox->menu));
+            action(ent)->setData(AT_MW_OS + (int)(ent - mbox->menu));
             if (ent->is_alt())
                 action(ent)->setVisible(false);
             if (ent->is_separator())
@@ -493,6 +502,7 @@ QTmenuConfig::instantiateMainMenus()
                 newsubm = a->menu();
                 if (!newsubm) {
                     newsubm = new QMenu();
+                    newsubm->setObjectName("ObjectsSubMenu");
                     a->setMenu(newsubm);
                 }
                 newsubm->clear();
@@ -507,6 +517,7 @@ QTmenuConfig::instantiateMainMenus()
     }
 
     // Objects sub-sub-menu.
+#define AT_MW_OBJ_OS 200
     mbox = MainMenu()->GetObjSubMenu();
     if (submenu && mbox && mbox->menu) {
         set(mbox->menu[objSubMenuBoxes], "Boxes", 0);
@@ -524,7 +535,7 @@ QTmenuConfig::instantiateMainMenus()
             }
             action(ent)->setShortcut(QKeySequence(ent->accel));
             action(ent)->setToolTip(tr(ent->description));
-            action(ent)->setData((int)(ent - mbox->menu));
+            action(ent)->setData(AT_MW_OBJ_OS + (int)(ent - mbox->menu));
             if (ent->is_alt())
                 action(ent)->setVisible(false);
             if (ent->is_separator())
@@ -542,6 +553,7 @@ QTmenuConfig::instantiateMainMenus()
     if (mbox && mbox->menu) {
         QMenu *cvrt_menu = menubar->addMenu(tr(mbox->name));
         cvrt_menu->setToolTipsVisible(true);
+        cvrt_menu->setObjectName("CvrtMenu");
 
         set(mbox->menu[cvrtMenu], "C&onvert", 0);
         set(mbox->menu[cvrtMenuExprt], "&Export Cell Data", 0);
@@ -579,6 +591,7 @@ QTmenuConfig::instantiateMainMenus()
     if (mbox && mbox->menu) {
         QMenu *drc_menu = menubar->addMenu(tr(mbox->name));
         drc_menu->setToolTipsVisible(true);
+        drc_menu->setObjectName("DrcMenu");
 
         set(mbox->menu[drcMenu], "&DRC", 0);
         set(mbox->menu[drcMenuLimit], "DRC &Setup", 0);
@@ -622,6 +635,7 @@ QTmenuConfig::instantiateMainMenus()
     if (mbox && mbox->menu) {
         QMenu *ext_menu = menubar->addMenu(tr(mbox->name));
         ext_menu->setToolTipsVisible(true);
+        ext_menu->setObjectName("ExtMenu");
 
         set(mbox->menu[extMenu], "E&xtract", 0);
         set(mbox->menu[extMenuExcfg], "Extraction Set&up", 0);
@@ -662,6 +676,7 @@ QTmenuConfig::instantiateMainMenus()
     if (mbox && mbox->menu) {
         QMenu *user_menu = menubar->addMenu(tr(mbox->name));
         user_menu->setToolTipsVisible(true);
+        user_menu->setObjectName("UserMenu");
 
         set(mbox->menu[userMenu], "&User", 0);
         set(mbox->menu[userMenuDebug], "&Debugger", 0);
@@ -695,6 +710,7 @@ QTmenuConfig::instantiateMainMenus()
         menubar->addSeparator();
         QMenu *help_menu = menubar->addMenu(tr(mbox->name));
         help_menu->setToolTipsVisible(true);
+        help_menu->setObjectName("HelpMenu");
 
         set(mbox->menu[helpMenu], "&Help", 0);
         set(mbox->menu[helpMenuHelp], "&Help", "Ctrl+H");
@@ -745,22 +761,16 @@ QTmenuConfig::instantiateTopButtonMenu()
         hbox->setSpacing(2);
 
         set(mbox->menu[miscMenu], 0, 0);
-#ifdef Q_OS_MACOS
-        // With Apple the WR button goes here, since there is no menu bar.
         set(mbox->menu[miscMenuMail], "Mail", 0);
-#endif
         set(mbox->menu[miscMenuLtvis], "LTvisib", 0);
         set(mbox->menu[miscMenuLpal], "Palette", 0);
         set(mbox->menu[miscMenuSetcl], "SetCL", 0);
         set(mbox->menu[miscMenuSelcp], "SelCP", 0);
         set(mbox->menu[miscMenuRdraw], "Rdraw", 0);
 
-#ifdef Q_OS_MACOS
         for (MenuEnt *ent = mbox->menu + 1; ent->entry; ent++) {
-#else
-        for (MenuEnt *ent = mbox->menu + 2; ent->entry; ent++) {
-#endif
             QTmenuButton *b = new QTmenuButton(ent, top_button_box);
+            b->setObjectName(ent->menutext);
             b->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
             b->setToolTip(tr(ent->description));
             ent->cmd.caller = b;
@@ -817,7 +827,7 @@ QTmenuConfig::instantiateSideButtonMenus()
 
         for (MenuEnt *ent = mbox->menu + 1; ent->entry; ent++) {
             QTmenuButton *b = new QTmenuButton(ent, phys_button_box);
-
+            b->setObjectName(ent->menutext);
             b->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
             b->setToolTip(tr(ent->description));
             ent->cmd.caller = b;
@@ -889,6 +899,7 @@ QTmenuConfig::instantiateSideButtonMenus()
 
         for (MenuEnt *ent = mbox->menu + 1; ent->entry; ent++) {
             QTmenuButton *b = new QTmenuButton(ent, elec_button_box);
+            b->setObjectName(ent->menutext);
             b->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
             b->setToolTip(tr(ent->description));
             ent->cmd.caller = b;
@@ -1374,6 +1385,7 @@ QTmenuConfig::set_main_global_sens(const MenuList *list, bool sens)
 // Private Slots
 
 // File Menu slot.
+// The Open sub-menu actions have zero values so are safely filtered here.
 //
 void
 QTmenuConfig::file_menu_slot(QAction *a)
@@ -1386,11 +1398,11 @@ QTmenuConfig::file_menu_slot(QAction *a)
         return;
     MenuEnt *ent = &mbox->menu[i];
     ent->cmd.caller = ent->user_action;
-    emit exec_slot(ent);
+    exec_slot(ent);
 }
 
 
-// File/Edit submenu slot.
+// File/Open submenu slot.
 //
 void
 QTmenuConfig::file_open_menu_slot(QAction *a)
@@ -1427,7 +1439,7 @@ QTmenuConfig::cell_menu_slot(QAction *a)
         return;
     MenuEnt *ent = &mbox->menu[i];
     ent->cmd.caller = ent->user_action;
-    emit exec_slot(ent);
+    exec_slot(ent);
 }
 
 
@@ -1444,7 +1456,7 @@ QTmenuConfig::edit_menu_slot(QAction *a)
         return;
     MenuEnt *ent = &mbox->menu[i];
     ent->cmd.caller = ent->user_action;
-    emit exec_slot(ent);
+    exec_slot(ent);
 }
 
 
@@ -1461,11 +1473,12 @@ QTmenuConfig::modf_menu_slot(QAction *a)
         return;
     MenuEnt *ent = &mbox->menu[i];
     ent->cmd.caller = ent->user_action;
-    emit exec_slot(ent);
+    exec_slot(ent);
 }
 
 
 // View Menu slot.
+// The sub-menu actions have data value 0 so are safely filtered out.
 //
 void
 QTmenuConfig::view_menu_slot(QAction *a)
@@ -1478,7 +1491,7 @@ QTmenuConfig::view_menu_slot(QAction *a)
         return;
     MenuEnt *ent = &mbox->menu[i];
     ent->cmd.caller = ent->user_action;
-    emit exec_slot(ent);
+    exec_slot(ent);
 }
 
 
@@ -1501,20 +1514,30 @@ QTmenuConfig::view_view_menu_slot(QAction *a)
 }
 
 
-// Attributes Menu slot.
+// NOTE:  In standard QT, the action slot of the top menu receives the
+// action signls from any sub-menus, so the sub-menus don't need
+// separate handlers.  However for Apple when using the native menu,
+// this does not happen and each menu requires its own handler.  Below
+// we support both by using separate handlers but keeping the dispatch
+// ranges separate, so we can avoid parasitic multiple handling of
+// actions.
+
+
+// Attributes Menu.
 //
 void
 QTmenuConfig::attr_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
-    if (i <= 0)
-        return;
-    MenuBox *mbox = MainMenu()->FindMainMenu(MMattr);
-    if (!mbox)
-        return;
-    MenuEnt *ent = &mbox->menu[i];
-    ent->cmd.caller = ent->user_action;
-    emit exec_slot(ent);
+    if (i > 0 && i < AT_MW_OS) {
+        // Only top-level actions are handled here.
+        MenuBox *mbox = MainMenu()->FindMainMenu(MMattr);
+        if (!mbox)
+            return;
+        MenuEnt *ent = &mbox->menu[i];
+        ent->cmd.caller = ent->user_action;
+        exec_slot(ent);
+    }
 }
 
 
@@ -1524,14 +1547,15 @@ void
 QTmenuConfig::attr_main_win_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
-    if (i <= 0)
-        return;
-    MenuBox *mbox = MainMenu()->GetAttrSubMenu();
-    if (!mbox)
-        return;
-    MenuEnt *ent = &mbox->menu[i];
-    ent->cmd.caller = ent->user_action;
-    emit exec_slot(ent);
+    if (i > AT_MW_OS && i < AT_MW_OBJ_OS) {
+        i -= AT_MW_OS;
+        MenuBox *mbox = MainMenu()->GetAttrSubMenu();
+        if (!mbox)
+            return;
+        MenuEnt *ent = &mbox->menu[i];
+        ent->cmd.caller = ent->user_action;
+        exec_slot(ent);
+    }
 }
 
 
@@ -1541,14 +1565,15 @@ void
 QTmenuConfig::attr_main_win_obj_menu_slot(QAction *a)
 {
     int i = a->data().toInt();
-    if (i <= 0)
-        return;
-    MenuBox *mbox = MainMenu()->GetObjSubMenu();
-    if (!mbox)
-        return;
-    MenuEnt *ent = &mbox->menu[i];
-    ent->cmd.caller = ent->user_action;
-    emit exec_slot(ent);
+    if (i > AT_MW_OBJ_OS) {
+        i -= AT_MW_OBJ_OS;
+        MenuBox *mbox = MainMenu()->GetObjSubMenu();
+        if (!mbox)
+            return;
+        MenuEnt *ent = &mbox->menu[i];
+        ent->cmd.caller = ent->user_action;
+        exec_slot(ent);
+    }
 }
 
 
@@ -1565,7 +1590,7 @@ QTmenuConfig::cvrt_menu_slot(QAction *a)
         return;
     MenuEnt *ent = &mbox->menu[i];
     ent->cmd.caller = ent->user_action;
-    emit exec_slot(ent);
+    exec_slot(ent);
 }
 
 
@@ -1582,7 +1607,7 @@ QTmenuConfig::drc_menu_slot(QAction *a)
         return;
     MenuEnt *ent = &mbox->menu[i];
     ent->cmd.caller = ent->user_action;
-    emit exec_slot(ent);
+    exec_slot(ent);
 }
 
 
@@ -1599,7 +1624,7 @@ QTmenuConfig::ext_menu_slot(QAction *a)
         return;
     MenuEnt *ent = &mbox->menu[i];
     ent->cmd.caller = ent->user_action;
-    emit exec_slot(ent);
+    exec_slot(ent);
 }
 
 
@@ -1616,7 +1641,7 @@ QTmenuConfig::user_menu_slot(QAction *a)
         return;
     MenuEnt *ent = &mbox->menu[i];
     ent->cmd.caller = ent->user_action;
-    emit exec_slot(ent);
+    exec_slot(ent);
 }
 
 
@@ -1633,11 +1658,12 @@ QTmenuConfig::help_menu_slot(QAction *a)
         return;
     MenuEnt *ent = &mbox->menu[i];
     ent->cmd.caller = ent->user_action;
-    emit exec_slot(ent);
+    exec_slot(ent);
 }
 
 
 // Subwindow View Menu slot.
+// The sub-menu actions are filtered here in the second test for i==0.
 //
 void
 QTmenuConfig::subwin_view_menu_slot(QAction *a)
@@ -1647,6 +1673,8 @@ QTmenuConfig::subwin_view_menu_slot(QAction *a)
         return;
     int wnum = i >> 16;  // Decode window number.
     i &= 0xffff;
+    if (i <= 0)
+        return;
     MenuBox *mbox = MainMenu()->FindSubwMenu(MMview, wnum);
     if (!mbox)
         return;
@@ -1656,7 +1684,7 @@ QTmenuConfig::subwin_view_menu_slot(QAction *a)
         // can't destroy here, defer
         emit exec_idle(ent);
     else
-        emit exec_slot(ent);
+        exec_slot(ent);
 }
 
 
@@ -1704,7 +1732,7 @@ QTmenuConfig::subwin_attr_menu_slot(QAction *a)
         return;
     MenuEnt *ent = &mbox->menu[i];
     ent->cmd.caller = ent->user_action;
-    emit exec_slot(ent);
+    exec_slot(ent);
 }
 
 
@@ -1723,7 +1751,7 @@ QTmenuConfig::subwin_help_menu_slot(QAction *a)
         return;
     MenuEnt *ent = &mbox->menu[i];
     ent->cmd.caller = ent->user_action;
-    emit exec_slot(ent);
+    exec_slot(ent);
 }
 
 
@@ -1797,6 +1825,10 @@ QTmenuConfig::idle_exec_slot(MenuEnt *ent)
 void
 QTmenuConfig::exec_slot(MenuEnt *ent)
 {
+    if (!ent || !ent->entry) {
+        fprintf(stderr, "Warning: bad object passed to exec_slot.\n");
+        return;
+    }
     if (ent->alt_caller) {
         // Spurious call from menu pop-up.  This handler should only
         // be called through the alt_caller.

@@ -56,11 +56,332 @@
   Keyboard Macros
  ========================================================================*/
 
-cKbMacro *cKbMacro::instancePtr = 0;
+sKeyEvent::sKeyEvent(char *wn, unsigned s, unsigned t, unsigned k)
+{
+    widget_name = wn;
+    state = s & (GR_SHIFT_MASK | GR_CONTROL_MASK | GR_ALT_MASK);
+    type = t;
+    key = k;
+    text[0] = 0;
+    text[1] = 0;
+    text[2] = 0;
+    text[3] = 0;
+}
+
+
+void
+sKeyEvent::print(FILE *fp)
+{
+    fprintf(fp, "%s(%x, %d, \"%s\")\n",
+        type == KEY_PRESS ? "KeyDown" : "KeyUp", (int)key,
+        state, widget_name);
+}
+
+
+void
+sKeyEvent::print(char *buf, int bsz)
+{
+    sLstr lstr;
+    if (type == KEY_RELEASE)
+        lstr.add("up ");
+    else
+        lstr.add("down ");
+    char tbuf[64];
+    if (KbMac()->isModifier(key)) {
+        if (KbMac()->isControl(key))
+            lstr.add("ctrl ");
+        if (KbMac()->isShift(key))
+            lstr.add("shift ");
+        if (KbMac()->isAlt(key))
+            lstr.add("alt ");
+    }
+    else {
+        KbMac()->SprintKey(tbuf, sizeof(tbuf), key, state, text);
+        lstr.add(tbuf);
+    }
+    snprintf(tbuf, sizeof(tbuf), " %x", state);
+    lstr.add(tbuf);
+    snprintf(buf, bsz, "%s", lstr.string());
+}
+
+
+// Set the text field from the keysym.
+//
+void
+sKeyEvent::set_text()
+{
+    char *s = KbMac()->keyText(key, state);
+    text[0] = s ? s[0] : 0;
+    text[1] = 0;
+}
+
+
+bool
+sKeyEvent::exec()
+{
+    return (KbMac()->execKey(this));
+}
+// End of sKeyEvent functions.
+
+
+sBtnEvent::sBtnEvent(char *wn, unsigned s, unsigned t, unsigned b,
+    int xx, int yy)
+{
+    widget_name = wn;
+    state = s & (GR_SHIFT_MASK | GR_CONTROL_MASK | GR_ALT_MASK);
+    type = t;
+    button = b;
+    x = xx;
+    y = yy;
+}
+
+
+void
+sBtnEvent::print(FILE *fp)
+{
+    fprintf(fp, "%s(%d, %d, %d, %d, \"%s\")\n",
+        type == BUTTON_PRESS ? "BtnDown" : "BtnUp", button,
+        state, x, y, widget_name);
+}
+
+
+void
+sBtnEvent::print(char *buf, int bsz)
+{
+    KbMac()->SprintBtn(buf, bsz, button, state);
+}
+
+
+bool
+sBtnEvent::exec()
+{
+    return (KbMac()->execBtn(this));
+}
+// End of sBtnEvent functions.
+
+
+sKeyMap::sKeyMap(unsigned k, unsigned s, const char *str)
+{
+    state = s & (GR_SHIFT_MASK | GR_CONTROL_MASK | GR_ALT_MASK);
+    key = k;
+    if (str)
+        strncpy(text, str, 4);
+    else
+        *text = 0;
+    forstr = 0;
+    response = end = 0;
+    lastkey = 0;
+    grabber = 0;
+    next = 0;
+};
+
+
+void
+sKeyMap::show()
+{
+    char buf[256];
+    snprintf(buf, sizeof(buf), "Record actions for %s, Enter to complete: ",
+        forstr);
+    for (sEvent *r = response; r; r = r->next) {
+        if (r->type == KEY_PRESS) {
+            sKeyEvent *rk = (sKeyEvent*)r;
+            int len = strlen(buf);
+            KbMac()->SprintKey(buf + len, sizeof(buf) - len, rk->key,
+                rk->state, rk->text);
+        }
+        else if (r->type ==  BUTTON_PRESS) {
+            sBtnEvent *rb = (sBtnEvent*)r;
+            int len = strlen(buf);
+            KbMac()->SprintBtn(buf + len, sizeof(buf) - len, rb->button,
+                rb->state);
+        }
+    }
+    PL()->ShowPrompt(buf);
+}
+
+
+void
+sKeyMap::print_macro(FILE *fp)
+{
+    print_macro_text(fp);
+    fprintf(fp, "#macro\n");
+    fprintf(fp, "KeyDown(%x, %d, NULL)\n", (unsigned)key, state);
+    for (sEvent *ev = response; ev; ev = ev->next)
+        ev->print(fp);
+    fprintf(fp, "#end macro\n");
+}
+
+
+void
+sKeyMap::print_macro_text(FILE *fp)
+{
+    char buf[256];
+    KbMac()->SprintKey(buf, sizeof(buf), key, state, 0);
+    strcat(buf, " : ");
+    for (sEvent *r = response; r; r = r->next) {
+        int len = strlen(buf);
+        if (r->type == KEY_PRESS) {
+            sKeyEvent *rk = (sKeyEvent*)r;
+            KbMac()->SprintKey(buf + len, sizeof(buf) - len, rk->key,
+                rk->state, rk->text);
+        }
+        else if (r->type ==  BUTTON_PRESS) {
+            sBtnEvent *rb = (sBtnEvent*)r;
+            KbMac()->SprintBtn(buf + len, sizeof(buf) - len, rb->button,
+                rb->state);
+        }
+    }
+    fprintf(fp, "# %s\n", buf);
+}
+
+
+void
+sKeyMap::add_response(sEvent *ev)
+{
+    if (!response)
+        response = end = ev;
+    else {
+        end->next = ev;
+        end = end->next;
+    }
+}
+
+
+void
+sKeyMap::clear_response()
+{
+    sEvent *ev;
+    for ( ; response; response = ev) {
+        ev = response->next;
+        delete response;
+    }
+}
+
+
+// Remove the last button or key press/release.
+//
+void
+sKeyMap::clear_last_event()
+{
+    sEvent *e0 = 0, *en, *e;
+    // reverse the event list
+    //
+    for (e = response; e; e = en) {
+        en = e->next;
+        e->next = e0;
+        e0 = e;
+    }
+    e = e0;
+    e0 = 0;
+    bool found = false;
+    // Delete events up through the first button or non-modifier key
+    // press.
+    //
+    for ( ; e; e = en) {
+        en = e->next;
+        switch (e->type) {
+        case KEY_PRESS:
+            if (KbMac()->isModifier(((sKeyEvent*)e)->key)) {
+                e->next = e0;
+                e0 = e;
+                continue;
+            } // fall thru
+        case BUTTON_PRESS:
+            if (found) {
+                e->next = e0;
+                e0 = e;
+                continue;
+            }
+            else {
+                found = true;
+                delete e;
+            }
+            break;
+        case KEY_RELEASE:
+            if (KbMac()->isModifier(((sKeyEvent*)e)->key)) {
+                e->next = e0;
+                e0 = e;
+                continue;
+            } // fall thru
+        case BUTTON_RELEASE:
+            if (found) {
+                e->next = e0;
+                e0 = e;
+                continue;
+            }
+            else
+                delete e;
+            break;
+        }
+    }
+    end = response = e0;
+    if (end) {
+        while (end->next)
+            end = end->next;
+    }
+}
+
+
+// Remove modifier keypress/release that does not enclose a button
+// event or normal key event.
+//
+void
+sKeyMap::fix_modif()
+{
+    sEvent *r, *rn;
+    for (r = response; r; r = rn) {
+        rn = r->next;
+        if (r->type == KEY_PRESS &&
+                KbMac()->isModifier(((sKeyEvent*)r)->key)) {
+            sEvent *rr;
+            for (rr = r->next; rr; rr = rr->next) {
+                if (rr->type == KEY_PRESS &&
+                        KbMac()->isModifier(((sKeyEvent*)rr)->key))
+                    continue;
+                if (rr->type == KEY_RELEASE &&
+                        KbMac()->isModifier(((sKeyEvent*)rr)->key) &&
+                        ((sKeyEvent*)rr)->key != ((sKeyEvent*)r)->key)
+                    continue;
+                // break on release, or modifiable event
+                break;
+            }
+            // there is nothing important enclosed, so delete the pair
+            if (rr && rr->type == KEY_RELEASE &&
+                    ((sKeyEvent*)rr)->key == ((sKeyEvent*)r)->key) {
+                remove(r);
+                remove(rr);
+                rn = response; // start over
+            }
+        }
+    }
+}
+
+
+// Remove e from the list.
+//
+void
+sKeyMap::remove(sEvent *e)
+{
+    sEvent *rp = 0;
+    for (sEvent *r = response; r; r = r->next) {
+        if (r == e) {
+            if (rp)
+                rp->next = r->next;
+            else
+                response = r->next;
+            delete r; // e is bogus!
+            return;
+        }
+        rp = r;
+    }
+}
+// End of sKeyMap functions.
+
 
 // Instantiate the class.
 namespace { cKbMacro _km; }
 
+cKbMacro *cKbMacro::instancePtr = 0;
 
 cKbMacro::cKbMacro()
 {
@@ -149,7 +470,7 @@ cKbMacro::SaveMacro(sKeyMap *nkey, bool success)
 // Remove the structure from the list.
 //
 sKeyMap *
-cKbMacro::already_mapped(unsigned key, unsigned state)
+cKbMacro::AlreadyMapped(unsigned key, unsigned state)
 {
     sKeyMap *kp = 0;
     for (sKeyMap *kl = km_key_list; kl; kl = kl->next) {
@@ -634,326 +955,4 @@ cKbMacro::SprintBtn(char *buf, int bsz, int btn, unsigned state)
     snprintf(buf, bsz, "<%s%d>", tbuf, btn);
 }
 // End of cKbMacro functions.
-
-
-sKeyEvent::sKeyEvent(char *wn, unsigned s, unsigned t, unsigned k)
-{
-    widget_name = wn;
-    state = s & (GR_SHIFT_MASK | GR_CONTROL_MASK | GR_ALT_MASK);
-    type = t;
-    key = k;
-    text[0] = 0;
-    text[1] = 0;
-    text[2] = 0;
-    text[3] = 0;
-}
-
-
-void
-sKeyEvent::print(FILE *fp)
-{
-    fprintf(fp, "%s(%x, %d, \"%s\")\n",
-        type == KEY_PRESS ? "KeyDown" : "KeyUp", (int)key,
-        state, widget_name);
-}
-
-
-void
-sKeyEvent::print(char *buf, int bsz)
-{
-    sLstr lstr;
-    if (type == KEY_RELEASE)
-        lstr.add("up ");
-    else
-        lstr.add("down ");
-    char tbuf[64];
-    if (KbMac()->isModifier(key)) {
-        if (KbMac()->isControl(key))
-            lstr.add("ctrl ");
-        if (KbMac()->isShift(key))
-            lstr.add("shift ");
-        if (KbMac()->isAlt(key))
-            lstr.add("alt ");
-    }
-    else {
-        KbMac()->SprintKey(tbuf, sizeof(tbuf), key, state, text);
-        lstr.add(tbuf);
-    }
-    snprintf(tbuf, sizeof(tbuf), " %x", state);
-    lstr.add(tbuf);
-    snprintf(buf, bsz, "%s", lstr.string());
-}
-
-
-// Set the text field from the keysym.
-//
-void
-sKeyEvent::set_text()
-{
-    char *s = KbMac()->keyText(key, state);
-    text[0] = s ? s[0] : 0;
-    text[1] = 0;
-}
-
-
-bool
-sKeyEvent::exec()
-{
-    return (KbMac()->execKey(this));
-}
-// End of sKeyEvent functions.
-
-
-sBtnEvent::sBtnEvent(char *wn, unsigned s, unsigned t, unsigned b,
-    int xx, int yy)
-{
-    widget_name = wn;
-    state = s & (GR_SHIFT_MASK | GR_CONTROL_MASK | GR_ALT_MASK);
-    type = t;
-    button = b;
-    x = xx;
-    y = yy;
-}
-
-
-void
-sBtnEvent::print(FILE *fp)
-{
-    fprintf(fp, "%s(%d, %d, %d, %d, \"%s\")\n",
-        type == BUTTON_PRESS ? "BtnDown" : "BtnUp", button,
-        state, x, y, widget_name);
-}
-
-
-void
-sBtnEvent::print(char *buf, int bsz)
-{
-    KbMac()->SprintBtn(buf, bsz, button, state);
-}
-
-
-bool
-sBtnEvent::exec()
-{
-    return (KbMac()->execBtn(this));
-}
-// End of sBtnEvent functions.
-
-
-sKeyMap::sKeyMap(unsigned k, unsigned s, const char *str)
-{
-    state = s & (GR_SHIFT_MASK | GR_CONTROL_MASK | GR_ALT_MASK);
-    key = k;
-    if (str)
-        strncpy(text, str, 4);
-    else
-        *text = 0;
-    forstr = 0;
-    response = end = 0;
-    lastkey = 0;
-    grabber = 0;
-    next = 0;
-};
-
-
-void
-sKeyMap::show()
-{
-    char buf[256];
-    snprintf(buf, sizeof(buf), "Record actions for %s, Enter to complete: ",
-        forstr);
-    for (sEvent *r = response; r; r = r->next) {
-        if (r->type == KEY_PRESS) {
-            sKeyEvent *rk = (sKeyEvent*)r;
-            int len = strlen(buf);
-            KbMac()->SprintKey(buf + len, sizeof(buf) - len, rk->key,
-                rk->state, rk->text);
-        }
-        else if (r->type ==  BUTTON_PRESS) {
-            sBtnEvent *rb = (sBtnEvent*)r;
-            int len = strlen(buf);
-            KbMac()->SprintBtn(buf + len, sizeof(buf) - len, rb->button,
-                rb->state);
-        }
-    }
-    PL()->ShowPrompt(buf);
-}
-
-
-void
-sKeyMap::print_macro(FILE *fp)
-{
-    print_macro_text(fp);
-    fprintf(fp, "#macro\n");
-    fprintf(fp, "KeyDown(%x, %d, NULL)\n", (unsigned)key, state);
-    for (sEvent *ev = response; ev; ev = ev->next)
-        ev->print(fp);
-    fprintf(fp, "#end macro\n");
-}
-
-
-void
-sKeyMap::print_macro_text(FILE *fp)
-{
-    char buf[256];
-    KbMac()->SprintKey(buf, sizeof(buf), key, state, 0);
-    strcat(buf, " : ");
-    for (sEvent *r = response; r; r = r->next) {
-        int len = strlen(buf);
-        if (r->type == KEY_PRESS) {
-            sKeyEvent *rk = (sKeyEvent*)r;
-            KbMac()->SprintKey(buf + len, sizeof(buf) - len, rk->key,
-                rk->state, rk->text);
-        }
-        else if (r->type ==  BUTTON_PRESS) {
-            sBtnEvent *rb = (sBtnEvent*)r;
-            KbMac()->SprintBtn(buf + len, sizeof(buf) - len, rb->button,
-                rb->state);
-        }
-    }
-    fprintf(fp, "# %s\n", buf);
-}
-
-
-void
-sKeyMap::add_response(sEvent *ev)
-{
-    if (!response)
-        response = end = ev;
-    else {
-        end->next = ev;
-        end = end->next;
-    }
-}
-
-
-void
-sKeyMap::clear_response()
-{
-    sEvent *ev;
-    for ( ; response; response = ev) {
-        ev = response->next;
-        delete response;
-    }
-}
-
-
-// Remove the last button or key press/release.
-//
-void
-sKeyMap::clear_last_event()
-{
-    sEvent *e0 = 0, *en, *e;
-    // reverse the event list
-    //
-    for (e = response; e; e = en) {
-        en = e->next;
-        e->next = e0;
-        e0 = e;
-    }
-    e = e0;
-    e0 = 0;
-    bool found = false;
-    // Delete events up through the first button or non-modifier key
-    // press.
-    //
-    for ( ; e; e = en) {
-        en = e->next;
-        switch (e->type) {
-        case KEY_PRESS:
-            if (KbMac()->isModifier(((sKeyEvent*)e)->key)) {
-                e->next = e0;
-                e0 = e;
-                continue;
-            } // fall thru
-        case BUTTON_PRESS:
-            if (found) {
-                e->next = e0;
-                e0 = e;
-                continue;
-            }
-            else {
-                found = true;
-                delete e;
-            }
-            break;
-        case KEY_RELEASE:
-            if (KbMac()->isModifier(((sKeyEvent*)e)->key)) {
-                e->next = e0;
-                e0 = e;
-                continue;
-            } // fall thru
-        case BUTTON_RELEASE:
-            if (found) {
-                e->next = e0;
-                e0 = e;
-                continue;
-            }
-            else
-                delete e;
-            break;
-        }
-    }
-    end = response = e0;
-    if (end) {
-        while (end->next)
-            end = end->next;
-    }
-}
-
-
-// Remove modifier keypress/release that does not enclose a button
-// event or normal key event.
-//
-void
-sKeyMap::fix_modif()
-{
-    sEvent *r, *rn;
-    for (r = response; r; r = rn) {
-        rn = r->next;
-        if (r->type == KEY_PRESS &&
-                KbMac()->isModifier(((sKeyEvent*)r)->key)) {
-            sEvent *rr;
-            for (rr = r->next; rr; rr = rr->next) {
-                if (rr->type == KEY_PRESS &&
-                        KbMac()->isModifier(((sKeyEvent*)rr)->key))
-                    continue;
-                if (rr->type == KEY_RELEASE &&
-                        KbMac()->isModifier(((sKeyEvent*)rr)->key) &&
-                        ((sKeyEvent*)rr)->key != ((sKeyEvent*)r)->key)
-                    continue;
-                // break on release, or modifiable event
-                break;
-            }
-            // there is nothing important enclosed, so delete the pair
-            if (rr && rr->type == KEY_RELEASE &&
-                    ((sKeyEvent*)rr)->key == ((sKeyEvent*)r)->key) {
-                remove(r);
-                remove(rr);
-                rn = response; // start over
-            }
-        }
-    }
-}
-
-
-// Remove e from the list.
-//
-void
-sKeyMap::remove(sEvent *e)
-{
-    sEvent *rp = 0;
-    for (sEvent *r = response; r; r = r->next) {
-        if (r == e) {
-            if (rp)
-                rp->next = r->next;
-            else
-                response = r->next;
-            delete r; // e is bogus!
-            return;
-        }
-        rp = r;
-    }
-}
-// End of sKeyMap functions.
 

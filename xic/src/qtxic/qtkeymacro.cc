@@ -47,11 +47,13 @@
 #include "tech.h"
 #include "errorlog.h"
 #include "qtmain.h"
+#include "qtkeymacro.h"
 
 #include <QKeyEvent>
 #include <QApplication>
 #include <QAbstractButton>
 #include <QAction>
+#include <QMenuBar>
 
 
 //-----------------------------------------------------------------------------
@@ -84,81 +86,49 @@ cMain::SendButtonEvent(const char *widget_name, int state, int num, int x,
 // End of cMain functions.
 
 
+// Start recording events for macro definition.
+//
+void
+sKeyMap::begin_recording(char *str)
+{
+    forstr = lstring::copy(str);
+    for (end = response; end && end->next; end = end->next) ;
+    show();
+
+    lastkey = 0;
+    grabber = 0;
+    QTpkg::self()->RegisterEventHandler(qt_keyb::macro_event_handler, this);
+}
+// end of sKeyMap functions
+
+
+namespace {
+    struct sGetKeyState
+    {
+        sGetKeyState() : nkey(0), prcnt(0), done(false) { }
+
+        sKeyMap *nkey;
+        int prcnt;
+        bool done;
+    };
+}
+
+
 // Main function to obtain a macro mapping for a keypress.
 //
 sKeyMap *
 cKbMacro::getKeyToMap()
 {
-    /*
-    bool done = false;
-    sKeyMap *nkey = 0;
-    int prcnt = 0;
-    XM()->ShowPrompt("Enter keypress to map: ");
-    for (;;) {
-        QEvent *ev = gdk_event_get();
-        if (!ev)
-            continue;
-        if (ev->type() == QEvent::KeyPress) {
-            prcnt++;
-            QKeyEvent *kev = static_cast<QKeyEvent*>(ev);
-            if (kev->key() == 0) {
-                // may happen if key is unknown, e.g. the Microsoft Windows
-                // key
-                gdk_event_free(ev);
-                continue;
-            }
-            if (isModifier(kev->key())) {
-                gdk_event_free(ev);
-                continue;
-            }
-            QByteArray ba = kev->text().toLatin1();
-            const char *kstr = ba.constData();
-            if ((kstr && kstr[1] == 0 &&
-                    (*kstr == 27 || *kstr == 13)) &&
-                    !(kev->modifiers & (Qt::ControlModifier | Qt::Mod1Modifier))) {
-                // Esc or CR
-                XM()->ErasePrompt();
-                gdk_event_free(ev);
-                return (0);
-            }
-            if (!done) {
-                if (not_mappable(kev->key(), mod_state(kev->modifiers()))) {
-                    XM()->ShowPrompt("Not mappable, try another: ");
-                    gdk_event_free(ev);
-                    continue;
-                }
-                nkey = already_mapped(kev->key(),
-                    mod_state(kev->modifiers()));
-                if (!nkey)
-                    nkey = new sKeyMap(kev->key(),
-                        mod_state(kev->modifiers()), kstr);
-                done = true;
-            }
-            gdk_event_free(ev);
-            continue;
-        }
-        if (ev->type() == QEvent::KeyRelease) {
-            if (prcnt)
-                prcnt--;
-            if (!prcnt && done)
-                break;
-            gdk_event_free(ev);
-            continue;
-        }
-        if (ev->type() == QEvent::MouseButtonPress ||
-                ev->type == GDK_2BUTTON_PRESS) {
-            gdk_event_free(ev);
-            return (0);
-        }
-        gtk_main_do_event(ev);
-        gdk_event_free(ev);
-    }
-    return (nkey);
-    */
-    return (0);
+    PL()->ShowPrompt("Enter keypress to map: ");
+    sGetKeyState st;
+    QTpkg::self()->RegisterEventHandler(qt_keyb::getkey_event_handler, &st);
+
+    QTdev::self()->MainLoop(false);
+    return (st.nkey);
 }
 
 
+// Static function.
 bool
 cKbMacro::isModifier(unsigned int key)
 {
@@ -171,6 +141,7 @@ cKbMacro::isModifier(unsigned int key)
 }
 
 
+// Static function.
 bool
 cKbMacro::isControl(unsigned int key)
 {
@@ -178,6 +149,7 @@ cKbMacro::isControl(unsigned int key)
 }
 
 
+// Static function.
 bool
 cKbMacro::isShift(unsigned int key)
 {
@@ -185,6 +157,7 @@ cKbMacro::isShift(unsigned int key)
 }
 
 
+// Static function.
 bool
 cKbMacro::isAlt(unsigned int key)
 {
@@ -192,6 +165,7 @@ cKbMacro::isAlt(unsigned int key)
 }
 
 
+// Static function.
 char *
 cKbMacro::keyText(unsigned int key, unsigned int state)
 {
@@ -217,7 +191,6 @@ cKbMacro::keyText(unsigned int key, unsigned int state)
         const char *tt = ba.constData();
         strncpy(text, tt, 3);
         text[3] = 0;
-// printf("*%s*\n", tt);
     }
 
     if (key == Qt::Key_Return) {
@@ -228,6 +201,7 @@ cKbMacro::keyText(unsigned int key, unsigned int state)
 }
 
 
+// Static function.
 void
 cKbMacro::keyName(unsigned int key, char *buf)
 {
@@ -236,6 +210,7 @@ cKbMacro::keyName(unsigned int key, char *buf)
 }
 
 
+// Static function.
 bool
 cKbMacro::isModifierDown()
 {
@@ -250,6 +225,7 @@ cKbMacro::isModifierDown()
 }
 
 
+// Static function.
 // Return true if the given key event can not be mapped.
 //
 bool
@@ -269,6 +245,34 @@ cKbMacro::notMappable(unsigned int key, unsigned int state)
 }
 
 
+namespace {
+    Qt::KeyboardModifiers modifiers(unsigned int m)
+    {
+        Qt::KeyboardModifiers mod = Qt::NoModifier;
+        if (m & GR_SHIFT_MASK)
+            mod |= Qt::ShiftModifier;
+        if (m & GR_CONTROL_MASK)
+            mod |= Qt::ControlModifier;
+        if (m & GR_ALT_MASK)
+            mod |= Qt::AltModifier;
+        if (m & GR_KEYPAD_MASK)
+            mod |= Qt::KeypadModifier;
+        return (mod);
+    }
+
+    Qt::MouseButton button(int b)
+    {
+        if (b == 1)
+            return (Qt::LeftButton);
+        if (b == 2)
+            return (Qt::MiddleButton);
+        if (b == 4)
+            return (Qt::RightButton);
+        return (Qt::NoButton);
+    }
+}
+
+
 // Send a key event, return false if the window can't be found.
 //
 bool
@@ -282,20 +286,15 @@ cKbMacro::execKey(sKeyEvent *k)
     }
 
     QTpkg::self()->CheckForInterrupt();
-    const QObject *w = qt_keyb::name_to_object(k->widget_name);
+    QWidget *w = qt_keyb::name_to_widget(k->widget_name);
     if (!w)
         return (false);
 
-/*XXX
-    QKeyEvent event;
-    event.state = k->state;
-    event.keyval = k->key;
-    event.string = k->text;
-    event.length = strlen(k->text);
-    event.type = (k->type == KEY_PRESS ? QEvent::KeyPress : QEvent::KeyRelease);
+    QKeyEvent event(
+        k->type == KEY_PRESS ? QEvent::KeyPress : QEvent::KeyRelease,
+        k->key, modifiers(k->state), QString(k->text));
 
-    w->event(&event);
-*/
+    QCoreApplication::sendEvent(w, &event);
     return (true);
 }
 
@@ -307,15 +306,17 @@ cKbMacro::execBtn(sBtnEvent *b)
 {
     if (b->type == BUTTON_PRESS)
         QTpkg::self()->CheckForInterrupt();
-    QObject *w = qt_keyb::name_to_object(b->widget_name);
+    QWidget *w = qt_keyb::name_to_widget(b->widget_name);
     if (!w)
         return (false);
 
     if (dynamic_cast<const QAbstractButton*>(w)) {
         if (b->type == BUTTON_RELEASE) {
-            if (w == km_last_btn)
-//                gtk_button_clicked(GTK_BUTTON(w));
-;
+            if (w == km_last_btn) {
+                QAbstractButton *btn = dynamic_cast<QAbstractButton*>(w);
+                if (btn)
+                    btn->click();
+            }
             km_last_btn = 0;
         }
         else
@@ -326,8 +327,8 @@ cKbMacro::execBtn(sBtnEvent *b)
         if (b->type == BUTTON_RELEASE) {
             if (km_last_menu) {
                 QAction *a = dynamic_cast<QAction*>(w);
-                a->activate(QAction::Trigger);
-//                gtk_menu_shell_deactivate(GTK_MENU_SHELL(w->parent));
+                if (a)
+                    a->activate(QAction::Trigger);
             }
             km_last_menu = 0;
         }
@@ -338,53 +339,91 @@ cKbMacro::execBtn(sBtnEvent *b)
     else {
         km_last_menu = w;
         km_last_btn = 0;
-/*XXX
-        int xo, yo;
-        gdk_window_get_root_origin(w->window, &xo, &yo);
 
-        eQMouseEvent event;
-        event.x = b->x;
-        event.y = b->y;
-        event.x_root = xo + b->x;
-        event.y_root = yo + b->y;
-#if GTK_CHECK_VERSION(1,3,15)
-#else
-        event.pressure = 0.5;
-        event.xtilt = 0;
-        event.ytilt = 0;
-        event.source = GDK_SOURCE_MOUSE;
-        event.deviceid = GDK_CORE_POINTER;
-#endif
-        event.state = b->state;
-        event.button = b->button;
+        QWidget *widg = dynamic_cast<QWidget*>(w);
+        if (widg) {
+            QPointF localPos(b->x, b->y);
+            QPointF globalPos = widg->mapToGlobal(localPos);
+            QMouseEvent event(b->type == BUTTON_PRESS ?
+                QEvent::MouseButtonPress : QEvent::MouseButtonRelease,
+                localPos, globalPos, button(b->button), button(b->button),
+                modifiers(b->state));
 
-        event.type = (b->type == BUTTON_PRESS ?
-            GDK_BUTTON_PRESS : GDK_BUTTON_RELEASE);
-        w->event(&event);
-*/
+            QCoreApplication::sendEvent(w, &event);
+        }
     }
     return (true);
 }
 // End of cKbMacro functions
 
 
-// Start recording events for macro definition.
+// Event handler in effect while defining macro key..
 //
-void
-sKeyMap::begin_recording(char *str)
+bool
+qt_keyb::getkey_event_handler(QObject *obj, QEvent *ev, void *arg)
 {
-    forstr = lstring::copy(str);
-    for (end = response; end && end->next; end = end->next) ;
-    show();
+    sGetKeyState *st = static_cast<sGetKeyState*>(arg);
+    if (ev->type() == QEvent::KeyPress) {
+        st->prcnt++;
+        QKeyEvent *kev = static_cast<QKeyEvent*>(ev);
+        if (kev->key() == 0) {
+            // May happen if key is unknown, e.g. the Microsoft Windows
+            // key.
+            return (true);
+        }
+        if (cKbMacro::isModifier(kev->key())) {
+            // Pure modifier press/release, ignore here.
+            return (true);
+        }
+        QByteArray ba = kev->text().toLatin1();
+        const char *kstr = ba.constData();
+        if (kstr && kstr[0] && kstr[1] == 0 &&
+                (kev->key() == Qt::Key_Escape ||
+                    kev->key() == Qt::Key_Return) &&
+                !(kev->modifiers() &
+                    (Qt::ControlModifier | Qt::AltModifier))) {
+            // Esc or CR
+            // Finished.
+            PL()->ErasePrompt();
+            QTdev::self()->BreakLoop();
+            return (true);
+        }
+        if (!st->done) {
+            if (cKbMacro::notMappable(kev->key(),
+                    mod_state(kev->modifiers()))) {
+                PL()->ShowPrompt("Not mappable, try another: ");
+                return (true);
+            }
+            st->nkey = KbMac()->AlreadyMapped(kev->key(),
+                mod_state(kev->modifiers()));
+            if (!st->nkey) {
+                st->nkey = new sKeyMap(kev->key(),
+                    mod_state(kev->modifiers()), kstr);
+            }
+            st->done = true;
+        }
+        return (true);
+    }
+    if (ev->type() == QEvent::KeyRelease) {
+        if (st->prcnt)
+            st->prcnt--;
+        if (!st->prcnt && st->done)
+            QTdev::self()->BreakLoop();
+        return (true);
+    }
+    if (ev->type() == QEvent::MouseButtonPress ||
+            ev->type() == QEvent::MouseButtonRelease ||
+            ev->type() == QEvent::MouseButtonDblClick) {
+        // Ignore mouse presses.
+        return (true);
+    }
 
-    lastkey = 0;
-    grabber = 0;
-    QTpkg::self()->RegisterEventHandler(qt_keyb::macro_event_handler, this);
+    // Handle event.
+    return (false);
 }
-// end of sKeyMap functions
 
 
-// Event handler in effect while processing macro definition input
+// Event handler in effect while processing macro definition input.
 //
 bool
 qt_keyb::macro_event_handler(QObject *obj, QEvent *ev, void *arg)
@@ -393,18 +432,21 @@ qt_keyb::macro_event_handler(QObject *obj, QEvent *ev, void *arg)
     if (ev->type() == QEvent::KeyRelease) {
         // The string field of the key up event is empty.
         QKeyEvent *kev = dynamic_cast<QKeyEvent*>(ev);
-        if (km->lastkey == 13 && !(mod_state(kev->modifiers()) &
+        if (kev->key() == Qt::Key_Return && !(mod_state(kev->modifiers()) &
                 (GR_CONTROL_MASK | GR_ALT_MASK))) {
             km->fix_modif();
             QTpkg::self()->RegisterEventHandler(0, 0);
             KbMac()->SaveMacro(km, true);
             return (true);
         }
-        if (km->lastkey == 8 && !(mod_state(kev->modifiers()) &
+        if (kev->key() == Qt::Key_Backspace && !(mod_state(kev->modifiers()) &
                 (GR_CONTROL_MASK | GR_ALT_MASK)))
             return (true);
 
-        char *wname = find_wname(obj);
+        QWidget *widg = qobject_cast<QWidget*>(obj);
+        if (!widg || widg->isHidden())
+            return (false);
+        char *wname = widget_path(widg);
         if (wname) {
             sEvent *nev = new sKeyEvent(wname,
                 mod_state(kev->modifiers()), KEY_RELEASE, kev->key());
@@ -418,7 +460,7 @@ qt_keyb::macro_event_handler(QObject *obj, QEvent *ev, void *arg)
         QKeyEvent *kev = dynamic_cast<QKeyEvent*>(ev);
         km->lastkey = (!kev->text().isNull() &&
             kev->text().length() == 1) ? kev->text().toLatin1()[0] : 0;
-        if (km->lastkey == 13 && !(mod_state(kev->modifiers()) &
+        if (kev->key() == Qt::Key_Return && !(mod_state(kev->modifiers()) &
                 (GR_CONTROL_MASK | GR_ALT_MASK)))
             return (true);
         if (kev->key() == Qt::Key_Escape && !(mod_state(kev->modifiers()) &
@@ -428,7 +470,7 @@ qt_keyb::macro_event_handler(QObject *obj, QEvent *ev, void *arg)
             KbMac()->SaveMacro(km, false);
             return (true);
         }
-        if (km->lastkey == 8 && !(mod_state(kev->modifiers()) &
+        if (kev->key() == Qt::Key_Backspace && !(mod_state(kev->modifiers()) &
                 (GR_CONTROL_MASK | GR_ALT_MASK))) {
             if (!km->response)
                 return (true);
@@ -437,7 +479,10 @@ qt_keyb::macro_event_handler(QObject *obj, QEvent *ev, void *arg)
             return (true);
         }
 
-        char *wname = find_wname(obj);
+        QWidget *widg = qobject_cast<QWidget*>(obj);
+        if (!widg || widg->isHidden())
+            return (false);
+        char *wname = widget_path(widg);
         if (wname) {
             sEvent *nev = new sKeyEvent(wname,
                 mod_state(kev->modifiers()), KEY_PRESS, kev->key());
@@ -453,11 +498,15 @@ qt_keyb::macro_event_handler(QObject *obj, QEvent *ev, void *arg)
         if (ev->type() == QEvent::MouseButtonRelease && km->grabber) {
             QTdev::Deselect(km->grabber);
             km->grabber = 0;
-//            gtk_main_do_event(ev);
+            return (false);
         }
         QMouseEvent *mev = dynamic_cast<QMouseEvent*>(ev);
 
-        char *wname = qt_keyb::find_wname(obj);
+        QWidget *widg = qobject_cast<QWidget*>(obj);
+        if (!widg || widg->isHidden())
+            return (false);
+        char *wname = widget_path(widg);
+        bool do_it = false;
         if (wname) {
             sEvent *nev = new sBtnEvent(wname,
                 mod_state(mev->modifiers()),
@@ -468,57 +517,40 @@ qt_keyb::macro_event_handler(QObject *obj, QEvent *ev, void *arg)
 #else
                 (int)mev->x(), (int)mev->y());
 #endif
-            /*
-            if (ev->type() == QEvent::MouseButtonPress &&
-                    GTK_IS_MENU_ITEM(widg) &&
-                    GTK_MENU_ITEM(widg)->submenu) {
+            bool ismenu = qobject_cast<QMenuBar*>(obj) ||
+                qobject_cast<QMenu*>(obj);
+            if (ev->type() == QEvent::MouseButtonPress && ismenu) {
                 // show the menu
                 km->grabber = widg;
-//                gtk_main_do_event(ev);
+                do_it = true;
             }
-            */
             km->add_response(nev);
-            if (ev->type() == QEvent::MouseButtonPress)
-                km->show();
         }
-        return (true);
+        return (!do_it);
     }
     if (ev->type() == QEvent::MouseButtonDblClick)
         return (true);
-//    gtk_main_do_event(ev);
     return (false);
 }
 
 
-// Return the widget and its name from the window.  Return 0 if the widget
-// isn't recognized.
+// Return the path name for the widget.  Heap allocated.
 //
 char *
-qt_keyb::find_wname(const QObject *obj)
+qt_keyb::widget_path(const QWidget *widg)
 {
-    if (obj)
-        return (object_path(obj));
-    return (0);
-}
-
-
-// Return the path name for the object.  Heap allocated.
-//
-char *
-qt_keyb::object_path(const QObject *object)
-{
-    if (!object)
+    if (!widg || widg->isHidden())
         return (0);
     char *aa[256];
     int cnt = 0, len = 0;
-    while (object) {
-        QByteArray ba = object->objectName().toLatin1();
+    while (widg) {
+        QByteArray ba = widg->objectName().toLatin1();
         const char *nm = ba.constData();
         if (!nm || !*nm)
-            nm = "unknown";
+            nm = widg->metaObject()->className();
         aa[cnt] = lstring::copy(nm);
         len += strlen(aa[cnt]) + 1;
-        object = object->parent();
+        widg = widg->parentWidget();
         cnt++;
     }
     cnt--;
@@ -538,11 +570,13 @@ qt_keyb::object_path(const QObject *object)
 }
 
 
-// Return a list of widgets that match the path given, relative to w
+// Return a list of widgets that match the path given.
 //
 qt_keyb::wlist *
-qt_keyb::find_object(const QObject *obj, const char *path)
+qt_keyb::find_widget(const QWidget *widg, const char *path)
 {
+    if (!widg || widg->isHidden() || !path)
+        return (0);
     wlist *w0 = 0;
     const char *t = strchr(path, '.');
     if (!t)
@@ -550,12 +584,19 @@ qt_keyb::find_object(const QObject *obj, const char *path)
     char name[128];
     strncpy(name, path, t-path);
     name[t-path] = 0;
-    QList<QObject*> chl = obj->children();
+    QList<QObject*> chl = widg->children();
     for (int i = 0; chl[i]; i++) {
-        QObject *ww = chl[i];
-        if (ww->objectName() == name) {
+        QWidget *ww = qobject_cast<QWidget*>(chl[i]);
+        if (!ww)
+            continue;
+        QByteArray ba = ww->objectName().toLatin1();
+        const char *nm = ba.constData();
+        if (!nm || !*nm)
+            nm = ww->metaObject()->className();
+
+        if (!strcmp(nm, name)) {
             if (*t == '.') {
-                wlist *wx = find_object(ww, t+1);
+                wlist *wx = find_widget(ww, t+1);
                 if (wx) {
                     wlist *wn = wx;
                     while (wn->next)
@@ -575,8 +616,8 @@ qt_keyb::find_object(const QObject *obj, const char *path)
 // If the path identifies a widget uniquely, return it.  The path is rooted
 // in a top level widget.
 //
-QObject *
-qt_keyb::name_to_object(const char *path)
+QWidget *
+qt_keyb::name_to_widget(const char *path)
 {
     if (!path)
         return (0);
@@ -587,12 +628,19 @@ qt_keyb::name_to_object(const char *path)
     char name[128];
     strncpy(name, path, t-path);
     name[t-path] = 0;
+
     QList<QWidget*> qwl = QApplication::topLevelWidgets();
     for (int i = 0; qwl[i]; i++) {
         QWidget *ww = qwl[i];
-        if (ww->objectName() == name) {
+        if (ww->isHidden())
+            continue;
+        QByteArray ba = ww->objectName().toLatin1();
+        const char *nm = ba.constData();
+        if (!nm || !*nm)
+            nm = ww->metaObject()->className();
+        if (!strcmp(nm, name)) {
             if (*t == '.') {
-                wlist *wx = find_object(ww, t+1);
+                wlist *wx = find_widget(ww, t+1);
                 if (wx) {
                     wlist *wn = wx;
                     while (wn->next)
@@ -605,9 +653,9 @@ qt_keyb::name_to_object(const char *path)
                 w0 = new wlist(ww, w0);
         }
     }
-    QObject *wfound = 0;
+    QWidget *wfound = 0;
     if (w0 && !w0->next)
-        wfound = w0->obj;
+        wfound = w0->widget;
     while (w0) {
         wlist *wx = w0->next;
         delete w0;
