@@ -170,7 +170,7 @@ cKbMacro::getKeyToMap()
                     gdk_event_free(ev);
                     continue;
                 }
-                nkey = already_mapped(ev->key.keyval,
+                nkey = AlreadyMapped(ev->key.keyval,
                     convert_state(ev->key.state));
                 if (!nkey)
                     nkey = new sKeyMap(ev->key.keyval,

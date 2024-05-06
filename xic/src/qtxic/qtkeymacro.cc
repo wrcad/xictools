@@ -342,8 +342,8 @@ cKbMacro::execBtn(sBtnEvent *b)
 
         QWidget *widg = dynamic_cast<QWidget*>(w);
         if (widg) {
-            QPointF localPos(b->x, b->y);
-            QPointF globalPos = widg->mapToGlobal(localPos);
+            QPoint localPos(b->x, b->y);
+            QPoint globalPos = widg->mapToGlobal(localPos);
             QMouseEvent event(b->type == BUTTON_PRESS ?
                 QEvent::MouseButtonPress : QEvent::MouseButtonRelease,
                 localPos, globalPos, button(b->button), button(b->button),
@@ -585,7 +585,8 @@ qt_keyb::find_widget(const QWidget *widg, const char *path)
     strncpy(name, path, t-path);
     name[t-path] = 0;
     QList<QObject*> chl = widg->children();
-    for (int i = 0; chl[i]; i++) {
+    int sz = chl.size();
+    for (int i = 0; i < sz; i++) {
         QWidget *ww = qobject_cast<QWidget*>(chl[i]);
         if (!ww)
             continue;
@@ -630,7 +631,8 @@ qt_keyb::name_to_widget(const char *path)
     name[t-path] = 0;
 
     QList<QWidget*> qwl = QApplication::topLevelWidgets();
-    for (int i = 0; qwl[i]; i++) {
+    int sz = qwl.size();
+    for (int i = 0; i < sz; i++) {
         QWidget *ww = qwl[i];
         if (ww->isHidden())
             continue;
