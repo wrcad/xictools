@@ -1069,7 +1069,10 @@ cEdit::copy_call(int ref_x, int ref_y, int new_x, int new_y,
                 break;
             case P_SYMBLC:
                 cdesc->prptyAddCopy(pdesc);
+                BBox tBB(cdesc->oBB());
                 cdesc->computeBB();
+                if (tBB != cdesc->oBB())
+                    cursd->reinsert(cdesc, 0);
                 break;
             }
         }
