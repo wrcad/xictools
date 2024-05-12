@@ -56,7 +56,7 @@
 #ifdef HAVE_SYS_RESOURCE_H
 #include <sys/resource.h>
 #else
-#ifdef WIN32
+#ifdef Q_OS_WIN
 #include <windows.h>
 #endif
 #endif
@@ -273,7 +273,7 @@ QTmemMonDlg::update()
         Text(str, xx, yy, 0);
     }
 #else
-#ifdef WIN32
+#ifdef Q_OS_WIN
     MEMORYSTATUS mem;
     memset(&mem, 0, sizeof(MEMORYSTATUS));
     mem.dwLength = sizeof(MEMORYSTATUS);

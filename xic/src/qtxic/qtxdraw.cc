@@ -122,7 +122,7 @@ cMain::SetupLayers(void *dp, GRdraw *cx, void *scxptr)
                 if (lp->fill()->xPixmap())
                     XFreePixmap((Display*)dp, (Pixmap)lp->fill()->xPixmap());
 #else
-#ifdef WIN32
+#ifdef Q_OS_WIN
 //                if (lp->fill()->xPixmap())
 //                    DeleteBitmap((HBITMAP)lp->fill()->xPixmap());
 #endif
@@ -141,7 +141,7 @@ cMain::SetupLayers(void *dp, GRdraw *cx, void *scxptr)
                 if (lp->fill()->xPixmap())
                     XFreePixmap((Display*)dp, (Pixmap)lp->fill()->xPixmap());
 #else
-#ifdef WIN32
+#ifdef Q_OS_WIN
 //                if (lp->fill()->xPixmap())
 //                    DeleteBitmap((HBITMAP)lp->fill()->xPixmap());
 #endif

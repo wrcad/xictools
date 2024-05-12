@@ -45,7 +45,7 @@
 #include "dsp_color.h"
 #include "qtmain.h"
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 #include <windows.h>
 #endif
 
@@ -81,7 +81,7 @@ cMain::ColorTimerInit()
 }
 
 
-#ifndef WIN32
+#ifndef Q_OS_WIN
 namespace {
     inline unsigned int RGB(int r, int g, int b)
     {
@@ -260,7 +260,10 @@ namespace {
                             Selections.show(wd);
                     }
                     wd->ShowHighlighting();
-                    sw->Viewport()->update();
+//XXX rid this
+// Used to periodically refresh the drawing windows.  This is no longer
+// needed as all QTcanvas drawing is asynchronous.
+//                    sw->Viewport()->update();
                 }
             }
         }

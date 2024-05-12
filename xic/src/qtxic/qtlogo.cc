@@ -263,7 +263,7 @@ cEdit::polytext(const char *string, int psz, int x, int y)
 #ifdef Q_OS_MACOS
 #define DEF_FONTNAME    "Menlo 18"
 #else
-#ifdef WIN32
+#ifdef Q_OS_WIN
 #define DEF_FONTNAME    "Menlo 18"
 #else
 #define DEF_FONTNAME    "Courier New 18"

@@ -51,7 +51,7 @@
 #include "promptline.h"
 #include "qtinterf/qttextw.h"
 #include "qtinterf/qtdblsb.h"
-#ifdef WIN32
+#ifdef Q_OS_WIN
 #include "windows.h"
 #endif
 #include <signal.h>
@@ -937,7 +937,7 @@ QTdrcRunDlg::abort_btn_slot()
 {
     int pid = get_pid();
     if (pid > 0) {
-#ifdef WIN32
+#ifdef Q_OS_WIN
         HANDLE h = OpenProcess(PROCESS_TERMINATE, 0, pid);
         TerminateProcess(h, 1);
 #else

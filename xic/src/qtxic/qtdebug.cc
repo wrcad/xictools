@@ -243,7 +243,7 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c) : QTbag(this)
     a->setData(SaveAsCode);
     a->setShortcut(QKeySequence("Alt+A"));
     db_saveas = a;
-#ifdef WIN32
+#ifdef Q_OS_WIN
     // _Write CRLF, 0, db_action_proc, CRLFcode, <CheckItem>"
     a = db_filemenu->addAction(tr("&Write CRLF"));
     a->setCheckable(true);
@@ -768,12 +768,12 @@ QTscriptDebuggerDlg::write_file(const char *fname)
         QTbag::PopUpMessage("Can't open file, text not saved", true);
         return (false);
     }
-#ifdef WIN32
+#ifdef Q_OS_WIN
     char lastc = 0;
 #endif
     char *string = wb_textarea->get_chars();
     if (db_mode == DBedit) {
-#ifdef WIN32
+#ifdef Q_OS_WIN
         char *s = string;
         while (*s) {
             if (!QTdev::self()->GetCRLFtermination()) {
@@ -795,7 +795,7 @@ QTscriptDebuggerDlg::write_file(const char *fname)
         char *s = string;
         if (*s && *(s+1)) {
             s += 2;
-#ifdef WIN32
+#ifdef Q_OS_WIN
             while (*s) {
                 if (!QTdev::self()->GetCRLFtermination()) {
                     if (s[0] == '\r' && s[1] == '\n') {
@@ -1374,7 +1374,7 @@ QTscriptDebuggerDlg::file_menu_slot(QAction *a)
         return;
     }
     if (a->data().toInt() == CRLFcode) {
-#ifdef WIN32
+#ifdef Q_OS_WIN
         QTdev::self()->SetCRLFtermination(QTdev::GetStatus(a));
 #endif
         return;
