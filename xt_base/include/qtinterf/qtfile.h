@@ -121,7 +121,7 @@ public:
     void set_label();
     void flash(QTreeWidgetItem*);
 
-    QSize sizeHint() const      { return (QSize(500, 250)); }
+    QSize sizeHint() const;
     QSize minimumSizeHint()     const { return (QSize(250, 125)); }
 
     static char *any_selection()    { return (FSmonitor.any_selection()); }

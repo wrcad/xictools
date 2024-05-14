@@ -1251,7 +1251,7 @@ cKeys::check_exec(bool exact)
     // Put the execution in an idle proc.  This avoids an artifact in
     // prompt text from newly-generated text coming before the geometry
     // update is finished.
-    QTpkg::self()->RegisterIdleProc(check_exec_idle, ent);
+    emit QTmainwin::self()->run_queued((void*)&check_exec_idle, ent);
 }
 
 
@@ -2600,14 +2600,6 @@ QTsubwin::help_slot()
 //-----------------------------------------------------------------------------
 // QTmainwin functions
 
-namespace {
-    bool is_shift_down()
-    {
-        return (QApplication::keyboardModifiers() & Qt::ShiftModifier);
-    }
-}
-
-
 QTmainwin::QTmainwin(QWidget *prnt) : QTsubwin(0, prnt)
 {
     mw_menubar = new QMenuBar();
@@ -2713,6 +2705,9 @@ QTmainwin::QTmainwin(QWidget *prnt) : QTsubwin(0, prnt)
 
     connect(this, SIGNAL(update_coords(int, int)),
         this, SLOT(update_coords_slot(int, int)));
+    connect(this, SIGNAL(run_queued(void*, void*)),
+        this, SLOT(run_queued_slot(void*, void*)),
+        Qt::QueuedConnection);
 }
 
 
@@ -2921,6 +2916,20 @@ void
 QTmainwin::update_coords_slot(int xx, int yy)
 {
     mw_coords->print(xx, yy, QTcoord::COOR_MOTION);
+}
+
+
+// Emitting run_queued causes the function to be run at the end of the
+// event loop, as if in an idle proc.  Be careful with this, the
+// arguments have to be alive when called.  I tried to pass a function
+// pointer instead of a void* but Qt seemed not to accept the syntax.
+//
+void
+QTmainwin::run_queued_slot(void* i, void *arg)
+{
+    int(*func)(void*) = (int(*)(void*))(i);
+    if (func(arg))
+        emit run_queued(i, arg);
 }
 // End of QTmainwin functions.
 

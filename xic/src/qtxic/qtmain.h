@@ -289,7 +289,6 @@ private:
     QTeventMonitor pkg_event_monitor;   // event dispatch control
 };
 
-
 // Length of keypress buffer.
 #define CBUFMAX 15
 
@@ -420,7 +419,6 @@ protected:
     int         sw_cursor_type;
 };
 
-
 class QTmainwin : public QTsubwin
 {
     Q_OBJECT
@@ -479,9 +477,11 @@ public:
 
 signals:
     void side_button_press(MenuEnt*);
+    void run_queued(void*, void*);
 
 private slots:
     void update_coords_slot(int, int);
+    void run_queued_slot(void*, void*);
 
 private:
     // QWidget virtual overrides

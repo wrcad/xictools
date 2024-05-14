@@ -173,6 +173,7 @@ cConvert::PopUpFiles(GRobject caller, ShowMode mode)
         return;
 
     // This is needed to reliably show the busy cursor.
+//XXX is this needed?
 #ifdef FILES_TIMEOUT
     QTpkg::self()->SetWorking(true);
     QTpkg::self()->RegisterTimeoutProc(500, msw_timeout, caller);

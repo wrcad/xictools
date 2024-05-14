@@ -117,9 +117,6 @@ QTmenuConfig::QTmenuConfig()
     mc_style_menu = 0;
     mc_shape_menu = 0;
     mc_menu_disabled = false;
-
-    connect(this, SIGNAL(exec_idle(MenuEnt*)),
-        this, SLOT(idle_exec_slot(MenuEnt*)), Qt::QueuedConnection);
 }
 
 
@@ -1381,6 +1378,69 @@ QTmenuConfig::set_main_global_sens(const MenuList *list, bool sens)
 }
 
 
+// Static function
+// This executes the menu-entry action code.  For certain commands, the
+// call is actually made from an idle procedure.
+//
+void
+QTmenuConfig::exec_idle_proc(void *arg)
+{
+    MenuEnt *ent = static_cast<MenuEnt*>(arg);
+    // Below, we wait until the drawing is complete ("not busy")
+    // before allowing the command to be launched.
+
+    if (ent->is_dynamic()) {
+        if (QTpkg::self()->IsBusy())
+            return;
+        DSP()->SetInterrupt(DSPinterNone);
+        const char *entry = ent->menutext;
+        // entry is the same as m->entry, but contains the menu path
+        // for submenu items
+        char buf[128];
+        if (lstring::strdirsep(entry)) {
+            // From submenu, add a distinguishing prefix to avoid
+            // confusion with file path.
+
+            snprintf(buf, sizeof(buf), "%s%s", SCR_LIBCODE, entry);
+            entry = buf;
+        }
+        SIfile *sfp;
+        stringlist *wl;
+        XM()->OpenScript(entry, &sfp, &wl);
+        if (sfp || wl) {
+            // Make sure that there is a current cell before calling the
+            // script.  If we create a cell and it remains empty and
+            // unconnected, we will delete it.
+
+            bool cell_created = false;
+            CDs *cursd = CurCell();
+            if (!cursd) {
+                if (!CD()->ReopenCell(Tstring(DSP()->CurCellName()),
+                        DSP()->CurMode())) {
+                    Log()->ErrorLog(mh::Processing, Errs()->get_error());
+                    return;
+                }
+                cell_created = true;
+                cursd = CurCell();
+            }
+            EditIf()->ulListCheck(ent->entry, cursd, false);
+            SI()->Interpret(sfp, wl, 0, 0);
+            if (sfp)
+                delete sfp;
+            EditIf()->ulCommitChanges(true);
+            if (cell_created && cursd->isEmpty() && !cursd->isSubcell())
+                delete cursd;
+        }
+        return;
+    }
+    if (ent->action && QTmainwin::exists() && !QTpkg::self()->IsBusy()) {
+        QTmainwin::self()->ShowGhost(ERASE);
+        (*ent->action)(&ent->cmd);
+        QTmainwin::self()->ShowGhost(DISPLAY);
+    }
+}
+
+
 //-----------------------------------------------------------------------
 // Private Slots
 
@@ -1682,7 +1742,7 @@ QTmenuConfig::subwin_view_menu_slot(QAction *a)
     ent->cmd.caller = ent->user_action;
     if (i == subwViewMenuCancl)
         // can't destroy here, defer
-        emit exec_idle(ent);
+        emit QTmainwin::self()->run_queued((void*)&exec_idle_proc, ent);
     else
         exec_slot(ent);
 }
@@ -1765,64 +1825,6 @@ QTmenuConfig::subwin_help_slot()
 
 
 void
-QTmenuConfig::idle_exec_slot(MenuEnt *ent)
-{
-    // Below, we wait until the drawing is complete ("not busy")
-    // before allowing the command to be launched.
-
-    if (ent->is_dynamic()) {
-        if (QTpkg::self()->IsBusy())
-            return;
-        DSP()->SetInterrupt(DSPinterNone);
-        const char *entry = ent->menutext;
-        // entry is the same as m->entry, but contains the menu path
-        // for submenu items
-        char buf[128];
-        if (lstring::strdirsep(entry)) {
-            // From submenu, add a distinguishing prefix to avoid
-            // confusion with file path.
-
-            snprintf(buf, sizeof(buf), "%s%s", SCR_LIBCODE, entry);
-            entry = buf;
-        }
-        SIfile *sfp;
-        stringlist *wl;
-        XM()->OpenScript(entry, &sfp, &wl);
-        if (sfp || wl) {
-            // Make sure that there is a current cell before calling the
-            // script.  If we create a cell and it remains empty and
-            // unconnected, we will delete it.
-
-            bool cell_created = false;
-            CDs *cursd = CurCell();
-            if (!cursd) {
-                if (!CD()->ReopenCell(Tstring(DSP()->CurCellName()),
-                        DSP()->CurMode())) {
-                    Log()->ErrorLog(mh::Processing, Errs()->get_error());
-                    return;
-                }
-                cell_created = true;
-                cursd = CurCell();
-            }
-            EditIf()->ulListCheck(ent->entry, cursd, false);
-            SI()->Interpret(sfp, wl, 0, 0);
-            if (sfp)
-                delete sfp;
-            EditIf()->ulCommitChanges(true);
-            if (cell_created && cursd->isEmpty() && !cursd->isSubcell())
-                delete cursd;
-        }
-        return;
-    }
-    if (ent->action && QTmainwin::exists() && !QTpkg::self()->IsBusy()) {
-        QTmainwin::self()->ShowGhost(ERASE);
-        (*ent->action)(&ent->cmd);
-        QTmainwin::self()->ShowGhost(DISPLAY);
-    }
-}
-
-
-void
 QTmenuConfig::exec_slot(MenuEnt *ent)
 {
     if (!ent || !ent->entry) {
@@ -1878,7 +1880,7 @@ QTmenuConfig::exec_slot(MenuEnt *ent)
             // Putting the call in a timeout proc allows the current
             // command to return and finish before the new one starts
             // (see below).
-            emit exec_idle(ent);
+            emit QTmainwin::self()->run_queued((void*)&exec_idle_proc, ent);
         }
         return;
     }
@@ -1887,7 +1889,7 @@ QTmenuConfig::exec_slot(MenuEnt *ent)
     if (!MainMenu()->SetupCommand(ent, &call_on_up))
         return;
 
-    if (ent->type == CMD_NOTSAFE) {
+    if (ent->type == CMD_NOTSAFE || ent->type == CMD_PROMPT) {
 
         // Terminate present command state.
         // We enable the coordinate export here.  This is a
@@ -1906,13 +1908,11 @@ QTmenuConfig::exec_slot(MenuEnt *ent)
         // Putting the call in a timeout proc allows the current
         // command to return and finish before the new one starts.
 
-        if (MainMenu()->GetStatus(ent->cmd.caller))
-            emit exec_idle(ent);
-        else if (call_on_up)
-            emit exec_idle(ent);
+        if (MainMenu()->GetStatus(ent->cmd.caller) || call_on_up)
+            emit QTmainwin::self()->run_queued((void*)&exec_idle_proc, ent);
         return;
     }
-    idle_exec_slot(ent);
+    exec_idle_proc(ent);
 }
 
 

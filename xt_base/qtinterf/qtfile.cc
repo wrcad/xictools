@@ -97,52 +97,54 @@ extern "C" { extern int fnmatch(const char*, const char*, int); }
 #define COLUMN_SPACING 20
 
 
-// XPM
-static const char* const up_xpm[] = {
-"32 16 3 1",
-"     c none",
-".    c blue",
-"x    c sienna",
-"                                ",
-"                                ",
-"                                ",
-"                                ",
-"               .                ",
-"              ...x              ",
-"             .....x             ",
-"            .......x            ",
-"           .........x           ",
-"          ...........x          ",
-"         .............x         ",
-"        ...............x        ",
-"        x.............xx        ",
-"         xxxxxxxxxxxxxx         ",
-"                                ",
-"                                "};
+namespace {
+    // XPM
+    const char* const up_xpm[] = {
+    "16 16 3 1",
+    "     c none",
+    ".    c blue",
+    "x    c sienna",
+    "                ",
+    "                ",
+    "                ",
+    "                ",
+    "       .        ",
+    "      ...x      ",
+    "     .....x     ",
+    "    .......x    ",
+    "   .........x   ",
+    "  ...........x  ",
+    " .............x ",
+    "...............x",
+    "x.............xx",
+    " xxxxxxxxxxxxxx ",
+    "                ",
+    "                "};
 
-// XPM
-static const char * const go_xpm[] = {
-"32 16 4 1",
-"   c none",
-".  c green",
-"x  c white",
-"+  c black",
-"                                ",
-"             xxxxx              ",
-"            xx....x             ",
-"           xx......x            ",
-"           x........x           ",
-"          x..........x          ",
-"         x............          ",
-"          ............          ",
-"          ............          ",
-"          ............+         ",
-"          +..........+          ",
-"           +........+           ",
-"            +......++           ",
-"             +....++            ",
-"              +++++             ",
-"                                "};
+    // XPM
+    const char * const go_xpm[] = {
+    "16 16 4 1",
+    "   c none",
+    ".  c green",
+    "x  c white",
+    "+  c black",
+    "                ",
+    "     xxxxx      ",
+    "    xx....x     ",
+    "   xx......x    ",
+    "   x........x   ",
+    "  x..........x  ",
+    " x............  ",
+    "  ............  ",
+    "  ............  ",
+    "  ............+ ",
+    "  +..........+  ",
+    "   +........+   ",
+    "    +......++   ",
+    "     +....++    ",
+    "      +++++     ",
+    "                "};
+}
 
 
 // The supported modes
@@ -680,7 +682,7 @@ QTfileDlg::QTfileDlg(QTbag *owner, FsMode mode, void *arg,
         QApplication::style()->standardIcon(QStyle::SP_DirOpenIcon);
 
     if (f_config == fsSEL) {
-        setWindowTitle(QString(tr("File Selection")));
+        setWindowTitle(tr("File Selection"));
         f_rootdir = lstring::copy(root_or_fname);
         if (!f_rootdir)
             f_rootdir = lstring::copy(f_cwd_bak);
@@ -688,7 +690,7 @@ QTfileDlg::QTfileDlg(QTbag *owner, FsMode mode, void *arg,
             f_rootdir = lstring::copy("/");
     }
     else if (f_config == fsDOWNLOAD) {
-        setWindowTitle(QString(tr("Target Selection")));
+        setWindowTitle(tr("Target Selection"));
         f_curfile = lstring::copy(root_or_fname);
         if (!f_curfile)
             // should be fatal error
@@ -726,9 +728,9 @@ QTfileDlg::QTfileDlg(QTbag *owner, FsMode mode, void *arg,
         }
         f_rootdir = fn;
         if (f_config == fsSAVE)
-            setWindowTitle(QString(tr("Path Selection")));
+            setWindowTitle(tr("Path Selection"));
         else
-            setWindowTitle(QString(tr("File Selection")));
+            setWindowTitle(tr("File Selection"));
     }
 
 #ifdef USE_QTOOLBAR
@@ -736,23 +738,24 @@ QTfileDlg::QTfileDlg(QTbag *owner, FsMode mode, void *arg,
     menubar->setMaximumHeight(22);
     f_Up = menubar->addAction("");
     f_Up->setIcon(QIcon(QPixmap(up_xpm)));
-    QToolButton *tb = dynamic_cast<QToolButton*>(menubar->widgetForAction(f_Up));
+    QToolButton *tb =
+        dynamic_cast<QToolButton*>(menubar->widgetForAction(f_Up));
     if (tb)
         tb->setPopupMode(QToolButton::InstantPopup);
 
-    f_Go = menubar->addAction(QString("go"), this, SLOT(open_slot()));
+    f_Go = menubar->addAction("go", this, SLOT(open_slot()));
     f_Go->setIcon(QIcon(QPixmap(go_xpm)));
 #else
     QMenuBar *menubar = new QMenuBar();
     f_Up = menubar->addAction("");
     f_Up->setIcon(QIcon(QPixmap(up_xpm)));
-    f_Go = menubar->addAction(QString("go"), this, SLOT(open_slot()));
+    f_Go = menubar->addAction("go", this, SLOT(open_slot()));
     f_Go->setIcon(QIcon(QPixmap(go_xpm)));
 #endif
 
     if (f_config == fsSEL || f_config == fsSAVE || f_config == fsOPEN) {
         f_filemenu = new QMenu(this);
-        f_filemenu->setTitle(QString(tr("&File")));
+        f_filemenu->setTitle(tr("&File"));
 #ifdef USE_QTOOLBAR
         QAction *a = menubar->addAction("File");
         a->setMenu(f_filemenu);
@@ -765,42 +768,42 @@ QTfileDlg::QTfileDlg(QTbag *owner, FsMode mode, void *arg,
 
         if (f_config == fsSEL) {
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-            f_Open = f_filemenu->addAction(QString(tr("&Open")),
+            f_Open = f_filemenu->addAction(tr("&Open"),
                 Qt::CTRL|Qt::Key_O, this, SLOT(open_slot()));
 #else
-            f_Open = f_filemenu->addAction(QString(tr("&Open")), this,
+            f_Open = f_filemenu->addAction(tr("&Open"), this,
                 SLOT(open_slot()), Qt::CTRL|Qt::Key_O);
 #endif
         }
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-        f_New = f_filemenu->addAction(QString(tr("New &Folder")),
+        f_New = f_filemenu->addAction(tr("New &Folder"),
             Qt::CTRL|Qt::Key_F, this, SLOT(new_folder_slot()));
-        f_Delete = f_filemenu->addAction(QString(tr("&Delete")),
+        f_Delete = f_filemenu->addAction(tr("&Delete"),
             Qt::CTRL|Qt::Key_D, this, SLOT(delete_slot()));
-        f_Rename = f_filemenu->addAction(QString(tr("&Rename")),
+        f_Rename = f_filemenu->addAction(tr("&Rename"),
             Qt::CTRL|Qt::Key_R, this, SLOT(rename_slot()));
-        f_filemenu->addAction(QString(tr("N&ew Root")),
+        f_filemenu->addAction(tr("N&ew Root"),
             Qt::CTRL|Qt::Key_E, this, SLOT(new_root_slot()));
-        f_filemenu->addAction(QString(tr("New C&WD")),
+        f_filemenu->addAction(tr("New C&WD"),
             Qt::CTRL|Qt::Key_W, this, SLOT(new_cwd_slot()));
 #else
-        f_New = f_filemenu->addAction(QString(tr("New &Folder")),
+        f_New = f_filemenu->addAction(tr("New &Folder"),
             this, SLOT(new_folder_slot()), Qt::CTRL|Qt::Key_F);
-        f_Delete = f_filemenu->addAction(QString(tr("&Delete")),
+        f_Delete = f_filemenu->addAction(tr("&Delete"),
             this, SLOT(delete_slot()), Qt::CTRL|Qt::Key_D);
-        f_Rename = f_filemenu->addAction(QString(tr("&Rename")),
+        f_Rename = f_filemenu->addAction(tr("&Rename"),
             this, SLOT(rename_slot()), Qt::CTRL|Qt::Key_R);
-        f_filemenu->addAction(QString(tr("N&ew Root")),
+        f_filemenu->addAction(tr("N&ew Root"),
             this, SLOT(new_root_slot()), Qt::CTRL|Qt::Key_E);
-        f_filemenu->addAction(QString(tr("New C&WD")),
+        f_filemenu->addAction(tr("New C&WD"),
             this, SLOT(new_cwd_slot()), Qt::CTRL|Qt::Key_W);
 #endif
         f_filemenu->addSeparator();
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-        f_filemenu->addAction(QString(tr("&Quit")),
+        f_filemenu->addAction(tr("&Quit"),
             Qt::CTRL|Qt::Key_Q, this, SLOT(quit_slot()));
 #else
-        f_filemenu->addAction(QString(tr("&Quit")),
+        f_filemenu->addAction(tr("&Quit"),
             this, SLOT(quit_slot()), Qt::CTRL|Qt::Key_Q);
 #endif
     }
@@ -812,7 +815,7 @@ QTfileDlg::QTfileDlg(QTbag *owner, FsMode mode, void *arg,
 
     if (f_config == fsSEL || f_config == fsOPEN) {
         f_listmenu = new QMenu(this);
-        f_listmenu->setTitle(QString(tr("&Listing")));
+        f_listmenu->setTitle(tr("&Listing"));
         QAction *a;
 #ifdef USE_QTOOLBAR
         a = menubar->addAction("Listing");
@@ -830,10 +833,10 @@ QTfileDlg::QTfileDlg(QTbag *owner, FsMode mode, void *arg,
         connect(a, SIGNAL(toggled(bool)),
             this, SLOT(show_filter_slot(bool)));
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-        f_listmenu->addAction(QString(tr("Re&list")),
+        f_listmenu->addAction(tr("Re&list"),
             Qt::CTRL|Qt::Key_L, this, SLOT(list_files_slot()));
 #else
-        f_listmenu->addAction(QString(tr("Re&list")),
+        f_listmenu->addAction(tr("Re&list"),
             this, SLOT(list_files_slot()), Qt::CTRL|Qt::Key_L);
 #endif
     }
@@ -851,7 +854,7 @@ QTfileDlg::QTfileDlg(QTbag *owner, FsMode mode, void *arg,
 #endif
 #else
         f_helpmenu = new QMenu(this);
-        f_helpmenu->setTitle(QString(tr("&Help")));
+        f_helpmenu->setTitle(tr("&Help"));
         menubar->addMenu(f_helpmenu);
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         f_helpmenu->addAction(tr("&Help"),
@@ -874,7 +877,7 @@ QTfileDlg::QTfileDlg(QTbag *owner, FsMode mode, void *arg,
         QVBoxLayout *vbox = new QVBoxLayout(gbox);
         vbox->setContentsMargins(qmtop);
         f_label = new QLabel(gbox);
-        f_label->setText(QString("Root:\nCwd:"));
+        f_label->setText("Root:\nCwd:");
         f_label->setMinimumHeight(24);
         f_label->setMaximumHeight(32);
         vbox->addWidget(f_label);
@@ -885,7 +888,7 @@ QTfileDlg::QTfileDlg(QTbag *owner, FsMode mode, void *arg,
     else if (f_config == fsDOWNLOAD) {
         char *path = pathlist::mk_path(f_rootdir, root_or_fname);
         f_entry = new QLineEdit(this);
-        f_entry->setText(QString(path));
+        f_entry->setText(path);
         delete [] path;
     }
 
@@ -979,7 +982,6 @@ QTfileDlg::QTfileDlg(QTbag *owner, FsMode mode, void *arg,
 
 QTfileDlg::~QTfileDlg()
 {
-//    emit dismiss();
     f_timer->stop();
     if (p_usrptr)
         *p_usrptr = 0;
@@ -1008,6 +1010,15 @@ QTfileDlg::~QTfileDlg()
     delete [] f_curfile;
     delete [] f_rootdir;
     delete [] f_cwd_bak;
+}
+
+
+QSize
+QTfileDlg::sizeHint() const
+{
+    if (f_list)
+        return (QSize(500, 250));
+    return (QSize(250, 250));
 }
 
     
@@ -1069,7 +1080,7 @@ QTfileDlg::set_label()
         strncpy(buf, s, e-s);
         buf[e-s] = 0;
         s = e;
-        a = f_upmenu->addAction(QString(buf));
+        a = f_upmenu->addAction(buf);
         a->setData(QVariant((int)(e - f_rootdir - 1)));
         if (!*s)
             break;
@@ -1339,7 +1350,7 @@ QTfileDlg::filter_change_slot(const QString &qs)
     if (i > 1) {
         delete [] filter_options[i];
         filter_options[i] = text;
-        f_filter->setItemText(i, QString(text));
+        f_filter->setItemText(i, text);
     }
     else
         delete [] text;
@@ -1418,7 +1429,7 @@ QTfileDlg::tree_select_slot(QTreeWidgetItem *cur, QTreeWidgetItem*)
             const char *fname = lstring::strip_path(path);
             dir = get_path(f_curnode, false);
             char *fpath = pathlist::mk_path(dir, fname);
-            f_entry->setText(QString(fpath));
+            f_entry->setText(fpath);
             delete [] fpath;
             delete [] dir;
         }
@@ -1539,7 +1550,7 @@ QTfileDlg::list_files_slot()
             }
             if (!is_match(filt, de->d_name))
                 continue;
-            f_list->addItem(QString(de->d_name));
+            f_list->addItem(de->d_name);
             continue;
         }
 #endif
@@ -1548,7 +1559,7 @@ QTfileDlg::list_files_slot()
         strcpy(dt, de->d_name);
         if (filestat::is_directory(p))
             continue;
-        f_list->addItem(QString(de->d_name));
+        f_list->addItem(de->d_name);
     }
     delete [] p;
     closedir(wdir);
@@ -1756,7 +1767,7 @@ QTfileDlg::insert_node(char *dir, QTreeWidgetItem *prnt)
         node = new file_tree_item((file_tree_item*)prnt);
     else 
         node = new file_tree_item(f_tree);
-    node->setText(0, QString(name));
+    node->setText(0, name);
     node->setIcon(0, closed_folder_icon);
     return (node);
 }
@@ -2026,7 +2037,7 @@ QTfileDlg::check_slot()
     // Hold nodes to delete until list iteration is through.
     QList<QTreeWidgetItem*> dead_list;
 
-    QList<QTreeWidgetItem*> ilist = f_tree->findItems(QString("*"),
+    QList<QTreeWidgetItem*> ilist = f_tree->findItems("*",
         Qt::MatchWildcard | Qt::MatchRecursive);
     for (int row = 0; row < ilist.size(); row++) {
 

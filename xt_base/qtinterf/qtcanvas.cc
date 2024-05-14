@@ -985,9 +985,10 @@ QTcanvas::draw_arc(int x0, int y0, int r, int, double a1, double a2)
     if (r < 0)
         r = -r;
 #ifdef USE_TIMER
-    if (!da_pixmap_bak && !da_regfull)
+    if (!da_pixmap_bak && !da_regfull) {
         region_add(x0-r, y0-r);
         region_add(x0+r, y0+r);
+    }
 #else
     if (da_overlay_count) {
         bb_add(x0-r, y0-r);

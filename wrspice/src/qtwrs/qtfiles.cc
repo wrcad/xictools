@@ -116,27 +116,6 @@ QTfileTextEdit::createMimeDataFromSelection() const
 // End of QTfileTextEdit functions.
 
 
-// It can take a while to process the files, unfortunately the "busy"
-// cursor seems to never appear with the standard logic.  In order to
-// make the busy cursor appear, had to use a timeout as below.
-
-/*
-namespace {
-    int msw_timeout(void *caller)
-    {
-        new QTfilesListDlg(caller);
-
-        QTdev::self()->SetPopupLocation(GRloc(), QTfilesListDlg::self(),
-            QTmainwin::self()->Viewport());
-        QTfilesListDlg::self()->show();
-
-        QTpkg::self()->SetWorking(false);
-        return (0);
-    }
-}
-*/
-
-
 void
 QTtoolbar::PopUpFiles(ShowMode mode, int x, int y)
 {
