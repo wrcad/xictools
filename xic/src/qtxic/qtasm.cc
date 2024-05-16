@@ -251,8 +251,7 @@ QTasmDlg::QTasmDlg(GRobject c) : QTbag(this)
     a = menu->addAction(tr("&Quit"));
     a->setData(CancelCode);
     a->setShortcut(QKeySequence("Ctrl+Q"));
-    connect(menu, SIGNAL(triggered(QAction*)),
-        this, SLOT(main_menu_slot(QAction*)));
+    connect(menu, &QMenu::triggered, this, &QTasmDlg::main_menu_slot);
 
     // Options menu.
 #ifdef USE_QTOOLBAR
@@ -283,8 +282,7 @@ QTasmDlg::QTasmDlg(GRobject c) : QTbag(this)
     // Remove Toplevel, 0, asm_action_proc, DelTlCode, 0
     a = menu->addAction(tr("Remove Toplevel"));
     a->setData(DelTlCode);
-    connect(menu, SIGNAL(triggered(QAction*)),
-        this, SLOT(main_menu_slot(QAction*)));
+    connect(menu, &QMenu::triggered, this, &QTasmDlg::main_menu_slot);
 
     // Help menu.
 #ifdef USE_QTOOLBAR
@@ -307,9 +305,8 @@ QTasmDlg::QTasmDlg(GRobject c) : QTbag(this)
     //
     asm_notebook = new QTabWidget();
     vbox->addWidget(asm_notebook);
-    connect(asm_notebook, SIGNAL(currentChanged(int)),
-        this, SLOT(tab_changed_slot(int)));
-
+    connect(asm_notebook, &QTabWidget::currentChanged,
+        this, &QTasmDlg::tab_changed_slot);
 
     output_page_setup();
     notebook_append();
@@ -325,12 +322,14 @@ QTasmDlg::QTasmDlg(GRobject c) : QTbag(this)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Create Layout File"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(crlayout_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTasmDlg::crlayout_btn_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTasmDlg::dismiss_btn_slot);
 
     // status message line
     //

@@ -150,6 +150,13 @@ namespace {
 void
 QTmenuConfig::instantiateMainMenus()
 {
+/* XXX
+#ifdef Q_OS_MACOS
+//    QString bundlePath = QString::fromNSString(NSBundle.mainBundle.bundlePath);
+    QString bundlePath = QString::fromNSString([[[NSBundle mainBundle] infoDictionary] objectForKey:@"custom_key"]);
+    qDebug() << "Bundle path is " << bundlePath;
+#endif
+*/
     QTmainwin *main_win = QTmainwin::self();
     if (!main_win)
         return;
@@ -257,7 +264,16 @@ QTmenuConfig::instantiateMainMenus()
     // Edit menu
     mbox = MainMenu()->FindMainMenu(MMedit);
     if (mbox && mbox->menu) {
+#ifdef Q_OS_MACOS
+        // Keep default Mac junk out of our menu.
+        QMenu *edit_menu;
+        if (menubar->isNativeMenuBar())
+            edit_menu = menubar->addMenu("XicEdit");
+        else
+            edit_menu = menubar->addMenu(tr(mbox->name));
+#else
         QMenu *edit_menu = menubar->addMenu(tr(mbox->name));
+#endif
         edit_menu->setToolTipsVisible(true);
         edit_menu->setObjectName("EditMenu");
 
@@ -705,7 +721,16 @@ QTmenuConfig::instantiateMainMenus()
     mbox = MainMenu()->FindMainMenu(MMhelp);
     if (mbox && mbox->menu) {
         menubar->addSeparator();
+#ifdef Q_OS_MACOS
+        // Keep default Mac junk out of our menu.
+        QMenu *help_menu;
+        if (menubar->isNativeMenuBar())
+            help_menu = menubar->addMenu("XicHelp");
+        else
+            help_menu = menubar->addMenu(tr(mbox->name));
+#else
         QMenu *help_menu = menubar->addMenu(tr(mbox->name));
+#endif
         help_menu->setToolTipsVisible(true);
         help_menu->setObjectName("HelpMenu");
 

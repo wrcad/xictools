@@ -115,6 +115,7 @@
 #include "../../icons/xic_32x32.xpm"
 #include "../../icons/xic_48x48.xpm"
 
+#define NEW_SIGSYNTAX
 
 //-----------------------------------------------------------------------------
 // Main Window and top-level functions.
@@ -1120,8 +1121,13 @@ cKeys::cKeys(int wnum, QWidget *prnt) : QTcanvas(prnt)
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_SCREEN))
         set_font(fnt);
+#ifdef NEW_SIGSYNTAX
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &cKeys::font_changed, Qt::QueuedConnection);
+#else
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed(int)), Qt::QueuedConnection);
+#endif
 }
 
 
@@ -1379,6 +1385,39 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_SCREEN))
         gd_viewport->set_font(fnt);
+#ifdef NEW_SIGSYNTAX
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTsubwin::font_changed, Qt::QueuedConnection);
+
+    connect(gd_viewport, &QTcanvas::resize_event,
+        this, &QTsubwin::resize_slot);
+    connect(gd_viewport, &QTcanvas::press_event,
+        this, &QTsubwin::button_down_slot);
+    connect(gd_viewport, &QTcanvas::release_event,
+        this, &QTsubwin::button_up_slot);
+    connect(gd_viewport, &QTcanvas::double_click_event,
+        this, &QTsubwin::double_click_slot);
+    connect(gd_viewport, &QTcanvas::motion_event,
+        this, &QTsubwin::motion_slot);
+    connect(gd_viewport, &QTcanvas::key_press_event,
+        this, &QTsubwin::key_down_slot);
+    connect(gd_viewport, &QTcanvas::key_release_event,
+        this, &QTsubwin::key_up_slot);
+    connect(gd_viewport, &QTcanvas::enter_event,
+        this, &QTsubwin::enter_slot);
+    connect(gd_viewport, &QTcanvas::leave_event,
+        this, &QTsubwin::leave_slot);
+    connect(gd_viewport, &QTcanvas::focus_in_event,
+        this, &QTsubwin::focus_in_slot);
+    connect(gd_viewport, &QTcanvas::focus_out_event,
+        this, &QTsubwin::focus_out_slot);
+    connect(gd_viewport, &QTcanvas::mouse_wheel_event,
+        this, &QTsubwin::mouse_wheel_slot);
+    connect(gd_viewport, &QTcanvas::drag_enter_event,
+        this, &QTsubwin::drag_enter_slot);
+    connect(gd_viewport, &QTcanvas::drop_event,
+        this, &QTsubwin::drop_slot);
+#else
     connect(QTfont::self(), SIGNAL(fontChanged(int)),
         this, SLOT(font_changed(int)), Qt::QueuedConnection);
 
@@ -1410,6 +1449,7 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
         this, SLOT(drag_enter_slot(QDragEnterEvent*)));
     connect(gd_viewport, SIGNAL(drop_event(QDropEvent*)),
         this, SLOT(drop_slot(QDropEvent*)));
+#endif
 
     if (sw_win_number == 0) {
         // being subclassed for main window
@@ -1456,8 +1496,13 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
     // Create new menu, just copy template.
     MainMenu()->CreateSubwinMenu(wnum);
 
+#ifdef NEW_SIGSYNTAX
+    connect(this, &QTsubwin::update_coords,
+        QTmainwin::self(), &QTmainwin::update_coords_slot);
+#else
     connect(this, SIGNAL(update_coords(int, int)),
         QTmainwin::self(), SLOT(update_coords_slot(int, int)));
+#endif
 
     QPoint mposn = QTmainwin::self()->pos();
     if (LastPos[wnum].width()) {
@@ -2703,11 +2748,17 @@ QTmainwin::QTmainwin(QWidget *prnt) : QTsubwin(0, prnt)
     mw_status = new QTparam(this);
     vbox->addWidget(mw_status);
 
+#ifdef NEW_SIGSYNTAX
+    connect(this, &QTmainwin::update_coords,
+        this, &QTmainwin::update_coords_slot);
+    connect(this, &QTmainwin::run_queued,
+        this, &QTmainwin::run_queued_slot, Qt::QueuedConnection);
+#else
     connect(this, SIGNAL(update_coords(int, int)),
         this, SLOT(update_coords_slot(int, int)));
     connect(this, SIGNAL(run_queued(void*, void*)),
-        this, SLOT(run_queued_slot(void*, void*)),
-        Qt::QueuedConnection);
+        this, SLOT(run_queued_slot(void*, void*)), Qt::QueuedConnection);
+#endif
 }
 
 

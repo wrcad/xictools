@@ -479,8 +479,10 @@ signals:
     void side_button_press(MenuEnt*);
     void run_queued(void*, void*);
 
-private slots:
+public slots:
     void update_coords_slot(int, int);
+
+private slots:
     void run_queued_slot(void*, void*);
 
 private:

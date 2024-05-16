@@ -140,28 +140,29 @@ QTauxTabDlg::QTauxTabDlg(GRobject c) : QTbag(this)
     at_addbtn->setText(tr("Add"));
     hbox->addWidget(at_addbtn);
     at_addbtn->setCheckable(true);
-    connect(at_addbtn, SIGNAL(toggled(bool)),
-        this, SLOT(add_btn_slot(bool)));
+    connect(at_addbtn, &QAbstractButton::toggled,
+        this, &QTauxTabDlg::add_btn_slot);
 
     at_rembtn = new QToolButton();
     at_rembtn->setText(tr("Remove"));
     hbox->addWidget(at_rembtn);
     at_rembtn->setCheckable(true);
-    connect(at_rembtn, SIGNAL(toggled(bool)),
-        this, SLOT(rem_btn_slot(bool)));
+    connect(at_rembtn, &QAbstractButton::toggled,
+        this, &QTauxTabDlg::rem_btn_slot);
 
     at_clearbtn = new QToolButton();
     at_clearbtn->setText(tr("Clear"));
     hbox->addWidget(at_clearbtn);
     at_clearbtn->setCheckable(true);
-    connect(at_clearbtn, SIGNAL(toggled(bool)),
-        this, SLOT(clear_btn_slot(bool)));
+    connect(at_clearbtn, &QAbstractButton::toggled,
+        this, &QTauxTabDlg::clear_btn_slot);
 
     hbox->addStretch(1);
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTauxTabDlg::help_btn_slot);
 
     hbox = new QHBoxLayout(0);
     hbox->setContentsMargins(qm);
@@ -170,13 +171,13 @@ QTauxTabDlg::QTauxTabDlg(GRobject c) : QTbag(this)
 
     at_over = new QRadioButton(tr("Override"));;
     hbox->addWidget(at_over);
-    connect(at_over, SIGNAL(toggled(bool)),
-        this, SLOT(over_btn_slot(bool)));
+    connect(at_over, &QRadioButton::toggled,
+        this, &QTauxTabDlg::over_btn_slot);
 
     at_skip = new QRadioButton(tr("Skip"));;
     hbox->addWidget(at_skip);
-    connect(at_skip, SIGNAL(toggled(bool)),
-        this, SLOT(skip_btn_slot(bool)));
+    connect(at_skip, &QRadioButton::toggled,
+        this, &QTauxTabDlg::skip_btn_slot);
 
     // Title label
     //
@@ -198,30 +199,30 @@ QTauxTabDlg::QTauxTabDlg(GRobject c) : QTbag(this)
     wb_textarea->setMouseTracking(true);
     wb_textarea->setAcceptDrops(true);
     vbox->addWidget(wb_textarea);
-    connect(wb_textarea, SIGNAL(resize_event(QResizeEvent*)),
-        this, SLOT(resize_slot(QResizeEvent*)));
-    connect(wb_textarea, SIGNAL(press_event(QMouseEvent*)),
-        this, SLOT(mouse_press_slot(QMouseEvent*)));
-    connect(wb_textarea, SIGNAL(motion_event(QMouseEvent*)),
-        this, SLOT(mouse_motion_slot(QMouseEvent*)));
-    connect(wb_textarea,
-        SIGNAL(mime_data_handled(const QMimeData*, int*)),
-        this, SLOT(mime_data_handled_slot(const QMimeData*, int*)));
-    connect(wb_textarea, SIGNAL(mime_data_delivered(const QMimeData*, int*)),
-        this, SLOT(mime_data_delivered_slot(const QMimeData*, int*)));
+    connect(wb_textarea, &QTtextEdit::resize_event,
+        this, &QTauxTabDlg::resize_slot);
+    connect(wb_textarea, &QTtextEdit::press_event,
+        this, &QTauxTabDlg::mouse_press_slot);
+    connect(wb_textarea, &QTtextEdit::motion_event,
+        this, &QTauxTabDlg::mouse_motion_slot);
+    connect(wb_textarea, &QTtextEdit::mime_data_handled,
+        this, &QTauxTabDlg::mime_data_handled_slot);
+    connect(wb_textarea, &QTtextEdit::mime_data_delivered,
+        this, &QTauxTabDlg::mime_data_delivered_slot);
 
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_FIXED))
         wb_textarea->setFont(*fnt);
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTauxTabDlg::font_changed_slot, Qt::QueuedConnection);
 
     // Dismiss button
     //
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTauxTabDlg::dismiss_btn_slot);
 
     update();
 }

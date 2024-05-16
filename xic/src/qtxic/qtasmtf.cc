@@ -128,8 +128,8 @@ QTasmTf::QTasmTf(QTasmPage *src)
         tf_angle->addItem(buf);
     }
     tf_angle->setCurrentIndex(tf_angle_ix);
-    connect(tf_angle, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(angle_changed_slot(int)));
+    connect(tf_angle, &QComboBox::currentIndexChanged,
+        this, &QTasmTf::angle_changed_slot);
 
     tf_mirror = new QCheckBox(tr("Mirror-Y"));
     grid->addWidget(tf_mirror, 1, 2);
@@ -172,8 +172,8 @@ QTasmTf::QTasmTf(QTasmPage *src)
 
     tf_use_win = new QCheckBox(tr("Use Window"));
     hbox->addWidget(tf_use_win);
-    connect(tf_use_win, SIGNAL(stateChanged(int)),
-        this, SLOT(usew_btn_slot(int)));
+    connect(tf_use_win, &QCheckBox::stateChanged,
+        this, &QTasmTf::usew_btn_slot);
 
     tf_do_clip = new QCheckBox(tr("Clip"));
     hbox->addWidget(tf_do_clip);
