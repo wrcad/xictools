@@ -256,8 +256,8 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c) : QTbag(this)
     a = db_filemenu->addAction(tr("&Quit"));
     a->setData(CancelCode);
     a->setShortcut(QKeySequence("Ctrl+Q"));
-    connect(db_filemenu, SIGNAL(triggered(QAction*)),
-        this, SLOT(file_menu_slot(QAction*)));
+    connect(db_filemenu, &QMenu::triggered,
+        this, &QTscriptDebuggerDlg::file_menu_slot);
 
     // Edit menu.
 #ifdef USE_QTOOLBAR
@@ -298,8 +298,8 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c) : QTbag(this)
     a->setData(4);
     a->setShortcut(QKeySequence("Alt+P"));
 #endif
-    connect(db_editmenu, SIGNAL(triggered(QAction*)),
-        this, SLOT(edit_menu_slot(QAction*)));
+    connect(db_editmenu, &QMenu::triggered,
+        this, &QTscriptDebuggerDlg::edit_menu_slot);
 
     // Execute menu.
 #ifdef USE_QTOOLBAR
@@ -328,8 +328,8 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c) : QTbag(this)
     a = db_execmenu->addAction(tr("&Monitor"));
     a->setData(MonitorCode);
     a->setShortcut(QKeySequence("Ctrl+M"));
-    connect(db_execmenu, SIGNAL(triggered(QAction*)),
-        this, SLOT(exec_menu_slot(QAction*)));
+    connect(db_execmenu, &QMenu::triggered,
+        this, &QTscriptDebuggerDlg::exec_menu_slot);
 
     // Options menu.
 #ifdef USE_QTOOLBAR
@@ -350,22 +350,22 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c) : QTbag(this)
     a = menu->addAction(tr("&Font"));
     a->setData(2);
     a->setCheckable(true);
-    connect(menu, SIGNAL(triggered(QAction*)),
-        this, SLOT(options_menu_slot(QAction*)));
+    connect(menu, &QMenu::triggered,
+        this, &QTscriptDebuggerDlg::options_menu_slot);
 
     // Help menu.
 #ifdef USE_QTOOLBAR
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     menubar->addAction(tr("&Help"), Qt::CTRL|Qt::Key_H, this,
-        SLOT(help_slot()));
+        &QTscriptDebuggerDlg::help_slot()));
 #else
-    a = menubar->addAction(tr("&Help"), this, SLOT(help_slot()));
+    a = menubar->addAction(tr("&Help"), this, &QTscriptDebuggerDlg::help_slot);
     a->setShortcut(QKeySequence("Ctrl+H"));
 #endif
 #else
     menu = menubar->addMenu(tr("&Help"));
     // _Help, <control>H, db_action_proc, HelpCode, 0
-    a = menu->addAction(tr("&Help"), this, SLOT(help_slot()));
+    a = menu->addAction(tr("&Help"), this, &QTscriptDebuggerDlg::help_slot);
     a->setShortcut(QKeySequence("Ctrl+H"));
 #endif
 
@@ -379,7 +379,8 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c) : QTbag(this)
     hbox->addWidget(db_modebtn);
     db_modebtn->setEnabled(false);
     db_modebtn->setMaximumWidth(80);
-    connect(db_modebtn, SIGNAL(clicked()), this, SLOT(mode_btn_slot()));
+    connect(db_modebtn, &QAbstractButton::clicked,
+        this, &QTscriptDebuggerDlg::mode_btn_slot);
 
     // labels in frame
     //
@@ -399,29 +400,28 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c) : QTbag(this)
     wb_textarea->setMouseTracking(true);
     wb_textarea->setAcceptDrops(true);
     vbox->addWidget(wb_textarea);
-    connect(wb_textarea, SIGNAL(press_event(QMouseEvent*)),
-        this, SLOT(mouse_press_slot(QMouseEvent*)));
-    connect(wb_textarea, SIGNAL(release_event(QMouseEvent*)),
-        this, SLOT(mouse_release_slot(QMouseEvent*)));
-    connect(wb_textarea, SIGNAL(textChanged()),
-        this, SLOT(text_changed_slot()));
-    connect(wb_textarea,
-        SIGNAL(mime_data_handled(const QMimeData*, int*)),
-        this, SLOT(mime_data_handled_slot(const QMimeData*, int*)));
-    connect(wb_textarea, SIGNAL(mime_data_delivered(const QMimeData*, int*)),
-        this, SLOT(mime_data_delivered_slot(const QMimeData*, int*)));
-    connect(wb_textarea, SIGNAL(key_press_event(QKeyEvent*)),
-        this, SLOT(key_press_slot(QKeyEvent*)));
+    connect(wb_textarea, &QTtextEdit::press_event,
+        this, &QTscriptDebuggerDlg::mouse_press_slot);
+    connect(wb_textarea, &QTtextEdit::release_event,
+        this, &QTscriptDebuggerDlg::mouse_release_slot);
+    connect(wb_textarea, &QTtextEdit::textChanged,
+        this, &QTscriptDebuggerDlg::text_changed_slot);
+    connect(wb_textarea, &QTtextEdit::mime_data_handled,
+        this, &QTscriptDebuggerDlg::mime_data_handled_slot);
+    connect(wb_textarea, &QTtextEdit::mime_data_delivered,
+        this, &QTscriptDebuggerDlg::mime_data_delivered_slot);
+    connect(wb_textarea, &QTtextEdit::key_press_event,
+        this, &QTscriptDebuggerDlg::key_press_slot);
 
     QTextDocument *doc = wb_textarea->document();
-    connect(doc, SIGNAL(contentsChange(int, int, int)),
-        this, SLOT(text_change_slot(int, int, int)));
+    connect(doc, &QTextDocument::contentsChange,
+        this, &QTscriptDebuggerDlg::text_change_slot);
 
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_FIXED))
         wb_textarea->setFont(*fnt);
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTscriptDebuggerDlg::font_changed_slot, Qt::QueuedConnection);
 
     db_in_undo = false;
     check_sens();
@@ -1845,29 +1845,28 @@ QTdbgVarsDlg::QTdbgVarsDlg(void *p, QWidget *prnt) : QDialog(prnt)
     dv_list->header()->setMinimumSectionSize(25);
     dv_list->header()->resizeSection(0, 50);
 
-    connect(dv_list,
-        SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
-        this,
-        SLOT(current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*)));
-    connect(dv_list, SIGNAL(itemActivated(QTreeWidgetItem*, int)),
-        this, SLOT(item_activated_slot(QTreeWidgetItem*, int)));
-    connect(dv_list, SIGNAL(itemClicked(QTreeWidgetItem*, int)),
-        this, SLOT(item_clicked_slot(QTreeWidgetItem*, int)));
-    connect(dv_list, SIGNAL(itemSelectionChanged()),
-        this, SLOT(item_selection_changed()));
+    connect(dv_list, &QTreeWidget::currentItemChanged,
+        this, &QTdbgVarsDlg::current_item_changed_slot);
+    connect(dv_list, &QTreeWidget::itemActivated,
+        this, &QTdbgVarsDlg::item_activated_slot);
+    connect(dv_list, &QTreeWidget::itemClicked,
+        this, &QTdbgVarsDlg::item_clicked_slot);
+    connect(dv_list, &QTreeWidget::itemSelectionChanged,
+        this, &QTdbgVarsDlg::item_selection_changed);
 
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_FIXED))
         dv_list->setFont(*fnt);
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTdbgVarsDlg::font_changed_slot, Qt::QueuedConnection);
 
     // Dismiss button
     //
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTdbgVarsDlg::dismiss_btn_slot);
 }
 
 

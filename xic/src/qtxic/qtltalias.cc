@@ -139,40 +139,46 @@ QTlayerAliasDlg::QTlayerAliasDlg(GRobject c) : QTbag(this)
     la_open = new QToolButton();
     la_open->setText(tr("Open"));
     hbox->addWidget(la_open);
-    connect(la_open, SIGNAL(clicked()), this, SLOT(open_btn_slot()));
+    connect(la_open, &QAbstractButton::clicked,
+        this, &QTlayerAliasDlg::open_btn_slot);
 
     // _Save, <control>S, la_action_proc, SaveCode, 0
     la_save = new QToolButton();
     la_save->setText(tr("Save"));
     hbox->addWidget(la_save);
-    connect(la_save, SIGNAL(clicked()), this, SLOT(save_btn_slot()));
+    connect(la_save, &QAbstractButton::clicked,
+        this, &QTlayerAliasDlg::save_btn_slot);
 
     // _New, <control>N, la_action_proc, NewCode, 0
     la_new = new QToolButton();
     la_new->setText(tr("New"));
     hbox->addWidget(la_new);
-    connect(la_new, SIGNAL(clicked()), this, SLOT(new_btn_slot()));
+    connect(la_new, &QAbstractButton::clicked,
+        this, &QTlayerAliasDlg::new_btn_slot);
 
     // _Delete, <control>D, la_action_proc, DeleteCode, 0
     la_del = new QToolButton();
     la_del->setText(tr("Delete"));
     la_del->setEnabled(false);
     hbox->addWidget(la_del);
-    connect(la_del, SIGNAL(clicked()), this, SLOT(del_btn_slot()));
+    connect(la_del, &QAbstractButton::clicked,
+        this, &QTlayerAliasDlg::del_btn_slot);
 
     // _Edit, <control>E, la_action_proc, EditCode, 0
     la_edit = new QToolButton();
     la_edit->setText(tr("Edit"));
     la_edit->setEnabled(false);
     hbox->addWidget(la_edit);
-    connect(la_edit, SIGNAL(clicked()), this, SLOT(edit_btn_slot()));
+    connect(la_edit, &QAbstractButton::clicked,
+        this, &QTlayerAliasDlg::edit_btn_slot);
 
     // Help button.
     hbox->addStretch(1);
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTlayerAliasDlg::help_btn_slot);
 
     // Scrolled display window.
     la_list = new QTreeWidget();
@@ -180,16 +186,14 @@ QTlayerAliasDlg::QTlayerAliasDlg(GRobject c) : QTbag(this)
     la_list->setHeaderLabels(QStringList(QList<QString>() <<
         tr("Layer Name") << tr("Alias")));
 
-    connect(la_list,
-        SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
-        this,
-        SLOT(current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*)));
+    connect(la_list, &QTreeWidget::currentItemChanged,
+        this, &QTlayerAliasDlg::current_item_changed_slot);
 
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_PROP))
         la_list->setFont(*fnt);
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTlayerAliasDlg::font_changed_slot, Qt::QueuedConnection);
 
     hbox = new QHBoxLayout(0);
     hbox->setContentsMargins(qm);
@@ -199,13 +203,14 @@ QTlayerAliasDlg::QTlayerAliasDlg(GRobject c) : QTbag(this)
     // Decimal _Form, <control>F, la_action_proc, DecCode, <CheckItem>
     la_decimal = new QCheckBox(tr("Decimal Form"));
     hbox->addWidget(la_decimal);
-    connect(la_decimal, SIGNAL(stateChanged(int)),
-        this, SLOT(decimal_btn_slot(int)));
+    connect(la_decimal, &QCheckBox::stateChanged,
+        this, &QTlayerAliasDlg::decimal_btn_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTlayerAliasDlg::dismiss_btn_slot);
 
     update();
 }

@@ -143,7 +143,8 @@ QTspiceIfDlg::QTspiceIfDlg(GRobject c)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTspiceIfDlg::help_btn_slot);
 
     // WRspice interface controls
     //
@@ -152,31 +153,31 @@ QTspiceIfDlg::QTspiceIfDlg(GRobject c)
 
     sc_listall = new QCheckBox(tr("List all devices and subcircuits."));
     grid->addWidget(sc_listall, 0, 0, 1, 2);
-    connect(sc_listall, SIGNAL(stateChanged(int)),
-        this, SLOT(listall_btn_slot(int)));
+    connect(sc_listall, &QCheckBox::stateChanged,
+        this, &QTspiceIfDlg::listall_btn_slot);
 
     sc_checksol = new QCheckBox(tr("Check and report solitary connections."));
     grid->addWidget(sc_checksol, 1, 0, 1, 2);
-    connect(sc_checksol, SIGNAL(stateChanged(int)),
-        this, SLOT(checksol_btn_slot(int)));
+    connect(sc_checksol, &QCheckBox::stateChanged,
+        this, &QTspiceIfDlg::checksol_btn_slot);
 
     sc_notools = new QCheckBox(tr("Don't show WRspice Tool Control panel."));
     grid->addWidget(sc_notools, 2, 0, 1, 2);
-    connect(sc_checksol, SIGNAL(stateChanged(int)),
-        this, SLOT(notools_btn_slot(int)));
+    connect(sc_checksol, &QCheckBox::stateChanged,
+        this, &QTspiceIfDlg::notools_btn_slot);
 
     sc_alias_b = new QCheckBox(tr("Spice device prefix aliases"));
     grid->addWidget(sc_alias_b, 3, 0);
-    connect(sc_alias_b, SIGNAL(stateChanged(int)),
-        this, SLOT(alias_btn_slot(int)));
+    connect(sc_alias_b, &QCheckBox::stateChanged,
+        this, &QTspiceIfDlg::alias_btn_slot);
 
     sc_alias = new QLineEdit();
     grid->addWidget(sc_alias, 3, 1);
 
     sc_hostname_b = new QCheckBox(tr("Remote WRspice server host\nname"));
     grid->addWidget(sc_hostname_b, 4, 0);
-    connect(sc_hostname_b, SIGNAL(stateChanged(int)),
-        this, SLOT(hostname_btn_slot(int)));
+    connect(sc_hostname_b, &QCheckBox::stateChanged,
+        this, &QTspiceIfDlg::hostname_btn_slot);
 
     sc_hostname = new QLineEdit();
     grid->addWidget(sc_hostname, 4, 1);
@@ -184,16 +185,16 @@ QTspiceIfDlg::QTspiceIfDlg(GRobject c)
     sc_dispname_b = new QCheckBox(tr(
         "Remote WRspice server host\ndisplay name"));
     grid->addWidget(sc_dispname_b, 5, 0);
-    connect(sc_dispname_b, SIGNAL(stateChanged(int)),
-        this, SLOT(dispname_btn_slot(int)));
+    connect(sc_dispname_b, &QCheckBox::stateChanged,
+        this, &QTspiceIfDlg::dispname_btn_slot);
 
     sc_dispname = new QLineEdit();
     grid->addWidget(sc_dispname, 5, 1);
 
     sc_progname_b = new QCheckBox(tr("Path to local WRspice\nexecutable"));
     grid->addWidget(sc_progname_b, 6, 0);
-    connect(sc_progname_b, SIGNAL(stateChanged(int)),
-        this, SLOT(progname_btn_slot(int)));
+    connect(sc_progname_b, &QCheckBox::stateChanged,
+        this, &QTspiceIfDlg::progname_btn_slot);
 
     sc_progname = new QLineEdit();
     grid->addWidget(sc_progname, 6, 1);
@@ -201,8 +202,8 @@ QTspiceIfDlg::QTspiceIfDlg(GRobject c)
     sc_execdir_b = new QCheckBox(tr(
         "Path to local directory\ncontaining WRspice executable"));
     grid->addWidget(sc_execdir_b, 7, 0);
-    connect(sc_execdir_b, SIGNAL(stateChanged(int)),
-        this, SLOT(execdir_btn_slot(int)));
+    connect(sc_execdir_b, &QCheckBox::stateChanged,
+        this, &QTspiceIfDlg::execdir_btn_slot);
 
     sc_execdir = new QLineEdit();
     grid->addWidget(sc_execdir, 7, 1);
@@ -210,8 +211,8 @@ QTspiceIfDlg::QTspiceIfDlg(GRobject c)
     sc_execname_b = new QCheckBox(tr(
         "Assumed WRspice program\nexecutable name"));
     grid->addWidget(sc_execname_b, 8, 0);
-    connect(sc_execname_b, SIGNAL(stateChanged(int)),
-        this, SLOT(execname_btn_slot(int)));
+    connect(sc_execname_b, &QCheckBox::stateChanged,
+        this, &QTspiceIfDlg::execname_btn_slot);
 
     sc_execname = new QLineEdit();
     grid->addWidget(sc_execname, 8, 1);
@@ -219,8 +220,8 @@ QTspiceIfDlg::QTspiceIfDlg(GRobject c)
     sc_catchar_b = new QCheckBox(tr(
         "Assumed WRspice subcircuit\nconcatenation character"));
     grid->addWidget(sc_catchar_b, 9, 0);
-    connect(sc_catchar_b, SIGNAL(stateChanged(int)),
-        this, SLOT(catchar_btn_slot(int)));
+    connect(sc_catchar_b, &QCheckBox::stateChanged,
+        this, &QTspiceIfDlg::catchar_btn_slot);
 
     sc_catchar = new QLineEdit();
     grid->addWidget(sc_catchar, 9, 1);
@@ -228,8 +229,8 @@ QTspiceIfDlg::QTspiceIfDlg(GRobject c)
     sc_catmode_b = new QCheckBox(tr(
         "Assumed WRspice subcircuit\nexpansion mode"));
     grid->addWidget(sc_catmode_b, 10, 0);
-    connect(sc_catmode_b, SIGNAL(stateChanged(int)),
-        this, SLOT(catmode_btn_slot(int)));
+    connect(sc_catmode_b, &QCheckBox::stateChanged,
+        this, &QTspiceIfDlg::catmode_btn_slot);
 
     sc_catmode = new QComboBox();
     grid->addWidget(sc_catmode, 10, 1);
@@ -241,7 +242,8 @@ QTspiceIfDlg::QTspiceIfDlg(GRobject c)
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     grid->addWidget(btn, 11, 0, 1, 2);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTspiceIfDlg::dismiss_btn_slot);
 
     update();
 }

@@ -143,14 +143,15 @@ QTjoinDlg::QTjoinDlg(GRobject c)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTjoinDlg::help_btn_slot);
 
     // no limit check box
     //
     jn_nolimit = new QCheckBox(tr("No limits in join operation"));
     vbox->addWidget(jn_nolimit);
-    connect(jn_nolimit, SIGNAL(stateChanged(int)),
-        this, SLOT(nolimit_btn_slot(int)));
+    connect(jn_nolimit, &QCheckBox::stateChanged,
+        this, &QTjoinDlg::nolimit_btn_slot);
 
     // Max Verts spin button
     //
@@ -168,8 +169,8 @@ QTjoinDlg::QTjoinDlg(GRobject c)
     jn_mverts->setMaximum(8000);
     jn_mverts->setValue(0);
     jn_mverts->setMaximumWidth(140);
-    connect(jn_mverts, SIGNAL(valueChanged(int)),
-        this, SLOT(mverts_change_slot(int)));
+    connect(jn_mverts, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTjoinDlg::mverts_change_slot);
 
     // Max Group spin button
     //
@@ -187,8 +188,8 @@ QTjoinDlg::QTjoinDlg(GRobject c)
     jn_mgroup->setMaximum(1000000);
     jn_mgroup->setValue(0);
     jn_mgroup->setMaximumWidth(140);
-    connect(jn_mgroup, SIGNAL(valueChanged(int)),
-        this, SLOT(mgroup_change_slot(int)));
+    connect(jn_mgroup, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTjoinDlg::mgroup_change_slot);
 
     // Max Queue spin button
     //
@@ -206,22 +207,22 @@ QTjoinDlg::QTjoinDlg(GRobject c)
     jn_mqueue->setMaximum(1000000);
     jn_mqueue->setValue(0);
     jn_mqueue->setMaximumWidth(140);
-    connect(jn_mqueue, SIGNAL(valueChanged(int)),
-        this, SLOT(mqueue_change_slot(int)));
+    connect(jn_mqueue, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTjoinDlg::mqueue_change_slot);
 
     // break clean check box
     //
     jn_clean = new QCheckBox(tr("Clean break in join operation limiting"));
     vbox->addWidget(jn_clean);
-    connect(jn_clean, SIGNAL(stateChanged(int)),
-        this, SLOT(clean_btn_slot(int)));
+    connect(jn_clean, &QCheckBox::stateChanged,
+        this, &QTjoinDlg::clean_btn_slot);
 
     // include wires check box
     //
     jn_wires = new QCheckBox(tr("Include wires (as polygons) in join/split"));
     vbox->addWidget(jn_wires);
-    connect(jn_wires, SIGNAL(stateChanged(int)),
-        this, SLOT(wires_btn_slot(int)));
+    connect(jn_wires, &QCheckBox::stateChanged,
+        this, &QTjoinDlg::wires_btn_slot);
 
     // Command buttons
     //
@@ -234,34 +235,40 @@ QTjoinDlg::QTjoinDlg(GRobject c)
     jn_join = new QToolButton();
     jn_join->setText(tr("Join"));
     hbox->addWidget(jn_join);
-    connect(jn_join, SIGNAL(clicked()), this, SLOT(join_btn_slot()));
+    connect(jn_join, &QAbstractButton::clicked,
+        this, &QTjoinDlg::join_btn_slot);
 
     jn_join_lyr = new QToolButton();
     jn_join_lyr->setText(tr("Join Lyr"));
     hbox->addWidget(jn_join_lyr);
-    connect(jn_join_lyr, SIGNAL(clicked()), this, SLOT(join_lyr_btn_slot()));
+    connect(jn_join_lyr, &QAbstractButton::clicked,
+        this, &QTjoinDlg::join_lyr_btn_slot);
 
     jn_join_all = new QToolButton();
     jn_join_all->setText(tr("Join All"));
     hbox->addWidget(jn_join_all);
-    connect(jn_join_all, SIGNAL(clicked()), this, SLOT(join_all_btn_slot()));
+    connect(jn_join_all, &QAbstractButton::clicked,
+        this, &QTjoinDlg::join_all_btn_slot);
 
     jn_split_h = new QToolButton();
     jn_split_h->setText(tr("Split Horiz"));
     hbox->addWidget(jn_split_h);
-    connect(jn_split_h, SIGNAL(clicked()), this, SLOT(split_h_btn_slot()));
+    connect(jn_split_h, &QAbstractButton::clicked,
+        this, &QTjoinDlg::split_h_btn_slot);
 
     jn_split_v = new QToolButton();
     jn_split_v->setText(tr("Split Vert"));
     hbox->addWidget(jn_split_v);
-    connect(jn_split_v, SIGNAL(clicked()), this, SLOT(split_v_btn_slot()));
+    connect(jn_split_v, &QAbstractButton::clicked,
+        this, &QTjoinDlg::split_v_btn_slot);
 
     // Dismiss button
     //
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(delete_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTjoinDlg::delete_btn_slot);
 
     update();
 }

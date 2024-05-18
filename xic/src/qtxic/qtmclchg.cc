@@ -125,30 +125,32 @@ QTmclChangeDlg::QTmclChangeDlg()
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTmclChangeDlg::help_btn_slot);
 
     lcg_none = new QRadioButton(tr("Don't allow layer change"));
     vbox->addWidget(lcg_none);
-    connect(lcg_none, SIGNAL(toggled(bool)),
-        this, SLOT(none_btn_slot(bool)));
+    connect(lcg_none, &QRadioButton::toggled,
+        this, &QTmclChangeDlg::none_btn_slot);
 
     lcg_cur = new QRadioButton(tr(
         "Allow layer change for objects on current layer"));
     vbox->addWidget(lcg_cur);
-    connect(lcg_cur, SIGNAL(toggled(bool)),
-        this, SLOT(cur_btn_slot(bool)));
+    connect(lcg_cur, &QRadioButton::toggled,
+        this, &QTmclChangeDlg::cur_btn_slot);
 
     lcg_all = new QRadioButton(tr(
         "Allow layer change for all objects"));
     vbox->addWidget(lcg_all);
-    connect(lcg_all, SIGNAL(toggled(bool)),
-        this, SLOT(all_btn_slot(bool)));
+    connect(lcg_all, &QRadioButton::toggled,
+        this, &QTmclChangeDlg::all_btn_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     vbox->addSpacing(4);
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTmclChangeDlg::dismiss_btn_slot);
 
     update();
 }

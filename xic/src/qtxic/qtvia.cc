@@ -242,7 +242,8 @@ QTstdViaDlg::QTstdViaDlg(GRobject caller, CDc *cdesc)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTstdViaDlg::help_btn_slot);
 
     QGridLayout *grid = new QGridLayout();
     vbox->addLayout(grid);
@@ -253,12 +254,12 @@ QTstdViaDlg::QTstdViaDlg(GRobject caller, CDc *cdesc)
     grid->addWidget(label, 0, 0);
     stv_name = new QComboBox();
     grid->addWidget(stv_name, 0, 1);
-    connect(stv_name, SIGNAL(currentTextChanged(const QString&)),
-        this, SLOT(name_menu_slot(const QString&)));
+    connect(stv_name, &QComboBox::currentTextChanged,
+        this, &QTstdViaDlg::name_menu_slot);
     stv_layerv = new QComboBox();
     grid->addWidget(stv_layerv, 0, 2);
-    connect(stv_layerv, SIGNAL(currentTextChanged(const QString&)),
-        this, SLOT(layerv_menu_slot(const QString&)));
+    connect(stv_layerv, &QComboBox::currentTextChanged,
+        this, &QTstdViaDlg::layerv_menu_slot);
 
     label = new QLabel(tr("layer 1, layer 2"));
     grid->addWidget(label, 1, 0);
@@ -417,12 +418,14 @@ QTstdViaDlg::QTstdViaDlg(GRobject caller, CDc *cdesc)
     stv_apply = new QToolButton();
     stv_apply->setText(tr("Apply"));
     hbox->addWidget(stv_apply);
-    connect(stv_apply, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
+    connect(stv_apply, &QAbstractButton::clicked,
+        this, &QTstdViaDlg::apply_btn_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTstdViaDlg::dismiss_btn_slot);
 
     update(caller, cdesc);
 }

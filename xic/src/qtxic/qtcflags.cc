@@ -135,22 +135,26 @@ QTcflagsDlg::QTcflagsDlg(GRobject caller, const stringlist *sl, int dmode)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("None"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(imm_none_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTcflagsDlg::imm_none_btn_slot);
 
     tbtn = new QToolButton();
     tbtn->setText(tr("All"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(imm_all_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTcflagsDlg::imm_all_btn_slot);
 
     tbtn = new QToolButton();
     tbtn->setText(tr("None"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(lib_none_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTcflagsDlg::lib_none_btn_slot);
 
     tbtn = new QToolButton();
     tbtn->setText(tr("All"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(lib_all_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTcflagsDlg::lib_all_btn_slot);
 
     QGroupBox *gb = new QGroupBox();
     vbox->addWidget(gb);
@@ -165,8 +169,8 @@ QTcflagsDlg::QTcflagsDlg(GRobject caller, const stringlist *sl, int dmode)
     vbox->addWidget(wb_textarea);
     wb_textarea->setReadOnly(true);
     wb_textarea->setMouseTracking(true);
-    connect(wb_textarea, SIGNAL(press_event(QMouseEvent*)),
-        this, SLOT(mouse_press_slot(QMouseEvent*)));
+    connect(wb_textarea, &QTtextEdit::press_event,
+        this, &QTcflagsDlg::mouse_press_slot);
 
     // Use a fixed font in the label, same as the text area, so can
     // match columns.
@@ -175,8 +179,8 @@ QTcflagsDlg::QTcflagsDlg(GRobject caller, const stringlist *sl, int dmode)
         wb_textarea->setFont(*fnt);
         cf_label->setFont(*fnt);
     }
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTcflagsDlg::font_changed_slot, Qt::QueuedConnection);
 
     hbox = new QHBoxLayout(0);
     hbox->setContentsMargins(qm);
@@ -186,12 +190,14 @@ QTcflagsDlg::QTcflagsDlg(GRobject caller, const stringlist *sl, int dmode)
     tbtn = new QToolButton();
     tbtn->setText(tr("Apply"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTcflagsDlg::apply_btn_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTcflagsDlg::dismiss_btn_slot);
 
     update(sl, dmode);
 }

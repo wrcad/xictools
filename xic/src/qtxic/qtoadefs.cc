@@ -132,7 +132,8 @@ QToaDefsDlg::QToaDefsDlg(GRobject c)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QToaDefsDlg::help_btn_slot);
 
     gb = new QGroupBox(tr("Library Path"));
     vbox->addWidget(gb);
@@ -142,8 +143,8 @@ QToaDefsDlg::QToaDefsDlg(GRobject c)
 
     od_path = new QLineEdit();
     hbox->addWidget(od_path);
-    connect(od_path, SIGNAL(textChanged(const QString&)),
-        this, SLOT(path_text_changed(const QString&)));
+    connect(od_path, &QLineEdit::textChanged,
+        this, &QToaDefsDlg::path_text_changed);
 
     QGridLayout *grid = new QGridLayout();
     vbox->addLayout(grid);
@@ -155,60 +156,61 @@ QToaDefsDlg::QToaDefsDlg(GRobject c)
 
     od_lib = new QLineEdit();
     grid->addWidget(od_lib, 0, 1);
-    connect(od_lib, SIGNAL(textChanged(const QString&)),
-        this, SLOT(lib_text_changed(const QString&)));
+    connect(od_lib, &QLineEdit::textChanged,
+        this, &QToaDefsDlg::lib_text_changed);
 
     label = new QLabel(tr("Default Tech Library"));
     grid->addWidget(label, 1, 0);
 
     od_techlib = new QLineEdit();
     grid->addWidget(od_techlib, 1, 1);
-    connect(od_techlib, SIGNAL(textChanged(const QString&)),
-        this, SLOT(tech_text_changed(const QString&)));
+    connect(od_techlib, &QLineEdit::textChanged,
+        this, &QToaDefsDlg::tech_text_changed);
 
     label = new QLabel(tr("Default Layout View"));
     grid->addWidget(label, 2, 0);
 
     od_layout = new QLineEdit();
     grid->addWidget(od_layout, 2, 1);
-    connect(od_layout, SIGNAL(textChanged(const QString&)),
-        this, SLOT(lview_text_changed(const QString&)));
+    connect(od_layout, &QLineEdit::textChanged,
+        this, &QToaDefsDlg::lview_text_changed);
 
     label = new QLabel(tr("Default Schematic View"));
     grid->addWidget(label, 3, 0);
 
     od_schem = new QLineEdit();
     grid->addWidget(od_schem, 3, 1);;
-    connect(od_schem, SIGNAL(textChanged(const QString&)),
-        this, SLOT(schview_text_changed(const QString&)));
+    connect(od_schem, &QLineEdit::textChanged,
+        this, &QToaDefsDlg::schview_text_changed);
 
     label = new QLabel(tr("Default Symbol View"));
     grid->addWidget(label, 4, 0);
 
     od_symb = new QLineEdit();
     grid->addWidget(od_symb, 4, 1);
-    connect(od_symb, SIGNAL(textChanged(const QString&)),
-        this, SLOT(symview_text_changed(const QString&)));
+    connect(od_symb, &QLineEdit::textChanged,
+        this, &QToaDefsDlg::symview_text_changed);
     
     label = new QLabel(tr("Default Properties View"));
     grid->addWidget(label, 5, 0);
 
     od_prop = new QLineEdit;
     grid->addWidget(od_prop, 5, 1);
-    connect(od_prop, SIGNAL(textChanged(const QString&)),
-        this, SLOT(prop_text_changed(const QString&)));
+    connect(od_prop, &QLineEdit::textChanged,
+        this, &QToaDefsDlg::prop_text_changed);
 
     od_cdf = new QCheckBox(tr("Dump CDF files when reading"));
     vbox->addWidget(od_cdf);
-    connect(od_cdf, SIGNAL(stateChangred(int)),
-        this, SLOT(cdf_btn_slot(int)));
+    connect(od_cdf, &QCheckBox::stateChanged,
+        this, &QToaDefsDlg::cdf_btn_slot);
 
     // Dismiss button
     //
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QToaDefsDlg::dismiss_btn_slot);
 
     update();
 }

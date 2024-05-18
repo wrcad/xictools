@@ -114,12 +114,14 @@ QTemptyDlg::QTemptyDlg(stringlist *l) : QTbag(this)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Delete All"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(delete_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTemptyDlg::delete_btn_slot);
 
     tbtn = new QToolButton();
     tbtn->setText(tr("Skip All"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(skip_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTemptyDlg::skip_btn_slot);
 
     QGroupBox *gb = new QGroupBox();
     vbox->addWidget(gb);
@@ -134,8 +136,8 @@ QTemptyDlg::QTemptyDlg(stringlist *l) : QTbag(this)
     ec_text->setReadOnly(true);
     ec_text->setMouseTracking(true);
     vbox->addWidget(ec_text);
-    connect(ec_text, SIGNAL(press_event(QMouseEvent*)),
-        this, SLOT(mouse_press_slot(QMouseEvent*)));
+    connect(ec_text, &QTtextEdit::press_event,
+        this, &QTemptyDlg::mouse_press_slot);
 
     hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
@@ -145,12 +147,14 @@ QTemptyDlg::QTemptyDlg(stringlist *l) : QTbag(this)
     tbtn = new QToolButton();
     tbtn->setText(tr("Apply"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTemptyDlg::apply_btn_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTemptyDlg::dismiss_btn_slot);
 
     // Use a fixed font in the label, same as the text area, so can
     // match columns.
@@ -159,8 +163,8 @@ QTemptyDlg::QTemptyDlg(stringlist *l) : QTbag(this)
         ec_text->setFont(*fnt);
         ec_label->setFont(*fnt);
     }
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTemptyDlg::font_changed_slot, Qt::QueuedConnection);
     update(l);
 }
 

@@ -138,7 +138,8 @@ QTdrcSetupDlg::QTdrcSetupDlg(GRobject c)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTdrcSetupDlg::help_btn_slot);
 
     // Layer list.
     //
@@ -150,13 +151,13 @@ QTdrcSetupDlg::QTdrcSetupDlg(GRobject c)
 
     dl_luse = new QCheckBox(tr("Check listed layers only  "));
     grid->addWidget(dl_luse, 0, 1);
-    connect(dl_luse, SIGNAL(stateChanged(int)),
-        this, SLOT(luse_btn_slot(int)));
+    connect(dl_luse, &QCheckBox::stateChanged,
+        this, &QTdrcSetupDlg::luse_btn_slot);
 
     dl_lskip = new QCheckBox(tr("Skip listed layers"));
     grid->addWidget(dl_lskip, 0, 2);
-    connect(dl_lskip, SIGNAL(stateChanged(int)),
-        this, SLOT(lskip_btn_slot(int)));
+    connect(dl_lskip, &QCheckBox::stateChanged,
+        this, &QTdrcSetupDlg::lskip_btn_slot);
 
     dl_llist = new QTlayerEdit();
     grid->addWidget(dl_llist, 1, 0, 1, 3);
@@ -168,12 +169,12 @@ QTdrcSetupDlg::QTdrcSetupDlg(GRobject c)
 
     dl_ruse = new QCheckBox(tr("Check listed rules only"));
     grid->addWidget(dl_ruse, 2, 1);
-    connect(dl_ruse, SIGNAL(stateChanged(int)),
-        this, SLOT(ruse_btn_slot(int)));
+    connect(dl_ruse, &QCheckBox::stateChanged,
+        this, &QTdrcSetupDlg::ruse_btn_slot);
     dl_rskip = new QCheckBox(tr("Skip listed rules"));;
     grid->addWidget(dl_rskip, 2, 2);
-    connect(dl_rskip, SIGNAL(stateChanged(int)),
-        this, SLOT(rskip_btn_slot(int)));
+    connect(dl_rskip, &QCheckBox::stateChanged,
+        this, &QTdrcSetupDlg::rskip_btn_slot);
 
     dl_rlist = new QLineEdit();
     grid->addWidget(dl_rlist, 3, 0, 1, 3);
@@ -194,8 +195,8 @@ QTdrcSetupDlg::QTdrcSetupDlg(GRobject c)
     dl_sb_max_errs->setMinimum(DRC_MAX_ERRS_MIN);
     dl_sb_max_errs->setMaximum(DRC_MAX_ERRS_MAX);
     dl_sb_max_errs->setValue(DRC()->maxErrors());
-    connect(dl_sb_max_errs, SIGNAL(valueChanged(int)),
-        this, SLOT(max_errs_changed_slot(int)));
+    connect(dl_sb_max_errs, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTdrcSetupDlg::max_errs_changed_slot);
 
     // Interactive Mode object limit.
     //
@@ -207,8 +208,8 @@ QTdrcSetupDlg::QTdrcSetupDlg(GRobject c)
     dl_sb_imax_objs->setMinimum(DRC_INTR_MAX_OBJS_MIN);
     dl_sb_imax_objs->setMaximum(DRC_INTR_MAX_OBJS_MAX);
     dl_sb_imax_objs->setValue(DRC()->intrMaxObjs());
-    connect(dl_sb_imax_objs, SIGNAL(valueChanged(int)),
-        this, SLOT(imax_objs_changed_slot(int)));
+    connect(dl_sb_imax_objs, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTdrcSetupDlg::imax_objs_changed_slot);
 
     // Interactive Mode time limit.
     //
@@ -220,8 +221,8 @@ QTdrcSetupDlg::QTdrcSetupDlg(GRobject c)
     dl_sb_imax_time->setMinimum(DRC_INTR_MAX_TIME_MIN);
     dl_sb_imax_time->setMaximum(DRC_INTR_MAX_TIME_MAX);
     dl_sb_imax_time->setValue(DRC()->intrMaxTime());
-    connect(dl_sb_imax_time, SIGNAL(valueChanged(int)),
-        this, SLOT(imax_time_changed_slot(int)));
+    connect(dl_sb_imax_time, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTdrcSetupDlg::imax_time_changed_slot);
 
     // Interactive Mode error limit.
     //
@@ -233,16 +234,16 @@ QTdrcSetupDlg::QTdrcSetupDlg(GRobject c)
     dl_sb_imax_errs->setMinimum(DRC_INTR_MAX_ERRS_MIN);
     dl_sb_imax_errs->setMaximum(DRC_INTR_MAX_ERRS_MAX);
     dl_sb_imax_errs->setValue(DRC()->intrMaxErrors());
-    connect(dl_sb_imax_errs, SIGNAL(valueChanged(int)),
-        this, SLOT(imax_errs_changed_slot(int)));
+    connect(dl_sb_imax_errs, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTdrcSetupDlg::imax_errs_changed_slot);
 
     // Skip cells check box
     //
     dl_skip = new QCheckBox(tr(
         "Skip interactive test of moved/copied/placed cells"));
     grid->addWidget(dl_skip, 4, 0, 1, 2);
-    connect(dl_skip, SIGNAL(stateChanged(int)),
-        this, SLOT(skip_btn_slot(int)));
+    connect(dl_skip, &QCheckBox::stateChanged,
+        this, &QTdrcSetupDlg::skip_btn_slot);
 
     // DRC error level
     //
@@ -252,33 +253,34 @@ QTdrcSetupDlg::QTdrcSetupDlg(GRobject c)
 
     dl_b1 = new QRadioButton(tr("One error per object"));
     vb->addWidget(dl_b1);
-    connect(dl_b1, SIGNAL(toggled(bool)),
-        this, SLOT(b1_btn_slot(bool)));
+    connect(dl_b1, &QRadioButton::toggled,
+        this, &QTdrcSetupDlg::b1_btn_slot);
 
     dl_b2 = new QRadioButton(tr("One error of each type per object"));
     vb->addWidget(dl_b2);
-    connect(dl_b2, SIGNAL(toggled(bool)),
-        this, SLOT(b2_btn_slot(bool)));
+    connect(dl_b2, &QRadioButton::toggled,
+        this, &QTdrcSetupDlg::b2_btn_slot);
 
     dl_b3 = new QRadioButton(tr("Record all errors"));
     vb->addWidget(dl_b3);
-    connect(dl_b3, SIGNAL(toggled(bool)),
-        this, SLOT(b3_btn_slot(bool)));
+    connect(dl_b3, &QRadioButton::toggled,
+        this, &QTdrcSetupDlg::b3_btn_slot);
 
     // Dismiss button
     //
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTdrcSetupDlg::dismiss_btn_slot);
 
     update();
 
     // must be done after entry text set
-    connect(dl_llist, SIGNAL(textChanged(const QString&)),
-        this, SLOT(llist_changed_slot(const QString&)));
-    connect(dl_rlist, SIGNAL(textChanged(const QString&)),
-        this, SLOT(rlist_changed_slot(const QString&)));
+    connect(dl_llist, &QTlayerEdit::textChanged,
+        this, &QTdrcSetupDlg::llist_changed_slot);
+    connect(dl_rlist, &QLineEdit::textChanged,
+        this, &QTdrcSetupDlg::rlist_changed_slot);
 }
 
 

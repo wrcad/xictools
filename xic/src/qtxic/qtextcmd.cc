@@ -246,7 +246,8 @@ QTextCmdDlg::QTextCmdDlg(GRobject c, sExtCmd *cmd,
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTextCmdDlg::help_btn_slot);
 
     gb = new QGroupBox(tr(cmd_excmd->btntitle()));
     vbox->addWidget(gb);
@@ -265,8 +266,8 @@ QTextCmdDlg::QTextCmdDlg(GRobject c, sExtCmd *cmd,
         grid->addWidget(cmd_bx[i], row, col);
         if (cmd_excmd->button(i)->is_active())
             QTdev::SetStatus(cmd_bx[i], true);
-        connect(cmd_bx[i], SIGNAL(stateChanged(int)),
-            this, SLOT(check_state_changed_slot(int)));
+        connect(cmd_bx[i], &QCheckBox::stateChanged,
+            this, &QTextCmdDlg::check_state_changed_slot);
     }
 
     // set sensitivity
@@ -315,8 +316,8 @@ QTextCmdDlg::QTextCmdDlg(GRobject c, sExtCmd *cmd,
             cmd_depth->addItem(buf);
         }
         cmd_depth->setCurrentIndex(dep);
-        connect(cmd_depth, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(depth_changed_slot(int)));
+        connect(cmd_depth, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &QTextCmdDlg::depth_changed_slot);
     }
 
     if (cmd_excmd->message()) {
@@ -352,12 +353,14 @@ QTextCmdDlg::QTextCmdDlg(GRobject c, sExtCmd *cmd,
     cmd_go->setText(tr(cmd_excmd->gotext()));
     hbox->addWidget(cmd_go);
     cmd_go->setCheckable(true);
-    connect(cmd_go, SIGNAL(toggled(bool)), this, SLOT(go_btn_slot(bool)));
+    connect(cmd_go, &QAbstractButton::toggled,
+        this, &QTextCmdDlg::go_btn_slot);
 
     QPushButton *btn = new QPushButton(tr("Cancel"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(cancel_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTextCmdDlg::cancel_btn_slot);
 }
 
 

@@ -200,7 +200,8 @@ QTdeviceDlg::QTdeviceDlg(GRobject caller)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     grid->addWidget(tbtn, 0, 2, 2, 1);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTdeviceDlg::help_btn_slot);
 
     label = new QLabel(tr("Default Model"));
     grid->addWidget(label, 2, 0);
@@ -248,15 +249,15 @@ QTdeviceDlg::QTdeviceDlg(GRobject caller)
     de_toggle->setText(tr("Hot Spot"));
     hbox->addWidget(de_toggle);
     de_toggle->setCheckable(true);
-    connect(de_toggle, SIGNAL(toggled(bool)),
-        this, SLOT(hotspot_btn_slot(bool)));
+    connect(de_toggle, &QAbstractButton::toggled,
+        this, &QTdeviceDlg::hotspot_btn_slot);
 
     QComboBox *entry = new QComboBox();
     hbox->addWidget(entry);
     for (int i = 0; orient_labels[i]; i++)
         entry->addItem(orient_labels[i]);
-    connect(entry, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(menu_changed_slot(int)));
+    connect(entry, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTdeviceDlg::menu_changed_slot);
 
     de_branch = new QLineEdit();
     grid->addWidget(de_branch, 5, 1, 1, 2);
@@ -303,17 +304,20 @@ QTdeviceDlg::QTdeviceDlg(GRobject caller)
     tbtn = new QToolButton();
     tbtn->setText(tr("Save in Library"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(savlib_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTdeviceDlg::savlib_btn_slot);
 
     tbtn = new QToolButton();
     tbtn->setText(tr("Save as Cell File"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(savfile_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTdeviceDlg::savfile_btn_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTdeviceDlg::dismiss_btn_slot);
 }
 
 

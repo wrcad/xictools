@@ -397,7 +397,7 @@ QTcellsDlg::QTcellsDlg(GRobject c) : QTbag(this)
 
     c_page_combo = new QComboBox();
     hbox->addWidget(c_page_combo);
-    connect(c_page_combo, &QComboBox::currentIndexChanged,
+    connect(c_page_combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
         this, &QTcellsDlg::page_menu_slot);
 
     // mode menu
@@ -407,7 +407,7 @@ QTcellsDlg::QTcellsDlg(GRobject c) : QTbag(this)
     c_mode_combo->addItem(tr("Phys Cells"));
     c_mode_combo->addItem(tr("Elec Cells"));
     c_mode_combo->setCurrentIndex(c_mode);
-    connect(c_mode_combo, &QComboBox::currentIndexChanged,
+    connect(c_mode_combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
         this, &QTcellsDlg::mode_changed_slot);
 
     // dismiss button

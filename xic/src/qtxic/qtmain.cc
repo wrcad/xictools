@@ -115,7 +115,6 @@
 #include "../../icons/xic_32x32.xpm"
 #include "../../icons/xic_48x48.xpm"
 
-#define NEW_SIGSYNTAX
 
 //-----------------------------------------------------------------------------
 // Main Window and top-level functions.
@@ -1121,13 +1120,8 @@ cKeys::cKeys(int wnum, QWidget *prnt) : QTcanvas(prnt)
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_SCREEN))
         set_font(fnt);
-#ifdef NEW_SIGSYNTAX
     connect(QTfont::self(), &QTfont::fontChanged,
         this, &cKeys::font_changed, Qt::QueuedConnection);
-#else
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed(int)), Qt::QueuedConnection);
-#endif
 }
 
 
@@ -1385,7 +1379,6 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_SCREEN))
         gd_viewport->set_font(fnt);
-#ifdef NEW_SIGSYNTAX
     connect(QTfont::self(), &QTfont::fontChanged,
         this, &QTsubwin::font_changed, Qt::QueuedConnection);
 
@@ -1417,39 +1410,6 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
         this, &QTsubwin::drag_enter_slot);
     connect(gd_viewport, &QTcanvas::drop_event,
         this, &QTsubwin::drop_slot);
-#else
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed(int)), Qt::QueuedConnection);
-
-    connect(gd_viewport, SIGNAL(resize_event(QResizeEvent*)),
-        this, SLOT(resize_slot(QResizeEvent*)));
-    connect(gd_viewport, SIGNAL(press_event(QMouseEvent*)),
-        this, SLOT(button_down_slot(QMouseEvent*)));
-    connect(gd_viewport, SIGNAL(release_event(QMouseEvent*)),
-        this, SLOT(button_up_slot(QMouseEvent*)));
-    connect(gd_viewport, SIGNAL(double_click_event(QMouseEvent*)),
-        this, SLOT(double_click_slot(QMouseEvent*)));
-    connect(gd_viewport, SIGNAL(motion_event(QMouseEvent*)),
-        this, SLOT(motion_slot(QMouseEvent*)));
-    connect(gd_viewport, SIGNAL(key_press_event(QKeyEvent*)),
-        this, SLOT(key_down_slot(QKeyEvent*)));
-    connect(gd_viewport, SIGNAL(key_release_event(QKeyEvent*)),
-        this, SLOT(key_up_slot(QKeyEvent*)));
-    connect(gd_viewport, SIGNAL(enter_event(QEnterEvent*)),
-        this, SLOT(enter_slot(QEnterEvent*)));
-    connect(gd_viewport, SIGNAL(leave_event(QEvent*)),
-        this, SLOT(leave_slot(QEvent*)));
-    connect(gd_viewport, SIGNAL(focus_in_event(QFocusEvent*)),
-        this, SLOT(focus_in_slot(QFocusEvent*)));
-    connect(gd_viewport, SIGNAL(focus_out_event(QFocusEvent*)),
-        this, SLOT(focus_out_slot(QFocusEvent*)));
-    connect(gd_viewport, SIGNAL(mouse_wheel_event(QWheelEvent*)),
-        this, SLOT(mouse_wheel_slot(QWheelEvent*)));
-    connect(gd_viewport, SIGNAL(drag_enter_event(QDragEnterEvent*)),
-        this, SLOT(drag_enter_slot(QDragEnterEvent*)));
-    connect(gd_viewport, SIGNAL(drop_event(QDropEvent*)),
-        this, SLOT(drop_slot(QDropEvent*)));
-#endif
 
     if (sw_win_number == 0) {
         // being subclassed for main window
@@ -1496,13 +1456,8 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
     // Create new menu, just copy template.
     MainMenu()->CreateSubwinMenu(wnum);
 
-#ifdef NEW_SIGSYNTAX
     connect(this, &QTsubwin::update_coords,
         QTmainwin::self(), &QTmainwin::update_coords_slot);
-#else
-    connect(this, SIGNAL(update_coords(int, int)),
-        QTmainwin::self(), SLOT(update_coords_slot(int, int)));
-#endif
 
     QPoint mposn = QTmainwin::self()->pos();
     if (LastPos[wnum].width()) {
@@ -2748,17 +2703,10 @@ QTmainwin::QTmainwin(QWidget *prnt) : QTsubwin(0, prnt)
     mw_status = new QTparam(this);
     vbox->addWidget(mw_status);
 
-#ifdef NEW_SIGSYNTAX
     connect(this, &QTmainwin::update_coords,
         this, &QTmainwin::update_coords_slot);
     connect(this, &QTmainwin::run_queued,
         this, &QTmainwin::run_queued_slot, Qt::QueuedConnection);
-#else
-    connect(this, SIGNAL(update_coords(int, int)),
-        this, SLOT(update_coords_slot(int, int)));
-    connect(this, SIGNAL(run_queued(void*, void*)),
-        this, SLOT(run_queued_slot(void*, void*)), Qt::QueuedConnection);
-#endif
 }
 
 

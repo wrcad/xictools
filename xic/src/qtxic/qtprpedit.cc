@@ -214,13 +214,15 @@ QTprpEditorDlg::QTprpEditorDlg(CDo *odesc, PRPmode activ) : QTprpBase(this)
     po_edit->setText(tr("Edit"));
     hbox->addWidget(po_edit);
     po_edit->setCheckable(true);
-    connect(po_edit, SIGNAL(toggled(bool)), this, SLOT(edit_btn_slot(bool)));
+    connect(po_edit, &QAbstractButton::toggled,
+        this, &QTprpEditorDlg::edit_btn_slot);
 
     po_del = new QToolButton();
     po_del->setText(tr("Delete"));
     hbox->addWidget(po_del);
     po_del->setCheckable(true);
-    connect(po_del, SIGNAL(toggled(bool)), this, SLOT(del_btn_slot(bool)));
+    connect(po_del, &QAbstractButton::toggled,
+        this, &QTprpEditorDlg::del_btn_slot);
 
     po_add = new QToolButton();
     po_add->setText(tr("Add"));
@@ -230,28 +232,29 @@ QTprpEditorDlg::QTprpEditorDlg(CDo *odesc, PRPmode activ) : QTprpBase(this)
     po_addmenu = new QMenu();
     po_add->setMenu(po_addmenu);
     po_add->setPopupMode(QToolButton::InstantPopup);
-    connect(po_addmenu, SIGNAL(triggered(QAction*)),
-        this, SLOT(add_menu_slot(QAction*)));
+    connect(po_addmenu, &QMenu::triggered,
+        this, &QTprpEditorDlg::add_menu_slot);
 
     po_global = new QToolButton();
     po_global->setText(tr("Global"));
     hbox->addWidget(po_global);
     po_global->setCheckable(true);
-    connect(po_global, SIGNAL(toggled(bool)),
-        this, SLOT(global_btn_slot(bool)));
+    connect(po_global, &QAbstractButton::toggled,
+        this, &QTprpEditorDlg::global_btn_slot);
 
     po_info = new QToolButton();
     po_info->setText(tr("Info"));
     hbox->addWidget(po_info);
     po_info->setCheckable(true);
-    connect(po_info, SIGNAL(toggled(bool)),
-        this, SLOT(info_btn_slot(bool)));
+    connect(po_info, &QAbstractButton::toggled,
+        this, &QTprpEditorDlg::info_btn_slot);
 
     hbox->addStretch(1);
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTprpEditorDlg::help_btn_slot);
 
     // scrolled text area
     //
@@ -260,23 +263,22 @@ QTprpEditorDlg::QTprpEditorDlg(CDo *odesc, PRPmode activ) : QTprpBase(this)
     wb_textarea->setMouseTracking(true);
     wb_textarea->setAcceptDrops(true);
     vbox->addWidget(wb_textarea);
-    connect(wb_textarea, SIGNAL(press_event(QMouseEvent*)),
-        this, SLOT(mouse_press_slot(QMouseEvent*)));
-    connect(wb_textarea, SIGNAL(release_event(QMouseEvent*)),
-        this, SLOT(mouse_release_slot(QMouseEvent*)));
-    connect(wb_textarea, SIGNAL(motion_event(QMouseEvent*)),
-        this, SLOT(mouse_motion_slot(QMouseEvent*)));
-    connect(wb_textarea,
-        SIGNAL(mime_data_handled(const QMimeData*, int*)),
-        this, SLOT(mime_data_handled_slot(const QMimeData*, int*)));
-    connect(wb_textarea, SIGNAL(mime_data_delivered(const QMimeData*, int*)),
-        this, SLOT(mime_data_delivered_slot(const QMimeData*, int*)));
+    connect(wb_textarea, &QTtextEdit::press_event,
+        this, &QTprpEditorDlg::mouse_press_slot);
+    connect(wb_textarea, &QTtextEdit::release_event,
+        this, &QTprpEditorDlg::mouse_release_slot);
+    connect(wb_textarea, &QTtextEdit::motion_event,
+        this, &QTprpEditorDlg::mouse_motion_slot);
+    connect(wb_textarea, &QTtextEdit::mime_data_handled,
+        this, &QTprpEditorDlg::mime_data_handled_slot);
+    connect(wb_textarea, &QTtextEdit::mime_data_delivered,
+        this, &QTprpEditorDlg::mime_data_delivered_slot);
 
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_FIXED))
         wb_textarea->setFont(*fnt);
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTprpEditorDlg::font_changed_slot, Qt::QueuedConnection);
 
     // activate and dismiss buttons
     //
@@ -289,13 +291,14 @@ QTprpEditorDlg::QTprpEditorDlg(CDo *odesc, PRPmode activ) : QTprpBase(this)
     po_activ->setText(tr("Activate"));
     po_activ->setCheckable(true);
     hbox->addWidget(po_activ);
-    connect(po_activ, SIGNAL(toggled(bool)),
-        this, SLOT(activ_btn_slot(bool)));
+    connect(po_activ, &QAbstractButton::toggled,
+        this, &QTprpEditorDlg::activ_btn_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTprpEditorDlg::dismiss_btn_slot);
 
     update(odesc, activ);
 }

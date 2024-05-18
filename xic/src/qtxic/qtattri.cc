@@ -351,7 +351,7 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     for (int i = 0; cursvals[i]; i++)
         at_cursor->addItem(cursvals[i]);
     at_cursor->setCurrentIndex(XM()->GetCursor());
-    connect(at_cursor, &QComboBox::currentIndexChanged,
+    connect(at_cursor, QOverload<int>::of(&QComboBox::currentIndexChanged),
         this, &QTattributesDlg::cursor_menu_changed_slot);
 
     at_fullscr = new QCheckBox(tr("Use full-window cursor"));
@@ -369,7 +369,7 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     grid->addWidget(at_sb_visthr, 0, 1);
     at_sb_visthr->setRange(DSP_MIN_CELL_THRESHOLD, DSP_MAX_CELL_THRESHOLD);
     at_sb_visthr->setValue(DSP_DEF_CELL_THRESHOLD);
-    connect(at_sb_visthr, &QSpinBox::valueChanged,
+    connect(at_sb_visthr, QOverload<int>::of(&QSpinBox::valueChanged),
         this, &QTattributesDlg::visthr_sb_slot);
 
     label = new QLabel(tr("Push context display illumination percent"));
@@ -379,7 +379,7 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     grid->addWidget(at_sb_cxpct, 1, 1);
     at_sb_cxpct->setRange(DSP_MIN_CX_DARK_PCNT, 100);
     at_sb_cxpct->setValue(DSP_DEF_CX_DARK_PCNT);
-    connect(at_sb_cxpct, &QSpinBox::valueChanged,
+    connect(at_sb_cxpct, QOverload<int>::of(&QSpinBox::valueChanged),
         this, &QTattributesDlg::cxpct_sb_slot);
 
     label = new QLabel(tr("Pixels between pop-ups and prompt line"));
@@ -389,7 +389,7 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     grid->addWidget(at_sb_offset, 2, 1);
     at_sb_offset->setRange(-16, 16);
     at_sb_offset->setValue(0);
-    connect(at_sb_offset, &QSpinBox::valueChanged,
+    connect(at_sb_offset, QOverload<int>::of(&QSpinBox::valueChanged),
         this, &QTattributesDlg::offset_sb_slot);
 
     // Selections page
@@ -431,7 +431,7 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     grid->addWidget(at_sb_tsize, 1, 1);
     at_sb_tsize->setRange(DSP_MIN_PTRM_TXTHT, DSP_MAX_PTRM_TXTHT);
     at_sb_tsize->setValue(DSP_DEF_PTRM_TXTHT);
-    connect(at_sb_tsize, &QSpinBox::valueChanged,
+    connect(at_sb_tsize, QOverload<int>::of(&QSpinBox::valueChanged),
         this, &QTattributesDlg::tsize_sb_slot);
 
     // Terminals page
@@ -454,7 +454,7 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     at_ebterms->addItem("Cell terminals only");
     at_ebterms->addItem("All terminals");
     at_ebterms->setCurrentIndex(at_ebthst);
-    connect(at_ebterms, &QComboBox::currentIndexChanged,
+    connect(at_ebterms, QOverload<int>::of(&QComboBox::currentIndexChanged),
         this, &QTattributesDlg::ebt_menu_changed_slot);
 
     label = new QLabel(tr("Terminal text pixel size"));
@@ -464,7 +464,7 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     grid->addWidget(at_sb_ttsize, 1, 1);
     at_sb_ttsize->setRange(DSP_MIN_PTRM_TXTHT, DSP_MAX_PTRM_TXTHT);
     at_sb_ttsize->setValue(DSP()->TermTextSize());
-    connect(at_sb_ttsize, &QSpinBox::valueChanged,
+    connect(at_sb_ttsize, QOverload<int>::of(&QSpinBox::valueChanged),
         this, &QTattributesDlg::ttsize_sb_slot);
 
     label = new QLabel(tr("Terminal mark size"));
@@ -474,7 +474,7 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     grid->addWidget(at_sb_tmsize, 2, 1);
     at_sb_tmsize->setRange(DSP_MIN_PTRM_DELTA, DSP_MAX_PTRM_DELTA);
     at_sb_tmsize->setValue(DSP()->TermMarkSize());
-    connect(at_sb_tmsize, &QSpinBox::valueChanged,
+    connect(at_sb_tmsize, QOverload<int>::of(&QSpinBox::valueChanged),
         this, &QTattributesDlg::tmsize_sb_slot);
 
     // Labels page
@@ -494,7 +494,7 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     hb->addWidget(at_hdn);
     for (int i = 0; hdn_menu[i]; i++)
         at_hdn->addItem(hdn_menu[i]);
-    connect(at_hdn, &QComboBox::currentIndexChanged,
+    connect(at_hdn, QOverload<int>::of(&QComboBox::currentIndexChanged),
         this, &QTattributesDlg::hdn_menu_changed_slot);
 
     label = new QLabel(tr("Default minimum label height"));
@@ -505,7 +505,8 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     at_sb_lheight->setRange(CD_MIN_TEXT_HEI, CD_MAX_TEXT_HEI);
     at_sb_lheight->setDecimals(2);
     at_sb_lheight->setValue(CD_DEF_TEXT_HEI);
-    connect(at_sb_lheight, &QTdoubleSpinBox::valueChanged,
+    connect(at_sb_lheight,
+        QOverload<double>::of(&QTdoubleSpinBox::valueChanged),
         this, &QTattributesDlg::lheight_sb_slot);
 
     label = new QLabel(tr("Maximum displayed label length"));
@@ -515,7 +516,7 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     grid->addWidget(at_sb_llen, 2, 1);
     at_sb_llen->setRange(DSP_MIN_MAX_LABEL_LEN, DSP_MAX_MAX_LABEL_LEN);
     at_sb_llen->setValue(DSP_DEF_MAX_LABEL_LEN);
-    connect(at_sb_llen, &QSpinBox::valueChanged,
+    connect(at_sb_llen, QOverload<int>::of(&QSpinBox::valueChanged),
         this, &QTattributesDlg::llen_sb_slot);
 
     label = new QLabel(tr("Label optional displayed line limit"));
@@ -525,7 +526,7 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     grid->addWidget(at_sb_llines, 3, 1);
     at_sb_llines->setRange(DSP_MIN_MAX_LABEL_LINES, DSP_MAX_MAX_LABEL_LINES);
     at_sb_llines->setValue(DSP_DEF_MAX_LABEL_LINES);
-    connect(at_sb_llines, &QSpinBox::valueChanged,
+    connect(at_sb_llines, QOverload<int>::of(&QSpinBox::valueChanged),
         this, &QTattributesDlg::llines_sb_slot);
 
     // Dismiss button

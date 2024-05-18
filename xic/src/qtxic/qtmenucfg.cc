@@ -217,12 +217,12 @@ QTmenuConfig::instantiateMainMenus()
                 MainMenu()->NewDDmenu(ent->user_action,
                     XM()->OpenCellMenuList());
                 QMenu *submenu = action(ent)->menu();
-                connect(submenu, SIGNAL(triggered(QAction*)),
-                    this, SLOT(file_open_menu_slot(QAction*)));
+                connect(submenu, &QMenu::triggered,
+                    this, &QTmenuConfig::file_open_menu_slot);
             }
         }
-        connect(file_menu, SIGNAL(triggered(QAction*)),
-            this, SLOT(file_menu_slot(QAction*)));
+        connect(file_menu, &QMenu::triggered,
+            this, &QTmenuConfig::file_menu_slot);
     }
 
     // Cell menu
@@ -257,8 +257,8 @@ QTmenuConfig::instantiateMainMenus()
             ent->cmd.caller = ent->user_action;
             ent->cmd.wdesc = DSP()->MainWdesc();
         }
-        connect(cell_menu, SIGNAL(triggered(QAction*)),
-            this, SLOT(cell_menu_slot(QAction*)));
+        connect(cell_menu, &QMenu::triggered,
+            this, &QTmenuConfig::cell_menu_slot);
     }
 
     // Edit menu
@@ -307,8 +307,8 @@ QTmenuConfig::instantiateMainMenus()
             ent->cmd.caller = ent->user_action;
             ent->cmd.wdesc = DSP()->MainWdesc();
         }
-        connect(edit_menu, SIGNAL(triggered(QAction*)),
-            this, SLOT(edit_menu_slot(QAction*)));
+        connect(edit_menu, &QMenu::triggered,
+            this, &QTmenuConfig::edit_menu_slot);
     }
 
     // Modify menu
@@ -347,8 +347,8 @@ QTmenuConfig::instantiateMainMenus()
             ent->cmd.caller = ent->user_action;
             ent->cmd.wdesc = DSP()->MainWdesc();
         }
-        connect(modf_menu, SIGNAL(triggered(QAction*)),
-            this, SLOT(modf_menu_slot(QAction*)));
+        connect(modf_menu, &QMenu::triggered,
+            this, &QTmenuConfig::modf_menu_slot);
     }
 
     // View menu
@@ -394,8 +394,8 @@ QTmenuConfig::instantiateMainMenus()
                 MainMenu()->NewDDmenu(ent->user_action, XM()->ViewList());
                 QMenu *submenu = action(ent)->menu();
                 submenu->setObjectName("ViewSubMenu");
-                connect(submenu, SIGNAL(triggered(QAction*)),
-                    this, SLOT(view_view_menu_slot(QAction*)));
+                connect(submenu, &QMenu::triggered,
+                    this, &QTmenuConfig::view_view_menu_slot);
             }
 
             // Show/hide mode buttons.
@@ -404,8 +404,8 @@ QTmenuConfig::instantiateMainMenus()
             if (ent - mbox->menu == viewMenuPhys)
                 action(ent)->setVisible(DSP()->CurMode() == Electrical);
         }
-        connect(view_menu, SIGNAL(triggered(QAction*)),
-            this, SLOT(view_menu_slot(QAction*)));
+        connect(view_menu, &QMenu::triggered,
+            this, &QTmenuConfig::view_menu_slot);
     }
 
     // Attributes menu
@@ -462,8 +462,8 @@ QTmenuConfig::instantiateMainMenus()
             }
         }
         submenu = newsubm;
-        connect(attr_menu, SIGNAL(triggered(QAction*)),
-            this, SLOT(attr_menu_slot(QAction*)));
+        connect(attr_menu, &QMenu::triggered,
+            this, &QTmenuConfig::attr_menu_slot);
     }
 
     // Attributes Main Window sub-menu.
@@ -524,8 +524,8 @@ QTmenuConfig::instantiateMainMenus()
         if (DSP()->CurMode() == Physical)
             action(&mbox->menu[subwAttrMenuNosym])->setVisible(false);
 
-        connect(submenu, SIGNAL(triggered(QAction*)),
-            this, SLOT(attr_main_win_menu_slot(QAction*)));
+        connect(submenu, &QMenu::triggered,
+            this, &QTmenuConfig::attr_main_win_menu_slot);
         submenu = newsubm;
     }
 
@@ -556,8 +556,8 @@ QTmenuConfig::instantiateMainMenus()
             ent->cmd.caller = ent->user_action;
             ent->cmd.wdesc = DSP()->MainWdesc();
         }
-        connect(submenu, SIGNAL(triggered(QAction*)),
-            this, SLOT(attr_main_win_obj_menu_slot(QAction*)));
+        connect(submenu, &QMenu::triggered,
+            this, &QTmenuConfig::attr_main_win_obj_menu_slot);
     }
     submenu = 0;
 
@@ -595,8 +595,8 @@ QTmenuConfig::instantiateMainMenus()
             ent->cmd.caller = ent->user_action;
             ent->cmd.wdesc = DSP()->MainWdesc();
         }
-        connect(cvrt_menu, SIGNAL(triggered(QAction*)),
-            this, SLOT(cvrt_menu_slot(QAction*)));
+        connect(cvrt_menu, &QMenu::triggered,
+            this, &QTmenuConfig::cvrt_menu_slot);
     }
 
     // Drc menu
@@ -639,8 +639,8 @@ QTmenuConfig::instantiateMainMenus()
             ent->cmd.caller = ent->user_action;
             ent->cmd.wdesc = DSP()->MainWdesc();
         }
-        connect(drc_menu, SIGNAL(triggered(QAction*)),
-            this, SLOT(drc_menu_slot(QAction*)));
+        connect(drc_menu, &QMenu::triggered,
+            this, &QTmenuConfig::drc_menu_slot);
     }
 
     // Extract menu
@@ -680,8 +680,8 @@ QTmenuConfig::instantiateMainMenus()
             ent->cmd.caller = ent->user_action;
             ent->cmd.wdesc = DSP()->MainWdesc();
         }
-        connect(ext_menu, SIGNAL(triggered(QAction*)),
-            this, SLOT(ext_menu_slot(QAction*)));
+        connect(ext_menu, &QMenu::triggered,
+            this, &QTmenuConfig::ext_menu_slot);
     }
 
     // User menu
@@ -713,8 +713,8 @@ QTmenuConfig::instantiateMainMenus()
             ent->cmd.caller = ent->user_action;
             ent->cmd.wdesc = DSP()->MainWdesc();
         }
-        connect(user_menu, SIGNAL(triggered(QAction*)),
-            this, SLOT(user_menu_slot(QAction*)));
+        connect(user_menu, &QMenu::triggered,
+            this, &QTmenuConfig::user_menu_slot);
     }
 
     // Help menu
@@ -760,8 +760,8 @@ QTmenuConfig::instantiateMainMenus()
             ent->cmd.caller = ent->user_action;
             ent->cmd.wdesc = DSP()->MainWdesc();
         }
-        connect(help_menu, SIGNAL(triggered(QAction*)),
-            this, SLOT(help_menu_slot(QAction*)));
+        connect(help_menu, &QMenu::triggered,
+            this, &QTmenuConfig::help_menu_slot);
     }
 }
 
@@ -802,8 +802,8 @@ QTmenuConfig::instantiateTopButtonMenu()
             ent->cmd.caller = b;
             ent->cmd.wdesc = DSP()->MainWdesc();
 
-            connect(b, SIGNAL(button_pressed(MenuEnt*)),
-                this, SLOT(exec_slot(MenuEnt*)));
+            connect(b, &QTmenuButton::button_pressed,
+                this, &QTmenuConfig::exec_slot);
         }
     }
 }
@@ -870,12 +870,12 @@ QTmenuConfig::instantiateSideButtonMenus()
             ent->cmd.wdesc = DSP()->MainWdesc();
 
             if (ent - mbox->menu == btnPhysMenuStyle) {
-                connect(b, SIGNAL(button_pressed(MenuEnt*)),
-                    this, SLOT(style_slot(MenuEnt*)));
+                connect(b, &QTmenuButton::button_pressed,
+                    this, &QTmenuConfig::style_slot);
             }
             else {
-                connect(b, SIGNAL(button_pressed(MenuEnt*)),
-                    this, SLOT(exec_slot(MenuEnt*)));
+                connect(b, &QTmenuButton::button_pressed,
+                    this, &QTmenuConfig::exec_slot);
             }
         }
         if (EditIf()->styleList()) {
@@ -883,8 +883,8 @@ QTmenuConfig::instantiateSideButtonMenus()
             for (const char *const *s = EditIf()->styleList(); *s; s++)
                 mc_style_menu->addAction(tr(*s));
 
-            connect(mc_style_menu, SIGNAL(triggered(QAction*)),
-                this, SLOT(style_menu_slot(QAction*)));
+            connect(mc_style_menu, &QMenu::triggered,
+                this, &QTmenuConfig::style_menu_slot);
         }
     }
 
@@ -936,12 +936,12 @@ QTmenuConfig::instantiateSideButtonMenus()
             ent->cmd.wdesc = DSP()->MainWdesc();
 
             if (ent - mbox->menu == btnElecMenuShape) {
-                connect(b, SIGNAL(button_pressed(MenuEnt*)),
-                    this, SLOT(shape_slot(MenuEnt*)));
+                connect(b, &QTmenuButton::button_pressed,
+                    this, &QTmenuConfig::shape_slot);
             }
             else {
-                connect(b, SIGNAL(button_pressed(MenuEnt*)),
-                    this, SLOT(exec_slot(MenuEnt*)));
+                connect(b, &QTmenuButton::button_pressed,
+                    this, &QTmenuConfig::exec_slot);
             }
         }
         if (ScedIf()->shapesList()) {
@@ -949,8 +949,8 @@ QTmenuConfig::instantiateSideButtonMenus()
             for (const char *const *s = ScedIf()->shapesList(); *s; s++)
                 mc_shape_menu->addAction(tr(*s));
 
-            connect(mc_shape_menu, SIGNAL(triggered(QAction*)),
-                this, SLOT(shape_menu_slot(QAction*)));
+            connect(mc_shape_menu, &QMenu::triggered,
+                this, &QTmenuConfig::shape_menu_slot);
         }
     }
 }
@@ -1032,8 +1032,8 @@ QTmenuConfig::instantiateSubwMenus(int wnum)
                 for (int i = 0; i < lst.size(); i++)
                     lst.value(i)->setData(wincode);
 
-                connect(submenu, SIGNAL(triggered(QAction*)),
-                    this, SLOT(subwin_view_view_menu_slot(QAction*)));
+                connect(submenu, &QMenu::triggered,
+                    this, &QTmenuConfig::subwin_view_view_menu_slot);
             }
 
             // Show/hide mode buttons.
@@ -1043,8 +1043,8 @@ QTmenuConfig::instantiateSubwMenus(int wnum)
                 action(ent)->setVisible(DSP()->CurMode() == Electrical);
         }
 
-        connect(subwin_view_menu, SIGNAL(triggered(QAction*)),
-            this, SLOT(subwin_view_menu_slot(QAction*)));
+        connect(subwin_view_menu, &QMenu::triggered,
+            this, &QTmenuConfig::subwin_view_menu_slot);
     }
 
     // Subwin Attr Menu
@@ -1108,8 +1108,8 @@ QTmenuConfig::instantiateSubwMenus(int wnum)
         if (DSP()->Window(wnum)->Mode() == Physical)
             action(&mbox->menu[subwAttrMenuNosym])->setVisible(false);
 
-        connect(subwin_attr_menu, SIGNAL(triggered(QAction*)),
-            this, SLOT(subwin_attr_menu_slot(QAction*)));
+        connect(subwin_attr_menu, &QMenu::triggered,
+            this, &QTmenuConfig::subwin_attr_menu_slot);
     }
 
     // Subwin Help Menu
@@ -1123,10 +1123,10 @@ QTmenuConfig::instantiateSubwMenus(int wnum)
 #ifdef USE_QTOOLBAR
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         menubar->addAction(tr("&Help"), Qt::CTRL|Qt::Key_H,
-            this, SLOT(subwin_help_slot()));
+            this, &QTmenuConfig::subwin_help_slot);
 #else
         QAction *a = menubar->addAction(tr("&Help"),
-            this, SLOT(subwin_help_slot()));
+            this, &QTmenuConfig::subwin_help_slot);
         a->setShortcut(QKeySequence("Ctrl+H"));
 #endif
 #else
@@ -1154,8 +1154,8 @@ QTmenuConfig::instantiateSubwMenus(int wnum)
             ent->cmd.wdesc = wdesc;
         }
 
-        connect(subwin_help_menu, SIGNAL(triggered(QAction*)),
-            this, SLOT(subwin_help_menu_slot(QAction*)));
+        connect(subwin_help_menu, &QMenu::triggered,
+            this, &QTmenuConfig::subwin_help_menu_slot);
 #endif
     }
 }
@@ -1232,8 +1232,8 @@ QTmenuConfig::updateDynamicMenus()
             curname = ent->menutext;
             action(ent)->setMenu(curmenu);
             curstrp += strlen(curname) + 1;
-            connect(curmenu, SIGNAL(triggered(QAction*)),
-                this, SLOT(user_menu_slot(QAction*)));
+            connect(curmenu, &QMenu::triggered,
+                this, &QTmenuConfig::user_menu_slot);
             continue;
         }
 

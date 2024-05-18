@@ -139,7 +139,8 @@ QTflattenDlg::QTflattenDlg(
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTflattenDlg::help_btn_slot);
 
     // depth option
     //
@@ -167,39 +168,39 @@ QTflattenDlg::QTflattenDlg(
         entry->addItem(buf);
     }
     entry->setCurrentIndex(dep);
-    connect(entry, SIGNAL(currentTextChanged(const QString&)),
-        this, SLOT(depth_menu_slot(const QString&)));
+    connect(entry, &QComboBox::currentTextChanged,
+        this, &QTflattenDlg::depth_menu_slot);
 
     // check boxes
     //
     fl_novias = new QCheckBox(tr(
         "Don't flatten standard vias, move to top"));
     vbox->addWidget(fl_novias);
-    connect(fl_novias, SIGNAL(stateChanged(int)),
-        this, SLOT(novias_btn_slot(int)));
+    connect(fl_novias, &QCheckBox::stateChanged,
+        this, &QTflattenDlg::novias_btn_slot);
 
     fl_nopcells = new QCheckBox(tr(
         "Don't flatten param. cells, move to top"));
     vbox->addWidget(fl_nopcells);
-    connect(fl_nopcells, SIGNAL(stateChanged(int)),
-        this, SLOT(nopcells_btn_slot(int)));
+    connect(fl_nopcells, &QCheckBox::stateChanged,
+        this, &QTflattenDlg::nopcells_btn_slot);
 
     fl_nolabels = new QCheckBox(tr("Ignore labels in subcells"));
     vbox->addWidget(fl_nolabels);
-    connect(fl_nolabels, SIGNAL(stateChanged(int)),
-        this, SLOT(nolabels_btn_slot(int)));
+    connect(fl_nolabels, &QCheckBox::stateChanged,
+        this, &QTflattenDlg::nolabels_btn_slot);
 
     QCheckBox *cbox = new QCheckBox(tr("Use fast mode, NOT UNDOABLE"));
     vbox->addWidget(cbox);
     QTdev::SetStatus(cbox, fmode);
-    connect(cbox, SIGNAL(stateChanged(int)),
-        this, SLOT(fastmode_btn_slot(int)));
+    connect(cbox, &QCheckBox::stateChanged,
+        this, &QTflattenDlg::fastmode_btn_slot);
 
     fl_merge = new QCheckBox(tr("Use object merging when flattening"));
     vbox->addWidget(fl_merge);
     QTdev::SetStatus(fl_merge, merge);
-    connect(fl_merge, SIGNAL(stateChanged(int)),
-        this, SLOT(merge_btn_slot(int)));
+    connect(fl_merge, &QCheckBox::stateChanged,
+        this, &QTflattenDlg::merge_btn_slot);
 
     // flatten and dismiss buttons
     //
@@ -212,12 +213,14 @@ QTflattenDlg::QTflattenDlg(
     fl_go = new QToolButton();
     fl_go->setText(tr("Flatten"));
     hbox->addWidget(fl_go);
-    connect(fl_go, SIGNAL(clicked()), this, SLOT(go_btn_slot()));
+    connect(fl_go, &QAbstractButton::clicked,
+        this, &QTflattenDlg::go_btn_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTflattenDlg::dismiss_btn_slot);
 
     update();
 }

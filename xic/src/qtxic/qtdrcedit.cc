@@ -179,8 +179,8 @@ QTdrcRuleEditDlg::QTdrcRuleEditDlg(GRobject c)
     // _Quit, <control>Q, dim_cancel_proc, 0, 0
     a = menu->addAction(tr("&Quit"));
     a->setShortcut(QKeySequence("Ctrl+Q"));
-    connect(menu, SIGNAL(triggered(QAction*)),
-        this, SLOT(edit_menu_slot(QAction*)));
+    connect(menu, &QMenu::triggered,
+        this, &QTdrcRuleEditDlg::edit_menu_slot);
 
     // Rules menu.
 #ifdef USE_QTOOLBAR
@@ -198,8 +198,8 @@ QTdrcRuleEditDlg::QTdrcRuleEditDlg(GRobject c)
     for (DRCtest *tst = DRC()->userTests(); tst; tst = tst->next()) {
         dim_umenu->addAction(tst->name());
     }
-    connect(dim_umenu, SIGNAL(triggered(QAction*)),
-        this, SLOT(user_menu_slot(QAction*)));
+    connect(dim_umenu, &QMenu::triggered,
+        this, &QTdrcRuleEditDlg::user_menu_slot);
 
     // Connected, 0, dim_rule_proc, drConnected, 0
     a = dim_menu->addAction("Connected");
@@ -258,8 +258,8 @@ QTdrcRuleEditDlg::QTdrcRuleEditDlg(GRobject c)
     // MinNoOverlap, 0, dim_rule_proc, drMinNoOverlap, 0
     a = dim_menu->addAction("MinNoOverlap");
     a->setData(drMinNoOverlap);
-    connect(dim_menu, SIGNAL(triggered(QAction*)),
-        this, SLOT(rules_menu_slot(QAction*)));
+    connect(dim_menu, &QMenu::triggered,
+        this, &QTdrcRuleEditDlg::rules_menu_slot);
 
     // Rule Block menu.
 #ifdef USE_QTOOLBAR
@@ -283,22 +283,22 @@ QTdrcRuleEditDlg::QTdrcRuleEditDlg(GRobject c)
     for (DRCtest *tst = DRC()->userTests(); tst; tst = tst->next()) {
         dim_rbmenu->addAction(tst->name());
     }
-    connect(dim_rbmenu, SIGNAL(triggered(QAction*)),
-        this, SLOT(ruleblk_menu_slot(QAction*)));
+    connect(dim_rbmenu, &QMenu::triggered,
+        this, &QTdrcRuleEditDlg::ruleblk_menu_slot);
 
     // Help menu.
 #ifdef USE_QTOOLBAR
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     menubar->addAction(tr("&Help"), Qt::CTRL|Qt::Key_H, this,
-        SLOT(help_slot()));
+        &QTdrcRuleEditDlg::help_slot()));
 #else
-    a = menubar->addAction(tr("&Help"), this, SLOT(help_slot()));
+    a = menubar->addAction(tr("&Help"), this, &QTdrcRuleEditDlg::help_slot);
     a->setShortcut(QKeySequence("Ctrl+H"));
 #endif
 #else
     menu = menubar->addMenu(tr("&Help"));
     // _Help, <control>H, dim_help_proc, 0, 0);
-    a = menu->addAction(tr("&Help"), this, SLOT(help_slot()));
+    a = menu->addAction(tr("&Help"), this, &QTdrcRuleEditDlg::help_slot);
     a->setShortcut(QKeySequence("Ctrl+H"));
 #endif
 
@@ -306,14 +306,14 @@ QTdrcRuleEditDlg::QTdrcRuleEditDlg(GRobject c)
     vbox->addWidget(dim_text);
     dim_text->setReadOnly(true);
     dim_text->setMouseTracking(true);
-    connect(dim_text, SIGNAL(press_event(QMouseEvent*)),
-        this, SLOT(mouse_press_slot(QMouseEvent*)));
+    connect(dim_text, &QTtextEdit::press_event,
+        this, &QTdrcRuleEditDlg::mouse_press_slot);
 
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_FIXED))
         dim_text->setFont(*fnt);
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTdrcRuleEditDlg::font_changed_slot, Qt::QueuedConnection);
 
     if (dim_undo)
         dim_undo->setEnabled(false);

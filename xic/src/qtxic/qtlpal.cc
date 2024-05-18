@@ -180,8 +180,8 @@ QTlayerPaletteDlg::QTlayerPaletteDlg(GRobject caller) : QTdraw(XW_LPAL)
         QAction *a = lp_recall_menu->addAction(buf);
         a->setData(i);
     }
-    connect(lp_recall_menu, SIGNAL(triggered(QAction*)),
-        this, SLOT(recall_menu_slot(QAction*)));
+    connect(lp_recall_menu, &QMenu::triggered,
+        this, &QTlayerPaletteDlg::recall_menu_slot);
 
     QToolButton *save_btn = new QToolButton();
     save_btn->setText(tr("Save"));
@@ -196,8 +196,8 @@ QTlayerPaletteDlg::QTlayerPaletteDlg(GRobject caller) : QTdraw(XW_LPAL)
         QAction *a = lp_save_menu->addAction(buf);
         a->setData(i);
     }
-    connect(lp_save_menu, SIGNAL(triggered(QAction*)),
-        this, SLOT(save_menu_slot(QAction*)));
+    connect(lp_save_menu, &QMenu::triggered,
+        this, &QTlayerPaletteDlg::save_menu_slot);
 
     lp_remove = new QToolButton();
     lp_remove->setText(tr("Remove"));
@@ -208,7 +208,8 @@ QTlayerPaletteDlg::QTlayerPaletteDlg(GRobject caller) : QTdraw(XW_LPAL)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTlayerPaletteDlg::help_btn_slot);
 
     QGroupBox *gb = new QGroupBox();
     vbox->addWidget(gb);
@@ -218,32 +219,33 @@ QTlayerPaletteDlg::QTlayerPaletteDlg(GRobject caller) : QTdraw(XW_LPAL)
 
     gd_viewport = new QTcanvas();
     vb->addWidget(gd_viewport);
-    Viewport()->setFocusPolicy(Qt::StrongFocus);
-    Viewport()->setAcceptDrops(true);
+    gd_viewport->setFocusPolicy(Qt::StrongFocus);
+    gd_viewport->setAcceptDrops(true);
 
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_SCREEN))
         gd_viewport->set_font(fnt);
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTlayerPaletteDlg::font_changed_slot, Qt::QueuedConnection);
 
-    connect(Viewport(), SIGNAL(resize_event(QResizeEvent*)),
-        this, SLOT(resize_slot(QResizeEvent*)));
-    connect(Viewport(), SIGNAL(press_event(QMouseEvent*)),
-        this, SLOT(button_down_slot(QMouseEvent*)));
-    connect(Viewport(), SIGNAL(release_event(QMouseEvent*)),
-        this, SLOT(button_up_slot(QMouseEvent*)));
-    connect(Viewport(), SIGNAL(motion_event(QMouseEvent*)),
-        this, SLOT(motion_slot(QMouseEvent*)));
-    connect(Viewport(), SIGNAL(drag_enter_event(QDragEnterEvent*)),
-        this, SLOT(drag_enter_slot(QDragEnterEvent*)));
-    connect(Viewport(), SIGNAL(drop_event(QDropEvent*)),
-        this, SLOT(drop_slot(QDropEvent*)));
+    connect(gd_viewport, &QTcanvas::resize_event,
+        this, &QTlayerPaletteDlg::resize_slot);
+    connect(gd_viewport, &QTcanvas::press_event,
+        this, &QTlayerPaletteDlg::button_down_slot);
+    connect(gd_viewport, &QTcanvas::release_event,
+        this, &QTlayerPaletteDlg::button_up_slot);
+    connect(gd_viewport, &QTcanvas::motion_event,
+        this, &QTlayerPaletteDlg::motion_slot);
+    connect(gd_viewport, &QTcanvas::drag_enter_event,
+        this, &QTlayerPaletteDlg::drag_enter_slot);
+    connect(gd_viewport, &QTcanvas::drop_event,
+        this, &QTlayerPaletteDlg::drop_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTlayerPaletteDlg::dismiss_btn_slot);
 
     init_size();
     recall_menu_slot(lp_recall_menu->actions().at(0));

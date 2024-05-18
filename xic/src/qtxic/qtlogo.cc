@@ -330,30 +330,31 @@ QTlogoDlg::QTlogoDlg(GRobject c) : QTbag(this)
 
     lgo_vector = new QRadioButton(tr("Vector"));
     hbox->addWidget(lgo_vector);
-    connect(lgo_vector, SIGNAL(toggled(bool)),
-        this, SLOT(vector_btn_slot(bool)));
+    connect(lgo_vector, &QRadioButton::toggled,
+        this, &QTlogoDlg::vector_btn_slot);
 
     lgo_manh = new QRadioButton(tr("Manhattan"));
     hbox->addWidget(lgo_manh);
-    connect(lgo_manh, SIGNAL(toggled(bool)),
-        this, SLOT(manh_btn_slot(bool)));
+    connect(lgo_manh, &QRadioButton::toggled,
+        this, &QTlogoDlg::manh_btn_slot);
 
     lgo_pretty = new QRadioButton(tr("Pretty"));
     hbox->addWidget(lgo_pretty);
-    connect(lgo_pretty, SIGNAL(toggled(bool)),
-        this, SLOT(pretty_btn_slot(bool)));
+    connect(lgo_pretty, &QRadioButton::toggled,
+        this, &QTlogoDlg::pretty_btn_slot);
 
     hbox->addStretch(1);
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTlogoDlg::help_btn_slot);
 
     // second row
     lgo_setpix = new QCheckBox(tr("Define \"pixel\" size"));
     grid->addWidget(lgo_setpix, 1, 0);
-    connect(lgo_setpix, SIGNAL(stateChanged(int)),
-        this, SLOT(pixel_btn_slot(int)));
+    connect(lgo_setpix, &QCheckBox::stateChanged,
+        this, &QTlogoDlg::pixel_btn_slot);
 
     lgo_sb_pix = new QTdoubleSpinBox();
     grid->addWidget(lgo_sb_pix, 1, 1);
@@ -361,8 +362,8 @@ QTlogoDlg::QTlogoDlg(GRobject c) : QTbag(this)
     lgo_sb_pix->setMinimum(MICRONS(1));
     lgo_sb_pix->setMaximum(100.0);
     lgo_sb_pix->setValue(lgo_defpixsz);
-    connect(lgo_sb_pix, SIGNAL(valueChanged(double)),
-        this, SLOT(value_changed_slot(double)));
+    connect(lgo_sb_pix, QOverload<double>::of(&QTdoubleSpinBox::valueChanged),
+        this, &QTlogoDlg::value_changed_slot);
 
     // third row
     label = new QLabel(tr("     Vector end style"));
@@ -372,8 +373,8 @@ QTlogoDlg::QTlogoDlg(GRobject c) : QTbag(this)
     grid->addWidget(lgo_endstyle, 2, 1);
     for (int i = 0; lgo_endstyles[i]; i++)
         lgo_endstyle->addItem(tr(lgo_endstyles[i]));
-    connect(lgo_endstyle, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(endstyle_change_slot(int)));
+    connect(lgo_endstyle, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTlogoDlg::endstyle_change_slot);
 
     // fourth row
     label = new QLabel(tr("     Vector path width"));
@@ -383,14 +384,14 @@ QTlogoDlg::QTlogoDlg(GRobject c) : QTbag(this)
     grid->addWidget(lgo_pwidth, 3, 1);
     for (int i = 0; lgo_pathwidth[i]; i++)
         lgo_pwidth->addItem(tr(lgo_pathwidth[i]));
-    connect(lgo_pwidth, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(pwidth_change_slot(int)));
+    connect(lgo_pwidth, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTlogoDlg::pwidth_change_slot);
 
     // fifth row
     lgo_create = new QCheckBox(tr("Create cell for text"));
     grid->addWidget(lgo_create, 4, 0);
-    connect(lgo_create, SIGNAL(stateChanged(int)),
-        this, SLOT(create_btn_slot(int)));
+    connect(lgo_create, &QCheckBox::stateChanged,
+        this, &QTlogoDlg::create_btn_slot);
 
     // bottom row
     hbox = new QHBoxLayout(0);
@@ -402,20 +403,21 @@ QTlogoDlg::QTlogoDlg(GRobject c) : QTbag(this)
     lgo_dump->setText(tr("Dump Vector Font "));
     hbox->addWidget(lgo_dump);
     lgo_dump->setCheckable(true);
-    connect(lgo_dump, SIGNAL(toggled(bool)),
-        this, SLOT(dump_btn_slot(bool)));
+    connect(lgo_dump, &QAbstractButton::toggled,
+        this, &QTlogoDlg::dump_btn_slot);
 
     lgo_sel = new QToolButton();
     lgo_sel->setText(tr("Select Pretty Font"));
     hbox->addWidget(lgo_sel);
     lgo_sel->setCheckable(true);
-    connect(lgo_sel, SIGNAL(toggled(bool)),
-        this, SLOT(sel_btn_slot(bool)));
+    connect(lgo_sel, &QAbstractButton::toggled,
+        this, &QTlogoDlg::sel_btn_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTlogoDlg::dismiss_btn_slot);
 
     update();
 }

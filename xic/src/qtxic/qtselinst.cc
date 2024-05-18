@@ -58,7 +58,7 @@
 
 
 //-----------------------------------------------------------------------------
-// QTselInstSelectDlg:  Dialog to allow the user to select/deselect cell
+// QTcellInstSelectDlg:  Dialog to allow the user to select/deselect cell
 // instances.
 // Called when multiple instances are selected in a drawing window.
 
@@ -173,12 +173,14 @@ QTcellInstSelectDlg::QTcellInstSelectDlg(CDol *l, bool filtmode) : QTbag(this)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr(ci_filt ? "Choose All" : "Select All"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(sel_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTcellInstSelectDlg::sel_btn_slot);
 
     tbtn = new QToolButton();
     tbtn->setText(tr(ci_filt ? "Ignore All" : "Desel All"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(desel_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTcellInstSelectDlg::desel_btn_slot);
 
     QGroupBox *gb = new QGroupBox();
     vbox->addWidget(gb);
@@ -192,13 +194,14 @@ QTcellInstSelectDlg::QTcellInstSelectDlg(CDol *l, bool filtmode) : QTbag(this)
     vbox->addWidget(wb_textarea);
     wb_textarea->setReadOnly(true);
     wb_textarea->setMouseTracking(true);
-    connect(wb_textarea, SIGNAL(press_event(QMouseEvent*)),
-        this, SLOT(mouse_press_slot(QMouseEvent*)));
+    connect(wb_textarea, &QTtextEdit::press_event,
+        this, &QTcellInstSelectDlg::mouse_press_slot);
 
     QPushButton *btn = new QPushButton(tr(ci_filt ? "Continue" : "Dismiss"));
     btn->setObjectName("Default");
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTcellInstSelectDlg::dismiss_btn_slot);
 
     // Use a fixed font in the label, same as the text area, so can
     // match columns.
@@ -207,8 +210,8 @@ QTcellInstSelectDlg::QTcellInstSelectDlg(CDol *l, bool filtmode) : QTbag(this)
         wb_textarea->setFont(*fnt);
         ci_label->setFont(*fnt);
     }
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTcellInstSelectDlg::font_changed_slot, Qt::QueuedConnection);
 
     update(l);
 }

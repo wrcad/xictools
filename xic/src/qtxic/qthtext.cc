@@ -125,8 +125,8 @@ QTedit::QTedit(bool nogr) : QTdraw(XW_TEXT)
     pe_rcl_btn->setMenu(rcl_menu);
     pe_rcl_btn->setPopupMode(QToolButton::InstantPopup);
     pe_rcl_btn->hide();
-    connect(rcl_menu, SIGNAL(triggered(QAction*)),
-        this, SLOT(recall_menu_slot(QAction*)));
+    connect(rcl_menu, &QMenu::triggered,
+        this, &QTedit::recall_menu_slot);
 
     // Store button and menu.
     pe_sto_btn = new QToolButton();
@@ -143,8 +143,8 @@ QTedit::QTedit(bool nogr) : QTdraw(XW_TEXT)
     pe_sto_btn->setMenu(sto_menu);
     pe_sto_btn->setPopupMode(QToolButton::InstantPopup);
     pe_sto_btn->hide();
-    connect(sto_menu, SIGNAL(triggered(QAction*)),
-        this, SLOT(store_menu_slot(QAction*)));
+    connect(sto_menu, &QMenu::triggered,
+        this, &QTedit::store_menu_slot);
 
     // Long Text button.
     pe_ltx_btn = new QToolButton();
@@ -153,8 +153,8 @@ QTedit::QTedit(bool nogr) : QTdraw(XW_TEXT)
     pe_ltx_btn->setToolTip(tr(
         "Associate a block of text with the label - pop up an editor."));
     hbox->addWidget(pe_ltx_btn);
-    connect(pe_ltx_btn, SIGNAL(clicked()),
-        this, SLOT(long_text_slot()));
+    connect(pe_ltx_btn, &QAbstractButton::clicked,
+        this, &QTedit::long_text_slot);
 
     hbox = new QHBoxLayout(this);
     hbox->setContentsMargins(qm);
@@ -179,28 +179,28 @@ QTedit::QTedit(bool nogr) : QTdraw(XW_TEXT)
         pe_ltx_btn->setFont(*tfont);
     }
 
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)));
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTedit::font_changed_slot);
 
-    connect(gd_viewport, SIGNAL(resize_event(QResizeEvent*)),
-        this, SLOT(resize_slot(QResizeEvent*)));
-    connect(gd_viewport, SIGNAL(press_event(QMouseEvent*)),
-        this, SLOT(press_slot(QMouseEvent*)));
-    connect(gd_viewport, SIGNAL(release_event(QMouseEvent*)),
-        this, SLOT(release_slot(QMouseEvent*)));
-    connect(gd_viewport, SIGNAL(enter_event(QEnterEvent*)),
-        this, SLOT(enter_slot(QEnterEvent*)));
-    connect(gd_viewport, SIGNAL(leave_event(QEvent*)),
-        this, SLOT(leave_slot(QEvent*)));
-    connect(gd_viewport, SIGNAL(motion_event(QMouseEvent*)),
-        this, SLOT(motion_slot(QMouseEvent*)));
-    connect(gd_viewport, SIGNAL(drag_enter_event(QDragEnterEvent*)),
-        this, SLOT(drag_enter_slot(QDragEnterEvent*)));
-    connect(gd_viewport, SIGNAL(drop_event(QDropEvent*)),
-        this, SLOT(drop_slot(QDropEvent*)));
+    connect(gd_viewport, &QTcanvas::resize_event,
+        this, &QTedit::resize_slot);
+    connect(gd_viewport, &QTcanvas::press_event,
+        this, &QTedit::press_slot);
+    connect(gd_viewport, &QTcanvas::release_event,
+        this, &QTedit::release_slot);
+    connect(gd_viewport, &QTcanvas::enter_event,
+        this, &QTedit::enter_slot);
+    connect(gd_viewport, &QTcanvas::leave_event,
+        this, &QTedit::leave_slot);
+    connect(gd_viewport, &QTcanvas::motion_event,
+        this, &QTedit::motion_slot);
+    connect(gd_viewport, &QTcanvas::drag_enter_event,
+        this, &QTedit::drag_enter_slot);
+    connect(gd_viewport, &QTcanvas::drop_event,
+        this, &QTedit::drop_slot);
 
-    connect(pe_keys, SIGNAL(press_event(QMouseEvent*)),
-        this, SLOT(keys_press_slot(QMouseEvent*)));
+    connect(pe_keys, &QTcanvas::press_event,
+        this, &QTedit::keys_press_slot);
 }
 
 

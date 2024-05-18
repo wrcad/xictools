@@ -154,65 +154,68 @@ QTchdListDlg::QTchdListDlg(GRobject c) : QTbag(this)
     chl_addbtn->setText(tr("Add"));
     hbox->addWidget(chl_addbtn);
     chl_addbtn->setCheckable(true);
-    connect(chl_addbtn, SIGNAL(toggled(bool)),
-        this, SLOT(add_btn_slot(bool)));
+    connect(chl_addbtn, &QAbstractButton::toggled,
+        this, &QTchdListDlg::add_btn_slot);
 
     chl_savbtn = new QToolButton();
     chl_savbtn->setText(tr("Save"));
     hbox->addWidget(chl_savbtn);
     chl_savbtn->setCheckable(true);
-    connect(chl_savbtn, SIGNAL(toggled(bool)),
-        this, SLOT(sav_btn_slot(bool)));
+    connect(chl_savbtn, &QAbstractButton::toggled,
+        this, &QTchdListDlg::sav_btn_slot);
 
     chl_delbtn = new QToolButton();
     chl_delbtn->setText(tr("Delete"));
     hbox->addWidget(chl_delbtn);
     chl_delbtn->setCheckable(true);
-    connect(chl_delbtn, SIGNAL(toggled(bool)),
-        this, SLOT(del_btn_slot(bool)));
+    connect(chl_delbtn, &QAbstractButton::toggled,
+        this, &QTchdListDlg::del_btn_slot);
 
     chl_cfgbtn = new QToolButton();
     chl_cfgbtn->setText(tr("Config"));
     hbox->addWidget(chl_cfgbtn);
     chl_cfgbtn->setCheckable(true);
-    connect(chl_cfgbtn, SIGNAL(toggled(bool)),
-        this, SLOT(cfg_btn_slot(bool)));
+    connect(chl_cfgbtn, &QAbstractButton::toggled,
+        this, &QTchdListDlg::cfg_btn_slot);
 
     chl_dspbtn = new QToolButton();
     chl_dspbtn->setText(tr("Display"));
     hbox->addWidget(chl_dspbtn);
     chl_dspbtn->setCheckable(true);
-    connect(chl_dspbtn, SIGNAL(toggled(bool)),
-        this, SLOT(dsp_btn_slot(bool)));
+    connect(chl_dspbtn, &QAbstractButton::toggled,
+        this, &QTchdListDlg::dsp_btn_slot);
 
     chl_cntbtn = new QToolButton();
     chl_cntbtn->setText(tr("Contents"));
     hbox->addWidget(chl_cntbtn);
-    connect(chl_cntbtn, SIGNAL(clicked()),
-        this, SLOT(cnt_btn_slot()));
+    connect(chl_cntbtn, &QAbstractButton::clicked,
+        this, &QTchdListDlg::cnt_btn_slot);
 
     chl_celbtn = new QToolButton();
     chl_celbtn->setText(tr("Cell"));
     hbox->addWidget(chl_celbtn);
     chl_celbtn->setCheckable(true);
-    connect(chl_celbtn, SIGNAL(toggled(bool)),
-        this, SLOT(cel_btn_slot(bool)));
+    connect(chl_celbtn, &QAbstractButton::toggled,
+        this, &QTchdListDlg::cel_btn_slot);
 
     chl_infbtn = new QToolButton();
     chl_infbtn->setText(tr("Info"));
     hbox->addWidget(chl_infbtn);
-    connect(chl_infbtn, SIGNAL(clicked()), this, SLOT(inf_btn_slot()));
+    connect(chl_infbtn, &QAbstractButton::clicked,
+        this, &QTchdListDlg::inf_btn_slot);
 
     chl_qinfbtn = new QToolButton();
     chl_qinfbtn->setText("?");
     hbox->addWidget(chl_qinfbtn);
-    connect(chl_qinfbtn, SIGNAL(clicked()), this, SLOT(qinf_btn_slot()));
+    connect(chl_qinfbtn, &QAbstractButton::clicked,
+        this, &QTchdListDlg::qinf_btn_slot);
 
     hbox->addStretch(1);
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTchdListDlg::help_btn_slot);
 
     if (DSP()->MainWdesc()->DbType() == WDchd)
         QTdev::SetStatus(chl_dspbtn, true);
@@ -228,24 +231,22 @@ QTchdListDlg::QTchdListDlg(GRobject c) : QTbag(this)
     chl_list->header()->resizeSection(0, 100);
     chl_list->header()->resizeSection(1, 100);
 
-    connect(chl_list,
-        SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
-        this,
-        SLOT(current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*)));
+    connect(chl_list, &QTreeWidget::currentItemChanged,
+        this, &QTchdListDlg::current_item_changed_slot);
 
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_PROP))
         chl_list->setFont(*fnt);
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTchdListDlg::font_changed_slot, Qt::QueuedConnection);
 
     // lower buttons
     //
     chl_rename = new QCheckBox(tr(
         "Use auto-rename when writing CHD reference cells"));
     vbox->addWidget(chl_rename);
-    connect(chl_rename, SIGNAL(stateChanged(int)),
-        this, SLOT(rename_btn_slot(int)));
+    connect(chl_rename, &QCheckBox::stateChanged,
+        this, &QTchdListDlg::rename_btn_slot);
 
     hbox = new QHBoxLayout(0);
     hbox->setContentsMargins(qm);
@@ -264,25 +265,25 @@ QTchdListDlg::QTchdListDlg(GRobject c) : QTbag(this)
 
     chl_loadtop = new QCheckBox(tr("Load top cell only"));
     col1->addWidget(chl_loadtop);
-    connect(chl_loadtop, SIGNAL(stateChanged(int)),
-        this, SLOT(loadtop_btn_slot(int)));
+    connect(chl_loadtop, &QCheckBox::stateChanged,
+        this, &QTchdListDlg::loadtop_btn_slot);
 
     chl_failres = new QCheckBox(tr("Fail on unresolved"));
     col2->addWidget(chl_failres);
-    connect(chl_failres, SIGNAL(stateChanged(int)),
-        this, SLOT(failres_btn_slot(int)));
+    connect(chl_failres, &QCheckBox::stateChanged,
+        this, &QTchdListDlg::failres_btn_slot);
 
     chl_usetab = new QCheckBox(tr("Use cell table"));
     col1->addWidget(chl_usetab);
-    connect(chl_usetab, SIGNAL(stateChanged(int)),
-        this, SLOT(usetab_btn_slot(int)));
+    connect(chl_usetab, &QCheckBox::stateChanged,
+        this, &QTchdListDlg::usetab_btn_slot);
 
     chl_showtab = new QToolButton();
     chl_showtab->setText(tr("Edit Cell Table"));
     col2->addWidget(chl_showtab);
     chl_showtab->setCheckable(true);
-    connect(chl_showtab, SIGNAL(toggled(bool)),
-        this, SLOT(showtab_btn_slot(bool)));
+    connect(chl_showtab, &QAbstractButton::toggled,
+        this, &QTchdListDlg::showtab_btn_slot);
 
     // Geom handling menu
     //
@@ -295,15 +296,16 @@ QTchdListDlg::QTchdListDlg(GRobject c) : QTbag(this)
     chl_geomenu->addItem(tr("Create new MEMORY CGD"));
     chl_geomenu->addItem(tr("Create new FILE CHD"));
     chl_geomenu->addItem(tr("Ignore geometry records"));
-    connect(chl_geomenu, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(geom_change_slot(int)));
+    connect(chl_geomenu, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTchdListDlg::geom_change_slot);
 
     // dismiss button
     //
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTchdListDlg::dismiss_btn_slot);
 
     update();
 }

@@ -95,17 +95,17 @@ QTparam::QTparam(QTmainwin *prnt) : QWidget(prnt), QTdraw(XW_TEXT)
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_SCREEN))
         gd_viewport->set_font(fnt);
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTparam::font_changed_slot, Qt::QueuedConnection);
 
-    connect(Viewport(), SIGNAL(resize_event(QResizeEvent*)),
-        this, SLOT(resize_slot(QResizeEvent*)));
-    connect(Viewport(), SIGNAL(press_event(QMouseEvent*)),
-        this, SLOT(button_down_slot(QMouseEvent*)));
-    connect(Viewport(), SIGNAL(release_event(QMouseEvent*)),
-        this, SLOT(button_up_slot(QMouseEvent*)));
-    connect(Viewport(), SIGNAL(motion_event(QMouseEvent*)),
-        this, SLOT(motion_slot(QMouseEvent*)));
+    connect(gd_viewport, &QTcanvas::resize_event,
+        this, &QTparam::resize_slot);
+    connect(gd_viewport, &QTcanvas::press_event,
+        this, &QTparam::button_down_slot);
+    connect(gd_viewport, &QTcanvas::release_event,
+        this, &QTparam::button_up_slot);
+    connect(gd_viewport, &QTcanvas::motion_event,
+        this, &QTparam::motion_slot);
 }
 
 

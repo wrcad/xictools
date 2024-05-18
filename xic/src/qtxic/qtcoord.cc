@@ -93,14 +93,14 @@ QTcoord::QTcoord(QWidget *prnt) : QWidget(prnt), QTdraw(XW_TEXT)
     setMinimumWidth(wid/3);
     co_width = wid;
     co_height = hei;
-    connect(gd_viewport, SIGNAL(resize_event(QResizeEvent*)),
-        this, SLOT(redraw_slot()), Qt::QueuedConnection);
+    connect(gd_viewport, &QTcanvas::resize_event,
+        this, &QTcoord::redraw_slot, Qt::QueuedConnection);
 
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_SCREEN))
         gd_viewport->set_font(fnt);
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTcoord::font_changed_slot, Qt::QueuedConnection);
 }
 
 

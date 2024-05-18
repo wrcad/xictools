@@ -113,7 +113,8 @@ QTltabEditDlg::QTltabEditDlg(GRobject c)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTltabEditDlg::help_btn_slot);
 
     hbox = new QHBoxLayout();
     hbox->setContentsMargins(qm);
@@ -137,18 +138,21 @@ QTltabEditDlg::QTltabEditDlg(GRobject c)
     le_add->setText(tr("Add Layer"));
     hbox->addWidget(le_add);
     le_add->setCheckable(true);
-    connect(le_add, SIGNAL(toggled(bool)), this, SLOT(add_layer_slot(bool)));
+    connect(le_add, &QAbstractButton::toggled,
+        this, &QTltabEditDlg::add_layer_slot);
 
     le_rem = new QToolButton();
     le_rem->setText(tr("Remove Layer"));
     hbox->addWidget(le_rem);
     le_rem->setCheckable(true);
-    connect(le_rem, SIGNAL(toggled(bool)), this, SLOT(rem_layer_slot(bool)));
+    connect(le_rem, &QAbstractButton::toggled,
+        this, &QTltabEditDlg::rem_layer_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTltabEditDlg::dismiss_slot);
 }
 
 

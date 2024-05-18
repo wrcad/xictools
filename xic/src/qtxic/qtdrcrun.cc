@@ -197,7 +197,8 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTdrcRunDlg::help_btn_slot);
 
     QTabWidget *nbook = new QTabWidget();
     vbox->addWidget(nbook);
@@ -229,21 +230,22 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
     dc_use->setText(tr("Use"));
     hb->addWidget(dc_use);
     dc_use->setCheckable(true);
-    connect(dc_use, SIGNAL(toggled(bool)), this, SLOT(use_btn_slot(bool)));
+    connect(dc_use, &QAbstractButton::toggled,
+        this, &QTdrcRunDlg::use_btn_slot);
 
     dc_chdname = new QLineEdit();
     hb->addSpacing(8);
     hb->addWidget(dc_chdname);
-    connect(dc_chdname, SIGNAL(textChanged(const QString&)),
-        this, SLOT(chd_name_slot(const QString&)));
+    connect(dc_chdname, &QLineEdit::textChanged,
+        this, &QTdrcRunDlg::chd_name_slot);
 
     label = new QLabel(tr("CHD top cell"));
     grid->addWidget(label, 1, 0);
 
     dc_cname = new QLineEdit();
     grid->addWidget(dc_cname, 1, 1);
-    connect(dc_cname, SIGNAL(textChanged(const QString&)),
-        this, SLOT(cname_slot(const QString&)));
+    connect(dc_cname, &QLineEdit::textChanged,
+        this, &QTdrcRunDlg::cname_slot);
 
     // Gridding.
     //
@@ -259,15 +261,16 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
     dc_none->setText(tr("None"));
     hb->addWidget(dc_none);
     dc_none->setCheckable(true);
-    connect(dc_none, SIGNAL(toggled(bool)), this, SLOT(none_btn_slot(bool)));
+    connect(dc_none, &QAbstractButton::toggled,
+        this, &QTdrcRunDlg::none_btn_slot);
 
     dc_sb_part = new QTdoubleSpinBox();
     dc_sb_part->setRange(DRC_PART_MIN, DRC_PART_MAX);
     dc_sb_part->setDecimals(2);
     dc_sb_part->setValue(DRC_PART_DEF);
     hb->addWidget(dc_sb_part);
-    connect(dc_sb_part, SIGNAL(valueChanged(double)),
-        this, SLOT(part_changed_slot(double)));
+    connect(dc_sb_part, QOverload<double>::of(&QTdoubleSpinBox::valueChanged),
+        this, &QTdrcRunDlg::part_changed_slot);
 
     // Use Window
     //
@@ -278,13 +281,13 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
 
     dc_wind = new QCheckBox(tr("Use window"));
     grid->addWidget(dc_wind, 0, 0, 1, 2);
-    connect(dc_wind, SIGNAL(stateChanged(int)),
-        this, SLOT(win_btn_slot(int)));
+    connect(dc_wind, &QCheckBox::stateChanged,
+        this, &QTdrcRunDlg::win_btn_slot);
 
     dc_flat = new QCheckBox(tr("Flatten"));
     grid->addWidget(dc_flat, 0, 2);
-    connect(dc_flat, SIGNAL(stateChanged(int)),
-        this, SLOT(flat_btn_slot(int)));
+    connect(dc_flat, &QCheckBox::stateChanged,
+        this, &QTdrcRunDlg::flat_btn_slot);
 
     hb = new QHBoxLayout();
     grid->addLayout(hb, 0, 3);
@@ -297,7 +300,8 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
     hb->addWidget(dc_set);
     dc_set->setCheckable(true);
     dc_set->setMaximumWidth(60);
-    connect(dc_set, SIGNAL(toggled(bool)), this, SLOT(set_btn_slot(bool)));
+    connect(dc_set, &QAbstractButton::toggled,
+        this, &QTdrcRunDlg::set_btn_slot);
 
     // Window LBRT
     //
@@ -311,8 +315,8 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
     dc_sb_left->setDecimals(ndgt);
     dc_sb_left->setValue(0.0);
     grid->addWidget(dc_sb_left, 1, 1);
-    connect(dc_sb_left, SIGNAL(valueChanged(double)),
-        this, SLOT(left_changed_slot(double)));
+    connect(dc_sb_left, QOverload<double>::of(&QTdoubleSpinBox::valueChanged),
+        this, &QTdrcRunDlg::left_changed_slot);
 
     dc_b_label = new QLabel(tr("Bottom"));
     grid->addWidget(dc_b_label, 1, 2);
@@ -322,8 +326,8 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
     dc_sb_bottom->setDecimals(ndgt);
     dc_sb_bottom->setValue(0.0);
     grid->addWidget(dc_sb_bottom, 1, 3);
-    connect(dc_sb_bottom, SIGNAL(valueChanged(double)),
-        this, SLOT(botm_changed_slot(double)));
+    connect(dc_sb_bottom, QOverload<double>::of(&QTdoubleSpinBox::valueChanged),
+        this, &QTdrcRunDlg::botm_changed_slot);
 
     dc_r_label = new QLabel(tr("Right"));
     grid->addWidget(dc_r_label, 2, 0);
@@ -333,8 +337,8 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
     dc_sb_right->setDecimals(ndgt);
     dc_sb_right->setValue(0.0);
     grid->addWidget(dc_sb_right, 2, 1);
-    connect(dc_sb_right, SIGNAL(valueChanged(double)),
-        this, SLOT(right_changed_slot(double)));
+    connect(dc_sb_right, QOverload<double>::of(&QTdoubleSpinBox::valueChanged),
+        this, &QTdrcRunDlg::right_changed_slot);
 
     dc_t_label = new QLabel(tr("Top"));
     grid->addWidget(dc_t_label, 2, 2);
@@ -344,8 +348,8 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
     dc_sb_top->setDecimals(ndgt);
     dc_sb_top->setValue(0.0);
     grid->addWidget(dc_sb_top, 2, 3);
-    connect(dc_sb_top, SIGNAL(valueChanged(double)),
-        this, SLOT(top_changed_slot(double)));
+    connect(dc_sb_top, QOverload<double>::of(&QTdoubleSpinBox::valueChanged),
+        this, &QTdrcRunDlg::top_changed_slot);
 
     // Check, Check Bg buttons
     //
@@ -353,7 +357,8 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
     dc_check->setText(tr("Check\n"));
     grid->addWidget(dc_check, 3, 0, 1, 2);
     dc_check->setCheckable(true);
-    connect(dc_check, SIGNAL(toggled(bool)), this, SLOT(check_btn_slot(bool)));
+    connect(dc_check, &QAbstractButton::toggled,
+        this, &QTdrcRunDlg::check_btn_slot);
 
     // This is to allow button pressess/releases to be
     // dispatched when the busy flag is set.  Un-setting the Check
@@ -366,8 +371,8 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
     dc_checkbg->setText(tr("Check in\nBackground"));
     grid->addWidget(dc_checkbg, 3, 2, 1, 2);
     dc_checkbg->setCheckable(true);
-    connect(dc_checkbg, SIGNAL(toggled(bool)),
-        this, SLOT(checkbg_btn_slot(bool)));
+    connect(dc_checkbg, &QAbstractButton::toggled,
+        this, &QTdrcRunDlg::checkbg_btn_slot);
 
     // Jobs page
     //
@@ -381,26 +386,28 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
     dc_jobs->setReadOnly(true);
     dc_jobs->setMouseTracking(true);
     vb->addWidget(dc_jobs);
-    connect(dc_jobs, SIGNAL(press_event(QMouseEvent*)),
-        this, SLOT(mouse_press_slot(QMouseEvent*)));
+    connect(dc_jobs, &QTtextEdit::press_event,
+        this, &QTdrcRunDlg::mouse_press_slot);
 
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_FIXED))
         dc_jobs->setFont(*fnt);
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTdrcRunDlg::font_changed_slot, Qt::QueuedConnection);
 
     dc_kill = new QToolButton();
     dc_kill->setText(tr("Abort job"));
     vb->addWidget(dc_kill);
-    connect(dc_kill, SIGNAL(clicked()), this, SLOT(abort_btn_slot()));
+    connect(dc_kill, &QAbstractButton::clicked,
+        this, &QTdrcRunDlg::abort_btn_slot);
 
     // Dismiss button
     //
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTdrcRunDlg::dismiss_btn_slot);
 
     update();
 }

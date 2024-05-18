@@ -163,25 +163,25 @@ QTltab::QTltab(bool nogr) : QTdraw(XW_LTAB)
     QFont *scfont;
     if (Fnt()->getFont(&scfont, FNT_SCREEN))
         gd_viewport->set_font(scfont);
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTltab::font_changed, Qt::QueuedConnection);
 
-    connect(gd_viewport, SIGNAL(resize_event(QResizeEvent*)),
-        this, SLOT(resize_slot(QResizeEvent*)));
-    connect(gd_viewport, SIGNAL(press_event(QMouseEvent*)),
-        this, SLOT(button_press_slot(QMouseEvent*)));
-    connect(gd_viewport, SIGNAL(release_event(QMouseEvent*)),
-        this, SLOT(button_release_slot(QMouseEvent*)));
-    connect(gd_viewport, SIGNAL(motion_event(QMouseEvent*)),
-        this, SLOT(motion_slot(QMouseEvent*)));
-    connect(gd_viewport, SIGNAL(mouse_wheel_event(QWheelEvent*)),
-        this, SLOT(mouse_wheel_slot(QWheelEvent*)));
-    connect(ltab_scrollbar, SIGNAL(valueChanged(int)),
-        this, SLOT(ltab_scroll_value_changed_slot(int)));
-    connect(gd_viewport, SIGNAL(drag_enter_event(QDragEnterEvent*)),
-        this, SLOT(drag_enter_slot(QDragEnterEvent*)));
-    connect(gd_viewport, SIGNAL(drop_event(QDropEvent*)),
-        this, SLOT(drop_event_slot(QDropEvent*)));
+    connect(gd_viewport, &QTcanvas::resize_event,
+        this, &QTltab::resize_slot);
+    connect(gd_viewport, &QTcanvas::press_event,
+        this, &QTltab::button_press_slot);
+    connect(gd_viewport, &QTcanvas::release_event,
+        this, &QTltab::button_release_slot);
+    connect(gd_viewport, &QTcanvas::motion_event,
+        this, &QTltab::motion_slot);
+    connect(gd_viewport, &QTcanvas::mouse_wheel_event,
+        this, &QTltab::mouse_wheel_slot);
+    connect(ltab_scrollbar, &QScrollBar::valueChanged,
+        this, &QTltab::ltab_scroll_value_changed_slot);
+    connect(gd_viewport, &QTcanvas::drag_enter_event,
+        this, &QTltab::drag_enter_slot);
+    connect(gd_viewport, &QTcanvas::drop_event,
+        this, &QTltab::drop_event_slot);
 }
 
 
@@ -384,7 +384,8 @@ QTltab::set_search_widgets(QToolButton *p, QLineEdit *e)
     ltab_sbtn->setToolTip(tr("Search layer table for layer."));
     ltab_lsearch = new QPixmap(lsearch_xpm);
     ltab_sbtn->setIcon(*ltab_lsearch);
-    connect(ltab_sbtn, SIGNAL(clicked()), this, SLOT(pressed_slot()));
+    connect(ltab_sbtn, &QAbstractButton::clicked,
+        this, &QTltab::pressed_slot);
 }
 
 

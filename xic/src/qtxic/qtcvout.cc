@@ -167,7 +167,8 @@ QTconvertOutDlg::QTconvertOutDlg(GRobject c, CvoCallback callback, void *arg)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTconvertOutDlg::help_btn_slot);
 
     // Format selection notebook.
     //
@@ -178,8 +179,8 @@ QTconvertOutDlg::QTconvertOutDlg(GRobject c, CvoCallback callback, void *arg)
     // Mode notebook.
     cvo_nbook = new QTabWidget();
     vbox->addWidget(cvo_nbook);
-    connect(cvo_nbook, SIGNAL(currentChanged(int)),
-        this, SLOT(nbook_page_slot(int)));
+    connect(cvo_nbook, &QTabWidget::currentChanged,
+        this, &QTconvertOutDlg::nbook_page_slot);
 
     // The Setup Page
     //
@@ -204,15 +205,15 @@ QTconvertOutDlg::QTconvertOutDlg(GRobject c, CvoCallback callback, void *arg)
 
     cvo_invis_p = new QCheckBox(tr("Physical"));
     phbox->addWidget(cvo_invis_p);
-    connect(cvo_invis_p, SIGNAL(stateChanged(int)),
-        this, SLOT(invis_p_btn_slot(int)));
+    connect(cvo_invis_p, &QCheckBox::stateChanged,
+        this, &QTconvertOutDlg::invis_p_btn_slot);
 
     phbox->addSpacing(24);
 
     cvo_invis_e = new QCheckBox(tr("Electrical"));
     phbox->addWidget(cvo_invis_e);
-    connect(cvo_invis_e, SIGNAL(stateChanged(int)),
-        this, SLOT(invis_e_btn_slot(int)));
+    connect(cvo_invis_e, &QCheckBox::stateChanged,
+        this, &QTconvertOutDlg::invis_e_btn_slot);
 
     const char *s = CDvdb()->getVariable(VA_SkipInvisible);
     if (!s) {
@@ -235,54 +236,54 @@ QTconvertOutDlg::QTconvertOutDlg(GRobject c, CvoCallback callback, void *arg)
     cvo_strip = new QCheckBox(tr(
         "Strip For Export - (convert physical data only)"));
     pvbox->addWidget(cvo_strip);
-    connect(cvo_strip, SIGNAL(stateChanged(int)),
-        this, SLOT(strip_btn_slot(int)));
+    connect(cvo_strip, &QCheckBox::stateChanged,
+        this, &QTconvertOutDlg::strip_btn_slot);
 
     cvo_libsub = new QCheckBox(tr("Include library cell masters"));
     pvbox->addWidget(cvo_libsub);
-    connect(cvo_libsub, SIGNAL(stateChanged(int)),
-        this, SLOT(libsub_btn_slot(int)));
+    connect(cvo_libsub, &QCheckBox::stateChanged,
+        this, &QTconvertOutDlg::libsub_btn_slot);
 
     cvo_pcsub = new QCheckBox(tr(
         "Include parameterized cell sub-masters"));
     pvbox->addWidget(cvo_pcsub);
-    connect(cvo_pcsub, SIGNAL(stateChanged(int)),
-        this, SLOT(pcsub_btn_slot(int)));
+    connect(cvo_pcsub, &QCheckBox::stateChanged,
+        this, &QTconvertOutDlg::pcsub_btn_slot);
 
     cvo_viasub = new QCheckBox(tr(
         "Include standard via cell sub-masters"));
     pvbox->addWidget(cvo_viasub);
-    connect(cvo_viasub, SIGNAL(stateChanged(int)),
-        this, SLOT(viasub_btn_slot(int)));
+    connect(cvo_viasub, &QCheckBox::stateChanged,
+        this, &QTconvertOutDlg::viasub_btn_slot);
 
     cvo_allcells = new QCheckBox(tr(
         "Consider ALL cells in current symbol table for output"));
     pvbox->addWidget(cvo_allcells);
-    connect(cvo_allcells, SIGNAL(stateChanged(int)),
-        this, SLOT(allcells_btn_slot(int)));
+    connect(cvo_allcells, &QCheckBox::stateChanged,
+        this, &QTconvertOutDlg::allcells_btn_slot);
 
     cvo_noflvias = new QCheckBox(tr(
         "Don't flatten standard vias, keep as instance at top level"));
     pvbox->addWidget(cvo_noflvias);
-    connect(cvo_noflvias, SIGNAL(stateChanged(int)),
-        this, SLOT(noflvias_btn_slot(int)));
+    connect(cvo_noflvias, &QCheckBox::stateChanged,
+        this, &QTconvertOutDlg::noflvias_btn_slot);
 
     cvo_noflpcs = new QCheckBox(tr(
         "Don't flatten pcells, keep as instance at top level"));
     pvbox->addWidget(cvo_noflpcs);
-    connect(cvo_noflpcs, SIGNAL(stateChanged(int)),
-        this, SLOT(noflpcs_btn_slot(int)));
+    connect(cvo_noflpcs, &QCheckBox::stateChanged,
+        this, &QTconvertOutDlg::noflpcs_btn_slot);
 
     cvo_nofllbs = new QCheckBox(tr(
         "Ignore labels in subcells when flattening"));
     pvbox->addWidget(cvo_nofllbs);
-    connect(cvo_nofllbs, SIGNAL(stateChanged(int)),
-        this, SLOT(nofllbs_btn_slot(int)));
+    connect(cvo_nofllbs, &QCheckBox::stateChanged,
+        this, &QTconvertOutDlg::nofllbs_btn_slot);
 
     cvo_keepbad = new QCheckBox(tr("Keep bad output (for debugging)"));
     pvbox->addWidget(cvo_keepbad);
-    connect(cvo_keepbad, SIGNAL(stateChanged(int)),
-        this, SLOT(keepbad_btn_slot(int)));
+    connect(cvo_keepbad, &QCheckBox::stateChanged,
+        this, &QTconvertOutDlg::keepbad_btn_slot);
 
     // The Read File page
     //
@@ -320,15 +321,16 @@ QTconvertOutDlg::QTconvertOutDlg(GRobject c, CvoCallback callback, void *arg)
     cvo_sb_scale->setMaximum(CDSCALEMAX);
     cvo_sb_scale->setDecimals(5);
     cvo_sb_scale->setValue(FIO()->WriteScale());
-    connect(cvo_sb_scale, SIGNAL(valueChanged(double)),
-        this, SLOT(scale_changed_slot(double)));
+    connect(cvo_sb_scale, QOverload<double>::of(&QTdoubleSpinBox::valueChanged),
+        this, &QTconvertOutDlg::scale_changed_slot);
 
     // Write File button
     //
     tbtn = new QToolButton();
     tbtn->setText(tr("Write File"));
     pvbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(write_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTconvertOutDlg::write_btn_slot);
     tbtn->setMaximumWidth(140);
 
     // Dismiss button
@@ -336,7 +338,8 @@ QTconvertOutDlg::QTconvertOutDlg(GRobject c, CvoCallback callback, void *arg)
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTconvertOutDlg::dismiss_btn_slot);
 
     update();
 }

@@ -128,7 +128,7 @@ QTasmTf::QTasmTf(QTasmPage *src)
         tf_angle->addItem(buf);
     }
     tf_angle->setCurrentIndex(tf_angle_ix);
-    connect(tf_angle, &QComboBox::currentIndexChanged,
+    connect(tf_angle, QOverload<int>::of(&QComboBox::currentIndexChanged),
         this, &QTasmTf::angle_changed_slot);
 
     tf_mirror = new QCheckBox(tr("Mirror-Y"));

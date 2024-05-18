@@ -198,7 +198,8 @@ QTchdSaveDlg::QTchdSaveDlg(GRobject caller,
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTchdSaveDlg::help_btn_slot);
 
     cs_text = new QTchdSavePathEdit();
     vbox->addWidget(cs_text);
@@ -207,8 +208,8 @@ QTchdSaveDlg::QTchdSaveDlg(GRobject caller,
 
     cs_geom = new QCheckBox(tr("Include geometry records in file"));
     vbox->addWidget(cs_geom);
-    connect(cs_geom, SIGNAL(stateChanged(int)),
-        this, SLOT(geom_btn_slot(int)));
+    connect(cs_geom, &QCheckBox::stateChanged,
+        this, &QTchdSaveDlg::geom_btn_slot);
 
     // Layer list
     //
@@ -226,12 +227,14 @@ QTchdSaveDlg::QTchdSaveDlg(GRobject caller,
     cs_apply = new QToolButton();
     cs_apply->setText(tr("Apply"));
     hbox->addWidget(cs_apply);
-    connect(cs_apply, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
+    connect(cs_apply, &QAbstractButton::clicked,
+        this, &QTchdSaveDlg::apply_btn_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTchdSaveDlg::dismiss_btn_slot);
 }
 
 
