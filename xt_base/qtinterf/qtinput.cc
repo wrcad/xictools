@@ -104,12 +104,12 @@ QTledDlg::QTledDlg(QTbag *owner, const char *label_str,
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr(action_str));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(action_slot()));
+    connect(tbtn, &QAbstractButton::clicked, this, &QTledDlg::action_slot);
 
     QPushButton *btn = new QPushButton(tr("Cancel"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(cancel_btn_slot()));
+    connect(btn, &QAbstractButton::clicked, this, &QTledDlg::cancel_btn_slot);
 }
 
 
@@ -152,12 +152,12 @@ QTledDlg::register_caller(GRobject c, bool no_dsl, bool handle_popdn)
                 QAbstractButton *btn = dynamic_cast<QAbstractButton*>(o);
                 if (btn) {
                     if (btn->isCheckable()) {
-                        connect(btn, SIGNAL(toggled(bool)),
-                            this, SLOT(cancel_action_slot(bool)));
+                        connect(btn, &QAbstractButton::toggled,
+                            this, &QTledDlg::cancel_action_slot);
                     }
                     else {
-                        connect(btn, SIGNAL(clicked()),
-                            this, SLOT(cancel_btn_slot()));
+                        connect(btn, &QAbstractButton::clicked,
+                            this, &QTledDlg::cancel_btn_slot);
                     }
                 }
             }
@@ -165,12 +165,12 @@ QTledDlg::register_caller(GRobject c, bool no_dsl, bool handle_popdn)
                 QAction *a = dynamic_cast<QAction*>(o);
                 if (a) {
                     if (a->isCheckable()) {
-                        connect(a, SIGNAL(triggered(bool)),
-                            this, SLOT(cancel_action_slot(bool)));
+                        connect(a, &QAction::triggered,
+                            this, &QTledDlg::cancel_action_slot);
                     }
                     else {
-                        connect(a, SIGNAL(triggered()),
-                            this, SLOT(cancel_btn_slot()));
+                        connect(a, &QAction::triggered,
+                            this, &QTledDlg::cancel_btn_slot);
                     }
                 }
             }

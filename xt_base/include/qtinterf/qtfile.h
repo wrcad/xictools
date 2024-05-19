@@ -63,8 +63,8 @@ class QToolButton;
 class QToolBar;
 
 namespace qtinterf {
-    class file_tree_widget;
-    class file_list_widget;
+    class QTfileTreeWidget;
+    class QTfileListWidget;
     class QTfileDlg;
 }
 
@@ -170,8 +170,8 @@ private:
     stringlist *tokenize_filter();
     char *get_newdir(const char*);
 
-    file_tree_widget *f_tree;
-    file_list_widget *f_list;
+    QTfileTreeWidget *f_tree;
+    QTfileListWidget *f_list;
     QLabel      *f_label;
     QComboBox   *f_filter;
     QAction     *f_Up;

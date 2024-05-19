@@ -58,7 +58,7 @@ class QPushButton;
 
 namespace qtinterf {
     class QTbag;
-    class list_list_widget;
+    class QTlistListWidget;
     class QTlistDlg;
 }
 
@@ -122,7 +122,7 @@ private slots:
 
 private:
     QLabel      *li_label;
-    list_list_widget *li_lbox;
+    QTlistListWidget *li_lbox;
     QPixmap     *li_open_pm;
     QPixmap     *li_close_pm;
     bool        li_use_pix;

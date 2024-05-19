@@ -97,7 +97,8 @@ QTform_file::QTform_file(htmForm *entry, QWidget *prnt) : QWidget(prnt)
     QSize qs = size();
     entry->width = qs.width();
     entry->height = ht + 4;
-    connect(ff_browse, SIGNAL(clicked()), this, SLOT(browse_btn_slot()));
+    connect(ff_browse, &QAbstractButton::clicked,
+        this, &QTform_file::browse_btn_slot);
 }
 
 
@@ -107,8 +108,8 @@ QTform_file::browse_btn_slot()
     if (!ff_fsel) {
         ff_fsel = new QTfileDlg(0, fsSEL, 0, 0);
         ff_fsel->register_usrptr((void**)&ff_fsel);
-        connect(ff_fsel, SIGNAL(file_selected(const char*, void*)),
-            this, SLOT(file_selected_slot(const char*, void*)));
+        connect(ff_fsel, &QTfileDlg::file_selected,
+            this, &QTform_file::file_selected_slot);
     }
     ff_fsel->set_visible(true);
 }

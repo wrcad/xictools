@@ -288,15 +288,15 @@ QTasmDlg::QTasmDlg(GRobject c) : QTbag(this)
 #ifdef USE_QTOOLBAR
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     menubar->addAction(tr("&Help"), Qt::CTRL|Qt::Key_H, this,
-        SLOT(help_slot()));
+        &QTasmDlg::help_slot);
 #else
-    a = menubar->addAction(tr("&Help"), this, SLOT(help_slot()));
+    a = menubar->addAction(tr("&Help"), this, &QTasmDlg::help_slot);
     a->setShortcut(QKeySequence("Ctrl+H"));
 #endif
 #else
     menu = menubar->addMenu(tr("&Help"));
     // _Help, <control>H, asm_action_proc, HelpCode, 0
-    a = menu->addAction(tr("&Help"), this, SLOT(help_slot()));
+    a = menu->addAction(tr("&Help"), this, &QTasmDlg::help_slot);
     a->setData(HelpCode);
     a->setShortcut(QKeySequence("Ctrl+H"));
 #endif

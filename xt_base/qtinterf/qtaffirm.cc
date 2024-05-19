@@ -102,12 +102,14 @@ QTaffirmDlg::QTaffirmDlg(QTbag *owner, const char *question_str)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Affirm"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(affirm_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTaffirmDlg::affirm_btn_slot);
 
     QPushButton *btn = new QPushButton(tr("Cancel"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(cancel_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTaffirmDlg::cancel_btn_slot);
 }
 
 
@@ -152,12 +154,12 @@ QTaffirmDlg::register_caller(GRobject c, bool no_dsl, bool handle_popdn)
                 QAbstractButton *btn = dynamic_cast<QAbstractButton*>(o);
                 if (btn) {
                     if (btn->isCheckable()) {
-                        connect(btn, SIGNAL(toggled(bool)),
-                            this, SLOT(cancel_action_slot(bool)));
+                        connect(btn, &QAbstractButton::toggled,
+                            this, &QTaffirmDlg::cancel_action_slot);
                     }
                     else {
-                        connect(btn, SIGNAL(clicked()),
-                            this, SLOT(cancel_btn_slot()));
+                        connect(btn, &QAbstractButton::clicked,
+                            this, &QTaffirmDlg::cancel_btn_slot);
                     }
                 }
             }
@@ -165,12 +167,12 @@ QTaffirmDlg::register_caller(GRobject c, bool no_dsl, bool handle_popdn)
                 QAction *a = dynamic_cast<QAction*>(o);
                 if (a) {
                     if (a->isCheckable()) {
-                        connect(a, SIGNAL(triggered(bool)),
-                            this, SLOT(cancel_action_slot(bool)));
+                        connect(a, &QAction::triggered,
+                            this, &QTaffirmDlg::cancel_action_slot);
                     }
                     else {
-                        connect(a, SIGNAL(triggered()),
-                            this, SLOT(cancel_btn_slot()));
+                        connect(a, &QAction::triggered,
+                            this, &QTaffirmDlg::cancel_btn_slot);
                     }
                 }
             }

@@ -88,7 +88,7 @@ QTactivity::QTactivity(QWidget *prnt) : QWidget(prnt)
     a_rad = 8;  // half image size
     a_active = false;
     a_pixmap = new QPixmap(smile_xpm);
-    connect(&a_timer, SIGNAL(timeout()), this, SLOT(increment_slot()));
+    connect(&a_timer, &QTimer::timeout, this, &QTactivity::increment_slot);
 }
 
 

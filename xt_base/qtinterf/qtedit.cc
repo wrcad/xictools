@@ -203,51 +203,51 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::EditorType type,
     if (ed_editor_type == Editor || ed_editor_type == Browser) {
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         ed_filemenu->addAction(tr("&Open"), Qt::CTRL|Qt::Key_O,
-            this, SLOT(open_slot()));
+            this, &QTeditDlg::open_slot);
         ed_File_Load = ed_filemenu->addAction(tr("&Load"),
-            Qt::CTRL|Qt::Key_L, this, SLOT(load_slot()));
+            Qt::CTRL|Qt::Key_L, this, &QTeditDlg::load_slot);
 #else
-        ed_filemenu->addAction(tr("&Open"), this, SLOT(open_slot()),
+        ed_filemenu->addAction(tr("&Open"), this, &QTeditDlg::open_slot,
             Qt::CTRL|Qt::Key_O);
         ed_File_Load = ed_filemenu->addAction(tr("&Load"), this,
-            SLOT(load_slot()), Qt::CTRL|Qt::Key_L);
+            &QTeditDlg::load_slot, Qt::CTRL|Qt::Key_L);
 #endif
     }
     if (ed_editor_type != Browser) {
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         ed_File_Read = ed_filemenu->addAction(tr("&Read"),
-            Qt::CTRL|Qt::Key_R, this, SLOT(read_slot()));
+            Qt::CTRL|Qt::Key_R, this, &QTeditDlg::read_slot);
 #else
         ed_File_Read = ed_filemenu->addAction(tr("&Read"), this,
-            SLOT(read_slot()), Qt::CTRL|Qt::Key_R);
+            &QTeditDlg::read_slot, Qt::CTRL|Qt::Key_R);
 #endif
     }
     if (ed_editor_type == Editor || ed_editor_type == StringEditor) {
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         ed_File_Save = ed_filemenu->addAction(tr("&Save"),
-            Qt::CTRL|Qt::Key_S, this, SLOT(save_slot()));
+            Qt::CTRL|Qt::Key_S, this, &QTeditDlg::save_slot);
 #else
         ed_File_Save = ed_filemenu->addAction(tr("&Save"), this,
-            SLOT(save_slot()), Qt::CTRL|Qt::Key_S);
+            &QTeditDlg::save_slot, Qt::CTRL|Qt::Key_S);
 #endif
     }
     if (ed_editor_type != StringEditor) {
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         ed_File_SaveAs = ed_filemenu->addAction(tr("Save &As"),
-            Qt::CTRL|Qt::Key_A, this, SLOT(save_as_slot()));
+            Qt::CTRL|Qt::Key_A, this, &QTeditDlg::save_as_slot);
         ed_filemenu->addAction(tr("&Print"), Qt::CTRL|Qt::Key_P,
-            this, SLOT(print_slot()));
+            this, &QTeditDlg::print_slot);
 #else
         ed_File_SaveAs = ed_filemenu->addAction(tr("Save &As"), this,
-            SLOT(save_as_slot()), Qt::CTRL|Qt::Key_A);
+            &QTeditDlg::save_as_slot, Qt::CTRL|Qt::Key_A);
         ed_filemenu->addAction(tr("&Print"), this,
-            SLOT(print_slot()), Qt::CTRL|Qt::Key_P);
+            &QTeditDlg::print_slot, Qt::CTRL|Qt::Key_P);
 #endif
     }
 #ifdef WIN32
     if (ed_editor_type == Editor) {
         ed_File_CRLF = ed_filemenu->addAction(tr("&Write CRLF"), 0,
-            this, SLOT(write_crlf_slot(bool)));
+            this, &QTeditDlg::write_crlf_slot);
         ed_File_CRLF->setCheckable(true);
         ed_File_CRLF->setChecked(QTdev::self()->GetCRLFtermination());
     }
@@ -256,17 +256,17 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::EditorType type,
     if (ed_editor_type == Mailer)  {
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         ed_filemenu->addAction(tr("Send &Mail"), Qt::CTRL|Qt::Key_M,
-            this, SLOT(send_slot()));
+            this, &QTeditDlg::send_slot);
 #else
         ed_filemenu->addAction(tr("Send &Mail"), this,
-            SLOT(send_slot()), Qt::CTRL|Qt::Key_M);
+            &QTeditDlg::send_slot, Qt::CTRL|Qt::Key_M);
 #endif
     }
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     ed_filemenu->addAction(tr("&Quit"), Qt::CTRL|Qt::Key_Q,
-        this, SLOT(quit_slot()));
+        this, &QTeditDlg::quit_slot);
 #else
-    ed_filemenu->addAction(tr("&Quit"), this, SLOT(quit_slot()),
+    ed_filemenu->addAction(tr("&Quit"), this, &QTeditDlg::quit_slot,
             Qt::CTRL|Qt::Key_Q);
 #endif
 
@@ -286,18 +286,18 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::EditorType type,
     if (ed_editor_type != Browser) {
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         ed_Edit_Undo = ed_editmenu->addAction(tr("Undo"), Qt::CTRL|Qt::Key_U,
-            this, SLOT(undo_slot()));
+            this, &QTeditDlg::undo_slot);
         ed_Edit_Redo = ed_editmenu->addAction(tr("Redo"), Qt::CTRL|Qt::Key_R,
-            this, SLOT(redo_slot()));
+            this, &QTeditDlg::redo_slot);
         ed_editmenu->addAction(tr("&Cut to Clipboard`"), Qt::CTRL|Qt::Key_X,
-            this, SLOT(cut_slot()));
+            this, &QTeditDlg::cut_slot);
 #else
         ed_Edit_Undo = ed_editmenu->addAction(tr("Undo"), this,
-            SLOT(undo_slot()), Qt::CTRL|Qt::Key_U);
+            &QTeditDlg::undo_slot, Qt::CTRL|Qt::Key_U);
         ed_Edit_Redo = ed_editmenu->addAction(tr("Redo"), this,
-            SLOT(redo_slot()), Qt::CTRL|Qt::Key_R);
+            &QTeditDlg::redo_slot, Qt::CTRL|Qt::Key_R);
         ed_editmenu->addAction(tr("&Cut to Clipboard`"), this,
-            SLOT(cut_slot()), Qt::CTRL|Qt::Key_X);
+            &QTeditDlg::cut_slot, Qt::CTRL|Qt::Key_X);
 #endif
         ed_Edit_Undo->setEnabled(false);
         ed_Edit_Redo->setEnabled(false);
@@ -305,17 +305,17 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::EditorType type,
 
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     ed_editmenu->addAction(tr("&Copy to Clipboard"), Qt::CTRL|Qt::Key_C,
-        this, SLOT(copy_slot()));
+        this, &QTeditDlg::copy_slot);
     if (ed_editor_type != Browser) {
         ed_editmenu->addAction(tr("&Paste from Clipboard"),
-            Qt::CTRL|Qt::Key_V, this, SLOT(paste_slot()));
+            Qt::CTRL|Qt::Key_V, this, &QTeditDlg::paste_slot);
     }
 #else
-    ed_editmenu->addAction(tr("&Copy to Clipboard"), this, SLOT(copy_slot()),
-        Qt::CTRL|Qt::Key_C);
+    ed_editmenu->addAction(tr("&Copy to Clipboard"), this,
+        &QTeditDlg::copy_slot, Qt::CTRL|Qt::Key_C);
     if (ed_editor_type != Browser) {
         ed_editmenu->addAction(tr("&Paste from Clipboard"), this,
-            SLOT(paste_slot()), Qt::CTRL|Qt::Key_V);
+            &QTeditDlg::paste_slot, Qt::CTRL|Qt::Key_V);
     }
 #endif
 
@@ -333,18 +333,18 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::EditorType type,
     ed_optmenu = new QMenu(this);
     ed_optmenu->setTitle(tr("&Options"));
     ed_optmenu->addAction(tr("&Search"), this,
-        SLOT(search_slot()));
+        &QTeditDlg::search_slot);
     if ((ed_editor_type == Editor || ed_editor_type == StringEditor) &&
             ed_have_source) {
         ed_optmenu->addAction(tr("&Source"), this,
-            SLOT(source_slot()));
+            &QTeditDlg::source_slot);
     }
     if (ed_editor_type == Mailer) {
         ed_Options_Attach = ed_optmenu->addAction(tr("&Attach"),
-            this, SLOT(attach_slot()));
+            this, &QTeditDlg::attach_slot);
     }
     ed_optmenu->addAction(tr("&Font"), this,
-        SLOT(font_slot()));
+        &QTeditDlg::font_slot);
 #ifdef USE_QTOOLBAR
     a = menubar->addAction("Options");
     a->setMenu(ed_optmenu);
@@ -359,15 +359,15 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::EditorType type,
 #ifdef USE_QTOOLBAR
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     menubar->addAction(tr("&Help"), Qt::CTRL|Qt::Key_H, this,
-        SLOT(help_slot()));
+        &QTeditDlg::help_slot);
 #else
-    a = menubar->addAction(tr("&Help"), this, SLOT(help_slot()));
+    a = menubar->addAction(tr("&Help"), this, &QTeditDlg::help_slot);
     a->setShortcut(QKeySequence("Ctrl+H"));
 #endif
 #else
     ed_helpmenu = new QMenu(this);
     ed_helpmenu->setTitle(tr("&Help"));
-    ed_helpmenu->addAction(tr("&Help"), this, SLOT(help_slot()));
+    ed_helpmenu->addAction(tr("&Help"), this, &QTeditDlg::help_slot);
     ed_HelpMenu = menubar->addMenu(ed_helpmenu);
 #endif
 
@@ -405,10 +405,10 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::EditorType type,
     if (ed_editor_type == Browser)
         ed_text_editor->setUndoRedoEnabled(false);
     else {
-        connect(ed_text_editor, SIGNAL(undoAvailable(bool)),
-            this, SLOT(undo_available_slot(bool)));
-        connect(ed_text_editor, SIGNAL(redoAvailable(bool)),
-            this, SLOT(redo_available_slot(bool)));
+        connect(ed_text_editor, &QTtextEdit::undoAvailable,
+            this, &QTeditDlg::undo_available_slot);
+        connect(ed_text_editor, &QTtextEdit::redoAvailable,
+            this, &QTeditDlg::redo_available_slot);
     }
 
     ed_status_bar = new QStatusBar();
@@ -424,8 +424,8 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::EditorType type,
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_EDITOR))
         ed_text_editor->setFont(*fnt);
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTeditDlg::font_changed_slot, Qt::QueuedConnection);
 
     if (ed_editor_type == Editor || ed_editor_type == Browser) {
         if (ed_editor_type == Browser) {
@@ -465,8 +465,8 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::EditorType type,
         ed_text_editor->setPlainText(file_or_string);
 
     ed_text_changed = false;
-    connect(ed_text_editor, SIGNAL(textChanged()),
-        this, SLOT(text_changed_slot()));
+    connect(ed_text_editor, &QTtextEdit::textChanged,
+        this, &QTeditDlg::text_changed_slot);
 
     ed_saved_as = 0;
     ed_last_event = LOAD;
@@ -539,14 +539,15 @@ QTeditDlg::set_caller(GRobject obj)
         if (o->isWidgetType()) {
             QAbstractButton *btn = dynamic_cast<QAbstractButton*>(o);
             if (btn) {
-                connect(btn, SIGNAL(clicked()), this, SLOT(quit_slot()));
+                connect(btn, &QAbstractButton::clicked,
+                    this, &QTeditDlg::quit_slot);
                 return;
             }
         }
         else {
             QAction *a = dynamic_cast<QAction*>(o);
             if (a) {
-                connect(a, SIGNAL(triggered()), this, SLOT(quit_slot()));
+                connect(a, &QAction::triggered, this, &QTeditDlg::quit_slot);
                 return;
             }
         }
@@ -601,9 +602,10 @@ QTeditDlg::open_slot()
     }
     GRfilePopup *fs = PopUpFileSelector(fsSEL, GRloc(), 0, 0, 0, path);
     QTfileDlg *fsel = dynamic_cast<QTfileDlg*>(fs);
-    if (fsel)
-        connect(fsel, SIGNAL(file_selected(const char*, void*)),
-            this, SLOT(file_selection_slot(const char*, void*)));
+    if (fsel) {
+        connect(fsel, &QTfileDlg::file_selected,
+            this, &QTeditDlg::file_selection_slot);
+    }
 
     delete [] path;
 }
@@ -681,8 +683,8 @@ QTeditDlg::load_slot()
     if (wb_input)
         wb_input->popdown();
     PopUpInput(0, buf, "Load File", 0, 0);
-    connect(wb_input, SIGNAL(action_call(const char*, void*)),
-        this, SLOT(load_file_slot(const char*, void*)));
+    connect(wb_input, &QTledDlg::action_call,
+        this, &QTeditDlg::load_file_slot);
 }
 
 
@@ -745,8 +747,8 @@ QTeditDlg::read_slot()
         ed_drop_file = 0;
     }
     PopUpInput(0, buf, "Read File", 0, 0);
-    connect(wb_input, SIGNAL(action_call(const char*, void*)),
-        this, SLOT(read_file_slot(const char*, void*)));
+    connect(wb_input, &QTledDlg::action_call,
+        this, &QTeditDlg::read_file_slot);
 }
 
 
@@ -902,13 +904,13 @@ QTeditDlg::save_as_slot()
         if (ed_editor_type == Mailer)
             fname = "";
         PopUpInput(0, fname, "Save File", 0, 0);
-        connect(wb_input, SIGNAL(action_call(const char*, void*)),
-            this, SLOT(save_file_as_slot(const char*, void*)));
+        connect(wb_input, &QTledDlg::action_call,
+            this, &QTeditDlg::save_file_as_slot);
     }
     else {
         PopUpInput(0, "", "Save Block", 0, 0);
-        connect(wb_input, SIGNAL(action_call(const char*, void*)),
-            this, SLOT(save_file_as_slot(const char*, void*)));
+        connect(wb_input, &QTledDlg::action_call,
+            this, &QTeditDlg::save_file_as_slot);
     }
 }
 
@@ -1147,12 +1149,12 @@ QTeditDlg::search_slot()
         ed_searcher->set_visible(true);
 
         ed_searcher->set_ign_case(ed_ign_case);
-        connect(ed_searcher, SIGNAL(search_down()),
-            this, SLOT(search_down_slot()));
-        connect(ed_searcher, SIGNAL(search_up()),
-            this, SLOT(search_up_slot()));
-        connect(ed_searcher, SIGNAL(ignore_case(bool)),
-            this, SLOT(ignore_case_slot(bool)));
+        connect(ed_searcher, &QTsearchDlg::search_down,
+            this, &QTeditDlg::search_down_slot);
+        connect(ed_searcher, &QTsearchDlg::search_up,
+            this, &QTeditDlg::search_up_slot);
+        connect(ed_searcher, &QTsearchDlg::ignore_case,
+            this, &QTeditDlg::ignore_case_slot);
     }
 }
 
@@ -1234,8 +1236,7 @@ QTeditDlg::attach_file_slot(const char *fnamein, void*)
     a->setText("Unattach");
     a->setData(QVariant((unsigned long long)(uintptr_t)a_path));
     menu->addAction(a);
-    connect(menu, SIGNAL(triggered(QAction*)),
-        this, SLOT(unattach_slot(QAction*)));
+    connect(menu, &QMenu::triggered, this, &QTeditDlg::unattach_slot);
 
     delete [] fname;
     if (wb_input)
@@ -1256,8 +1257,8 @@ QTeditDlg::attach_slot()
         ed_drop_file = 0;
     }
     PopUpInput(0, buf, "Attach File", 0, 0);
-    connect(wb_input, SIGNAL(action_call(const char*, void*)),
-        this, SLOT(attach_file_slot(const char*, void*)));
+    connect(wb_input, &QTledDlg::action_call,
+        this, &QTeditDlg::attach_file_slot);
 }
 
 

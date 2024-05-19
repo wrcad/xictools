@@ -453,10 +453,10 @@ QTfont::on_null_ptr()
 #define PREVIEW_STRING "abcdefghijk ABCDEFGHIJK 0123456789"
 
 namespace {
-    class font_list_widget : public QListWidget
+    class QTfontListWidget : public QListWidget
     {
     public:
-        font_list_widget(int w, QWidget *prnt=0) : QListWidget(prnt)
+        QTfontListWidget(int w, QWidget *prnt=0) : QListWidget(prnt)
         {
             pref_width = w;
             QSizePolicy p = sizePolicy();
@@ -544,10 +544,9 @@ QTfontDlg::QTfontDlg(QTbag *owner, int indx, void *arg) :
     vb->setContentsMargins(qmtop);
     QLabel *label = new QLabel(tr("Faces"));
     vb->addWidget(label);
-    ft_face_list = new font_list_widget(180);
-    connect(ft_face_list,
-        SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), this,
-        SLOT(face_changed_slot(QListWidgetItem*, QListWidgetItem*)));
+    ft_face_list = new QTfontListWidget(180);
+    connect(ft_face_list, &QTfontListWidget::currentItemChanged,
+        this, &QTfontDlg::face_changed_slot);
     vb->addWidget(ft_face_list);
 
     vb = new QVBoxLayout();
@@ -555,10 +554,9 @@ QTfontDlg::QTfontDlg(QTbag *owner, int indx, void *arg) :
     vb->setContentsMargins(qmtop);
     label = new QLabel(tr("Styles"));
     vb->addWidget(label);
-    ft_style_list = new font_list_widget(120);
-    connect(ft_style_list,
-        SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), this,
-        SLOT(style_changed_slot(QListWidgetItem*, QListWidgetItem*)));
+    ft_style_list = new QTfontListWidget(120);
+    connect(ft_style_list, &QTfontListWidget::currentItemChanged,
+        this, &QTfontDlg::style_changed_slot);
     vb->addWidget(ft_style_list);
 
     vb = new QVBoxLayout();
@@ -566,10 +564,9 @@ QTfontDlg::QTfontDlg(QTbag *owner, int indx, void *arg) :
     vb->setContentsMargins(qmtop);
     label = new QLabel(tr("Sizes"));
     vb->addWidget(label);
-    ft_size_list = new font_list_widget(60);
-    connect(ft_size_list,
-        SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), this,
-        SLOT(size_changed_slot(QListWidgetItem*, QListWidgetItem*)));
+    ft_size_list = new QTfontListWidget(60);
+    connect(ft_size_list, &QTfontListWidget::currentItemChanged,
+        this, &QTfontDlg::size_changed_slot);
     vb->addWidget(ft_size_list);
 
     QGroupBox *gb = new QGroupBox(tr("Preview"));
@@ -588,21 +585,23 @@ QTfontDlg::QTfontDlg(QTbag *owner, int indx, void *arg) :
     ft_apply = new QToolButton();
     ft_apply->setText(tr("Apply"));
     hbox->addWidget(ft_apply);
-    connect(ft_apply, SIGNAL(clicked()), this, SLOT(action_slot()));
+    connect(ft_apply, &QAbstractButton::clicked,
+        this, &QTfontDlg::action_slot);
 
     ft_menu = new QComboBox(this);
     hbox->addWidget(ft_menu);
     QSize qs = ft_apply->sizeHint();
     ft_menu->setMinimumHeight(qs.height());
     ft_menu->setEditable(false);
-    connect(ft_menu, SIGNAL(activated(int)), this, SLOT(menu_choice_slot(int)));
+    connect(ft_menu, QOverload<int>::of(&QComboBox::activated),
+        this, &QTfontDlg::menu_choice_slot);
     if (indx <= 0)
         ft_menu->hide();
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(quit_slot()));
+    connect(btn, &QAbstractButton::clicked, this, &QTfontDlg::quit_slot);
 
     for (int i = 1; i < Fnt()->num_app_fonts; i++) {
         QFont *fnt;
@@ -659,12 +658,12 @@ QTfontDlg::register_caller(GRobject c, bool no_dsl, bool handle_popdn)
                 QAbstractButton *btn = dynamic_cast<QAbstractButton*>(o);
                 if (btn) {
                     if (btn->isCheckable()) {
-                        connect(btn, SIGNAL(toggled(bool)),
-                            this, SLOT(cancel_action_slot(bool)));
+                        connect(btn, &QAbstractButton::toggled,
+                            this, &QTfontDlg::cancel_action_slot);
                     }
                     else {
-                        connect(btn, SIGNAL(clicked()),
-                            this, SLOT(quit_slot()));
+                        connect(btn, &QAbstractButton::clicked,
+                            this, &QTfontDlg::quit_slot);
                     }
                 }
             }
@@ -672,12 +671,12 @@ QTfontDlg::register_caller(GRobject c, bool no_dsl, bool handle_popdn)
                 QAction *a = dynamic_cast<QAction*>(o);
                 if (a) {
                     if (a->isCheckable()) {
-                        connect(a, SIGNAL(triggered(bool)),
-                            this, SLOT(cancel_action_slot(bool)));
+                        connect(a, &QAction::triggered,
+                            this, &QTfontDlg::cancel_action_slot);
                     }
                     else {
-                        connect(a, SIGNAL(triggered()),
-                            this, SLOT(quit_slot()));
+                        connect(a, &QAction::triggered,
+                            this, &QTfontDlg::quit_slot);
                     }
                 }
             }

@@ -57,7 +57,7 @@ QTtimer::QTtimer(int(*cb)(void*), void *a, QTtimer *n, QObject *p) : QTimer(p)
     t_timer_id = id_cntr++;
     t_deleted = false;
     t_use_cb_ret = false;
-    connect(this, SIGNAL(timeout()), this, SLOT(timeout_slot()));
+    connect(this, &QTtimer::timeout, this, &QTtimer::timeout_slot);
 }
 
 

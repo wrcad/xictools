@@ -48,7 +48,7 @@ QTidleproc::QTidleproc() : QTimer(0)
     ip_idle_proc_list = 0;
     ip_idle_id_cnt = 1000;
     ip_running = false;
-    connect(this, SIGNAL(timeout()), this, SLOT(run_slot()));
+    connect(this, &QTidleproc::timeout, this, &QTidleproc::run_slot);
 }
 
 
