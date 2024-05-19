@@ -834,7 +834,7 @@ QTfileDlg::QTfileDlg(QTbag *owner, FsMode mode, void *arg,
             this, &QTfileDlg::show_filter_slot);
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         f_listmenu->addAction(tr("Re&list"),
-            Qt::CTRL|Qt::Key_L, this, &QTfileDlg::list_files_slot()));
+            Qt::CTRL|Qt::Key_L, this, &QTfileDlg::list_files_slot);
 #else
         f_listmenu->addAction(tr("Re&list"),
             this, &QTfileDlg::list_files_slot, Qt::CTRL|Qt::Key_L);
@@ -847,7 +847,7 @@ QTfileDlg::QTfileDlg(QTbag *owner, FsMode mode, void *arg,
 #ifdef USE_QTOOLBAR
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         menubar->addAction(tr("&Help"),
-            Qt::CTRL|Qt::Key_H, this, &QTfileDlg::help_slot()));
+            Qt::CTRL|Qt::Key_H, this, &QTfileDlg::help_slot);
 #else
         QAction *a = menubar->addAction(tr("&Help"), this,
             &QTfileDlg::help_slot);

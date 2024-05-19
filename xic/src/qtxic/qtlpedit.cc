@@ -423,7 +423,7 @@ QTlayerParamDlg::QTlayerParamDlg(GRobject c, const char *msg,
 #ifdef USE_QTOOLBAR
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     menubar->addAction(tr("&Help"), Qt::CTRL|Qt::Key_H, this,
-        &QTlayerParamDlg::help_slot()));
+        &QTlayerParamDlg::help_slot);
 #else
     a = menubar->addAction(tr("&Help"), this, &QTlayerParamDlg::help_slot);
     a->setShortcut(QKeySequence("Ctrl+H"));
