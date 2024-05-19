@@ -290,7 +290,7 @@ QTdrcRuleEditDlg::QTdrcRuleEditDlg(GRobject c)
 #ifdef USE_QTOOLBAR
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     menubar->addAction(tr("&Help"), Qt::CTRL|Qt::Key_H, this,
-        &QTdrcRuleEditDlg::help_slot()));
+        &QTdrcRuleEditDlg::help_slot);
 #else
     a = menubar->addAction(tr("&Help"), this, &QTdrcRuleEditDlg::help_slot);
     a->setShortcut(QKeySequence("Ctrl+H"));

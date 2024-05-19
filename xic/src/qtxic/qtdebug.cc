@@ -357,7 +357,7 @@ QTscriptDebuggerDlg::QTscriptDebuggerDlg(GRobject c) : QTbag(this)
 #ifdef USE_QTOOLBAR
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     menubar->addAction(tr("&Help"), Qt::CTRL|Qt::Key_H, this,
-        &QTscriptDebuggerDlg::help_slot()));
+        &QTscriptDebuggerDlg::help_slot);
 #else
     a = menubar->addAction(tr("&Help"), this, &QTscriptDebuggerDlg::help_slot);
     a->setShortcut(QKeySequence("Ctrl+H"));
