@@ -73,47 +73,6 @@ QTtoolbar::PopUpShellDefs(ShowMode mode, int x, int y)
     new QTshellParamDlg(x, y);
     QTshellParamDlg::self()->show();
 }
-
-/*
-// Remove the plot defaults popup.  Called from the toolbar.
-//
-void
-GTKtoolbar::PopDownShellDefs()
-{
-    if (!sh_shell)
-        return;
-    TB()->PopDownTBhelp(TBH_SH);
-    SetLoc(ntb_shell, sh_shell);
-
-    GTKdev::Deselect(tb_shell);
-    g_signal_handlers_disconnect_by_func(G_OBJECT(sh_shell),
-        (gpointer)sh_cancel_proc, sh_shell);
-
-    for (int i = 0; KW.shell(i)->word; i++) {
-        xKWent *ent = static_cast<xKWent*>(KW.shell(i));
-        if (ent->ent) {
-            if (ent->ent->entry) {
-                const char *str =
-                    gtk_entry_get_text(GTK_ENTRY(ent->ent->entry));
-                delete [] ent->lastv1;
-                ent->lastv1 = lstring::copy(str);
-            }
-            if (ent->ent->entry2) {
-                const char *str =
-                    gtk_entry_get_text(GTK_ENTRY(ent->ent->entry2));
-                delete [] ent->lastv2;
-                ent->lastv2 = lstring::copy(str);
-            }
-            delete ent->ent;
-            ent->ent = 0;
-        }
-    }
-    gtk_widget_destroy(sh_shell);
-    sh_shell = 0;
-    SetActive(ntb_shell, false);
-}
-*/
-
 // End of QTtoolbar functions.
 
 
@@ -151,7 +110,8 @@ QTshellParamDlg::QTshellParamDlg(int xx, int yy)
     tbtn->setText(tr("Help"));
     tbtn->setCheckable(true);
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(toggled(bool)), this, SLOT(help_btn_slot(bool)));
+    connect(tbtn, &QAbstractButton::toggled,
+        this, &QTshellParamDlg::help_btn_slot);
 
     QGridLayout *grid = new QGridLayout();
     grid->setContentsMargins(qmtop);
@@ -274,7 +234,8 @@ QTshellParamDlg::QTshellParamDlg(int xx, int yy)
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTshellParamDlg::dismiss_btn_slot);
 
     if (xx || yy) {
         TB()->FixLoc(&xx, &yy);

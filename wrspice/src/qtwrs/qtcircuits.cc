@@ -151,32 +151,33 @@ QTcircuitListDlg::QTcircuitListDlg(int xx, int yy, const char *s)
         tbtn->setText(tr(cl_btns[n]));
         tbtn->setCheckable(true);
         hbox->addWidget(tbtn);
-        connect(tbtn, SIGNAL(toggled(bool)),
-            this, SLOT(button_slot(bool)));
+        connect(tbtn, &QAbstractButton::toggled,
+            this, &QTcircuitListDlg::button_slot);
     }
 
     hbox->addStretch(1);
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTcircuitListDlg::help_btn_slot);
 
     // scrolled text area
     //
     wb_textarea = new QTtextEdit();
     vbox->addWidget(wb_textarea);
     wb_textarea->setReadOnly(true);
-    connect(wb_textarea, SIGNAL(press_event(QMouseEvent*)),
-        this, SLOT(mouse_press_slot(QMouseEvent*)));
-    connect(wb_textarea, SIGNAL(release_event(QMouseEvent*)),
-        this, SLOT(mouse_release_slot(QMouseEvent*)));
-    connect(wb_textarea, SIGNAL(motion_event(QMouseEvent*)),
-        this, SLOT(mouse_motion_slot(QMouseEvent*)));
+    connect(wb_textarea, &QTtextEdit::press_event,
+        this, &QTcircuitListDlg::mouse_press_slot);
+    connect(wb_textarea, &QTtextEdit::release_event,
+        this, &QTcircuitListDlg::mouse_release_slot);
+    connect(wb_textarea, &QTtextEdit::motion_event,
+        this, &QTcircuitListDlg::mouse_motion_slot);
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_FIXED))
         wb_textarea->setFont(*fnt);
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTcircuitListDlg::font_changed_slot, Qt::QueuedConnection);
 
     wb_textarea->set_chars(s);
 
@@ -189,7 +190,8 @@ QTcircuitListDlg::QTcircuitListDlg(int xx, int yy, const char *s)
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTcircuitListDlg::dismiss_btn_slot);
 
     TB()->FixLoc(&xx, &yy);
     TB()->SetActiveDlg(tid_circuits, this);
@@ -357,8 +359,8 @@ QTcircuitListDlg::button_slot(bool state)
                     cl_affirm->register_usrptr((void**)&cl_affirm);
                     cl_affirm->register_caller(btn, false, false);
                     QTaffirmDlg *af = dynamic_cast<QTaffirmDlg*>(cl_affirm);
-                    connect(af, SIGNAL(affirm(bool, void*)),
-                        this, SLOT(delete_ckt_slot(bool, void*)));
+                    connect(af, &QTaffirmDlg::affirm,
+                        this, &QTcircuitListDlg::delete_ckt_slot);
                     return;
                 }
             }

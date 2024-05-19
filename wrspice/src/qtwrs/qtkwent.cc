@@ -126,7 +126,8 @@ QTkwent::QTkwent(EntryMode m, EntryCallback cb, xKWent *kwstr,
         ke_deflt = new QToolButton();
         ke_deflt->setText(tr("Def"));
         hbox->addWidget(ke_deflt);
-        connect(ke_deflt, SIGNAL(clicked()), this, SLOT(def_btn_slot()));
+        connect(ke_deflt, &QAbstractButton::clicked,
+            this, &QTkwent::def_btn_slot);
     }
 
     if ((ke_mode != KW_FLOAT && ke_mode != KW_NO_SPIN) &&
@@ -214,24 +215,24 @@ QTkwent::QTkwent(EntryMode m, EntryCallback cb, xKWent *kwstr,
         }
         else if (ke_update)
             (*ke_update)(true, v, this);
-        connect(ke_entry, SIGNAL(textChanged(const QString&)),
-            this, SLOT(val_changed_slot(const QString&)));
+        connect(ke_entry, &QLineEdit::textChanged,
+            this, &QTkwent::val_changed_slot);
         if (ke_entry2) {
-            connect(ke_entry2, SIGNAL(textChanged(const QString&)),
-                this, SLOT(val_changed_slot(const QString&)));
+            connect(ke_entry2, &QLineEdit::textChanged,
+                this, &QTkwent::val_changed_slot);
         }
     }
     if (ke_spbox) {
         if (v && ke_update)
             (*ke_update)(true, v, this);
-        connect(ke_spbox, SIGNAL(textChanged(const QString&)),
-            this, SLOT(val_changed_slot(const QString&)));
+        connect(ke_spbox, &QTdoubleSpinBox::textChanged,
+            this, &QTkwent::val_changed_slot);
     }
     if (ke_expsb) {
         if (v && ke_update)
             (*ke_update)(true, v, this);
-        connect(ke_expsb, SIGNAL(textChanged(const QString&)),
-            this, SLOT(val_changed_slot(const QString&)));
+        connect(ke_expsb, &QTexpDoubleSpinBox::textChanged,
+            this, &QTkwent::val_changed_slot);
     }
     if (ke_choice) {
         if (!v) {
@@ -245,14 +246,14 @@ QTkwent::QTkwent(EntryMode m, EntryCallback cb, xKWent *kwstr,
         }
         else if (v && ke_update)
             (*ke_update)(true, v, this);
-        connect(ke_choice, SIGNAL(textChanged(const QString&)),
-            this, SLOT(val_changed_slot(const QString&)));
+        connect(ke_choice, &QTchoiceSpinBox::textChanged,
+            this, &QTkwent::val_changed_slot);
     }
 
     if (ke_mode != KW_NO_CB) {
         set_state(v ? true : false);
-        connect(ke_active, SIGNAL(stateChanged(int)),
-            this, SLOT(set_btn_slot(int)));
+        connect(ke_active, &QCheckBox::stateChanged,
+            this, &QTkwent::set_btn_slot);
     }
 }
 

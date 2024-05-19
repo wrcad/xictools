@@ -116,7 +116,8 @@ QTdebugParamDlg::QTdebugParamDlg(int xx, int yy)
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
     tbtn->setCheckable(true);
-    connect(tbtn, SIGNAL(toggled(bool)), this, SLOT(help_btn_slot(bool)));
+    connect(tbtn, &QAbstractButton::toggled,
+        this, &QTdebugParamDlg::help_btn_slot);
 
     QGridLayout *grid = new QGridLayout();
     grid->setContentsMargins(qmtop);
@@ -143,8 +144,8 @@ QTdebugParamDlg::QTdebugParamDlg(int xx, int yy)
     if (entry) {
         entry->ent = new QTkwent(KW_NO_CB, QTkwent::ke_bool_func, entry, 0);
         grid->addWidget(entry->qtent(), 1, 0, 1, 2);
-        connect(entry->qtent()->active(), SIGNAL(stateChanged(int)),
-            this, SLOT(set_btn_slot(int)));
+        connect(entry->qtent()->active(), &QCheckBox::stateChanged,
+            this, &QTdebugParamDlg::set_btn_slot);
     }
     db_dbent = entry;
 
@@ -152,80 +153,80 @@ QTdebugParamDlg::QTdebugParamDlg(int xx, int yy)
     if (entry) {
         entry->ent = new QTkwent(KW_NO_CB, QTkwent::ke_bool_func, entry, 0);
         grid->addWidget(entry->qtent(), 1, 2);
-        connect(entry->qtent()->active(), SIGNAL(stateChanged(int)),
-            this, SLOT(set_btn_slot(int)));
+        connect(entry->qtent()->active(), &QCheckBox::stateChanged,
+            this, &QTdebugParamDlg::set_btn_slot);
     }
 
     entry = KWGET(kw_control);
     if (entry) {
         entry->ent = new QTkwent(KW_NO_CB, QTkwent::ke_bool_func, entry, 0);
         grid->addWidget(entry->qtent(), 1, 3);
-        connect(entry->qtent()->active(), SIGNAL(stateChanged(int)),
-            this, SLOT(set_btn_slot(int)));
+        connect(entry->qtent()->active(), &QCheckBox::stateChanged,
+            this, &QTdebugParamDlg::set_btn_slot);
     }
 
     entry = KWGET(kw_cshpar);
     if (entry) {
         entry->ent = new QTkwent(KW_NO_CB, QTkwent::ke_bool_func, entry, 0);
         grid->addWidget(entry->qtent(), 2, 0);
-        connect(entry->qtent()->active(), SIGNAL(stateChanged(int)),
-            this, SLOT(set_btn_slot(int)));
+        connect(entry->qtent()->active(), &QCheckBox::stateChanged,
+            this, &QTdebugParamDlg::set_btn_slot);
     }
 
     entry = KWGET(kw_eval);
     if (entry) {
         entry->ent = new QTkwent(KW_NO_CB, QTkwent::ke_bool_func, entry, 0);
         grid->addWidget(entry->qtent(), 2, 1);
-        connect(entry->qtent()->active(), SIGNAL(stateChanged(int)),
-            this, SLOT(set_btn_slot(int)));
+        connect(entry->qtent()->active(), &QCheckBox::stateChanged,
+            this, &QTdebugParamDlg::set_btn_slot);
     }
 
     entry = KWGET(kw_ginterface);
     if (entry) {
         entry->ent = new QTkwent(KW_NO_CB, QTkwent::ke_bool_func, entry, 0);
         grid->addWidget(entry->qtent(), 2, 2);
-        connect(entry->qtent()->active(), SIGNAL(stateChanged(int)),
-            this, SLOT(set_btn_slot(int)));
+        connect(entry->qtent()->active(), &QCheckBox::stateChanged,
+            this, &QTdebugParamDlg::set_btn_slot);
     }
 
     entry = KWGET(kw_helpsys);
     if (entry) {
         entry->ent = new QTkwent(KW_NO_CB, QTkwent::ke_bool_func, entry, 0);
         grid->addWidget(entry->qtent(), 2, 3);
-        connect(entry->qtent()->active(), SIGNAL(stateChanged(int)),
-            this, SLOT(set_btn_slot(int)));
+        connect(entry->qtent()->active(), &QCheckBox::stateChanged,
+            this, &QTdebugParamDlg::set_btn_slot);
     }
 
     entry = KWGET(kw_plot);
     if (entry) {
         entry->ent = new QTkwent(KW_NO_CB, QTkwent::ke_bool_func, entry, 0);
         grid->addWidget(entry->qtent(), 3, 0);
-        connect(entry->qtent()->active(), SIGNAL(stateChanged(int)),
-            this, SLOT(set_btn_slot(int)));
+        connect(entry->qtent()->active(), &QCheckBox::stateChanged,
+            this, &QTdebugParamDlg::set_btn_slot);
     }
 
     entry = KWGET(kw_parser);
     if (entry) {
         entry->ent = new QTkwent(KW_NO_CB, QTkwent::ke_bool_func, entry, 0);
         grid->addWidget(entry->qtent(), 3, 1);
-        connect(entry->qtent()->active(), SIGNAL(stateChanged(int)),
-            this, SLOT(set_btn_slot(int)));
+        connect(entry->qtent()->active(), &QCheckBox::stateChanged,
+            this, &QTdebugParamDlg::set_btn_slot);
     }
 
     entry = KWGET(kw_siminterface);
     if (entry) {
         entry->ent = new QTkwent(KW_NO_CB, QTkwent::ke_bool_func, entry, 0);
         grid->addWidget(entry->qtent(), 3, 2);
-        connect(entry->qtent()->active(), SIGNAL(stateChanged(int)),
-            this, SLOT(set_btn_slot(int)));
+        connect(entry->qtent()->active(), &QCheckBox::stateChanged,
+            this, &QTdebugParamDlg::set_btn_slot);
     }
 
     entry = KWGET(kw_vecdb);
     if (entry) {
         entry->ent = new QTkwent(KW_NO_CB, QTkwent::ke_bool_func, entry, 0);
         grid->addWidget(entry->qtent(), 3, 3);
-        connect(entry->qtent()->active(), SIGNAL(stateChanged(int)),
-            this, SLOT(set_btn_slot(int)));
+        connect(entry->qtent()->active(), &QCheckBox::stateChanged,
+            this, &QTdebugParamDlg::set_btn_slot);
     }
 
     entry = KWGET(kw_trantrace);
@@ -262,7 +263,8 @@ QTdebugParamDlg::QTdebugParamDlg(int xx, int yy)
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTdebugParamDlg::dismiss_btn_slot);
 
     if (xx || yy) {
         TB()->FixLoc(&xx, &yy);

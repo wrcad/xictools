@@ -164,13 +164,13 @@ QTtbHelpDlg::QTtbHelpDlg(GRobject prnt, GRobject call_btn, TBH_type typ)
     th_text->setReadOnly(true);
     th_text->setMouseTracking(true);
     th_text->setLineWrapMode(QTextEdit::NoWrap);
-    connect(th_text, SIGNAL(press_event(QMouseEvent*)),
-        this, SLOT(mouse_press_slot(QMouseEvent*)));
+    connect(th_text, &QTtextEdit::press_event,
+        this, &QTtbHelpDlg::mouse_press_slot);
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_FIXED))
         th_text->setFont(*fnt);
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTtbHelpDlg::font_changed_slot, Qt::QueuedConnection);
 
     char *s = TB()->KeywordsText(th_parent);
     th_text->set_chars(s);
@@ -185,7 +185,8 @@ QTtbHelpDlg::QTtbHelpDlg(GRobject prnt, GRobject call_btn, TBH_type typ)
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTtbHelpDlg::dismiss_btn_slot);
 }
 
 

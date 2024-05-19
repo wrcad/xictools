@@ -143,12 +143,13 @@ QTerrmsgDlg::QTerrmsgDlg(const char *string)
     hbox->addWidget(wrap);
     wrap->setCheckable(true);
     wrap->setAutoDefault(false);
-    connect(wrap, SIGNAL(toggled(bool)),
-        this, SLOT(wrap_btn_slot(bool)));
+    connect(wrap, &QAbstractButton::toggled,
+        this, &QTerrmsgDlg::wrap_btn_slot);
 
     QPushButton *cancel = new QPushButton(tr("Dismiss"));
     hbox->addWidget(cancel);
-    connect(cancel, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(cancel, &QAbstractButton::clicked,
+        this, &QTerrmsgDlg::dismiss_btn_slot);
     cancel->setAutoDefault(false);
     cancel->setDefault(true);
 
