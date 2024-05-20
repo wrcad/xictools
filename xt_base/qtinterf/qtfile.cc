@@ -862,7 +862,7 @@ QTfileDlg::QTfileDlg(QTbag *owner, FsMode mode, void *arg,
             Qt::CTRL|Qt::Key_H, this, &QTfileDlg::help_slot()));
 #else
         f_helpmenu->addAction(tr("&Help"),
-            this, &QTfileDlg::help_slot()), Qt::CTRL|Qt::Key_H);
+            this, &QTfileDlg::help_slot, Qt::CTRL|Qt::Key_H);
 #endif
 #endif
     }
