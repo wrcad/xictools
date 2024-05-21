@@ -419,6 +419,8 @@ protected:
     int         sw_cursor_type;
 };
 
+typedef int(*RunQueuedProc)(void*);
+
 class QTmainwin : public QTsubwin
 {
     Q_OBJECT
@@ -477,13 +479,13 @@ public:
 
 signals:
     void side_button_press(MenuEnt*);
-    void run_queued(void*, void*);
+    void run_queued(RunQueuedProc, void*);
 
 public slots:
     void update_coords_slot(int, int);
 
 private slots:
-    void run_queued_slot(void*, void*);
+    void run_queued_slot(RunQueuedProc, void*);
 
 private:
     // QWidget virtual overrides

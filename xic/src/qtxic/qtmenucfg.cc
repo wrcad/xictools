@@ -1407,7 +1407,7 @@ QTmenuConfig::set_main_global_sens(const MenuList *list, bool sens)
 // This executes the menu-entry action code.  For certain commands, the
 // call is actually made from an idle procedure.
 //
-void
+int
 QTmenuConfig::exec_idle_proc(void *arg)
 {
     MenuEnt *ent = static_cast<MenuEnt*>(arg);
@@ -1416,7 +1416,7 @@ QTmenuConfig::exec_idle_proc(void *arg)
 
     if (ent->is_dynamic()) {
         if (QTpkg::self()->IsBusy())
-            return;
+            return (0);
         DSP()->SetInterrupt(DSPinterNone);
         const char *entry = ent->menutext;
         // entry is the same as m->entry, but contains the menu path
@@ -1443,7 +1443,7 @@ QTmenuConfig::exec_idle_proc(void *arg)
                 if (!CD()->ReopenCell(Tstring(DSP()->CurCellName()),
                         DSP()->CurMode())) {
                     Log()->ErrorLog(mh::Processing, Errs()->get_error());
-                    return;
+                    return (0);
                 }
                 cell_created = true;
                 cursd = CurCell();
@@ -1456,13 +1456,14 @@ QTmenuConfig::exec_idle_proc(void *arg)
             if (cell_created && cursd->isEmpty() && !cursd->isSubcell())
                 delete cursd;
         }
-        return;
+        return (0);
     }
     if (ent->action && QTmainwin::exists() && !QTpkg::self()->IsBusy()) {
         QTmainwin::self()->ShowGhost(ERASE);
         (*ent->action)(&ent->cmd);
         QTmainwin::self()->ShowGhost(DISPLAY);
     }
+    return (0);
 }
 
 
@@ -1767,7 +1768,7 @@ QTmenuConfig::subwin_view_menu_slot(QAction *a)
     ent->cmd.caller = ent->user_action;
     if (i == subwViewMenuCancl)
         // can't destroy here, defer
-        emit QTmainwin::self()->run_queued((void*)&exec_idle_proc, ent);
+        emit QTmainwin::self()->run_queued(&exec_idle_proc, ent);
     else
         exec_slot(ent);
 }
@@ -1905,7 +1906,7 @@ QTmenuConfig::exec_slot(MenuEnt *ent)
             // Putting the call in a timeout proc allows the current
             // command to return and finish before the new one starts
             // (see below).
-            emit QTmainwin::self()->run_queued((void*)&exec_idle_proc, ent);
+            emit QTmainwin::self()->run_queued(&exec_idle_proc, ent);
         }
         return;
     }
@@ -1934,7 +1935,7 @@ QTmenuConfig::exec_slot(MenuEnt *ent)
         // command to return and finish before the new one starts.
 
         if (MainMenu()->GetStatus(ent->cmd.caller) || call_on_up)
-            emit QTmainwin::self()->run_queued((void*)&exec_idle_proc, ent);
+            emit QTmainwin::self()->run_queued(&exec_idle_proc, ent);
         return;
     }
     exec_idle_proc(ent);

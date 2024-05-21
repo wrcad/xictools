@@ -589,6 +589,14 @@ cEdit::addMaster(const char *mnamein, const char *cname, cCHD *chd)
                 chd, &cbin, 0, add_cell_cb, cbdata);
         }
 
+        // Instances of cells just read that are in cells not just
+        // read will have a bad bounding box.  In particular, such
+        // instances in the top-level editing cell can cause trouble. 
+        // If we switch editing context, the new BBs will be corrected
+        // so we shouln't need to worry about these.
+        CDcbin ccbin(DSP()->MainWdesc()->CurCellName());
+        ccbin.fixBBs();
+
         if (oiret == OIerror) {
             Errs()->add_error("Error opening %s", mname);
             Log()->ErrorLog(mh::CellPlacement, Errs()->get_error());

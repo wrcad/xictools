@@ -1,5 +1,5 @@
 
-/*========================================================================*
+/*========================================================================
  *                                                                        *
  *  Distributed by Whiteley Research Inc., Sunnyvale, California, USA     *
  *                       http://wrcad.com                                 *
@@ -69,7 +69,7 @@ public:
     void updateDynamicMenus();
     void switch_menu_mode(DisplayMode, int);
     void set_main_global_sens(const MenuList*, bool);
-    static void exec_idle_proc(void*);
+    static int exec_idle_proc(void*);
 
     bool menu_disabled() const  { return (mc_menu_disabled); }
 

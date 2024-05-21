@@ -1251,7 +1251,7 @@ cKeys::check_exec(bool exact)
     // Put the execution in an idle proc.  This avoids an artifact in
     // prompt text from newly-generated text coming before the geometry
     // update is finished.
-    emit QTmainwin::self()->run_queued((void*)&check_exec_idle, ent);
+    emit QTmainwin::self()->run_queued(&check_exec_idle, ent);
 }
 
 
@@ -2924,11 +2924,10 @@ QTmainwin::update_coords_slot(int xx, int yy)
 // pointer instead of a void* but Qt seemed not to accept the syntax.
 //
 void
-QTmainwin::run_queued_slot(void* i, void *arg)
+QTmainwin::run_queued_slot(RunQueuedProc func, void *arg)
 {
-    int(*func)(void*) = (int(*)(void*))(i);
     if (func(arg))
-        emit run_queued(i, arg);
+        emit run_queued(func, arg);
 }
 // End of QTmainwin functions.
 
