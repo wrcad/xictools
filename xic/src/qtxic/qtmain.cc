@@ -2614,7 +2614,10 @@ QTmainwin::QTmainwin(QWidget *prnt) : QTsubwin(0, prnt)
     mw_status = 0;
 
     qRegisterMetaType<RunQueuedStruct>();
-    qRegisterMetaType<QResizeEvent*>();  // Seems not to be registered!
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+    qRegisterMetaType<QResizeEvent*>();
+    // Seems not to be registered in QT6!  Line errors out in QT5.
+#endif
 
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     setWindowFlags(Qt::Window);
