@@ -2613,6 +2613,9 @@ QTmainwin::QTmainwin(QWidget *prnt) : QTsubwin(0, prnt)
     mw_layertab = 0;
     mw_status = 0;
 
+    qRegisterMetaType<RunQueuedStruct>();
+    qRegisterMetaType<QResizeEvent*>();  // Seems not to be registered!
+
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     setWindowFlags(Qt::Window);
     setAttribute(Qt::WA_DeleteOnClose);
@@ -2924,10 +2927,10 @@ QTmainwin::update_coords_slot(int xx, int yy)
 // pointer instead of a void* but Qt seemed not to accept the syntax.
 //
 void
-QTmainwin::run_queued_slot(RunQueuedProc func, void *arg)
+QTmainwin::run_queued_slot(RunQueuedStruct f, void *arg)
 {
-    if (func(arg))
-        emit run_queued(func, arg);
+    if (f.func(arg))
+        emit run_queued(f.func, arg);
 }
 // End of QTmainwin functions.
 
