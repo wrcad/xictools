@@ -35,8 +35,6 @@ REGEX = @REGEX@
 DEVLIB_STATIC = @DEVLIB_STATIC_FILE@
 DEVLIB_CALL = @DEVLIB_CALL@
 SOEXT = @SOEXT@
-DLL_SPICE_PROG = @DLL_SPICE_PROG@
-NODLL_SPICE_PROG = @NODLL_SPICE_PROG@
 TOOLROOT = @TOOLROOT@
 WINPTHREADFIX = @WINPTHREADFIX@
 
@@ -142,11 +140,12 @@ syntaxlevel:
 $(TARGETS)::
 	$(MAKE) bin/$@
 
-#--------------------
-# The first two targets are for Windows, create wrspice with
-# everything in a DLL, so that we can link plugins against the DLL.
+ifeq ($(OSNAME), MINGW)
 
-bin/$(DLL_SPICE_PROG): bin/main.cc bin/wrspice.dll
+# For Windows, create wrspice with everything in a DLL, so that we can
+# link plugins against the DLL.
+
+bin/wrspice: bin/main.cc bin/wrspice.dll
 	$(CC) -o bin/wrspice bin/main.cc src/$(GRPREF)wrs/resource.o -Lbin \
   -lwrspice
 
@@ -155,12 +154,14 @@ bin/wrspice.dll: bin/wrspice.o $(LOCAL_LIBS) $(MALLOC)
 	@$(LINKCC) $(LSHFLAG) -o bin/wrspice.dll $(LFLAGS) bin/wrspice.o \
   $(LOCAL_LIBS) $(LIBS) $(MALLOC) $(STDCLIB)
 
-#--------------------
+else
 
-bin/$(NODLL_SPICE_PROG): bin/wrspice.o $(LOCAL_LIBS) $(MALLOC)
+bin/wrspice: bin/wrspice.o $(LOCAL_LIBS) $(MALLOC)
 	@echo $@: dynamic link
 	@$(LINKCC) -o bin/wrspice $(LFLAGS) bin/wrspice.o \
   $(LOCAL_LIBS) $(LIBS) $(MALLOC) $(STDCLIB) $(PSLIBS)
+
+endif
 
 bin/wrspiced: bin/wrspiced.o $(BASE)/lib/miscutil.a
 	@echo $@: dynamic link
@@ -486,16 +487,14 @@ $(destn)/bin::
 	done
 	@$(INSTALL_BIN) mmjco/mmjco$(EXESUFFIX) $@;
 # Don't strip wrspice.exe, Webroot will think its a virus!
-	@if [ $(DLL_SPICE_PROG) = wrspice ]; then \
+	@if [ -n "$(EXESUFFIX)" ]; then \
 	    $(INSTALL_BIN) bin/wrspice.dll $@; \
 	    $(INSTALL_SCRIPT) bin/wrspice$(EXESUFFIX) $@; \
-	else \
-	    $(INSTALL_BIN) bin/wrspice$(EXESUFFIX) $@; \
-	fi
-	@if [ -n "$(EXESUFFIX)" ]; then \
 	    cp $(BASE)/util/program.bat wrspice.bat; \
             $(INSTALL_SCRIPT) wrspice.bat $@; \
 	    rm -f wrspice.bat; \
+	else \
+	    $(INSTALL_BIN) bin/wrspice$(EXESUFFIX) $@; \
 	fi
 
 $(destn)/icons::

@@ -467,11 +467,6 @@ AC_PROG_MAKE_SET
 
 AC_PATH_XTRA
 
-DLL_SPICE_PROG='dll-wrspice'
-NODLL_SPICE_PROG='wrspice'
-DLL_XIC_PROG='dll-xic'
-NODLL_XIC_PROG='xic'
-
 case $sys_os in
 MINGW)
     MSW="msw"
@@ -489,10 +484,6 @@ MINGW)
     oa_lpath=$oa_loc/lib/mingw_32/opt
     LSHFLAG="-shared -Wl,--enable-auto-import,--export-all-symbols"
     oa_cflags="-DOA_WINDOWS -DOA_MINGW -DOA_NO_DLL_ATTR"
-    DLL_SPICE_PROG='wrspice'
-    NODLL_SPICE_PROG='nodll-wrspice'
-    DLL_XIC_PROG='xic'
-    NODLL_XIC_PROG='nodll-xic)'
 ;;
 Darwin)
     kern=`uname -r`
@@ -695,10 +686,6 @@ AC_SUBST(ARCH)
 AC_SUBST(DIST_SUFFIX)
 AC_SUBST(INCLXTRA)
 AC_SUBST(SOEXT)
-AC_SUBST(DLL_SPICE_PROG)
-AC_SUBST(NODLL_SPICE_PROG)
-AC_SUBST(DLL_XIC_PROG)
-AC_SUBST(NODLL_XIC_PROG)
 
 if test $with_oa = yes; then
     OA_INCLUDE=$oa_loc/include/oa

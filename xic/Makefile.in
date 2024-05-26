@@ -30,8 +30,6 @@ USESECURE = @USESECURE@
 USEMOZY = @USEMOZY@
 REGEX = @REGEX@
 OA_SUBDIR = @OA_SUBDIR@
-DLL_XIC_PROG = @DLL_XIC_PROG@
-NODLL_XIC_PROG = @NODLL_XIC_PROG@
 TOOLROOT = @TOOLROOT@
 WINPTHREADFIX = @WINPTHREADFIX@
 
@@ -120,11 +118,12 @@ cptest:
 $(TARGETS)::
 	$(MAKE) bin/$@
 
-#--------------------
-# The first two targets are for Windows, create xic with everything in
-# a DLL, so that we can link plugins against the DLL.
+ifeq ($(OSNAME), MINGW)
 
-bin/$(DLL_XIC_PROG): bin/main.cc bin/xic.dll
+# For Windows, create xic with everything in a DLL, so that we can
+# link plugins against the DLL.
+
+bin/xic: bin/main.cc bin/xic.dll
 	$(CC) -o bin/xic bin/main.cc src/$(GRPREF)xic/resource.o -Lbin -lxic
 
 bin/xic.dll: bin/xic.o $(LOCAL_LIBS) $(MALLOC)
@@ -132,12 +131,14 @@ bin/xic.dll: bin/xic.o $(LOCAL_LIBS) $(MALLOC)
 	@$(LINKCC) $(LSHFLAG) -o bin/xic.dll $(LFLAGS) bin/xic.o \
   $(LOCAL_LIBS) $(LIBS) $(MALLOC) $(STDCLIB)
 
-#--------------------
+else
 
-bin/$(NODLL_XIC_PROG): bin/xic.o $(LOCAL_LIBS) $(MALLOC) $(OA_SUBDIR)
+bin/xic: bin/xic.o $(LOCAL_LIBS) $(MALLOC) $(OA_SUBDIR)
 	-@echo $@: dynamic link;
 	-@$(LINKCC) -o bin/xic $(LFLAGS) bin/xic.o \
   $(LOCAL_LIBS) $(LIBS) $(MALLOC) $(STDCLIB)
+
+endif
 
 plugins::
 	cd plugins; $(MAKE)
@@ -415,10 +416,8 @@ $(destn)/bin::
 	$(INSTALL_BIN) bin/wrdecode$(EXESUFFIX) $@
 	$(INSTALL_BIN) bin/wrsetpass$(EXESUFFIX) $@
 	$(INSTALL_BIN) bin/xic$(EXESUFFIX) $@
-	@if [ $(DLL_XIC_PROG) = xic ]; then \
-	    $(INSTALL_BIN) bin/xic.dll $@; \
-	fi
 	@if [ -n "$(EXESUFFIX)" ]; then \
+	    $(INSTALL_BIN) bin/xic.dll $@; \
 	    cp $(BASE)/util/program.bat xic.bat; \
             $(INSTALL_SCRIPT) xic.bat $@; \
 	    rm -f xic.bat; \
