@@ -1,4 +1,5 @@
 .vscode
+github_token
 *.[oa]
 Makefile
 Makefile.bak
