@@ -1,4 +1,4 @@
-nl Configure input script for XicTools.
+dnl Configure input script for XicTools.
 dnl Process this file with autoconf to produce a configure script.
 dnl Copyright (c) Whiteley Research Inc, 2002
 dnl $Id: configure.in,v 1.233 2016/09/28 22:49:23 stevew Exp $
@@ -1539,10 +1539,12 @@ if test -d ../wrspice; then
         ../wrspice/src/misc/Makefile \
         ../wrspice/src/plot/Makefile \
         ../wrspice/src/sparse/Makefile \
-        ../wrspice/ipc_demo_files/Makefile \
         ../wrspice/mmjco/Makefile \
         ../wrspice/Makefile \
         ../wrspice/devlib/Makefile"
+    if test -d ../wrspice/ipc_demo_files; then
+        makefiles="$makefiles ../wrspice/ipc_demo_files/Makefile"
+    fi
     (cd ../wrspice/devlib; make -f Makefile.in devlist)
     subd="`cat ../wrspice/devlib/devices ../wrspice/devlib/modules`"
     for a in $subd adms disto; do
