@@ -113,16 +113,16 @@ MMJCO = mmjco/mmjco
 all: cptest $(TARGETS) $(MMJCO) wdemo
 
 cptest:
-	cd help; make cptest
-	cd src/misc; make cptest
-	cd src/sparse; make cptest
-	cd devlib/include; make cptest
-	cd devlib/adms/include; make cptest
+	$(MAKE) -C help cptest
+	$(MAKE) -C src/misc cptest
+	$(MAKE) -C src/sparse cptest
+	$(MAKE) -C devlib/include cptest
+	$(MAKE) -C devlib/adms/include cptest
 
 $(TARGETS)::
 	$(MAKE) bin/$@
 
-#--------------------
+#######################################################################
 # The first two targets are for Windows, create wrspice with
 # everything in a DLL, so that we can link plugins against the DLL.
 
@@ -135,7 +135,7 @@ bin/wrspice.dll: bin/wrspice.o $(LOCAL_LIBS) $(MALLOC)
 	@$(LINKCC) $(LSHFLAG) -o bin/wrspice.dll $(LFLAGS) bin/wrspice.o \
   $(LOCAL_LIBS) $(LIBS) $(MALLOC) $(STDCLIB)
 
-#--------------------
+################# end of Windows special targets ######################
 
 bin/$(NODLL_SPICE_PROG): bin/wrspice.o $(LOCAL_LIBS) $(MALLOC)
 	@echo $@: dynamic link
@@ -163,64 +163,64 @@ bin/printtoraw: bin/printtoraw.o $(BASE)/lib/miscutil.a
   $(STDCLIB) $(WINPTHREADFIX)
 
 mmjco/mmjco::
-	cd mmjco; make
+	$(MAKE) -C mmjco
 
 #######################################################################
 ####### Recursively generate libraries ################################
 
 $(DEVLIB_CALL)::
-	cd $(@D); $(MAKE)
+	$(MAKE) -C $(@D)
 
 $(SUBDIR_LIBS)::
-	cd $(@D); $(MAKE)
+	$(MAKE) -C $(@D)
 
 $(VLOG)::
-	cd $(@D); $(MAKE)
+	$(MAKE) -C $(@D)
 
 ifeq ($(USESECURE), yes)
 $(SECURE)/secure.a::
-	cd $(@D); $(MAKE)
+	$(MAKE) -C $(@D)
 endif
 
 $(MALLOC)::
-	cd $(@D)/../malloc; $(MAKE)
+	$(MAKE) -C $(@D)/../malloc
 
 $(BASE)/lib/ginterf.a::
-	cd $(BASE)/ginterf; $(MAKE)
+	$(MAKE) -C $(BASE)/ginterf
 
 $(BASE)/lib/$(GRPREF)interf.a::
-	cd $(BASE)/$(GRPREF)interf; $(MAKE)
+	$(MAKE) -C $(BASE)/$(GRPREF)interf
 
 $(BASE)/lib/miscutil.a::
-	cd $(BASE)/miscutil; $(MAKE)
+	$(MAKE) -C $(BASE)/miscutil
 
 $(BASE)/lib/libregex.a::
-	cd $(BASE)/regex; $(MAKE)
+	$(MAKE) -C $(BASE)/regex
 
 ifeq ($(USEMOZY), yes)
 $(MOZY)/lib/$(GRPREF)mozy.a::
 	if [ -d $(MOZY)/src/$(GRPREF)mozy ]; then \
-	    cd $(MOZY)/src/$(GRPREF)mozy; $(MAKE); \
+	    $(MAKE); \ -C $(MOZY)/src/$(GRPREF)mozy
 	fi
 
 $(MOZY)/lib/help.a::
 	if [ -d $(MOZY)/src/help ]; then \
-	    cd $(MOZY)/src/help; $(MAKE); \
+	    $(MAKE); \ -C $(MOZY)/src/help
 	fi
 
 $(MOZY)/lib/htm.a::
 	if [ -d $(MOZY)/src/htm ]; then \
-	    cd $(MOZY)/src/htm; $(MAKE); \
+	    $(MAKE); \ -C $(MOZY)/src/htm
 	fi
 
 $(MOZY)/lib/httpget.a::
 	if [ -d $(MOZY)/src/httpget ]; then \
-	    cd $(MOZY)/src/httpget; $(MAKE); \
+	    $(MAKE); \ -C $(MOZY)/src/httpget
 	fi
 
 $(MOZY)/lib/imsave.a::
 	if [ -d $(MOZY)/src/imsave ] ; then \
-	    cd $(MOZY)/src/imsave; $(MAKE); \
+	    $(MAKE); \ -C $(MOZY)/src/imsave
 	fi
 endif
 
@@ -274,9 +274,9 @@ CCFILES = bin/wrspice.cc bin/wrspiced.cc bin/multidec.cc bin/proc2mod.cc \
   bin/printtoraw.cc
 
 depend:
-	@(cd devlib/adms/examples; $(MAKE) make);
+	@($(MAKE) -C devlib/adms/examples
 	@for a in include $(SUBDIRS) devlib help startup; do \
-	    (cd $$a; $(MAKE) depend) \
+	    $(MAKE) -C $$a  depend ; \
 	done
 	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
@@ -302,24 +302,24 @@ eclean:
 
 clean: eclean
 	-@for a in $(SUBDIRS) devlib; do \
-	    (cd $$a; $(MAKE) $@) \
+	    $(MAKE) -C $$a  $@ ; \
 	done
-	cd mmjco; $(MAKE) clean
+	$(MAKE) clean -C mmjco
 	-@rm -f bin/*.o $(WDEMODIR).tar.gz
 
 distclean: eclean
 	-@for a in $(SUBDIRS) include devlib packages help startup \
   ipc_demo_files; do \
-	    (cd $$a; $(MAKE) $@) \
+	    $(MAKE) -C $$a  $@ ; \
 	done
-	-@cd mmjco; $(MAKE) distclean
+	-@$(MAKE) -C mmjco distclean
 	-@rm -f bin/*.o wrspice_ipc_demo.tar.gz Makefile
 	-@rm -f examples/wrspice_ipc_demo.tar.gz
 
 grclean:
-	cd src/$(GRPREF)wrs; $(MAKE) clean
-	cd ../mozy/src/$(GRPREF)mozy; $(MAKE) clean
-	cd ../xt_base/$(GRPREF)interf; $(MAKE) clean
+	$(MAKE) -C src/$(GRPREF)wrs clean
+	$(MAKE) -C ../mozy/src/$(GRPREF)mozy clean
+	$(MAKE) -C ../xt_base/$(GRPREF)interf clean
 
 #######################################################################
 ####### Install into another location #################################
@@ -474,7 +474,7 @@ $(destn)/icons::
 	done
 
 $(destn)/help::
-	cd help; $(MAKE)
+	$(MAKE) -C help
 	@$(BASE)/util/mkdirpth $@ $@/screenshots
 	help=`packages/util/wrspice_files help`; \
 	for a in $$help; do \
@@ -487,7 +487,7 @@ $(destn)/help::
 	done
 
 $(destn)/startup::
-	cd startup; $(MAKE)
+	$(MAKE) -C startup
 	@$(BASE)/util/mkdirpth $@
 	startup=`packages/util/wrspice_files startup`; \
 	for a in $$startup; do \
@@ -577,9 +577,9 @@ $(destn)/cadence-oasis::
 	fi
 
 devkit_examples:
-	(cd devlib/adms/examples; \
+	(\ -C devlib/adms/examples
 	    for a in */Makefile; do \
-	        (cd `dirname $$a`; $(MAKE) \
+	        ($(MAKE) \ -C `dirname $$a`
 	            ADMST=../../admst \
 	            ADMSXML=../../../../../adms/adms_wr/admsXml/admsXml \
 	            DLL_LOC=../../../../bin \
@@ -599,6 +599,6 @@ package::
 	if [ -n "$(TKTOOLS)" ]; then \
 	    $(MAKE) INSTALL_PREFIX=packages/root$(prefix) install_cadence; \
 	fi
-	cd packages; $(MAKE) package
+	$(MAKE) -C packages package
 
 #######################################################################

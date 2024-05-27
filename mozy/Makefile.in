@@ -150,7 +150,7 @@ depend::
 	    done; \
 	fi
 	@for a in $(SUBDIRS); do \
-	  (cd $$a; $(MAKE) depend) \
+	  $(MAKE) -C $$a  depend ; \
 	done
 
 #######################################################################
@@ -164,13 +164,13 @@ eclean::
 clean:: eclean
 	-@rm -f bin/*.o
 	-@for a in $(SUBDIRS); do \
-	    (cd $$a; $(MAKE) $@) \
+	    $(MAKE) -C $$a  $@ ; \
 	done
 
 distclean:: eclean
 	-@rm -f bin/*.o Makefile
 	-@for a in $(SUBDIRS); do \
-	    (cd $$a; $(MAKE) distclean) \
+	    $(MAKE) -C $$a  distclean ; \
 	done
 	-@cd packages; $(MAKE) $@
 

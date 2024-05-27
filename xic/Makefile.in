@@ -113,9 +113,9 @@ cptest:
 $(TARGETS)::
 	$(MAKE) bin/$@
 
-#--------------------
-# The first two targets are for Windows, create xic with everything in
-# a DLL, so that we can link plugins against the DLL.
+######### The first two targets are for Windows #######################
+# Create xic with everything in a DLL,
+# so that we can link plugins against the DLL.
 
 bin/$(DLL_XIC_PROG): bin/main.cc bin/xic.dll
 	$(CC) -o bin/xic bin/main.cc src/$(GRPREF)xic/resource.o -Lbin -lxic
@@ -125,7 +125,7 @@ bin/xic.dll: bin/xic.o $(LOCAL_LIBS) $(MALLOC)
 	@$(LINKCC) $(LSHFLAG) -o bin/xic.dll $(LFLAGS) bin/xic.o \
   $(LOCAL_LIBS) $(LIBS) $(MALLOC) $(STDCLIB)
 
-#--------------------
+######## end Windows specific targets. ################################
 
 bin/$(NODLL_XIC_PROG): bin/xic.o $(LOCAL_LIBS) $(MALLOC) $(OA_SUBDIR)
 	-@echo $@: dynamic link;
@@ -168,7 +168,7 @@ bin/wrdecode: bin/cryptmain.cc src/parser/parser.a $(BASE)/lib/miscutil.a
 	$(LINKCC) $(CFLAGS) -o bin/wrdecode $(INCLUDE) bin/cryptmain.cc \
   src/parser/parser.a $(BASE)/lib/miscutil.a  $(STDCLIB) $(WINPTHREADFIX)
 
-bin/wrsetpass: bin/cryptmain.cc src/parser/parser.a $(BASE)/lib/miscutil.a 
+bin/wrsetpass: bin/cryptmain.cc src/parser/parser.a $(BASE)/lib/miscutil.a
 	$(LINKCC) $(CFLAGS) -o bin/wrsetpass $(INCLUDE) -DENCODING -DSETPASS \
   bin/cryptmain.cc src/parser/parser.a $(BASE)/lib/miscutil.a $(STDCLIB) \
   $(WINPTHREADFIX)
@@ -266,7 +266,7 @@ CCFILES = bin/xic.cc bin/sa-filetool.cc bin/cryptmain.cc
 
 depend:
 	@for a in include $(SUBDIRS) help startup plugins; do \
-	    (cd $$a; $(MAKE) depend) \
+	    $(MAKE) -C $$a  depend ; \
 	done
 	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
@@ -292,14 +292,14 @@ eclean:
 
 clean: eclean
 	-@for a in $(SUBDIRS) plugins; do \
-	    (cd $$a; $(MAKE) $@) \
+	    $(MAKE) -C $$a  $@ ; \
 	done
 	-@rm -f bin/*.o
 
 distclean: eclean
 	-@for a in $(SUBDIRS) src/scrkit include help startup  plugins \
   packages; do \
-	    (cd $$a; $(MAKE) $@) \
+	    $(MAKE) -C $$a  $@ ; \
 	done
 	-@rm -f bin/*.o Makefile
 
