@@ -120,6 +120,7 @@ all: cptest $(TARGETS) $(MMJCO) wdemo
 
 cptest:
 	cd help; make cptest
+	cd ipc_demo; make cptest
 	cd src/misc; make cptest
 	cd src/sparse; make cptest
 	cd devlib/include; make cptest

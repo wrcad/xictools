@@ -49,7 +49,7 @@
 // illustrates how things may be done, and it works.
 
 #include "spclient.h"
-#include "errorrec.h"
+#include "miscutil/errorrec.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -57,10 +57,10 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "pathlist.h"
-#include "tvals.h"
-#include "services.h"
-#include "childproc.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/tvals.h"
+#include "miscutil/services.h"
+#include "miscutil/childproc.h"
 
 #else
 
@@ -342,7 +342,7 @@ cSpiceIPC::RunSpice(CmdDesc *cmd)
     if (ipc_in_spice && ipc_msg_skt >= 0) {
         PL()->ShowPrompt("WRspice analysis in progress.");
         if (cmd)
-            MainMenu()->Select(cmd->caller);
+            Menu()->Select(cmd->caller);
         SCD()->PopUpSim(SpBusy);
         return (true);
     }
@@ -979,7 +979,7 @@ cSpiceIPC::CloseSpice()
             Proc()->RemoveChildHandler(ipc_child_sp_pid, child_hdlr);
 #endif
             write_msg("close 0", ipc_msg_skt);
-            MainMenu()->MenuButtonSet(MMmain, MenuRUN, false);
+            Menu()->MenuButtonSet(MMmain, MenuRUN, false);
         }
     }
     close_all();
@@ -1046,7 +1046,7 @@ cSpiceIPC::SigIOhdlr(int sig)
         if (Errs()->has_error())
             Log()->ErrorLog(SpiceIPC, Errs()->get_error());
         SCD()->PopUpSim(SpError);
-        MainMenu()->MenuButtonSet(MMmain, MenuRUN, false);
+        Menu()->MenuButtonSet(MMmain, MenuRUN, false);
         return;
     }
     if (FD_ISSET(ipc_msg_skt, &readfds)) {
@@ -1059,7 +1059,7 @@ cSpiceIPC::SigIOhdlr(int sig)
             Log()->ErrorLog(SpiceIPC, Errs()->get_error());
         if (!ok) {
             SCD()->PopUpSim(SpError);
-            MainMenu()->MenuButtonSet(MMmain, MenuRUN, false);
+            Menu()->MenuButtonSet(MMmain, MenuRUN, false);
         }
     }
     if (ipc_stdout_skt > 0 && FD_ISSET(ipc_stdout_skt, &readfds)) {
@@ -1486,6 +1486,8 @@ cSpiceIPC::init_local()
     bool has_graphics = !ipc_no_graphics;
 #ifdef DEMO_EXPORT
     // The demo app is command-line driven.
+//XXX
+display_string = ":0";
 #else
     if (has_graphics && DSPpkg::self()->UsingX11()) {
         display_string = DSPpkg::self()->GetDisplayString();
@@ -1656,22 +1658,14 @@ cSpiceIPC::init_local()
         DSPpkg::self()->CloseGraphicsConnection();
         dup2(ipc_stdout_skt2, fileno(stdout));
         dup2(ipc_stdout_skt2, fileno(stderr));
-        if (has_graphics) {
-            if (display_string) {
-                if (ipc_no_toolbar) {
-                    execl(ipc_spice_path, prog_name, "-P", "-D",
-                        display_string, (char*)0);
-                }
-                else {
-                    execl(ipc_spice_path, prog_name, "-P", "-I", "-D",
-                        display_string, (char*)0);
-                }
+        if (has_graphics && *display_string) {
+            if (ipc_no_toolbar) {
+                execl(ipc_spice_path, prog_name, "-P", "-D",
+                    display_string, (char*)0);
             }
             else {
-                if (ipc_no_toolbar)
-                    execl(ipc_spice_path, prog_name, "-P", (char*)0);
-                else
-                    execl(ipc_spice_path, prog_name, "-P", "-I", (char*)0);
+                execl(ipc_spice_path, prog_name, "-P", "-I", "-D",
+                    display_string, (char*)0);
             }
         }
         else
@@ -1779,7 +1773,7 @@ cSpiceIPC::runnit(const char *what)
     if (i > 0) {
         if (!complete_spice()) {
             SCD()->PopUpSim(SpError);
-            MainMenu()->MenuButtonSet(MMmain, MenuRUN, false);
+            Menu()->MenuButtonSet(MMmain, MenuRUN, false);
         }
     }
     else {
@@ -2397,11 +2391,11 @@ cSpiceIPC::complete_spice()
             return (false);
 
         SCD()->PopUpSim(SpDone);
-        MainMenu()->MenuButtonSet(MMmain, MenuRUN, false);
+        Menu()->MenuButtonSet(MMmain, MenuRUN, false);
     }
     else {
         SCD()->PopUpSim(SpPause);
-        MainMenu()->MenuButtonSet(MMmain, MenuRUN, false);
+        Menu()->MenuButtonSet(MMmain, MenuRUN, false);
     }
     return (true);
 }

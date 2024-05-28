@@ -1,0 +1,65 @@
+#######################################################################
+LOCATION = wrspice/ipc_demo
+#######################################################################
+
+SPICE_VERSION = @SPICE_VERSION@
+DATE = @DATE@
+
+CXX = @CXX@
+CC = @CC@
+LINKCC = @LINKCC@
+CFLAGS = @CFLAGS_SG@ @UFLAGS@ -DWRSPICE -DDEMO_EXPORT
+LFLAGS = @LFLAGS@ @TOOLKITLFLAGS@ @UFLAGS@
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGS_SG@ -DWRSPICE
+STDCLIB = @STDCLIB@
+SLIBS = @SLIBS@
+EXESUFFIX = @EXESUFFIX@
+FILTER = @FILTER@
+WINPTHREADFIX = @WINPTHREADFIX@
+
+BASE = ../../xt_base
+XIC = ../../xic
+INCLUDE = -I../include -I$(BASE)/include -I$(XIC)/include
+
+XIC_CCFILES = sced_spiceipc.cc spclient.cc
+CCFILES = $(XIC_CCFILES).cc spclient.cc
+CCOBJS = $(CCFILES:.cc=.o)
+
+spclient: spclient.o sced_spiceipc.o 
+	$(LINKCC) -o spclient $(LFLAGS) spclient.o sced_spiceipc.o \
+  $(BASE)/lib/miscutil.a $(SLIBS) $(STDCLIB) $(WINPTHREADFIX)
+
+.cc.o:
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
+
+sced_spiceipc.cc: $(XIC)/src/sced/sced_spiceipc.cc
+	cp -fp $(XIC)/src/sced/sced_spiceipc.cc .
+
+depend: $(CCFILES)
+	@echo depending in $(LOCATION)
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	fi
+
+clean:
+	-@rm -f *.o spclient$(EXESUFFIX) sced_spiceipc.cc
+
+distclean: clean
+	-@rm -f Makefile
+
+# Make sure that the copies are the same as the source, avoid local
+# updates that won't propagate!
+cptest: $(XIC_CCFILES)
+	@for a in $(XIC_CCFILES); do \
+	    set -- $$(/usr/bin/sum $(BASE)/sparse/$$a); s1=$$1; \
+	    set -- $$(/usr/bin/sum $$a); s2=$$1; \
+            if [ "$$s1" != "$$s2" ]; then \
+	        echo ; \
+	        echo  "ERROR!!! $$a differs in $(BASE)/sparse, FIXME"; \
+	        echo ; \
+	        exit 1; \
+	    fi; \
+	done
+
+#######################################################################

@@ -1542,8 +1542,8 @@ if test -d ../wrspice; then
         ../wrspice/mmjco/Makefile \
         ../wrspice/Makefile \
         ../wrspice/devlib/Makefile"
-    if test -d ../wrspice/ipc_demo_files; then
-        makefiles="$makefiles ../wrspice/ipc_demo_files/Makefile"
+    if test -d ../wrspice/ipc_demo; then
+        makefiles="$makefiles ../wrspice/ipc_demo/Makefile"
     fi
     (cd ../wrspice/devlib; make -f Makefile.in devlist)
     subd="`cat ../wrspice/devlib/devices ../wrspice/devlib/modules`"
