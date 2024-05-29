@@ -42,7 +42,6 @@ src/sparse/spoutput.cc
 src/sparse/spsolve.cc
 src/sparse/sputils.cc
 startup/wr_install
-wrspice_ipc_demo.tar.gz
 manual/*.aux
 manual/wrsmanual-*
 manual/wrsmanual.aux
