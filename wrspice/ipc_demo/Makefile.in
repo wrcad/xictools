@@ -21,8 +21,8 @@ BASE = ../../xt_base
 XIC = ../../xic
 INCLUDE = -I../include -I$(BASE)/include -I$(XIC)/include
 
-XIC_CCFILES = sced_spiceipc.cc spclient.cc
-CCFILES = $(XIC_CCFILES).cc spclient.cc
+XIC_CCFILES = sced_spiceipc.cc
+CCFILES = $(XIC_CCFILES) spclient.cc
 CCOBJS = $(CCFILES:.cc=.o)
 
 spclient: spclient.o sced_spiceipc.o 
@@ -52,11 +52,11 @@ distclean: clean
 # updates that won't propagate!
 cptest: $(XIC_CCFILES)
 	@for a in $(XIC_CCFILES); do \
-	    set -- $$(/usr/bin/sum $(BASE)/sparse/$$a); s1=$$1; \
+	    set -- $$(/usr/bin/sum $(XIC)/src/sced/$$a); s1=$$1; \
 	    set -- $$(/usr/bin/sum $$a); s2=$$1; \
             if [ "$$s1" != "$$s2" ]; then \
 	        echo ; \
-	        echo  "ERROR!!! $$a differs in $(BASE)/sparse, FIXME"; \
+	        echo  "ERROR!!! $$a differs in $(XIC)/src/sced, FIXME"; \
 	        echo ; \
 	        exit 1; \
 	    fi; \

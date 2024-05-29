@@ -10,7 +10,6 @@ bin/wrspice
 bin/wrspice.exe
 bin/wrspiced
 bin/wrspiced.exe
-examples/wrspice_ipc_demo.tar.gz
 help/FileSel.hlp
 help/Hardcopy.hlp
 help/HelpSys.hlp
@@ -29,6 +28,9 @@ help/spModels.hlp
 help/spSemicond.hlp
 help/spSources.hlp
 include/reltag.h
+ipc_demo/sced_spiceipc.cc
+ipc_demo/spclient
+ipc_demo/spclient.exe
 lib
 src/fte/paramsub.cc
 src/misc/hash.cc

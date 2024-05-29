@@ -801,8 +801,16 @@ elif test $grpkg == QT5 -o $grpkg == QT6 ; then
         qmake=$QTBASE/bin/qmake
     fi
     $qmake -project
+    if test $? != 0; then
+        echo "Command \"qmake -project\" returned with error, exiting."
+        exit 1
+    fi
     $qmake "QT += widgets xml opengl printsupport"
     # $qmake "QT += widgets xml opengl printsupport x11extras"
+    if test $? != 0; then
+        echo "Command \"qmake widgets...\" returned with error, exiting."
+        exit 1
+    fi
     cd $cwd
 
     if test -f $tmpdir/Makefile.Release; then
