@@ -33,27 +33,27 @@ SUBDIRS = \
   $(MALLOC_DIR) \
   $(REGEX_DIR)
 
-all: 
+all:
 	@if [ ! -d lib ]; then \
 	    mkdir lib; \
 	fi
 	@for a in $(SUBDIRS); do \
 	    if [ -d $$a ]; then \
-	        (cd $$a; $(MAKE)) \
+	        $(MAKE) -C $$a ; \
 	    fi; \
 	done
-	
+
 depend clean:
 	-@for a in $(SUBDIRS); do \
 	    if [ -d $$a ]; then \
-	        (cd $$a; $(MAKE) $@) \
+	        $(MAKE) -C $$a $@; \
 	    fi; \
 	done
 
 distclean:
 	-@for a in $(SUBDIRS) packages; do \
 	    if [ -d $$a ]; then \
-	        (cd $$a; $(MAKE) $@) \
+	        $(MAKE) -C $$a $@; \
 	    fi; \
 	done
 	-@rm -f config.cache config.log config.status configure Makefile

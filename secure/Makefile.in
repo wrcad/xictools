@@ -81,7 +81,7 @@ xtlserv: xtlserv.o $(BASE)/lib/miscutil.a
   $(BASE)/lib/miscutil.a $(SLIBS) $(STDCLIB)
 
 $(BASE)/lib/miscutil.a::
-	cd $(BASE)/miscutil; $(MAKE)
+	$(MAKE) -C $(BASE)/miscutil
 
 DARGS = \
   -DPREFIX="\"$(prefix)\"" \
@@ -115,7 +115,7 @@ clean: eclean
 	-@rm *.o $(LIB_TARGET)
 
 distclean: clean
-	-@cd packages; $(MAKE) $@
+	-@$(MAKE) -C packages $@
 	-@rm -f LICENSE* Makefile validate.log xtdaemon.log
 
 INSTALL_PREFIX ?= $(prefix)
@@ -158,6 +158,6 @@ package::
 	-rm -rf packages/root
 	mkdir packages/root
 	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install
-	cd packages; $(MAKE) package
+	$(MAKE) -C packages package
 
 #######################################################################
