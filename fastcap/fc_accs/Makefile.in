@@ -47,9 +47,9 @@ lstunpack: lstunpack.cc
 ####### Recursively generate libraries ################################
 
 $(BASE)/lib/miscutil.a::
-	cd $(BASE)/miscutil; $(MAKE)
+	$(MAKE) -C $(BASE)/miscutil
 	if [ x$(NTREGEX) != x ]; then \
-	    cd $(BASE)/miscutil/libregex; $(MAKE); \
+	    $(MAKE) -C $(BASE)/miscutil/libregex ; \
 	fi
 
 #######################################################################
