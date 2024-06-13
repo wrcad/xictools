@@ -165,7 +165,7 @@ unpack:
 	-@rm -rf SuiteSparse
 
 patch: unpack
-	@patch -p0 --forward < long_dbl_patch
+	@patch -p0 < long_dbl_patch
 
 depend: unpack patch
 
