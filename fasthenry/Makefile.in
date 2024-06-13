@@ -31,9 +31,9 @@ VERS := \"`./release.sh`\"
 all: unpack
 	# Make the KLU version since it is faster.
 	if [ ! -f ../KLU/KLU/Lib/libklu.a ]; then \
-	    cd ../KLU; $(MAKE); \
+	    $(MAKE) -C ../KLU ; \
         fi
-	cd $(FASTHENRY_DIR); $(MAKE) SOLVER=KLU_SOLVER CC="$(CC)" all
+	$(MAKE) -C $(FASTHENRY_DIR) SOLVER=KLU_SOLVER CC="$(CC)" all
 
 unpack:
 	@if [ ! -d $(FASTHENRY_DIR) ]; then \
@@ -54,12 +54,12 @@ unpack:
 
 clean:
 	-@if [ -d $(FASTHENRY_DIR) ]; then \
-	    cd $(FASTHENRY_DIR); $(MAKE) $@; \
+	    $(MAKE) -C $(FASTHENRY_DIR) $@; \
 	fi
 
 distclean:
 	-@rm -rf $(FASTHENRY_DIR) Makefile
-	-@cd packages; $(MAKE) $@
+	-@$(MAKE) -C packages $@
 
 depend:
 
@@ -158,6 +158,6 @@ package::
 	-rm -rf packages/root
 	mkdir packages/root
 	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install
-	cd packages; $(MAKE) package
+	$(MAKE) -C packages package
 
 #######################################################################
