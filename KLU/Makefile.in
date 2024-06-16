@@ -153,7 +153,7 @@ $(SHLIB_TARGET): AMD/Lib/libamd.a BTF/Lib/libbtf.a COLAMD/Lib/libcolamd.a \
 	    $(CC) -o $(SHLIB_TARGET) $(LSHFLAG) \
  $(OFILES_AMD) $(OFILES_BTF) $(OFILES_COLAMD) $(OFILES_KLU) \
  SuiteSparse_config/SuiteSparse_config.o;
-	
+
 unpack:
 	-@rm -rf AMD BTF COLAMD KLU SuiteSparse_config
 	@tar xzf SuiteSparse-$(SSVERSION).tar.gz
@@ -165,32 +165,32 @@ unpack:
 	-@rm -rf SuiteSparse
 
 patch: unpack
-	@patch -p0 --forward < long_dbl_patch
+	@patch -p0 < long_dbl_patch
 
 depend: unpack patch
 
 AMD/Lib/libamd.a ::
-	@cd AMD/Lib; $(MAKE) CC="$(CC)" CF="$(CFLAGS)"
+	@$(MAKE) -C AMD/Lib CC="$(CC)" CF="$(CFLAGS)"
 
 BTF/Lib/libbtf.a ::
-	@cd BTF/Lib; $(MAKE) CC="$(CC)" CF="$(CFLAGS)"
+	@$(MAKE) -C BTF/Lib CC="$(CC)" CF="$(CFLAGS)"
 
 COLAMD/Lib/libcolamd.a ::
-	@cd COLAMD/Lib; $(MAKE) CC="$(CC)" CF="$(CFLAGS)"
+	@$(MAKE) -C COLAMD/Lib CC="$(CC)" CF="$(CFLAGS)"
 
 KLU/Lib/libklu.a ::
-	@cd KLU/Lib; $(MAKE) CC="$(CC)" CF="$(CFLAGS)"
+	@$(MAKE) -C KLU/Lib CC="$(CC)" CF="$(CFLAGS)"
 
 SuiteSparse_config/SuiteSparse_config.o : \
  SuiteSparse_config/SuiteSparse_config.c
 	$(CC) $(CFLAGS) -c SuiteSparse_config/SuiteSparse_config.c -o $@
 
 clean:
-	-@cd AMD;  $(MAKE) distclean
-	-@cd BTF;  $(MAKE) distclean
-	-@cd COLAMD;  $(MAKE) distclean
-	-@cd KLU;  $(MAKE) distclean
-	-@cd SuiteSparse_config;  $(MAKE) distclean
+	-@$(MAKE) -C AMD distclean
+	-@$(MAKE) -C BTF distclean
+	-@$(MAKE) -C COLAMD distclean
+	-@$(MAKE) -C KLU distclean
+	-@$(MAKE) -C SuiteSparse_config distclean
 
 distclean:
 	-@rm -rf AMD BTF COLAMD KLU SuiteSparse_config

@@ -143,40 +143,42 @@ QTcgdListDlg::QTcgdListDlg(GRobject c) : QTbag(this)
     cgl_addbtn->setText(tr("Add"));
     hbox->addWidget(cgl_addbtn);
     cgl_addbtn->setCheckable(true);
-    connect(cgl_addbtn, SIGNAL(toggled(bool)),
-        this, SLOT(add_btn_slot(bool)));
+    connect(cgl_addbtn, &QAbstractButton::toggled,
+        this, &QTcgdListDlg::add_btn_slot);
 
     cgl_savbtn = new QToolButton();
     cgl_savbtn->setText(tr("Save"));
     hbox->addWidget(cgl_savbtn);
     cgl_savbtn->setCheckable(true);
-    connect(cgl_savbtn, SIGNAL(toggled(bool)),
-        this, SLOT(sav_btn_slot(bool)));
+    connect(cgl_savbtn, &QAbstractButton::toggled,
+        this, &QTcgdListDlg::sav_btn_slot);
 
     cgl_delbtn = new QToolButton();
     cgl_delbtn->setText(tr("Delete"));
     hbox->addWidget(cgl_delbtn);
     cgl_delbtn->setCheckable(true);
-    connect(cgl_delbtn, SIGNAL(toggled(bool)),
-        this, SLOT(del_btn_slot(bool)));
+    connect(cgl_delbtn, &QAbstractButton::toggled,
+        this, &QTcgdListDlg::del_btn_slot);
 
     cgl_cntbtn = new QToolButton();
     cgl_cntbtn->setText(tr("Contents"));
     hbox->addWidget(cgl_cntbtn);
-    connect(cgl_cntbtn, SIGNAL(clicked()), this, SLOT(cont_btn_slot()));
+    connect(cgl_cntbtn, &QAbstractButton::clicked,
+        this, &QTcgdListDlg::cont_btn_slot);
 
     cgl_infbtn = new QToolButton();
     cgl_infbtn->setText(tr("Info"));
     hbox->addWidget(cgl_infbtn);
     cgl_infbtn->setCheckable(true);
-    connect(cgl_infbtn, SIGNAL(toggled(bool)),
-        this, SLOT(inf_btn_slot(bool)));
+    connect(cgl_infbtn, &QAbstractButton::toggled,
+        this, &QTcgdListDlg::inf_btn_slot);
 
     hbox->addStretch(1);
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTcgdListDlg::help_btn_slot);
 
     // scrolled list
     //
@@ -185,29 +187,28 @@ QTcgdListDlg::QTcgdListDlg(GRobject c) : QTbag(this)
     cgl_list->setHeaderLabels(QStringList(QList<QString>() << tr("Db Name") <<
         tr("Type, Linked") << tr("Source ll - Click to select")));
 
-    connect(cgl_list,
-        SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
-        this,
-        SLOT(current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*)));
-    connect(cgl_list, SIGNAL(itemActivated(QTreeWidgetItem*, int)),
-        this, SLOT(item_activated_slot(QTreeWidgetItem*, int)));
-    connect(cgl_list, SIGNAL(itemClicked(QTreeWidgetItem*, int)),
-        this, SLOT(item_clicked_slot(QTreeWidgetItem*, int)));
-    connect(cgl_list, SIGNAL(itemSelectionChanged()),
-        this, SLOT(item_selection_changed()));
+    connect(cgl_list, &QTreeWidget::currentItemChanged,
+        this, &QTcgdListDlg::current_item_changed_slot);
+    connect(cgl_list, &QTreeWidget::itemActivated,
+        this, &QTcgdListDlg::item_activated_slot);
+    connect(cgl_list, &QTreeWidget::itemClicked,
+        this, &QTcgdListDlg::item_clicked_slot);
+    connect(cgl_list, &QTreeWidget::itemSelectionChanged,
+        this, &QTcgdListDlg::item_selection_changed);
 
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_PROP))
         cgl_list->setFont(*fnt);
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTcgdListDlg::font_changed_slot, Qt::QueuedConnection);
 
     // dismiss button
     //
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTcgdListDlg::dismiss_btn_slot);
 
     update();
 }

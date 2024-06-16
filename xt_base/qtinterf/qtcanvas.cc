@@ -63,17 +63,27 @@ QTcanvas::QTcanvas(QWidget *prnt) : QWidget(prnt)
     da_painter = new QPainter(da_pixmap);
     da_painter2 = 0;
     da_painter_bak = 0;
+#ifdef USE_TIMER
+    da_regx0 = 0;
+    da_regy0 = 0;
+    da_regx1 = 0;
+    da_regy1 = 0;
+#else
+    da_xb1 = 0;
+    da_yb1 = 0;
+    da_xb2 = 0;
+    da_yb2 = 0;
+#endif
     da_tile_x = 0;
     da_tile_y = 0;
+#ifdef USE_TIMER
+    da_regfull = false;
+#endif
     da_fill_mode = false;
     da_ghost_bg_set = false;
     da_overlay_count = 0;
     da_line_mode = 0;
     da_line_style = 0;
-    da_xb1 = 0;
-    da_yb1 = 0;
-    da_xb2 = 0;
-    da_yb2 = 0;
     da_olx = 0;
     da_oly = 0;
     da_olw = 0;
@@ -96,8 +106,7 @@ QTcanvas::QTcanvas(QWidget *prnt) : QWidget(prnt)
     da_brush.setStyle(Qt::SolidPattern);
     da_pen.setStyle(Qt::NoPen);
     initialize();
-    setAttribute(Qt::WA_OpaquePaintEvent, false);
-    setAutoFillBackground(true);
+    startTimer(0);
 }
 
 
@@ -155,7 +164,12 @@ QTcanvas::switch_to_pixmap2(QPixmap *pixmp)
     da_painter = da_painter2;
     da_painter->setBrush(da_brush);
     da_painter->setPen(da_pen);
+#ifdef USE_TIMER
+    // Skip draw region tracking when using second pixmap.
+    region_reset();
+#else
     bb_init();
+#endif
     emit new_painter(da_painter);
 }
 
@@ -177,7 +191,11 @@ QTcanvas::switch_from_pixmap2(int xd, int yd, int xs, int ys, int w, int h)
     da_painter_bak = 0;
     da_painter->setBrush(da_brush);
     da_painter->setPen(da_pen);
+#ifdef USE_TIMER
+    region_reset();
+#else
     bb_init();
+#endif
     emit new_painter(da_painter);
     da_painter->drawPixmap(xd, yd, *da_pixmap2, xs, ys, w, h);
     repaint(xd, yd, w, h);
@@ -224,7 +242,11 @@ QTcanvas::set_draw_to_pixmap(QPixmap *pixmp)
         da_painter_bak = 0;
         da_painter->setBrush(da_brush);
         da_painter->setPen(da_pen);
+#ifdef USE_TIMER
+        region_reset();
+#else
         bb_init();
+#endif
         emit new_painter(da_painter);
         if (da_painter2) {
             da_painter2->end();
@@ -292,8 +314,18 @@ QTcanvas::set_overlay_mode(bool set)
         // while in overlay mode.  This area will be used to update
         // the screen.
 
-        if (da_overlay_count == 0)
+        if (da_overlay_count == 0) {
+#ifdef USE_TIMER
+            if (!da_pixmap_bak && da_regx1 >= da_regx0 &&
+                    da_regy1 >= da_regy0) {
+                repaint(da_regx0, da_regy0,
+                    da_regx1 - da_regx0 + 1, da_regy1 - da_regy0 + 1);
+            }
+            region_reset();
+#else
             bb_init();
+#endif
+        }
         da_overlay_count++;
     }
     else {
@@ -305,14 +337,23 @@ QTcanvas::set_overlay_mode(bool set)
 
         da_overlay_count--;
         if (da_overlay_count == 0) {
+#ifdef USE_TIMER
+            da_olx = da_regx0;
+            da_oly = da_regy0;
+            da_olw = da_regx1 - da_regx0 + 1;
+            da_olh = da_regy1 - da_regy0 + 1;
+            if (da_olw > 0 && da_olh > 0)
+                repaint(da_olx, da_oly, da_olw, da_olh);
+            region_reset();
+#else
             da_olx = da_xb1;
             da_oly = da_yb1;
             da_olw = da_xb2-da_xb1+1;
             da_olh = da_yb2-da_yb1+1;
-            if (da_olw > 0 && da_olh > 0) {
+            if (da_olw > 0 && da_olh > 0)
                 repaint(da_olx, da_oly, da_olw, da_olh);
-            }
             bb_init();
+#endif
         }
     }
 }
@@ -346,8 +387,12 @@ QTcanvas::erase_last_overlay()
     if (da_overlay_count && da_overlay_bg && da_olw > 0 && da_olh > 0) {
         da_painter->drawPixmap(da_olx, da_oly, da_olw, da_olh,
             *da_overlay_bg, da_olx, da_oly, da_olw, da_olh);
+#ifdef USE_TIMER
+        region_add(da_olx, da_oly, da_olx + da_olw - 1, da_oly + da_olh - 1);
+#else
         bb_add(da_olx, da_oly);
         bb_add(da_olx + da_olw, da_oly + da_olh);
+#endif
     }
 }
 
@@ -377,6 +422,10 @@ QTcanvas::refresh(int xx, int yy, int w, int h)
         return;
     }
     da_painter->drawPixmap(xx, yy, *da_pixmap2, xx, yy, w, h);
+#ifdef USE_TIMER
+    if (!da_regfull)
+        region_add(xx, yy, xx + w - 1, yy + h - 1);
+#endif
 }
 
 
@@ -391,11 +440,27 @@ QTcanvas::update(int xx, int yy, int w, int h)
     if (da_overlay_count) {
         if (da_overlay_bg) {
             da_painter->drawPixmap(xx, yy, w, h, *da_overlay_bg, xx, yy, w, h);
+#ifdef USE_TIMER
+            region_add(xx, yy, xx + w, yy + h);
+#else
             bb_add(xx, yy);
             bb_add(xx+w, yy+h);
+#endif
         }
         return;
     }
+#ifdef USE_TIMER
+    // Repaint with union and reset.
+    if (da_regx0 < xx)
+        xx = da_regx0;
+    if (da_regy0 < yy)
+        yy = da_regy0;
+    if (da_regx1 > xx + w - 1)
+        w = da_regx1 - xx + 1;
+    if (da_regy1 > yy + h - 1)
+        h = da_regy1 - yy + 1;
+    region_reset();
+#endif
     repaint(xx, yy, w, h);
 }
 
@@ -410,6 +475,9 @@ QTcanvas::clear()
     da_painter->setBrush(da_brush);
     da_painter->drawRect(0, 0, width(), height());
     da_brush.setColor(da_fg);
+#ifdef USE_TIMER
+    region_fill();
+#endif
 }
 
 
@@ -425,6 +493,10 @@ QTcanvas::clear_area(int x0, int y0, int w, int h)
     da_painter->setBrush(da_brush);
     da_painter->drawRect(x0, y0, w, h);
     da_brush.setColor(da_fg);
+#ifdef USE_TIMER
+    if (!da_pixmap_bak && !da_regfull)
+        region_add(x0, y0, x0 + w - 1, y0 + h - 1);
+#endif
 }
 
 
@@ -454,8 +526,13 @@ QTcanvas::set_background(unsigned int pix)
 void
 QTcanvas::draw_pixel(int x0, int y0)
 {
+#ifdef USE_TIMER
+    if (!da_pixmap_bak && !da_regfull)
+        region_add(x0, y0);
+#else
     if (da_overlay_count)
         bb_add(x0, y0);
+#endif
     da_pen.setStyle(Qt::SolidLine);
     da_painter->setPen(da_pen);
     da_painter->drawPoint(x0, y0);
@@ -467,6 +544,18 @@ QTcanvas::draw_pixel(int x0, int y0)
 void
 QTcanvas::draw_pixels(GRmultiPt *p, int n)
 {
+#ifdef USE_TIMER
+    if (!da_pixmap_bak && !da_regfull) {
+        p->data_ptr_init();
+        int nn = n;
+        while (nn--) {
+            int xx = p->data_ptr_x();
+            int yy = p->data_ptr_y();
+            region_add(xx, yy);
+            p->data_ptr_inc();
+        }
+    }
+#else
     if (da_overlay_count) {
         p->data_ptr_init();
         int nn = n;
@@ -477,6 +566,7 @@ QTcanvas::draw_pixels(GRmultiPt *p, int n)
             p->data_ptr_inc();
         }
     }
+#endif
 
     QPolygon poly;
     poly.setPoints(n, (int*)p->data());
@@ -607,10 +697,15 @@ QTcanvas::draw_line_prv(int x1, int y1, int x2, int y2)
 void
 QTcanvas::draw_line(int x1, int y1, int x2, int y2)
 {
+#ifdef USE_TIMER
+    if (!da_pixmap_bak && !da_regfull)
+        region_add(x1, y1, x2, y2);
+#else
     if (da_overlay_count) {
         bb_add(x1, y1);
         bb_add(x2, y2);
     }
+#endif
     da_call_count++;
     if (da_line_mode)
         da_pen.setStyle((Qt::PenStyle)(da_line_mode + 1));
@@ -637,6 +732,18 @@ QTcanvas::draw_polyline(GRmultiPt *p, int n)
     if (n < 2)
         return;
 
+#ifdef USE_TIMER
+    if (!da_pixmap_bak && !da_regfull) {
+        p->data_ptr_init();
+        int nn = n;
+        while (nn--) {
+            int xx = p->data_ptr_x();
+            int yy = p->data_ptr_y();
+            region_add(xx, yy);
+            p->data_ptr_inc();
+        }
+    }
+#else
     if (da_overlay_count) {
         p->data_ptr_init();
         int nn = n;
@@ -647,6 +754,7 @@ QTcanvas::draw_polyline(GRmultiPt *p, int n)
             p->data_ptr_inc();
         }
     }
+#endif
     da_call_count++;
 
     if (da_line_mode)
@@ -683,6 +791,22 @@ QTcanvas::draw_lines(GRmultiPt *p, int n)
     if (n < 1)
         return;
 
+#ifdef USE_TIMER
+    if (!da_pixmap_bak && !da_regfull) {
+        p->data_ptr_init();
+        int nn = n;
+        while (nn--) {
+            int xx = p->data_ptr_x();
+            int yy = p->data_ptr_y();
+            region_add(xx, yy);
+            p->data_ptr_inc();
+            xx = p->data_ptr_x();
+            yy = p->data_ptr_y();
+            region_add(xx, yy);
+            p->data_ptr_inc();
+        }
+    }
+#else
     if (da_overlay_count) {
         p->data_ptr_init();
         int nn = n;
@@ -697,6 +821,7 @@ QTcanvas::draw_lines(GRmultiPt *p, int n)
             p->data_ptr_inc();
         }
     }
+#endif
     da_call_count++;
 
     if (da_line_mode)
@@ -798,10 +923,15 @@ QTcanvas::set_fillpattern(const GRfillType *fillp)
 void
 QTcanvas::draw_box(int x1, int y1, int x2, int y2)
 {
+#ifdef USE_TIMER
+    if (!da_pixmap_bak && !da_regfull)
+        region_add(x1, y1, x2, y2);
+#else
     if (da_overlay_count) {
         bb_add(x1, y1);
         bb_add(x2, y2);
     }
+#endif
     if (x1 > x2) {
         int temp = x1;
         x1 = x2;
@@ -828,13 +958,20 @@ QTcanvas::draw_boxes(GRmultiPt *p, int n)
         int xx = p->data_ptr_x();
         int yy = p->data_ptr_y();
         p->data_ptr_inc();
-        da_painter->drawRect(xx, yy, p->data_ptr_x() - 1, p->data_ptr_y() - 1);
+        da_painter->drawRect(xx, yy, p->data_ptr_x(), p->data_ptr_y());
+#ifdef USE_TIMER
+        if (!da_pixmap_bak && !da_regfull) {
+            region_add(xx, yy,
+                xx + p->data_ptr_x() - 1, yy + p->data_ptr_y() - 1);
+        }
+#else
         if (da_overlay_count) {
             bb_add(xx, yy);
             xx += p->data_ptr_x() - 1;
             yy += p->data_ptr_y() - 1;
             bb_add(xx, yy);
         }
+#endif
         p->data_ptr_inc();
     }
 }
@@ -847,10 +984,17 @@ QTcanvas::draw_arc(int x0, int y0, int r, int, double a1, double a2)
 {
     if (r < 0)
         r = -r;
+#ifdef USE_TIMER
+    if (!da_pixmap_bak && !da_regfull) {
+        region_add(x0-r, y0-r);
+        region_add(x0+r, y0+r);
+    }
+#else
     if (da_overlay_count) {
         bb_add(x0-r, y0-r);
         bb_add(x0+r, y0+r);
     }
+#endif
     if (a1 >= a2)
         a2 = 2 * M_PI + a2;
     int t1 = (int)(16 * (180.0 / M_PI) * a1);
@@ -866,15 +1010,29 @@ QTcanvas::draw_arc(int x0, int y0, int r, int, double a1, double a2)
 void
 QTcanvas::draw_polygon(GRmultiPt *p, int n)
 {
+#ifdef USE_TIMER
+    if (!da_pixmap_bak && !da_regfull) {
+        p->data_ptr_init();
+        int nn = n;
+        while (nn--) {
+            int xx = p->data_ptr_x();
+            int yy = p->data_ptr_y();
+            region_add(xx, yy);
+            p->data_ptr_inc();
+        }
+    }
+#else
     if (da_overlay_count) {
         p->data_ptr_init();
-        while (n--) {
+        int nn = n;
+        while (nn--) {
             int xx = p->data_ptr_x();
             int yy = p->data_ptr_y();
             bb_add(xx, yy);
             p->data_ptr_inc();
         }
     }
+#endif
     da_painter->drawPolygon((QPoint*)p->data(), n, Qt::WindingFill);
 }
 
@@ -882,12 +1040,21 @@ QTcanvas::draw_polygon(GRmultiPt *p, int n)
 void
 QTcanvas::draw_zoid(int yl, int yu, int xll, int xul, int xlr, int xur)
 {
+#ifdef USE_TIMER
+    if (!da_pixmap_bak && !da_regfull) {
+        region_add(xll, yl);
+        region_add(xul, yu);
+        region_add(xlr, yl);
+        region_add(xur, yu);
+    }
+#else
     if (da_overlay_count) {
         bb_add(xll, yl);
         bb_add(xul, yu);
         bb_add(xlr, yl);
         bb_add(xur, yu);
     }
+#endif
     QPoint pts[5];
     int n = 0;
     pts[n].setX(xll);
@@ -909,7 +1076,6 @@ QTcanvas::draw_zoid(int yl, int yu, int xll, int xul, int xlr, int xur)
         pts[n].setY(yl);
     }
     da_painter->drawPolygon(pts, n+1, Qt::WindingFill);
-
 }
 
 
@@ -919,6 +1085,10 @@ QTcanvas::draw_image(const GRimage *im, int xx, int yy, int w, int h)
     QImage qimg((const unsigned char*)im->data(), im->width(), im->height(),
         QImage::Format_RGB32);
     da_painter->drawImage(QPoint(xx, yy), qimg, QRect(xx, yy, w, h));
+#ifdef USE_TIMER
+    if (!da_pixmap_bak && !da_regfull)
+        region_add(xx, yy, xx + w - 1, yy + h - 1);
+#endif
 }
 
 
@@ -988,11 +1158,19 @@ QTcanvas::draw_text(int x0, int y0, const char *str, int len)
 
     y0 -= 2;
     QFontMetrics fm(da_font);
+#ifdef USE_TIMER
+    if (!da_pixmap_bak && !da_regfull) {
+        QRect r = fm.boundingRect(qs);
+        x0 += r.x();
+        region_add(x0, y0, x0 + r.width() - 1, y0 + r.height() - 1);
+    }
+#else
     if (da_overlay_count) {
         QRect r = fm.boundingRect(qs);
         bb_add(x0 + r.x(), y0);
         bb_add(x0 + r.x() + r.width(), y0 + r.height());
     }
+#endif
 
     da_painter->setFont(da_font);
     da_pen.setStyle(Qt::SolidLine);
@@ -1010,10 +1188,15 @@ QTcanvas::draw_glyph(int x0, int y0, const unsigned char *bits, int len)
 {
     x0 -= len/2;
     y0 -= len/2;
+#ifdef USE_TIMER
+    if (!da_pixmap_bak && !da_regfull)
+        region_add(x0, y0, x0 + len - 1, y0 + len - 1);
+#else
     if (da_overlay_count) {
         bb_add(x0, y0);
-        bb_add(x0 + len, y0 + len);
+        bb_add(x0 + len - 1, y0 + len - 1);
     }
+#endif
     Qt::BrushStyle st = da_brush.style();
     QBitmap bm(QBitmap::fromData(QSize(len, len), bits));
     da_brush.setTexture(bm);
@@ -1033,6 +1216,10 @@ QTcanvas::draw_pixmap(int xw, int yw, QPixmap *pmap,
     int xp, int yp, int wp, int hp)
 {
     da_painter->drawPixmap(xw, yw, wp, hp, *pmap, xp, yp, wp, hp);
+#ifdef USE_TIMER
+    if (!da_pixmap_bak && !da_regfull)
+        region_add(xw, yw, xw + wp - 1, yw + hp - 1);
+#endif
 }
 
 
@@ -1043,6 +1230,10 @@ QTcanvas::draw_image(int xw, int yw, QImage *image,
     int xp, int yp, int wp, int hp)
 {
     da_painter->drawImage(xw, yw, *image, xp, yp, wp, hp);
+#ifdef USE_TIMER
+    if (!da_pixmap_bak && !da_regfull)
+        region_add(xw, yw, xw + wp - 1, yw + hp - 1);
+#endif
 }
 // End of exported virtual interface
 
@@ -1095,6 +1286,10 @@ QTcanvas::tile_draw_pixmap(int o_x, int o_y, QPixmap *pm, int xx, int yy,
     if (!pm)
         return;
     da_painter->drawTiledPixmap(xx, yy, w, h, *pm, o_x, o_y);
+#ifdef USE_TIMER
+    if (!da_pixmap_bak && !da_regfull)
+        region_add(xx, yy, xx + w - 1, yy + h - 1);
+#endif
 }
 
 
@@ -1108,6 +1303,7 @@ QTcanvas::draw_rectangle(bool filled, int x0, int y0, int w, int h)
             if (da_tile_pixmap) {
                 da_painter->drawTiledPixmap(x0, y0, w, h, *da_tile_pixmap,
                     da_tile_x, da_tile_y);
+                return;
             }
         }
         else
@@ -1124,6 +1320,10 @@ QTcanvas::draw_rectangle(bool filled, int x0, int y0, int w, int h)
         da_brush.setStyle(st);
         da_painter->setBrush(da_brush);
     }
+#ifdef USE_TIMER
+    if (!da_pixmap_bak && !da_regfull)
+        region_add(x0, y0, x0 + w - 1, y0 + h - 1);
+#endif
 }
 
 
@@ -1146,6 +1346,10 @@ QTcanvas::draw_arc(bool filled, int x0, int y0, int w, int h, int st, int sp)
         da_brush.setStyle(sty);
         da_painter->setBrush(da_brush);
     }
+#ifdef USE_TIMER
+    if (!da_pixmap_bak && !da_regfull)
+        region_add(x0, y0, x0 + w - 1, y0 + h - 1);
+#endif
 }
 
 
@@ -1167,8 +1371,37 @@ QTcanvas::draw_polygon(bool filled, QPoint *points, int numpts)
         da_brush.setStyle(st);
         da_painter->setBrush(da_brush);
     }
+#ifdef USE_TIMER
+    if (!da_pixmap_bak && !da_regfull) {
+        QPoint *p = points;
+        int n = numpts;
+        while (n--) {
+            region_add(p->x(), p->y());
+            p++;
+        }
+    }
+#endif
 }
 // End of extra drawing functions
+
+
+#ifdef USE_TIMER
+
+void
+QTcanvas::timerEvent(QTimerEvent*)
+{
+    if (!da_pixmap_bak && da_regx1 >= da_regx0 && da_regy1 >= da_regy0) {
+        repaint(da_regx0, da_regy0,
+            da_regx1 - da_regx0 + 1, da_regy1 - da_regy0 + 1);
+        region_reset();
+//XXX
+//static int foo;
+//printf("repaint %d\n", foo);
+//foo++;
+    }
+}
+
+#endif
 
 
 void
@@ -1337,7 +1570,11 @@ QTcanvas::initialize()
     da_painter->setBrush(da_brush);
     da_painter->setPen(da_pen);
     clear();
+#ifdef USE_TIMER
+    region_reset();
+#else
     bb_init();
+#endif
 }
 
 

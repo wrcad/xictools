@@ -97,12 +97,14 @@ QTsimRunDlg::QTsimRunDlg(const char *msg)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Pause"));
     hbox->addWidget(tbtn); 
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(pause_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTsimRunDlg::pause_btn_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     hbox->addWidget(btn); 
     btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTsimRunDlg::dismiss_btn_slot);
 
     QTmainwin *w = QTmainwin::self();
     set_transient_for(w);

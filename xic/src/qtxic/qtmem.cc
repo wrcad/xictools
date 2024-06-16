@@ -56,7 +56,7 @@
 #ifdef HAVE_SYS_RESOURCE_H
 #include <sys/resource.h>
 #else
-#ifdef WIN32
+#ifdef Q_OS_WIN
 #include <windows.h>
 #endif
 #endif
@@ -124,10 +124,11 @@ QTmemMonDlg::QTmemMonDlg() : QTbag(this), QTdraw(XW_TEXT)
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTmemMonDlg::dismiss_btn_slot);
 
-    connect(gd_viewport, SIGNAL(resize_event(QResizeEvent*)),
-        this, SLOT(resize_slot(QResizeEvent*)));
+    connect(gd_viewport, &QTcanvas::resize_event,
+        this, &QTmemMonDlg::resize_slot);
 
     // Font setup.
     //
@@ -137,8 +138,8 @@ QTmemMonDlg::QTmemMonDlg() : QTbag(this), QTdraw(XW_TEXT)
     }
     setMinimumWidth(sizeHint().width());
     setMinimumHeight(sizeHint().height());
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTmemMonDlg::font_changed_slot, Qt::QueuedConnection);
 
     QTpkg::self()->RegisterTimeoutProc(5000, mem_proc, 0);
 }
@@ -273,7 +274,7 @@ QTmemMonDlg::update()
         Text(str, xx, yy, 0);
     }
 #else
-#ifdef WIN32
+#ifdef Q_OS_WIN
     MEMORYSTATUS mem;
     memset(&mem, 0, sizeof(MEMORYSTATUS));
     mem.dwLength = sizeof(MEMORYSTATUS);

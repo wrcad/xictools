@@ -89,7 +89,8 @@ QTmsgDlg::QTmsgDlg(QTbag *owner, const char *message_str,
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTmsgDlg::dismiss_btn_slot);
 }
 
 

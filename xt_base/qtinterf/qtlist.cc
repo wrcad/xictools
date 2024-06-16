@@ -85,10 +85,10 @@ namespace qtinterf
     // Go through some wretched shit in order to get reasonable
     // spacing between columns.
     //
-    class list_list_widget : public QListWidget
+    class QTlistListWidget : public QListWidget
     {
     public:
-        list_list_widget(QWidget*);
+        QTlistListWidget(QWidget*);
 
         QListWidgetItem *item_of(const QModelIndex &index)
         {
@@ -99,7 +99,7 @@ namespace qtinterf
     class list_delegate : public QItemDelegate
     {
     public:
-        list_delegate(list_list_widget *w) : QItemDelegate(w)
+        list_delegate(QTlistListWidget *w) : QItemDelegate(w)
         {
             widget = w;
         }
@@ -108,12 +108,12 @@ namespace qtinterf
             const QModelIndex&)  const;
 
     private:
-        list_list_widget *widget;
+        QTlistListWidget *widget;
     };
 }
 
 
-list_list_widget::list_list_widget(QWidget *prnt) : QListWidget(prnt)
+QTlistListWidget::QTlistListWidget(QWidget *prnt) : QListWidget(prnt)
 {
     setItemDelegate(new list_delegate(this));
 }
@@ -165,16 +165,15 @@ QTlistDlg::QTlistDlg(QTbag *owner, stringlist *symlist, const char *title,
     li_label = new QLabel(t);
     vbox->addWidget(li_label);
 
-    li_lbox = new list_list_widget(this);
+    li_lbox = new QTlistListWidget(this);
     li_lbox->setWrapping(false);
     for (stringlist *l = symlist; l; l = l->next)
         li_lbox->addItem(QString(l->string));
     li_lbox->sortItems();
     vbox->addWidget(li_lbox);
 
-    connect(li_lbox,
-        SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)),
-        this, SLOT(action_slot()));
+    connect(li_lbox, &QTlistListWidget::currentItemChanged,
+        this, &QTlistDlg::action_slot);
 
     QHBoxLayout *hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
@@ -185,13 +184,15 @@ QTlistDlg::QTlistDlg(QTbag *owner, stringlist *symlist, const char *title,
         QToolButton *tbtn = new QToolButton();
         tbtn->setText(tr("Apply"));
         hbox->addWidget(tbtn);
-        connect(tbtn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
+        connect(tbtn, &QAbstractButton::clicked,
+            this, &QTlistDlg::apply_btn_slot);
     }
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTlistDlg::dismiss_btn_slot);
 }
 
 

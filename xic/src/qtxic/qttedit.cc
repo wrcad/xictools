@@ -162,7 +162,8 @@ QTelecTermEditDlg::QTelecTermEditDlg(GRobject caller, TermEditInfo *tinfo,
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTelecTermEditDlg::help_btn_slot);
 
     // Bus Term Indices.
     //
@@ -215,13 +216,14 @@ QTelecTermEditDlg::QTelecTermEditDlg(GRobject caller, TermEditInfo *tinfo,
 
     te_phys = new QCheckBox(tr("Has physical terminal"));
     hbox->addWidget(te_phys);
-    connect(te_phys, SIGNAL(stateChanged(int)),
-        this, SLOT(has_phys_term_slot(int)));
+    connect(te_phys, &QCheckBox::stateChanged,
+        this, &QTelecTermEditDlg::has_phys_term_slot);
 
     tbtn = new QToolButton();
     tbtn->setText("Delete");
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(destroy_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTelecTermEditDlg::destroy_btn_slot);
 
     // Physical Group
     //
@@ -272,12 +274,14 @@ QTelecTermEditDlg::QTelecTermEditDlg(GRobject caller, TermEditInfo *tinfo,
     te_crtbits = new QToolButton();
     te_crtbits->setText(tr("Check/Create Bits"));
     hb->addWidget(te_crtbits);
-    connect(te_crtbits, SIGNAL(clicked()), this, SLOT(crbits_btn_slot()));
+    connect(te_crtbits, &QAbstractButton::clicked,
+        this, &QTelecTermEditDlg::crbits_btn_slot);
 
     te_ordbits = new QToolButton();
     te_ordbits->setText(tr("Reorder to Index"));
     hb->addWidget(te_ordbits);
-    connect(te_ordbits, SIGNAL(clicked()), this, SLOT(ordbits_btn_slot()));
+    connect(te_ordbits, &QAbstractButton::clicked,
+        this, &QTelecTermEditDlg::ordbits_btn_slot);
 
     hb = new QHBoxLayout();
     vb->addLayout(hb);
@@ -287,24 +291,28 @@ QTelecTermEditDlg::QTelecTermEditDlg(GRobject caller, TermEditInfo *tinfo,
     tbtn = new QToolButton();
     tbtn->setText(tr("Schem Vis"));
     hb->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(scvis_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTelecTermEditDlg::scvis_btn_slot);
 
     tbtn = new QToolButton();
     tbtn->setText(tr("Invis"));
     hb->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(scinvis_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTelecTermEditDlg::scinvis_btn_slot);
 
     hb->addStretch(1);
 
     tbtn = new QToolButton();
     tbtn->setText(tr("Symbol Vis"));
     hb->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(syvis_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTelecTermEditDlg::syvis_btn_slot);
 
     tbtn = new QToolButton();
     tbtn->setText(tr("Invis"));
     hb->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(syinvis_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTelecTermEditDlg::syinvis_btn_slot);
 
     // Prev, Next buttons
     //
@@ -316,19 +324,22 @@ QTelecTermEditDlg::QTelecTermEditDlg(GRobject caller, TermEditInfo *tinfo,
     tbtn = new QToolButton();
     tbtn->setText(tr("Prev"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(prev_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTelecTermEditDlg::prev_btn_slot);
 
     tbtn = new QToolButton();
     tbtn->setText(tr("Next"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(next_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTelecTermEditDlg::next_btn_slot);
 
     hbox->addStretch(1);
 
     tbtn = new QToolButton();
     tbtn->setText(tr("To Index"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(toindex_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTelecTermEditDlg::toindex_btn_slot);
 
     te_sb_toindex = new QSpinBox();
     hbox->addWidget(te_sb_toindex);
@@ -346,12 +357,14 @@ QTelecTermEditDlg::QTelecTermEditDlg(GRobject caller, TermEditInfo *tinfo,
     tbtn = new QToolButton();
     tbtn->setText(tr("Apply"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTelecTermEditDlg::apply_btn_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTelecTermEditDlg::dismiss_btn_slot);
 
     update(tinfo, prp);
     setTabOrder(te_name, te_sb_index);
@@ -402,8 +415,8 @@ QTelecTermEditDlg::update(TermEditInfo *tinfo, CDp *prp)
         te_layer->addItem(ld->name());
     }
     te_layer->setCurrentIndex(0);
-    connect(te_layer, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(layer_menu_slot(int)));
+    connect(te_layer, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTelecTermEditDlg::layer_menu_slot);
 
     te_sb_index->setValue(tinfo->index());
     te_sb_toindex->setValue(tinfo->index());

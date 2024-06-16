@@ -28,8 +28,8 @@ IDSTR := \"`./release.sh` `$(BASE)/info.sh osname` `$(BASE)/info.sh arch`\"
 VERS := \"`./release.sh` (xictools)\"
 
 all: unpack
-	cd $(FASTCAP_DIR); $(MAKE) CC="$(CC)" all
-	cd fc_accs; $(MAKE) all
+	$(MAKE) -C $(FASTCAP_DIR) CC="$(CC)" all
+	$(MAKE) -C fc_accs all
 
 unpack:
 	@if [ ! -d $(FASTCAP_DIR) ]; then \
@@ -45,17 +45,17 @@ unpack:
 
 clean:
 	-@if [ -d $(FASTCAP_DIR) ]; then \
-	    cd $(FASTCAP_DIR); $(MAKE) $@; \
+	    $(MAKE) -C $(FASTCAP_DIR) $@; \
 	fi
-	-@cd fc_accs; $(MAKE) $@
+	-@$(MAKE) -C fc_accs $@
 
 distclean:
 	-@rm -rf $(FASTCAP_DIR) Makefile
-	-@cd fc_accs; $(MAKE) $@
-	-@cd packages; $(MAKE) $@
+	-@$(MAKE) -C fc_accs $@
+	-@$(MAKE) -C packages $@
 
 depend:
-	@cd fc_accs; $(MAKE) $@
+	@$(MAKE) -C fc_accs $@
 
 #######################################################################
 ####### Installation ##################################################
@@ -153,6 +153,6 @@ package::
 	-rm -rf packages/root
 	mkdir packages/root
 	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install
-	cd packages; $(MAKE) package
+	$(MAKE) -C packages package
 
 #######################################################################

@@ -189,12 +189,12 @@ users.  This will provide several advantages for users:
 3.3  Building from Source, Prerequisites
 
 The XicTools can be built on macOS with MacPorts, Windows with MSYS2,
-of any reasonably current Linux system.
+or any reasonably current Linux system.
 
 In general, it will be helpful to have some familiarity with building
 open-source software, with makefiles, compilers, and the tools needed
 to build and maintain Linux programs.  However, this is mostly for
-cases when something goes wrong, so the user can diagnose an fix a
+cases when something goes wrong, so the user can diagnose and fix a
 problem.  Eventually, we hope to make everything "just work" with no
 intervention required, but this will take time to evolve.
 
@@ -209,7 +209,7 @@ Requirements are partially listed below for various operting systems.
 To install system software as above on Linux, you will need root
 permission, or an IT department that can do this for you.  If you
 are already in a corporate software development environment, then
-this software will quite likely be installed already, is it is at
+this software will quite likely be installed already, as it is at
 Synopsys, for example.
 
 Programs and Utilities:
@@ -246,6 +246,10 @@ I've indicated the requirements for GTK and Qt below. You can choose
 either one or both, depending on the tools version(s) you intend to
 build.
 
+Note:  It doesn't hurt to attempt to install software that is already
+installed with the commands below.  If the software is alredy installed.
+you will get a message indicating this.
+
 Ubuntu 20
 Debian 11
    These use the same packages.  The "build-essential" provides the
@@ -258,8 +262,8 @@ Debian 11
    apt-install libgtk2.0-dev  (for GTK)
    apt-install qt5-qtbase-devel  (for Qt)
 
-Fedora 35/36
-    In Fedora, the development tools are preinstalled, but you have
+Fedora 40
+    In Fedora, the development tools are preinstalled, but you may have
     to install g++ to get C++ support.  Again, packages can be installed
     one at a time or in groups.
 
@@ -287,11 +291,11 @@ file.  The "git" program is a software management tool, and using a
 git repository allows you to update the files from the primary
 repository on github.com with a simple command.
 
-If there is a subdirectory named ".git" in the directory containing this
-file, then you probably have a git repository.  If not, lets start over.
-Go to the parent directory containing this one, and "rm -rf" to delete
-this directory and everything under it (which will include this file unless
-you save a copy some place).
+If there is a subdirectory named ".git" in the directory containing
+this file, then you probably have a git repository.  If not, lets
+start over.  Go to the parent directory containing this one, and use
+"rm -rf" to delete this directory and everything under it (which will
+include this file unless you save a copy some place).
 
 Next, give the following command to clone the xictools repository into
 the current directory:
@@ -326,28 +330,50 @@ The procedure is as follows.
     3.  Give "make all" to build all of the programs.  If all went
         right for Xic and WRspice, there should be files present:
         xic/bin/xic and wrspice/bin/wrspice
-    4.  Thereafter, after changes, do "make reconfig" followed by
-        "make all".
+    4.  in the future, after changes, do "make reconfig" followed by
+        "make all" to rebuild the programs.  Alternatively, if you
+        want to start over from a fresh environment, give
+        "make distclean", then "make config" and "make all".
 
-The intended installation procedure is to first build a binary package
-(e.g., RPM) for each program, then install the packages on your system
-using the wr_install script.  The Makefiles will actually prevent
-running "make install" to the default location under /usr/local. 
-However, you can modify the Makefiles to allow this, and skip the
-packaging step entirely if you wish.  However, if you don't install
-from the packages, you won't have the "Safe Install" feature, see
-http://wrcad.com for info about the packages.  Basically, if you are a
-"user", you probably want to install with packages.  If you are a
-"developer", you may wish to enable direct installation.
+The present default build procedure assumes that the intended
+installation procedure is to first build a binary package (e.g., RPM)
+for each program, then install the packages on your system using the
+wr_install script.  The wr_install script is available on wrcad.com
+with the package files, and in the source tree under
+xictools/xt_base/packages/util/wr_install.  The Makefiles will
+actually prevent running "make install" to the default location
+(typically under /usr/local).  However, you can modify the top-level
+Makefile (in this directory) to allow this (see the ITOPOK variable),
+and skip the packaging step entirely if you wish.
 
+If you are buikding/installing packages:
     5. "make packages" will create all of the package files.
-       Packages are left in xt/xt_base/packages/pkgfiles.
+       Packages are left in xictools/xt_base/packages/pkgfiles.
 
-    6. cd xt_base/packages/pkgfiles; ../util/wr_install all
-       This will install the programs from the package files.
+    6. cd to xt_base/packages/pkgfiles, then give
+       "../util/wr_install all". This will install the programs from
+       the package files.  If you are installing to a system location
+       such as the default under /usr/local, you need to have sudo
+       privileges.  The wr_install script will ask for your password. 
+       It doesn't matter if this fails of you are installing to a
+       location where you have write permission.
+
+Otherwise:
+    5,6.  If you are installing to a system location like the default
+       under /usr/local, you must get root privileges somehow.  On
+       Current Linux systems this means that you will probably use the
+       sudo command and your account will be listed in the
+       /etc/sudoers file.  If at work, you may have to get help from
+       IT.  However you can install to a directory where you have
+       write permission without becomming root.  Next, give "make
+       install".  It may take half an hour or so, since this builds
+       the example Verilog-A models for WRspice which takes a while.
     
+In either case:
     7. Set your shell search path to include the main XicTools
        bin, by default /usr/local/xictools/bin.
+
+You should now be able to use the programs.
 
 
 3.3  Windows
@@ -375,7 +401,7 @@ the mingw64 versions of the gtk2 and gsl libraries.
     pacman -S mingw_w64-x86_64-gtk2  (for GTK)
     pacman -S mingw_w64-x86_64-qt6  (for Qt)
 
-Add some other needed utilities
+Add some other needed utilities:
 
     pacman -S autoconf-wrapper
     pacman -S bison
@@ -417,7 +443,8 @@ install it.
 You will run the installer in the future to update your packages, and
 to add packages needed later.
 
-The actual build procedure follows the Linux procedure above.
+The actual build procedure follows the Linux procedure above, but there
+is no need to worry about root access.
 
 
 3.4  macOS

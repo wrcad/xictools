@@ -199,8 +199,8 @@ QTmergeDlg::QTmergeDlg(mitem_t *mi)
     
     QCheckBox *cb = new QCheckBox(tr("Overwrite Physical"));
     hbox->addWidget(cb);
-    connect(cb, SIGNAL(stateChanged(int)),
-        this, SLOT(phys_check_box_slot(int)));
+    connect(cb, &QCheckBox::stateChanged,
+        this, &QTmergeDlg::phys_check_box_slot);
     cb->setChecked(mc_do_elec);
 
     hbox = new QHBoxLayout(0);
@@ -210,8 +210,8 @@ QTmergeDlg::QTmergeDlg(mitem_t *mi)
 
     cb = new QCheckBox(tr("Overwrite Electrical"));
     hbox->addWidget(cb);
-    connect(cb, SIGNAL(stateChanged(int)),
-        this, SLOT(elec_check_box_slot(int)));
+    connect(cb, &QCheckBox::stateChanged,
+        this, &QTmergeDlg::elec_check_box_slot);
     cb->setChecked(mc_do_elec);
 
     hbox = new QHBoxLayout(0);
@@ -222,12 +222,14 @@ QTmergeDlg::QTmergeDlg(mitem_t *mi)
     QPushButton *btn = new QPushButton(tr("Apply"));
     hbox->addWidget(btn);
     btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
+    connect(btn, &QCheckBox::clicked,
+        this, &QTmergeDlg::apply_btn_slot);
 
     btn = new QPushButton(tr("Apply To Rest"));
     hbox->addWidget(btn);
     btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(apply_to_all_btn_slot()));
+    connect(btn, &QCheckBox::clicked,
+        this, &QTmergeDlg::apply_to_all_btn_slot);
 }
 
 

@@ -208,7 +208,8 @@ QTchdOpenDlg::QTchdOpenDlg(GRobject caller,
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTchdOpenDlg::help_btn_slot);
 
     co_nbook = new QTabWidget();
     vbox->addWidget(co_nbook);
@@ -245,8 +246,8 @@ QTchdOpenDlg::QTchdOpenDlg(GRobject caller,
     co_p1_info->addItem(tr("per-cell counts"));
     co_p1_info->addItem(tr("per-cell and per-layer counts"));
     co_p1_info->setCurrentIndex(FIO()->CvtInfo());
-    connect(co_p1_info, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(p1_info_slot(int)));
+    connect(co_p1_info, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTchdOpenDlg::p1_info_slot);
 
     co_nbook->addTab(page, tr("layout file"));
 
@@ -323,12 +324,14 @@ QTchdOpenDlg::QTchdOpenDlg(GRobject caller,
     co_apply = new QToolButton();
     co_apply->setText(tr("Apply"));
     hbox->addWidget(co_apply);
-    connect(co_apply, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
+    connect(co_apply, &QAbstractButton::clicked,
+        this, &QTchdOpenDlg::apply_btn_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTchdOpenDlg::dismiss_btn_slot);
 
     update(init_idname, init_str);
 }

@@ -78,10 +78,8 @@ namespace qtinterf {
     class event_loop : public QEventLoop
     {
     public:
-        event_loop(event_loop *nx) : QEventLoop(0)
-        {
-            next = nx;
-        }
+        event_loop(event_loop *nx) : QEventLoop(0), next(nx) { }
+
         event_loop *next;
     };
 }

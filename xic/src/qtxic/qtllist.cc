@@ -122,13 +122,13 @@ QTlayerList::QTlayerList()
 
     ll_luse = new QCheckBox(tr("Layers only"));
     hbox->addWidget(ll_luse);
-    connect(ll_luse, SIGNAL(stateChanged(int)),
-        this, SLOT(luse_btn_slot(int)));
+    connect(ll_luse, &QCheckBox::stateChanged,
+        this, &QTlayerList::luse_btn_slot);
 
     ll_lskip = new QCheckBox(tr("Skip layers"));
     hbox->addWidget(ll_lskip);
-    connect(ll_lskip, SIGNAL(stateChanged(int)),
-        this, SLOT(lskip_btn_slot(int)));
+    connect(ll_lskip, &QCheckBox::stateChanged,
+        this, &QTlayerList::lskip_btn_slot);
 
     ll_laylist = new QTlayerEdit();
     vbox->addWidget(ll_laylist);
@@ -141,20 +141,20 @@ QTlayerList::QTlayerList()
 
     ll_aluse = new QCheckBox(tr("Use Layer Aliases"));
     hbox->addWidget(ll_aluse);
-    connect(ll_aluse, SIGNAL(stateChanged(int)),
-        this, SLOT(aluse_btn_slot(int)));
+    connect(ll_aluse, &QCheckBox::stateChanged,
+        this, &QTlayerList::aluse_btn_slot);
 
     ll_aledit = new QToolButton();
     ll_aledit->setText(tr("Edit Layer Aliases"));
     hbox->addWidget(ll_aledit);
     ll_aledit->setCheckable(true);
-    connect(ll_aledit, SIGNAL(toggled(bool)),
-        this, SLOT(aledit_btn_slot(bool)));
+    connect(ll_aledit, &QAbstractButton::toggled,
+        this, &QTlayerList::aledit_btn_slot);
 
     update();
 
-    connect(ll_laylist, SIGNAL(textChanged(const QString&)),
-        this, SLOT(text_changed_slot(const QString&)));
+    connect(ll_laylist, &QTlayerEdit::textChanged,
+        this, &QTlayerList::text_changed_slot);
 }
 
 

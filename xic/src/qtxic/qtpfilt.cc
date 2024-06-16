@@ -116,7 +116,8 @@ QTcmpPrpFltDlg::QTcmpPrpFltDlg(GRobject c)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTcmpPrpFltDlg::help_btn_slot);
 
     label = new QLabel(tr("Cell"));
     grid->addWidget(label, 1, 0);
@@ -127,16 +128,16 @@ QTcmpPrpFltDlg::QTcmpPrpFltDlg(GRobject c)
 
     pf_phys_cell = new QLineEdit();
     grid->addWidget(pf_phys_cell, 1, 1);
-    connect(pf_phys_cell, SIGNAL(textChanged(const QString&)),
-        this, SLOT(phys_cellstr_slot(const QString&)));
+    connect(pf_phys_cell, &QLineEdit::textChanged,
+        this, &QTcmpPrpFltDlg::phys_cellstr_slot);
     pf_phys_inst = new QLineEdit();
     grid->addWidget(pf_phys_inst, 2, 1);
-    connect(pf_phys_inst, SIGNAL(textChanged(const QString&)),
-        this, SLOT(phys_inststr_slot(const QString&)));
+    connect(pf_phys_inst, &QLineEdit::textChanged,
+        this, &QTcmpPrpFltDlg::phys_inststr_slot);
     pf_phys_obj = new QLineEdit();
     grid->addWidget(pf_phys_obj, 3, 1);
-    connect(pf_phys_obj, SIGNAL(textChanged(const QString&)),
-        this, SLOT(phys_objstr_slot(const QString&)));
+    connect(pf_phys_obj, &QLineEdit::textChanged,
+        this, &QTcmpPrpFltDlg::phys_objstr_slot);
 
     // electrical strings
     //
@@ -152,23 +153,24 @@ QTcmpPrpFltDlg::QTcmpPrpFltDlg(GRobject c)
 
     pf_elec_cell = new QLineEdit();
     grid->addWidget(pf_elec_cell, 5, 1);
-    connect(pf_elec_cell, SIGNAL(textChanged(const QString&)),
-        this, SLOT(elec_cellstr_slot(const QString&)));
+    connect(pf_elec_cell, &QLineEdit::textChanged,
+        this, &QTcmpPrpFltDlg::elec_cellstr_slot);
     pf_elec_inst = new QLineEdit();
     grid->addWidget(pf_elec_inst, 6, 1);
-    connect(pf_elec_inst, SIGNAL(textChanged(const QString&)),
-        this, SLOT(elec_inststr_slot(const QString&)));
+    connect(pf_elec_inst, &QLineEdit::textChanged,
+        this, &QTcmpPrpFltDlg::elec_inststr_slot);
     pf_elec_obj = new QLineEdit();
     grid->addWidget(pf_elec_obj, 7, 1);
-    connect(pf_elec_obj, SIGNAL(textChanged(const QString&)),
-        this, SLOT(elec_objstr_slot(const QString&)));
+    connect(pf_elec_obj, &QLineEdit::textChanged,
+        this, &QTcmpPrpFltDlg::elec_objstr_slot);
 
     // dismiss button
     //
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     grid->addWidget(btn, 8, 0, 1, 2);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTcmpPrpFltDlg::dismiss_btn_slot);
 
     update();
 }

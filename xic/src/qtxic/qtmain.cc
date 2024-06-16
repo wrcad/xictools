@@ -49,6 +49,7 @@
 #include "qtltab.h"
 #include "qthtext.h"
 #include "qtmenucfg.h"
+#include "qtkeymacro.h"
 #include "qtinterf/qtfile.h"
 #include "qtinterf/qttext.h"
 #include "qtinterf/qttextw.h"
@@ -73,9 +74,6 @@
 #include "miscutil/tvals.h"
 #include "help/help_context.h"
 #include "qtinterf/qtidleproc.h"
-#ifdef Q_OS_MACOS
-#include "bitmaps/wr.xpm"
-#endif
 #ifdef HAVE_MOZY
 #include "editif.h"
 #include "si_parsenode.h"
@@ -134,7 +132,6 @@
 //  button2
 //  button3
 //  keyspresd
-//  xic:wrbtn
 
 // Create and export the graphics package.
 namespace { QTpkg _qt_; }
@@ -873,7 +870,7 @@ namespace {
         // Here, obj can be two things.
         // 1.  An object with no parent that has a name derived from
         // the source top-level widget name, either
-        // "QTmainwinClassWindow" or similar for the modal window". 
+        // "QTmainwinClassWindow" or similar for the modal window. 
         // Accept the event if it is not from the main window.
         // 2.  An object whose parent is a pointer to the modal
         // widget.  Accept these.
@@ -894,12 +891,12 @@ QTeventMonitor::eventFilter(QObject *obj, QEvent *ev)
 {
     // Handle events here, return true to indicate handled.
 //XXX
-    if (ev->type() == QEvent::MouseMove) { 
+//    if (ev->type() == QEvent::MouseMove) { 
 //    printf("%p %x\n", qApp->widgetAt(QCursor::pos()), ev->type());
-    }
+//    }
 
     if (em_event_handler)
-        return (em_event_handler(obj, ev, 0));
+        return (em_event_handler(obj, ev, em_event_handler_arg));
 
     // When the application is busy, all button presses and all key
     // presses except for Ctrl-C are locked out, and upon receipt a
@@ -1060,7 +1057,8 @@ QTeventMonitor::log_event(const QObject *obj, const QEvent *ev)
             else
                 fprintf(fp, "# %s\n", "");
 
-            char *wname = qt_keyb::object_path(obj);
+            const QWidget *widg = qobject_cast<const QWidget*>(obj);
+            char *wname = qt_keyb::widget_path(widg);
             if (!wname)
                 wname = lstring::copy("unknown");
             fprintf(fp, "%s(%d, %x, \"%s\")\n",
@@ -1083,7 +1081,8 @@ QTeventMonitor::log_event(const QObject *obj, const QEvent *ev)
             if (!ccnt)
                 log_init(fp);
             const QMouseEvent *mev = static_cast<const QMouseEvent*>(ev);
-            char *wname = qt_keyb::object_path(obj);
+            const QWidget *widg = qobject_cast<const QWidget*>(obj);
+            char *wname = qt_keyb::widget_path(widg);
             if (!wname)
                 wname = lstring::copy("unknown");
             fprintf(fp, "%s(%d, %d, %d, %d, \"%s\")\n",
@@ -1121,8 +1120,8 @@ cKeys::cKeys(int wnum, QWidget *prnt) : QTcanvas(prnt)
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_SCREEN))
         set_font(fnt);
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &cKeys::font_changed, Qt::QueuedConnection);
 }
 
 
@@ -1252,7 +1251,7 @@ cKeys::check_exec(bool exact)
     // Put the execution in an idle proc.  This avoids an artifact in
     // prompt text from newly-generated text coming before the geometry
     // update is finished.
-    QTpkg::self()->RegisterIdleProc(check_exec_idle, ent);
+    emit QTmainwin::self()->run_queued(&check_exec_idle, ent);
 }
 
 
@@ -1380,41 +1379,49 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_SCREEN))
         gd_viewport->set_font(fnt);
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTsubwin::font_changed, Qt::QueuedConnection);
 
-    connect(gd_viewport, SIGNAL(resize_event(QResizeEvent*)),
-        this, SLOT(resize_slot(QResizeEvent*)));
-    connect(gd_viewport, SIGNAL(press_event(QMouseEvent*)),
-        this, SLOT(button_down_slot(QMouseEvent*)));
-    connect(gd_viewport, SIGNAL(release_event(QMouseEvent*)),
-        this, SLOT(button_up_slot(QMouseEvent*)));
-    connect(gd_viewport, SIGNAL(double_click_event(QMouseEvent*)),
-        this, SLOT(double_click_slot(QMouseEvent*)));
-    connect(gd_viewport, SIGNAL(motion_event(QMouseEvent*)),
-        this, SLOT(motion_slot(QMouseEvent*)));
-    connect(gd_viewport, SIGNAL(key_press_event(QKeyEvent*)),
-        this, SLOT(key_down_slot(QKeyEvent*)));
-    connect(gd_viewport, SIGNAL(key_release_event(QKeyEvent*)),
-        this, SLOT(key_up_slot(QKeyEvent*)));
-    connect(gd_viewport, SIGNAL(enter_event(QEnterEvent*)),
-        this, SLOT(enter_slot(QEnterEvent*)));
-    connect(gd_viewport, SIGNAL(leave_event(QEvent*)),
-        this, SLOT(leave_slot(QEvent*)));
-    connect(gd_viewport, SIGNAL(focus_in_event(QFocusEvent*)),
-        this, SLOT(focus_in_slot(QFocusEvent*)));
-    connect(gd_viewport, SIGNAL(focus_out_event(QFocusEvent*)),
-        this, SLOT(focus_out_slot(QFocusEvent*)));
-    connect(gd_viewport, SIGNAL(mouse_wheel_event(QWheelEvent*)),
-        this, SLOT(mouse_wheel_slot(QWheelEvent*)));
-    connect(gd_viewport, SIGNAL(drag_enter_event(QDragEnterEvent*)),
-        this, SLOT(drag_enter_slot(QDragEnterEvent*)));
-    connect(gd_viewport, SIGNAL(drop_event(QDropEvent*)),
-        this, SLOT(drop_slot(QDropEvent*)));
+    connect(gd_viewport, &QTcanvas::resize_event,
+        this, &QTsubwin::resize_slot);
+    connect(gd_viewport, &QTcanvas::press_event,
+        this, &QTsubwin::button_down_slot);
+    connect(gd_viewport, &QTcanvas::release_event,
+        this, &QTsubwin::button_up_slot);
+    connect(gd_viewport, &QTcanvas::double_click_event,
+        this, &QTsubwin::double_click_slot);
+    connect(gd_viewport, &QTcanvas::motion_event,
+        this, &QTsubwin::motion_slot);
+    connect(gd_viewport, &QTcanvas::key_press_event,
+        this, &QTsubwin::key_down_slot);
+    connect(gd_viewport, &QTcanvas::key_release_event,
+        this, &QTsubwin::key_up_slot);
+    connect(gd_viewport, &QTcanvas::enter_event,
+        this, &QTsubwin::enter_slot);
+    connect(gd_viewport, &QTcanvas::leave_event,
+        this, &QTsubwin::leave_slot);
+    connect(gd_viewport, &QTcanvas::focus_in_event,
+        this, &QTsubwin::focus_in_slot);
+    connect(gd_viewport, &QTcanvas::focus_out_event,
+        this, &QTsubwin::focus_out_slot);
+    connect(gd_viewport, &QTcanvas::mouse_wheel_event,
+        this, &QTsubwin::mouse_wheel_slot);
+    connect(gd_viewport, &QTcanvas::drag_enter_event,
+        this, &QTsubwin::drag_enter_slot);
+    connect(gd_viewport, &QTcanvas::drop_event,
+        this, &QTsubwin::drop_slot);
 
-    if (sw_win_number == 0)
+    if (sw_win_number == 0) {
         // being subclassed for main window
+        gd_viewport->setObjectName("MainDrawingWin");
+        setObjectName("XicMainWin");
         return;
+    }
+    char bf[16];
+    snprintf(bf, sizeof(bf), "DrawingWin%d", sw_win_number);
+    gd_viewport->setObjectName(bf);
+    snprintf(bf, sizeof(bf), "SubWin%d", sw_win_number);
+    setObjectName(bf);
 
     sw_keys_pressed = new cKeys(sw_win_number, this);
     sw_keys_pressed->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -1449,8 +1456,8 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
     // Create new menu, just copy template.
     MainMenu()->CreateSubwinMenu(wnum);
 
-    connect(this, SIGNAL(update_coords(int, int)),
-        QTmainwin::self(), SLOT(update_coords_slot(int, int)));
+    connect(this, &QTsubwin::update_coords,
+        QTmainwin::self(), &QTmainwin::update_coords_slot);
 
     QPoint mposn = QTmainwin::self()->pos();
     if (LastPos[wnum].width()) {
@@ -2593,14 +2600,6 @@ QTsubwin::help_slot()
 //-----------------------------------------------------------------------------
 // QTmainwin functions
 
-namespace {
-    bool is_shift_down()
-    {
-        return (QApplication::keyboardModifiers() & Qt::ShiftModifier);
-    }
-}
-
-
 QTmainwin::QTmainwin(QWidget *prnt) : QTsubwin(0, prnt)
 {
     mw_menubar = new QMenuBar();
@@ -2614,14 +2613,15 @@ QTmainwin::QTmainwin(QWidget *prnt) : QTsubwin(0, prnt)
     mw_layertab = 0;
     mw_status = 0;
 
+    qRegisterMetaType<RunQueuedStruct>();
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+    qRegisterMetaType<QResizeEvent*>();
+    // Seems not to be registered in QT6!  Line errors out in QT5.
+#endif
+
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     setWindowFlags(Qt::Window);
     setAttribute(Qt::WA_DeleteOnClose);
-#ifdef Q_OS_MACOS
-    QAction *a = mw_menubar->addAction(tr("wr"));
-    a->setIcon(QIcon(QPixmap(wr_xpm)));
-    connect(a, SIGNAL(triggered()), this, SLOT(wr_btn_slot()));
-#endif
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;
@@ -2655,6 +2655,7 @@ QTmainwin::QTmainwin(QWidget *prnt) : QTsubwin(0, prnt)
     hbox->setStretch(1, 0);
 
     mw_top_button_box = new QWidget();
+    mw_top_button_box->setObjectName("TopBtns");
     hbox->addWidget(mw_top_button_box);
     hbox->setStretch(2, 0);
 
@@ -2667,8 +2668,10 @@ QTmainwin::QTmainwin(QWidget *prnt) : QTsubwin(0, prnt)
     hbox->setSpacing(2);
 
     mw_phys_button_box = new QWidget(this);
+    mw_phys_button_box->setObjectName("PhysSideBtns");
     hbox->addWidget(mw_phys_button_box);
     mw_elec_button_box = new QWidget(this);
+    mw_elec_button_box->setObjectName("ElecSideBtns");
     hbox->addWidget(mw_elec_button_box);
 
     mw_layertab = new QTltab(false);
@@ -2706,8 +2709,10 @@ QTmainwin::QTmainwin(QWidget *prnt) : QTsubwin(0, prnt)
     mw_status = new QTparam(this);
     vbox->addWidget(mw_status);
 
-    connect(this, SIGNAL(update_coords(int, int)),
-        this, SLOT(update_coords_slot(int, int)));
+    connect(this, &QTmainwin::update_coords,
+        this, &QTmainwin::update_coords_slot);
+    connect(this, &QTmainwin::run_queued,
+        this, &QTmainwin::run_queued_slot, Qt::QueuedConnection);
 }
 
 
@@ -2912,26 +2917,23 @@ QTmainwin::closeEvent(QCloseEvent *ev)
 }
 
 
-// Handler for the "WR" button.
-//
-void
-QTmainwin::wr_btn_slot()
-{
-    if (XM()->IsDoingHelp() && !is_shift_down()) {
-        PopUpHelp("xic:wrbtn");
-        return;
-    }
-    char buf[128];
-    snprintf(buf, sizeof(buf), "%s-%s bug", XM()->Product(),
-        XM()->VersionString());
-    PopUpMail(buf, Log()->MailAddress());
-}
-
-
 void
 QTmainwin::update_coords_slot(int xx, int yy)
 {
     mw_coords->print(xx, yy, QTcoord::COOR_MOTION);
+}
+
+
+// Emitting run_queued causes the function to be run at the end of the
+// event loop, as if in an idle proc.  Be careful with this, the
+// arguments have to be alive when called.  I tried to pass a function
+// pointer instead of a void* but Qt seemed not to accept the syntax.
+//
+void
+QTmainwin::run_queued_slot(RunQueuedStruct f, void *arg)
+{
+    if (f.func(arg))
+        emit run_queued(f.func, arg);
 }
 // End of QTmainwin functions.
 

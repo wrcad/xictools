@@ -174,18 +174,21 @@ QTlibsDlg::QTlibsDlg(GRobject c) : QTbag(this)
     lb_openbtn = new QToolButton();
     lb_openbtn->setText(tr("Open/Close"));
     hbox->addWidget(lb_openbtn);
-    connect(lb_openbtn, SIGNAL(clicked()), this, SLOT(open_btn_slot()));
+    connect(lb_openbtn, &QAbstractButton::clicked,
+        this, &QTlibsDlg::open_btn_slot);
 
     lb_contbtn = new QToolButton();
     lb_contbtn->setText(tr("Contents"));
     hbox->addWidget(lb_contbtn);
-    connect(lb_contbtn, SIGNAL(clicked()), this, SLOT(cont_btn_slot()));
+    connect(lb_contbtn, &QAbstractButton::clicked,
+        this, &QTlibsDlg::cont_btn_slot);
 
     hbox->addStretch(1);
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTlibsDlg::help_btn_slot);
 
     // scrolled list
     //
@@ -196,18 +199,16 @@ QTlibsDlg::QTlibsDlg(GRobject c) : QTbag(this)
     lb_list->header()->setMinimumSectionSize(25);
     lb_list->header()->resizeSection(0, 50);
 
-    connect(lb_list,
-        SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
-        this,
-        SLOT(current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*)));
-    connect(lb_list, SIGNAL(itemClicked(QTreeWidgetItem*, int)),
-        this, SLOT(item_clicked_slot(QTreeWidgetItem*, int)));
+    connect(lb_list, &QTreeWidget::currentItemChanged,
+        this, &QTlibsDlg::current_item_changed_slot);
+    connect(lb_list, &QTreeWidget::itemClicked,
+        this, &QTlibsDlg::item_clicked_slot);
 
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_PROP))
         lb_list->setFont(*fnt);
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTlibsDlg::font_changed_slot, Qt::QueuedConnection);
 
     // dismiss button line
     //
@@ -220,13 +221,14 @@ QTlibsDlg::QTlibsDlg(GRobject c) : QTbag(this)
     lb_noovr->setText(tr("No Overwrite Lib Cells"));
     hbox->addWidget(lb_noovr);
     lb_noovr->setCheckable(true);
-    connect(lb_noovr, SIGNAL(toggled(bool)),
-        this, SLOT(noovr_btn_slot(bool)));
+    connect(lb_noovr, &QAbstractButton::toggled,
+        this, &QTlibsDlg::noovr_btn_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTlibsDlg::dismiss_btn_slot);
 
     // Create pixmaps.
     lb_open_pb = new QPixmap(wb_open_folder_xpm);

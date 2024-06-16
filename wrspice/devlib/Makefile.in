@@ -80,14 +80,14 @@ DEVOBJS = $(SUBDIRS:=/*.o)
 ####### Library targets ###############################################
 
 dummy:
-	-@cd include; $(MAKE)
-	-@cd adms/include; $(MAKE)
+	-@$(MAKE) -C include
+	-@$(MAKE) -C adms/include
 	@echo Making device library;
 	$(MAKE) $(LIB_TARGET);
 
 veriloga:
-	-@cd adms/include; $(MAKE)
-	-@cd adms/examples; $(MAKE)
+	-@$(MAKE) -C adms/include
+	-@$(MAKE) -C adms/examples
 
 $(LIB_TARGET): subdirs $(COBJS)
 	@if [ -f $(LIB_TARGET) ]; then \
@@ -144,7 +144,7 @@ toc.so: toc.cc
 
 subdirs:
 	for a in $(SUBDIRS); do \
-	    (cd $$a; $(MAKE)); \
+	    $(MAKE) -C $$a ; \
 	done;
 
 #######################################################################
@@ -153,7 +153,7 @@ subdirs:
 
 depend:
 	-@for a in include adms/include $(SUBDIRS); do \
-	    (cd $$a; $(MAKE) depend;) \
+	    $(MAKE) -C $$a depend; \
 	done
 	@echo depending in devlib
 	-@if [ x$(DEPEND_DONE) = x ]; then \
@@ -168,13 +168,13 @@ depend:
 
 clean:
 	-@for a in adms/examples $(SUBDIRS); do \
-	    (cd $$a; $(MAKE) $@) \
+	    $(MAKE) -C $$a $@; \
 	done
 	-@rm -f toc.cc *.o *.a
 
 distclean:
 	-@for a in include adms/include adms/examples  $(SUBDIRS); do \
-	    (cd $$a; $(MAKE) $@) \
+	    $(MAKE) -C $$a $@; \
 	done
 	-@rm -f toc.cc *.o *.a Makefile devices modules
 	-@rm -f adms/Makefile

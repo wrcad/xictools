@@ -167,7 +167,8 @@ QTdisplayWinDlg::QTdisplayWinDlg(GRobject caller, const BBox *BB,
     dw_apply = new QToolButton();
     dw_apply->setText(tr("Apply"));
     col3->addWidget(dw_apply);
-    connect(dw_apply, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
+    connect(dw_apply, &QAbstractButton::clicked,
+        this, &QTdisplayWinDlg::apply_btn_slot);
 
     hbox = new QHBoxLayout(0);
     hbox->setContentsMargins(qm);
@@ -177,12 +178,14 @@ QTdisplayWinDlg::QTdisplayWinDlg(GRobject caller, const BBox *BB,
     dw_center = new QToolButton();
     dw_center->setText(tr("Center Full View"));
     hbox->addWidget(dw_center);
-    connect(dw_center, SIGNAL(clicked()), this, SLOT(center_btn_slot()));
+    connect(dw_center, &QAbstractButton::clicked,
+        this, &QTdisplayWinDlg::center_btn_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTdisplayWinDlg::dismiss_btn_slot);
 
     update(BB);
 }

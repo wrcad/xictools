@@ -206,7 +206,8 @@ QTextSetupDlg::QTextSetupDlg(GRobject c)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTextSetupDlg::help_btn_slot);
 
     es_notebook = new QTabWidget();
     vbox->addWidget(es_notebook);
@@ -226,17 +227,20 @@ QTextSetupDlg::QTextSetupDlg(GRobject c)
     es_clrex = new QToolButton();
     es_clrex->setText(tr("Clear Extraction"));
     hbox->addWidget(es_clrex);
-    connect(es_clrex, SIGNAL(clicked()), this, SLOT(clrex_btn_slot()));
+    connect(es_clrex, &QAbstractButton::clicked,
+        this, &QTextSetupDlg::clrex_btn_slot);
 
     es_doex = new QToolButton();
     es_doex->setText(tr("Do Extraction"));
     hbox->addWidget(es_doex);
-    connect(es_doex, SIGNAL(clicked()), this, SLOT(doex_btn_slot()));
+    connect(es_doex, &QAbstractButton::clicked,
+        this, &QTextSetupDlg::doex_btn_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTextSetupDlg::dismiss_btn_slot);
 
     update();
 }
@@ -282,28 +286,28 @@ QTextSetupDlg::views_and_ops_page()
 
     es_p1_extview = new QCheckBox(tr("Extraction View"));
     grid->addWidget(es_p1_extview, 0, 0);
-    connect(es_p1_extview, SIGNAL(stateChanged(int)),
-        this, SLOT(p1_extview_btn_slot(int)));
+    connect(es_p1_extview, &QCheckBox::stateChanged,
+        this, &QTextSetupDlg::p1_extview_btn_slot);
 
     es_p1_groups = new QCheckBox(tr("Groups"));
     grid->addWidget(es_p1_groups, 0, 1);
-    connect(es_p1_groups, SIGNAL(stateChanged(int)),
-        this, SLOT(p1_groups_btn_slot(int)));
+    connect(es_p1_groups, &QCheckBox::stateChanged,
+        this, &QTextSetupDlg::p1_groups_btn_slot);
 
     es_p1_nodes = new QCheckBox(tr("Nodes"));
     grid->addWidget(es_p1_nodes, 0, 2);
-    connect(es_p1_nodes, SIGNAL(stateChanged(int)),
-        this, SLOT(p1_nodes_btn_slot(int)));
+    connect(es_p1_nodes, &QCheckBox::stateChanged,
+        this, &QTextSetupDlg::p1_nodes_btn_slot);
 
     es_p1_terms = new QCheckBox(tr("All Terminals"));
     grid->addWidget(es_p1_terms, 1, 0);
-    connect(es_p1_terms, SIGNAL(stateChanged(int)),
-        this, SLOT(p1_terms_btn_slot(int)));
+    connect(es_p1_terms, &QCheckBox::stateChanged,
+        this, &QTextSetupDlg::p1_terms_btn_slot);
 
     es_p1_cterms = new QCheckBox(tr("Cell Terminals Only"));
     grid->addWidget(es_p1_cterms, 1, 1);
-    connect(es_p1_cterms, SIGNAL(stateChanged(int)),
-        this, SLOT(p1_cterms_btn_slot(int)));
+    connect(es_p1_cterms, &QCheckBox::stateChanged,
+        this, &QTextSetupDlg::p1_cterms_btn_slot);
 
     // The Terminals group.
     //
@@ -320,18 +324,20 @@ QTextSetupDlg::views_and_ops_page()
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Reset Terms"));
     hb->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(p1_rsterms_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTextSetupDlg::p1_rsterms_btn_slot);
 
     tbtn = new QToolButton();
     tbtn->setText(tr("Reset Subckts"));
     hb->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(p1_rssubs_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTextSetupDlg::p1_rssubs_btn_slot);
 
     hb->addSpacing(12);
     es_p1_recurs = new QCheckBox(tr("Recursive"));
     hb->addWidget(es_p1_recurs);
-    connect(es_p1_recurs, SIGNAL(stateChanged(int)),
-        this, SLOT(p1_recurs_btn_slot(int)));
+    connect(es_p1_recurs, &QCheckBox::stateChanged,
+        this, &QTextSetupDlg::p1_recurs_btn_slot);
 
     hb = new QHBoxLayout();
     vb->addLayout(hb);
@@ -342,15 +348,15 @@ QTextSetupDlg::views_and_ops_page()
     es_p1_tedit->setText(tr("Edit Terminals"));
     hb->addWidget(es_p1_tedit);
     es_p1_tedit->setCheckable(true);
-    connect(es_p1_tedit, SIGNAL(toggled(bool)),
-        this, SLOT(p1_tedit_btn_slot(bool)));
+    connect(es_p1_tedit, &QAbstractButton::toggled,
+        this, &QTextSetupDlg::p1_tedit_btn_slot);
 
     es_p1_tfind = new QToolButton();
     es_p1_tfind->setText(tr("Find Terminal"));
     hb->addWidget(es_p1_tfind);
     es_p1_tfind->setCheckable(true);
-    connect(es_p1_tfind, SIGNAL(toggled(bool)),
-        this, SLOT(p1_tfind_btn_slot(bool)));
+    connect(es_p1_tfind, &QAbstractButton::toggled,
+        this, &QTextSetupDlg::p1_tfind_btn_slot);
 
     // Selection of unassociated objects.
     //
@@ -365,17 +371,20 @@ QTextSetupDlg::views_and_ops_page()
     tbtn = new QToolButton();
     tbtn->setText(tr("Groups/Nodes"));
     hb->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(p1_uagn_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTextSetupDlg::p1_uagn_btn_slot);
 
     tbtn = new QToolButton();
     tbtn->setText(tr("Devices"));
     hb->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(p1_uadev_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTextSetupDlg::p1_uadev_btn_slot);
 
     tbtn = new QToolButton();
     tbtn->setText(tr("Subckts"));
     hb->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(p1_uasub_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTextSetupDlg::p1_uasub_btn_slot);
 }
 
 
@@ -406,8 +415,8 @@ QTextSetupDlg::net_and_cell_page()
     es_p2_nlprpset->setText(tr("Apply"));
     hb->addWidget(es_p2_nlprpset);
     es_p2_nlprpset->setCheckable(true);
-    connect(es_p2_nlprpset, SIGNAL(toggled(bool)),
-        this, SLOT(p2_papply_btn_slot(bool)));
+    connect(es_p2_nlprpset, &QAbstractButton::toggled,
+        this, &QTextSetupDlg::p2_papply_btn_slot);
 
     es_p2_nlprp = new QLineEdit();
     hb->addWidget(es_p2_nlprp);
@@ -422,8 +431,8 @@ QTextSetupDlg::net_and_cell_page()
     es_p2_nllset->setText(tr("Apply"));
     hb->addWidget(es_p2_nllset);
     es_p2_nllset->setCheckable(true);
-    connect(es_p2_nllset, SIGNAL(toggled(bool)),
-        this, SLOT(p2_lapply_btn_slot(bool)));
+    connect(es_p2_nllset, &QAbstractButton::toggled,
+        this, &QTextSetupDlg::p2_lapply_btn_slot);
 
     es_p2_nll = new QLineEdit();
     hb->addWidget(es_p2_nll);
@@ -432,26 +441,26 @@ QTextSetupDlg::net_and_cell_page()
     //
     es_p2_ignlab = new QCheckBox(tr("Ignore net name labels"));
     vbox->addWidget(es_p2_ignlab);
-    connect(es_p2_ignlab, SIGNAL(stateChanged(int)),
-        this, SLOT(p2_ignnm_btn_slot(int)));
+    connect(es_p2_ignlab, &QCheckBox::stateChanged,
+        this, &QTextSetupDlg::p2_ignnm_btn_slot);
 
     es_p2_oldlab = new QCheckBox(tr(
         "Find old-style net (term name) labels"));
     vbox->addWidget(es_p2_oldlab);
-    connect(es_p2_oldlab, SIGNAL(stateChanged(int)),
-        this, SLOT(p2_oldlab_btn_slot(int)));
+    connect(es_p2_oldlab, &QCheckBox::stateChanged,
+        this, &QTextSetupDlg::p2_oldlab_btn_slot);
 
     es_p2_updlab = new QCheckBox(tr(
         "Update net name labels after association"));
     vbox->addWidget(es_p2_updlab);
-    connect(es_p2_updlab, SIGNAL(stateChanged(int)),
-        this, SLOT(p2_updlab_btn_slot(int)));
+    connect(es_p2_updlab, &QCheckBox::stateChanged,
+        this, &QTextSetupDlg::p2_updlab_btn_slot);
 
     es_p2_merge = new QCheckBox(tr(
         "Merge groups with matching net names"));
     vbox->addWidget(es_p2_merge);
-    connect(es_p2_merge, SIGNAL(stateChanged(int)),
-        this, SLOT(p2_merge_btn_slot(int)));
+    connect(es_p2_merge, &QCheckBox::stateChanged,
+        this, &QTextSetupDlg::p2_merge_btn_slot);
 
     // Via detection group.
     //
@@ -467,8 +476,8 @@ QTextSetupDlg::net_and_cell_page()
 
     es_p2_vcvx = new QCheckBox(tr("Assume convex vias"));
     hb->addWidget(es_p2_vcvx);
-    connect(es_p2_vcvx, SIGNAL(stateChanged(int)),
-        this, SLOT(p2_vcvx_btn_slot(int)));
+    connect(es_p2_vcvx, &QCheckBox::stateChanged,
+        this, &QTextSetupDlg::p2_vcvx_btn_slot);
 
     hb->addStretch(1);
 
@@ -479,8 +488,8 @@ QTextSetupDlg::net_and_cell_page()
     es_p2_sb_vdepth->setRange(0, CDMAXCALLDEPTH);
     es_p2_sb_vdepth->setValue(EXT_DEF_VIA_SEARCH_DEPTH);
     hb->addWidget(es_p2_sb_vdepth);
-    connect(es_p2_sb_vdepth, SIGNAL(valueChanged(int)),
-        this, SLOT(p2_vdepth_slot(int)));
+    connect(es_p2_sb_vdepth, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTextSetupDlg::p2_vdepth_slot);
 
     hb = new QHBoxLayout();
     vb->addLayout(hb);
@@ -490,8 +499,8 @@ QTextSetupDlg::net_and_cell_page()
     es_p2_vsubs = new QCheckBox(tr(
         "Check for via connections between subcells"));
     hb->addWidget(es_p2_vsubs);
-    connect(es_p2_vsubs, SIGNAL(stateChanged(int)),
-        this, SLOT(p2_vsubs_btn_slot(int)));
+    connect(es_p2_vsubs, &QCheckBox::stateChanged,
+        this, &QTextSetupDlg::p2_vsubs_btn_slot);
 
     // Ground plane group.
     //
@@ -504,14 +513,14 @@ QTextSetupDlg::net_and_cell_page()
     es_p2_gpglob = new QCheckBox(tr(
         "Assume clear-field ground plane is global"));
     vb->addWidget(es_p2_gpglob);
-    connect(es_p2_gpglob, SIGNAL(stateChanged(int)),
-        this, SLOT(p2_gpglob_btn_slot(int)));
+    connect(es_p2_gpglob, &QCheckBox::stateChanged,
+        this, &QTextSetupDlg::p2_gpglob_btn_slot);
 
     es_p2_gpmulti = new QCheckBox(tr(
         "Invert dark-field ground plane for multi-nets"));
     vb->addWidget(es_p2_gpmulti);
-    connect(es_p2_gpmulti, SIGNAL(stateChanged(int)),
-        this, SLOT(p2_gpmulti_btn_slot(int)));
+    connect(es_p2_gpmulti, &QCheckBox::stateChanged,
+        this, &QTextSetupDlg::p2_gpmulti_btn_slot);
 
     es_p2_gpmthd = new QComboBox();
     vb->addWidget(es_p2_gpmthd);
@@ -522,8 +531,8 @@ QTextSetupDlg::net_and_cell_page()
     es_p2_gpmthd->addItem(tr(
         "Invert flat in all cells"));
     es_p2_gpmthd->setCurrentIndex(Tech()->GroundPlaneMode());
-    connect(es_p2_gpmthd, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(p2_gpmthd_menu_slot(int)));
+    connect(es_p2_gpmthd, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTextSetupDlg::p2_gpmthd_menu_slot);
 }
 
 
@@ -553,64 +562,64 @@ QTextSetupDlg::devs_page()
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Edit"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()),
-        this, SLOT(p3_edit_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTextSetupDlg::p3_edit_btn_slot);
 
     es_p3_delblk = new QToolButton();
     es_p3_delblk->setText(tr("Delete"));;
     hbox->addWidget(es_p3_delblk);
     es_p3_delblk->setCheckable(true);
-    connect(es_p3_delblk, SIGNAL(toggled(bool)),
-        this, SLOT(p3_del_btn_slot(bool)));
+    connect(es_p3_delblk, &QAbstractButton::toggled,
+        this, &QTextSetupDlg::p3_del_btn_slot);
 
     es_p3_undblk = new QToolButton();
     es_p3_undblk->setText(tr("Undelete"));
     hbox->addWidget(es_p3_undblk);
     es_p3_undblk->setCheckable(true);
-    connect(es_p3_undblk, SIGNAL(toggled(bool)),
-        this, SLOT(p3_und_btn_slot(bool)));
+    connect(es_p3_undblk, &QAbstractButton::toggled,
+        this, &QTextSetupDlg::p3_und_btn_slot);
 
     // Check boxes.
     //
     es_p3_noseries = new QCheckBox(tr("Don't merge series devices"));
     vbox->addWidget(es_p3_noseries);
-    connect(es_p3_noseries, SIGNAL(stateChanged(int)),
-        this, SLOT(p3_noseries_btn_slot(int)));
+    connect(es_p3_noseries, &QCheckBox::stateChanged,
+        this, &QTextSetupDlg::p3_noseries_btn_slot);
 
     es_p3_nopara = new QCheckBox(tr("Don't merge parallel devices"));
     vbox->addWidget(es_p3_nopara);
-    connect(es_p3_nopara, SIGNAL(stateChanged(int)),
-        this, SLOT(p3_nopara_btn_slot(int)));
+    connect(es_p3_nopara, &QCheckBox::stateChanged,
+        this, &QTextSetupDlg::p3_nopara_btn_slot);
 
     es_p3_keepshrt = new QCheckBox(tr(
         "Include devices with terminals shorted"));
     vbox->addWidget(es_p3_keepshrt);
-    connect(es_p3_keepshrt, SIGNAL(stateChanged(int)),
-        this, SLOT(p3_keepshrt_btn_slot(int)));
+    connect(es_p3_keepshrt, &QCheckBox::stateChanged,
+        this, &QTextSetupDlg::p3_keepshrt_btn_slot);
 
     es_p3_nomrgshrt = new QCheckBox(tr(
         "Don't merge devices with terminals shorted"));
     vbox->addWidget(es_p3_nomrgshrt);
-    connect(es_p3_nomrgshrt, SIGNAL(stateChanged(int)),
-        this, SLOT(p3_nomrgshrt_btn_slot(int)));
+    connect(es_p3_nomrgshrt, &QCheckBox::stateChanged,
+        this, &QTextSetupDlg::p3_nomrgshrt_btn_slot);
 
     es_p3_nomeas = new QCheckBox(tr(
         "Skip device parameter measurement"));
     vbox->addWidget(es_p3_nomeas);
-    connect(es_p3_nomeas, SIGNAL(stateChanged(int)),
-        this, SLOT(p3_nomeas_btn_slot(int)));
+    connect(es_p3_nomeas, &QCheckBox::stateChanged,
+        this, &QTextSetupDlg::p3_nomeas_btn_slot);
 
     es_p3_usecache = new QCheckBox(tr(
         "Use measurement results cache property"));
     vbox->addWidget(es_p3_usecache);
-    connect(es_p3_usecache, SIGNAL(stateChanged(int)),
-        this, SLOT(p3_usecache_btn_slot(int)));
+    connect(es_p3_usecache, &QCheckBox::stateChanged,
+        this, &QTextSetupDlg::p3_usecache_btn_slot);
 
     es_p3_nordcache = new QCheckBox(tr(
         "Don't read measurement results from property"));
     vbox->addWidget(es_p3_nordcache);
-    connect(es_p3_nordcache, SIGNAL(stateChanged(int)),
-        this, SLOT(p3_nordcache_btn_slot(int)));
+    connect(es_p3_nordcache, &QCheckBox::stateChanged,
+        this, &QTextSetupDlg::p3_nordcache_btn_slot);
 
     // RL solver group.
     //
@@ -622,8 +631,8 @@ QTextSetupDlg::devs_page()
 
     es_p3_deltaset = new QCheckBox(tr("Set/use fixed grid size"));
     grid->addWidget(es_p3_deltaset, 0, 0);
-    connect(es_p3_deltaset, SIGNAL(stateChanged(int)),
-        this, SLOT(p3_deltaset_btn_slot(int)));
+    connect(es_p3_deltaset, &QCheckBox::stateChanged,
+        this, &QTextSetupDlg::p3_deltaset_btn_slot);
 
     int ndgt = CD()->numDigits();
     es_p3_sb_delta = new QTdoubleSpinBox();
@@ -631,13 +640,14 @@ QTextSetupDlg::devs_page()
     es_p3_sb_delta->setDecimals(ndgt);
     es_p3_sb_delta->setValue(0.01);
     grid->addWidget(es_p3_sb_delta, 0, 2);
-    connect(es_p3_sb_delta, SIGNAL(valueChanged(double)),
-        this, SLOT(p3_gridsize_slot(double)));
+    connect(es_p3_sb_delta,
+        QOverload<double>::of(&QTdoubleSpinBox::valueChanged),
+        this, &QTextSetupDlg::p3_gridsize_slot);
 
     es_p3_trytile = new QCheckBox(tr("Try to tile"));
     grid->addWidget(es_p3_trytile, 1, 0);
-    connect(es_p3_trytile, SIGNAL(stateChanged(int)),
-        this, SLOT(p3_trytile_btn_slot(int)));
+    connect(es_p3_trytile, &QCheckBox::stateChanged,
+        this, &QTextSetupDlg::p3_trytile_btn_slot);
 
     es_p3_lmax = new QLabel(tr("Maximum tile count per device"));
     grid->addWidget(es_p3_lmax, 1, 1);
@@ -646,8 +656,8 @@ QTextSetupDlg::devs_page()
     es_p3_sb_maxpts->setRange(1000, 100000);
     es_p3_sb_maxpts->setValue(1000);
     grid->addWidget(es_p3_sb_maxpts, 1, 2);
-    connect(es_p3_sb_maxpts, SIGNAL(valueChanged(int)),
-        this, SLOT(p3_maxpts_slot(int)));
+    connect(es_p3_sb_maxpts, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTextSetupDlg::p3_maxpts_slot);
 
     es_p3_lgrid = new QLabel(tr("Set fixed per-device grid cell count"));
     grid->addWidget(es_p3_lgrid, 2, 1);
@@ -656,8 +666,8 @@ QTextSetupDlg::devs_page()
     es_p3_sb_gridpts->setRange(10, 100000);
     es_p3_sb_gridpts->setValue(10);
     grid->addWidget(es_p3_sb_gridpts, 2, 2);
-    connect(es_p3_sb_gridpts, SIGNAL(valueChanged(int)),
-        this, SLOT(p3_gridpts_slot(int)));
+    connect(es_p3_sb_gridpts, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTextSetupDlg::p3_gridpts_slot);
 }
 
 
@@ -686,8 +696,8 @@ QTextSetupDlg::misc_page()
     es_p4_flkeyset->setText(tr("Apply"));
     hbox->addWidget(es_p4_flkeyset);
     es_p4_flkeyset->setCheckable(true);
-    connect(es_p4_flkeyset, SIGNAL(toggled(bool)),
-        this, SLOT(p4_flapply_btn_slot(bool)));
+    connect(es_p4_flkeyset, &QAbstractButton::toggled,
+        this, &QTextSetupDlg::p4_flapply_btn_slot);
 
     es_p4_flkeys = new QLineEdit();
     hbox->addWidget(es_p4_flkeys);
@@ -695,14 +705,14 @@ QTextSetupDlg::misc_page()
     es_p4_exopq = new QCheckBox(tr(
         "Extract opaque cells, ignore OPAQUE flag"));
     vbox->addWidget(es_p4_exopq);
-    connect(es_p4_exopq, SIGNAL(stateChanged(int)),
-        this, SLOT(p4_exopq_btn_slot(int)));
+    connect(es_p4_exopq, &QCheckBox::stateChanged,
+        this, &QTextSetupDlg::p4_exopq_btn_slot);
 
     es_p4_vrbos = new QCheckBox(tr(
         "Be very verbose on prompt line during extraction."));
     vbox->addWidget(es_p4_vrbos);
-    connect(es_p4_vrbos, SIGNAL(stateChanged(int)),
-        this, SLOT(p4_vrbos_btn_slot(int)));
+    connect(es_p4_vrbos, &QCheckBox::stateChanged,
+        this, &QTextSetupDlg::p4_vrbos_btn_slot);
 
 
     gb = new QGroupBox(tr("Global exclude layer expression"));
@@ -715,8 +725,8 @@ QTextSetupDlg::misc_page()
     es_p4_glbexset->setText(tr("Apply"));
     hbox->addWidget(es_p4_glbexset);
     es_p4_glbexset->setCheckable(true);
-    connect(es_p4_glbexset, SIGNAL(toggled(bool)),
-        this, SLOT(p4_glapply_btn_slot(bool)));
+    connect(es_p4_glbexset, &QAbstractButton::toggled,
+        this, &QTextSetupDlg::p4_glapply_btn_slot);
 
     es_p4_glbex = new QLineEdit();
     hbox->addWidget(es_p4_glbex);
@@ -732,20 +742,20 @@ QTextSetupDlg::misc_page()
     es_p4_noperm = new QCheckBox(tr(
         "Don't run symmetry trials in association"));
     grid->addWidget(es_p4_noperm, 0, 0);
-    connect(es_p4_noperm, SIGNAL(stateChanged(int)),
-        this, SLOT(p4_noperm_btn_slot(int)));
+    connect(es_p4_noperm, &QCheckBox::stateChanged,
+        this, &QTextSetupDlg::p4_noperm_btn_slot);
 
     es_p4_apmrg = new QCheckBox(tr(
         "Logically merge physical contacts for split net handling"));
     grid->addWidget(es_p4_apmrg, 1, 0, 1, 2);
-    connect(es_p4_apmrg, SIGNAL(stateChanged(int)),
-        this, SLOT(p4_apmrg_btn_slot(int)));
+    connect(es_p4_apmrg, &QCheckBox::stateChanged,
+        this, &QTextSetupDlg::p4_apmrg_btn_slot);
 
     es_p4_apfix = new QCheckBox(tr(
         "Apply post-association permutation fix"));
     grid->addWidget(es_p4_apfix, 2, 0);
-    connect(es_p4_apfix, SIGNAL(stateChanged(int)),
-        this, SLOT(p4_apfix_btn_slot(int)));
+    connect(es_p4_apfix, &QCheckBox::stateChanged,
+        this, &QTextSetupDlg::p4_apfix_btn_slot);
 
     QLabel *label = new QLabel(tr("Maximum association loop count"));
     grid->addWidget(label, 3, 0);
@@ -754,8 +764,8 @@ QTextSetupDlg::misc_page()
     es_p4_sb_loop->setRange(0, 1000000);
     es_p4_sb_loop->setValue(EXT_DEF_LVS_LOOP_MAX);
     grid->addWidget(es_p4_sb_loop, 3, 1);
-    connect(es_p4_sb_loop, SIGNAL(valueChanged(int)),
-        this, SLOT(p4_loop_count_slot(int)));
+    connect(es_p4_sb_loop, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTextSetupDlg::p4_loop_count_slot);
 
     label = new QLabel(tr("Maximum association iterations"));
     grid->addWidget(label, 4, 0);
@@ -764,8 +774,8 @@ QTextSetupDlg::misc_page()
     es_p4_sb_iters->setRange(10, 1000000);
     es_p4_sb_iters->setValue(EXT_DEF_LVS_ITER_MAX);
     grid->addWidget(es_p4_sb_iters, 4, 1);
-    connect(es_p4_sb_iters, SIGNAL(valueChanged(int)),
-        this, SLOT(p4_iter_count_slot(int)));
+    connect(es_p4_sb_iters, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTextSetupDlg::p4_iter_count_slot);
 }
 
 

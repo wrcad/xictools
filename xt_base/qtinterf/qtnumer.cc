@@ -112,12 +112,13 @@ QTnumDlg::QTnumDlg(QTbag *owner, const char *prompt_str, double initd,
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Apply"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(action_slot()));
+    connect(tbtn, &QAbstractButton::clicked, this, &QTnumDlg::action_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTnumDlg::dismiss_btn_slot);
 }
 
 
@@ -160,12 +161,12 @@ QTnumDlg::register_caller(GRobject c, bool no_dsl, bool handle_popdn)
                 QAbstractButton *btn = dynamic_cast<QAbstractButton*>(o);
                 if (btn) {
                     if (btn->isCheckable()) {
-                        connect(btn, SIGNAL(toggled(bool)),
-                            this, SLOT(cancel_action_slot(bool)));
+                        connect(btn, &QAbstractButton::toggled,
+                            this, &QTnumDlg::cancel_action_slot);
                     }
                     else {
-                        connect(btn, SIGNAL(clicked()),
-                            this, SLOT(dismiss_btn_slot()));
+                        connect(btn, &QAbstractButton::clicked,
+                            this, &QTnumDlg::dismiss_btn_slot);
                     }
                 }
             }
@@ -173,12 +174,12 @@ QTnumDlg::register_caller(GRobject c, bool no_dsl, bool handle_popdn)
                 QAction *a = dynamic_cast<QAction*>(o);
                 if (a) {
                     if (a->isCheckable()) {
-                        connect(a, SIGNAL(triggered(bool)),
-                            this, SLOT(cancel_action_slot(bool)));
+                        connect(a, &QAction::triggered,
+                            this, &QTnumDlg::cancel_action_slot);
                     }
                     else {
-                        connect(a, SIGNAL(triggered()),
-                            this, SLOT(dismiss_btn_slot()));
+                        connect(a, &QAction::triggered,
+                            this, &QTnumDlg::dismiss_btn_slot);
                     }
                 }
             }

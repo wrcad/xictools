@@ -134,18 +134,20 @@ QTmozyClrDlg::QTmozyClrDlg(QWidget *prnt) : QDialog(prnt), QTbag(this)
     clr_listbtn->setText(tr("Colors"));
     hbox->addWidget(clr_listbtn);
     clr_listbtn->setCheckable(true);
-    connect(clr_listbtn, SIGNAL(toggled(bool)),
-        this, SLOT(colors_btn_slot(bool)));
+    connect(clr_listbtn, &QAbstractButton::toggled,
+        this, &QTmozyClrDlg::colors_btn_slot);
 
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Apply"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTmozyClrDlg::apply_btn_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(quit_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTmozyClrDlg::quit_btn_slot);
 
     update();
 }

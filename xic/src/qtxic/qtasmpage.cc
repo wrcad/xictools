@@ -303,14 +303,14 @@ QTasmPage::QTasmPage(QTasmDlg *mt)
 
     pg_toplevels = new QTasmPageTreeWidget();
     grid->addWidget(pg_toplevels, 6, 0);
-    connect(pg_toplevels, SIGNAL(itemSelectionChanged()),
-        this, SLOT(toplev_selection_changed_slot()));
+    connect(pg_toplevels, &QTreeWidget::itemSelectionChanged,
+        this, &QTasmPage::toplev_selection_changed_slot);
 
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_PROP))
         pg_toplevels->setFont(*fnt);
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTasmPage::font_changed_slot, Qt::QueuedConnection);
 
     pg_tx = new QTasmTf(this);
     grid->addWidget(pg_tx, 5, 1, 2, 2);

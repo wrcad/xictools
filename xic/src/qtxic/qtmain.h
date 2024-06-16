@@ -122,6 +122,7 @@ public:
         em_event_list = 0;
         em_busy_allow_list = 0;
         em_event_handler = 0;
+        em_event_handler_arg = 0;
         for (int i = 0; i < GS_NBTNS; i++)
             em_button_state[i] = false;
     }
@@ -200,10 +201,11 @@ public:
             }
         }
 
-    EventHandlerFunc set_event_handler(EventHandlerFunc func, void*)
+    EventHandlerFunc set_event_handler(EventHandlerFunc func, void *arg)
         {
             EventHandlerFunc f = em_event_handler;
             em_event_handler = func;
+            em_event_handler_arg = arg;
             return (f);
         }
 
@@ -221,6 +223,7 @@ private:
     evl_t       *em_event_list;
     ol_t        *em_busy_allow_list;
     EventHandlerFunc em_event_handler;
+    void        *em_event_handler_arg;
     bool        em_button_state[GS_NBTNS];
 
 protected:
@@ -285,7 +288,6 @@ private:
     bool        pkg_not_mapped;         // true when iconic
     QTeventMonitor pkg_event_monitor;   // event dispatch control
 };
-
 
 // Length of keypress buffer.
 #define CBUFMAX 15
@@ -417,6 +419,13 @@ protected:
     int         sw_cursor_type;
 };
 
+struct RunQueuedStruct
+{
+    RunQueuedStruct() { }
+    RunQueuedStruct(int(*f)(void*)) : func(f) { }
+    int (*func)(void*);
+};
+Q_DECLARE_METATYPE(RunQueuedStruct);
 
 class QTmainwin : public QTsubwin
 {
@@ -476,10 +485,13 @@ public:
 
 signals:
     void side_button_press(MenuEnt*);
+    void run_queued(RunQueuedStruct, void*);
+
+public slots:
+    void update_coords_slot(int, int);
 
 private slots:
-    void wr_btn_slot();
-    void update_coords_slot(int, int);
+    void run_queued_slot(RunQueuedStruct, void*);
 
 private:
     // QWidget virtual overrides
@@ -525,26 +537,6 @@ inline bool is_modifier_key(int key)
         key == Qt::Key_Meta     ||
         key == Qt::Key_Alt      ||
         key == Qt::Key_CapsLock);
-}
-
-
-namespace qt_keyb {
-
-    // List element for widget name matches.
-    //
-    struct wlist
-    {
-        wlist(QObject *o, wlist *n) : obj(o), next(n) { }
-
-        QObject *obj;
-        wlist *next;
-    };
-
-    bool macro_event_handler(QObject*, QEvent*, void*);
-    char *find_wname(const QObject*);
-    char *object_path(const QObject*);
-    wlist *find_object(const QObject*, const char*);
-    QObject *name_to_object(const char*);
 }
 
 #endif

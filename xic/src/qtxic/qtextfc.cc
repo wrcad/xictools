@@ -212,12 +212,13 @@ QTfastCapDlg::QTfastCapDlg(GRobject c) : QTbag(this)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTfastCapDlg::help_btn_slot);
 
     QTabWidget *nbook = new QTabWidget();
     vbox->addWidget(nbook);
-    connect(nbook, SIGNAL(currentChanged(int)),
-        this, SLOT(page_changed_slot(int)));
+    connect(nbook, &QTabWidget::currentChanged,
+        this, &QTfastCapDlg::page_changed_slot);
 
     // Run page.
     //
@@ -233,13 +234,13 @@ QTfastCapDlg::QTfastCapDlg(GRobject c) : QTbag(this)
 
     fc_foreg = new QCheckBox(tr("Run in foreground"));
     hb->addWidget(fc_foreg);
-    connect(fc_foreg, SIGNAL(stateChanged(int)),
-        this, SLOT(foreg_btn_slot(int)));
+    connect(fc_foreg, &QCheckBox::stateChanged,
+        this, &QTfastCapDlg::foreg_btn_slot);
 
     fc_out = new QCheckBox(tr("Out to console"));
     hb->addWidget(fc_out);
-    connect(fc_out, SIGNAL(stateChanged(int)),
-        this, SLOT(console_btn_slot(int)));
+    connect(fc_out, &QCheckBox::stateChanged,
+        this, &QTfastCapDlg::console_btn_slot);
 
     hb = new QHBoxLayout();
     vb->addLayout(hb);
@@ -248,8 +249,8 @@ QTfastCapDlg::QTfastCapDlg(GRobject c) : QTbag(this)
 
     fc_shownum = new QCheckBox(tr("Show Numbers"));
     hb->addWidget(fc_shownum);
-    connect(fc_shownum, SIGNAL(stateChanged(int)),
-        this, SLOT(shownum_btn_slot(int)));
+    connect(fc_shownum, &QCheckBox::stateChanged,
+        this, &QTfastCapDlg::shownum_btn_slot);
 
     vb->addStretch(1);
 
@@ -261,7 +262,8 @@ QTfastCapDlg::QTfastCapDlg(GRobject c) : QTbag(this)
     tbtn = new QToolButton();
     tbtn->setText(tr("Run File"));
     hb->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(runfile_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTfastCapDlg::runfile_btn_slot);
 
     fc_file = new QLineEdit();
     hb->addWidget(fc_file);;
@@ -274,12 +276,14 @@ QTfastCapDlg::QTfastCapDlg(GRobject c) : QTbag(this)
     tbtn = new QToolButton();
     tbtn->setText(tr("Run Extraction"));
     hb->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(runext_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTfastCapDlg::runext_btn_slot);
 
     tbtn = new QToolButton();
     tbtn->setText(tr("Dump Unified List File"));
     hb->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(dumplist_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTfastCapDlg::dumplist_btn_slot);
 
     gb = new QGroupBox(tr("FcArgs"));
     vb->addWidget(gb);
@@ -288,8 +292,8 @@ QTfastCapDlg::QTfastCapDlg(GRobject c) : QTbag(this)
     fc_args = new QLineEdit();
     fc_args->setText(fc_def_string(FcArgs));
     hb->addWidget(fc_args);
-    connect(fc_args, SIGNAL(textChanged(const QString&)),
-        this, SLOT(args_changed_slot(const QString&)));
+    connect(fc_args, &QLineEdit::textChanged,
+        this, &QTfastCapDlg::args_changed_slot);
 
     gb = new QGroupBox(tr("Path to FasterCap or FastCap-WR"));
     vb->addWidget(gb);
@@ -298,8 +302,8 @@ QTfastCapDlg::QTfastCapDlg(GRobject c) : QTbag(this)
     fc_path = new QLineEdit();;
     fc_path->setText(fc_def_string(FcPath));
     hb->addWidget(fc_path);
-    connect(fc_path, SIGNAL(textChanged(const QString&)),
-        this, SLOT(path_changed_slot(const QString&)));
+    connect(fc_path, &QLineEdit::textChanged,
+        this, &QTfastCapDlg::path_changed_slot);
 
     // Params page.
     //
@@ -320,8 +324,9 @@ QTfastCapDlg::QTfastCapDlg(GRobject c) : QTbag(this)
     fc_sb_plane_bloat->setDecimals(ndgt);
     fc_sb_plane_bloat->setValue(FC_PLANE_BLOAT_DEF);
     hb->addWidget(fc_sb_plane_bloat);
-    connect(fc_sb_plane_bloat, SIGNAL(valueChanged(double)),
-        this, SLOT(plane_bloat_changed_slot(double)));
+    connect(fc_sb_plane_bloat,
+        QOverload<double>::of(&QTdoubleSpinBox::valueChanged),
+        this, &QTfastCapDlg::plane_bloat_changed_slot);
 
     gb = new QGroupBox("SubstrateThickness");
     grid->addWidget(gb, 0, 1);
@@ -335,8 +340,9 @@ QTfastCapDlg::QTfastCapDlg(GRobject c) : QTbag(this)
     fc_sb_substrate_thickness->setDecimals(ndgt);
     fc_sb_substrate_thickness->setValue(SUBSTRATE_THICKNESS);
     hb->addWidget(fc_sb_substrate_thickness);
-    connect(fc_sb_substrate_thickness, SIGNAL(valueChanged(double)),
-        this, SLOT(subthick_changed_slot(double)));
+    connect(fc_sb_substrate_thickness,
+        QOverload<double>::of(&QTdoubleSpinBox::valueChanged),
+        this, &QTfastCapDlg::subthick_changed_slot);
 
     gb = new QGroupBox("FcUnits");
     grid->addWidget(gb, 1, 0);
@@ -349,8 +355,8 @@ QTfastCapDlg::QTfastCapDlg(GRobject c) : QTbag(this)
     for (int i = 0; unit_t::units_strings[i]; i++)
         fc_units->addItem(unit_t::units_strings[i]);
     fc_units->setCurrentIndex(FCif()->getUnitsIndex(0));
-    connect(fc_units, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(units_changed_slot(int)));
+    connect(fc_units, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTfastCapDlg::units_changed_slot);
 
     gb = new QGroupBox("SubstrateEps");
     grid->addWidget(gb, 1, 1);
@@ -363,8 +369,9 @@ QTfastCapDlg::QTfastCapDlg(GRobject c) : QTbag(this)
     fc_sb_substrate_eps->setDecimals(3);
     fc_sb_substrate_eps->setValue(SUBSTRATE_EPS);
     hb->addWidget(fc_sb_substrate_eps);
-    connect(fc_sb_substrate_eps, SIGNAL(valueChanged(double)),
-        this, SLOT(subeps_changed_slot(double)));
+    connect(fc_sb_substrate_eps,
+        QOverload<double>::of(&QTdoubleSpinBox::valueChanged),
+        this, &QTfastCapDlg::subeps_changed_slot);
 
     gb = new QGroupBox();
     grid->addWidget(gb, 2, 0, 1, 2);
@@ -378,8 +385,8 @@ QTfastCapDlg::QTfastCapDlg(GRobject c) : QTbag(this)
 
     fc_enab = new QCheckBox(tr("Enable"));
     grid->addWidget(fc_enab, 3, 0);
-    connect(fc_enab, SIGNAL(stateChanged(int)),
-        this, SLOT(enable_btn_slot(int)));
+    connect(fc_enab, &QCheckBox::stateChanged,
+        this, &QTfastCapDlg::enable_btn_slot);
 
     gb = new QGroupBox("FcPanelTarget");
     grid->addWidget(gb, 3, 1);
@@ -393,8 +400,9 @@ QTfastCapDlg::QTfastCapDlg(GRobject c) : QTbag(this)
     fc_sb_panel_target->setValue(FC_DEF_TARG_PANELS);
     fc_sb_panel_target->setSingleStep(0);
     hb->addWidget(fc_sb_panel_target);
-    connect(fc_sb_panel_target, SIGNAL(valueChanged(double)),
-        this, SLOT(panels_changed_slot(double)));
+    connect(fc_sb_panel_target,
+        QOverload<double>::of(&QTexpDoubleSpinBox::valueChanged),
+        this, &QTfastCapDlg::panels_changed_slot);
 
     // Debug page
     // This is invisible unless the variable FcDebug is set.
@@ -415,78 +423,78 @@ QTfastCapDlg::QTfastCapDlg(GRobject c) : QTbag(this)
 
     fc_dbg_zoids = new QCheckBox("Zoids");
     grid->addWidget(fc_dbg_zoids, 0, 0);
-    connect(fc_dbg_zoids, SIGNAL(stateChanged(int)),
-        this, SLOT(zoid_dbg_btn_slot(int)));
+    connect(fc_dbg_zoids, &QCheckBox::stateChanged,
+        this, &QTfastCapDlg::zoid_dbg_btn_slot);
 
     fc_dbg_vrbo = new QCheckBox(tr("Verbose Out"));
     grid->addWidget(fc_dbg_vrbo, 0, 1);
-    connect(fc_dbg_vrbo, SIGNAL(stateChanged(int)),
-        this, SLOT(vrbo_dbg_btn_slot(int)));
+    connect(fc_dbg_vrbo, &QCheckBox::stateChanged,
+        this, &QTfastCapDlg::vrbo_dbg_btn_slot);
 
     fc_dbg_nm = new QCheckBox(tr("No Merge"));
     grid->addWidget(fc_dbg_nm, 1, 0);
-    connect(fc_dbg_nm, SIGNAL(stateChanged(int)),
-        this, SLOT(nm_dbg_btn_slot(int)));
+    connect(fc_dbg_nm, &QCheckBox::stateChanged,
+        this, &QTfastCapDlg::nm_dbg_btn_slot);
 
     fc_dbg_czbot = new QCheckBox("C zbot");
     grid->addWidget(fc_dbg_czbot, 2, 0);
-    connect(fc_dbg_czbot, SIGNAL(stateChanged(int)),
-        this, SLOT(czbot_dbg_btn_slot(int)));
+    connect(fc_dbg_czbot, &QCheckBox::stateChanged,
+        this, &QTfastCapDlg::czbot_dbg_btn_slot);
 
     fc_dbg_dzbot = new QCheckBox("D zbot");
     grid->addWidget(fc_dbg_dzbot, 2, 1);
-    connect(fc_dbg_dzbot, SIGNAL(stateChanged(int)),
-        this, SLOT(dzbot_dbg_btn_slot(int)));
+    connect(fc_dbg_dzbot, &QCheckBox::stateChanged,
+        this, &QTfastCapDlg::dzbot_dbg_btn_slot);
 
     fc_dbg_cztop = new QCheckBox("C ztop");
     grid->addWidget(fc_dbg_cztop, 3, 0);
-    connect(fc_dbg_cztop, SIGNAL(stateChanged(int)),
-        this, SLOT(cztop_dbg_btn_slot(int)));
+    connect(fc_dbg_cztop, &QCheckBox::stateChanged,
+        this, &QTfastCapDlg::cztop_dbg_btn_slot);
 
     fc_dbg_dztop = new QCheckBox("D ztop");
     grid->addWidget(fc_dbg_dztop, 3, 1);
-    connect(fc_dbg_dztop, SIGNAL(stateChanged(int)),
-        this, SLOT(dztop_dbg_btn_slot(int)));
+    connect(fc_dbg_dztop, &QCheckBox::stateChanged,
+        this, &QTfastCapDlg::dztop_dbg_btn_slot);
 
     fc_dbg_cyl = new QCheckBox("C yl");
     grid->addWidget(fc_dbg_cyl, 4, 0);
-    connect(fc_dbg_cyl, SIGNAL(stateChanged(int)),
-        this, SLOT(cyl_dbg_btn_slot(int)));
+    connect(fc_dbg_cyl, &QCheckBox::stateChanged,
+        this, &QTfastCapDlg::cyl_dbg_btn_slot);
 
     fc_dbg_dyl = new QCheckBox("D yl");
     grid->addWidget(fc_dbg_dyl, 4, 1);
-    connect(fc_dbg_dyl, SIGNAL(stateChanged(int)),
-        this, SLOT(dyl_dbg_btn_slot(int)));
+    connect(fc_dbg_dyl, &QCheckBox::stateChanged,
+        this, &QTfastCapDlg::dyl_dbg_btn_slot);
 
     fc_dbg_cyu = new QCheckBox("C yu");
     grid->addWidget(fc_dbg_cyu, 5, 0);
-    connect(fc_dbg_cyu, SIGNAL(stateChanged(int)),
-        this, SLOT(cyu_dbg_btn_slot(int)));
+    connect(fc_dbg_cyu, &QCheckBox::stateChanged,
+        this, &QTfastCapDlg::cyu_dbg_btn_slot);
 
     fc_dbg_dyu = new QCheckBox("D yu");
     grid->addWidget(fc_dbg_dyu, 5, 1);
-    connect(fc_dbg_dyu, SIGNAL(stateChanged(int)),
-        this, SLOT(dyu_dbg_btn_slot(int)));
+    connect(fc_dbg_dyu, &QCheckBox::stateChanged,
+        this, &QTfastCapDlg::dyu_dbg_btn_slot);
 
     fc_dbg_cleft = new QCheckBox("C left");
     grid->addWidget(fc_dbg_cleft, 6, 0);
-    connect(fc_dbg_cleft, SIGNAL(stateChanged(int)),
-        this, SLOT(cleft_dbg_btn_slot(int)));
+    connect(fc_dbg_cleft, &QCheckBox::stateChanged,
+        this, &QTfastCapDlg::cleft_dbg_btn_slot);
 
     fc_dbg_dleft = new QCheckBox("D left");
     grid->addWidget(fc_dbg_dleft, 6, 1);
-    connect(fc_dbg_dleft, SIGNAL(stateChanged(int)),
-        this, SLOT(dleft_dbg_btn_slot(int)));
+    connect(fc_dbg_dleft, &QCheckBox::stateChanged,
+        this, &QTfastCapDlg::dleft_dbg_btn_slot);
 
     fc_dbg_cright = new QCheckBox("C right");
     grid->addWidget(fc_dbg_cright, 7, 0);
-    connect(fc_dbg_cright, SIGNAL(stateChanged(int)),
-        this, SLOT(cright_dbg_btn_slot(int)));
+    connect(fc_dbg_cright, &QCheckBox::stateChanged,
+        this, &QTfastCapDlg::cright_dbg_btn_slot);
 
     fc_dbg_dright = new QCheckBox("D right");
     grid->addWidget(fc_dbg_dright, 7, 1);
-    connect(fc_dbg_dright, SIGNAL(stateChanged(int)),
-        this, SLOT(dright_dbg_btn_slot(int)));
+    connect(fc_dbg_dright, &QCheckBox::stateChanged,
+        this, &QTfastCapDlg::dright_dbg_btn_slot);
 
     // Jobs page
     //
@@ -500,19 +508,20 @@ QTfastCapDlg::QTfastCapDlg(GRobject c) : QTbag(this)
     vb->addWidget(fc_jobs);
     fc_jobs->setReadOnly(true);
     fc_jobs->setMouseTracking(true);
-    connect(fc_jobs, SIGNAL(press_event(QMouseEvent*)),
-        this, SLOT(mouse_press_slot(QMouseEvent*)));
+    connect(fc_jobs, &QTtextEdit::press_event,
+        this, &QTfastCapDlg::mouse_press_slot);
 
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_FIXED))
         fc_jobs->setFont(*fnt);
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTfastCapDlg::font_changed_slot, Qt::QueuedConnection);
 
     fc_kill = new QToolButton();
     fc_kill->setText(tr("Abort job"));
     vb->addWidget(fc_kill);
-    connect(fc_kill, SIGNAL(clicked()), this, SLOT(abort_btn_slot()));
+    connect(fc_kill, &QAbstractButton::clicked,
+        this, &QTfastCapDlg::abort_btn_slot);
 
     // End of pages.
     // Status line and Dismiss button.
@@ -532,7 +541,8 @@ QTfastCapDlg::QTfastCapDlg(GRobject c) : QTbag(this)
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTfastCapDlg::dismiss_btn_slot);
 
     update();
 }

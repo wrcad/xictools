@@ -130,12 +130,14 @@ QTprogressDlg::QTprogressDlg(QTbag *owner, prgMode mode)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Abort"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(abort_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTprogressDlg::abort_btn_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTprogressDlg::dismiss_btn_slot);
 
     pg_pbar = new QTactivity();
     hbox->addWidget(pg_pbar);

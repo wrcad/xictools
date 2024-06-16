@@ -197,12 +197,13 @@ QTconvertInDlg::QTconvertInDlg(GRobject c,
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTconvertInDlg::help_btn_slot);
 
     cvi_nbook = new QTabWidget();
     vbox->addWidget(cvi_nbook);
-    connect(cvi_nbook, SIGNAL(currentChanged(int)),
-        this, SLOT(nbook_page_slot(int)));
+    connect(cvi_nbook, &QTabWidget::currentChanged,
+        this, &QTconvertInDlg::nbook_page_slot);
 
     // The Setup page
     //
@@ -223,21 +224,21 @@ QTconvertInDlg::QTconvertInDlg(GRobject c,
 
     cvi_nonpc = new QCheckBox(tr("Don't eval native"));
     phbox->addWidget(cvi_nonpc);
-    connect(cvi_nonpc, SIGNAL(stateChanged(int)),
-        this, SLOT(nonpc_btn_slot(int)));
+    connect(cvi_nonpc, &QCheckBox::stateChanged,
+        this, &QTconvertInDlg::nonpc_btn_slot);
 
     if (OAif()->hasOA()) {
         cvi_yesoapc = new QCheckBox(tr("Eval OpenAccess"));
         pvbox->addWidget(cvi_yesoapc);
-        connect(cvi_yesoapc, SIGNAL(stateChanged(int)),
-            this, SLOT(yesoapc_btn_slot(int)));
+        connect(cvi_yesoapc, &QCheckBox::stateChanged,
+            this, &QTconvertInDlg::yesoapc_btn_slot);
     }
 
     cvi_nolyr = new QCheckBox(tr(
         "Don't create new layers when reading, abort instead"));
     pvbox->addWidget(cvi_nolyr);
-    connect(cvi_nolyr, SIGNAL(stateChanged(int)),
-        this, SLOT(nolyr_btn_slot(int)));
+    connect(cvi_nolyr, &QCheckBox::stateChanged,
+        this, &QTconvertInDlg::nolyr_btn_slot);
 
     phbox = new QHBoxLayout();
     pvbox->addLayout(phbox);
@@ -248,8 +249,8 @@ QTconvertInDlg::QTconvertInDlg(GRobject c,
     phbox->addWidget(cvi_over);
     for (int i = 0; cvi_overvals[i]; i++)
         cvi_over->addItem(cvi_overvals[i], i);
-    connect(cvi_over, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(over_menu_slot(int)));
+    connect(cvi_over, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTconvertInDlg::over_menu_slot);
 
     label = new QLabel(tr("Default when new cells conflict"));
     phbox->addWidget(label);
@@ -258,19 +259,19 @@ QTconvertInDlg::QTconvertInDlg(GRobject c,
     cvi_replace = new QCheckBox(tr(
         "Don't prompt for overwrite instructions"));
     pvbox->addWidget(cvi_replace);
-    connect(cvi_replace, SIGNAL(stateChanged(int)),
-        this, SLOT(replace_btn_slot(int)));
+    connect(cvi_replace, &QCheckBox::stateChanged,
+        this, &QTconvertInDlg::replace_btn_slot);
 
     cvi_merge = new QCheckBox(tr(
         "Clip and merge overlapping boxes"));
     pvbox->addWidget(cvi_merge);
-    connect(cvi_merge, SIGNAL(stateChanged(int)),
-        this, SLOT(merge_btn_slot(int)));
+    connect(cvi_merge, &QCheckBox::stateChanged,
+        this, &QTconvertInDlg::merge_btn_slot);
 
     cvi_polys = new QCheckBox(tr(
         "Skip testing for badly formed polygons"));
-    connect(cvi_polys, SIGNAL(stateChanged(int)),
-        this, SLOT(polys_btn_slot(int)));
+    connect(cvi_polys, &QCheckBox::stateChanged,
+        this, &QTconvertInDlg::polys_btn_slot);
 
     phbox = new QHBoxLayout();
     pvbox->addLayout(phbox);
@@ -281,8 +282,8 @@ QTconvertInDlg::QTconvertInDlg(GRobject c,
     phbox->addWidget(cvi_dup);
     for (int i = 0; cvi_dupvals[i]; i++)
         cvi_dup->addItem(cvi_dupvals[i], i);
-    connect(cvi_dup, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(dup_menu_slot(int)));
+    connect(cvi_dup, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTconvertInDlg::dup_menu_slot);
 
     label = new QLabel(tr("Duplicate item handling"));
     phbox->addWidget(label);
@@ -291,14 +292,14 @@ QTconvertInDlg::QTconvertInDlg(GRobject c,
     cvi_empties = new QCheckBox(tr(
         "Skip testing for empty cells"));
     pvbox->addWidget(cvi_empties);
-    connect(cvi_empties, SIGNAL(stateChanged(int)),
-        this, SLOT(empties_btn_slot(int)));
+    connect(cvi_empties, &QCheckBox::stateChanged,
+        this, &QTconvertInDlg::empties_btn_slot);
 
     cvi_dtypes = new QCheckBox(tr(
         "Map all unmapped GDSII datatypes to same Xic layer"));
     pvbox->addWidget(cvi_dtypes);
-    connect(cvi_dtypes, SIGNAL(stateChanged(int)),
-        this, SLOT(dtypes_btn_slot(int)));
+    connect(cvi_dtypes, &QCheckBox::stateChanged,
+        this, &QTconvertInDlg::dtypes_btn_slot);
 
     phbox = new QHBoxLayout();
     pvbox->addLayout(phbox);
@@ -309,8 +310,8 @@ QTconvertInDlg::QTconvertInDlg(GRobject c,
     phbox->addWidget(cvi_force);;
     for (int i = 0; cvi_forcevals[i].name; i++)
         cvi_force->addItem(cvi_forcevals[i].name, i);
-    connect(cvi_force, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(force_menu_slot(int)));
+    connect(cvi_force, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTconvertInDlg::force_menu_slot);
 
     label = new QLabel(tr("How to resolve CIF layers"));
     phbox->addWidget(label);
@@ -319,26 +320,26 @@ QTconvertInDlg::QTconvertInDlg(GRobject c,
     cvi_noflvias = new QCheckBox(tr(
         "Don't flatten standard vias, keep as instance at top level"));
     pvbox->addWidget(cvi_noflvias);
-    connect(cvi_noflvias, SIGNAL(stateChanged(int)),
-        this, SLOT(noflvias_btn_slot(int)));
+    connect(cvi_noflvias, &QCheckBox::stateChanged,
+        this, &QTconvertInDlg::noflvias_btn_slot);
 
     cvi_noflpcs = new QCheckBox(tr(
         "Don't flatten pcells, keep as instance at top level"));
     pvbox->addWidget(cvi_noflpcs);
-    connect(cvi_noflpcs, SIGNAL(stateChanged(int)),
-        this, SLOT(noflpcs_btn_slot(int)));
+    connect(cvi_noflpcs, &QCheckBox::stateChanged,
+        this, &QTconvertInDlg::noflpcs_btn_slot);
 
     cvi_nofllbs = new QCheckBox(tr(
         "Ignore labels in subcells when flattening"));
     pvbox->addWidget(cvi_nofllbs);
-    connect(cvi_nofllbs, SIGNAL(stateChanged(int)),
-        this, SLOT(nofllbs_btn_slot(int)));
+    connect(cvi_nofllbs, &QCheckBox::stateChanged,
+        this, &QTconvertInDlg::nofllbs_btn_slot);
 
     cvi_nolabels = new QCheckBox(tr(
         "Skip reading text labels from physical archives"));
     pvbox->addWidget(cvi_nolabels);
-    connect(cvi_nolabels, SIGNAL(stateChanged(int)),
-        this, SLOT(nolabels_btn_slot(int)));
+    connect(cvi_nolabels, &QCheckBox::stateChanged,
+        this, &QTconvertInDlg::nolabels_btn_slot);
 
     // The Read File page
     //
@@ -359,8 +360,8 @@ QTconvertInDlg::QTconvertInDlg(GRobject c,
     for (int i = 0; cvi_mergvals[i]; i++)
         cvi_merg->addItem(cvi_mergvals[i], i);
     cvi_merg->setCurrentIndex(cvi_merg_val);
-    connect(cvi_merg, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(merg_menu_slot(int)));
+    connect(cvi_merg, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTconvertInDlg::merg_menu_slot);
 
     label = new QLabel(tr("Merge Into Current mode"));
     phbox->addWidget(label);
@@ -398,8 +399,8 @@ QTconvertInDlg::QTconvertInDlg(GRobject c,
     cvi_sb_scale->setMaximum(CDSCALEMAX);
     cvi_sb_scale->setDecimals(5);
     cvi_sb_scale->setValue(FIO()->ReadScale());
-    connect(cvi_sb_scale, SIGNAL(valueChanged(double)),
-        this, SLOT(scale_changed_slot(double)));
+    connect(cvi_sb_scale, QOverload<double>::of(&QTdoubleSpinBox::valueChanged),
+        this, &QTconvertInDlg::scale_changed_slot);
 
     // Read File button
     //
@@ -407,14 +408,16 @@ QTconvertInDlg::QTconvertInDlg(GRobject c,
     tbtn->setText(tr("Read File"));
     pvbox->addWidget(tbtn);
     tbtn->setMaximumWidth(140);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(read_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTconvertInDlg::read_btn_slot);
 
     // Dismiss button
     //
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTconvertInDlg::dismiss_btn_slot);
 
     update();
 }

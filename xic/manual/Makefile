@@ -35,5 +35,6 @@ pdf::
 	dvipdf xicmanual.dvi xicmanual-`../release.sh xic`.pdf
 
 clean distclean::
-	-@rm -rf *.log *.aux *.ilg *.ind *.dvi xicmanual *.gz *.pdf
+	-@rm -rf *.log *.aux *.ilg *.ind *.dvi xicmanual.tex xicmanual \
+  *.gz *.pdf
 

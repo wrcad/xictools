@@ -150,7 +150,8 @@ QTxformDlg::QTxformDlg(GRobject c,
     QToolButton *hbtn = new QToolButton();
     hbtn->setText(tr("Help"));
     hbox->addWidget(hbtn);
-    connect(hbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(hbtn, &QAbstractButton::clicked,
+        this, &QTxformDlg::help_btn_slot);
 
     // Rotation entry and mirror buttons
     //
@@ -163,19 +164,19 @@ QTxformDlg::QTxformDlg(GRobject c,
 
     tf_ang = new QComboBox();
     hbox->addWidget(tf_ang);
-    connect(tf_ang, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(angle_change_slot(int)));
+    connect(tf_ang, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTxformDlg::angle_change_slot);
 
     tf_rflx = new QCheckBox(tr("Reflect X"));
     hbox->addWidget(tf_rflx);
-    connect(tf_rflx, SIGNAL(stateChanged(int)),
-        this, SLOT(reflect_x_slot(int)));
+    connect(tf_rflx, &QCheckBox::stateChanged,
+        this, &QTxformDlg::reflect_x_slot);
 
     hbox->addSpacing(12);
     tf_rfly = new QCheckBox(tr("Reflect Y"));
     hbox->addWidget(tf_rfly);
-    connect(tf_rfly, SIGNAL(stateChanged(int)),
-        this, SLOT(reflect_y_slot(int)));
+    connect(tf_rfly, &QCheckBox::stateChanged,
+        this, &QTxformDlg::reflect_y_slot);
 
 
     // Magnification label and spin button.
@@ -192,8 +193,8 @@ QTxformDlg::QTxformDlg(GRobject c,
     tf_mag->setRange(TFM_MIND, TFM_MAXD);
     tf_mag->setDecimals(TFM_NUMD);
     hbox->addWidget(tf_mag);
-    connect(tf_mag, SIGNAL(valueChanged(double)),
-        this, SLOT(magnification_change_slot(double)));
+    connect(tf_mag, QOverload<double>::of(&QTdoubleSpinBox::valueChanged),
+        this, &QTxformDlg::magnification_change_slot);
 
     // Identity and Last buttons
     //
@@ -204,12 +205,14 @@ QTxformDlg::QTxformDlg(GRobject c,
     tf_id = new QToolButton();
     tf_id->setText(tr("Identity Transform"));
     hbox->addWidget(tf_id);
-    connect(tf_id, SIGNAL(clicked()), this, SLOT(identity_btn_slot()));
+    connect(tf_id, &QAbstractButton::clicked,
+        this, &QTxformDlg::identity_btn_slot);
 
     tf_last = new QToolButton();
     tf_last->setText(tr("Last Transform"));
     hbox->addWidget(tf_last);
-    connect(tf_last, SIGNAL(clicked()), this, SLOT(last_btn_slot()));
+    connect(tf_last, &QAbstractButton::clicked,
+        this, &QTxformDlg::last_btn_slot);
 
     // Store buttons
     //
@@ -220,23 +223,28 @@ QTxformDlg::QTxformDlg(GRobject c,
     QToolButton *btn = new QToolButton();
     btn->setText(tr("Sto 1"));
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(store_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTxformDlg::store_btn_slot);
     btn = new QToolButton();
     btn->setText(tr("Sto 2"));
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(store_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTxformDlg::store_btn_slot);
     btn = new QToolButton();
     btn->setText(tr("Sto 3"));
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(store_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTxformDlg::store_btn_slot);
     btn = new QToolButton();
     btn->setText(tr("Sto 4"));
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(store_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTxformDlg::store_btn_slot);
     btn = new QToolButton();
     btn->setText(tr("Sto 5"));
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(store_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTxformDlg::store_btn_slot);
 
     // Recall buttons
     //
@@ -247,23 +255,28 @@ QTxformDlg::QTxformDlg(GRobject c,
     btn = new QToolButton();
     btn->setText(tr("Rcl 1"));
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(rcl_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTxformDlg::rcl_btn_slot);
     btn = new QToolButton();
     btn->setText(tr("Rcl 2"));
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(rcl_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTxformDlg::rcl_btn_slot);
     btn = new QToolButton();
     btn->setText(tr("Rcl 3"));
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(rcl_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTxformDlg::rcl_btn_slot);
     btn = new QToolButton();
     btn->setText(tr("Rcl 4"));
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(rcl_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTxformDlg::rcl_btn_slot);
     btn = new QToolButton();
     btn->setText(tr("Rcl 5"));
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(rcl_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTxformDlg::rcl_btn_slot);
 
     // Dismiss button
     //
@@ -274,7 +287,8 @@ QTxformDlg::QTxformDlg(GRobject c,
     tf_cancel = new QPushButton(tr("Dismiss"));
     tf_cancel->setObjectName("Default");
     hbox->addWidget(tf_cancel);
-    connect(tf_cancel, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(tf_cancel, &QAbstractButton::clicked,
+        this, &QTxformDlg::dismiss_btn_slot);
 
     update();
 }
@@ -307,16 +321,16 @@ QTxformDlg::update()
     int da = DSP()->CurMode() == Physical ? 45 : 90;
     int d = 0;
 
-    disconnect(tf_ang, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(angle_change_slot(int)));
+    disconnect(tf_ang, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTxformDlg::angle_change_slot);
     tf_ang->clear();
     while (d < 360) {
         snprintf(buf, sizeof(buf), "%d", d);
         tf_ang->addItem(tr(buf));
         d += da;
     }
-    connect(tf_ang, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(angle_change_slot(int)));
+    connect(tf_ang, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTxformDlg::angle_change_slot);
     tf_ang->setCurrentIndex(0);
     tf_ang->setCurrentIndex(GEO()->curTx()->angle()/da);
 

@@ -159,7 +159,8 @@ QTconvertFmtDlg::QTconvertFmtDlg(GRobject c, int inp_type,
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTconvertFmtDlg::help_btn_slot);
 
     // Input selection menu
     //
@@ -178,8 +179,8 @@ QTconvertFmtDlg::QTconvertFmtDlg(GRobject c, int inp_type,
     cv_input->addItem(tr("Cell Hierarchy Digest Name"), 1);
     cv_input->addItem(tr("Cell Hierarchy Digest File"), 2);
     cv_input->addItem(tr("Native Cell Directory"), 3);
-    connect(cv_input, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(input_menu_slot(int)));
+    connect(cv_input, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTconvertFmtDlg::input_menu_slot);
 
     // Output format selection notebook.
     //
@@ -191,8 +192,8 @@ QTconvertFmtDlg::QTconvertFmtDlg(GRobject c, int inp_type,
     //
     cv_nbook = new QTabWidget();
     vbox->addWidget(cv_nbook);
-    connect(cv_nbook, SIGNAL(currentChanged(int)),
-        this, SLOT(nbook_page_slot(int)));
+    connect(cv_nbook, &QTabWidget::currentChanged,
+        this, &QTconvertFmtDlg::nbook_page_slot);
 
     // The Setup page
     //
@@ -208,54 +209,54 @@ QTconvertFmtDlg::QTconvertFmtDlg(GRobject c, int inp_type,
     cv_strip = new QCheckBox(tr(
         "Strip For Export - (convert physical data only)"));
     vb->addWidget(cv_strip);
-    connect(cv_strip, SIGNAL(stateChanged(int)),
-        this, SLOT(strip_btn_slot(int)));
+    connect(cv_strip, &QCheckBox::stateChanged,
+        this, &QTconvertFmtDlg::strip_btn_slot);
     QTdev::SetStatus(cv_strip, CDvdb()->getVariable(VA_StripForExport));
 
     cv_libsub = new QCheckBox(tr("Include library cell masters"));
     vb->addWidget(cv_libsub);
-    connect(cv_libsub, SIGNAL(stateChanged(int)),
-        this, SLOT(libsub_btn_slot(int)));
+    connect(cv_libsub, &QCheckBox::stateChanged,
+        this, &QTconvertFmtDlg::libsub_btn_slot);
     QTdev::SetStatus(cv_libsub, CDvdb()->getVariable(VA_KeepLibMasters));
 
     cv_pcsub = new QCheckBox(tr("Include parameterized cell sub-masters"));
     vb->addWidget(cv_pcsub);
-    connect(cv_pcsub, SIGNAL(stateChanged(int)),
-        this, SLOT(pcsub_btn_slot(int)));
+    connect(cv_pcsub, &QCheckBox::stateChanged,
+        this, &QTconvertFmtDlg::pcsub_btn_slot);
 
     cv_viasub = new QCheckBox(tr("Include standard via cell sub-masters"));
     vb->addWidget(cv_viasub);
-    connect(cv_viasub, SIGNAL(stateChanged(int)),
-        this, SLOT(viasub_btn_slot(int)));
+    connect(cv_viasub, &QCheckBox::stateChanged,
+        this, &QTconvertFmtDlg::viasub_btn_slot);
 
     cv_noflvias = new QCheckBox(tr(
         "Don't flatten standard vias, keep as instance at top level"));
     vb->addWidget(cv_noflvias);
-    connect(cv_noflvias, SIGNAL(stateChanged(int)),
-        this, SLOT(noflvias_btn_slot(int)));
+    connect(cv_noflvias, &QCheckBox::stateChanged,
+        this, &QTconvertFmtDlg::noflvias_btn_slot);
 
     cv_noflpcs = new QCheckBox(tr(
         "Don't flatten pcells, keep as instance at top level"));
     vb->addWidget(cv_noflpcs);
-    connect(cv_noflpcs, SIGNAL(stateChanged(int)),
-        this, SLOT(noflpcs_btn_slot(int)));
+    connect(cv_noflpcs, &QCheckBox::stateChanged,
+        this, &QTconvertFmtDlg::noflpcs_btn_slot);
 
     cv_nofllbs = new QCheckBox(tr(
         "Ignore labels in subcells when flattening"));
     vb->addWidget(cv_nofllbs);
-    connect(cv_nofllbs, SIGNAL(stateChanged(int)),
-        this, SLOT(nofllbs_btn_slot(int)));
+    connect(cv_nofllbs, &QCheckBox::stateChanged,
+        this, &QTconvertFmtDlg::nofllbs_btn_slot);
 
     cv_nolabels = new QCheckBox(tr(
         "Skip reading text labels from physical archives"));
     vb->addWidget(cv_nolabels);
-    connect(cv_nolabels, SIGNAL(stateChanged(int)),
-        this, SLOT(nolabels_btn_slot(int)));
+    connect(cv_nolabels, &QCheckBox::stateChanged,
+        this, &QTconvertFmtDlg::nolabels_btn_slot);
 
     cv_keepbad = new QCheckBox(tr("Keep bad output (for debugging)"));
     vb->addWidget(cv_keepbad);
-    connect(cv_keepbad, SIGNAL(stateChanged(int)),
-        this, SLOT(keepbad_btn_slot(int)));
+    connect(cv_keepbad, &QCheckBox::stateChanged,
+        this, &QTconvertFmtDlg::keepbad_btn_slot);
 
     // The Convert File page.
     //
@@ -291,7 +292,8 @@ QTconvertFmtDlg::QTconvertFmtDlg(GRobject c, int inp_type,
     tbtn = new QToolButton();
     tbtn->setText(tr("Convert"));
     hb->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(convert_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTconvertFmtDlg::convert_btn_slot);
 
     // Conversion scale
     //
@@ -301,8 +303,8 @@ QTconvertFmtDlg::QTconvertFmtDlg(GRobject c, int inp_type,
     cv_sb_scale->setMaximum(CDSCALEMAX);
     cv_sb_scale->setDecimals(5);
     cv_sb_scale->setValue(FIO()->TransScale());
-    connect(cv_sb_scale, SIGNAL(valueChanged(double)),
-        this, SLOT(scale_changed_slot(double)));
+    connect(cv_sb_scale, QOverload<double>::of(&QTdoubleSpinBox::valueChanged),
+        this, &QTconvertFmtDlg::scale_changed_slot);
 
     cv_tx_label = new QLabel(tr("Conversion Scale Factor"));
     hb->addWidget(cv_tx_label);
@@ -312,7 +314,8 @@ QTconvertFmtDlg::QTconvertFmtDlg(GRobject c, int inp_type,
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTconvertFmtDlg::dismiss_btn_slot);
 
     if (inp_type == cConvert::cvDefault)
         inp_type = cv_inp_type;

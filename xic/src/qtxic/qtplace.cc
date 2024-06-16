@@ -158,15 +158,15 @@ QTplaceDlg::QTplaceDlg(bool noprompt)
     pl_arraybtn->setText(tr("Use Array"));
     hbox->addWidget(pl_arraybtn);
     pl_arraybtn->setCheckable(true);
-    connect(pl_arraybtn, SIGNAL(toggled(bool)),
-        this, SLOT(array_btn_slot(bool)));
+    connect(pl_arraybtn, &QAbstractButton::toggled,
+        this, &QTplaceDlg::array_btn_slot);
 
     pl_replbtn = new QToolButton();
     pl_replbtn->setText(tr("Replace"));
     hbox->addWidget(pl_replbtn);
     pl_replbtn->setCheckable(true);
-    connect(pl_replbtn, SIGNAL(clicked(bool)),
-        this, SLOT(replace_btn_slot(bool)));
+    connect(pl_replbtn, &QAbstractButton::clicked,
+        this, &QTplaceDlg::replace_btn_slot);
 
     pl_smashbtn = new QToolButton();
     pl_smashbtn->setText(tr("Smash"));
@@ -181,8 +181,8 @@ QTplaceDlg::QTplaceDlg(bool noprompt)
     pl_refmenu->addItem(tr("Lower Right"));
     pl_refmenu->setCurrentIndex(ED()->instanceRef());
     hbox->addWidget(pl_refmenu);
-    connect(pl_refmenu, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(refmenu_slot(int)));
+    connect(pl_refmenu, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTplaceDlg::refmenu_slot);
 
     // Array set labels and entries.
     //
@@ -199,16 +199,16 @@ QTplaceDlg::QTplaceDlg(bool noprompt)
     hbox->addWidget(pl_nx);
     pl_nx->setRange(1, MAX_ARRAY);
     pl_nx->setValue(1);
-    connect(pl_nx, SIGNAL(valueChanged(int)),
-        this, SLOT(nx_change_slot(int)));
+    connect(pl_nx, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTplaceDlg::nx_change_slot);
     pl_dx = new QTdoubleSpinBox();
     hbox->addSpacing(4);
     hbox->addWidget(pl_dx);;
     pl_dx->setRange(-1e6, 1e6);
     pl_dx->setValue(0.0);
     pl_dx->setDecimals(ndgt);
-    connect(pl_dx, SIGNAL(valueChanged(double)),
-        this, SLOT(dx_change_slot(double)));
+    connect(pl_dx, QOverload<double>::of(&QTdoubleSpinBox::valueChanged),
+        this, &QTplaceDlg::dx_change_slot);
     hbox->addSpacing(60);
 
     hbox = new QHBoxLayout(0);
@@ -223,26 +223,26 @@ QTplaceDlg::QTplaceDlg(bool noprompt)
     hbox->addWidget(pl_ny);
     pl_ny->setRange(1, MAX_ARRAY);
     pl_ny->setValue(1);
-    connect(pl_ny, SIGNAL(valueChanged(int)),
-        this, SLOT(ny_change_slot(int)));
+    connect(pl_ny, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTplaceDlg::ny_change_slot);
     pl_dy = new QTdoubleSpinBox();
     hbox->addSpacing(4);
     hbox->addWidget(pl_dy);
     pl_dy->setRange(-1e6, 1e6);
     pl_dy->setValue(0.0);
     pl_dy->setDecimals(ndgt);
-    connect(pl_dy, SIGNAL(valueChanged(double)),
-        this, SLOT(dy_change_slot(double)));
+    connect(pl_dy, QOverload<double>::of(&QTdoubleSpinBox::valueChanged),
+        this, &QTplaceDlg::dy_change_slot);
     hbox->addSpacing(60);
 
     // Master selection option menu.
     //
     pl_masterbtn = new QComboBox();
     vbox->addWidget(pl_masterbtn);
-    connect(pl_masterbtn, SIGNAL(activated(int)),
-        this, SLOT(master_menu_active_slot(int)));
-    connect(pl_masterbtn, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(master_menu_slot(int)));
+    connect(pl_masterbtn, QOverload<int>::of(&QComboBox::activated),
+        this, &QTplaceDlg::master_menu_active_slot);
+    connect(pl_masterbtn, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTplaceDlg::master_menu_slot);
     rebuild_menu();
 
     // Only prompt if we don't already have a cell.
@@ -275,7 +275,8 @@ QTplaceDlg::QTplaceDlg(bool noprompt)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTplaceDlg::help_btn_slot);
 
     MenuEnt *m = MainMenu()->FindEntry(MMside, MenuPLACE);
     if (m)
@@ -290,16 +291,17 @@ QTplaceDlg::QTplaceDlg(bool noprompt)
         bool status = QTdev::GetStatus(pl_menu_placebtn);
         pl_placebtn->setChecked(status);
         hbox->addWidget(pl_placebtn);
-        connect(pl_placebtn, SIGNAL(toggled(bool)),
-            this, SLOT(place_btn_slot(bool)));
-        connect(pl_menu_placebtn, SIGNAL(toggled(bool)),
-            this, SLOT(menu_placebtn_slot(bool)));
+        connect(pl_placebtn, &QAbstractButton::toggled,
+            this, &QTplaceDlg::place_btn_slot);
+        connect(pl_menu_placebtn, &QAbstractButton::toggled,
+            this, &QTplaceDlg::menu_placebtn_slot);
     }
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTplaceDlg::dismiss_btn_slot);
 
     if (DSP()->CurMode() == Electrical)
         pl_arraybtn->setEnabled(false);
@@ -429,8 +431,9 @@ QTplaceDlg::rebuild_menu()
 {
     if (!pl_masterbtn)
         return;
-    disconnect(pl_masterbtn, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(master_menu_slot(int)));
+    disconnect(pl_masterbtn,
+        QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTplaceDlg::master_menu_slot);
     pl_masterbtn->clear();
     pl_masterbtn->addItem(tr("New"));
     pl_masterbtn->setCurrentIndex(0);
@@ -438,8 +441,8 @@ QTplaceDlg::rebuild_menu()
         pl_masterbtn->addItem(tr(p->string));
     if (ED()->plMenu())
         pl_masterbtn->setCurrentIndex(1);
-    connect(pl_masterbtn, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(master_menu_slot(int)));
+    connect(pl_masterbtn, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTplaceDlg::master_menu_slot);
 }
 
 

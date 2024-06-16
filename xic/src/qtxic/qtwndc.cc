@@ -90,18 +90,18 @@ QTwindowCfg::QTwindowCfg(WndSensMode(sens_test)(), WndFuncMode fmode)
 
     wnd_use_win = new QCheckBox(tr("Use Window"));
     hbox->addWidget(wnd_use_win);
-    connect(wnd_use_win, SIGNAL(stateChanged(int)),
-        this, SLOT(usewin_btn_slot(int)));
+    connect(wnd_use_win, &QCheckBox::stateChanged,
+        this, &QTwindowCfg::usewin_btn_slot);
 
     wnd_clip = new QCheckBox(tr("Clip to Window"));
     hbox->addWidget(wnd_clip);
-    connect(wnd_clip, SIGNAL(stateChanged(int)),
-        this, SLOT(clip_btn_slot(int)));
+    connect(wnd_clip, &QCheckBox::stateChanged,
+        this, &QTwindowCfg::clip_btn_slot);
 
     wnd_flatten = new QCheckBox(tr("Flatten Hierarchy"));
     hbox->addWidget(wnd_flatten);
-    connect(wnd_flatten, SIGNAL(stateChanged(int)),
-        this, SLOT(flatten_btn_slot(int)));
+    connect(wnd_flatten, &QCheckBox::stateChanged,
+        this, &QTwindowCfg::flatten_btn_slot);
 
     wnd_ecf_label = new QLabel(tr("Empty Cell Filter"));
     hbox->addWidget(wnd_ecf_label);
@@ -131,8 +131,8 @@ QTwindowCfg::QTwindowCfg(WndSensMode(sens_test)(), WndFuncMode fmode)
         QAction *a = wnd_s_menu->addAction(buf);
         a->setData(i);
     }
-    connect(wnd_s_menu, SIGNAL(triggered(QAction*)),
-        this, SLOT(s_menu_slot(QAction*)));
+    connect(wnd_s_menu, &QMenu::triggered,
+        this, &QTwindowCfg::s_menu_slot);
 
     wnd_rbutton = new QToolButton();
     wnd_rbutton->setText("R");
@@ -148,8 +148,8 @@ QTwindowCfg::QTwindowCfg(WndSensMode(sens_test)(), WndFuncMode fmode)
         QAction *a = wnd_r_menu->addAction(buf);
         a->setData(i);
     }
-    connect(wnd_r_menu, SIGNAL(triggered(QAction*)),
-        this, SLOT(r_menu_slot(QAction*)));
+    connect(wnd_r_menu, &QMenu::triggered,
+        this, &QTwindowCfg::r_menu_slot);
 
     col = new QVBoxLayout();
     hbox->addLayout(col);
@@ -179,8 +179,8 @@ QTwindowCfg::QTwindowCfg(WndSensMode(sens_test)(), WndFuncMode fmode)
     else if (wnd_func_mode == WndFuncIn)
         initd = MICRONS(FIO()->InWindow()->left);
     wnd_sb_left->setValue(initd);
-    connect(wnd_sb_left, SIGNAL(valueChanged(double)),
-        this, SLOT(left_value_slot(double)));
+    connect(wnd_sb_left, QOverload<double>::of(&QTdoubleSpinBox::valueChanged),
+        this, &QTwindowCfg::left_value_slot);
 
     wnd_sb_right = new QTdoubleSpinBox();
     col->addWidget(wnd_sb_right);
@@ -196,8 +196,8 @@ QTwindowCfg::QTwindowCfg(WndSensMode(sens_test)(), WndFuncMode fmode)
     else if (wnd_func_mode == WndFuncIn)
         initd = MICRONS(FIO()->InWindow()->right);
     wnd_sb_right->setValue(initd);
-    connect(wnd_sb_right, SIGNAL(valueChanged(double)),
-        this, SLOT(right_value_slot(double)));
+    connect(wnd_sb_right, QOverload<double>::of(&QTdoubleSpinBox::valueChanged),
+        this, &QTwindowCfg::right_value_slot);
 
     col = new QVBoxLayout();
     hbox->addLayout(col);
@@ -225,8 +225,8 @@ QTwindowCfg::QTwindowCfg(WndSensMode(sens_test)(), WndFuncMode fmode)
     else if (wnd_func_mode == WndFuncIn)
         initd = MICRONS(FIO()->InWindow()->bottom);
     wnd_sb_bottom->setValue(initd);
-    connect(wnd_sb_bottom, SIGNAL(valueChanged(double)),
-        this, SLOT(bottom_value_slot(double)));
+    connect(wnd_sb_bottom,QOverload<double>::of(&QTdoubleSpinBox::valueChanged),
+        this, &QTwindowCfg::bottom_value_slot);
 
     wnd_sb_top = new QTdoubleSpinBox();
     col->addWidget(wnd_sb_top);
@@ -242,23 +242,23 @@ QTwindowCfg::QTwindowCfg(WndSensMode(sens_test)(), WndFuncMode fmode)
     else if (wnd_func_mode == WndFuncIn)
         initd = MICRONS(FIO()->InWindow()->top);
     wnd_sb_top->setValue(initd);
-    connect(wnd_sb_top, SIGNAL(valueChanged(double)),
-        this, SLOT(top_value_slot(double)));
+    connect(wnd_sb_top, QOverload<double>::of(&QTdoubleSpinBox::valueChanged),
+        this, &QTwindowCfg::top_value_slot);
 
     col = new QVBoxLayout();
     hbox->addLayout(col);
 
     wnd_ecf_pre = new QCheckBox(tr("pre-filter"));
     col->addWidget(wnd_ecf_pre);
-    connect(wnd_ecf_pre, SIGNAL(stateChanged(int)),
-        this, SLOT(ecf_pre_btn_slot(int)));
+    connect(wnd_ecf_pre, &QCheckBox::stateChanged,
+        this, &QTwindowCfg::ecf_pre_btn_slot);
     if (wnd_func_mode == WndFuncOut || wnd_func_mode == WndFuncIn)
         wnd_ecf_pre->hide();
 
     wnd_ecf_post = new QCheckBox(tr("post-filter"));
     col->addWidget(wnd_ecf_post);
-    connect(wnd_ecf_post, SIGNAL(stateChanged(int)),
-        this, SLOT(ecf_post_btn_slot(int)));
+    connect(wnd_ecf_post, &QCheckBox::stateChanged,
+        this, &QTwindowCfg::ecf_post_btn_slot);
     if (wnd_func_mode == WndFuncOut || wnd_func_mode == WndFuncIn)
         wnd_ecf_post->hide();
 

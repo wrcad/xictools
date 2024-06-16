@@ -40,7 +40,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "lstring.h"
+#include "miscutil/lstring.h"
 #include "sced_spiceipc.h"
 
 
@@ -116,18 +116,18 @@ private:
 };
 
 
-struct DspPkgIf *dspPkgIf();
-
 // This contains more utilities to support the graphical system.
-struct DspPkgIf
+struct DSPpkg
 {
-    friend DspPkgIf *dspPkgIf() { return(_dsp_if); }
+    DSPpkg() { instPtr = this; }
 
-    DspPkgIf() { _dsp_if = this; }
+    static DSPpkg *self()   { return (instPtr); }
 
     bool GetMainWinIdentifier(char*) { return (false); }
-    bool GetDisplayString(const char *hostname, char *buf)
+    char *GetDisplayString()
         {
+            return (0);
+/*XXX
             // Return a display string, making sure that it includes
             // the host name.
             const char *t = getenv("DISPLAY");
@@ -146,6 +146,7 @@ struct DspPkgIf
                 sprintf(buf, "%s:0", hostname);
             }
             return (true);
+*/
         }
     bool CheckScreenAccess(hostent*, const char*, const char*)
         {
@@ -160,7 +161,7 @@ struct DspPkgIf
     bool CheckForInterrupt() { return (false); }
 
 private:
-    static DspPkgIf *_dsp_if;
+    static DSPpkg *instPtr;
 };
 
 
@@ -180,6 +181,7 @@ private:
     static sMenu *_menu;
 };
 
+#define MMmain "main"
 
 // This hack resolves some graphics calls.
 #define DSPmainWbag(x)

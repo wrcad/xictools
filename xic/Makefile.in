@@ -30,8 +30,6 @@ USESECURE = @USESECURE@
 USEMOZY = @USEMOZY@
 REGEX = @REGEX@
 OA_SUBDIR = @OA_SUBDIR@
-DLL_XIC_PROG = @DLL_XIC_PROG@
-NODLL_XIC_PROG = @NODLL_XIC_PROG@
 TOOLROOT = @TOOLROOT@
 WINPTHREADFIX = @WINPTHREADFIX@
 
@@ -113,18 +111,19 @@ TARGETS = xic wrencode wrdecode wrsetpass
 all:  cptest $(TARGETS) plugins
 
 cptest:
-	cd help; make cptest
-	cd src/sparse; make cptest
-	cd src/wrspif; make cptest
+	$(MAKE) -C help cptest
+	$(MAKE) -C src/sparse cptest
+	$(MAKE) -C src/wrspif cptest
 
 $(TARGETS)::
 	$(MAKE) bin/$@
 
-#--------------------
-# The first two targets are for Windows, create xic with everything in
-# a DLL, so that we can link plugins against the DLL.
+ifeq ($(OSNAME), MINGW)
 
-bin/$(DLL_XIC_PROG): bin/main.cc bin/xic.dll
+# For Windows, create xic with everything in a DLL, so that we can
+# link plugins against the DLL.
+
+bin/xic: bin/main.cc bin/xic.dll
 	$(CC) -o bin/xic bin/main.cc src/$(GRPREF)xic/resource.o -Lbin -lxic
 
 bin/xic.dll: bin/xic.o $(LOCAL_LIBS) $(MALLOC)
@@ -132,15 +131,17 @@ bin/xic.dll: bin/xic.o $(LOCAL_LIBS) $(MALLOC)
 	@$(LINKCC) $(LSHFLAG) -o bin/xic.dll $(LFLAGS) bin/xic.o \
   $(LOCAL_LIBS) $(LIBS) $(MALLOC) $(STDCLIB)
 
-#--------------------
+else
 
-bin/$(NODLL_XIC_PROG): bin/xic.o $(LOCAL_LIBS) $(MALLOC) $(OA_SUBDIR)
+bin/xic: bin/xic.o $(LOCAL_LIBS) $(MALLOC) $(OA_SUBDIR)
 	-@echo $@: dynamic link;
 	-@$(LINKCC) -o bin/xic $(LFLAGS) bin/xic.o \
   $(LOCAL_LIBS) $(LIBS) $(MALLOC) $(STDCLIB)
 
+endif
+
 plugins::
-	cd plugins; $(MAKE)
+	$(MAKE) -C plugins
 
 # sa-filetool will always rebuild fietool.o, to set a three-month lifetime
 # for the binary.
@@ -175,7 +176,7 @@ bin/wrdecode: bin/cryptmain.cc src/parser/parser.a $(BASE)/lib/miscutil.a
 	$(LINKCC) $(CFLAGS) -o bin/wrdecode $(INCLUDE) bin/cryptmain.cc \
   src/parser/parser.a $(BASE)/lib/miscutil.a  $(STDCLIB) $(WINPTHREADFIX)
 
-bin/wrsetpass: bin/cryptmain.cc src/parser/parser.a $(BASE)/lib/miscutil.a 
+bin/wrsetpass: bin/cryptmain.cc src/parser/parser.a $(BASE)/lib/miscutil.a
 	$(LINKCC) $(CFLAGS) -o bin/wrsetpass $(INCLUDE) -DENCODING -DSETPASS \
   bin/cryptmain.cc src/parser/parser.a $(BASE)/lib/miscutil.a $(STDCLIB) \
   $(WINPTHREADFIX)
@@ -185,58 +186,58 @@ bin/wrsetpass: bin/cryptmain.cc src/parser/parser.a $(BASE)/lib/miscutil.a
 
 $(SUBDIR_LIBS) $(OA_SUBDIR)::
 	@if [ x$@ = x$(OA_SUBDIR) ]; then \
-	    cd $(OA_SUBDIR); $(MAKE); \
+	    $(MAKE) -C $(OA_SUBDIR) ; \
 	else \
-	    cd $(@D); $(MAKE); \
+	    $(MAKE) -C $(@D) ; \
 	fi
 
 ifeq ($(USESECURE), yes)
 $(SECURE)/secure.a::
-	cd $(@D); $(MAKE)
+	$(MAKE) -C $(@D)
 endif
 
 $(MALLOC)::
-	cd $(@D)/../malloc; $(MAKE)
+	$(MAKE) -C $(@D)/../malloc
 
 $(BASE)/lib/ginterf.a::
-	cd $(BASE)/ginterf; $(MAKE)
+	$(MAKE) -C $(BASE)/ginterf
 
 ifdef GRPREF
 $(BASE)/lib/$(GRPREF)interf.a::
-	cd $(BASE)/$(GRPREF)interf; $(MAKE)
+	$(MAKE) -C $(BASE)/$(GRPREF)interf
 endif
 
 $(BASE)/lib/miscutil.a::
-	cd $(BASE)/miscutil; $(MAKE)
+	$(MAKE) -C $(BASE)/miscutil
 
 $(BASE)/lib/libregex.a::
-	cd $(BASE)/regex; $(MAKE)
+	$(MAKE) -C $(BASE)/regex
 
 ifdef GRPREF
 ifeq ($(USEMOZY), yes)
 $(MOZY)/lib/$(GRPREF)mozy.a::
 	if [ -d $(MOZY)/src/$(GRPREF)mozy ]; then \
-	    cd $(MOZY)/src/$(GRPREF)mozy; $(MAKE); \
+	    $(MAKE) -C $(MOZY)/src/$(GRPREF)mozy ; \
 	fi
 
 $(MOZY)/lib/help.a::
 	if [ -d $(MOZY)/src/help ]; then \
-	    cd $(MOZY)/src/help; $(MAKE); \
+	    $(MAKE) -C $(MOZY)/src/help ; \
 	fi
 
 $(MOZY)/lib/htm.a::
 	if [ -d $(MOZY)/src/htm ]; then \
-	    cd $(MOZY)/src/htm; $(MAKE); \
+	    $(MAKE) -C $(MOZY)/src/htm ; \
 	fi
 
 $(MOZY)/lib/httpget.a::
 	if [ -d $(MOZY)/src/httpget ]; then \
-	    cd $(MOZY)/src/httpget; $(MAKE); \
+	    $(MAKE) -C $(MOZY)/src/httpget ; \
 	fi
 
 $(MOZY)/lib/imsave.a::
 	if [ -d $(MOZY)/src/imsave ] ; then \
-	    cd $(MOZY)/src/imsave; $(MAKE); \
+	    $(MAKE) -C $(MOZY)/src/imsave ; \
 	fi
 endif
 endif
@@ -277,7 +278,7 @@ CCFILES = bin/xic.cc bin/sa-filetool.cc bin/cryptmain.cc
 
 depend:
 	@for a in include $(SUBDIRS) help startup plugins; do \
-	    (cd $$a; $(MAKE) depend) \
+	    $(MAKE) -C $$a depend; \
 	done
 	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
@@ -303,22 +304,22 @@ eclean:
 
 clean: eclean
 	-@for a in $(SUBDIRS) plugins; do \
-	    (cd $$a; $(MAKE) $@) \
+	    $(MAKE) -C $$a $@; \
 	done
 	-@rm -f bin/*.o
 
 distclean: eclean
 	-@for a in $(SUBDIRS) src/scrkit include help startup  plugins \
   packages; do \
-	    (cd $$a; $(MAKE) $@) \
+	    $(MAKE) -C $$a $@; \
 	done
 	-@rm -f bin/*.o Makefile
 
 ifdef GRPREF
 grclean:
-	cd src/$(GRPREF)xic; $(MAKE) clean
-	cd ../mozy/src/$(GRPREF)mozy; $(MAKE) clean
-	cd ../xt_base/$(GRPREF)interf; $(MAKE) clean
+	$(MAKE) -C src/$(GRPREF)xic clean
+	$(MAKE) -C ../mozy/src/$(GRPREF)mozy clean
+	$(MAKE) -C ../xt_base/$(GRPREF)interf clean
 endif
 
 #######################################################################
@@ -415,10 +416,8 @@ $(destn)/bin::
 	$(INSTALL_BIN) bin/wrdecode$(EXESUFFIX) $@
 	$(INSTALL_BIN) bin/wrsetpass$(EXESUFFIX) $@
 	$(INSTALL_BIN) bin/xic$(EXESUFFIX) $@
-	@if [ $(DLL_XIC_PROG) = xic ]; then \
-	    $(INSTALL_BIN) bin/xic.dll $@; \
-	fi
 	@if [ -n "$(EXESUFFIX)" ]; then \
+	    $(INSTALL_BIN) bin/xic.dll $@; \
 	    cp $(BASE)/util/program.bat xic.bat; \
             $(INSTALL_SCRIPT) xic.bat $@; \
 	    rm -f xic.bat; \
@@ -428,7 +427,7 @@ $(destn)/bin::
 	@$(BASE)/util/mkdirpth $(toolbin)
 
 $(destn)/help::
-	cd help; $(MAKE)
+	$(MAKE) -C help
 	@$(BASE)/util/mkdirpth $@ $@/screenshots
 	help=`packages/util/xic_files help`; \
         for a in $$help; do \
@@ -459,7 +458,7 @@ $(destn)/plugins::
 	fi
 
 $(destn)/startup::
-	cd startup; $(MAKE)
+	$(MAKE) -C startup
 	@$(BASE)/util/mkdirpth $@
 	startup=`packages/util/xic_files startup`; \
 	for a in $$startup; do \
@@ -518,6 +517,6 @@ package::
 	-rm -rf packages/root
 	mkdir packages/root
 	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install_xic_pkg
-	cd packages; $(MAKE) package
+	$(MAKE) -C packages package
 
 #######################################################################

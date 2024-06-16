@@ -129,16 +129,16 @@ QTselectDlg::QTselectDlg(GRobject c) : QTbag(this)
     vb->setSpacing(2);
     sl_pm_norm = new QRadioButton(tr("Normal"));
     vb->addWidget(sl_pm_norm);
-    connect(sl_pm_norm, SIGNAL(toggled(bool)),
-        this, SLOT(pm_norm_slot(bool)));
+    connect(sl_pm_norm, &QRadioButton::toggled,
+        this, &QTselectDlg::pm_norm_slot);
     sl_pm_sel = new QRadioButton(tr("Select"));
     vb->addWidget(sl_pm_sel);
-    connect(sl_pm_sel, SIGNAL(toggled(bool)),
-        this, SLOT(pm_sel_slot(bool)));
+    connect(sl_pm_sel, &QRadioButton::toggled,
+        this, &QTselectDlg::pm_sel_slot);
     sl_pm_mod = new QRadioButton(tr("Modify"));
     vb->addWidget(sl_pm_mod);
-    connect(sl_pm_mod, SIGNAL(toggled(bool)),
-        this, SLOT(pm_mod_slot(bool)));
+    connect(sl_pm_mod, &QRadioButton::toggled,
+        this, &QTselectDlg::pm_mod_slot);
 
     // area mode radio group
     //
@@ -149,22 +149,23 @@ QTselectDlg::QTselectDlg(GRobject c) : QTbag(this)
     vb->setSpacing(2);
     sl_am_norm = new QRadioButton(tr("Normal"));
     vb->addWidget(sl_am_norm);
-    connect(sl_am_norm, SIGNAL(toggled(bool)),
-        this, SLOT(am_norm_slot(bool)));
+    connect(sl_am_norm, &QRadioButton::toggled,
+        this, &QTselectDlg::am_norm_slot);
     sl_am_enc = new QRadioButton(tr("Enclosed"));
     vb->addWidget(sl_am_enc);
-    connect(sl_am_enc, SIGNAL(toggled(bool)),
-        this, SLOT(am_enc_slot(bool)));
+    connect(sl_am_enc, &QRadioButton::toggled,
+        this, &QTselectDlg::am_enc_slot);
     sl_am_all = new QRadioButton(tr("All"));
     vb->addWidget(sl_am_all);
-    connect(sl_am_all, SIGNAL(toggled(bool)),
-        this, SLOT(am_all_slot(bool)));
+    connect(sl_am_all, &QRadioButton::toggled,
+        this, &QTselectDlg::am_all_slot);
 
     sl_upbtn = new QToolButton();
     sl_upbtn->setText(tr("Search Bottom to Top"));
     grid->addWidget(sl_upbtn, 1, 0, 1, 3);
     sl_upbtn->setCheckable(true);
-    connect(sl_upbtn, SIGNAL(toggled(bool)), this, SLOT(up_btn_slot(bool)));
+    connect(sl_upbtn, &QAbstractButton::toggled,
+        this, &QTselectDlg::up_btn_slot);
 
     // addition mode radio group
     //
@@ -175,30 +176,32 @@ QTselectDlg::QTselectDlg(GRobject c) : QTbag(this)
     vb->setSpacing(2);
     sl_sel_norm = new QRadioButton(tr("Normal"));
     vb->addWidget(sl_sel_norm);
-    connect(sl_sel_norm, SIGNAL(toggled(bool)),
-        this, SLOT(sl_norm_slot(bool)));
+    connect(sl_sel_norm, &QRadioButton::toggled,
+        this, &QTselectDlg::sl_norm_slot);
     sl_sel_togl = new QRadioButton(tr("Toggle"));
     vb->addWidget(sl_sel_togl);
-    connect(sl_sel_togl, SIGNAL(toggled(bool)),
-        this, SLOT(sl_togl_slot(bool)));
+    connect(sl_sel_togl, &QRadioButton::toggled,
+        this, &QTselectDlg::sl_togl_slot);
     sl_sel_add = new QRadioButton(tr("Add"));
     vb->addWidget(sl_sel_add);
-    connect(sl_sel_add, SIGNAL(toggled(bool)),
-        this, SLOT(sl_add_slot(bool)));
+    connect(sl_sel_add, &QRadioButton::toggled,
+        this, &QTselectDlg::sl_add_slot);
     sl_sel_rem = new QRadioButton(tr("Remove"));
     vb->addWidget(sl_sel_rem);
-    connect(sl_sel_rem, SIGNAL(toggled(bool)),
-        this, SLOT(sl_rem_slot(bool)));
+    connect(sl_sel_rem, &QRadioButton::toggled,
+        this, &QTselectDlg::sl_rem_slot);
 
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     grid->addWidget(tbtn, 2, 0);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTselectDlg::help_btn_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     grid->addWidget(btn, 2, 1, 1, 3);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTselectDlg::dismiss_btn_slot);
 
     // objects group
     //
@@ -209,24 +212,24 @@ QTselectDlg::QTselectDlg(GRobject c) : QTbag(this)
     vb->setSpacing(2);
     sl_cell = new QCheckBox(tr("Cells"));
     vb->addWidget(sl_cell);
-    connect(sl_cell, SIGNAL(stateChanged(int)),
-        this, SLOT(ob_cell_slot(int)));
+    connect(sl_cell, &QCheckBox::stateChanged,
+        this, &QTselectDlg::ob_cell_slot);
     sl_box = new QCheckBox(tr("Boxes"));
     vb->addWidget(sl_box);
-    connect(sl_box, SIGNAL(stateChanged(int)),
-        this, SLOT(ob_box_slot(int)));
+    connect(sl_box, &QCheckBox::stateChanged,
+        this, &QTselectDlg::ob_box_slot);
     sl_poly = new QCheckBox(tr("Polys"));
     vb->addWidget(sl_poly);
-    connect(sl_poly, SIGNAL(stateChanged(int)),
-        this, SLOT(ob_poly_slot(int)));
+    connect(sl_poly, &QCheckBox::stateChanged,
+        this, &QTselectDlg::ob_poly_slot);
     sl_wire = new QCheckBox(tr("Wires"));
     vb->addWidget(sl_wire);
-    connect(sl_wire, SIGNAL(stateChanged(int)),
-        this, SLOT(ob_wire_slot(int)));
+    connect(sl_wire, &QCheckBox::stateChanged,
+        this, &QTselectDlg::ob_wire_slot);
     sl_label = new QCheckBox(tr("Labels"));
     vb->addWidget(sl_label);
-    connect(sl_label, SIGNAL(stateChanged(int)),
-        this, SLOT(ob_label_slot(int)));
+    connect(sl_label, &QCheckBox::stateChanged,
+        this, &QTselectDlg::ob_label_slot);
 
     update();
 }

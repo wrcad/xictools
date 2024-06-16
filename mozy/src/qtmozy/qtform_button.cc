@@ -79,8 +79,10 @@ QTform_button::QTform_button(htmForm *entry, QWidget *prnt) :
     }
     setFixedSize(QSize(entry->width, entry->height));
 
-    connect(this, SIGNAL(pressed()), this, SLOT(pressed_slot()));
-    connect(this, SIGNAL(released()), this, SLOT(released_slot()));
+    connect(this, &QTform_button::pressed,
+        this, &QTform_button::pressed_slot);
+    connect(this, &QTform_button::released,
+        this, &QTform_button::released_slot);
 }
 
 

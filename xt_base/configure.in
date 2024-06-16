@@ -1,4 +1,4 @@
-nl Configure input script for XicTools.
+dnl Configure input script for XicTools.
 dnl Process this file with autoconf to produce a configure script.
 dnl Copyright (c) Whiteley Research Inc, 2002
 dnl $Id: configure.in,v 1.233 2016/09/28 22:49:23 stevew Exp $
@@ -467,11 +467,6 @@ AC_PROG_MAKE_SET
 
 AC_PATH_XTRA
 
-DLL_SPICE_PROG='dll-wrspice'
-NODLL_SPICE_PROG='wrspice'
-DLL_XIC_PROG='dll-xic'
-NODLL_XIC_PROG='xic'
-
 case $sys_os in
 MINGW)
     MSW="msw"
@@ -489,10 +484,6 @@ MINGW)
     oa_lpath=$oa_loc/lib/mingw_32/opt
     LSHFLAG="-shared -Wl,--enable-auto-import,--export-all-symbols"
     oa_cflags="-DOA_WINDOWS -DOA_MINGW -DOA_NO_DLL_ATTR"
-    DLL_SPICE_PROG='wrspice'
-    NODLL_SPICE_PROG='nodll-wrspice'
-    DLL_XIC_PROG='xic'
-    NODLL_XIC_PROG='nodll-xic)'
 ;;
 Darwin)
     kern=`uname -r`
@@ -695,10 +686,6 @@ AC_SUBST(ARCH)
 AC_SUBST(DIST_SUFFIX)
 AC_SUBST(INCLXTRA)
 AC_SUBST(SOEXT)
-AC_SUBST(DLL_SPICE_PROG)
-AC_SUBST(NODLL_SPICE_PROG)
-AC_SUBST(DLL_XIC_PROG)
-AC_SUBST(NODLL_XIC_PROG)
 
 if test $with_oa = yes; then
     OA_INCLUDE=$oa_loc/include/oa
@@ -814,8 +801,16 @@ elif test $grpkg == QT5 -o $grpkg == QT6 ; then
         qmake=$QTBASE/bin/qmake
     fi
     $qmake -project
+    if test $? != 0; then
+        echo "Command \"qmake -project\" returned with error, exiting."
+        exit 1
+    fi
     $qmake "QT += widgets xml opengl printsupport"
     # $qmake "QT += widgets xml opengl printsupport x11extras"
+    if test $? != 0; then
+        echo "Command \"qmake widgets...\" returned with error, exiting."
+        exit 1
+    fi
     cd $cwd
 
     if test -f $tmpdir/Makefile.Release; then
@@ -1552,10 +1547,12 @@ if test -d ../wrspice; then
         ../wrspice/src/misc/Makefile \
         ../wrspice/src/plot/Makefile \
         ../wrspice/src/sparse/Makefile \
-        ../wrspice/ipc_demo_files/Makefile \
         ../wrspice/mmjco/Makefile \
         ../wrspice/Makefile \
         ../wrspice/devlib/Makefile"
+    if test -d ../wrspice/ipc_demo; then
+        makefiles="$makefiles ../wrspice/ipc_demo/Makefile"
+    fi
     (cd ../wrspice/devlib; make -f Makefile.in devlist)
     subd="`cat ../wrspice/devlib/devices ../wrspice/devlib/modules`"
     for a in $subd adms disto; do

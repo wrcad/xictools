@@ -165,7 +165,8 @@ QTruleDlg::QTruleDlg(GRobject c, DRCtype type, const char *username,
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTruleDlg::help_btn_slot);
 
     QGridLayout *grid = new QGridLayout();
     vbox->addLayout(grid);
@@ -260,7 +261,8 @@ QTruleDlg::QTruleDlg(GRobject c, DRCtype type, const char *username,
     ru_edit_st = new QToolButton();
     ru_edit_st->setText(tr("Edit Table"));
     grid->addWidget(ru_edit_st, 7, 1);
-    connect(ru_edit_st, SIGNAL(clicked()), this, SLOT(edit_table_slot()));
+    connect(ru_edit_st, &QAbstractButton::clicked,
+        this, &QTruleDlg::edit_table_slot);
 
     // Dimension when target objects are fully enclosed.
     //
@@ -322,12 +324,14 @@ QTruleDlg::QTruleDlg(GRobject c, DRCtype type, const char *username,
     tbtn = new QToolButton();
     tbtn->setText(tr("Apply"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTruleDlg::apply_btn_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTruleDlg::dismiss_btn_slot);
 
     update(type, username, rule);
 }

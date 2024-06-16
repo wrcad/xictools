@@ -136,28 +136,29 @@ QTextNetSelDlg::QTextNetSelDlg(GRobject caller) : QTbag(this)
     es_gnsel->setText(tr("Select Group/Node"));
     hbox->addWidget(es_gnsel);
     es_gnsel->setCheckable(true);
-    connect(es_gnsel, SIGNAL(toggled(bool)),
-        this, SLOT(gnsel_btn_slot(bool)));
+    connect(es_gnsel, &QAbstractButton::toggled,
+        this, &QTextNetSelDlg::gnsel_btn_slot);
 
     es_paths = new QToolButton();
     es_paths->setText(tr("Select Path"));
     hbox->addWidget(es_paths);
     es_paths->setCheckable(true);
-    connect(es_paths, SIGNAL(toggled(bool)),
-        this, SLOT(pathsel_btn_slot(bool)));
+    connect(es_paths, &QAbstractButton::toggled,
+        this, &QTextNetSelDlg::pathsel_btn_slot);
 
     es_qpath = new QToolButton();
     es_qpath->setText(tr("\"Quick\" Path"));
     hbox->addWidget(es_qpath);
     es_qpath->setCheckable(true);
-    connect(es_qpath, SIGNAL(toggled(bool)),
-        this, SLOT(qpath_btn_slot(bool)));
+    connect(es_qpath, &QAbstractButton::toggled,
+        this, &QTextNetSelDlg::qpath_btn_slot);
 
     hbox->addStretch(1);
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTextNetSelDlg::help_btn_slot);
 
     // quick paths ground plane method
     //
@@ -174,8 +175,8 @@ QTextNetSelDlg::QTextNetSelDlg(GRobject caller) : QTbag(this)
     es_gpmnu->addItem(tr("Use ground plane if available"));
     es_gpmnu->addItem(tr("Create and use ground plane"));
     es_gpmnu->addItem(tr("Never use ground plane"));
-    connect(es_gpmnu, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(gplane_menu_slot(int)));
+    connect(es_gpmnu, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTextNetSelDlg::gplane_menu_slot);
 
     // depth control line
     //
@@ -191,24 +192,26 @@ QTextNetSelDlg::QTextNetSelDlg(GRobject caller) : QTbag(this)
     hbox->addWidget(es_sb_depth);
     es_sb_depth->setRange(0, CDMAXCALLDEPTH);
     es_sb_depth->setValue(CDMAXCALLDEPTH);
-    connect(es_sb_depth, SIGNAL(valueChanged(int)),
-        this, SLOT(depth_changed_slot(int)));
+    connect(es_sb_depth, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTextNetSelDlg::depth_changed_slot);
 
     tbtn = new QToolButton();
     tbtn->setText("0");
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(zbtn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTextNetSelDlg::zbtn_slot);
 
     tbtn = new QToolButton();
     tbtn->setText(tr("all"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(allbtn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTextNetSelDlg::allbtn_slot);
 
     hbox->addSpacing(4);
     es_qpconn = new QCheckBox(tr("\"Quick\" Path use Conductor"));
     hbox->addWidget(es_qpconn);
-    connect(es_qpconn, SIGNAL(toggled(bool)),
-        this, SLOT(qp_usec_btn_slot(bool)));
+    connect(es_qpconn, &QCheckBox::toggled,
+        this, &QTextNetSelDlg::qp_usec_btn_slot);
 
     // check boxes
     //
@@ -219,13 +222,13 @@ QTextNetSelDlg::QTextNetSelDlg(GRobject caller) : QTbag(this)
 
     es_blink = new QCheckBox(tr("Blink highlighting"));
     hbox->addWidget(es_blink);
-    connect(es_blink, SIGNAL(toggled(bool)),
-        this, SLOT(blink_btn_slot(bool)));
+    connect(es_blink, &QCheckBox::toggled,
+        this, &QTextNetSelDlg::blink_btn_slot);
 
     es_subpath = new QCheckBox(tr("Enable sub-path selection"));
     hbox->addWidget(es_subpath);
-    connect(es_subpath, SIGNAL(toggled(bool)),
-        this, SLOT(subpath_btn_slot(bool)));
+    connect(es_subpath, &QCheckBox::toggled,
+        this, &QTextNetSelDlg::subpath_btn_slot);
 
     // botton button row
     //
@@ -237,17 +240,20 @@ QTextNetSelDlg::QTextNetSelDlg(GRobject caller) : QTbag(this)
     es_antenna = new QToolButton();
     es_antenna->setText(tr("Load Antenna file"));
     hbox->addWidget(es_antenna);
-    connect(es_antenna, SIGNAL(clicked()), this, SLOT(ldant_btn_slot()));
+    connect(es_antenna, &QAbstractButton::clicked,
+        this, &QTextNetSelDlg::ldant_btn_slot);
 
     es_zoid = new QToolButton();
     es_zoid->setText(tr("To trapezoids"));
     hbox->addWidget(es_zoid);
-    connect(es_zoid, SIGNAL(clicked()), this, SLOT(zoid_btn_slot()));
+    connect(es_zoid, &QAbstractButton::clicked,
+        this, &QTextNetSelDlg::zoid_btn_slot);
 
     es_tofile = new QToolButton();
     es_tofile->setText(tr("Save path to file"));
     hbox->addWidget(es_tofile);
-    connect(es_tofile, SIGNAL(clicked()), this, SLOT(tofile_btn_slot()));
+    connect(es_tofile, &QAbstractButton::clicked,
+        this, &QTextNetSelDlg::tofile_btn_slot);
 
     // Path file vias check boxes.
     //
@@ -258,13 +264,13 @@ QTextNetSelDlg::QTextNetSelDlg(GRobject caller) : QTbag(this)
 
     es_vias = new QCheckBox(tr("Path file contains vias"));
     hbox->addWidget(es_vias);
-    connect(es_vias, SIGNAL(stateChanged(int)),
-        this, SLOT(pathvias_btn_slot(int)));
+    connect(es_vias, &QCheckBox::stateChanged,
+        this, &QTextNetSelDlg::pathvias_btn_slot);
 
     es_vtree = new QCheckBox(tr("Path file contains via check layers"));
     hbox->addWidget(es_vtree);
-    connect(es_vtree, SIGNAL(stateChanged(int)),
-        this, SLOT(vcheck_btn_slot(int)));
+    connect(es_vtree, &QCheckBox::stateChanged,
+        this, &QTextNetSelDlg::vcheck_btn_slot);
 
     // resistance measurememt
     //
@@ -280,20 +286,22 @@ QTextNetSelDlg::QTextNetSelDlg(GRobject caller) : QTbag(this)
     es_terms->setText(tr("Define terminals"));
     hbox->addWidget(es_terms);
     es_terms->setCheckable(true);
-    connect(es_terms, SIGNAL(toggled(bool)),
-        this, SLOT(def_terms_slot(bool)));
+    connect(es_terms, &QAbstractButton::toggled,
+        this, &QTextNetSelDlg::def_terms_slot);
 
     es_meas = new QToolButton();
     es_meas->setText(tr("Measure"));
     hbox->addWidget(es_meas);
-    connect(es_meas, SIGNAL(clicked()), this, SLOT(meas_btn_slot()));
+    connect(es_meas, &QAbstractButton::clicked,
+        this, &QTextNetSelDlg::meas_btn_slot);
 
     // dismiss button
     //
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTextNetSelDlg::dismiss_btn_slot);
 
     update();
 }

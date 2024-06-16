@@ -291,7 +291,8 @@ QTcolorParamDlg::QTcolorParamDlg(int xx, int yy)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTcolorParamDlg::help_btn_slot);
 
     QGridLayout *grid = new QGridLayout();
     grid->setContentsMargins(qmtop);
@@ -321,7 +322,8 @@ QTcolorParamDlg::QTcolorParamDlg(int xx, int yy)
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTcolorParamDlg::dismiss_btn_slot);
 
 
     if (xx || yy) {

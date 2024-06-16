@@ -18,10 +18,10 @@ releases had precisely the same graphical interface, which greatly
 simplified documentation, maintenance, and development.
 
 Presently (April 2024) GTK-2 is still the reference toolkit, but
-it is being replaced by QT, another popular toolkit.  The user
+it is being replaced by Qt, another popular toolkit.  The user
 interface is very similar, most of the changes are ``under the
 hood''.  The tremendous amount of work to bring in a different
-toolkit is about complete, and QT releases are in ``beta'' testing.
+toolkit is about complete, and Qt releases are in ``beta'' testing.
 
 The reasons for the change are as follows.
 \begin{itemize}
@@ -37,17 +37,18 @@ point soon.  The current GTK is GTK-4, which is not supported by
 GTK-3, but the result has serious flaws and shortcomings, and
 further development with GTK has stopped.}
 \item{GTK is a C library and {\Xic} and {\WRspice} are C++
-programs, whereas QT is also C++.  The internal organization of
-the QT version of the programs is far nicer and more concise and
+programs, whereas Qt is also C++.  The internal organization of
+the Qt version of the programs is far nicer and more concise and
 will be esier to maintain and extend.}
-\item{QT has very good compatibility with Windows and macOS.  There
-is no need to run an X server like XQuartz with the macOS QT
+\item{Qt has very good compatibility with Windows and macOS.  There
+is no need to run an X server like XQuartz with the macOS Qt
 versions.}
-\item{QT is contemporary software under active development, GTK-2
+\item{Qt is contemporary software under active development, GTK-2
 is very old.}
+\end{itemize}
 
 % -----------------------------------------------------------------------------
-% macosx 093017
+% macosx 091124
 \section{Apple macOS Notes}
 
 In macOS, lurking beneath the pretty graphics is a complete Unix
@@ -58,59 +59,105 @@ can look like Unix with a great graphical interface that also runs
 Macintosh applications.  Overall, macOS is a very impressive
 desktop/laptop operating system.
 
-All Generation 4 macOS distributions require macOS 10.10 (Yosemite) or
-later.
+The programs built with the GTK graphics toolkit require that an
+X-windows server be running, as X is used for graphics.  This is not
+installed automatically.  The Apple-sponsored X-server is called
+``XQuartz'' and is available for download from the project web site
+(google ``XQuartz download'').
 
-The Whiteley Research programs presently require that the X-windows
-server be running, as X is used for graphics.  Unlike in some earlier
-macOS releases, it is not installed automatically in Yosemite.  The
-Apple-sponsored X-server is called "XQuartz" and is available for
-download from the project web site (google ``XQuartz download'').
+The programs built with the Qt graphics toolkit are native macOS
+applications and make use of direct access to the s creen, so there is
+no neew for XQuartz in this case.
 
-Operation and behavior should be identical to the Unix/Linux versions
-of the programs.  These are 64-bit binaries.
+Operation and behavior should be identical or very similar to the
+Unix/Linux versions of the programs.
 
-\subsection{Installation}
+\subsection{Package Installation}
+
+Packages (precompiled program binaries) are being phased out in favor
+of building from source code.  If you have compatible package files,
+they can be installed as described here.
 
 The package distribution files are ``flat'' Apple package files.  The
 installation procedure is pretty much the same as under Unix/Linux,
-using the {\vt wr\_install} script from a terminal window.  Due to the
-X-Windows support, graphical operation from remote systems is possible
-if running a local X-server program.
+using the {\vt wr\_install} script from a terminal window.
 
-There are two differences from the Linux releases.
 \begin{enumerate}
-\item{The programs use the GTK-2 graphical interface toolkit for
-display, which is supplied in a separate ``{\vt gtk2-bundle-x11}''
-distribution file.  As in Windows, the bundle supplies all of the
-libraries and supporting files needed, as they are not native to macOS. 
-The user will need to download and install the bundle package.  Once
-installed, it should rarely if ever need to be upgraded.  The bundle
-can be installed with the {\vt wr\_install} script, or with Apple's
-installer, the same as the program distribution files.}
+\item{Download the necessary distribution files and scripts. 
+Probably, the easiest course is to download everything in the
+distribution directory for your operating system, into a new, empty
+temporary directory.  Presently, there are eight package files and two
+scripts.  The installation method below uses the terminal window. 
+When downloading completes, cd to the new directory.}
 
-\item{The program installation location can not be changed.  The
-programs will be installed under {\vt /usr/local/xictools}, and the
-bundle is installed under {\vt /usr/local/gtk2-bundle-x11}.}
+\item{Make sure that the {\vt wr\_install} and {\vt wr\_uninstall}
+scripts are executable (they might not be after the download).  If
+not, use\\
+{\vt chmod 0755 wr\_install wr\_uninstall}}
+
+\item{The installation location is under {\vt /usr/local/xictools},
+and can not be changed.  You will need to become `root' in order to
+install packages.  For future use of the automated updating features
+of {\Xic} and {\WRspice}, you will need to have your account enabled
+for the ``sudo'' command, i.e., your account name should be listed in
+``{\vt /etc/sudoers}''.  If this is set up, the installer will ask for
+your password to enable installation.  Otherwise you will have to use
+the su command to become root (which may not be enabled).}
+
+\item{Run {\vt wr\_install} with the argument(s) being the names of
+the distribution files, or ``{\vt all}''.
+\begin{quote}\vt
+./wr\_install all
+\end{quote}
+The argument ``{\vt all}'' is equivalent to {vt *.pkg}.  This
+automates the installation procedure.  Do NOT change the names of the
+files, or {\vt wr\_install} will probably fail.}
+
+\item{Add the {\vt /usr/local/xictools/bin} directory to your shell
+search path, if you haven't done so.  Once {\Xic} and {\WRspice} have
+been installed, updating could not be simpler.  See the program
+documentation:  In {\WRspice}, give the commands ``help passwd'' and
+``help wrupdate''.  In {\Xic} , with the mouse pointer in the main
+drawing window, type ``?!passwd'' and ``?!update''.  These help topics
+explain how to set up and use the update features.  The programs will
+check for updates when started.  The user can download and install
+updates when available.  (Warning, packlages are deprecated and the
+update feature is not supported presently).}
+
+\item{For a first-time installation, you will need to install and set
+up MacPorts.  This provides the graphical libraries used by the
+programs.  Following the instructions, install MacPorts for your
+operating system.  Be sure to install the default package which
+installs in the default location (i.e., don't build from source and
+change the location).  Note that the procedure also requires
+installing Apple xcode from the App Store.  Once the basic
+installation is done, run, as root, the following commands:
+
+\begin{quote}\vt
+port -v selfupdate\\
+port install gtk2\\
+port install gsl\\
+port install python2\_select\\
+port install python27\\
+port install autoconf\\
+port install pkgconfig\\
+\end{quote}}
+
+\item{Finally, if you are installing GTK versions and if you don't
+already have an X-server, you should install X-Quartz.  XQuartz is the
+``official'' X server for masOS and is recommended.}
+  
+\item{You're done, and should be able to run the programs. 
+Furthermore, you should be able to build the {\XicTools} from source,
+the MacPorts and xcode provide the necessary libraries.}
 \end{enumerate}
 
-The user must have root permission to install the programs.  If a root
-password has been defined, the user can use ``{\vt su}'' to become
-root as in Unix/Linux.  Otherwise, there is a ``{\vt sudo}'' command
-that can be issued which provides temporary root privileges to certain
-pre-designated users.  From a command line, one can use {\vt sudo} to
-execute commands that require root privileges.  The user is asked for
-their password, and the command is executed if the password is
-accepted.
+\subsection{Installation from Source}
 
-The {\vt sudo} command is built into the {\vt wr\_install} script, so
-that users should not need to become root explicitly to perform
-updates.  To edit configuration files in the installation, root access
-is needed.
-%\ifxtlserv
-%The {\vt sudo} command can be used to start the license server, if
-%running the server is necessary.
-%\fi
+Presently, this is the recommended procedure for installing {\Xic} and
+all of the {\XicTools} on your system.  See the README file at the top
+directory of the {\XicTools} source tree from {\vt
+github.com/wrcad/xictools}.
 
 \subsection{Un-Installation}
 
@@ -120,18 +167,10 @@ care of file removal and updating the system package database.
 \subsection{Running the Applications}
 
 It is assumed that the user will be initiating the applications from a
-terminal window, as under Unix/Linux.  The directories containing the
-program binaries ({\vt /usr/local/xictools/bin}) and the bundle
-programs ({\vt /usr/local/gtk2-bundle-x11/bin}) should be in the
+terminal window, as under Unix/Linux.  The directory containing the
+program binaries ({\vt /usr/local/xictools/bin}) should be in the
 shell search path.  Then, all executables will be found by name. 
 Operation is the same as under Unix/Linux.
-
-The X-Windows server must be running for successful execution of the
-programs that use graphics.  In macOS Mavericks the Apple "XQuartz"
-X-server will start automatically when needed (remember that this must
-be downloaded, as it is not installed automatically in Mavericks),
-however this causes the initial program startup time to be rather
-long.
 
 \subsection{MacBook Keyboard Mapping Issues}
 
@@ -215,7 +254,7 @@ which will re-map the keys for the current X session.
 
 
 % -----------------------------------------------------------------------------
-% mswindows 102817
+% mswindows 061124
 \section{Microsoft Windows Notes}
 
 This section contains notes relevant to the Microsoft Windows
@@ -238,16 +277,20 @@ release of the {\XicTools}.
 %information, and indicates success or failure.
 %\fi
 
-The distributions are available from the {\vt wrcad.com} web site,
-along with the distributions for Linux and macOS.  The distributions
-come in self-extracting {\vt .exe} files.  Simply run the files to do
-the installation.  The programs can later be uninstalled, either from
-the {\cb Control Panel} or by clicking the {\cb Uninstall} icons in
-the {\cb XicTools} program group in the {\cb Start} menu.
+Packages (precompiled binary programs) are deprecated in favor of
+building the programs from source.  If you have access to packages,
+they can be installed per the instructions in this section.
+
+The packages come in self-extracting {\vt .exe} files.  Simply run
+the files to do the installation.  The programs can later be
+uninstalled, either with the Windows software manager or by clicking
+the {\cb Uninstall} icons in the {\cb XicTools} program group in the
+{\cb Start} menu.
 
 The same process can be used to install updated releases -- it is not
 necessary to uninstall first.  A more convenient way to keep current
-is to use the updating feature of the help system (see \ref{update}).
+is to use the updating feature of the help system (see \ref{update}). 
+(Package updating is not currently available).
 
 WARNING\\
 The programs use an entry in the Windows Registry to find their
@@ -286,36 +329,135 @@ The structure of the tree is exactly that as under Linux, which
 simplifies compatibility.  It is recommended that the default
 installation location be used, if possible.
 
-The Generation 4 programs all use the GTK-2 toolkit for the user
-interface.  The DLLs and other support files for this toolkit are in
-the {\vt gtk2-bundle} distribution file.  This must be installed, by
-executing the file, in the same manner as the program distribution
-files.  You will only need to do this once, or at least very
-infrequently.  The default location is under {\vt
-C:$\backslash$usr$\backslash$local$\backslash$gtk2-bundle}.
+\subsubsection{Installing MSYS2}
+
+Starting January 2021, all Windows binaries are 64-bit, compiled under
+the MINGW64 subsystem of MSYS2 (64-bit version).
+
+Although it may be possible to run the programs from other MINGW64
+installations, for example Cygwin, it is recommended MSYS2 be
+installed.  This replaces the {\vt gtk\_bundle} package that was
+previously used to supply graphical interface dlls.
+
+When installing MSYS2 and {\XicTools} programs, you are strongly
+advised to install in the default locations if possible.
+
+Go to {\vt www.msys2.org}.  Download and run the installer, and follow
+the directions.  It is easy.  When done, you will have a shell window
+on the screen.  You should type the following commands to load some
+things you will need.
+\begin{quote} \vt
+pacman -S vim\\
+pacman -S winpty\\
+pacman -S mingw-w64-x86\_64-gtk2\\
+pacman -S mingw-w64-x86\_64-gsl\\
+\end{quote}
+This provides the vim editor, the winpty program described below, the
+GTK-2 libraries and dependencies, and the Gnu Scientific Library. 
+These satisfy all references needed to run the {\XicTools} programs.
+
+Then, use the vim editor to edit the {\vt .bash\_profile} file that
+exists in the current (your home) directory.  Add the following lines
+to the bottom of the file:
+\begin{quote} \vt
+mount c:/usr/local/xictools /usr/local/xictools\\
+export PATH="/usr/local/xictools/bin:\$PATH"\\
+export XT\_HOMEDIR=c:/msys64/home/your\_username\\
+\end{quote}
+
+To run the programs in the future:\\
+Click MSYS2 64bit in the {\cb Start} menu, then MSYS2 MinGW x64 in the
+sub-menu.  This brings up a shell window with the MinGW 64-bit support
+enabled.  Note that there are multiple choices in the sub-menu so be
+sure to select the one specified, others may not work with the
+{\XicTools} programs.  Take some time to learn about MSYS2 and MINGW64,
+particularly the pacman package manager.  You can install lots of
+useful software that runs in this environment.
+
+\subsubsection{The mintty Terminal Emulator Window}
+
+The terminal window used in MSYS2 is ``mintty''.  This does NOT work
+directly with native Windows programs that work with a console window,
+which includes the {\XicTools} programs.  One must run {\WRspice} and
+possibly {\Xic} with the ``winpty'' program.  Just type winpty
+followed by the name and arguments of the program you want to run.
+
+For example, the command to run {\WRspice} is
+\begin{quote} \vt
+winpty wrspice ...
+\end{quote}
+where the ...  represents the command line arguments to {\WRspice}. 
+The winpty program performs some magic that enables native Windows
+programs expecting to find a cmd.com type of window to work with the
+mintty.
+
+subsubsection{MSYS2 Basics}
+
+The environment is a bash shell and environment very similar to Linux.
+
+You bring up a new shell window from the MSYS2 64bit / MSYS2 MinGW x64
+entry of the {\cb Start} menu.  There are multiple selections for MSYS2 in
+the {\cb Start} menu, including MSYS2 MinGW x86 which is the MINGW 32-bit
+subsystem, MSYS2 MinGW x64 is the MINGW 64-bit subsystem used for
+{\XicTools}, and MSYS2 MSYS is the MSYS subsystem without MinGW
+support.  MinGW is ``minimal Gnu (for) Windows'' and is a library that
+provides a limited Linux-like programming environment under Windows. 
+The {\XicTools} programs use this environment and are thus
+Windows-native programs.
+
+MSYS2 uses an underlying dll to provide a more complete Linux-like
+environment, similar to Cygwin.  Installed programs are available for
+all three subsystems, though the search order differs.  The
+{\XicTools} do not use the dll, but the MSYS2 environment is very
+convenient for use with the tools.  The MSYS subsystem provides the
+shell and other Linux-emulation commands.  The MinGW subsystems
+provide libraries which enable porting of Linux programs to native
+Windows.
+
+From the shell window, the file system installed under {\vt
+c:$\backslash$msys64} (or wherever the msys64 directory is installed)
+is taken as root.  One can access the files and directories explicitly
+with a path starting with {\vt /c} where the {\vt c} can be any
+existing drive letter.  Your home directory is {\vt /home/{\it
+yourname}}, or equivalently {\vt /c/msys64/home/{\it yourname}}.
+
+It is important to realize that within MINGW and other native Windows
+programs including {\XicTools}, the paths used by the programs are
+expected to be Windows paths, though they may use forward slashes. 
+For example, in the shell {\vt /usr/local} is rooted to the
+{\vt msys64} directory, but within {\Xic} {\vt /usr/local} is
+rooted to the current drive, e.g., {\vt c:/usr/local}.
+
+In MSYS2, the mount command can provide an alias between the file
+system as viewed from the shell and that of Windows.  The command
+\begin{quote}\vt
+mount c:/usr/local/xictools /usr/local/xictools
+\end{quote}
+will map the Windows directory {\vt c:/usr/local/xictools} to the
+location {\vt /usr/local/xictools} in the shell.  From a shell window,
+{\vt /usr/local/xictools} is equivalent to {\vt
+/c/usr/local/xictools}, or in Windows {\vt c:/usr/local/xictools}, the
+default {\XicTools} installation location.
 
 By default, the actual binary executable is run from a script ({\vt
 .bat}) file, which is installed in the same directory as the
-executables, which by default is {\vt
-C:$\backslash$usr$\backslash$local$\backslash$xictools$\backslash$bin}. 
-The script takes care of properly specifying the path to the DLLs
-provided by the gtk2-bundle.
+executables, which by default is
+ {\vt C:$\backslash$usr$\backslash$local$\backslash$xictools$\backslash$bin}.
 
-A program group named {\vt XicTools} is created in the {\vt Start}
+A program group named {\vt XicTools} is created in the {\cb Start}
 menu (or equivalent), from which the programs can be started.  The
 programs can also be started from a command line, in either a Windows
-{\cb Command Prompt} window or a Cygwin shell window.  One will need
-to type the full path to the bat file (e.g., type ``{\vt
+{\cb Command Prompt} window or a MSYS2/Cygwin shell window.  One will
+need to type the full path to the bat file (e.g., type ``{\vt
 C:$\backslash$usr$\backslash$local$\backslash$xictools$\backslash$bin$\backslash$xic}''
 to start {\Xic}).  There are two ways to avoid having to type the
 whole path:
-
 \begin{enumerate}
 \item{Add the directory to your search path.  This is the {\vt PATH}
 variable in the environment.  This can be set in your {\cb Command
-Prompt}window by giving a command like
-\begin{quote}
- \vt PATH=\%PATH\%;c:$\backslash$usr$\backslash$local$\backslash$xictools$\backslash$bin
+Prompt} window by giving a command like
+\begin{quote}\vt
+PATH=%PATH%;c:\usr\local\xictools\bin
 \end{quote}
 or the {\vt PATH} can be set from the {\cb Control Panel} (the
 procedure is described below for Windows 8).}
@@ -325,16 +467,9 @@ into a directory that is already in the search path, or to the current
 directory.}
 \end{enumerate}
 
-WARNING\\
-In early alpha test releases, it was suggested that the {\vt
-gtk2-bundle/bin} be added to the system {\vt PATH}.  This is a very
-bad idea, since this may have an adverse effect on other programs. 
-Unless you really know what you are doing, the {\vt gtk2-bundle/bin}
-directory should never appear in a global search path.
-
 \subsection{General Notes}
 
-The {\XicTools} for Windows are supported on Windows XP and later. 
+The {\XicTools} for Windows are supported on Windows 10 and later. 
 The programs retain the ``look and feel'' of the Unix/Linux versions
 as much as possible, given the constraints of the Windows operating
 system.
@@ -1345,7 +1480,7 @@ bugs.
 \index{XTNOMAIL environment variable}
 \item{\et XTNOMAIL}\\
 This has the same effect as {\et XICNOMAIL} but also prevents email
-from the {\WRspice}> program.
+from the {\WRspice} program.
 
 \index{environment!SPICE\_HOST}
 \index{SPICE\_HOST environment variable}

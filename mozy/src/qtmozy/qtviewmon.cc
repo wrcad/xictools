@@ -50,26 +50,28 @@ QTviewmon::QTviewmon(QTviewer *prnt) : QObject(prnt)
 {
     html_viewer = prnt;
 
-    connect(html_viewer, SIGNAL(arm(htmCallbackInfo*)),
-        this, SLOT(arm_slot(htmCallbackInfo*)));
-    connect(html_viewer, SIGNAL(activate(htmAnchorCallbackStruct*)),
-        this, SLOT(activate_slot(htmAnchorCallbackStruct*)));
-    connect(html_viewer, SIGNAL(anchor_track(htmAnchorCallbackStruct*)),
-        this, SLOT(anchor_track_slot(htmAnchorCallbackStruct*)));
-    connect(html_viewer, SIGNAL(anchor_visited(htmVisitedCallbackStruct*)),
-        this, SLOT(anchor_visited_slot(htmVisitedCallbackStruct*)));
-    connect(html_viewer, SIGNAL(document(htmDocumentCallbackStruct*)),
-        this, SLOT(document_slot(htmDocumentCallbackStruct*)));
-    connect(html_viewer, SIGNAL(link(htmLinkCallbackStruct*)),
-        this, SLOT(link_slot(htmLinkCallbackStruct*)));
-    connect(html_viewer, SIGNAL(frame(htmFrameCallbackStruct*)),
-        this, SLOT(frame_slot(htmFrameCallbackStruct*)));
-    connect(html_viewer, SIGNAL(form(htmFormCallbackStruct*)),
-        this, SLOT(form_slot(htmFormCallbackStruct*)));
-    connect(html_viewer, SIGNAL(imagemap(htmImagemapCallbackStruct*)),
-        this, SLOT(imagemap_slot(htmImagemapCallbackStruct*)));
-    connect(html_viewer, SIGNAL(html_event(htmEventCallbackStruct*)),
-        this, SLOT(html_event_slot(htmEventCallbackStruct*)));
+/****XXX FIXME
+    connect(html_viewer, &QTviewer::arm,
+        this, &QTviewmon::arm_slot);
+    connect(html_viewer, &QTviewer::activate,
+        this, &QTviewmon::activate_slot);
+    connect(html_viewer, &QTviewer::anchor_track,
+        this, &QTviewmon::anchor_track_slot);
+    connect(html_viewer, &QTviewer::anchor_visited,
+        this, &QTviewmon::anchor_visited_slot);
+    connect(html_viewer, &QTviewer::document,
+        this, &QTviewmon::document_slot);
+    connect(html_viewer, &QTviewer::link,
+        this, &QTviewmon::link_slot);
+    connect(html_viewer, &QTviewer::frame,
+        this, &QTviewmon::frame_slot);
+    connect(html_viewer, &QTviewer::form,
+        this, &QTviewmon::form_slot);
+    connect(html_viewer, &QTviewer::imagemap,
+        this, &QTviewmon::imagemap_slot);
+    connect(html_viewer, &QTviewer::html_event,
+        this, &QTviewmon::html_event_slot);
+*/
 }
 
 

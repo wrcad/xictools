@@ -209,35 +209,36 @@ QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node) : QTbag(this)
     nm_use_np->setText(tr("Use nophys"));
     hbox->addWidget(nm_use_np);
     nm_use_np->setCheckable(true);
-    connect(nm_use_np, SIGNAL(toggled(bool)),
-        this, SLOT(nophys_btn_slot(bool)));
+    connect(nm_use_np, &QAbstractButton::toggled,
+        this, &QTnodeMapDlg::nophys_btn_slot);
 
     nm_rename = new QToolButton();
     nm_rename->setText(tr("Map Name"));
     hbox->addWidget(nm_rename);
     nm_rename->setCheckable(true);
-    connect(nm_rename, SIGNAL(toggled(bool)),
-        this, SLOT(mapname_btn_slot(bool)));
+    connect(nm_rename, &QAbstractButton::toggled,
+        this, &QTnodeMapDlg::mapname_btn_slot);
 
     nm_remove = new QToolButton();
     nm_remove->setText(tr("Unmap"));
     hbox->addWidget(nm_remove);
     nm_remove->setCheckable(true);
-    connect(nm_remove, SIGNAL(toggled(bool)),
-        this, SLOT(unmap_btn_slot(bool)));
+    connect(nm_remove, &QAbstractButton::toggled,
+        this, &QTnodeMapDlg::unmap_btn_slot);
 
     nm_point_btn = new QToolButton();
     nm_point_btn->setText(tr("Click-Select Mode"));
     hbox->addWidget(nm_point_btn);
     nm_point_btn->setCheckable(true);
-    connect(nm_point_btn, SIGNAL(toggled(bool)),
-        this, SLOT(click_btn_slot(bool)));
+    connect(nm_point_btn, &QAbstractButton::toggled,
+        this, &QTnodeMapDlg::click_btn_slot);
 
     hbox->addStretch(1);
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTnodeMapDlg::help_btn_slot);
 
     // second button line
     //
@@ -252,12 +253,13 @@ QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node) : QTbag(this)
     nm_srch_btn = new QToolButton();
     hbox->addWidget(nm_srch_btn);
     nm_srch_btn->setIcon(QIcon(QPixmap(lsearch_xpm)));
-    connect(nm_srch_btn, SIGNAL(clicked()), this, SLOT(srch_btn_slot()));
+    connect(nm_srch_btn, &QAbstractButton::clicked,
+        this, &QTnodeMapDlg::srch_btn_slot);
 
     nm_srch_entry = new QLineEdit();
     hbox->addWidget(nm_srch_entry);
-    connect(nm_srch_entry, SIGNAL(textChanged(const QString&)),
-        this, SLOT(srch_text_changed_slot(const QString&)));
+    connect(nm_srch_entry, &QLineEdit::textChanged,
+        this, &QTnodeMapDlg::srch_text_changed_slot);
 
     hbox->addSpacing(20);
     nm_srch_nodes = new QRadioButton(tr("Nodes"));
@@ -276,14 +278,15 @@ QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node) : QTbag(this)
     tbtn = new QToolButton();
     tbtn->setText(tr(" Deselect "));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(deselect_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTnodeMapDlg::deselect_btn_slot);
 
 
     hbox->addSpacing(40);
     nm_usex_btn = new QCheckBox(tr("Use Extract"));
     hbox->addWidget(nm_usex_btn);
-    connect(nm_usex_btn, SIGNAL(stateChanged(int)),
-        this, SLOT(usex_btn_slot(int)));
+    connect(nm_usex_btn, &QCheckBox::stateChanged,
+        this, &QTnodeMapDlg::usex_btn_slot);
     if (ExtIf()->hasExtract())
         nm_usex_btn->show();
     else
@@ -292,7 +295,8 @@ QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node) : QTbag(this)
     nm_find_btn = new QToolButton();
     nm_find_btn->setText(tr("Find"));
     hbox->addWidget(nm_find_btn);
-    connect(nm_find_btn, SIGNAL(clicked()), this, SLOT(find_btn_slot()));
+    connect(nm_find_btn, &QAbstractButton::clicked,
+        this, &QTnodeMapDlg::find_btn_slot);
 
     hbox = new QHBoxLayout();
     hbox->setContentsMargins(qm);
@@ -311,9 +315,8 @@ QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node) : QTbag(this)
         tr("Internal?") << tr("Mapped") << tr("Set")));
     nm_node_list->header()->setMinimumSectionSize(25);
     nm_node_list->header()->resizeSection(0, 50);
-    connect(nm_node_list,
-        SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
-        this, SLOT(nodesel_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*)));
+    connect(nm_node_list, &QTreeWidget::currentItemChanged,
+        this, &QTnodeMapDlg::nodesel_changed_slot);
 
     // terminal listing text
     //
@@ -322,9 +325,8 @@ QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node) : QTbag(this)
     nm_term_list->setHeaderLabels(QStringList(QList<QString>() <<
         tr("Terminals?")));
     nm_term_list->header()->setMinimumSectionSize(25);
-    connect(nm_term_list,
-        SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
-        this, SLOT(termsel_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*)));
+    connect(nm_term_list, &QTreeWidget::currentItemChanged,
+        this, &QTnodeMapDlg::termsel_changed_slot);
 
     spl->setSizes(QList<int>() << 0.8*width() << 0.2*width());
 
@@ -333,14 +335,15 @@ QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node) : QTbag(this)
         nm_node_list->setFont(*fnt);
         nm_term_list->setFont(*fnt);
     }
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTnodeMapDlg::font_changed_slot, Qt::QueuedConnection);
 
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTnodeMapDlg::dismiss_btn_slot);
 
     // If the group/node selection mode in extraction is enabled with
     // a selection, configure the pop-up to have that node selected.

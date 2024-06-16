@@ -333,7 +333,7 @@ bool
 QTdev::CheckForEvents()
 {
     QApplication::instance()->sendPostedEvents();
-    QApplication::instance()->processEvents();
+    QApplication::instance()->processEvents(QEventLoop::WaitForMoreEvents);
     return (false);
 }
 
@@ -358,6 +358,8 @@ QTdev::MainLoop(bool)
         QApplication::exec();
         return;
     }
+    CheckForEvents();
+
     dv_loop_level++;
     dv_loop = new event_loop(dv_loop);
     dv_loop->exec();

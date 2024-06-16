@@ -21,36 +21,15 @@ spclient
    interface.  It is less likely that a developer will need to modify
    the existing code in these files.
 
-wrspiced
-   This is the WRspice daemon, also distributed with WRspice.  It
-   manages communication with WRspice on a server system, exporting
-   WRspice simulation capability over a network.
-
-These programs, or course, require WRspice.  See the Whiteley Research
-web site at www.wrcad.com for information about obtaining WRspice.
-
-
-Building the Programs
----------------------
+Building spclient
+-----------------
 
 You should be able to build the programs with
-   cd wrspice_ipc_demo
+   cd ipc_demo
    make
 
-There is a configure script, which you can try running if the build
-fails.  This will regenerate the Makefile and config.h files.  These
-come pre-configured on a machine presumably similar to yours, but if
-there are important differences configure should be re-run locally.
-
-  ./configure
-
-This will build the Makefiles, configured for your computer.  When this
-finishes, type
-
-  make
-
 This will compile the source code into the executable files: spclient
-and wrspiced.  This completes the build process.
+(spclient.exe in Windows).  This completes the build process.
 
 The programs will build successfully on any of the platforms supported
 by WRspice.  If there is trouble, please alert Whiteley Research.

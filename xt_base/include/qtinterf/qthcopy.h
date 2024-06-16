@@ -137,7 +137,7 @@ private slots:
     void quit_slot();
 
     void process_error_slot(QProcess::ProcessError);
-    void process_finished_slot(int);
+    void process_finished_slot(int, QProcess::ExitStatus);
 
 private:
     void set_sens(unsigned int);

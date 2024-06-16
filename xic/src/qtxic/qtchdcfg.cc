@@ -217,7 +217,8 @@ QTchdCfgDlg::QTchdCfgDlg(GRobject caller, const char *chdname) : QTbag(this)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTchdCfgDlg::help_btn_slot);
 
     // Frame and name group.
     //
@@ -236,7 +237,8 @@ QTchdCfgDlg::QTchdCfgDlg(GRobject caller, const char *chdname) : QTbag(this)
     cf_apply_tc = new QToolButton();
     cf_apply_tc->setText("");
     ghbox->addWidget(cf_apply_tc);
-    connect(cf_apply_tc, SIGNAL(clicked()), this, SLOT(apply_tc_btn_slot()));
+    connect(cf_apply_tc, &QAbstractButton::clicked,
+        this, &QTchdCfgDlg::apply_tc_btn_slot);
 
     QLabel *label = new QLabel(tr("Set Default Cell"));
     ghbox->addWidget(label);
@@ -254,7 +256,8 @@ QTchdCfgDlg::QTchdCfgDlg(GRobject caller, const char *chdname) : QTbag(this)
     cf_last = new QToolButton();
     cf_last->setText(tr("Last"));
     ghbox->addWidget(cf_last);
-    connect(cf_last, SIGNAL(clicked()), this, SLOT(last_btn_slot()));
+    connect(cf_last, &QAbstractButton::clicked,
+        this, &QTchdCfgDlg::last_btn_slot);
 
     cf_text = new QLineEdit();
     cf_text->setReadOnly(false);
@@ -279,16 +282,16 @@ QTchdCfgDlg::QTchdCfgDlg(GRobject caller, const char *chdname) : QTbag(this)
     cf_apply_cgd = new QToolButton();
     cf_apply_cgd->setText("");
     ghbox->addWidget(cf_apply_cgd);
-    connect(cf_apply_cgd, SIGNAL(clicked()),
-        this, SLOT(apply_cgd_btn_slot()));
+    connect(cf_apply_cgd, &QAbstractButton::clicked,
+        this, &QTchdCfgDlg::apply_cgd_btn_slot);
 
     label = new QLabel(tr("Setup Linked Cell Geometry Digest"));
     ghbox->addWidget(label);
 
     cf_newcgd = new QCheckBox(tr("Open new CGD"));
     gvbox->addWidget(cf_newcgd);
-    connect(cf_newcgd, SIGNAL(stateChanged(int)),
-        this, SLOT(new_cgd_btn_slot(int)));
+    connect(cf_newcgd, &QCheckBox::stateChanged,
+        this, &QTchdCfgDlg::new_cgd_btn_slot);
 
     ghbox = new QHBoxLayout();
     gvbox->addLayout(ghbox);
@@ -309,7 +312,8 @@ QTchdCfgDlg::QTchdCfgDlg(GRobject caller, const char *chdname) : QTbag(this)
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked, this,
+        &QTchdCfgDlg::dismiss_btn_slot);
 
     update(chdname);
 }

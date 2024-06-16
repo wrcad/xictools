@@ -173,7 +173,8 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTbag(this),
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTgridDlg::help_btn_slot);
 
     QTabWidget *nbook = new QTabWidget();
     vbox->addWidget(nbook);
@@ -205,8 +206,8 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTbag(this),
     gd_resol->setRange(0.0, 10000.0);
     gd_resol->setDecimals(4);
     gd_resol->setValue(1.0);
-    connect(gd_resol, SIGNAL(valueChanged(double)),
-        this, SLOT(resol_changed_slot(double)));
+    connect(gd_resol, QOverload<double>::of(&QTdoubleSpinBox::valueChanged),
+        this, &QTgridDlg::resol_changed_slot);
 
     gd_mfglabel = new QLabel();
     vb->addWidget(gd_mfglabel);
@@ -221,13 +222,13 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTbag(this),
     vb->addWidget(gd_snap);
     gd_snap->setRange(1, 10);
     gd_snap->setValue(1);
-    connect(gd_snap, SIGNAL(valueChanged(int)),
-        this, SLOT(snap_changed_slot(int)));
+    connect(gd_snap, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTgridDlg::snap_changed_slot);
 
     gd_snapbtn = new QCheckBox(tr("GridPerSnap"));
     vb->addWidget(gd_snapbtn);
-    connect(gd_snapbtn, SIGNAL(stateChanged(int)),
-        this, SLOT(gridpersnap_btn_slot(int)));
+    connect(gd_snapbtn, &QCheckBox::stateChanged,
+        this, &QTgridDlg::gridpersnap_btn_slot);
 
     // Edge Snapping group
     gd_edgegrp = new QGroupBox("Edge Snapping");
@@ -242,28 +243,28 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTbag(this),
     for (int i = 0; edgevals[i]; i++) {
         gd_edge->addItem(edgevals[i], i);
     }
-    connect(gd_edge, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(edge_menu_slot(int)));
+    connect(gd_edge, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTgridDlg::edge_menu_slot);
 
     gd_off_grid = new QCheckBox(tr("Allow off-grid edge snapping"));
     vb->addWidget(gd_off_grid);
-    connect(gd_off_grid, SIGNAL(stateChanged(int)),
-        this, SLOT(off_grid_btn_slot(int)));
+    connect(gd_off_grid, &QCheckBox::stateChanged,
+        this, &QTgridDlg::off_grid_btn_slot);
 
     gd_use_nm_edge = new QCheckBox(tr("Include non-Manhattan edges"));
     vb->addWidget(gd_use_nm_edge);
-    connect(gd_use_nm_edge, SIGNAL(stateChanged(int)),
-        this, SLOT(use_nm_btn_slot(int)));
+    connect(gd_use_nm_edge, &QCheckBox::stateChanged,
+        this, &QTgridDlg::use_nm_btn_slot);
 
     gd_wire_edge = new QCheckBox(tr("Include wire edges"));
     vb->addWidget(gd_wire_edge);
-    connect(gd_wire_edge, SIGNAL(stateChanged(int)),
-        this, SLOT(wire_edge_btn_slot(int)));
+    connect(gd_wire_edge, &QCheckBox::stateChanged,
+        this, &QTgridDlg::wire_edge_btn_slot);
 
     gd_wire_path = new QCheckBox(tr("Include wire path"));
     vb->addWidget(gd_wire_path);
-    connect(gd_wire_path, SIGNAL(stateChanged(int)),
-        this, SLOT(wire_path_btn_slot(int)));
+    connect(gd_wire_path, &QCheckBox::stateChanged,
+        this, &QTgridDlg::wire_path_btn_slot);
 
     // Style page
     //
@@ -284,16 +285,16 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTbag(this),
     gd_showbtn->setText(tr("Show"));
     hb->addWidget(gd_showbtn);
     gd_showbtn->setCheckable(true);
-    connect(gd_showbtn, SIGNAL(toggled(bool)),
-        this, SLOT(show_btn_slot(bool)));
+    connect(gd_showbtn, &QAbstractButton::toggled,
+        this, &QTgridDlg::show_btn_slot);
     QTdev::SetStatus(gd_showbtn, gd_grid.displayed());
 
     gd_topbtn = new QToolButton();
     gd_topbtn->setText(tr("On Top"));
     hb->addWidget(gd_topbtn);
     gd_topbtn->setCheckable(true);
-    connect(gd_topbtn, SIGNAL(toggled(bool)),
-        this, SLOT(top_btn_slot(bool)));
+    connect(gd_topbtn, &QAbstractButton::toggled,
+        this, &QTgridDlg::top_btn_slot);
     QTdev::SetStatus(gd_topbtn, gd_grid.show_on_top());
 
     tbtn = new QToolButton();
@@ -308,8 +309,7 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTbag(this),
             snprintf(buf, sizeof(buf), "reg%d", i);
             menu->addAction(buf);
         }
-        connect(menu, SIGNAL(triggered(QAction*)),
-            this, SLOT(store_menu_slot(QAction*)));
+        connect(menu, &QMenu::triggered, this, &QTgridDlg::store_menu_slot);
     }
 
     tbtn = new QToolButton();
@@ -329,8 +329,7 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTbag(this),
             snprintf(buf, sizeof(buf), "reg%d", i);
             menu->addAction(buf);
         }
-        connect(menu, SIGNAL(triggered(QAction*)),
-            this, SLOT(rcl_menu_slot(QAction*)));
+        connect(menu, &QMenu::triggered, this, &QTgridDlg::rcl_menu_slot);
     }
 
     // Axes and Coarse Mult
@@ -344,18 +343,18 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTbag(this),
 
     gd_noaxesbtn = new QRadioButton(tr("No Axes"));
     col->addWidget(gd_noaxesbtn);
-    connect(gd_noaxesbtn, SIGNAL(toggled(bool)),
-        this, SLOT(noaxes_btn_slot(bool)));
+    connect(gd_noaxesbtn, &QRadioButton::toggled,
+        this, &QTgridDlg::noaxes_btn_slot);
 
     gd_plaxesbtn = new QRadioButton(tr("Plain Axes"));;
     col->addWidget(gd_plaxesbtn);
-    connect(gd_plaxesbtn, SIGNAL(toggled(bool)),
-        this, SLOT(plaxes_btn_slot(bool)));
+    connect(gd_plaxesbtn, &QRadioButton::toggled,
+        this, &QTgridDlg::plaxes_btn_slot);
 
     gd_oraxesbtn = new QRadioButton(tr("Mark Origin"));;
     col->addWidget(gd_oraxesbtn);
-    connect(gd_oraxesbtn, SIGNAL(toggled(bool)),
-        this, SLOT(oraxes_btn_slot(bool)));
+    connect(gd_oraxesbtn, &QRadioButton::toggled,
+        this, &QTgridDlg::oraxes_btn_slot);
 
     if (gd_grid.axes() == AxesNone) {
         gd_noaxesbtn->setChecked(true);
@@ -377,8 +376,8 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTbag(this),
     col->addWidget(gd_cmult);
     gd_cmult->setRange(1, 50);
     gd_cmult->setValue(1);
-    connect(gd_cmult, SIGNAL(valueChanged(int)),
-        this, SLOT(cmult_changed_slot(int)));
+    connect(gd_cmult, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTgridDlg::cmult_changed_slot);
 
     // Line Style Editor
     gb = new QGroupBox(tr("Line Style Editor"));
@@ -393,17 +392,17 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTbag(this),
 
     gd_solidbtn = new QRadioButton(tr("Solid"));
     hb->addWidget(gd_solidbtn);
-    connect(gd_solidbtn, SIGNAL(toggled(bool)),
-        this, SLOT(solid_btn_slot(bool)));
+    connect(gd_solidbtn, &QRadioButton::toggled,
+        this, &QTgridDlg::solid_btn_slot);
     gd_dotsbtn = new QRadioButton(tr("Dots"));
     hb->addWidget(gd_dotsbtn);;
-    connect(gd_dotsbtn, SIGNAL(toggled(bool)),
-        this, SLOT(dots_btn_slot(bool)));
+    connect(gd_dotsbtn, &QRadioButton::toggled,
+        this, &QTgridDlg::dots_btn_slot);
 
     gd_stipbtn = new QRadioButton(tr("Textured"));;
     hb->addWidget(gd_stipbtn);
-    connect(gd_stipbtn, SIGNAL(toggled(bool)),
-        this, SLOT(stip_btn_slot(bool)));
+    connect(gd_stipbtn, &QRadioButton::toggled,
+        this, &QTgridDlg::stip_btn_slot);
 
     if (gd_grid.linestyle().mask == 0) {
         gd_solidbtn->setChecked(true);
@@ -432,8 +431,8 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTbag(this),
     vb2->addWidget(gd_crs);
     gd_crs->setRange(0, 6);
     gd_crs->setValue(0);
-    connect(gd_crs, SIGNAL(valueChanged(int)),
-        this, SLOT(cross_size_changed(int)));
+    connect(gd_crs, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTgridDlg::cross_size_changed);
 
     gd_sample = new QTcanvas();
     grd->addWidget(gd_sample, 1, 1);
@@ -442,23 +441,23 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTbag(this),
     // the line style mask in "0xhhhh" format.  This might be useful
     // for exporting the line style.
 
-    connect(gd_sample, SIGNAL(press_event(QMouseEvent*)),
-        this, SLOT(smp_btn_press_slot(QMouseEvent*)));
-    connect(gd_sample, SIGNAL(release_event(QMouseEvent*)),
-        this, SLOT(smp_btn_release_slot(QMouseEvent*)));
-    connect(gd_sample, SIGNAL(motion_event(QMouseEvent*)),
-        this, SLOT(smp_motion_slot(QMouseEvent*)));
+    connect(gd_sample, &QTcanvas::press_event,
+        this, &QTgridDlg::smp_btn_press_slot);
+    connect(gd_sample, &QTcanvas::release_event,
+        this, &QTgridDlg::smp_btn_release_slot);
+    connect(gd_sample, &QTcanvas::motion_event,
+        this, &QTgridDlg::smp_motion_slot);
 
     gd_viewport = new QTcanvas();
     grd->addWidget(gd_viewport, 2, 1);
     gd_viewport->setFixedSize(QSize(200, 10));
 
-    connect(gd_viewport, SIGNAL(press_event(QMouseEvent*)),
-        this, SLOT(vp_btn_press_slot(QMouseEvent*)));
-    connect(gd_viewport, SIGNAL(release_event(QMouseEvent*)),
-        this, SLOT(vp_btn_release_slot(QMouseEvent*)));
-    connect(gd_viewport, SIGNAL(resize_event(QResizeEvent*)),
-        this, SLOT(vp_resize_slot(QResizeEvent*)));
+    connect(gd_viewport, &QTcanvas::press_event,
+        this, &QTgridDlg::vp_btn_press_slot);
+    connect(gd_viewport, &QTcanvas::release_event,
+        this, &QTgridDlg::vp_btn_release_slot);
+    connect(gd_viewport, &QTcanvas::resize_event,
+        this, &QTgridDlg::vp_resize_slot);
 
     // Visibility controls (global)
     gb = new QGroupBox(tr("All Windows"));
@@ -471,8 +470,8 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTbag(this),
 
     gd_nocoarse = new QCheckBox(tr("No coarse when fine invisible"));
     vb->addWidget(gd_nocoarse);
-    connect(gd_nocoarse, SIGNAL(stateChanged(int)),
-        this, SLOT(nocoarse_btn_slot(int)));
+    connect(gd_nocoarse, &QCheckBox::stateChanged,
+        this, &QTgridDlg::nocoarse_btn_slot);
 
     hb = new QHBoxLayout();
     vb->addLayout(hb);
@@ -486,8 +485,8 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTbag(this),
     hb->addWidget(gd_thresh);
     gd_thresh->setRange(DSP_MIN_GRID_THRESHOLD, DSP_MAX_GRID_THRESHOLD);
     gd_thresh->setValue(DSP_DEF_GRID_THRESHOLD);
-    connect(gd_thresh, SIGNAL(valueChanged(int)),
-        this, SLOT(thresh_changed_slot(int)));
+    connect(gd_thresh, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTgridDlg::thresh_changed_slot);
 
     // Apply and Dismiss buttons
 
@@ -499,12 +498,14 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTbag(this),
     tbtn = new QToolButton();
     tbtn->setText(tr("Apply"));;
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(apply_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTgridDlg::apply_slot);
 
     gd_cancel = new QPushButton(tr("Dismiss"));
     gd_cancel->setObjectName("Default");
     hbox->addWidget(gd_cancel);
-    connect(gd_cancel, SIGNAL(clicked()), this, SLOT(dismiss_slot()));
+    connect(gd_cancel, &QAbstractButton::clicked,
+        this, &QTgridDlg::dismiss_slot);
 
     update();
 }

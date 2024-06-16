@@ -170,7 +170,7 @@ cKbMacro::getKeyToMap()
                     gdk_event_free(ev);
                     continue;
                 }
-                nkey = already_mapped(ev->key.keyval,
+                nkey = AlreadyMapped(ev->key.keyval,
                     convert_state(ev->key.state));
                 if (!nkey)
                     nkey = new sKeyMap(ev->key.keyval,
@@ -201,6 +201,7 @@ cKbMacro::getKeyToMap()
 }
 
 
+// Static function.
 bool
 cKbMacro::isModifier(unsigned key)
 {
@@ -209,6 +210,7 @@ cKbMacro::isModifier(unsigned key)
 }
 
 
+// Static function.
 bool
 cKbMacro::isControl(unsigned key)
 {
@@ -216,6 +218,7 @@ cKbMacro::isControl(unsigned key)
 }
 
 
+// Static function.
 bool
 cKbMacro::isShift(unsigned key)
 {
@@ -223,6 +226,7 @@ cKbMacro::isShift(unsigned key)
 }
 
 
+// Static function.
 bool
 cKbMacro::isAlt(unsigned key)
 {
@@ -230,6 +234,7 @@ cKbMacro::isAlt(unsigned key)
 }
 
 
+// Static function.
 char *
 cKbMacro::keyText(unsigned key, unsigned state)
 {
@@ -294,6 +299,7 @@ cKbMacro::keyText(unsigned key, unsigned state)
 }
 
 
+// Static function.
 void
 cKbMacro::keyName(unsigned key, char *buf)
 {
@@ -302,6 +308,7 @@ cKbMacro::keyName(unsigned key, char *buf)
 }
 
 
+// Static function.
 bool
 cKbMacro::isModifierDown()
 {
@@ -318,6 +325,7 @@ cKbMacro::isModifierDown()
 }
 
 
+// Static function.
 // Return true if the given key event can not be mapped.
 //
 bool

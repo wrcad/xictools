@@ -173,6 +173,7 @@ cConvert::PopUpFiles(GRobject caller, ShowMode mode)
         return;
 
     // This is needed to reliably show the busy cursor.
+//XXX is this needed?
 #ifdef FILES_TIMEOUT
     QTpkg::self()->SetWorking(true);
     QTpkg::self()->RegisterTimeoutProc(500, msw_timeout, caller);
@@ -294,7 +295,8 @@ QTfilesListDlg::QTfilesListDlg(GRobject c) : QTbag(this)
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTfilesListDlg::dismiss_btn_slot);
 
     update();
 }
@@ -402,8 +404,8 @@ QTfilesListDlg::update(const char *path, const char **buttons, int numbuttons)
             fl_button_box->addWidget(tbtn);
             tbtn->setCheckable(true);
             fl_buttons[i] = tbtn;
-            connect(tbtn, SIGNAL(toggled(bool)),
-                this, SLOT(button_slot(bool)));
+            connect(tbtn, &QAbstractButton::toggled,
+                this, &QTfilesListDlg::button_slot);
         }
     }
 }
@@ -500,13 +502,13 @@ QTfilesListDlg::init_viewing_area()
         if (i == init_page)
             wb_textarea = nbtext;
     }
-    connect(fl_notebook, SIGNAL(currentChanged(int)),
-        this, SLOT(page_change_slot(int)));
+    connect(fl_notebook, &QStackedWidget::currentChanged,
+        this, &QTfilesListDlg::page_change_slot);
 
     fl_notebook->setCurrentIndex(init_page);
     fl_menu->setCurrentIndex(init_page);
-    connect(fl_menu, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(menu_change_slot(int)));
+    connect(fl_menu, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTfilesListDlg::menu_change_slot);
 }
 
 
@@ -665,23 +667,23 @@ QTfilesListDlg::create_page(sDirList *dl)
     QFont *tfont;
     if (Fnt()->getFont(&tfont, FNT_SCREEN))
         nbtext->setFont(*tfont);
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)));
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTfilesListDlg::font_changed_slot);
 
-    connect(nbtext, SIGNAL(resize_event(QResizeEvent*)),
-        this, SLOT(resize_slot(QResizeEvent*)));
-    connect(nbtext, SIGNAL(press_event(QMouseEvent*)),
-        this, SLOT(mouse_press_slot(QMouseEvent*)));
-    connect(nbtext, SIGNAL(release_event(QMouseEvent*)),
-        this, SLOT(mouse_release_slot(QMouseEvent*)));
-    connect(nbtext, SIGNAL(motion_event(QMouseEvent*)),
-        this, SLOT(mouse_motion_slot(QMouseEvent*)));
-    connect(nbtext, SIGNAL(mime_data_handled(const QMimeData*, int*)),
-        this, SLOT(mime_data_handled_slot(const QMimeData*, int*)));
-    connect(nbtext, SIGNAL(mime_data_delivered(const QMimeData*, int*)),
-        this, SLOT(mime_data_delivered_slot(const QMimeData*, int*)));
-    connect(nbtext, SIGNAL(key_press_event(QKeyEvent*)),
-        this, SLOT(key_press_slot(QKeyEvent*)));
+    connect(nbtext, &QTfileTextEdit::resize_event,
+        this, &QTfilesListDlg::resize_slot);
+    connect(nbtext, &QTfileTextEdit::press_event,
+        this, &QTfilesListDlg::mouse_press_slot);
+    connect(nbtext, &QTfileTextEdit::release_event,
+        this, &QTfilesListDlg::mouse_release_slot);
+    connect(nbtext, &QTfileTextEdit::motion_event,
+        this, &QTfilesListDlg::mouse_motion_slot);
+    connect(nbtext, &QTfileTextEdit::mime_data_handled,
+        this, &QTfilesListDlg::mime_data_handled_slot);
+    connect(nbtext, &QTfileTextEdit::mime_data_delivered,
+        this, &QTfilesListDlg::mime_data_delivered_slot);
+    connect(nbtext, &QTfileTextEdit::key_press_event,
+        this, &QTfilesListDlg::key_press_slot);
 
     return (page);
 }

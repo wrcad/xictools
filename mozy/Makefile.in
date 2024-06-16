@@ -105,34 +105,34 @@ bin/xeditor.o: bin/xeditor.cc
 ####### Recursively generate libraries ################################
 
 lib/$(GRPREF)mozy.a::
-	cd src/$(GRPREF)mozy; $(MAKE)
+	$(MAKE) -C src/$(GRPREF)mozy
 
 lib/help.a::
-	cd src/help; $(MAKE)
+	$(MAKE) -C src/help
 
 lib/htm.a::
-	cd src/htm; $(MAKE)
+	$(MAKE) -C src/htm
 
 lib/httpget.a::
-	cd src/httpget; $(MAKE)
+	$(MAKE) -C src/httpget
 
 lib/imsave.a::
-	cd src/imsave; $(MAKE)
+	$(MAKE) -C src/imsave
 
 $(BASE)/lib/ginterf.a::
-	cd $(BASE)/ginterf; $(MAKE)
+	$(MAKE) -C $(BASE)/ginterf
 
 $(BASE)/lib/$(GRPREF)interf.a::
-	cd $(BASE)/$(GRPREF)interf; $(MAKE)
+	$(MAKE) -C $(BASE)/$(GRPREF)interf
 
 $(BASE)/lib/miscutil.a::
-	cd $(BASE)/miscutil; $(MAKE)
+	$(MAKE) -C $(BASE)/miscutil
 
 $(BASE)/lib/libregex.a::
-	cd $(BASE)/regex; $(MAKE)
+	$(MAKE) -C $(BASE)/regex
 
 foo $(MOZYRES) $(XEDRES):
-	cd $(@D); $(MAKE) $(@F)
+	$(MAKE) -C $(@D) $(@F)
 
 #######################################################################
 ####### Dependencies in this directory ################################
@@ -150,7 +150,7 @@ depend::
 	    done; \
 	fi
 	@for a in $(SUBDIRS); do \
-	  (cd $$a; $(MAKE) depend) \
+	  $(MAKE) -C $$a depend; \
 	done
 
 #######################################################################
@@ -164,15 +164,15 @@ eclean::
 clean:: eclean
 	-@rm -f bin/*.o
 	-@for a in $(SUBDIRS); do \
-	    (cd $$a; $(MAKE) $@) \
+	    $(MAKE) -C $$a $@; \
 	done
 
 distclean:: eclean
 	-@rm -f bin/*.o Makefile
 	-@for a in $(SUBDIRS); do \
-	    (cd $$a; $(MAKE) distclean) \
+	    $(MAKE) -C $$a distclean; \
 	done
-	-@cd packages; $(MAKE) $@
+	-@$(MAKE) -C packages $@
 
 #######################################################################
 ####### Installation ##################################################
@@ -212,7 +212,7 @@ $(dst_lib)/mozy/startup::
 
 $(dst_lib)/mozy/help::
 	if [ -f help/Makefile ]; then \
-	    (cd help; $(MAKE)); \
+	    $(MAKE) -C help ; \
 	fi
 	@$(BASE)/util/mkdirpth $@
 	help=`packages/util/mozy_files help`; \
@@ -246,6 +246,6 @@ package::
 	-rm -rf packages/root
 	mkdir packages/root
 	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install
-	cd packages; $(MAKE) package
+	$(MAKE) -C packages package
 
 #######################################################################

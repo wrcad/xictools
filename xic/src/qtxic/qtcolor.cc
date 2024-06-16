@@ -216,8 +216,8 @@ QTcolorDlg::QTcolorDlg(GRobject c)
     c_modemenu->addItem(tr("Electrical"));
     c_modemenu->setCurrentIndex(c_display_mode == Physical ? 0 : 1);
     hbox->addWidget(c_modemenu);
-    connect(c_modemenu, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(mode_menu_change_slot(int)));
+    connect(c_modemenu, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTcolorDlg::mode_menu_change_slot);
     if (ScedIf()->hasSced())
         c_modemenu->show();
     else
@@ -228,24 +228,24 @@ QTcolorDlg::QTcolorDlg(GRobject c)
     c_categmenu = new QComboBox();
     fill_categ_menu();
     hbox->addWidget(c_categmenu);
-    connect(c_categmenu, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(categ_menu_change_slot(int)));
+    connect(c_categmenu, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTcolorDlg::categ_menu_change_slot);
 
     // Attribute selection menu
     //
     c_attrmenu = new QComboBox();
     fill_attr_menu(CATEG_ATTR);
     hbox->addWidget(c_attrmenu);
-    connect(c_attrmenu, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(attr_menu_change_slot(int)));
+    connect(c_attrmenu, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTcolorDlg::attr_menu_change_slot);
 
     c_clrd = new QTcolorDialog();
     c_clrd->setWindowFlags(Qt::Widget);
     c_clrd->setOptions(QColorDialog::DontUseNativeDialog |
         QColorDialog::NoButtons);
     vbox->addWidget(c_clrd);
-    connect(c_clrd, SIGNAL(currentColorChanged(const QColor&)),
-        this, SLOT(color_selected_slot(const QColor&)));
+    connect(c_clrd, &QTcolorDialog::currentColorChanged,
+        this, &QTcolorDlg::color_selected_slot);
 
     hbox = new QHBoxLayout(0);
     hbox->setContentsMargins(qm);
@@ -257,23 +257,26 @@ QTcolorDlg::QTcolorDlg(GRobject c)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTcolorDlg::help_btn_slot);
 
     c_listbtn = new QToolButton();
     c_listbtn->setText(tr("Named Colors"));
     hbox->addWidget(c_listbtn);
     c_listbtn->setCheckable(true);
-    connect(c_listbtn, SIGNAL(toggled(bool)),
-        this, SLOT(colors_btn_slot(bool)));
+    connect(c_listbtn, &QAbstractButton::toggled,
+        this, &QTcolorDlg::colors_btn_slot);
 
     tbtn = new QToolButton();
     tbtn->setText(tr("Apply"));
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTcolorDlg::apply_btn_slot);
     hbox->addWidget(tbtn);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTcolorDlg::dismiss_btn_slot);
     hbox->addWidget(btn);
 
     update_color();

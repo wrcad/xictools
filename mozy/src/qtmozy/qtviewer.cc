@@ -78,14 +78,14 @@ QTviewer::QTviewer(int wid, int hei, htmDataInterface *dta, QWidget *prnt) :
     v_frame_style = frameStyle();
     v_iso8859 = false;
 
-    connect(v_darea, SIGNAL(press_event(QMouseEvent*)),
-        this, SLOT(press_event_slot(QMouseEvent*)));
-    connect(v_darea, SIGNAL(release_event(QMouseEvent*)),
-        this, SLOT(release_event_slot(QMouseEvent*)));
-    connect(v_darea, SIGNAL(motion_event(QMouseEvent*)),
-        this, SLOT(motion_event_slot(QMouseEvent*)));
-    connect(v_darea, SIGNAL(mouse_wheel_event(QWheelEvent*)),
-        this, SLOT(mouse_wheel_slot(QWheelEvent*)));
+    connect(v_darea, &QTcanvas::press_event,
+        this, &QTviewer::press_event_slot);
+    connect(v_darea, &QTcanvas::release_event,
+        this, &QTviewer::release_event_slot);
+    connect(v_darea, &QTcanvas::motion_event,
+        this, &QTviewer::motion_event_slot);
+    connect(v_darea, &QTcanvas::mouse_wheel_event,
+        this, &QTviewer::mouse_wheel_slot);
 
     v_timers = 0;
 
@@ -93,7 +93,7 @@ QTviewer::QTviewer(int wid, int hei, htmDataInterface *dta, QWidget *prnt) :
     v_btn_pressed = false;
     v_btn_timer.setInterval(250);
     v_btn_timer.setSingleShot(true);
-    connect(&v_btn_timer, SIGNAL(timeout()), this, SLOT(btn_timer_slot()));
+    connect(&v_btn_timer, &QTimer::timeout, this, &QTviewer::btn_timer_slot);
 
     const char *fn = Fnt()->getName(FNT_MOZY);
     if (fn)
@@ -102,8 +102,8 @@ QTviewer::QTviewer(int wid, int hei, htmDataInterface *dta, QWidget *prnt) :
     if (fn)
         set_fixed_font(fn);
     // Listen for font family names under FNT_MOZY and FNT_MOZY_FIXED.
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTviewer::font_changed_slot, Qt::QueuedConnection);
 }
 
 
@@ -1001,15 +1001,15 @@ QTviewer::tk_add_widget(htmForm *entry, htmForm *prnt)
     case FORM_RESET:
     case FORM_SUBMIT:
         {
-            QToolButton *btn = new QTform_button(entry, v_darea);
+            QTform_button *btn = new QTform_button(entry, v_darea);
             entry->widget = btn;
 
             if (entry->type == FORM_SUBMIT)
-                connect(btn, SIGNAL(pressed(htmForm*)),
-                    this, SLOT(form_submit_slot(htmForm*)));
+                connect(btn, &QTform_button::pressed,
+                    this, &QTviewer::form_submit_slot);
             else
-                connect(btn, SIGNAL(pressed(htmForm*)),
-                    this, SLOT(form_reset_slot(htmForm*)));
+                connect(btn, &QTform_button::pressed,
+                    this, &QTviewer::form_reset_slot);
         }
         break;
 

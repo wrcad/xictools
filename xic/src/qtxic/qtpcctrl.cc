@@ -138,7 +138,8 @@ QTpcellCtrlDlg::QTpcellCtrlDlg(GRobject c)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTpcellCtrlDlg::help_btn_slot);
 
     hbox = new QHBoxLayout(0);
     hbox->setContentsMargins(qm);
@@ -152,13 +153,13 @@ QTpcellCtrlDlg::QTpcellCtrlDlg(GRobject c)
     hbox->addWidget(pcc_abut);
     for (int i = 0; pcc_abutvals[i]; i++)
         pcc_abut->addItem(tr(pcc_abutvals[i]));
-    connect(pcc_abut, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(abut_mode_slot(int)));
+    connect(pcc_abut, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTpcellCtrlDlg::abut_mode_slot);
 
     pcc_hidestr = new QCheckBox(tr("Hide and disable stretch handles"));
     vbox->addWidget(pcc_hidestr);
-    connect(pcc_hidestr, SIGNAL(stateChanged(int)),
-        this, SLOT(hidestr_btn_slot(int)));
+    connect(pcc_hidestr, &QCheckBox::stateChanged,
+        this, &QTpcellCtrlDlg::hidestr_btn_slot);
 
     hbox = new QHBoxLayout(0);
     hbox->setContentsMargins(qm);
@@ -173,18 +174,18 @@ QTpcellCtrlDlg::QTpcellCtrlDlg(GRobject c)
     pcc_sb_psz->setMaximum(1000);
     pcc_sb_psz->setValue(DSP_MIN_FENCE_INST_PIXELS);
     hbox->addWidget(pcc_sb_psz);
-    connect(pcc_sb_psz, SIGNAL(valueChanged(int)),
-        this, SLOT(psz_change_slot(int)));
+    connect(pcc_sb_psz, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTpcellCtrlDlg::psz_change_slot);
 
     pcc_listsm = new QCheckBox(tr("List sub-masters as modified cells"));
     vbox->addWidget(pcc_listsm);
-    connect(pcc_listsm, SIGNAL(stateChanged(int)),
-        this, SLOT(listsm_btn_slot(int)));
+    connect(pcc_listsm, &QCheckBox::stateChanged,
+        this, &QTpcellCtrlDlg::listsm_btn_slot);
 
     pcc_allwarn = new QCheckBox(tr("Show all evaluation warnings"));
     vbox->addWidget(pcc_allwarn);
-    connect(pcc_allwarn, SIGNAL(stateChanged(int)),
-        this, SLOT(allwarn_btn_slot(int)));
+    connect(pcc_allwarn, &QCheckBox::stateChanged,
+        this, &QTpcellCtrlDlg::allwarn_btn_slot);
 
     // Dismiss button
     //
@@ -192,7 +193,8 @@ QTpcellCtrlDlg::QTpcellCtrlDlg(GRobject c)
     btn->setObjectName("Default");
     vbox->addSpacing(4);
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTpcellCtrlDlg::dismiss_btn_slot);
 
     update();
 }

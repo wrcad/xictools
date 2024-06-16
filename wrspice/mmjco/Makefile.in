@@ -48,10 +48,10 @@ mmjco_tscale.o: mmjco_tscale.cc mmjco_tscale.h
 	g++ $(CFLAGS) $(INCLUDE) -c mmjco_tscale.cc
 
 ./cmpfit-1.4/libmpfit.a:
-	cd cmpfit-1.4; $(MAKE)
+	$(MAKE) -C cmpfit-1.4
 
 clean::
-	-@cd cmpfit-1.4; $(MAKE) clean
+	-@$(MAKE) -C cmpfit-1.4 clean
 	-@rm -f libmmjco.a *.o mmjco mmjco.exe tca* tempr tempr.exe
 
 distclean: clean

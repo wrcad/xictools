@@ -109,7 +109,8 @@ queue_timer::start()
     if (!timer) {
         timer = new QTimer(0);
         timer->setInterval(50);
-        connect(timer, SIGNAL(timeout()), this, SLOT(run_queue_slot()));
+        connect(timer, &QTimer::timeout,
+            this, &queue_timer::run_queue_slot);
     }
     timer->start();
 }
@@ -420,15 +421,15 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QDialog(prnt),
     h_viewer->freeze();
 
     h_Backward = menubar->addAction(tr("back"),
-        this, SLOT(backward_slot()));
+        this, &QThelpDlg::backward_slot);
     h_Backward->setIcon(QIcon(QPixmap(backward_xpm)));
 
     h_Forward = menubar->addAction(tr("forw"),
-        this, SLOT(forward_slot()));
+        this, &QThelpDlg::forward_slot);
     h_Forward->setIcon(QIcon(QPixmap(forward_xpm)));
 
     h_Stop = menubar->addAction(tr("stop"),
-        this, SLOT(stop_slot()));
+        this, &QThelpDlg::stop_slot);
     h_Stop->setIcon(QIcon(QPixmap(stop_xpm)));
 
 #ifdef USE_QTOOLBAR
@@ -443,42 +444,42 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QDialog(prnt),
 #endif
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     h_Open = h_main_menus[0]->addAction(tr("&Open"), Qt::CTRL|Qt::Key_O,
-        this, SLOT(open_slot()));
+        this, &QThelpDlg::open_slot);
     h_OpenFile = h_main_menus[0]->addAction(tr("Open &File"),
-        Qt::CTRL|Qt::Key_F, this, SLOT(open_file_slot()));
+        Qt::CTRL|Qt::Key_F, this, &QThelpDlg::open_file_slot);
     h_Save = h_main_menus[0]->addAction(tr("&Save"), Qt::CTRL|Qt::Key_S,
-        this, SLOT(save_slot()));
+        this, &QThelpDlg::save_slot);
     h_Print = h_main_menus[0]->addAction(tr("&Print"), Qt::CTRL|Qt::Key_P,
-        this, SLOT(print_slot()));
+        this, &QThelpDlg::print_slot);
     h_Reload = h_main_menus[0]->addAction(tr("&Reload"), Qt::CTRL|Qt::Key_R,
-        this, SLOT(reload_slot()));
+        this, &QThelpDlg::reload_slot);
     // "Old Charset" 8859 support removed.
     h_MkFIFO = h_main_menus[0]->addAction(tr("&Make FIFO"), Qt::CTRL|Qt::Key_M,
-        this, SLOT(make_fifo_slot(bool)));
+        this, &QThelpDlg::make_fifo_slot);
     h_MkFIFO->setCheckable(true);
 
     h_main_menus[0]->addSeparator();
     h_Quit = h_main_menus[0]->addAction(tr("&Quit"), Qt::CTRL|Qt::Key_Q,
-        this, SLOT(quit_slot()));
+        this, &QThelpDlg::quit_slot);
 #else
     h_Open = h_main_menus[0]->addAction(tr("&Open"), this,
-        SLOT(open_slot()), Qt::CTRL|Qt::Key_O);
+        &QThelpDlg::open_slot, Qt::CTRL|Qt::Key_O);
     h_OpenFile = h_main_menus[0]->addAction(tr("Open &File"), this,
-        SLOT(open_file_slot()),  Qt::CTRL|Qt::Key_F);
+        &QThelpDlg::open_file_slot,  Qt::CTRL|Qt::Key_F);
     h_Save = h_main_menus[0]->addAction(tr("&Save"), this,
-        SLOT(save_slot()), Qt::CTRL|Qt::Key_S);
+        &QThelpDlg::save_slot, Qt::CTRL|Qt::Key_S);
     h_Print = h_main_menus[0]->addAction(tr("&Print"), this,
-        SLOT(print_slot()), Qt::CTRL|Qt::Key_P);
+        &QThelpDlg::print_slot, Qt::CTRL|Qt::Key_P);
     h_Reload = h_main_menus[0]->addAction(tr("&Reload"), this,
-        SLOT(reload_slot()), Qt::CTRL|Qt::Key_R);
+        &QThelpDlg::reload_slot, Qt::CTRL|Qt::Key_R);
     // "Old Charset" 8859 support removed.
     h_MkFIFO = h_main_menus[0]->addAction(tr("&Make FIFO"), this,
-        SLOT(make_fifo_slot(bool)), Qt::CTRL|Qt::Key_M);
+        &QThelpDlg::make_fifo_slot, Qt::CTRL|Qt::Key_M);
     h_MkFIFO->setCheckable(true);
 
     h_main_menus[0]->addSeparator();
     h_Quit = h_main_menus[0]->addAction(tr("&Quit"), this,
-        SLOT(quit_slot()), Qt::CTRL|Qt::Key_Q);
+        &QThelpDlg::quit_slot, Qt::CTRL|Qt::Key_Q);
 #endif
 
 #ifdef USE_QTOOLBAR
@@ -492,60 +493,60 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QDialog(prnt),
     h_main_menus[1] = menubar->addMenu(tr("&Options"));
 #endif
     h_Config = h_main_menus[1]->addAction(tr("Save Config"),
-        this, SLOT(config_slot()));
+        this, &QThelpDlg::config_slot);
     h_Proxy = h_main_menus[1]->addAction(tr("Set Proxy"),
-        this, SLOT(proxy_slot()));
+        this, &QThelpDlg::proxy_slot);
     h_Search = h_main_menus[1]->addAction(tr("&Search Database"),
-        this, SLOT(search_slot()));
+        this, &QThelpDlg::search_slot);
     h_FindText = h_main_menus[1]->addAction(tr("Find &Text"),
-        this, SLOT(find_text_slot()));
+        this, &QThelpDlg::find_text_slot);
     h_DefaultColors = h_main_menus[1]->addAction(tr("Default Colors"),
-        this, SLOT(colors_slot(bool)));
+        this, &QThelpDlg::colors_slot);
     h_DefaultColors->setCheckable(true);
     h_SetFont = h_main_menus[1]->addAction(tr("Set &Font"));
     h_SetFont->setCheckable(true);
-    connect(h_SetFont, SIGNAL(toggled(bool)),
-        this, SLOT(set_font_slot(bool)));
+    connect(h_SetFont, &QAction::toggled,
+        this, &QThelpDlg::set_font_slot);
     h_DontCache = h_main_menus[1]->addAction(tr("&Don't Cache"));
     h_DontCache->setCheckable(true);
-    connect(h_DontCache, SIGNAL(toggled(bool)),
-        this, SLOT(dont_cache_slot(bool)));
+    connect(h_DontCache, &QAction::toggled,
+        this, &QThelpDlg::dont_cache_slot);
     h_DontCache->setChecked(h_params->NoCache);
     h_ClearCache = h_main_menus[1]->addAction(tr("&Clear Cache"),
-        this, SLOT(clear_cache_slot()));
+        this, &QThelpDlg::clear_cache_slot);
     h_ReloadCache = h_main_menus[1]->addAction(tr("&Reload Cache"),
-        this, SLOT(reload_cache_slot()));
+        this, &QThelpDlg::reload_cache_slot);
     h_ShowCache = h_main_menus[1]->addAction(tr("Show Cache"),
-        this, SLOT(show_cache_slot()));
+        this, &QThelpDlg::show_cache_slot);
     h_main_menus[1]->addSeparator();
     h_NoCookies = h_main_menus[1]->addAction(tr("No Cookies"));
     h_NoCookies->setCheckable(true);
-    connect(h_NoCookies, SIGNAL(toggled(bool)),
-        this, SLOT(no_cookies_slot(bool)));
+    connect(h_NoCookies, &QAction::toggled,
+        this, &QThelpDlg::no_cookies_slot);
     h_NoCookies->setChecked(h_params->NoCookies);
 
     QActionGroup *ag = new QActionGroup(this);
     h_NoImages = h_main_menus[1]->addAction(tr("No Images"));
     h_NoImages->setCheckable(true);
-    connect(h_NoImages, SIGNAL(toggled(bool)),
-        this, SLOT(no_images_slot(bool)));
+    connect(h_NoImages, &QAction::toggled,
+        this, &QThelpDlg::no_images_slot);
     ag->addAction(h_NoImages);
     h_SyncImages = h_main_menus[1]->addAction(tr("Sync Images"));
     h_SyncImages->setCheckable(true);
-    connect(h_SyncImages, SIGNAL(toggled(bool)),
-        this, SLOT(sync_images_slot(bool)));
+    connect(h_SyncImages, &QAction::toggled,
+        this, &QThelpDlg::sync_images_slot);
     ag->addAction(h_SyncImages);
     h_DelayedImages =
         h_main_menus[1]->addAction(tr("Delayed Images"));
     h_DelayedImages->setCheckable(true);
-    connect(h_DelayedImages, SIGNAL(toggled(bool)),
-        this, SLOT(delayed_images_slot(bool)));
+    connect(h_DelayedImages, &QAction::toggled,
+        this, &QThelpDlg::delayed_images_slot);
     ag->addAction(h_DelayedImages);
     h_ProgressiveImages =
         h_main_menus[1]->addAction(tr("Progressive Images"));
     h_ProgressiveImages->setCheckable(true);
-    connect(h_ProgressiveImages, SIGNAL(toggled(bool)),
-        this, SLOT(progressive_images_slot(bool)));
+    connect(h_ProgressiveImages, &QAction::toggled,
+        this, &QThelpDlg::progressive_images_slot);
     ag->addAction(h_ProgressiveImages);
     if (h_params->LoadMode == HLPparams::LoadProgressive)
         h_ProgressiveImages->setChecked(true);
@@ -561,20 +562,20 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QDialog(prnt),
     ag = new QActionGroup(this);
     h_AnchorPlain = h_main_menus[1]->addAction(tr("Anchor Plain"));
     h_AnchorPlain->setCheckable(true);
-    connect(h_AnchorPlain, SIGNAL(toggled(bool)),
-        this, SLOT(anchor_plain_slot(bool)));
+    connect(h_AnchorPlain, &QAction::toggled,
+        this, &QThelpDlg::anchor_plain_slot);
     ag->addAction(h_AnchorPlain);
     h_AnchorButtons =
         h_main_menus[1]->addAction(tr("Anchor Buttons"));
     h_AnchorButtons->setCheckable(true);
-    connect(h_AnchorButtons, SIGNAL(toggled(bool)),
-        this, SLOT(anchor_buttons_slot(bool)));
+    connect(h_AnchorButtons, &QAction::toggled,
+        this, &QThelpDlg::anchor_buttons_slot);
     ag->addAction(h_AnchorButtons);
     h_AnchorUnderline =
         h_main_menus[1]->addAction(tr("Anchor Underline"));
     h_AnchorUnderline->setCheckable(true);
-    connect(h_AnchorUnderline, SIGNAL(toggled(bool)),
-        this, SLOT(anchor_underline_slot(bool)));
+    connect(h_AnchorUnderline, &QAction::toggled,
+        this, &QThelpDlg::anchor_underline_slot);
     ag->addAction(h_AnchorUnderline);
     if (h_params->AnchorButtons)
         h_AnchorButtons->setChecked(true);
@@ -586,25 +587,25 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QDialog(prnt),
     h_AnchorHighlight =
         h_main_menus[1]->addAction(tr("Anchor Highlight"));
     h_AnchorHighlight->setCheckable(true);
-    connect(h_AnchorHighlight, SIGNAL(toggled(bool)),
-        this, SLOT(anchor_highlight_slot(bool)));
+    connect(h_AnchorHighlight, &QAction::toggled,
+        this, &QThelpDlg::anchor_highlight_slot);
     h_AnchorHighlight->setChecked(h_params->AnchorHighlight);
     h_BadHTML = h_main_menus[1]->addAction(tr("Bad HTML Warnings"));
     h_BadHTML->setCheckable(true);
-    connect(h_BadHTML, SIGNAL(toggled(bool)),
-        this, SLOT(bad_html_slot(bool)));
+    connect(h_BadHTML, &QAction::toggled,
+        this, &QThelpDlg::bad_html_slot);
     h_BadHTML->setChecked(h_params->BadHTMLwarnings);
     h_FreezeAnimations =
         h_main_menus[1]->addAction(tr("Freeze Animations"));
     h_FreezeAnimations->setCheckable(true);
-    connect(h_FreezeAnimations, SIGNAL(toggled(bool)),
-        this, SLOT(freeze_animations_slot(bool)));
+    connect(h_FreezeAnimations, &QAction::toggled,
+        this, &QThelpDlg::freeze_animations_slot);
     h_FreezeAnimations->setChecked(h_params->FreezeAnimations);
     h_LogTransactions =
         h_main_menus[1]->addAction(tr("Log Transactions"));
     h_LogTransactions->setCheckable(true);
-    connect(h_LogTransactions, SIGNAL(toggled(bool)),
-        this, SLOT(log_transactions_slot(bool)));
+    connect(h_LogTransactions, &QAction::toggled,
+        this, &QThelpDlg::log_transactions_slot);
     h_LogTransactions->setChecked(h_params->PrintTransact);
 
 #ifdef USE_QTOOLBAR
@@ -618,28 +619,29 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QDialog(prnt),
     h_main_menus[2] = menubar->addMenu(tr("&Bookmarks"));
 #endif
     h_AddBookmark = h_main_menus[2]->addAction(tr("Add"),
-        this, SLOT(add_slot()));
+        this, &QThelpDlg::add_slot);
     h_DeleteBookmark = h_main_menus[2]->addAction(tr("Delete"),
-        this, SLOT(delete_slot()));
+        this, &QThelpDlg::delete_slot);
     h_DeleteBookmark->setCheckable(true);
     h_main_menus[2]->addSeparator();
 
     menubar->addSeparator();
 #ifdef USE_QTOOLBAR
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-    menubar->addAction(tr("Help"), Qt::CTRL|Qt::Key_H, this, SLOT(help_slot()));
+    menubar->addAction(tr("Help"), Qt::CTRL|Qt::Key_H,
+        this, &QThelpDlg::help_slot);
 #else
-    a = menubar->addAction(tr("&Help"), this, SLOT(help_slot()));
+    a = menubar->addAction(tr("&Help"), this, &QThelpDlg::help_slot);
     a->setShortcut(QKeySequence("Ctrl+H"));
 #endif
 #else
     h_main_menus[3] = menubar->addMenu(tr("&Help"));
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     h_Help = h_main_menus[3]->addAction(tr("&Help"), Qt::CTRL|Qt::Key_H,
-        this, SLOT(help_slot()));
+        this, &QThelpDlg::help_slot);
 #else
     h_Help = h_main_menus[3]->addAction(tr("&Help"), this,
-        SLOT(help_slot()), Qt::CTRL|Qt::Key_H);
+        &QThelpDlg::help_slot, Qt::CTRL|Qt::Key_H);
 #endif
 #endif
 
@@ -652,8 +654,8 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QDialog(prnt),
         h_main_menus[2]->addAction(
             new action_item(b, h_main_menus[2]));
     }
-    connect(h_main_menus[2], SIGNAL(triggered(QAction*)), this,
-        SLOT(bookmark_slot(QAction*)));
+    connect(h_main_menus[2], &QMenu::triggered,
+        this, &QThelpDlg::bookmark_slot);
 
     h_Backward->setEnabled(false);
     h_Forward->setEnabled(false);
@@ -1018,9 +1020,10 @@ QThelpDlg::show_cache(int mode)
     if (h_cache_list) {
         h_cache_list->register_usrptr((void**)&h_cache_list);
         QTlistDlg *list = dynamic_cast<QTlistDlg*>(h_cache_list);
-        if (list)
-            connect(list, SIGNAL(action_call(const char*, void*)),
-                this, SLOT(cache_choice_slot(const char*)));
+        if (list) {
+            connect(list, &QTlistDlg::action_call,
+                this, &QThelpDlg::cache_choice_slot);
+        }
     }
 }
 
@@ -1313,8 +1316,8 @@ void
 QThelpDlg::open_slot()
 {
     PopUpInput("Enter keyword, file name, or URL", "", "Open", 0, 0);
-    connect(wb_input, SIGNAL(action_call(const char*, void*)), this,
-        SLOT(do_open_slot(const char*, void*)));
+    connect(wb_input, &QTledDlg::action_call,
+        this, &QThelpDlg::do_open_slot);
 }
 
 
@@ -1323,9 +1326,10 @@ QThelpDlg::open_file_slot()
 {
     GRfilePopup *fs = PopUpFileSelector(fsSEL, GRloc(), 0, 0, 0, 0);
     QTfileDlg *fsel = dynamic_cast<QTfileDlg*>(fs);
-    if (fsel)
-        connect(fsel, SIGNAL(file_selected(const char*, void*)),
-            this, SLOT(do_open_slot(const char*, void*)));
+    if (fsel) {
+        connect(fsel, &QTfileDlg::file_selected,
+            this, &QThelpDlg::do_open_slot);
+    }
 }
 
 
@@ -1333,8 +1337,8 @@ void
 QThelpDlg::save_slot()
 {
     PopUpInput(0, "", "Save", 0, 0);
-    connect(wb_input, SIGNAL(action_call(const char*, void*)), this,
-        SLOT(do_save_slot(const char*, void*)));
+    connect(wb_input, &QTledDlg::action_call,
+        this, &QThelpDlg::do_save_slot);
 }
 
 
@@ -1423,8 +1427,8 @@ void
 QThelpDlg::search_slot()
 {
     PopUpInput("Enter keyword for database search:", "", "Search", 0, 0);
-    connect(wb_input, SIGNAL(action_call(const char*, void*)), this,
-        SLOT(do_search_slot(const char*, void*)));
+    connect(wb_input, &QTledDlg::action_call,
+        this, &QThelpDlg::do_search_slot);
 }
 
 
@@ -1438,12 +1442,12 @@ QThelpDlg::find_text_slot()
         h_searcher->set_visible(true);
 
         h_searcher->set_ign_case(h_ign_case);
-        connect(h_searcher, SIGNAL(search_down()),
-            this, SLOT(search_down_slot()));
-        connect(h_searcher, SIGNAL(search_up()),
-            this, SLOT(search_up_slot()));
-        connect(h_searcher, SIGNAL(ignore_case(bool)),
-            this, SLOT(ignore_case_slot(bool)));
+        connect(h_searcher, &QTsearchDlg::search_down,
+            this, &QThelpDlg::search_down_slot);
+        connect(h_searcher, &QTsearchDlg::search_up,
+            this, &QThelpDlg::search_up_slot);
+        connect(h_searcher, &QTsearchDlg::ignore_case,
+            this, &QThelpDlg::ignore_case_slot);
     }
 }
 
