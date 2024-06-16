@@ -48,7 +48,7 @@
 #include <winsock2.h>
 #include <windowsx.h>
 #include <gdk/gdkwin32.h>
-#include "mswdraw.h"
+#include "miscutil/mswdraw.h"
 #include "mswpdev.h"
 using namespace mswinterf;
 #endif
