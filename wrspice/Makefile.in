@@ -428,7 +428,7 @@ install_test::
 
 install_links::
 	-@if [ -n "$(EXESUFFIX)" ]; then \
-	    $(BASE)/util/make_junc $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice \
+	    $(BASE)/util/make_link $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice \
   $(destn); \
 	    $(BASE)/util/make_link $(toolbin)/mmjco$(EXESUFFIX) \
   $(destn)/bin/mmjco$(EXESUFFIX); \
@@ -510,9 +510,11 @@ $(destn)/help::
 	@$(BASE)/util/mkdirpth $@ $@/screenshots
 	help=`packages/util/wrspice_files help`; \
 	for a in $$help; do \
-	    $(INSTALL_LIB) help/$$a $@; \
+	    if [ $$a == mmjco.txt ]; then
+	        cp -f mmjco/README $@/mmjco.txt;
+	    else
+	        $(INSTALL_LIB) help/$$a $@; \
 	done
-	cp -f mmjco/README $@/mmjco.txt;
 	helpss=`packages/util/wrspice_files help_screenshots`; \
         for a in $$helpss; do \
 	    $(INSTALL_LIB) help/screenshots/$$a $@/screenshots; \

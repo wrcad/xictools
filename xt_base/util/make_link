@@ -1,17 +1,36 @@
 #! /bin/sh
 
 # Shell script to create a Windows symbolic link.
-# Usage: make_link link pathdd
+# Usage: make_link link path
 
-# In order to use the Windows mklink command, user must be running with
+# In order to use the Windows mklink command to link files, user must be running with
 # Admin privileges, or Developer Mode must be on.  Set this from
-# Settings/Update & Security/For Developers
+# Settings/Update & Security/For Developers (Windows 10) or from Settings->System,
+# scroll to For developers, and turn Developer Mode on (Windows 11).
+# If the path is to a directory, a "junction" is created, which for some reason does
+# not require special permission.
 
 link=$1
 path=$2
+if [ -z "$link" -o -z "$path" ]; then
+    echo "Error: make_link requires two arguments, command failed."
+    exit 1
+fi
 
-linkd=`echo $link | sed 's/\//\\\\/g'`
-pathd=`echo $path | sed 's/\//\\\\/g'`
-com=`echo cmd /c "'"mklink $linkd $pathd"'"`
-#echo $com
-eval $com
+linkd=`echo $link | sed -e s%/%'\\\\'%g`
+if [ -e $link ]; then
+    rm -f $link
+fi
+pathd=`echo $path | sed -e s%/%'\\\\'%g`
+bfnam=make_link$$.bat
+if [ -d $path ]; then
+    echo mklink /J $linkd $pathd > $bfnam
+elif [ -e $path ]; then
+    echo mklink $linkd $pathd > $bfnam
+else
+    echo "Error: $path does not exist, command failed."
+    exit 1
+fi
+chmod +x $bfnam
+./$bfnam
+rm -f $bfnam

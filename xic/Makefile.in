@@ -359,7 +359,7 @@ install_test::
 
 install_links::
 	@if [ -n "$(EXESUFFIX)" ]; then \
-	    $(BASE)/util/make_junc $(INSTALL_PREFIX)/$(TOOLROOT)/xic $(destn); \
+	    $(BASE)/util/make_link $(INSTALL_PREFIX)/$(TOOLROOT)/xic $(destn); \
 	    $(BASE)/util/make_link $(toolbin)/xic$(EXESUFFIX) \
  $(destn)/bin/xic$(EXESUFFIX); \
 	    $(BASE)/util/make_link $(toolbin)/xic.dll $(destn)/bin/xic.dll; \
