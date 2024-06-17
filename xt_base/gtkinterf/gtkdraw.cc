@@ -49,7 +49,7 @@
 #include <windowsx.h>
 #include <gdk/gdkwin32.h>
 #include "miscutil/mswdraw.h"
-#include "mswpdev.h"
+#include "miscutil/mswpdev.h"
 using namespace mswinterf;
 #endif
 

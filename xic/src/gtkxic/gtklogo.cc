@@ -524,7 +524,6 @@ sLgo::lgo_sav_cb(const char *fname, void*)
         return (ESTR_IGN);
     if (filestat::create_bak(tok)) {
         FILE *fp = fopen(tok, "w");
-        delete [] tok;
         if (fp) {
             ED()->logoFont()->dumpFont(fp);
             fclose(fp);

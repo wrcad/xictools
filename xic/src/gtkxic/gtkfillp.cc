@@ -524,10 +524,10 @@ sFpe::sFpe(GRobject c) : GTKdraw(XW_DRAWING)
             gtk_box_pack_start(GTK_BOX(hbox), iframe, true, true, 0);
 #if GTK_CHECK_VERSION(3,0,0)
             g_signal_connect(G_OBJECT(darea), "draw",
-                G_CALLBACK(fp_redraw_store_hdlr), (void*)(long)(i + j*3));
+                G_CALLBACK(fp_redraw_store_hdlr), (void*)(uintptr_t)(i + j*3));
 #else
             g_signal_connect(G_OBJECT(darea), "expose-event",
-                G_CALLBACK(fp_redraw_store_hdlr), (void*)(long)(i + j*3));
+                G_CALLBACK(fp_redraw_store_hdlr), (void*)(uintptr_t)(i + j*3));
 #endif
         }
         gtk_box_pack_start(GTK_BOX(vbox), hbox, true, true, 0);

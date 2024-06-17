@@ -243,7 +243,7 @@ sCf::sCf(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*), void *arg)
             gtk_widget_set_name(menu_item, buf);
             gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
             g_signal_connect(G_OBJECT(menu_item), "activate",
-                G_CALLBACK(cf_sto_menu_proc), (void*)(long)i);
+                G_CALLBACK(cf_sto_menu_proc), (void*)(uintptr_t)i);
             gtk_widget_show(menu_item);
         }
         gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), menu);
@@ -268,7 +268,7 @@ sCf::sCf(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*), void *arg)
             gtk_widget_set_name(menu_item, buf);
             gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
             g_signal_connect(G_OBJECT(menu_item), "activate",
-                G_CALLBACK(cf_rcl_menu_proc), (void*)(long)i);
+                G_CALLBACK(cf_rcl_menu_proc), (void*)(uintptr_t)i);
             gtk_widget_show(menu_item);
         }
         gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), menu);

@@ -94,7 +94,7 @@
 #define NOTMAPPED 255
 
 // Pointer to menu handler.
-#define voidptr (gpointer)(long)
+#define voidptr (gpointer)(uintptr_t)
 
 namespace {
     const char *MIDX = "midx";

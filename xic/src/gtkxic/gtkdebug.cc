@@ -375,7 +375,6 @@ sDbg::sDbg(GRobject c)
     db_in_undo = true;
     db_undo_list = 0;
     db_redo_list = 0;
-    memset(db_breaks, 0, NUMBKPTS*sizeof(sBp));
 
     wb_shell = gtk_NewPopup(0, "Script Debugger", db_cancel_proc, 0);
     if (!wb_shell)
