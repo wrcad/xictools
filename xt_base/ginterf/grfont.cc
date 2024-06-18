@@ -769,7 +769,7 @@ xfd_t::family_xfd(int *psz, bool append)
         if (psz)
             *psz = sz;
         if (append)
-            snprintf(t, 8, "-%d", sz);
+            snprintf(t, 12, "-%d", sz);
     }
     return (lstring::copy(buf));
 }

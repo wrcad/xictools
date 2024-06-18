@@ -161,35 +161,40 @@ QToaLibsDlg::QToaLibsDlg(GRobject c) : QTbag(this)
     lb_openbtn = new QToolButton();
     lb_openbtn->setText(tr("Open/Close"));
     hbox->addWidget(lb_openbtn);
-    connect(lb_openbtn, SIGNAL(clicked()), this, SLOT(open_btn_slot()));
+    connect(lb_openbtn, &QAbstractButton::clicked,
+        this, &QToaLibsDlg::open_btn_slot);
 
     lb_writbtn = new QToolButton();
     lb_writbtn->setText(tr("Writable Y/N"));
     hbox->addWidget(lb_writbtn);
-    connect(lb_writbtn, SIGNAL(clicked()), this, SLOT(write_btn_slot()));
+    connect(lb_writbtn, &QAbstractButton::clicked,
+        this, &QToaLibsDlg::write_btn_slot);
 
     lb_contbtn = new QToolButton();
     lb_contbtn->setText(tr("Contents"));
     hbox->addWidget(lb_contbtn);
-    connect(lb_contbtn, SIGNAL(clicked()), this, SLOT(cont_btn_slot()));
+    connect(lb_contbtn, &QAbstractButton::clicked,
+        this, &QToaLibsDlg::cont_btn_slot);
 
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Create"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(create_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QToaLibsDlg::create_btn_slot);
 
     lb_defsbtn = new QToolButton();
     lb_defsbtn->setText(tr("Defaults"));
     hbox->addWidget(lb_defsbtn);
     lb_defsbtn->setCheckable(true);
-    connect(lb_defsbtn, SIGNAL(toggled(bool)),
-        this, SLOT(defs_btn_slot(bool)));
+    connect(lb_defsbtn, &QAbstractButton::toggled,
+        this, &QToaLibsDlg::defs_btn_slot);
 
     hbox->addSpacing(1);
     tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QToaLibsDlg::help_btn_slot);
 
     hbox = new QHBoxLayout(0);
     hbox->setContentsMargins(qm);
@@ -200,13 +205,14 @@ QToaLibsDlg::QToaLibsDlg(GRobject c) : QTbag(this)
     lb_techbtn->setText(tr("Tech"));
     hbox->addWidget(lb_techbtn);
     lb_techbtn->setCheckable(true);
-    connect(lb_techbtn, SIGNAL(toggled(bool)),
-        this, SLOT(tech_btn_slot(bool)));
+    connect(lb_techbtn, &QAbstractButton::toggled,
+        this, &QToaLibsDlg::tech_btn_slot);
 
     lb_destbtn = new QToolButton();
     lb_destbtn->setText(tr("Destroy"));
     hbox->addWidget(lb_destbtn);
-    connect(lb_destbtn, SIGNAL(clicked()), this, SLOT(dest_btn_slot()));
+    connect(lb_destbtn, &QAbstractButton::clicked,
+        this, &QToaLibsDlg::dest_btn_slot);
 
     sLstr lstr;
     lstr.add("Using OpenAccess ");
@@ -227,18 +233,18 @@ QToaLibsDlg::QToaLibsDlg(GRobject c) : QTbag(this)
 
     lb_both = new QRadioButton(tr("All"));
     hbox->addWidget(lb_both);
-    connect(lb_both, SIGNAL(toggled(bool)),
-        this, SLOT(both_btn_slot(bool)));
+    connect(lb_both, &QRadioButton::toggled,
+        this, &QToaLibsDlg::both_btn_slot);
 
     lb_phys = new QRadioButton(tr("Physical"));
     hbox->addWidget(lb_phys);
-    connect(lb_phys, SIGNAL(toggled(bool)),
-        this, SLOT(phys_btn_slot(bool)));
+    connect(lb_phys, &QRadioButton::toggled,
+        this, &QToaLibsDlg::phys_btn_slot);
 
     lb_elec = new QRadioButton(tr("Electrical"));
     hbox->addWidget(lb_elec);
-    connect(lb_elec, SIGNAL(toggled(bool)),
-        this, SLOT(elec_btn_slot(bool)));
+    connect(lb_elec, &QRadioButton::toggled,
+        this, &QToaLibsDlg::elec_btn_slot);
 
     // scrolled list
     //
@@ -249,29 +255,28 @@ QToaLibsDlg::QToaLibsDlg(GRobject c) : QTbag(this)
     lb_list->header()->setMinimumSectionSize(25);
     lb_list->header()->resizeSection(0, 50);
 
-    connect(lb_list,
-        SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
-        this,
-        SLOT(current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*)));
-    connect(lb_list, SIGNAL(itemActivated(QTreeWidgetItem*, int)),
-        this, SLOT(item_activated_slot(QTreeWidgetItem*, int)));
-    connect(lb_list, SIGNAL(itemClicked(QTreeWidgetItem*, int)),
-        this, SLOT(item_clicked_slot(QTreeWidgetItem*, int)));
-    connect(lb_list, SIGNAL(itemSelectionChanged()),
-        this, SLOT(item_selection_changed_slot()));
+    connect(lb_list, &QTreeWidget::currentItemChanged,
+        this, &QToaLibsDlg::current_item_changed_slot);
+    connect(lb_list, &QTreeWidget::itemActivated,
+        this, &QToaLibsDlg::item_activated_slot);
+    connect(lb_list, &QTreeWidget::itemClicked,
+        this, &QToaLibsDlg::item_clicked_slot);
+    connect(lb_list, &QTreeWidget::itemSelectionChanged,
+        this, &QToaLibsDlg::item_selection_changed_slot);
 
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_PROP))
         lb_list->setFont(*fnt);
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QToaLibsDlg::font_changed_slot, Qt::QueuedConnection);
 
     // dismiss button line
     //
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QToaLibsDlg::dismiss_btn_slot);
 
     // Create pixmaps.
     lb_open_pm = new QPixmap(wb_open_folder_xpm);

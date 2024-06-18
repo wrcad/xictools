@@ -63,8 +63,8 @@ class QToolButton;
 class QToolBar;
 
 namespace qtinterf {
-    class file_tree_widget;
-    class file_list_widget;
+    class QTfileTreeWidget;
+    class QTfileListWidget;
     class QTfileDlg;
 }
 
@@ -121,7 +121,7 @@ public:
     void set_label();
     void flash(QTreeWidgetItem*);
 
-    QSize sizeHint() const      { return (QSize(500, 250)); }
+    QSize sizeHint() const;
     QSize minimumSizeHint()     const { return (QSize(250, 125)); }
 
     static char *any_selection()    { return (FSmonitor.any_selection()); }
@@ -170,8 +170,8 @@ private:
     stringlist *tokenize_filter();
     char *get_newdir(const char*);
 
-    file_tree_widget *f_tree;
-    file_list_widget *f_list;
+    QTfileTreeWidget *f_tree;
+    QTfileListWidget *f_list;
     QLabel      *f_label;
     QComboBox   *f_filter;
     QAction     *f_Up;

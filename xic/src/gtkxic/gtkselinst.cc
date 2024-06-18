@@ -539,7 +539,7 @@ sCI::ci_btn_hdlr(GtkWidget *caller, GdkEvent *event, void*)
                     }
                 }
             }
-            delete cname;
+            delete [] cname;
         }
     }
     delete [] string;

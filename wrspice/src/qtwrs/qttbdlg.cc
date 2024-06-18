@@ -175,8 +175,8 @@ QTtbDlg::QTtbDlg(int xx, int yy) : QTdraw(0)
         a->setToolTip(tr("Quit WRspice"));
     }
     a->setData(MA_dismiss);
-    connect(tb_file_menu, SIGNAL(triggered(QAction*)),
-        this, SLOT(file_menu_slot(QAction*)));
+    connect(tb_file_menu, &QMenu::triggered,
+        this, &QTtbDlg::file_menu_slot);
 
     // Edit menu.
     tb_edit_menu = menubar->addMenu(tr("&Edit"));
@@ -193,8 +193,8 @@ QTtbDlg::QTtbDlg(int xx, int yy) : QTdraw(0)
         a->setShortcut(QKeySequence("Ctrl+X"));
         a->setToolTip(tr("Start Xic"));
     }
-    connect(tb_edit_menu, SIGNAL(triggered(QAction*)),
-        this, SLOT(edit_menu_slot(QAction*)));
+    connect(tb_edit_menu, &QMenu::triggered,
+        this, &QTtbDlg::edit_menu_slot);
 
     // Tools menu.
     tb_tools_menu = menubar->addMenu(tr("&Tools"));
@@ -315,8 +315,8 @@ QTtbDlg::QTtbDlg(int xx, int yy) : QTdraw(0)
     a->setToolTip(tr("Set debugging options"));
     QTdev::SetStatus(a, (QTtoolbar::entries(tid_debug)->dialog() != 0));
     QTtoolbar::entries(tid_debug)->set_action(a);
-    connect(tb_tools_menu, SIGNAL(triggered(QAction*)),
-        this, SLOT(tools_menu_slot(QAction*)));
+    connect(tb_tools_menu, &QMenu::triggered,
+        this, &QTtbDlg::tools_menu_slot);
 
     // Help menu.
     tb_help_menu = menubar->addMenu(tr("&Help"));
@@ -338,8 +338,8 @@ QTtbDlg::QTtbDlg(int xx, int yy) : QTdraw(0)
     a->setData(MA_notes);
     a->setShortcut(QKeySequence("Ctrl+N"));
     a->setToolTip(tr("Show release notes"));
-    connect(tb_help_menu, SIGNAL(triggered(QAction*)),
-        this, SLOT(help_menu_slot(QAction*)));
+    connect(tb_help_menu, &QMenu::triggered,
+        this, &QTtbDlg::help_menu_slot);
 
     QMargins qmtop(2, 2, 2, 2);
     QMargins qm;
@@ -357,21 +357,21 @@ QTtbDlg::QTtbDlg(int xx, int yy) : QTdraw(0)
     btn->setIcon(QPixmap(tm30));
     hbox->addWidget(btn);
     btn->setToolTip(tr("Pop up email client"));
-    connect(btn, SIGNAL(clicked()), this, SLOT(wr_btn_slot()));
+    connect(btn, &QAbstractButton::clicked, this, &QTtbDlg::wr_btn_slot);
 
     // the Run button
     btn = new QToolButton();
     btn->setIcon(QPixmap(run_xpm));
     hbox->addWidget(btn);
     btn->setToolTip(tr("Run current circuit"));
-    connect(btn, SIGNAL(clicked()), this, SLOT(run_btn_slot()));
+    connect(btn, &QAbstractButton::clicked, this, &QTtbDlg::run_btn_slot);
 
     // the Stop button
     btn = new QToolButton();
     btn->setIcon(QPixmap(stop_xpm));
     hbox->addWidget(btn);
     btn->setToolTip(tr("Pause current analysis"));
-    connect(btn, SIGNAL(clicked()), this, SLOT(stop_btn_slot()));
+    connect(btn, &QAbstractButton::clicked, this, &QTtbDlg::stop_btn_slot);
 
 #ifdef Q_OS_MACOS
     hbox->addWidget(new QWidget());
@@ -387,15 +387,15 @@ QTtbDlg::QTtbDlg(int xx, int yy) : QTdraw(0)
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_SCREEN))
         gd_viewport->set_font(fnt);
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
-    Viewport()->setFocusPolicy(Qt::StrongFocus);
-    Viewport()->setAcceptDrops(true);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTtbDlg::font_changed_slot, Qt::QueuedConnection);
+    gd_viewport->setFocusPolicy(Qt::StrongFocus);
+    gd_viewport->setAcceptDrops(true);
 
-    connect(Viewport(), SIGNAL(drag_enter_event(QDragEnterEvent*)),
-        this, SLOT(drag_enter_slot(QDragEnterEvent*)));
-    connect(Viewport(), SIGNAL(drop_event(QDropEvent*)),
-        this, SLOT(drop_slot(QDropEvent*)));
+    connect(gd_viewport, &QTcanvas::drag_enter_event,
+        this, &QTtbDlg::drag_enter_slot);
+    connect(gd_viewport, &QTcanvas::drop_event,
+        this, &QTtbDlg::drop_slot);
 
     int wid, hei;
     TextExtent(0, &wid, &hei);

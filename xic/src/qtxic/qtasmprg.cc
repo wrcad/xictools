@@ -118,12 +118,14 @@ QTasmPrgDlg::QTasmPrgDlg()
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Abort"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(abort_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTasmPrgDlg::abort_btn_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTasmPrgDlg::dismiss_btn_slot);
 
     prg_pbar = new QTactivity(this);
     grid->addWidget(prg_pbar, 4, 0, 1, 2);

@@ -176,8 +176,8 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     for (int i = 0; fmt_gds_input[i].name; i++)
         fmt_gdsftopt->addItem(tr(fmt_gds_input[i].name), i);
     fmt_gdsftopt->setCurrentIndex(QTconvOutFmt::fmt_gds_inp);
-    connect(fmt_gdsftopt, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(gdsftopt_menu_changed(int)));
+    connect(fmt_gdsftopt, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTconvOutFmt::gdsftopt_menu_changed);
 
     fmt_gdsftlab = new QLabel(tr("Input File Type"));
     hbox->addWidget(fmt_gdsftlab);
@@ -197,8 +197,8 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     for (int i = 0; fmt_gds_limits[i]; i++)
         fmt_level->addItem(tr(fmt_gds_limits[i]), i);
     fmt_level->setCurrentIndex(FIO()->GdsOutLevel());
-    connect(fmt_level, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(gdslevel_menu_changed(int)));
+    connect(fmt_level, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTconvOutFmt::gdslevel_menu_changed);
 
     label = new QLabel(tr("GDSII version number, polyon/wire vertex limit"));
     label->setAlignment(Qt::AlignCenter);
@@ -208,8 +208,8 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     fmt_gdsmap = new QCheckBox(tr(
         "Skip layers without Xic to GDSII layer mapping"));
     vbox->addWidget(fmt_gdsmap);
-    connect(fmt_gdsmap, SIGNAL(stateChanged(int)),
-        this, SLOT(gdsmap_btn_slot(int)));
+    connect(fmt_gdsmap, &QCheckBox::stateChanged,
+        this, &QTconvOutFmt::gdsmap_btn_slot);
 
     // next row
     hbox = new QHBoxLayout();
@@ -219,8 +219,8 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
 
     fmt_gdscut = new QCheckBox(tr("Accept but truncate too-long strings"));
     hbox->addWidget(fmt_gdscut);
-    connect(fmt_gdscut, SIGNAL(stateChanged(int)),
-        this, SLOT(gdscut_btn_slot(int)));
+    connect(fmt_gdscut, &QCheckBox::stateChanged,
+        this, &QTconvOutFmt::gdscut_btn_slot);
     QTdev::SetStatus(fmt_gdscut,
         CDvdb()->getVariable(VA_GdsTruncateLongStrings));
 
@@ -242,8 +242,9 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
             CDvdb()->clearVariable(VA_GdsMunit);
     }
     fmt_sb_gdsunit->setValue(initd);
-    connect(fmt_sb_gdsunit, SIGNAL(valueChanged(double)),
-        this, SLOT(gdsunit_changed_slot(double)));
+    connect(fmt_sb_gdsunit,
+        QOverload<double>::of(&QTdoubleSpinBox::valueChanged),
+        this, &QTconvOutFmt::gdsunit_changed_slot);
 
     label = new QLabel(tr("Unit Scale"));
     hbox->addWidget(label);
@@ -270,16 +271,16 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     fmt_oasadv->setText(tr("Advanced"));
     hbox->addWidget(fmt_oasadv);
     fmt_oasadv->setCheckable(true);
-    connect(fmt_oasadv, SIGNAL(toggled(bool)),
-        this, SLOT(oasadv_btn_slot(bool)));
+    connect(fmt_oasadv, &QAbstractButton::toggled,
+        this, &QTconvOutFmt::oasadv_btn_slot);
 
     // next row
     fmt_oasmap = new QCheckBox(tr(
         "Skip layers without Xic to GDSII layer mapping"));
     vbox->addWidget(fmt_oasmap);
     QTdev::SetStatus(fmt_oasmap, CDvdb()->getVariable(VA_NoGdsMapOk));
-    connect(fmt_oasmap, SIGNAL(stateChanged(int)),
-        this, SLOT(oasmap_btn_slot(int)));
+    connect(fmt_oasmap, &QCheckBox::stateChanged,
+        this, &QTconvOutFmt::oasmap_btn_slot);
 
     // next two rows, in columns
     hbox = new QHBoxLayout();
@@ -299,26 +300,26 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
 
     fmt_oascmp = new QCheckBox(tr("Use compression"));
     col1->addWidget(fmt_oascmp);
-    connect(fmt_oascmp, SIGNAL(stateChanged(int)),
-        this, SLOT(oascmp_btn_slot(int)));
+    connect(fmt_oascmp, &QCheckBox::stateChanged,
+        this, &QTconvOutFmt::oascmp_btn_slot);
     QTdev::SetStatus(fmt_oascmp, CDvdb()->getVariable(VA_OasWriteCompressed));
 
     fmt_oasrep = new QCheckBox(tr("Find repetitions"));
     col2->addWidget(fmt_oasrep);
-    connect(fmt_oasrep, SIGNAL(stateChanged(int)),
-        this, SLOT(oasrep_btn_slot(int)));
+    connect(fmt_oasrep, &QCheckBox::stateChanged,
+        this, &QTconvOutFmt::oasrep_btn_slot);
     QTdev::SetStatus(fmt_oasrep, CDvdb()->getVariable(VA_OasWriteRep));
 
     fmt_oastab = new QCheckBox(tr("Use string tables"));
     col1->addWidget(fmt_oastab);
-    connect(fmt_oastab, SIGNAL(stateChanged(int)),
-        this, SLOT(oastab_btn_slot(int)));
+    connect(fmt_oastab, &QCheckBox::stateChanged,
+        this, &QTconvOutFmt::oastab_btn_slot);
     QTdev::SetStatus(fmt_oastab, CDvdb()->getVariable(VA_OasWriteNameTab));
 
     fmt_oassum = new QCheckBox(tr("Write CRC checksum"));
     col2->addWidget(fmt_oassum);
-    connect(fmt_oassum, SIGNAL(stateChanged(int)),
-        this, SLOT(oassum_btn_slot(int)));
+    connect(fmt_oassum, &QCheckBox::stateChanged,
+        this, &QTconvOutFmt::oassum_btn_slot);
     QTdev::SetStatus(fmt_oassum, CDvdb()->getVariable(VA_OasWriteChecksum));
 
     // CIF page
@@ -360,14 +361,15 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
         a->setChecked(m->code & flgs);
         a->setData(i++);
     }
-    connect(fmt_cifflags, SIGNAL(triggered(QAction*)),
-        this, SLOT(cif_flags_slot(QAction*)));
+    connect(fmt_cifflags, &QMenu::triggered,
+        this, &QTconvOutFmt::cif_flags_slot);
 
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Last Seen"));
     hbox->addWidget(tbtn);
     tbtn->setMaximumWidth(100);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(ciflast_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTconvOutFmt::ciflast_btn_slot);
 
     // next two rows in three columns
     hbox = new QHBoxLayout();
@@ -405,8 +407,8 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     }
     if (ax >= 0)
         fmt_cifcname->setCurrentIndex(ax);
-    connect(fmt_cifcname, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(cifcname_menu_changed(int)));
+    connect(fmt_cifcname, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTconvOutFmt::cifcname_menu_changed);
 
     label = new QLabel(tr("Layer Specification"));
     col2->addWidget(label);
@@ -422,8 +424,8 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     }
     if (ax >= 0)
         fmt_ciflayer->setCurrentIndex(ax);
-    connect(fmt_ciflayer, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(ciflayer_menu_changed(int)));
+    connect(fmt_ciflayer, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTconvOutFmt::ciflayer_menu_changed);
 
     label = new QLabel(tr("Label Extension"));
     col3->addWidget(label);
@@ -439,8 +441,8 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     }
     if (ax >= 0)
         fmt_ciflabel->setCurrentIndex(ax);
-    connect(fmt_ciflabel, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(ciflabel_menu_changed(int)));
+    connect(fmt_ciflabel, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTconvOutFmt::ciflabel_menu_changed);
         
     // CGX page
     //
@@ -457,8 +459,8 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
 
     fmt_cgxcut = new QCheckBox(tr("Accept but truncate too-long strings"));
     vbox->addWidget(fmt_cgxcut);
-    connect(fmt_cgxcut, SIGNAL(stateChanged(int)),
-        this, SLOT(cgxcut_btn_slot(int)));
+    connect(fmt_cgxcut, &QCheckBox::stateChanged,
+        this, &QTconvOutFmt::cgxcut_btn_slot);
     QTdev::SetStatus(fmt_cgxcut,
         CDvdb()->getVariable(VA_GdsTruncateLongStrings));
 
@@ -495,14 +497,14 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
 
     fmt_oasoff = new QCheckBox(tr("OASIS text: print offsets"));
     hbox->addWidget(fmt_oasoff);
-    connect(fmt_oasoff, SIGNAL(stateChanged(int)),
-        this, SLOT(oasoff_btn_slot(int)));
+    connect(fmt_oasoff, &QCheckBox::stateChanged,
+        this, &QTconvOutFmt::oasoff_btn_slot);
     QTdev::SetStatus(fmt_oasoff, CDvdb()->getVariable(VA_OasPrintOffset));
 
     fmt_oasnwp = new QCheckBox(tr("OASIS text: no line wrap"));
     hbox->addWidget(fmt_oasnwp);
-    connect(fmt_oasnwp, SIGNAL(stateChanged(int)),
-        this, SLOT(oasnwp_btn_slot(int)));
+    connect(fmt_oasnwp, &QCheckBox::stateChanged,
+        this, &QTconvOutFmt::oasnwp_btn_slot);
     QTdev::SetStatus(fmt_oasnwp, CDvdb()->getVariable(VA_OasPrintNoWrap));
 
     // End of pages
@@ -512,8 +514,8 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
 
     configure(fmtmode);
 
-    connect(this, SIGNAL(currentChanged(int)),
-        this, SLOT(format_changed_slot(int)));
+    connect(this, &QTconvOutFmt::currentChanged,
+        this, &QTconvOutFmt::format_changed_slot);
 }
 
 

@@ -338,21 +338,21 @@ QTdevMenuDlg::QTdevMenuDlg(GRobject caller, stringlist *wl) :
         QFont *fnt;
         if (Fnt()->getFont(&fnt, FNT_SCREEN))
             gd_viewport->set_font(fnt);
-        connect(QTfont::self(), SIGNAL(fontChanged(int)),
-            this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+        connect(QTfont::self(), &QTfont::fontChanged,
+            this, &QTdevMenuDlg::font_changed_slot, Qt::QueuedConnection);
 
-        connect(Viewport(), SIGNAL(resize_event(QResizeEvent*)),
-            this, SLOT(resize_slot(QResizeEvent*)));
-        connect(Viewport(), SIGNAL(press_event(QMouseEvent*)),
-            this, SLOT(button_down_slot(QMouseEvent*)));
-        connect(Viewport(), SIGNAL(release_event(QMouseEvent*)),
-            this, SLOT(button_up_slot(QMouseEvent*)));
-        connect(Viewport(), SIGNAL(motion_event(QMouseEvent*)),
-            this, SLOT(motion_slot(QMouseEvent*)));
-        connect(Viewport(), SIGNAL(enter_event(QEnterEvent*)),
-            this, SLOT(enter_slot(QEnterEvent*)));
-        connect(Viewport(), SIGNAL(leave_event(QEvent*)),
-            this, SLOT(leave_slot(QEvent*)));
+        connect(gd_viewport, &QTcanvas::resize_event,
+            this, &QTdevMenuDlg::resize_slot);
+        connect(gd_viewport, &QTcanvas::press_event,
+            this, &QTdevMenuDlg::button_down_slot);
+        connect(gd_viewport, &QTcanvas::release_event,
+            this, &QTdevMenuDlg::button_up_slot);
+        connect(gd_viewport, &QTcanvas::motion_event,
+            this, &QTdevMenuDlg::motion_slot);
+        connect(gd_viewport, &QTcanvas::enter_event,
+            this, &QTdevMenuDlg::enter_slot);
+        connect(gd_viewport, &QTcanvas::leave_event,
+            this, &QTdevMenuDlg::leave_slot);
 
         int i = stringlist::length(wl);
         dv_entries = new sEnt[i];
@@ -383,13 +383,15 @@ QTdevMenuDlg::QTdevMenuDlg(GRobject caller, stringlist *wl) :
         dv_morebtn->setIcon(QIcon(QPixmap(more_xpm)));
         dv_morebtn->setMaximumWidth(80);
         vbox->addWidget(dv_morebtn);
-        connect(dv_morebtn, SIGNAL(clicked()), this, SLOT(more_btn_slot()));
+        connect(dv_morebtn, &QAbstractButton::clicked,
+            this, &QTdevMenuDlg::more_btn_slot);
 
         QToolButton *btn = new QToolButton();
         btn->setIcon(QIcon(QPixmap(dd_xpm)));
         btn->setMaximumWidth(80);
         vbox->addWidget(btn);
-        connect(btn, SIGNAL(clicked()), this, SLOT(style_btn_slot()));
+        connect(btn, &QAbstractButton::clicked,
+            this, &QTdevMenuDlg::style_btn_slot);
 
         dv_backg = QTbag::PopupColor(GRattrColorDvBg).rgb();
         dv_foreg = QTbag::PopupColor(GRattrColorDvFg).rgb();
@@ -450,8 +452,8 @@ QTdevMenuDlg::QTdevMenuDlg(GRobject caller, stringlist *wl) :
 #else
                 menu = menubar->addMenu(bf);
 #endif
-                connect(menu, SIGNAL(triggered(QAction*)),
-                    this, SLOT(menu_slot(QAction*)));
+                connect(menu, &QMenu::triggered,
+                    this, &QTdevMenuDlg::menu_slot);
             }
             menu->addAction(ww->string);
             lastc = c;
@@ -460,7 +462,8 @@ QTdevMenuDlg::QTdevMenuDlg(GRobject caller, stringlist *wl) :
         QToolButton *btn = new QToolButton();
         btn->setIcon(QIcon(QPixmap(pict_xpm)));
         hbox->addWidget(btn);
-        connect(btn, SIGNAL(clicked()), this, SLOT(style_btn_slot()));
+        connect(btn, &QAbstractButton::clicked,
+            this, &QTdevMenuDlg::style_btn_slot);
     }
     else {
         dv_type = dvMenuCateg;
@@ -483,8 +486,8 @@ QTdevMenuDlg::QTdevMenuDlg(GRobject caller, stringlist *wl) :
             dynamic_cast<QToolButton*>(menubar->widgetForAction(a));
         if (tb)
             tb->setPopupMode(QToolButton::InstantPopup);
-        connect(menu_d, SIGNAL(triggered(QAction*)),
-            this, SLOT(menu_slot(QAction*)));
+        connect(menu_d, &QMenu::triggered,
+            this, &QTdevMenuDlg::menu_slot);
 
         a = menubar->addAction(tr("Sources"));
         QMenu *menu_s = new QMenu();
@@ -492,8 +495,8 @@ QTdevMenuDlg::QTdevMenuDlg(GRobject caller, stringlist *wl) :
         tb = dynamic_cast<QToolButton*>(menubar->widgetForAction(a));
         if (tb)
             tb->setPopupMode(QToolButton::InstantPopup);
-        connect(menu_s, SIGNAL(triggered(QAction*)),
-            this, SLOT(menu_slot(QAction*)));
+        connect(menu_s, &QMenu::triggered,
+            this, &QTdevMenuDlg::menu_slot);
 
         a = menubar->addAction(tr("Macros"));
         QMenu *menu_m = new QMenu();
@@ -501,8 +504,8 @@ QTdevMenuDlg::QTdevMenuDlg(GRobject caller, stringlist *wl) :
         tb = dynamic_cast<QToolButton*>(menubar->widgetForAction(a));
         if (tb)
             tb->setPopupMode(QToolButton::InstantPopup);
-        connect(menu_m, SIGNAL(triggered(QAction*)),
-            this, SLOT(menu_slot(QAction*)));
+        connect(menu_m, &QMenu::triggered,
+            this, &QTdevMenuDlg::menu_slot);
 
         a = menubar->addAction(tr("Terminals"));
         QMenu *menu_t = new QMenu();
@@ -510,23 +513,23 @@ QTdevMenuDlg::QTdevMenuDlg(GRobject caller, stringlist *wl) :
         tb = dynamic_cast<QToolButton*>(menubar->widgetForAction(a));
         if (tb)
             tb->setPopupMode(QToolButton::InstantPopup);
-        connect(menu_t, SIGNAL(triggered(QAction*)),
-            this, SLOT(menu_slot(QAction*)));
+        connect(menu_t, &QMenu::triggered,
+            this, &QTdevMenuDlg::menu_slot);
 #else
         QMenuBar *menubar = new QMenuBar();
 
         QMenu *menu_d = menubar->addMenu(tr("Devices"));
-        connect(menu_d, SIGNAL(triggered(QAction*)),
-            this, SLOT(menu_slot(QAction*)));
+        connect(menu_d, &QMenu::triggered,
+            this, &QTdevMenuDlg::menu_slot);
         QMenu *menu_s = menubar->addMenu(tr("Sources"));
-        connect(menu_s, SIGNAL(triggered(QAction*)),
-            this, SLOT(menu_slot(QAction*)));
+        connect(menu_s, &QMenu::triggered,
+            this, &QTdevMenuDlg::menu_slot);
         QMenu *menu_m = menubar->addMenu(tr("Macros"));
-        connect(menu_m, SIGNAL(triggered(QAction*)),
-            this, SLOT(menu_slot(QAction*)));
+        connect(menu_m, &QMenu::triggered,
+            this, &QTdevMenuDlg::menu_slot);
         QMenu *menu_t = menubar->addMenu(tr("Terminals"));
-        connect(menu_t, SIGNAL(triggered(QAction*)),
-            this, SLOT(menu_slot(QAction*)));
+        connect(menu_t, &QMenu::triggered,
+            this, &QTdevMenuDlg::menu_slot);
 #endif
         hbox->addWidget(menubar);
 
@@ -589,7 +592,8 @@ QTdevMenuDlg::QTdevMenuDlg(GRobject caller, stringlist *wl) :
         QToolButton *btn = new QToolButton();
         btn->setIcon(QIcon(QPixmap(dda_xpm)));
         hbox->addWidget(btn);
-        connect(btn, SIGNAL(clicked()), this, SLOT(style_btn_slot()));
+        connect(btn, &QAbstractButton::clicked,
+            this, &QTdevMenuDlg::style_btn_slot);
     }
     dv_active = true;
 }

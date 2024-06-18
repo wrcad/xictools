@@ -4828,7 +4828,7 @@ sChdPrp::sChdPrp(const char *str)
         }
         else
             delete [] tok1;
-        delete tok;
+        delete [] tok;
     }
 }
 

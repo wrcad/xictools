@@ -212,7 +212,8 @@ QTcgdOpenDlg::QTcgdOpenDlg(GRobject caller,
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTcgdOpenDlg::help_btn_slot);
 
     cgo_nbook = new QTabWidget();
     vbox->addWidget(cgo_nbook);
@@ -350,12 +351,14 @@ QTcgdOpenDlg::QTcgdOpenDlg(GRobject caller,
     cgo_apply = new QToolButton();
     cgo_apply->setText(tr("Apply"));
     hbox->addWidget(cgo_apply);
-    connect(cgo_apply, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
+    connect(cgo_apply, &QAbstractButton::clicked,
+        this, &QTcgdOpenDlg::apply_btn_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTcgdOpenDlg::dismiss_btn_slot);
 
     update(init_idname, init_str);
 }

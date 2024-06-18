@@ -51,6 +51,7 @@
 #include <QPaintEngine>
 #include <math.h>
 
+#define USE_TIMER
 
 class QEvent;
 class QMouseEvent;
@@ -287,6 +288,7 @@ signals:
     void drop_event(QDropEvent*);
 
 protected:
+    void timerEvent(QTimerEvent*);
     void resizeEvent(QResizeEvent*);
     void paintEvent(QPaintEvent*);
     void mousePressEvent(QMouseEvent*);
@@ -316,6 +318,44 @@ private:
             da_painter->setBrush(da_brush);
         }
 
+#ifdef USE_TIMER
+    void region_reset()
+        {
+            da_regx0 = size().width();
+            da_regy0 = size().height();
+            da_regx1 = 0;
+            da_regy1 = 0;
+            da_regfull = false;
+        }
+    void region_fill()
+        {
+            da_regx0 = 0;
+            da_regy0 = 0;
+            da_regx1 = size().width() - 1;
+            da_regy1 = size().height() - 1;
+            da_regfull = true;
+        }
+    void region_add(int x1, int y1)
+        {
+            if (x1 < da_regx0)
+                da_regx0 = x1;
+            if (x1 > da_regx1)
+                da_regx1 = x1;
+            if (y1 < da_regy0)
+                da_regy0 = y1;
+            if (y1 > da_regy1)
+                da_regy1 = y1;
+            if (!da_regx0 && !da_regy0 &&
+                    da_regx1 >= width()-1 && da_regy1 >= height()-1)
+                da_regfull = true;
+        }
+    void region_add(int x1, int y1, int x2, int y2)
+        {
+            region_add(x1, y1);
+            region_add(x2, y2);
+        }
+
+#else
     // Init a bounding box for refreshing.                                 
     void bb_init()
         {
@@ -337,6 +377,7 @@ private:
             if (yy > da_yb2)
                 da_yb2 = yy;
         }
+#endif
 
     void draw_line_prv(int, int, int, int);
     void initialize();
@@ -355,8 +396,20 @@ private:
     QColor      da_ghost_fg;        // Ghost color ^ background.
     QBrush      da_brush;           // Solid fill brush.
     QPen        da_pen;             // Min width pen.
+#ifdef USE_TIMER
+    int         da_regx0;           // Accumulatd bounding box of dirty
+    int         da_regy0;           //  region for update.
+    int         da_regx1;
+    int         da_regy1;
+#else
+    int         da_xb1, da_yb1;     // Accumulated bounding box for
+    int         da_xb2, da_yb2;     //  drawing overlay.
+#endif
     int         da_tile_x;          // Tile origin x.
     int         da_tile_y;          // Tile origin y.
+#ifdef USE_TIMER
+    bool        da_regfull;
+#endif
     bool        da_fill_mode;       // True when tiling.
     bool        da_ghost_bg_set;    // True when the ghost bg is overlay_bg
 #define DA_MAX_OVERLAY 32
@@ -373,8 +426,6 @@ private:
                                     //  da_line_mode = 0 in this case.
 
     int         da_call_count;      // Operation count.
-    int         da_xb1, da_yb1;     // Accumulated bounding box for
-    int         da_xb2, da_yb2;     //  drawing overlay.
 
     int         da_olx, da_oly;     // Previous accumulated overlay
     int         da_olw, da_olh;     //  bounding box.

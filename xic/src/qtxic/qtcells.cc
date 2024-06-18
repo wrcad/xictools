@@ -231,7 +231,8 @@ QTcellsDlg::QTcellsDlg(GRobject c) : QTbag(this)
     c_clearbtn->setSizePolicy(QSizePolicy::MinimumExpanding,
         QSizePolicy::Maximum);
     col1->addWidget(c_clearbtn);
-    connect(c_clearbtn, SIGNAL(clicked()), this, SLOT(clear_btn_slot()));
+    connect(c_clearbtn, &QAbstractButton::clicked,
+        this, &QTcellsDlg::clear_btn_slot);
     if (!EditIf()->hasEdit())
         c_clearbtn->hide();
 
@@ -240,21 +241,24 @@ QTcellsDlg::QTcellsDlg(GRobject c) : QTbag(this)
     c_treebtn->setSizePolicy(QSizePolicy::MinimumExpanding,
         QSizePolicy::Maximum);
     col1->addWidget(c_treebtn);
-    connect(c_treebtn, SIGNAL(clicked()), this, SLOT(tree_btn_slot()));
+    connect(c_treebtn, &QAbstractButton::clicked,
+        this, &QTcellsDlg::tree_btn_slot);
 
     c_openbtn = new QToolButton();
     c_openbtn->setText(tr("Open"));
     c_openbtn->setSizePolicy(QSizePolicy::MinimumExpanding,
         QSizePolicy::Maximum);
     col1->addWidget(c_openbtn);
-    connect(c_openbtn, SIGNAL(clicked()), this, SLOT(open_btn_slot()));
+    connect(c_openbtn, &QAbstractButton::clicked,
+        this, &QTcellsDlg::open_btn_slot);
 
     c_placebtn = new QToolButton();
     c_placebtn->setText(tr("Place"));
     c_placebtn->setSizePolicy(QSizePolicy::MinimumExpanding,
         QSizePolicy::Maximum);
     col1->addWidget(c_placebtn);
-    connect(c_placebtn, SIGNAL(clicked()), this, SLOT(place_btn_slot()));
+    connect(c_placebtn, &QAbstractButton::clicked,
+        this, &QTcellsDlg::place_btn_slot);
     if (!EditIf()->hasEdit())
         c_placebtn->hide();
 
@@ -263,7 +267,8 @@ QTcellsDlg::QTcellsDlg(GRobject c) : QTbag(this)
     c_copybtn->setSizePolicy(QSizePolicy::MinimumExpanding,
         QSizePolicy::Maximum);
     col1->addWidget(c_copybtn);
-    connect(c_copybtn, SIGNAL(clicked()), this, SLOT(copy_btn_slot()));
+    connect(c_copybtn, &QAbstractButton::clicked,
+        this, &QTcellsDlg::copy_btn_slot);
     if (!EditIf()->hasEdit())
         c_copybtn->hide();
 
@@ -272,7 +277,8 @@ QTcellsDlg::QTcellsDlg(GRobject c) : QTbag(this)
     c_replbtn->setSizePolicy(QSizePolicy::MinimumExpanding,
         QSizePolicy::Maximum);
     col1->addWidget(c_replbtn);
-    connect(c_replbtn, SIGNAL(clicked()), this, SLOT(repl_btn_slot()));
+    connect(c_replbtn, &QAbstractButton::clicked,
+        this, &QTcellsDlg::repl_btn_slot);
     if (!EditIf()->hasEdit())
         c_replbtn->hide();
 
@@ -281,7 +287,8 @@ QTcellsDlg::QTcellsDlg(GRobject c) : QTbag(this)
     c_renamebtn->setSizePolicy(QSizePolicy::MinimumExpanding,
         QSizePolicy::Maximum);
     col1->addWidget(c_renamebtn);
-    connect(c_renamebtn, SIGNAL(clicked()), this, SLOT(rename_btn_slot()));
+    connect(c_renamebtn, &QAbstractButton::clicked,
+        this, &QTcellsDlg::rename_btn_slot);
     if (!EditIf()->hasEdit())
         c_renamebtn->hide();
 
@@ -291,29 +298,32 @@ QTcellsDlg::QTcellsDlg(GRobject c) : QTbag(this)
         QSizePolicy::Maximum);
     col1->addWidget(c_searchbtn);
     c_searchbtn->setCheckable(true);
-    connect(c_searchbtn, SIGNAL(toggled(bool)),
-        this, SLOT(search_btn_slot(bool)));
+    connect(c_searchbtn, &QAbstractButton::toggled,
+        this, &QTcellsDlg::search_btn_slot);
 
     c_flagbtn = new QToolButton();
     c_flagbtn->setText(tr("Flags"));
     c_flagbtn->setSizePolicy(QSizePolicy::MinimumExpanding,
         QSizePolicy::Maximum);
     col1->addWidget(c_flagbtn);
-    connect(c_flagbtn, SIGNAL(clicked()), this, SLOT(flag_btn_slot()));
+    connect(c_flagbtn, &QAbstractButton::clicked,
+        this, &QTcellsDlg::flag_btn_slot);
 
     c_infobtn = new QToolButton();
     c_infobtn->setText(tr("Info"));;
     c_infobtn->setSizePolicy(QSizePolicy::MinimumExpanding,
         QSizePolicy::Maximum);
     col1->addWidget(c_infobtn);
-    connect(c_infobtn, SIGNAL(clicked()), this, SLOT(info_btn_slot()));
+    connect(c_infobtn, &QAbstractButton::clicked,
+        this, &QTcellsDlg::info_btn_slot);
 
     c_showbtn = new QToolButton();
     c_showbtn->setText(tr("Show"));;
     c_showbtn->setSizePolicy(QSizePolicy::MinimumExpanding,
         QSizePolicy::Maximum);
     col1->addWidget(c_showbtn);
-    connect(c_showbtn, SIGNAL(toggled(bool)), this, SLOT(show_btn_slot(bool)));
+    connect(c_showbtn, &QAbstractButton::toggled,
+        this, &QTcellsDlg::show_btn_slot);
 
     c_fltrbtn = new QToolButton();
     c_fltrbtn->setText(tr("Filter"));
@@ -321,14 +331,16 @@ QTcellsDlg::QTcellsDlg(GRobject c) : QTbag(this)
         QSizePolicy::Maximum);
     col1->addWidget(c_fltrbtn);
     c_fltrbtn->setCheckable(true);
-    connect(c_fltrbtn, SIGNAL(toggled(bool)), this, SLOT(fltr_btn_slot(bool)));
+    connect(c_fltrbtn, &QAbstractButton::toggled,
+        this, &QTcellsDlg::fltr_btn_slot);
 
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     tbtn->setSizePolicy(QSizePolicy::MinimumExpanding,
         QSizePolicy::Maximum);
     col1->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTcellsDlg::help_btn_slot);
 
     // title label
     //
@@ -354,20 +366,20 @@ QTcellsDlg::QTcellsDlg(GRobject c) : QTbag(this)
     wb_textarea->setMouseTracking(true);
     wb_textarea->setAcceptDrops(false);
     col2->addWidget(wb_textarea);
-    connect(wb_textarea, SIGNAL(resize_event(QResizeEvent*)),
-        this, SLOT(resize_slot(QResizeEvent*)));
-    connect(wb_textarea, SIGNAL(press_event(QMouseEvent*)),
-        this, SLOT(mouse_press_slot(QMouseEvent*)));
-    connect(wb_textarea, SIGNAL(release_event(QMouseEvent*)),
-        this, SLOT(mouse_release_slot(QMouseEvent*)));
-    connect(wb_textarea, SIGNAL(motion_event(QMouseEvent*)),
-        this, SLOT(mouse_motion_slot(QMouseEvent*)));
+    connect(wb_textarea, &QTtextEdit::resize_event,
+        this, &QTcellsDlg::resize_slot);
+    connect(wb_textarea, &QTtextEdit::press_event,
+        this, &QTcellsDlg::mouse_press_slot);
+    connect(wb_textarea, &QTtextEdit::release_event,
+        this, &QTcellsDlg::mouse_release_slot);
+    connect(wb_textarea, &QTtextEdit::motion_event,
+        this, &QTcellsDlg::mouse_motion_slot);
 
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_FIXED))
         wb_textarea->setFont(*fnt);
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTcellsDlg::font_changed_slot, Qt::QueuedConnection);
 
     // bottom row buttons
     //
@@ -380,12 +392,13 @@ QTcellsDlg::QTcellsDlg(GRobject c) : QTbag(this)
     tbtn->setText(tr("Save Text"));
     hbox->addWidget(tbtn);
     tbtn->setCheckable(true);
-    connect(tbtn, SIGNAL(toggled(bool)), this, SLOT(save_btn_slot(bool)));
+    connect(tbtn, &QAbstractButton::toggled,
+        this, &QTcellsDlg::save_btn_slot);
 
     c_page_combo = new QComboBox();
     hbox->addWidget(c_page_combo);
-    connect(c_page_combo, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(page_menu_slot(int)));
+    connect(c_page_combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTcellsDlg::page_menu_slot);
 
     // mode menu
     //
@@ -394,15 +407,16 @@ QTcellsDlg::QTcellsDlg(GRobject c) : QTbag(this)
     c_mode_combo->addItem(tr("Phys Cells"));
     c_mode_combo->addItem(tr("Elec Cells"));
     c_mode_combo->setCurrentIndex(c_mode);
-    connect(c_mode_combo, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(mode_changed_slot(int)));
+    connect(c_mode_combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTcellsDlg::mode_changed_slot);
 
     // dismiss button
     //
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTcellsDlg::dismiss_btn_slot);
 
     update();
 }

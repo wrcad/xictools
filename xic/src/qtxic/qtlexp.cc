@@ -157,7 +157,8 @@ QTlayerExpDlg::QTlayerExpDlg(GRobject c)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTlayerExpDlg::help_btn_slot);
 
     // depth option, recurse check box
     //
@@ -181,13 +182,13 @@ QTlayerExpDlg::QTlayerExpDlg(GRobject c)
         lx_depth->addItem(tr(buf));
     }
     lx_depth->setCurrentIndex(0);
-    connect(lx_depth, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(depth_changed_slot(int)));
+    connect(lx_depth, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTlayerExpDlg::depth_changed_slot);
 
     lx_recurse = new QCheckBox(tr("Recursively create in subcells"));
     hbox->addWidget(lx_recurse);
-    connect(lx_recurse, SIGNAL(stateChanged(int)),
-        this, SLOT(recurse_btn_slot(int)));
+    connect(lx_recurse, &QCheckBox::stateChanged,
+        this, &QTlayerExpDlg::recurse_btn_slot);
 
     // target layer entry
     //
@@ -212,8 +213,8 @@ QTlayerExpDlg::QTlayerExpDlg(GRobject c)
     lx_none->setText(tr("None"));
     hbox->addWidget(lx_none);
     lx_none->setCheckable(true);
-    connect(lx_none, SIGNAL(toggled(bool)),
-        this, SLOT(none_btn_slot(bool)));
+    connect(lx_none, &QAbstractButton::toggled,
+        this, &QTlayerExpDlg::none_btn_slot);
 
     lx_sb_part = new QTdoubleSpinBox();
     lx_sb_part->setMinimum(GRD_PART_MIN);
@@ -221,8 +222,8 @@ QTlayerExpDlg::QTlayerExpDlg(GRobject c)
     lx_sb_part->setDecimals(2);
     lx_sb_part->setValue(0.0);
     hbox->addWidget(lx_sb_part);
-    connect(lx_sb_part, SIGNAL(valueChanged(double)),
-        this, SLOT(part_changed_slot(double)));
+    connect(lx_sb_part, QOverload<double>::of(&QTdoubleSpinBox::valueChanged),
+        this, &QTlayerExpDlg::part_changed_slot);
 
     // helper threads entry
     //
@@ -239,8 +240,8 @@ QTlayerExpDlg::QTlayerExpDlg(GRobject c)
     lx_sb_thread->setMaximum(DSP_MAX_THREADS);
     lx_sb_thread->setValue(DSP_DEF_THREADS);
     hbox->addWidget(lx_sb_thread);
-    connect(lx_sb_thread, SIGNAL(valueChanged(int)),
-        this, SLOT(threads_changed_slot(int)));
+    connect(lx_sb_thread, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTlayerExpDlg::threads_changed_slot);
 
     // join/split radio group
     //
@@ -252,23 +253,23 @@ QTlayerExpDlg::QTlayerExpDlg(GRobject c)
 
     lx_deflt = new QRadioButton(tr("Default"));
     hb->addWidget(lx_deflt);
-    connect(lx_deflt, SIGNAL(toggled(bool)),
-        this, SLOT(deflt_btn_slot(bool)));
+    connect(lx_deflt, &QRadioButton::toggled,
+        this, &QTlayerExpDlg::deflt_btn_slot);
 
     lx_join = new QRadioButton(tr("Joined"));
     hb->addWidget(lx_join);
-    connect(lx_join, SIGNAL(toggled(bool)),
-        this, SLOT(join_btn_slot(bool)));
+    connect(lx_join, &QRadioButton::toggled,
+        this, &QTlayerExpDlg::join_btn_slot);
 
     lx_split_h = new QRadioButton(tr("Horiz Split"));
     hb->addWidget(lx_split_h);
-    connect(lx_split_h, SIGNAL(toggled(bool)),
-        this, SLOT(split_h_btn_slot(bool)));
+    connect(lx_split_h, &QRadioButton::toggled,
+        this, &QTlayerExpDlg::split_h_btn_slot);
 
     lx_split_v = new QRadioButton(tr("Vert Split"));
     hb->addWidget(lx_split_v);
-    connect(lx_split_v, SIGNAL(toggled(bool)),
-        this, SLOT(split_v_btn_slot(bool)));
+    connect(lx_split_v, &QRadioButton::toggled,
+        this, &QTlayerExpDlg::split_v_btn_slot);
 
     // layer expression entry, store/recall buttons
     //
@@ -298,8 +299,8 @@ QTlayerExpDlg::QTlayerExpDlg(GRobject c)
         QAction *a = lx_recall_menu->addAction(buf);
         a->setData(i);
     }
-    connect(lx_recall_menu, SIGNAL(triggered(QAction*)),
-        this, SLOT(recall_menu_slot(QAction*)));
+    connect(lx_recall_menu, &QMenu::triggered,
+        this, &QTlayerExpDlg::recall_menu_slot);
 
     lx_save = new QToolButton();
     lx_save->setText(tr("Save"));
@@ -313,27 +314,27 @@ QTlayerExpDlg::QTlayerExpDlg(GRobject c)
         QAction *a = lx_save_menu->addAction(buf);
         a->setData(i);
     }
-    connect(lx_save_menu, SIGNAL(triggered(QAction*)),
-        this, SLOT(save_menu_slot(QAction*)));
+    connect(lx_save_menu, &QMenu::triggered,
+        this, &QTlayerExpDlg::save_menu_slot);
 
     // no clear check box
     //
     lx_noclear = new QCheckBox(tr("Don't clear layer before evaluation"));
     vbox->addWidget(lx_noclear);
-    connect(lx_noclear, SIGNAL(stateChanged(int)),
-        this, SLOT(noclear_btn_slot(int)));
+    connect(lx_noclear, &QCheckBox::stateChanged,
+        this, &QTlayerExpDlg::noclear_btn_slot);
 
     // merge and fast mode check boxes
     //
     lx_merge = new QCheckBox(tr("Use object merging while processing"));
     vbox->addWidget(lx_merge);
-    connect(lx_merge, SIGNAL(stateChanged(int)),
-        this, SLOT(merge_btn_slot(int)));
+    connect(lx_merge, &QCheckBox::stateChanged,
+        this, &QTlayerExpDlg::merge_btn_slot);
 
     lx_fast = new QCheckBox(tr("Fast mode, NOT UNDOABLE"));
     vbox->addWidget(lx_fast);
-    connect(lx_merge, SIGNAL(stateChanged(int)),
-        this, SLOT(fast_btn_slot(int)));
+    connect(lx_merge, &QCheckBox::stateChanged,
+        this, &QTlayerExpDlg::fast_btn_slot);
 
     // evaluate and dismiss buttons
     //
@@ -346,12 +347,14 @@ QTlayerExpDlg::QTlayerExpDlg(GRobject c)
     tbtn = new QToolButton();
     tbtn->setText(tr("Evaluate"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(eval_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTlayerExpDlg::eval_btn_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTlayerExpDlg::dismiss_btn_slot);
 
     if (last_lexpr)
         lx_lexpr->setText(last_lexpr);

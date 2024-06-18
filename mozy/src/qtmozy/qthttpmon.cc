@@ -132,10 +132,11 @@ QThttpmon::QThttpmon(QWidget *prnt) : QDialog(prnt)
     vbox->addWidget(g_gb);
     vbox->addWidget(g_cancel);
 
-    connect(g_cancel, SIGNAL(clicked()), this, SLOT(abort_slot()));
+    connect(g_cancel, &QAbstractButton::clicked,
+        this, &QThttpmon::abort_slot);
 
     QTimer *timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(run_slot()));
+    connect(timer, &QTimer::timeout, this, &QThttpmon::run_slot);
 #if (QT_VERSION >> 16 < 4)
     timer->start(0, true);
 #else
@@ -204,7 +205,7 @@ QThttpmon::run(Transaction *t)
     http_monitor::run(t);
     g_jbuf_set = false;
     QTimer *timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(quit_slot()));
+    connect(timer, &QTimer::timeout, this, &QThttpmon::quit_slot);
 #if (QT_VERSION >> 16 < 4)
     timer->start(2000, true);
 #else

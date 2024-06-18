@@ -511,7 +511,7 @@ cColIn::parse_cols(FILE *fp, int ncols, int xcols)
             }
             if (xcols > 0) {
                 for (i = ncols; i < ncols + xcols; i++) {
-                    char tbf[16];
+                    char tbf[20];
                     snprintf(tbf, sizeof(tbf), "column_%d", i);
                     vec = new sDataVec(UU_NOTYPE);
                     vec->set_plot(pl);

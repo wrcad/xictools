@@ -294,21 +294,21 @@ QTprintDlg::QTprintDlg(GRobject caller, HCcb *cb, HCmode textmode, QTbag *wbag) 
             pd_frmbtn = new QToolButton();
             pd_frmbtn->setText(tr("Frame"));
             hbox->addWidget(pd_frmbtn);
-            connect(pd_frmbtn, SIGNAL(toggled(bool)),
-                this, SLOT(frame_slot(bool)));
+            connect(pd_frmbtn, &QAbstractButton::toggled,
+                this, &QTprintDlg::frame_slot);
             row1cnt++;
             hbox->addSpacing(20);
         }
         pd_fitbtn = new QCheckBox(tr("Best Fit"));
         hbox->addWidget(pd_fitbtn);
-        connect(pd_fitbtn, SIGNAL(toggled(bool)),
-            this, SLOT(best_fit_slot(bool)));
+        connect(pd_fitbtn, &QCheckBox::toggled,
+            this, &QTprintDlg::best_fit_slot);
         row1cnt++;
         if (!cb || cb->legend != HClegNone) {
             pd_legbtn = new QCheckBox(tr("Legend"));
             hbox->addWidget(pd_legbtn);
-            connect(pd_legbtn, SIGNAL(toggled(bool)),
-                this, SLOT(legend_slot(bool)));
+            connect(pd_legbtn, &QCheckBox::toggled,
+                this, &QTprintDlg::legend_slot);
             row1cnt++;
         }
     }
@@ -320,19 +320,19 @@ QTprintDlg::QTprintDlg(GRobject caller, HCcb *cb, HCmode textmode, QTbag *wbag) 
                 pd_legbtn->setEnabled(false);
             else
                 pd_legbtn->setChecked(pd_legend == HClegOn);
-            connect(pd_legbtn, SIGNAL(toggled(bool)),
-                this, SLOT(legend_slot(bool)));
+            connect(pd_legbtn, &QCheckBox::toggled,
+                this, &QTprintDlg::legend_slot);
             row1cnt++;
         }
         if (pd_textmode == HCtextPS) {
             pd_a4btn = new QCheckBox(tr("A4"));
             hbox->addWidget(pd_a4btn);
-            connect(pd_a4btn, SIGNAL(toggled(bool)),
-                this, SLOT(a4_slot(bool)));
+            connect(pd_a4btn, &QCheckBox::toggled,
+                this, &QTprintDlg::a4_slot);
             pd_ltrbtn = new QCheckBox(tr("Letter"));
             hbox->addWidget(pd_ltrbtn);
-            connect(pd_ltrbtn, SIGNAL(toggled(bool)),
-                this, SLOT(letter_slot(bool)));
+            connect(pd_ltrbtn, &QCheckBox::toggled,
+                this, &QTprintDlg::letter_slot);
             hbox->addSpacing(20);
             if (pd_metric)
                 pd_a4btn->setChecked(true);
@@ -356,8 +356,8 @@ QTprintDlg::QTprintDlg(GRobject caller, HCcb *cb, HCmode textmode, QTbag *wbag) 
                 pd_textfmt = textfonts[0].type;
             }
             pd_fontmenu->setCurrentIndex(hist);
-            connect(pd_fontmenu, SIGNAL(activated(int)),
-                this, SLOT(font_slot(int)));
+            connect(pd_fontmenu, QOverload<int>::of(&QComboBox::activated),
+                this, &QTprintDlg::font_slot);
             row1cnt++;
         }
     }
@@ -380,7 +380,7 @@ QTprintDlg::QTprintDlg(GRobject caller, HCcb *cb, HCmode textmode, QTbag *wbag) 
     hbox->addWidget(pd_cmdlab);
     pd_tofbtn = new QCheckBox(tr("To File"));
     pd_tofbtn->setChecked(pd_tofile);
-    connect(pd_tofbtn, SIGNAL(toggled(bool)), this, SLOT(tofile_slot(bool)));
+    connect(pd_tofbtn, &QCheckBox::toggled, this, &QTprintDlg::tofile_slot);
     hbox->addWidget(pd_tofbtn);
     if (row1cnt)
         vbox->addWidget(gb);
@@ -394,7 +394,8 @@ QTprintDlg::QTprintDlg(GRobject caller, HCcb *cb, HCmode textmode, QTbag *wbag) 
         hbox->addWidget(pd_hlpbtn);
         vbox->addLayout(hbox);
     }
-    connect(pd_hlpbtn, SIGNAL(clicked()), this, SLOT(help_slot()));
+    connect(pd_hlpbtn, &QAbstractButton::clicked,
+        this, &QTprintDlg::help_slot);
 
     pd_cmdtxtbox = new QLineEdit();
     pd_cmdtxtbox->setText(pd_tofile ? pd_tofilename : pd_cmdtext);
@@ -412,12 +413,12 @@ QTprintDlg::QTprintDlg(GRobject caller, HCcb *cb, HCmode textmode, QTbag *wbag) 
         hb->setSpacing(2);
         pd_portbtn = new QCheckBox(tr("Portrait"));
         hb->addWidget(pd_portbtn);
-        connect(pd_portbtn, SIGNAL(toggled(bool)),
-            this, SLOT(portrait_slot(bool)));
+        connect(pd_portbtn, &QCheckBox::toggled,
+            this, &QTprintDlg::portrait_slot);
         pd_landsbtn = new QCheckBox(tr("Landscape"));
         hb->addWidget(pd_landsbtn);
-        connect(pd_landsbtn, SIGNAL(toggled(bool)),
-            this, SLOT(landscape_slot(bool)));
+        connect(pd_landsbtn, &QCheckBox::toggled,
+            this, &QTprintDlg::landscape_slot);
         vb->addWidget(gb);
 
         pd_fmtmenu = new QComboBox();
@@ -428,8 +429,9 @@ QTprintDlg::QTprintDlg(GRobject caller, HCcb *cb, HCmode textmode, QTbag *wbag) 
         }
         pd_fmtmenu->setCurrentIndex(pd_fmt);
         vb->addWidget(pd_fmtmenu);
-        connect(pd_fmtmenu, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(format_slot(int)));
+        connect(pd_fmtmenu,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &QTprintDlg::format_slot);
         hbox->addLayout(vb);
 
         vb = new QVBoxLayout();
@@ -451,8 +453,8 @@ QTprintDlg::QTprintDlg(GRobject caller, HCcb *cb, HCmode textmode, QTbag *wbag) 
         else
             pd_resmenu->addItem("fixed");
         pd_resmenu->setCurrentIndex(pd_resol);
-        connect(pd_resmenu, SIGNAL(activated(int)),
-            this, SLOT(resol_slot(int)));
+        connect(pd_resmenu, QOverload<int>::of(&QComboBox::activated),
+            this, &QTprintDlg::resol_slot);
         vb->addWidget(pd_resmenu);
         hbox->addLayout(vb);
         vbox->addLayout(hbox);
@@ -470,8 +472,8 @@ QTprintDlg::QTprintDlg(GRobject caller, HCcb *cb, HCmode textmode, QTbag *wbag) 
         hb = new QHBoxLayout(gb);
         hb->setContentsMargins(qmtop);
         pd_wlabel = new QCheckBox(tr("Width"));
-        connect(pd_wlabel, SIGNAL(toggled(bool)),
-            this, SLOT(auto_width_slot(bool)));
+        connect(pd_wlabel, &QCheckBox::toggled,
+            this, &QTprintDlg::auto_width_slot);
         hb->addWidget(pd_wlabel);
         pd_wid = new QDoubleSpinBox();
         pd_wid->setDecimals(2);
@@ -487,8 +489,8 @@ QTprintDlg::QTprintDlg(GRobject caller, HCcb *cb, HCmode textmode, QTbag *wbag) 
         hb = new QHBoxLayout(gb);
         hb->setContentsMargins(qmtop);
         pd_hlabel = new QCheckBox(tr("Height"));
-        connect(pd_hlabel, SIGNAL(toggled(bool)),
-            this, SLOT(auto_height_slot(bool)));
+        connect(pd_hlabel, &QCheckBox::toggled,
+            this, &QTprintDlg::auto_height_slot);
         hb->addWidget(pd_hlabel);
         pd_hei = new QDoubleSpinBox();
         pd_hei->setDecimals(2);
@@ -537,12 +539,12 @@ QTprintDlg::QTprintDlg(GRobject caller, HCcb *cb, HCmode textmode, QTbag *wbag) 
         int i = 0;
         for (sMedia *m = pagesizes; m->name; m++, i++)
             pd_pgsmenu->addItem(m->name);
-        connect(pd_pgsmenu, SIGNAL(activated(int)),
-            this, SLOT(pagesize_slot(int)));
+        connect(pd_pgsmenu, QOverload<int>::of(&QComboBox::activated),
+            this, &QTprintDlg::pagesize_slot);
         pd_metbtn = new QCheckBox(tr("Metric (mm)"));
         pd_metbtn->setChecked(pd_metric);
-        connect(pd_metbtn, SIGNAL(toggled(bool)),
-            this, SLOT(metric_slot(bool)));
+        connect(pd_metbtn, &QCheckBox::toggled,
+            this, &QTprintDlg::metric_slot);
         hbox->addSpacing(20);
         hbox->addWidget(pd_metbtn);
     }
@@ -555,12 +557,12 @@ QTprintDlg::QTprintDlg(GRobject caller, HCcb *cb, HCmode textmode, QTbag *wbag) 
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Print"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(print_slot()));
+    connect(tbtn, &QAbstractButton::clicked, this, &QTprintDlg::print_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(quit_slot()));
+    connect(btn, &QAbstractButton::clicked, this, &QTprintDlg::quit_slot);
 
     if (pd_cb && pd_cb->hcsetup)
         (*pd_cb->hcsetup)(true, pd_fmt, false, 0);
@@ -1418,7 +1420,7 @@ QTprintDlg::process_error_slot(QProcess::ProcessError err)
 
 
 void
-QTprintDlg::process_finished_slot(int code)
+QTprintDlg::process_finished_slot(int code, QProcess::ExitStatus)
 {
     if (pd_progress) {
         char buf[256];
@@ -1547,10 +1549,11 @@ QTprintDlg::fork_and_submit(const char *str, const char *filename)
 
     if (!pd_process) {
         pd_process = new QProcess(this);
-        connect(pd_process, SIGNAL(error(QProcess::ProcessError)),
-            this, SLOT(pd_process_error_slot(QProcess::ProcessError)));
-        connect(pd_process, SIGNAL(finished(int)),
-            this, SLOT(pd_process_finished_slot(int)));
+        connect(pd_process, &QProcess::errorOccurred,
+            this, &QTprintDlg::process_error_slot);
+        connect(pd_process,
+            QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
+            this, &QTprintDlg::process_finished_slot);
     }
     QStringList sl;
     sl << "sh" << "-c" << buf;

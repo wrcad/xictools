@@ -100,7 +100,8 @@ QTzoomDlg::QTzoomDlg(QTbag *owner, WindowDesc *w)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTzoomDlg::help_btn_slot);
 
     if (w->IsXSect()) {
         // Showing cross-section, add a control set for the Y-scale.
@@ -133,7 +134,8 @@ QTzoomDlg::QTzoomDlg(QTbag *owner, WindowDesc *w)
         tbtn = new QToolButton();
         tbtn->setText(tr("Apply"));
         hbox->addWidget(tbtn);
-        connect(tbtn, SIGNAL(clicked()), this, SLOT(y_apply_btn_slot()));
+        connect(tbtn, &QAbstractButton::clicked,
+            this, &QTzoomDlg::y_apply_btn_slot);
     }
 
     hbox = new QHBoxLayout(0);
@@ -153,7 +155,8 @@ QTzoomDlg::QTzoomDlg(QTbag *owner, WindowDesc *w)
     tbtn = new QToolButton();
     tbtn->setText(tr("Apply"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(z_apply_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTzoomDlg::z_apply_btn_slot);
 
     hbox = new QHBoxLayout(0);
     vbox->addLayout(hbox);
@@ -194,7 +197,8 @@ QTzoomDlg::QTzoomDlg(QTbag *owner, WindowDesc *w)
     tbtn = new QToolButton();
     tbtn->setText(tr("Apply"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(window_apply_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTzoomDlg::window_apply_btn_slot);
 
     hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
@@ -204,7 +208,8 @@ QTzoomDlg::QTzoomDlg(QTbag *owner, WindowDesc *w)
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTzoomDlg::dismiss_btn_slot);
 
     update();
 }

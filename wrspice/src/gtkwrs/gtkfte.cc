@@ -1416,7 +1416,7 @@ sTextPop::sTextPop(const char *title, const char *lstring, const char *textstr,
         button = gtk_toggle_button_new_with_label(buttons[n]);
         gtk_widget_show(button);
         g_signal_connect(G_OBJECT(button), "clicked",
-            G_CALLBACK(action_proc), (void*)(long)(n+1));
+            G_CALLBACK(action_proc), (void*)(uintptr_t)(n+1));
         gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 2);
     }
 

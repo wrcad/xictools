@@ -97,10 +97,8 @@ QTspmsgDlg::QTspmsgDlg(const char *string)
     //
     QPushButton *cancel = new QPushButton(tr("Dismiss"));
     vbox->addWidget(cancel);
-    connect(cancel, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
-
-//    QTdev::self()->SetDoubleClickExit(popup, cancel);
-
+    connect(cancel, &QAbstractButton::clicked,
+        this, &QTspmsgDlg::dismiss_btn_slot);
 }
 
 

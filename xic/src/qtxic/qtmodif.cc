@@ -234,12 +234,14 @@ QTmodifDlg::QTmodifDlg(stringlist *l, bool(*s)(const char*)) : QTbag(this)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Save All"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(save_all_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTmodifDlg::save_all_slot);
 
     tbtn = new QToolButton();
     tbtn->setText(tr("Skip All"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(skip_all_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTmodifDlg::skip_all_slot);
 
     hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
@@ -256,14 +258,15 @@ QTmodifDlg::QTmodifDlg(stringlist *l, bool(*s)(const char*)) : QTbag(this)
     tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTmodifDlg::help_slot);
 
     m_text = new QTtextEdit();
     m_text->setReadOnly(true);
     m_text->setMouseTracking(true);
     vbox->addWidget(m_text);
-    connect(m_text, SIGNAL(press_event(QMouseEvent*)),
-        this, SLOT(mouse_press_slot(QMouseEvent*)));
+    connect(m_text, &QTtextEdit::press_event,
+        this, &QTmodifDlg::mouse_press_slot);
 
     hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
@@ -272,12 +275,14 @@ QTmodifDlg::QTmodifDlg(stringlist *l, bool(*s)(const char*)) : QTbag(this)
     QPushButton *btn = new QPushButton(tr("Apply - Continue"));
     hbox->addWidget(btn);
     btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(apply_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTmodifDlg::apply_slot);
 
     btn = new QPushButton(tr("ABORT"));
     hbox->addWidget(btn);
     btn->setAutoDefault(false);
-    connect(btn, SIGNAL(clicked()), this, SLOT(abort_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTmodifDlg::abort_slot);
 
     // Use a fixed font in the label, same as the text area, so can
     // match columns.
@@ -287,8 +292,8 @@ QTmodifDlg::QTmodifDlg(stringlist *l, bool(*s)(const char*)) : QTbag(this)
         m_label->setFont(*fnt);
     }
 
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTmodifDlg::font_changed_slot, Qt::QueuedConnection);
 
     refresh();
 }

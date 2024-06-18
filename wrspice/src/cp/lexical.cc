@@ -2124,7 +2124,7 @@ sLx::cpos_rev()
 
 
 // The following functions move the cursor.  In Win32, there is no ANSI
-// responsiveness since all MicroShit processing has been bypassed.
+// responsiveness since all Microsoft processing has been bypassed.
 
 void
 sLx::mv_l()

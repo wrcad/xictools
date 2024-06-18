@@ -134,7 +134,8 @@ QToaTechAttachDlg::QToaTechAttachDlg(GRobject c)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QToaTechAttachDlg::help_btn_slot);
 
     hbox = new QHBoxLayout();
     hbox->setContentsMargins(qm);
@@ -144,12 +145,14 @@ QToaTechAttachDlg::QToaTechAttachDlg(GRobject c)
     ot_unat = new QToolButton();
     ot_unat->setText(tr("Unattach"));
     hbox->addWidget(ot_unat);
-    connect(ot_unat, SIGNAL(clicked()), this, SLOT(unat_btn_slot()));
+    connect(ot_unat, &QAbstractButton::clicked,
+        this, &QToaTechAttachDlg::unat_btn_slot);
 
     ot_at = new QToolButton();
     ot_at->setText(tr("Attach"));
     hbox->addWidget(ot_at);
-    connect(ot_at, SIGNAL(clicked()), this, SLOT(at_btn_slot()));
+    connect(ot_at, &QAbstractButton::clicked,
+        this, &QToaTechAttachDlg::at_btn_slot);
 
     ot_tech = new QLineEdit();
     hbox->addWidget(ot_tech);
@@ -157,7 +160,8 @@ QToaTechAttachDlg::QToaTechAttachDlg(GRobject c)
     ot_def = new QToolButton();
     ot_def->setText(tr("Default"));
     hbox->addWidget(ot_def);
-    connect(ot_def, SIGNAL(clicked()), this, SLOT(def_btn_slot()));
+    connect(ot_def, &QAbstractButton::clicked,
+        this, &QToaTechAttachDlg::def_btn_slot);
 
     hbox = new QHBoxLayout();
     hbox->setContentsMargins(qm);
@@ -167,12 +171,14 @@ QToaTechAttachDlg::QToaTechAttachDlg(GRobject c)
     ot_dest = new QToolButton();
     ot_dest->setText(tr("Destroy Tech"));
     hbox->addWidget(ot_dest);
-    connect(ot_dest, SIGNAL(clicked()), this, SLOT(dest_btn_slot()));
+    connect(ot_dest, &QAbstractButton::clicked,
+        this, &QToaTechAttachDlg::dest_btn_slot);
 
     ot_crt = new QToolButton();
     ot_crt->setText(tr("Create New Tech"));
     hbox->addWidget(ot_crt);
-    connect(ot_crt, SIGNAL(clicked()), this, SLOT(crt_btn_slot()));
+    connect(ot_crt, &QAbstractButton::clicked,
+        this, &QToaTechAttachDlg::crt_btn_slot);
 
     gb = new QGroupBox();
     vbox->addWidget(gb);
@@ -188,7 +194,8 @@ QToaTechAttachDlg::QToaTechAttachDlg(GRobject c)
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QToaTechAttachDlg::dismiss_btn_slot);
 
     update();
 }

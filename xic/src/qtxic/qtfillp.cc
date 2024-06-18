@@ -218,15 +218,15 @@ QTfillPatDlg::QTfillPatDlg(GRobject c) : QTbag(this), QTdraw(XW_DRAWING)
     fp_spnx->setValue(8);
     fp_spnx->setMinimum(2);
     fp_spnx->setMaximum(32);
-    connect(fp_spnx, SIGNAL(valueChanged(int)),
-        this, SLOT(nx_change_slot(int)));
+    connect(fp_spnx, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTfillPatDlg::nx_change_slot);
     fp_spny = new QSpinBox();
     fp_spny->setMinimum(2);
     fp_spny->setMaximum(32);
     hbox->addWidget(fp_spny);
     fp_spny->setValue(8);
-    connect(fp_spny, SIGNAL(valueChanged(int)),
-        this, SLOT(ny_change_slot(int)));
+    connect(fp_spny, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTfillPatDlg::ny_change_slot);
 
     hbox = new QHBoxLayout();
     hbox->setContentsMargins(qmtop);
@@ -236,21 +236,25 @@ QTfillPatDlg::QTfillPatDlg(GRobject c) : QTbag(this), QTdraw(XW_DRAWING)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Rot90"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(rot90_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTfillPatDlg::rot90_btn_slot);
 
     tbtn = new QToolButton();
     tbtn->setText("X");
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(x_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTfillPatDlg::x_btn_slot);
     tbtn = new QToolButton();
     tbtn->setText("Y");
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(y_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTfillPatDlg::y_btn_slot);
 
     tbtn = new QToolButton();
     tbtn->setText(tr("Stores"));
     vbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(stores_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTfillPatDlg::stores_btn_slot);
 
     // Stores display controls
     //
@@ -272,18 +276,20 @@ QTfillPatDlg::QTfillPatDlg(GRobject c) : QTbag(this), QTdraw(XW_DRAWING)
     fp_defpats->setMaximum(4);
     fp_defpats->setWrapping(true);
     hb->addWidget(fp_defpats);
-    connect(fp_defpats, SIGNAL(valueChanged(int)),
-        this, SLOT(defpats_change_slot(int)));
+    connect(fp_defpats, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTfillPatDlg::defpats_change_slot);
 
     tbtn = new QToolButton();
     tbtn->setText(tr("Dump Defs"));
     vbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(dump_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTfillPatDlg::dump_btn_slot);
 
     tbtn = new QToolButton();
     tbtn->setText(tr("Pixel Editor"));
     vbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(pixed_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTfillPatDlg::pixed_btn_slot);
 
     // Sample area
     //
@@ -311,8 +317,8 @@ QTfillPatDlg::QTfillPatDlg(GRobject c) : QTbag(this), QTdraw(XW_DRAWING)
     hb->addWidget(fp_editor);
     connect_sigs(fp_editor, true);
     fp_editor->setFocusPolicy(Qt::StrongFocus);
-    connect(fp_editor, SIGNAL(enter_event(QEnterEvent*)),
-        this, SLOT(enter_slot(QEnterEvent*)));
+    connect(fp_editor, &QTcanvas::enter_event,
+        this, &QTfillPatDlg::enter_slot);
 
     // Patterns
     //
@@ -357,39 +363,46 @@ QTfillPatDlg::QTfillPatDlg(GRobject c) : QTbag(this), QTdraw(XW_DRAWING)
     fp_outl->setText(tr("Outline"));
     hbox->addWidget(fp_outl);
     fp_outl->setCheckable(true);
-    connect(fp_outl, SIGNAL(toggled(bool)), this, SLOT(outline_btn_slot(bool)));
+    connect(fp_outl, &QAbstractButton::toggled,
+        this, &QTfillPatDlg::outline_btn_slot);
 
     fp_fat = new QToolButton();
     fp_fat->setText(tr("Fat"));
     hbox->addWidget(fp_fat);
     fp_fat->setCheckable(true);
-    connect(fp_fat, SIGNAL(toggled(bool)), this, SLOT(fat_btn_slot(bool)));
+    connect(fp_fat, &QAbstractButton::toggled,
+        this, &QTfillPatDlg::fat_btn_slot);
 
     fp_cut = new QToolButton();
     fp_cut->setText(tr("Cut"));
     hbox->addWidget(fp_cut);
     fp_cut->setCheckable(true);
-    connect(fp_cut, SIGNAL(toggled(bool)), this, SLOT(cut_btn_slot(bool)));
+    connect(fp_cut, &QAbstractButton::toggled,
+        this, &QTfillPatDlg::cut_btn_slot);
 
     tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTfillPatDlg::help_btn_slot);
 
     tbtn = new QToolButton();
     tbtn->setText(tr("Load"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(load_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTfillPatDlg::load_btn_slot);
 
     tbtn = new QToolButton();
     tbtn->setText(tr("Apply"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTfillPatDlg::apply_btn_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTfillPatDlg::dismiss_btn_slot);
 
     DspLayerParams *lp = dsp_prm(LT()->CurLayer());
     bool solid = LT()->CurLayer()->isFilled() && !lp->fill()->hasMap();
@@ -1676,22 +1689,22 @@ QTfillPatDlg::pattern_to_layer(LayerFillData *dd, CDl *ld)
 void
 QTfillPatDlg::connect_sigs(QTcanvas *darea, bool dnd_rcvr)
 {
-    connect(darea, SIGNAL(press_event(QMouseEvent*)),
-        this, SLOT(button_down_slot(QMouseEvent*)));
-    connect(darea, SIGNAL(release_event(QMouseEvent*)),
-        this, SLOT(button_up_slot(QMouseEvent*)));
-    connect(darea, SIGNAL(key_press_event(QKeyEvent*)),
-        this, SLOT(key_down_slot(QKeyEvent*)));
-    connect(darea, SIGNAL(motion_event(QMouseEvent*)),
-        this, SLOT(motion_slot(QMouseEvent*)));
+    connect(darea, &QTcanvas::press_event,
+        this, &QTfillPatDlg::button_down_slot);
+    connect(darea, &QTcanvas::release_event,
+        this, &QTfillPatDlg::button_up_slot);
+    connect(darea, &QTcanvas::key_press_event,
+        this, &QTfillPatDlg::key_down_slot);
+    connect(darea, &QTcanvas::motion_event,
+        this, &QTfillPatDlg::motion_slot);
 
     if (dnd_rcvr) {
         // destination
         darea->setAcceptDrops(true);
-        connect(darea, SIGNAL(drag_enter_event(QDragEnterEvent*)),
-            this, SLOT(drag_enter_slot(QDragEnterEvent*)));
-        connect(darea, SIGNAL(drop_event(QDropEvent*)),
-            this, SLOT(drop_event_slot(QDropEvent*)));
+        connect(darea, &QTcanvas::drag_enter_event,
+            this, &QTfillPatDlg::drag_enter_slot);
+        connect(darea, &QTcanvas::drop_event,
+            this, &QTfillPatDlg::drop_event_slot);
     }
 }
 

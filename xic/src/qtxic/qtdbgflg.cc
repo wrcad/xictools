@@ -143,19 +143,20 @@ QTdbgFlagsDlg::QTdbgFlagsDlg(GRobject c)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTdbgFlagsDlg::help_btn_slot);
 
     // check boxes
     //
     df_sel = new QCheckBox(tr("Selection list consistency"));
     vbox->addWidget(df_sel);
-    connect(df_sel, SIGNAL(stateChanged(int)),
-        this, SLOT(sel_btn_slot(int)));
+    connect(df_sel, &QCheckBox::stateChanged,
+        this, &QTdbgFlagsDlg::sel_btn_slot);
 
     df_undo = new QCheckBox(tr("Undo/redo list processing"));
     vbox->addWidget(df_undo);
-    connect(df_undo, SIGNAL(stateChanged(int)),
-        this, SLOT(undo_btn_slot(int)));
+    connect(df_undo, &QCheckBox::stateChanged,
+        this, &QTdbgFlagsDlg::undo_btn_slot);
 
     if (ExtIf()->hasExtract()) {
         df_ldb3d = new QCheckBox(tr(
@@ -166,14 +167,14 @@ QTdbgFlagsDlg::QTdbgFlagsDlg(GRobject c)
             "3-D processing for cross sections"));
     }
     vbox->addWidget(df_ldb3d);
-    connect(df_ldb3d, SIGNAL(stateChanged(int)),
-        this, SLOT(ldb3d_btn_slot(int)));
+    connect(df_ldb3d, &QCheckBox::stateChanged,
+        this, &QTdbgFlagsDlg::ldb3d_btn_slot);
 
     if (ExtIf()->hasExtract()) {
         df_rlsolv = new QCheckBox(tr("Net resistance solver"));
         vbox->addWidget(df_rlsolv);
-        connect(df_rlsolv, SIGNAL(stateChanged(int)),
-            this, SLOT(rlsolv_btn_slot(int)));
+        connect(df_rlsolv, &QCheckBox::stateChanged,
+            this, &QTdbgFlagsDlg::rlsolv_btn_slot);
     }
     vbox->addSpacing(10);
 
@@ -189,8 +190,8 @@ QTdbgFlagsDlg::QTdbgFlagsDlg(GRobject c)
 
     df_fname = new QLineEdit();
     hbox->addWidget(df_fname);
-    connect(df_fname, SIGNAL(editingFinished()),
-        this, SLOT(editing_finished_slot()));
+    connect(df_fname, &QLineEdit::editingFinished,
+        this, &QTdbgFlagsDlg::editing_finished_slot);
 
     // Log file creation
     //
@@ -201,21 +202,21 @@ QTdbgFlagsDlg::QTdbgFlagsDlg(GRobject c)
 
     df_lisp = new QCheckBox(tr("Lisp parser (lisp.log)"));
     vbox->addWidget(df_lisp);
-    connect(df_lisp, SIGNAL(stateChanged(int)),
-        this, SLOT(lisp_btn_slot(int)));
+    connect(df_lisp, &QCheckBox::stateChanged,
+        this, &QTdbgFlagsDlg::lisp_btn_slot);
 
     if (ScedIf()->hasSced()) {
         df_connect = new QCheckBox(tr("Schematic connectivity (connect.log)"));
         vbox->addWidget(df_connect);
-        connect(df_connect, SIGNAL(stateChanged(int)),
-            this, SLOT(connect_btn_slot(int)));
+        connect(df_connect, &QCheckBox::stateChanged,
+            this, &QTdbgFlagsDlg::connect_btn_slot);
     }
     if (ExtIf()->hasExtract()) {
         df_rlsolvlog = new QCheckBox(tr(
             "Resistance/inductance extraction (rlsolver.log)"));
         vbox->addWidget(df_rlsolvlog);
-        connect(df_rlsolvlog, SIGNAL(stateChanged(int)),
-            this, SLOT(rlsolvlog_btn_slot(int)));
+        connect(df_rlsolvlog, &QCheckBox::stateChanged,
+            this, &QTdbgFlagsDlg::rlsolvlog_btn_slot);
 
         gb = new QGroupBox(tr("Grouping/Extraction/Association"));
         vbox->addWidget(gb);
@@ -225,23 +226,23 @@ QTdbgFlagsDlg::QTdbgFlagsDlg(GRobject c)
 
         df_group = new QCheckBox(tr("Group"));
         hb->addWidget(df_group);
-        connect(df_group, SIGNAL(stateChanged(int)),
-            this, SLOT(group_btn_slot(int)));
+        connect(df_group, &QCheckBox::stateChanged,
+            this, &QTdbgFlagsDlg::group_btn_slot);
 
         df_extract = new QCheckBox(tr("Extract"));;
         hb->addWidget(df_extract);
-        connect(df_extract, SIGNAL(stateChanged(int)),
-            this, SLOT(extract_btn_slot(int)));
+        connect(df_extract, &QCheckBox::stateChanged,
+            this, &QTdbgFlagsDlg::extract_btn_slot);
 
         df_assoc = new QCheckBox(tr("Assoc"));;
         hb->addWidget(df_assoc);
-        connect(df_assoc, SIGNAL(stateChanged(int)),
-            this, SLOT(assoc_btn_slot(int)));
+        connect(df_assoc, &QCheckBox::stateChanged,
+            this, &QTdbgFlagsDlg::assoc_btn_slot);
 
         df_verbose = new QCheckBox(tr("Verbose"));;
         hb->addWidget(df_verbose);
-        connect(df_verbose, SIGNAL(stateChanged(int)),
-            this, SLOT(verbose_btn_slot(int)));
+        connect(df_verbose, &QCheckBox::stateChanged,
+            this, &QTdbgFlagsDlg::verbose_btn_slot);
     }
 
     if (OAif()->hasOA()) {
@@ -253,18 +254,18 @@ QTdbgFlagsDlg::QTdbgFlagsDlg(GRobject c)
 
         df_load = new QCheckBox(tr("Load"));;
         hb->addWidget(df_load);
-        connect(df_load, SIGNAL(stateChanged(int)),
-            this, SLOT(load_btn_slot(int)));
+        connect(df_load, &QCheckBox::stateChanged,
+            this, &QTdbgFlagsDlg::load_btn_slot);
 
         df_net = new QCheckBox(tr("Net"));
         hb->addWidget(df_net);
-        connect(df_net, SIGNAL(stateChanged(int)),
-            this, SLOT(net_btn_slot(int)));
+        connect(df_net, &QCheckBox::stateChanged,
+            this, &QTdbgFlagsDlg::net_btn_slot);
 
         df_pcell = new QCheckBox(tr("PCell"));
         hb->addWidget(df_pcell);
-        connect(df_pcell, SIGNAL(stateChanged(int)),
-            this, SLOT(pcell_btn_slot(int)));
+        connect(df_pcell, &QCheckBox::stateChanged,
+            this, &QTdbgFlagsDlg::pcell_btn_slot);
     }
 
     // dismiss button
@@ -272,8 +273,8 @@ QTdbgFlagsDlg::QTdbgFlagsDlg(GRobject c)
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()),
-        this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTdbgFlagsDlg::dismiss_btn_slot);
 
     update();
 }

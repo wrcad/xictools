@@ -68,7 +68,7 @@ namespace {
     void destroy_po(RTelem *e)  { ((CDpo*)e)->destroy(); }
     void destroy_w(RTelem *e)   { ((CDw*)e)->destroy(); }
     void destroy_la(RTelem *e)  { ((CDla*)e)->destroy(); }
-    void destroy_c(RTelem *e)   { ((CDo*)e)->destroy(); }
+    void destroy_c(RTelem *e)   { ((CDc*)e)->destroy(); }
 
 #ifdef CD_USE_MANAGER
     void delete_o(RTelem *e)    { CDmmgr()->CDo_db.delElem(e); }

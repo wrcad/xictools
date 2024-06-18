@@ -59,7 +59,7 @@ Modified by Dietmar Warning 2003 and Paolo Nenzi 2003
 #define DIOcheckModel checkModel
 
 #define MALLOC(x) new char[x]
-#define FREE(x) delete x
+#define FREE(x) delete [] x
 
 int
 DIOdev::temperature(sGENmodel *genmod, sCKT *ckt)

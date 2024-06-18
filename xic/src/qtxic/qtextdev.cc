@@ -127,7 +127,8 @@ QTextDevDlg::QTextDevDlg(GRobject caller)
     ed_update = new QToolButton();
     ed_update->setText(tr("Update\nList"));
     grid->addWidget(ed_update, 0, 0, 2, 1);
-    connect(ed_update, SIGNAL(clicked()), this, SLOT(update_btn_slot()));
+    connect(ed_update, &QAbstractButton::clicked,
+        this, &QTextDevDlg::update_btn_slot);
 
     QHBoxLayout *hbox = new QHBoxLayout();
     hbox->setContentsMargins(qm);
@@ -137,18 +138,21 @@ QTextDevDlg::QTextDevDlg(GRobject caller)
     ed_show_all = new QToolButton();
     ed_show_all->setText(tr("Show All"));
     hbox->addWidget(ed_show_all);
-    connect(ed_show_all, SIGNAL(clicked()), this, SLOT(showall_btn_slot()));
+    connect(ed_show_all, &QAbstractButton::clicked,
+        this, &QTextDevDlg::showall_btn_slot);
 
     ed_erase_all = new QToolButton();
     ed_erase_all->setText(tr("Erase All"));
     hbox->addWidget(ed_erase_all);
-    connect(ed_erase_all, SIGNAL(clicked()), this, SLOT(eraseall_btn_slot()));
+    connect(ed_erase_all, &QAbstractButton::clicked,
+        this, &QTextDevDlg::eraseall_btn_slot);
 
     hbox->addStretch(1);
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTextDevDlg::help_btn_slot);
 
     hbox = new QHBoxLayout();
     hbox->setContentsMargins(qm);
@@ -158,12 +162,14 @@ QTextDevDlg::QTextDevDlg(GRobject caller)
     ed_show = new QToolButton();
     ed_show->setText(tr("Show"));
     hbox->addWidget(ed_show);
-    connect(ed_show, SIGNAL(clicked()), this, SLOT(show_btn_slot()));
+    connect(ed_show, &QAbstractButton::clicked,
+        this, &QTextDevDlg::show_btn_slot);
 
     ed_erase = new QToolButton();
     ed_erase->setText(tr("Erase"));
     hbox->addWidget(ed_erase);
-    connect(ed_erase, SIGNAL(clicked()), this, SLOT(erase_btn_slot()));
+    connect(ed_erase, &QAbstractButton::clicked,
+        this, &QTextDevDlg::erase_btn_slot);
 
     hbox->addSpacing(4);
     QLabel *label = new QLabel(tr("Indices"));
@@ -182,22 +188,20 @@ QTextDevDlg::QTextDevDlg(GRobject caller)
     ed_list->header()->setMinimumSectionSize(25);
     ed_list->header()->resizeSection(0, 50);
 
-    connect(ed_list,
-        SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
-        this,
-        SLOT(current_item_changed_slot(QTreeWidgetItem*, QTreeWidgetItem*)));
-    connect(ed_list, SIGNAL(itemActivated(QTreeWidgetItem*, int)),
-        this, SLOT(item_activated_slot(QTreeWidgetItem*, int)));
-    connect(ed_list, SIGNAL(itemClicked(QTreeWidgetItem*, int)),
-        this, SLOT(item_clicked_slot(QTreeWidgetItem*, int)));
-    connect(ed_list, SIGNAL(itemSelectionChanged()),
-        this, SLOT(item_selection_changed_slot()));
+    connect(ed_list, &QTreeWidget::currentItemChanged,
+        this, &QTextDevDlg::current_item_changed_slot);
+    connect(ed_list, &QTreeWidget::itemActivated,
+        this, &QTextDevDlg::item_activated_slot);
+    connect(ed_list, &QTreeWidget::itemClicked,
+        this, &QTextDevDlg::item_clicked_slot);
+    connect(ed_list, &QTreeWidget::itemSelectionChanged,
+        this, &QTextDevDlg::item_selection_changed_slot);
 
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_FIXED))
         ed_list->setFont(*fnt);
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTextDevDlg::font_changed_slot, Qt::QueuedConnection);
 
     // Frame and select devices group.
     //
@@ -209,20 +213,20 @@ QTextDevDlg::QTextDevDlg(GRobject caller)
     ed_select->setText(tr("Enable\nSelect"));
     gr->addWidget(ed_select, 0, 0, 2, 1);
     ed_select->setCheckable(true);
-    connect(ed_select, SIGNAL(toggled(bool)),
-        this, SLOT(enablesel_btn_slot(bool)));
+    connect(ed_select, &QAbstractButton::toggled,
+        this, &QTextDevDlg::enablesel_btn_slot);
 
     ed_compute = new QCheckBox(tr(
         "Show computed parameters of selected device"));
     gr->addWidget(ed_compute, 0, 1);
-    connect(ed_compute, SIGNAL(stateChanged(int)),
-        this, SLOT(compute_btn_slot(int)));
+    connect(ed_compute, &QCheckBox::stateChanged,
+        this, &QTextDevDlg::compute_btn_slot);
 
     ed_compare = new QCheckBox(tr(
         "Show elec/phys comparison of selected device"));
     gr->addWidget(ed_compare, 1, 1);
-    connect(ed_compare, SIGNAL(stateChanged(int)),
-        this, SLOT(compare_btn_slot(int)));
+    connect(ed_compare, &QCheckBox::stateChanged,
+        this, &QTextDevDlg::compare_btn_slot);
 
     // Frame and measure box group.
     //
@@ -236,20 +240,22 @@ QTextDevDlg::QTextDevDlg(GRobject caller)
     ed_measbox->setText(tr("Enable Measure Box"));
     hbox->addWidget(ed_measbox);
     ed_measbox->setCheckable(true);
-    connect(ed_measbox, SIGNAL(toggled(bool)),
-        this, SLOT(measbox_btn_slot(bool)));
+    connect(ed_measbox, &QAbstractButton::toggled,
+        this, &QTextDevDlg::measbox_btn_slot);
 
     ed_paint = new QToolButton();
     ed_paint->setText(tr("Paint Box (use current layer)"));
     hbox->addWidget(ed_paint);
-    connect(ed_paint, SIGNAL(clicked()), this, SLOT(paint_btn_slot()));
+    connect(ed_paint, &QAbstractButton::clicked,
+        this, &QTextDevDlg::paint_btn_slot);
 
     // Dismiss button.
     //
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     grid->addWidget(btn, 5, 0, 1, 2);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTextDevDlg::dismiss_btn_slot);
 
     update();
 }

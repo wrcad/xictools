@@ -145,20 +145,20 @@ QTmcolDlg::QTmcolDlg(QTbag *owner, stringlist *symlist,
     wb_textarea->setReadOnly(true);
     wb_textarea->setMouseTracking(true);
     wb_textarea->setAcceptDrops(false);
-    connect(wb_textarea, SIGNAL(resize_event(QResizeEvent*)),
-        this, SLOT(resize_slot(QResizeEvent*)));
-    connect(wb_textarea, SIGNAL(press_event(QMouseEvent*)),
-        this, SLOT(mouse_press_slot(QMouseEvent*)));
-    connect(wb_textarea, SIGNAL(release_event(QMouseEvent*)),
-        this, SLOT(mouse_release_slot(QMouseEvent*)));
-    connect(wb_textarea, SIGNAL(motion_event(QMouseEvent*)),
-        this, SLOT(mouse_motion_slot(QMouseEvent*)));
+    connect(wb_textarea, &QTtextEdit::resize_event,
+        this, &QTmcolDlg::resize_slot);
+    connect(wb_textarea, &QTtextEdit::press_event,
+        this, &QTmcolDlg::mouse_press_slot);
+    connect(wb_textarea, &QTtextEdit::release_event,
+        this, &QTmcolDlg::mouse_release_slot);
+    connect(wb_textarea, &QTtextEdit::motion_event,
+        this, &QTmcolDlg::mouse_motion_slot);
 
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_FIXED))
         wb_textarea->setFont(*fnt);
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTmcolDlg::font_changed_slot, Qt::QueuedConnection);
 
     QHBoxLayout *hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
@@ -169,7 +169,7 @@ QTmcolDlg::QTmcolDlg(QTbag *owner, stringlist *symlist,
     tbtn->setText(tr("Save Text "));
     hbox->addWidget(tbtn);
     tbtn->setCheckable(true);
-    connect(tbtn, SIGNAL(toggled(bool)), this, SLOT(save_btn_slot(bool)));
+    connect(tbtn, &QAbstractButton::toggled, this, &QTmcolDlg::save_btn_slot);
 
     mc_pagesel = new QComboBox();
     hbox->addWidget(mc_pagesel);
@@ -181,7 +181,8 @@ QTmcolDlg::QTmcolDlg(QTbag *owner, stringlist *symlist,
             tbtn->setEnabled(false);
             mc_buttons[i] = tbtn;
             hbox->addWidget(tbtn);
-            connect(tbtn, SIGNAL(clicked()), this, SLOT(user_btn_slot()));
+            connect(tbtn, &QAbstractButton::clicked,
+                this, &QTmcolDlg::user_btn_slot);
         }
     }
 
@@ -190,7 +191,8 @@ QTmcolDlg::QTmcolDlg(QTbag *owner, stringlist *symlist,
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTmcolDlg::dismiss_btn_slot);
 
     relist();
 }
@@ -328,8 +330,9 @@ QTmcolDlg::relist()
             mc_pagesel->addItem(buf);
         }
         mc_pagesel->setCurrentIndex(mc_page);
-        connect(mc_pagesel, SIGNAL(currentIndex(int)),
-            this, SLOT(page_size_slot(int)));
+        connect(mc_pagesel,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &QTmcolDlg::page_size_slot);
         mc_pagesel->show();
     }
 

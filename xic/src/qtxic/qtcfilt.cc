@@ -168,8 +168,8 @@ QTcfiltDlg::QTcfiltDlg(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*),
         }
         tbtn->setMenu(menu);
         tbtn->setPopupMode(QToolButton::InstantPopup);
-        connect(menu, SIGNAL(triggered(QAction*)),
-            this, SLOT(store_menu_slot(QAction*)));
+        connect(menu, &QMenu::triggered,
+            this, &QTcfiltDlg::store_menu_slot);
     }
     tbtn = new QToolButton();
     tbtn->setText(tr("Recall"));
@@ -184,8 +184,8 @@ QTcfiltDlg::QTcfiltDlg(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*),
         }
         tbtn->setMenu(menu);
         tbtn->setPopupMode(QToolButton::InstantPopup);
-        connect(menu, SIGNAL(triggered(QAction*)),
-            this, SLOT(recall_menu_slot(QAction*)));
+        connect(menu, &QMenu::triggered,
+            this, &QTcfiltDlg::recall_menu_slot);
     }
 
     QGroupBox *gb = new QGroupBox();
@@ -199,7 +199,8 @@ QTcfiltDlg::QTcfiltDlg(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*),
     tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTcfiltDlg::help_btn_slot);
 
     // Two colums
     hbox = new QHBoxLayout(0);
@@ -240,111 +241,111 @@ QTcfiltDlg::QTcfiltDlg(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*),
     // Immutable
     cf_nimm = new QCheckBox(tr("not"));
     col1->addWidget(cf_nimm);
-    connect(cf_nimm, SIGNAL(stateChanged(int)),
-        this, SLOT(nimm_btn_slot(int)));
+    connect(cf_nimm, &QCheckBox::stateChanged,
+        this, &QTcfiltDlg::nimm_btn_slot);
     cf_imm = new QCheckBox(tr("Immutable"));
     col2->addWidget(cf_imm);
-    connect(cf_imm, SIGNAL(stateChanged(int)),
-        this, SLOT(imm_btn_slot(int)));
+    connect(cf_imm, &QCheckBox::stateChanged,
+        this, &QTcfiltDlg::imm_btn_slot);
 
     // Via sub-master
     cf_nvsm = new QCheckBox(tr("not"));
     col3a->addWidget(cf_nvsm);
-    connect(cf_nvsm, SIGNAL(stateChanged(int)),
-        this, SLOT(nvsm_btn_slot(int)));
+    connect(cf_nvsm, &QCheckBox::stateChanged,
+        this, &QTcfiltDlg::nvsm_btn_slot);
     cf_vsm = new QCheckBox(tr("Via sub-master"));
     col3b->addWidget(cf_vsm);
-    connect(cf_vsm, SIGNAL(stateChanged(int)),
-        this, SLOT(vsm_btn_slot(int)));
+    connect(cf_vsm, &QCheckBox::stateChanged,
+        this, &QTcfiltDlg::vsm_btn_slot);
 
     // Library
     cf_nlib = new QCheckBox(tr("not"));
     col1->addWidget(cf_nlib);
-    connect(cf_nlib, SIGNAL(stateChanged(int)),
-        this, SLOT(nlib_btn_slot(int)));
+    connect(cf_nlib, &QCheckBox::stateChanged,
+        this, &QTcfiltDlg::nlib_btn_slot);
     cf_lib = new QCheckBox(tr("Library"));
     col2->addWidget(cf_lib);
-    connect(cf_lib, SIGNAL(stateChanged(int)),
-        this, SLOT(lib_btn_slot(int)));
+    connect(cf_lib, &QCheckBox::stateChanged,
+        this, &QTcfiltDlg::lib_btn_slot);
 
     // PCell sub-master
     cf_npsm = new QCheckBox(tr("not"));
     col3a->addWidget(cf_npsm);
-    connect(cf_npsm, SIGNAL(stateChanged(int)),
-        this, SLOT(npsm_btn_slot(int)));
+    connect(cf_npsm, &QCheckBox::stateChanged,
+        this, &QTcfiltDlg::npsm_btn_slot);
     cf_psm = new QCheckBox(tr("PCell sub-master"));
     col3b->addWidget(cf_psm);
-    connect(cf_psm, SIGNAL(stateChanged(int)),
-        this, SLOT(psm_btn_slot(int)));
+    connect(cf_psm, &QCheckBox::stateChanged,
+        this, &QTcfiltDlg::psm_btn_slot);
 
     // Device
     cf_ndev = new QCheckBox(tr("not"));
     col1->addWidget(cf_ndev);
-    connect(cf_ndev, SIGNAL(stateChanged(int)),
-        this, SLOT(ndev_btn_slot(int)));
+    connect(cf_ndev, &QCheckBox::stateChanged,
+        this, &QTcfiltDlg::ndev_btn_slot);
     cf_dev = new QCheckBox(tr("Device"));
     col2->addWidget(cf_dev);
-    connect(cf_dev, SIGNAL(stateChanged(int)),
-        this, SLOT(dev_btn_slot(int)));
+    connect(cf_dev, &QCheckBox::stateChanged,
+        this, &QTcfiltDlg::dev_btn_slot);
 
     // PCell super-master
     cf_nspr = new QCheckBox(tr("not"));
     col3a->addWidget(cf_nspr);
-    connect(cf_nspr, SIGNAL(stateChanged(int)),
-        this, SLOT(nspr_btn_slot(int)));
+    connect(cf_nspr, &QCheckBox::stateChanged,
+        this, &QTcfiltDlg::nspr_btn_slot);
     cf_spr = new QCheckBox(tr("PCell super"));
     col3b->addWidget(cf_spr);
-    connect(cf_spr, SIGNAL(stateChanged(int)),
-        this, SLOT(spr_btn_slot(int)));
+    connect(cf_spr, &QCheckBox::stateChanged,
+        this, &QTcfiltDlg::spr_btn_slot);
 
     // Top level
     cf_ntop = new QCheckBox(tr("not"));
     col1->addWidget(cf_ntop);
-    connect(cf_ntop, SIGNAL(stateChanged(int)),
-        this, SLOT(ntop_btn_slot(int)));
+    connect(cf_ntop, &QCheckBox::stateChanged,
+        this, &QTcfiltDlg::ntop_btn_slot);
     cf_top = new QCheckBox(tr("Top level"));
     col2->addWidget(cf_top);
-    connect(cf_top, SIGNAL(stateChanged(int)),
-        this, SLOT(top_btn_slot(int)));
+    connect(cf_top, &QCheckBox::stateChanged,
+        this, &QTcfiltDlg::top_btn_slot);
 
     // Modified
     cf_nmod = new QCheckBox(tr("not"));
     col3a->addWidget(cf_nmod);
-    connect(cf_nmod, SIGNAL(stateChanged(int)),
-        this, SLOT(nmod_btn_slot(int)));
+    connect(cf_nmod, &QCheckBox::stateChanged,
+        this, &QTcfiltDlg::nmod_btn_slot);
     cf_mod = new QCheckBox(tr("Modified"));
     col3b->addWidget(cf_mod);
-    connect(cf_mod, SIGNAL(stateChanged(int)),
-        this, SLOT(mod_btn_slot(int)));
+    connect(cf_mod, &QCheckBox::stateChanged,
+        this, &QTcfiltDlg::mod_btn_slot);
 
     // With alt
     cf_nalt = new QCheckBox(tr("not"));
     col1->addWidget(cf_nalt);
-    connect(cf_nalt, SIGNAL(stateChanged(int)),
-        this, SLOT(nalt_btn_slot(int)));
+    connect(cf_nalt, &QCheckBox::stateChanged,
+        this, &QTcfiltDlg::nalt_btn_slot);
     cf_alt = new QCheckBox(tr("With alt"));
     col2->addWidget(cf_alt);
-    connect(cf_alt, SIGNAL(stateChanged(int)),
-        this, SLOT(alt_btn_slot(int)));
+    connect(cf_alt, &QCheckBox::stateChanged,
+        this, &QTcfiltDlg::alt_btn_slot);
 
     cf_nref = new QCheckBox(tr("not"));
     col3a->addWidget(cf_nref);
-    connect(cf_nref, SIGNAL(stateChanged(int)),
-        this, SLOT(nref_btn_slot(int)));
+    connect(cf_nref, &QCheckBox::stateChanged,
+        this, &QTcfiltDlg::nref_btn_slot);
     cf_ref = new QCheckBox(tr("Reference"));
     col3b->addWidget(cf_ref);
-    connect(cf_ref, SIGNAL(stateChanged(int)),
-        this, SLOT(ref_btn_slot(int)));
+    connect(cf_ref, &QCheckBox::stateChanged,
+        this, &QTcfiltDlg::ref_btn_slot);
 
     // Parent cells
     cf_npcl = new QCheckBox(tr("not"));
     col1->addWidget(cf_npcl);
-    connect(cf_npcl, SIGNAL(stateChanged(int)),
-        this, SLOT(npcl_btn_slot(int)));
+    connect(cf_npcl, &QCheckBox::stateChanged,
+        this, &QTcfiltDlg::npcl_btn_slot);
     cf_pcl = new QCheckBox(tr("Parent cells"));
     col2->addWidget(cf_pcl);
-    connect(cf_pcl, SIGNAL(stateChanged(int)),
-        this, SLOT(pcl_btn_slot(int)));
+    connect(cf_pcl, &QCheckBox::stateChanged,
+        this, &QTcfiltDlg::pcl_btn_slot);
 
     cf_pclent = new QLineEdit();
     col3->addWidget(cf_pclent);
@@ -352,12 +353,12 @@ QTcfiltDlg::QTcfiltDlg(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*),
     // Subcell cells
     cf_nscl = new QCheckBox(tr("not"));
     col1->addWidget(cf_nscl);
-    connect(cf_nscl, SIGNAL(stateChanged(int)),
-        this, SLOT(nscl_btn_slot(int)));
+    connect(cf_nscl, &QCheckBox::stateChanged,
+        this, &QTcfiltDlg::nscl_btn_slot);
     cf_scl = new QCheckBox(tr("Subcell cells"));
     col2->addWidget(cf_scl);
-    connect(cf_scl, SIGNAL(stateChanged(int)),
-        this, SLOT(scl_btn_slot(int)));
+    connect(cf_scl, &QCheckBox::stateChanged,
+        this, &QTcfiltDlg::scl_btn_slot);
 
     cf_sclent = new QLineEdit();
     col3->addWidget(cf_sclent);
@@ -365,12 +366,12 @@ QTcfiltDlg::QTcfiltDlg(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*),
     // With layers
     cf_nlyr = new QCheckBox(tr("not"));
     col1->addWidget(cf_nlyr);
-    connect(cf_nlyr, SIGNAL(stateChanged(int)),
-        this, SLOT(nlyr_btn_slot(int)));
+    connect(cf_nlyr, &QCheckBox::stateChanged,
+        this, &QTcfiltDlg::nlyr_btn_slot);
     cf_lyr = new QCheckBox(tr("With layers"));
     col2->addWidget(cf_lyr);
-    connect(cf_lyr, SIGNAL(stateChanged(int)),
-        this, SLOT(lyr_btn_slot(int)));
+    connect(cf_lyr, &QCheckBox::stateChanged,
+        this, &QTcfiltDlg::lyr_btn_slot);
 
     cf_lyrent = new QLineEdit();
     col3->addWidget(cf_lyrent);
@@ -378,12 +379,12 @@ QTcfiltDlg::QTcfiltDlg(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*),
     // With flags
     cf_nflg = new QCheckBox(tr("not"));
     col1->addWidget(cf_nflg);
-    connect(cf_nflg, SIGNAL(stateChanged(int)),
-        this, SLOT(nflg_btn_slot(int)));
+    connect(cf_nflg, &QCheckBox::stateChanged,
+        this, &QTcfiltDlg::nflg_btn_slot);
     cf_flg = new QCheckBox(tr("With flags"));
     col2->addWidget(cf_flg);
-    connect(cf_flg, SIGNAL(stateChanged(int)),
-        this, SLOT(flg_btn_slot(int)));
+    connect(cf_flg, &QCheckBox::stateChanged,
+        this, &QTcfiltDlg::flg_btn_slot);
 
     cf_flgent = new QLineEdit();
     col3->addWidget(cf_flgent);
@@ -391,12 +392,12 @@ QTcfiltDlg::QTcfiltDlg(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*),
     // From filetypes
     cf_nftp = new QCheckBox(tr("not"));
     col1->addWidget(cf_nftp);
-    connect(cf_nftp, SIGNAL(stateChanged(int)),
-        this, SLOT(nftp_btn_slot(int)));
+    connect(cf_nftp, &QCheckBox::stateChanged,
+        this, &QTcfiltDlg::nftp_btn_slot);
     cf_ftp = new QCheckBox(tr("From filetypes"));
     col2->addWidget(cf_ftp);
-    connect(cf_ftp, SIGNAL(stateChanged(int)),
-        this, SLOT(ftp_btn_slot(int)));
+    connect(cf_ftp, &QCheckBox::stateChanged,
+        this, &QTcfiltDlg::ftp_btn_slot);
 
     cf_ftpent = new QLineEdit();
     col3->addWidget(cf_ftpent);
@@ -411,12 +412,14 @@ QTcfiltDlg::QTcfiltDlg(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*),
     cf_apply = new QToolButton();
     cf_apply->setText(tr("Apply"));
     hbox->addWidget(cf_apply);
-    connect(cf_apply, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
+    connect(cf_apply, &QAbstractButton::clicked,
+        this, &QTcfiltDlg::apply_btn_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTcfiltDlg::dismiss_btn_slot);
 
     update(cf_mode);
 }

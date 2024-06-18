@@ -1,13 +1,28 @@
 #! /bin/sh
 
-# Shell script to create a Windows "junction".
-# Usage: make_link link pathdd
+# Shell script to create a Windows "junction" which is a directory link (for directories
+# only!).  Unlike file links, anyone can do this and doesn't need Developer Mode.
+# Usage: make_junc link pathdd
 
 link=$1
 path=$2
+if [ -z "$link" -o -z "$path" ]; then
+    echo "Error: make_link requires two arguments, command failed."
+    exit 1
+fi
 
-linkd=`echo $link | sed 's/\//\\\\/g'`
-pathd=`echo $path | sed 's/\//\\\\/g'`
-com=`echo cmd /c "'"mklink /j $linkd $pathd"'"`
-#echo $com
-eval $com
+linkd=`echo $link | sed -e s%/%'\\\\'%g`
+if [ -e $link ]; then
+    rm -f $link
+fi
+pathd=`echo $path | sed -e s%/%'\\\\'%g`
+bfnam=make_junc$$.bat
+if [ -d $path ]; then
+    echo mklink /J $linkd $pathd > $bfnam
+else
+    echo "Error: $path is not an existing directory, command failed."
+    exit 1
+fi
+chmod +x $bfnam
+./$bfnam
+rm -f $bfnam

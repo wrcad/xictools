@@ -320,7 +320,8 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTattributesDlg::help_btn_slot);
 
     QTabWidget *nbook = new QTabWidget();
     vbox->addWidget(nbook);
@@ -350,13 +351,13 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     for (int i = 0; cursvals[i]; i++)
         at_cursor->addItem(cursvals[i]);
     at_cursor->setCurrentIndex(XM()->GetCursor());
-    connect(at_cursor, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(cursor_menu_changed_slot(int)));
+    connect(at_cursor, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTattributesDlg::cursor_menu_changed_slot);
 
     at_fullscr = new QCheckBox(tr("Use full-window cursor"));
     hb->addWidget(at_fullscr);
-    connect(at_fullscr, SIGNAL(stateChanged(int)),
-        this, SLOT(usefwc_btn_slot(int)));
+    connect(at_fullscr, &QCheckBox::stateChanged,
+        this, &QTattributesDlg::usefwc_btn_slot);
 
     QGridLayout *grid = new QGridLayout();
     vb->addLayout(grid);
@@ -368,8 +369,8 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     grid->addWidget(at_sb_visthr, 0, 1);
     at_sb_visthr->setRange(DSP_MIN_CELL_THRESHOLD, DSP_MAX_CELL_THRESHOLD);
     at_sb_visthr->setValue(DSP_DEF_CELL_THRESHOLD);
-    connect(at_sb_visthr, SIGNAL(valueChanged(int)),
-        this, SLOT(visthr_sb_slot(int)));
+    connect(at_sb_visthr, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTattributesDlg::visthr_sb_slot);
 
     label = new QLabel(tr("Push context display illumination percent"));
     grid->addWidget(label, 1, 0);
@@ -378,8 +379,8 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     grid->addWidget(at_sb_cxpct, 1, 1);
     at_sb_cxpct->setRange(DSP_MIN_CX_DARK_PCNT, 100);
     at_sb_cxpct->setValue(DSP_DEF_CX_DARK_PCNT);
-    connect(at_sb_cxpct, SIGNAL(valueChanged(int)),
-        this, SLOT(cxpct_sb_slot(int)));
+    connect(at_sb_cxpct, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTattributesDlg::cxpct_sb_slot);
 
     label = new QLabel(tr("Pixels between pop-ups and prompt line"));
     grid->addWidget(label, 2, 0);
@@ -388,8 +389,8 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     grid->addWidget(at_sb_offset, 2, 1);
     at_sb_offset->setRange(-16, 16);
     at_sb_offset->setValue(0);
-    connect(at_sb_offset, SIGNAL(valueChanged(int)),
-        this, SLOT(offset_sb_slot(int)));
+    connect(at_sb_offset, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTattributesDlg::offset_sb_slot);
 
     // Selections page
     //
@@ -402,14 +403,14 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     at_minst = new QCheckBox(tr(
         "Show origin of selected physical instances"));
     vb->addWidget(at_minst);
-    connect(at_minst, SIGNAL(stateChanged(int)),
-        this, SLOT(markinst_btn_slot(int)));
+    connect(at_minst, &QCheckBox::stateChanged,
+        this, &QTattributesDlg::markinst_btn_slot);
 
     at_mcntr = new QCheckBox(tr(
         "Show centroids of selected physical objects"));
     vb->addWidget(at_mcntr);
-    connect(at_mcntr, SIGNAL(stateChanged(int)),
-        this, SLOT(markcntr_btn_slot(int)));
+    connect(at_mcntr, &QCheckBox::stateChanged,
+        this, &QTattributesDlg::markcntr_btn_slot);
 
     // Phys Props page
     //
@@ -420,8 +421,8 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     at_abprop = new QCheckBox(tr(
         "Erase behind physical properties text"));
     grid->addWidget(at_abprop, 0, 0);
-    connect(at_abprop, SIGNAL(stateChanged(int)),
-        this, SLOT(abprop_btn_slot(int)));
+    connect(at_abprop, &QCheckBox::stateChanged,
+        this, &QTattributesDlg::abprop_btn_slot);
 
     label = new QLabel(tr("Physical property text size (pixels)"));
     grid->addWidget(label, 1, 0);
@@ -430,8 +431,8 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     grid->addWidget(at_sb_tsize, 1, 1);
     at_sb_tsize->setRange(DSP_MIN_PTRM_TXTHT, DSP_MAX_PTRM_TXTHT);
     at_sb_tsize->setValue(DSP_DEF_PTRM_TXTHT);
-    connect(at_sb_tsize, SIGNAL(valueChanged(int)),
-        this, SLOT(tsize_sb_slot(int)));
+    connect(at_sb_tsize, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTattributesDlg::tsize_sb_slot);
 
     // Terminals page
     //
@@ -453,8 +454,8 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     at_ebterms->addItem("Cell terminals only");
     at_ebterms->addItem("All terminals");
     at_ebterms->setCurrentIndex(at_ebthst);
-    connect(at_ebterms, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(ebt_menu_changed_slot(int)));
+    connect(at_ebterms, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTattributesDlg::ebt_menu_changed_slot);
 
     label = new QLabel(tr("Terminal text pixel size"));
     grid->addWidget(label, 1, 0);
@@ -463,8 +464,8 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     grid->addWidget(at_sb_ttsize, 1, 1);
     at_sb_ttsize->setRange(DSP_MIN_PTRM_TXTHT, DSP_MAX_PTRM_TXTHT);
     at_sb_ttsize->setValue(DSP()->TermTextSize());
-    connect(at_sb_ttsize, SIGNAL(valueChanged(int)),
-        this, SLOT(ttsize_sb_slot(int)));
+    connect(at_sb_ttsize, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTattributesDlg::ttsize_sb_slot);
 
     label = new QLabel(tr("Terminal mark size"));
     grid->addWidget(label, 2, 0);
@@ -473,8 +474,8 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     grid->addWidget(at_sb_tmsize, 2, 1);
     at_sb_tmsize->setRange(DSP_MIN_PTRM_DELTA, DSP_MAX_PTRM_DELTA);
     at_sb_tmsize->setValue(DSP()->TermMarkSize());
-    connect(at_sb_tmsize, SIGNAL(valueChanged(int)),
-        this, SLOT(tmsize_sb_slot(int)));
+    connect(at_sb_tmsize, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTattributesDlg::tmsize_sb_slot);
 
     // Labels page
     //
@@ -493,8 +494,8 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     hb->addWidget(at_hdn);
     for (int i = 0; hdn_menu[i]; i++)
         at_hdn->addItem(hdn_menu[i]);
-    connect(at_hdn, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(hdn_menu_changed_slot(int)));
+    connect(at_hdn, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTattributesDlg::hdn_menu_changed_slot);
 
     label = new QLabel(tr("Default minimum label height"));
     grid->addWidget(label, 1, 0);
@@ -504,8 +505,9 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     at_sb_lheight->setRange(CD_MIN_TEXT_HEI, CD_MAX_TEXT_HEI);
     at_sb_lheight->setDecimals(2);
     at_sb_lheight->setValue(CD_DEF_TEXT_HEI);
-    connect(at_sb_lheight, SIGNAL(valueChanged(double)),
-        this, SLOT(lheight_sb_slot(double)));
+    connect(at_sb_lheight,
+        QOverload<double>::of(&QTdoubleSpinBox::valueChanged),
+        this, &QTattributesDlg::lheight_sb_slot);
 
     label = new QLabel(tr("Maximum displayed label length"));
     grid->addWidget(label, 2, 0);
@@ -514,8 +516,8 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     grid->addWidget(at_sb_llen, 2, 1);
     at_sb_llen->setRange(DSP_MIN_MAX_LABEL_LEN, DSP_MAX_MAX_LABEL_LEN);
     at_sb_llen->setValue(DSP_DEF_MAX_LABEL_LEN);
-    connect(at_sb_llen, SIGNAL(valueChanged(int)),
-        this, SLOT(llen_sb_slot(int)));
+    connect(at_sb_llen, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTattributesDlg::llen_sb_slot);
 
     label = new QLabel(tr("Label optional displayed line limit"));
     grid->addWidget(label, 3, 0);
@@ -524,15 +526,16 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     grid->addWidget(at_sb_llines, 3, 1);
     at_sb_llines->setRange(DSP_MIN_MAX_LABEL_LINES, DSP_MAX_MAX_LABEL_LINES);
     at_sb_llines->setValue(DSP_DEF_MAX_LABEL_LINES);
-    connect(at_sb_llines, SIGNAL(valueChanged(int)),
-        this, SLOT(llines_sb_slot(int)));
+    connect(at_sb_llines, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTattributesDlg::llines_sb_slot);
 
     // Dismiss button
     //
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTattributesDlg::dismiss_btn_slot);
 
     update();
 }

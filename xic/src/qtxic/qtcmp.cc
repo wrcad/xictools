@@ -303,7 +303,8 @@ QTcompareDlg::QTcompareDlg(GRobject c)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTcompareDlg::help_btn_slot);
 
     // Comparison mode selection notebook.
     //
@@ -363,13 +364,13 @@ QTcompareDlg::QTcompareDlg(GRobject c)
 
     cmp_layer_use = new QCheckBox(tr("Layers Only"));
     grid->addWidget(cmp_layer_use, 0, 0);
-    connect(cmp_layer_use, SIGNAL(stateChanged(int)),
-        this, SLOT(luse_btn_slot(int)));
+    connect(cmp_layer_use, &QCheckBox::stateChanged,
+        this, &QTcompareDlg::luse_btn_slot);
 
     cmp_layer_skip = new QCheckBox(tr("Skip Layers"));
     grid->addWidget(cmp_layer_skip, 0, 1);
-    connect(cmp_layer_skip, SIGNAL(stateChanged(int)),
-        this, SLOT(lskip_btn_slot(int)));
+    connect(cmp_layer_skip, &QCheckBox::stateChanged,
+        this, &QTcompareDlg::lskip_btn_slot);
 
     cmp_layer_list = new QLineEdit();
     grid->addWidget(cmp_layer_list, 1, 0, 1, 2);
@@ -405,12 +406,14 @@ QTcompareDlg::QTcompareDlg(GRobject c)
     tbtn = new QToolButton();
     tbtn->setText(tr("Go"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(go_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTcompareDlg::go_btn_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTcompareDlg::dismiss_btn_slot);
 
     recall();
     p1_sens();
@@ -601,28 +604,28 @@ QTcompareDlg::per_cell_obj_page()
 
     cmp_p1_boxes = new QCheckBox(tr("Boxes"));
     vb->addWidget(cmp_p1_boxes);
-    connect(cmp_p1_boxes, SIGNAL(stateChanged(int)),
-        this, SLOT(p1_sens_set_slot(int)));
+    connect(cmp_p1_boxes, &QCheckBox::stateChanged,
+        this, &QTcompareDlg::p1_sens_set_slot);
 
     cmp_p1_polys = new QCheckBox(tr("Polygons"));
     vb->addWidget(cmp_p1_polys);
-    connect(cmp_p1_polys, SIGNAL(stateChanged(int)),
-        this, SLOT(p1_sens_set_slot(int)));
+    connect(cmp_p1_polys, &QCheckBox::stateChanged,
+        this, &QTcompareDlg::p1_sens_set_slot);
 
     cmp_p1_wires = new QCheckBox(tr("Wires"));
     vb->addWidget(cmp_p1_wires);
-    connect(cmp_p1_wires, SIGNAL(stateChanged(int)),
-        this, SLOT(p1_sens_set_slot(int)));
+    connect(cmp_p1_wires, &QCheckBox::stateChanged,
+        this, &QTcompareDlg::p1_sens_set_slot);
 
     cmp_p1_labels = new QCheckBox(tr("Labels"));
     vb->addWidget(cmp_p1_labels);
-    connect(cmp_p1_labels, SIGNAL(stateChanged(int)),
-        this, SLOT(p1_sens_set_slot(int)));
+    connect(cmp_p1_labels, &QCheckBox::stateChanged,
+        this, &QTcompareDlg::p1_sens_set_slot);
 
     cmp_p1_insts = new QCheckBox(tr("Cell Instances"));
     vb->addWidget(cmp_p1_insts);
-    connect(cmp_p1_insts, SIGNAL(stateChanged(int)),
-        this, SLOT(p1_sens_set_slot(int)));
+    connect(cmp_p1_insts, &QCheckBox::stateChanged,
+        this, &QTcompareDlg::p1_sens_set_slot);
 
     // Properties group
     //
@@ -649,8 +652,8 @@ QTcompareDlg::per_cell_obj_page()
 
     cmp_p1_phys = new QRadioButton(tr("Physical"));
     grid->addWidget(cmp_p1_phys, 2, 2);
-    connect(cmp_p1_phys, SIGNAL(toggled(bool)),
-        this, SLOT(p1_mode_btn_slot(bool)));
+    connect(cmp_p1_phys, &QRadioButton::toggled,
+        this, &QTcompareDlg::p1_mode_btn_slot);
 
     cmp_p1_elec = new QRadioButton(tr("Electrical"));
     grid->addWidget(cmp_p1_elec, 3, 2);
@@ -670,15 +673,15 @@ QTcompareDlg::per_cell_obj_page()
     cmp_p1_fltr->addItem(tr("Default"));
     cmp_p1_fltr->addItem(tr("None"));
     cmp_p1_fltr->addItem(tr("Custrom"));
-    connect(cmp_p1_fltr, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(p1_fltr_menu_slot(int)));
+    connect(cmp_p1_fltr, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTcompareDlg::p1_fltr_menu_slot);
 
     cmp_p1_setup = new QToolButton();
     cmp_p1_setup->setText(tr("Setup"));
     hb->addWidget(cmp_p1_setup);
     cmp_p1_setup->setCheckable(true);
-    connect(cmp_p1_setup, SIGNAL(toggled(bool)),
-        this, SLOT(p1_setup_btn_slot(bool)));
+    connect(cmp_p1_setup, &QAbstractButton::toggled,
+        this, &QTcompareDlg::p1_setup_btn_slot);
 
     recall_p1();
 }
@@ -728,8 +731,8 @@ QTcompareDlg::flat_geom_page()
 
     cmp_p3_aoi_use = new QCheckBox(tr("Use Window"));
     grid->addWidget(cmp_p3_aoi_use, 0, 0, 1, 3);
-    connect(cmp_p3_aoi_use, SIGNAL(stateChanged(int)),
-        this, SLOT(p3_usewin_btn_slot(int)));
+    connect(cmp_p3_aoi_use, &QCheckBox::stateChanged,
+        this, &QTcompareDlg::p3_usewin_btn_slot);
 
     cmp_p3_s_btn = new QToolButton();
     cmp_p3_s_btn->setText("S");
@@ -743,8 +746,8 @@ QTcompareDlg::flat_geom_page()
         QAction *a = cmp_p3_s_menu->addAction(buf);
         a->setData(i);
     }
-    connect(cmp_p3_s_menu, SIGNAL(triggered(QAction*)),
-        this, SLOT(p3_s_menu_slot(QAction*)));
+    connect(cmp_p3_s_menu, &QMenu::triggered,
+        this, &QTcompareDlg::p3_s_menu_slot);
 
     cmp_p3_r_btn = new QToolButton();
     cmp_p3_r_btn->setText("R");
@@ -757,8 +760,8 @@ QTcompareDlg::flat_geom_page()
         QAction *a = cmp_p3_r_menu->addAction(buf);
         a->setData(i);
     }
-    connect(cmp_p3_r_menu, SIGNAL(triggered(QAction*)),
-        this, SLOT(p3_r_menu_slot(QAction*)));
+    connect(cmp_p3_r_menu, &QMenu::triggered,
+        this, &QTcompareDlg::p3_r_menu_slot);
 
     QLabel *wnd_l_label = new QLabel(tr("Left"));
     grid->addWidget(wnd_l_label, 1, 1);

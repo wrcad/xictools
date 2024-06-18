@@ -29,8 +29,8 @@ DEFLIB = source.lefdef/def_5.8-p013-wr.tar.gz
 LEFLIB = source.lefdef/lef_5.8-p013-wr.tar.gz
 
 all: lef def
-	@cd def; $(MAKE) CC="$(CC)" CXX="$(CXX)" CXXFLAGS="$(CFLAGS)"
-	@cd lef; $(MAKE) CC="$(CC)" CXX="$(CXX)" CXXFLAGS="$(CFLAGS)"
+	@$(MAKE) -C def CC="$(CC)" CXX="$(CXX)" CXXFLAGS="$(CFLAGS)"
+	@$(MAKE) -C lef CC="$(CC)" CXX="$(CXX)" CXXFLAGS="$(CFLAGS)"
 	@cd mrouter; $(MAKE) depend; $(MAKE)
 
 lef:
@@ -40,32 +40,32 @@ def:
 	@tar xzf $(DEFLIB)
 
 cleanlef:
-	@cd lef; $(MAKE) clean
+	@$(MAKE) -C lef clean
 
 cleandef:
-	@cd def; $(MAKE) clean
+	@$(MAKE) -C def clean
 
 buildlef:
-	@cd lef; $(MAKE) CC="$(CC)" CXX="$(CXX)" CXXFLAGS="$(CFLAGS)"
+	@$(MAKE) -C lef CC="$(CC)" CXX="$(CXX)" CXXFLAGS="$(CFLAGS)"
 
 builddef:
-	@cd def; $(MAKE) CC="$(CC)" CXX="$(CXX)" CXXFLAGS="$(CFLAGS)"
+	@$(MAKE) -C def CC="$(CC)" CXX="$(CXX)" CXXFLAGS="$(CFLAGS)"
 
 clean:
 	-@for a in $(SUBDIRS); do \
 	    if [ -d $$a ]; then \
-	        (cd $$a; $(MAKE) clean); \
+	        $(MAKE) -C $$a clean; \
 	    fi \
 	done
-	-@cd examples; $(MAKE) clean
+	-@$(MAKE) -C examples clean
 
 distclean:
 	-@rm -rf lef def autom4te.cache config.cache config.status config.log \
   Makefile
 	-@rm -f mrouter-`./release.sh`.tar.gz
-	-@cd mrouter; $(MAKE) $@
-	-@cd examples; $(MAKE) $@
-	-@cd packages; $(MAKE) $@
+	-@$(MAKE) -C mrouter $@
+	-@$(MAKE) -C examples $@
+	-@$(MAKE) -C packages $@
 
 depend:
 	@if [ ! -d lef ]; then \
@@ -74,11 +74,11 @@ depend:
 	@if [ ! -d def ]; then \
 	    $(MAKE) def; \
 	fi
-	@cd mrouter; $(MAKE) $@
-	@cd examples; $(MAKE) $@
+	@$(MAKE) -C mrouter $@
+	@$(MAKE) -C examples $@
 
 test:
-	-cd mrouter; $(MAKE) test
+	-$(MAKE) -C mrouter test
 
 #######################################################################
 ####### Install programs into system location #########################
@@ -178,6 +178,6 @@ package::
 	-rm -rf packages/root
 	mkdir packages/root
 	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install
-	cd packages; $(MAKE) package
+	$(MAKE) -C packages package
 
 #######################################################################

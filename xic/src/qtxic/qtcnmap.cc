@@ -74,13 +74,13 @@ QTcnameMap::QTcnameMap(bool outp)
 
     cn_to_lower = new QCheckBox(tr("To Lower"));
     grid->addWidget(cn_to_lower, 0, 2);
-    connect(cn_to_lower, SIGNAL(stateChanged(int)),
-        this, SLOT(to_lower_slot(int)));
+    connect(cn_to_lower, &QCheckBox::stateChanged,
+        this, &QTcnameMap::to_lower_slot);
 
     cn_rd_alias = new QCheckBox(tr("Read Alias"));
     grid->addWidget(cn_rd_alias, 0, 3);
-    connect(cn_rd_alias, SIGNAL(stateChanged(int)),
-        this, SLOT(rd_alias_slot(int)));
+    connect(cn_rd_alias, &QCheckBox::stateChanged,
+        this, &QTcnameMap::rd_alias_slot);
 
     label = new QLabel(tr("Suffix"));
     grid->addWidget(label, 1, 0);
@@ -90,20 +90,20 @@ QTcnameMap::QTcnameMap(bool outp)
 
     cn_to_upper = new QCheckBox(tr("To Upper"));
     grid->addWidget(cn_to_upper, 1, 2);
-    connect(cn_to_upper, SIGNAL(stateChanged(int)),
-        this, SLOT(to_upper_slot(int)));
+    connect(cn_to_upper, &QCheckBox::stateChanged,
+        this, &QTcnameMap::to_upper_slot);
 
     cn_wr_alias = new QCheckBox(tr("Write Alias"));
     grid->addWidget(cn_wr_alias, 1, 3);
-    connect(cn_wr_alias, SIGNAL(stateChanged(int)),
-        this, SLOT(wr_alias_slot(int)));
+    connect(cn_wr_alias, &QCheckBox::stateChanged,
+        this, &QTcnameMap::wr_alias_slot);
 
     update();
 
-    connect(cn_prefix, SIGNAL(textChanged(const QString&)),
-        this, SLOT(prefix_changed_slot(const QString&)));
-    connect(cn_suffix, SIGNAL(textChanged(const QString&)),
-        this, SLOT(suffix_changed_slot(const QString&)));
+    connect(cn_prefix, &QLineEdit::textChanged,
+        this, &QTcnameMap::prefix_changed_slot);
+    connect(cn_suffix, &QLineEdit::textChanged,
+        this, &QTcnameMap::suffix_changed_slot);
 }
 
 

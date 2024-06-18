@@ -132,7 +132,8 @@ QTstabDlg::QTstabDlg(GRobject c) : QTbag(this)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTstabDlg::help_btn_slot);
 
     // Symbol tables list.
     //
@@ -142,8 +143,8 @@ QTstabDlg::QTstabDlg(GRobject c) : QTbag(this)
     for (stringlist *s = tb_namelist; s; s = s->next)
         tb_tables->addItem((const char*)s->string);
     tb_tables->setCurrentIndex(0);
-    connect(tb_tables, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(table_change_slot(int)));
+    connect(tb_tables, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTstabDlg::table_change_slot);
 
     // Button row.
     //
@@ -156,13 +157,15 @@ QTstabDlg::QTstabDlg(GRobject c) : QTbag(this)
     tb_add->setText(tr("Add"));
     hbox->addWidget(tb_add);
     tb_add->setCheckable(true);
-    connect(tb_add, SIGNAL(toggled(bool)), this, SLOT(add_btn_slot(bool)));
+    connect(tb_add, &QAbstractButton::toggled,
+        this, &QTstabDlg::add_btn_slot);
 
     tb_clr = new QToolButton();
     tb_clr->setText(tr("Clear"));
     hbox->addWidget(tb_clr);
     tb_clr->setCheckable(true);
-    connect(tb_clr, SIGNAL(toggled(bool)), this, SLOT(clear_btn_slot(bool)));
+    connect(tb_clr, &QAbstractButton::toggled,
+        this, &QTstabDlg::clear_btn_slot);
 
     tb_del = new QToolButton();
     tb_del->setText(tr("Destroy"));
@@ -170,12 +173,14 @@ QTstabDlg::QTstabDlg(GRobject c) : QTbag(this)
     tb_del->setCheckable(true);
     if (!tb_namelist || !strcmp(tb_namelist->string, CD_MAIN_ST_NAME))
         tb_del->setEnabled(false);
-    connect(tb_del, SIGNAL(toggled(bool)), this, SLOT(destroy_btn_slot(bool)));
+    connect(tb_del, &QAbstractButton::toggled,
+        this, &QTstabDlg::destroy_btn_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTstabDlg::dismiss_btn_slot);
 }
 
 

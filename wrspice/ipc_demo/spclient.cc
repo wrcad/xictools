@@ -34,9 +34,9 @@
 #include "config.h"
 
 #include "spclient.h"
-#include "pathlist.h"
-#include "tvals.h"
-#include "errorrec.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/tvals.h"
+#include "miscutil/errorrec.h"
 #ifdef WIN32
 #include <winsock2.h>       // for ntohl
 #else
@@ -97,13 +97,13 @@ sPL *sPL::_pl;
 cErrLog *cErrLog::_el;
 sSCD *sSCD::_scd;
 cSpiceIPC *sSCD::_ipc;
-DspPkgIf *DspPkgIf::_dsp_if;
+DSPpkg *DSPpkg::instPtr;
 sMenu *sMenu::_menu;
 
 // Instantiate classes.  These are all global singletons.
 sPL _pl_;
 cErrLog _el_;
-DspPkgIf _dsp_;
+DSPpkg _dsp_;
 sMenu _menu_;
 
 // This is an error-reporting class.

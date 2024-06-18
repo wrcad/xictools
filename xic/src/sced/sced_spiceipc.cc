@@ -49,7 +49,7 @@
 // illustrates how things may be done, and it works.
 
 #include "spclient.h"
-#include "errorrec.h"
+#include "miscutil/errorrec.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -57,10 +57,10 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "pathlist.h"
-#include "tvals.h"
-#include "services.h"
-#include "childproc.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/tvals.h"
+#include "miscutil/services.h"
+#include "miscutil/childproc.h"
 
 #else
 
@@ -504,10 +504,10 @@ cSpiceIPC::RunSpice(CmdDesc *cmd)
             save_analysis(SCD()->setAnalysisList(anl));
         }
         else if (tok) {
-            delete [] tok;
             delete [] analysis_str;
             hyList::destroy(anl);
             PL()->ShowPromptV("Unknown analysis type %s.", tok);
+            delete [] tok;
             return (false);
         }
         else {
@@ -1486,6 +1486,8 @@ cSpiceIPC::init_local()
     bool has_graphics = !ipc_no_graphics;
 #ifdef DEMO_EXPORT
     // The demo app is command-line driven.
+//XXX
+display_string = ":0";
 #else
     if (has_graphics && DSPpkg::self()->UsingX11()) {
         display_string = DSPpkg::self()->GetDisplayString();
@@ -1656,22 +1658,14 @@ cSpiceIPC::init_local()
         DSPpkg::self()->CloseGraphicsConnection();
         dup2(ipc_stdout_skt2, fileno(stdout));
         dup2(ipc_stdout_skt2, fileno(stderr));
-        if (has_graphics) {
-            if (display_string) {
-                if (ipc_no_toolbar) {
-                    execl(ipc_spice_path, prog_name, "-P", "-D",
-                        display_string, (char*)0);
-                }
-                else {
-                    execl(ipc_spice_path, prog_name, "-P", "-I", "-D",
-                        display_string, (char*)0);
-                }
+        if (has_graphics && *display_string) {
+            if (ipc_no_toolbar) {
+                execl(ipc_spice_path, prog_name, "-P", "-D",
+                    display_string, (char*)0);
             }
             else {
-                if (ipc_no_toolbar)
-                    execl(ipc_spice_path, prog_name, "-P", (char*)0);
-                else
-                    execl(ipc_spice_path, prog_name, "-P", "-I", (char*)0);
+                execl(ipc_spice_path, prog_name, "-P", "-I", "-D",
+                    display_string, (char*)0);
             }
         }
         else

@@ -126,41 +126,44 @@ QTtextDlg::QTtextDlg(QTbag *owner, const char *message_str, PuType which,
         // Wrap lines, this is not the default.
         tx_tbox->setLineWrapMode(QTextEdit::WidgetWidth);
         tx_tbox->setOpenLinks(false);
-        connect(tx_tbox, SIGNAL(anchorClicked(const QUrl&)),
-            this, SLOT(anchor_clicked_slot(const QUrl&)));
+        connect(tx_tbox, &QTtextEdit::anchorClicked,
+            this, &QTtextDlg::anchor_clicked_slot);
     }
     tx_save = new QToolButton();
     tx_save->setText(tr("Save Text "));
     hbox->addWidget(tx_save);
     tx_save->setCheckable(true);
-    connect(tx_save, SIGNAL(toggled(bool)),
-        this, SLOT(save_btn_slot(bool)));
+    connect(tx_save, &QAbstractButton::toggled,
+        this, &QTtextDlg::save_btn_slot);
     if ((tx_which == PuErr || tx_which == PuErrAlso) &&
             tx_errlog && p_parent) {
         QToolButton *tbtn = new QToolButton();
         tbtn->setText(tr("Show Error Log"));
         hbox->addWidget(tbtn);
-        connect(tbtn, SIGNAL(clicked()), this, SLOT(showlog_btn_slot()));
+        connect(tbtn, &QAbstractButton::clicked,
+            this, &QTtextDlg::showlog_btn_slot);
     }
     if (tx_which == PuInfo2) {
         QToolButton *tbtn = new QToolButton();
         tbtn->setText(tr("Help"));
         hbox->addWidget(tbtn);
-        connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+        connect(tbtn, &QAbstractButton::clicked,
+            this, &QTtextDlg::help_btn_slot);
 
         tx_activate = new QToolButton();
         tx_activate->setText(tr("Activate"));
         tx_activate->setCheckable(true);
         tx_activate->setChecked(true);
         hbox->addWidget(tx_activate);
-        connect(tx_activate, SIGNAL(toggled(bool)),
-            this, SLOT(activate_btn_slot(bool)));
+        connect(tx_activate, &QAbstractButton::toggled,
+            this, &QTtextDlg::activate_btn_slot);
     }
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTtextDlg::dismiss_btn_slot);
 }
 
 

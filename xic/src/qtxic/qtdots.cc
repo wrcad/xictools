@@ -101,20 +101,24 @@ QTdotsDlg::QTdotsDlg(GRobject caller)
 
     dt_none = new QRadioButton(tr("Don't show dots"));
     vbox->addWidget(dt_none);
-    connect(dt_none, SIGNAL(toggled(bool)), this, SLOT(none_slot(bool)));
+    connect(dt_none, &QRadioButton::toggled,
+        this, &QTdotsDlg::none_slot);
 
     dt_norm = new QRadioButton(tr("Show dots normally"));
     vbox->addWidget(dt_norm);
-    connect(dt_norm, SIGNAL(toggled(bool)), this, SLOT(norm_slot(bool)));
+    connect(dt_norm, &QRadioButton::toggled,
+        this, &QTdotsDlg::norm_slot);
 
     dt_all = new QRadioButton(tr("Show dot at every connection"));
     vbox->addWidget(dt_all);
-    connect(dt_all, SIGNAL(toggled(bool)), this, SLOT(all_slot(bool)));
+    connect(dt_all, &QRadioButton::toggled,
+        this, &QTdotsDlg::all_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTdotsDlg::dismiss_slot);
 
     update();
 }

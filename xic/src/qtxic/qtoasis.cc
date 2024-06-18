@@ -160,36 +160,37 @@ QToasisDlg::QToasisDlg(GRobject c)
 
     oas_notrap = new QCheckBox(tr("Don't write trapezoid records"));
     hbox->addWidget(oas_notrap);
-    connect(oas_notrap, SIGNAL(stateChanged(int)),
-        this, SLOT(nozoid_btn_slot(int)));
+    connect(oas_notrap, &QCheckBox::stateChanged,
+        this, &QToasisDlg::nozoid_btn_slot);
 
     hbox->addSpacing(60);
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QToasisDlg::help_btn_slot);
 
     oas_wtob = new QCheckBox(tr(
         "Convert Wire to Box records when possible"));
     vbox->addWidget(oas_wtob);
-    connect(oas_wtob, SIGNAL(stateChanged(int)),
-        this, SLOT(wtob_btn_slot(int)));
+    connect(oas_wtob, &QCheckBox::stateChanged,
+        this, &QToasisDlg::wtob_btn_slot);
 
     oas_rwtop = new QCheckBox(tr(
         "Convert rounded-end Wire records to Poly records"));
     vbox->addWidget(oas_rwtop);
-    connect(oas_rwtop, SIGNAL(stateChanged(int)),
-        this, SLOT(rwtop_btn_slot(int)));
+    connect(oas_rwtop, &QCheckBox::stateChanged,
+        this, &QToasisDlg::rwtop_btn_slot);
 
     oas_nogcd = new QCheckBox(tr("Skip GCD check"));
     vbox->addWidget(oas_nogcd);
-    connect(oas_nogcd, SIGNAL(stateChanged(int)),
-        this, SLOT(nogcd_btn_slot(int)));
+    connect(oas_nogcd, &QCheckBox::stateChanged,
+        this, &QToasisDlg::nogcd_btn_slot);
 
     oas_oldsort = new QCheckBox(tr("Use alternate modal sort algorithm"));
     vbox->addWidget(oas_oldsort);
-    connect(oas_oldsort, SIGNAL(stateChanged(int)),
-        this, SLOT(oldsort_btn_slot(int)));
+    connect(oas_oldsort, &QCheckBox::stateChanged,
+        this, &QToasisDlg::oldsort_btn_slot);
 
     hbox = new QHBoxLayout(0);
     hbox->setContentsMargins(qm);
@@ -204,8 +205,8 @@ QToasisDlg::QToasisDlg(GRobject c)
     hbox->addWidget(oas_pmask);
     for (int i = 0; pmaskvals[i]; i++)
         oas_pmask->addItem(pmaskvals[i], i);
-    connect(oas_pmask, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(pmask_menu_slot(int)));
+    connect(oas_pmask, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QToasisDlg::pmask_menu_slot);
 
     hbox = new QHBoxLayout(0);
     hbox->setContentsMargins(qm);
@@ -221,7 +222,8 @@ QToasisDlg::QToasisDlg(GRobject c)
     oas_def = new QToolButton();
     oas_def->setText(tr("Restore Defaults"));
     hbox->addWidget(oas_def);
-    connect(oas_def, SIGNAL(clicked()), this, SLOT(def_btn_slot()));
+    connect(oas_def, &QAbstractButton::clicked,
+        this, &QToasisDlg::def_btn_slot);
 
     // Repetition Finder Configuration
     // four columns
@@ -241,28 +243,28 @@ QToasisDlg::QToasisDlg(GRobject c)
 
     oas_objc = new QCheckBox(tr("Cells"));
     vb->addWidget(oas_objc);
-    connect(oas_objc, SIGNAL(stateChanged(int)),
-        this, SLOT(cells_btn_slot(int)));
+    connect(oas_objc, &QCheckBox::stateChanged,
+        this, &QToasisDlg::cells_btn_slot);
 
     oas_objb = new QCheckBox(tr("Boxes"));;
     vb->addWidget(oas_objb);
-    connect(oas_objb, SIGNAL(stateChanged(int)),
-        this, SLOT(boxes_btn_slot(int)));
+    connect(oas_objb, &QCheckBox::stateChanged,
+        this, &QToasisDlg::boxes_btn_slot);
 
     oas_objp = new QCheckBox(tr("Polys"));;
     vb->addWidget(oas_objp);
-    connect(oas_objp, SIGNAL(stateChanged(int)),
-        this, SLOT(polys_btn_slot(int)));
+    connect(oas_objp, &QCheckBox::stateChanged,
+        this, &QToasisDlg::polys_btn_slot);
 
     oas_objw = new QCheckBox(tr("Wires"));
     vb->addWidget(oas_objw);
-    connect(oas_objw, SIGNAL(stateChanged(int)),
-        this, SLOT(wires_btn_slot(int)));
+    connect(oas_objw, &QCheckBox::stateChanged,
+        this, &QToasisDlg::wires_btn_slot);
 
     oas_objl = new QCheckBox(tr("Labels"));
     vb->addWidget(oas_objl);
-    connect(oas_objl, SIGNAL(stateChanged(int)),
-        this, SLOT(labels_btn_slot(int)));
+    connect(oas_objl, &QCheckBox::stateChanged,
+        this, &QToasisDlg::labels_btn_slot);
 
     // Entry areas
     //
@@ -273,16 +275,16 @@ QToasisDlg::QToasisDlg(GRobject c)
     oas_noruns->setText(tr("None"));
     grid->addWidget(oas_noruns, 0, 2);
     oas_noruns->setCheckable(true);
-    connect(oas_noruns, SIGNAL(toggled(bool)),
-        this, SLOT(noruns_btn_slot(bool)));
+    connect(oas_noruns, &QAbstractButton::toggled,
+        this, &QToasisDlg::noruns_btn_slot);
 
     oas_sb_entm = new QSpinBox();
     grid->addWidget(oas_sb_entm, 0, 3);
     oas_sb_entm->setMinimum(REP_RUN_MIN);
     oas_sb_entm->setMaximum(REP_RUN_MAX);
     oas_sb_entm->setValue(REP_RUN_MIN);
-    connect(oas_sb_entm, SIGNAL(valueChanged(int)),
-        this, SLOT(entm_changed_slot(int)));
+    connect(oas_sb_entm, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QToasisDlg::entm_changed_slot);
 
     label = new QLabel(tr("Array minimum"));
     grid->addWidget(label, 1, 1);
@@ -291,16 +293,16 @@ QToasisDlg::QToasisDlg(GRobject c)
     oas_noarrs->setText(tr("None"));
     grid->addWidget(oas_noarrs, 1, 2);
     oas_noarrs->setCheckable(true);
-    connect(oas_noarrs, SIGNAL(toggled(bool)),
-        this, SLOT(noarrs_btn_slot(bool)));
+    connect(oas_noarrs, &QAbstractButton::toggled,
+        this, &QToasisDlg::noarrs_btn_slot);
 
     oas_sb_enta = new QSpinBox();
     grid->addWidget(oas_sb_enta, 1, 3);
     oas_sb_enta->setMinimum(REP_ARRAY_MIN);
     oas_sb_enta->setMaximum(REP_ARRAY_MAX);
     oas_sb_enta->setValue(REP_ARRAY_MIN);
-    connect(oas_sb_enta, SIGNAL(valueChanged(int)),
-        this, SLOT(enta_changed_slot(int)));
+    connect(oas_sb_enta, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QToasisDlg::enta_changed_slot);
 
     label = new QLabel(tr("Max different objects"));
     grid->addWidget(label, 2, 1);
@@ -310,8 +312,8 @@ QToasisDlg::QToasisDlg(GRobject c)
     oas_sb_entx->setMinimum(REP_MAX_ITEMS_MIN);
     oas_sb_entx->setMaximum(REP_MAX_ITEMS_MAX);
     oas_sb_entx->setValue(REP_MAX_ITEMS);
-    connect(oas_sb_entx, SIGNAL(valueChanged(int)),
-        this, SLOT(entx_changed_slot(int)));
+    connect(oas_sb_entx, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QToasisDlg::entx_changed_slot);
 
     label = new QLabel(tr("Max identical objects"));
     grid->addWidget(label, 3, 1);
@@ -320,21 +322,22 @@ QToasisDlg::QToasisDlg(GRobject c)
     oas_nosim->setText(tr("None"));
     grid->addWidget(oas_nosim, 3, 2);
     oas_nosim->setCheckable(true);
-    connect(oas_nosim, SIGNAL(toggled(bool)),
-        this, SLOT(nosim_btn_slot(bool)));
+    connect(oas_nosim, &QAbstractButton::toggled,
+        this, &QToasisDlg::nosim_btn_slot);
 
     oas_sb_entt = new QSpinBox();
     grid->addWidget(oas_sb_entt, 3, 3);
     oas_sb_entt->setMinimum(REP_MAX_REPS_MIN);
     oas_sb_entt->setMaximum(REP_MAX_REPS_MAX);
     oas_sb_entt->setValue(REP_MAX_REPS);
-    connect(oas_sb_entt, SIGNAL(valueChanged(int)),
-        this, SLOT(entt_changed_slot(int)));
+    connect(oas_sb_entt, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QToasisDlg::entt_changed_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QToasisDlg::dismiss_btn_slot);
 
     update();
 }

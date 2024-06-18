@@ -32,104 +32,34 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * QtInterf Graphical Interface Library                                   *
+ * Xic Integrated Circuit Layout and Schematic Editor                     *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#include "qtidleproc.h"
+#ifndef QTKEYMACRO_H
+#define QTKEYMACRO_H
 
+namespace qt_keyb {
 
-using namespace qtinterf;
+    // List element for widget name matches.
+    //
+    struct wlist
+    {
+        wlist(QWidget *o, wlist *n) : widget(o), next(n) { }
 
-QTidleproc::QTidleproc() : QTimer(0)
-{
-    ip_idle_proc_list = 0;
-    ip_idle_id_cnt = 1000;
-    ip_running = false;
-    connect(this, &QTidleproc::timeout, this, &QTidleproc::run_slot);
+        QWidget *widget;
+        wlist *next;
+    };
+
+    // qtkeymacro.cc
+    bool getkey_event_handler(QObject*, QEvent*, void*);
+    bool macro_event_handler(QObject*, QEvent*, void*);
+    char *widget_path(const QWidget*);
+    wlist *find_widget(const QWidget*, const char*);
+    QWidget *name_to_widget(const char*);
 }
 
-
-// Add an idle function callback.  The function will be called repeatedly
-// until 0 is returned, at which point it will be removed from the list.
-// An id for the callback is returned.
-//
-int
-QTidleproc::add(int(*cb)(void*), void *arg)
-{
-    idle_procs *ip = new idle_procs(cb, arg);
-    if (!ip_idle_proc_list)
-        ip_idle_proc_list = ip;
-    else {
-        idle_procs *p = ip_idle_proc_list;
-        while (p->next)
-            p = p->next;
-        p->next = ip;
-    }
-    ip_idle_proc_list->id = ip_idle_id_cnt++;
-    if (!ip_running) {
-        start();
-        ip_running = true;
-    }
-    return (ip_idle_proc_list->id);
-}
-
-
-// Remove an idle function callback from the list.  The argument is
-// the return value obtained when the callback was added.  Return
-// true if a removal was done.
-//
-bool
-QTidleproc::remove(int iid)
-{
-    idle_procs *p = 0;
-    for (idle_procs *ip = ip_idle_proc_list; ip; ip = ip->next) {
-        if (ip->id == iid) {
-            if (p)
-                p->next = ip->next;
-            else
-                ip_idle_proc_list = ip->next;
-            delete ip;
-            return (true);
-        }
-        p = ip;
-    }
-    return (false);
-}
-
-
-// Slot to run the idle queue.  The first callback is popped off and
-// run.  If the callback returns true, the callback is appended to the
-// end of the list, otherwise it is deleted.
-//
-void
-QTidleproc::run_slot()
-{
-    if (ip_idle_proc_list) {
-        idle_procs *ip = ip_idle_proc_list;
-        ip_idle_proc_list = ip->next;
-        ip->next = 0;
-
-        int ret = (*ip->proc)(ip->arg);
-        if (ret) {
-            if (!ip_idle_proc_list)
-                ip_idle_proc_list = ip;
-            else {
-                idle_procs *p = ip_idle_proc_list;
-                while (p->next)
-                    p = p->next;
-                p->next = ip;
-            }
-        }
-        else
-            delete ip;
-    }
-
-    if (!ip_idle_proc_list) {
-        stop();
-        ip_running = false;
-    }
-}
+#endif
 

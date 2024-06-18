@@ -102,7 +102,10 @@ struct sKeyMap
             delete [] forstr;
         }
 
+    // graphics
     void begin_recording(char*);
+
+    // keymacro.cc
     void show();
     void print_macro(FILE*);
     void print_macro_text(FILE*);
@@ -177,6 +180,7 @@ public:
 
     void GetMacro();
     void SaveMacro(sKeyMap*, bool);
+    sKeyMap *AlreadyMapped(unsigned int, unsigned int);
     void MacroParse(SIfile*, stringlist**, const char**, int*);
     bool DoMacro();
     bool MacroExpand(unsigned int, unsigned int, bool);
@@ -188,20 +192,20 @@ public:
 
     // These are provided by the graphics package.
     sKeyMap *getKeyToMap();
-    bool isModifier(unsigned int);
-    bool isControl(unsigned int);
-    bool isShift(unsigned int);
-    bool isAlt(unsigned int);
-    char *keyText(unsigned int, unsigned int);
-    void keyName(unsigned int, char*);
-    bool isModifierDown();
-    bool notMappable(unsigned int, unsigned int);
+
+    static bool isModifier(unsigned int);
+    static bool isControl(unsigned int);
+    static bool isShift(unsigned int);
+    static bool isAlt(unsigned int);
+    static char *keyText(unsigned int, unsigned int);
+    static void keyName(unsigned int, char*);
+    static bool isModifierDown();
+    static bool notMappable(unsigned int, unsigned int);
+
     bool execKey(sKeyEvent*);
     bool execBtn(sBtnEvent*);
 
 private:
-    sKeyMap *already_mapped(unsigned int, unsigned int);
-
     sKeyMap *km_key_list;
 #if defined(WITH_GTK2) || defined(WITH_GTK3)
     void *km_last_btn;

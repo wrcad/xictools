@@ -155,13 +155,15 @@ QTcellPrpDlg::QTcellPrpDlg() : QTbag(this)
     pc_edit->setText(tr("Edit"));
     hbox->addWidget(pc_edit);
     pc_edit->setCheckable(true);
-    connect(pc_edit, SIGNAL(toggled(bool)), this, SLOT(edit_btn_slot(bool)));
+    connect(pc_edit, &QAbstractButton::toggled,
+        this, &QTcellPrpDlg::edit_btn_slot);
 
     pc_del = new QToolButton();
     pc_del->setText(tr("Delete"));
     hbox->addWidget(pc_del);
     pc_del->setCheckable(true);
-    connect(pc_del, SIGNAL(toggled(bool)), this, SLOT(del_btn_slot(bool)));
+    connect(pc_del, &QAbstractButton::toggled,
+        this, &QTcellPrpDlg::del_btn_slot);
 
     pc_add = new QToolButton();
     pc_add->setText(tr("Add"));
@@ -171,14 +173,15 @@ QTcellPrpDlg::QTcellPrpDlg() : QTbag(this)
     pc_addmenu = new QMenu();
     pc_add->setMenu(pc_addmenu);
     pc_add->setPopupMode(QToolButton::InstantPopup);
-    connect(pc_addmenu, SIGNAL(triggered(QAction*)),
-        this, SLOT(add_menu_slot(QAction*)));
+    connect(pc_addmenu, &QMenu::triggered,
+        this, &QTcellPrpDlg::add_menu_slot);
 
     hbox->addStretch(1);
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTcellPrpDlg::help_btn_slot);
 
     // scrolled text area
     //
@@ -186,23 +189,24 @@ QTcellPrpDlg::QTcellPrpDlg() : QTbag(this)
     wb_textarea->setReadOnly(true);
     wb_textarea->setMouseTracking(true);
     vbox->addWidget(wb_textarea);
-    connect(wb_textarea, SIGNAL(press_event(QMouseEvent*)),
-        this, SLOT(mouse_press_slot(QMouseEvent*)));
-    connect(wb_textarea, SIGNAL(release_event(QMouseEvent*)),
-        this, SLOT(mouse_release_slot(QMouseEvent*)));
+    connect(wb_textarea, &QTtextEdit::press_event,
+        this, &QTcellPrpDlg::mouse_press_slot);
+    connect(wb_textarea, &QTtextEdit::release_event,
+        this, &QTcellPrpDlg::mouse_release_slot);
 
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_FIXED))
         wb_textarea->setFont(*fnt);
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTcellPrpDlg::font_changed_slot, Qt::QueuedConnection);
 
     // dismiss button
     //
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTcellPrpDlg::dismiss_btn_slot);
 
     update();
 }

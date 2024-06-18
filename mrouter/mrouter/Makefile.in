@@ -53,10 +53,10 @@ $(LIB_TARGET): $(MR_VERS_H) $(LDDBLIB) $(CCOBJS)
 	@$(CXX) $(LSHFLAG) -o $(LIB_TARGET) $(CCOBJS) $(TLIBS)
 
 $(LDDBLIB)::
-	cd ../lddb; $(MAKE)
+	$(MAKE) -C ../lddb
 
 $(BASE)/lib/miscutil.a::
-	(cd $(BASE)/miscutil; $(MAKE))
+	$(MAKE) -C $(BASE)/miscutil
 
 mrouter: $(MR_VERS_H) ../lddb/liblddb.a main.cc $(CCOBJS) \
   $(BASE)/lib/miscutil.a
@@ -74,7 +74,7 @@ $(MR_VERS_H):
 	$(CXX) $(CFLAGS) $(PIC_OPT) $(INCLUDE) -c $*.cc
 
 depend: $(MR_VERS_H)
-	cd ../lddb; $(MAKE) depend
+	$(MAKE) -C ../lddb depend
 	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
@@ -82,15 +82,15 @@ depend: $(MR_VERS_H)
 	fi
 
 clean:
-	-@cd ../lddb; $(MAKE) $@
+	-@$(MAKE) -C ../lddb $@
 	-@rm -f $(MR_VERS_H) *.o $(LIB_TARGET) mrouter$(EXESUFFIX)
 
 distclean:
-	-@cd ../lddb; $(MAKE) $@
-	-@cd test; $(MAKE) $@
+	-@$(MAKE) -C ../lddb $@
+	-@$(MAKE) -C test $@
 	-@rm -f $(MR_VERS_H) *.o $(LIB_TARGET) Makefile mrouter$(EXESUFFIX)
 
 test: mrouter
-	cd test; $(MAKE) test1
+	$(MAKE) -C test test1
 
 #######################################################################

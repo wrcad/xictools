@@ -151,7 +151,8 @@ QTphysTermDlg::QTphysTermDlg(GRobject caller, TermEditInfo *tinfo,
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTphysTermDlg::help_btn_slot);
 
     // Name Entry
     //
@@ -204,19 +205,22 @@ QTphysTermDlg::QTphysTermDlg(GRobject caller, TermEditInfo *tinfo,
     tbtn = new QToolButton();
     tbtn->setText(tr("Prev"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(prev_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTphysTermDlg::prev_btn_slot);
 
     tbtn = new QToolButton();
     tbtn->setText(tr("Next"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(next_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTphysTermDlg::next_btn_slot);
 
     hbox->addStretch(1);
 
     tbtn = new QToolButton();
     tbtn->setText(tr("To Index"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(toindedx_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTphysTermDlg::toindex_btn_slot);
 
     te_sb_toindex = new QSpinBox();
     hbox->addWidget(te_sb_toindex);
@@ -233,12 +237,14 @@ QTphysTermDlg::QTphysTermDlg(GRobject caller, TermEditInfo *tinfo,
     tbtn = new QToolButton();
     tbtn->setText(tr("Apply"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTphysTermDlg::apply_btn_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTphysTermDlg::dismiss_btn_slot);
 
     update(tinfo, term);
 }
@@ -281,8 +287,8 @@ QTphysTermDlg::update(TermEditInfo *tinfo, CDsterm *term)
         te_layer->addItem(ld->name());
     }
     te_layer->setCurrentIndex(0);
-    connect(te_layer, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(layer_menu_slot(int)));
+    connect(te_layer, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTphysTermDlg::layer_menu_slot);
 
     bool hset = false;
     if (tinfo->layer_name() && *tinfo->layer_name()) {

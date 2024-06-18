@@ -132,30 +132,30 @@ QTprpInfoDlg::QTprpInfoDlg(CDo *odesc) : QTprpBase(this)
     wb_textarea->setMouseTracking(true);
     wb_textarea->setAcceptDrops(true);
     vbox->addWidget(wb_textarea);
-    connect(wb_textarea, SIGNAL(press_event(QMouseEvent*)),
-        this, SLOT(mouse_press_slot(QMouseEvent*)));
-    connect(wb_textarea, SIGNAL(release_event(QMouseEvent*)),
-        this, SLOT(mouse_release_slot(QMouseEvent*)));
-    connect(wb_textarea, SIGNAL(motion_event(QMouseEvent*)),
-        this, SLOT(mouse_motion_slot(QMouseEvent*)));
-    connect(wb_textarea,
-        SIGNAL(mime_data_handled(const QMimeData*, int*)),
-        this, SLOT(mime_data_handled_slot(const QMimeData*, int*)));
-    connect(wb_textarea, SIGNAL(mime_data_delivered(const QMimeData*, int*)),
-        this, SLOT(mime_data_delivered_slot(const QMimeData*, int*)));
+    connect(wb_textarea, &QTtextEdit::press_event,
+        this, &QTprpInfoDlg::mouse_press_slot);
+    connect(wb_textarea, &QTtextEdit::release_event,
+        this, &QTprpInfoDlg::mouse_release_slot);
+    connect(wb_textarea, &QTtextEdit::motion_event,
+        this, &QTprpInfoDlg::mouse_motion_slot);
+    connect(wb_textarea, &QTtextEdit::mime_data_handled,
+        this, &QTprpInfoDlg::mime_data_handled_slot);
+    connect(wb_textarea, &QTtextEdit::mime_data_delivered,
+        this, &QTprpInfoDlg::mime_data_delivered_slot);
 
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_FIXED))
         wb_textarea->setFont(*fnt);
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTprpInfoDlg::font_changed_slot, Qt::QueuedConnection);
 
     // dismiss button
     //
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTprpInfoDlg::dismiss_btn_slot);
 
     update(odesc);
 }

@@ -74,10 +74,10 @@
 // Derive a QTreeWidget class with our own drag source, which is a
 // plain text cell name.
 //
-class tree_widget : public QTreeWidget
+class QTtreeWidget : public QTreeWidget
 {
 public:
-    tree_widget(QWidget *prnt = 0) : QTreeWidget(prnt) { }
+    QTtreeWidget(QWidget *prnt = 0) : QTreeWidget(prnt) { }
 
 protected:
     void mousePressEvent(QMouseEvent*);
@@ -89,7 +89,7 @@ private:
 };
 
 void
-tree_widget::mousePressEvent(QMouseEvent *ev)
+QTtreeWidget::mousePressEvent(QMouseEvent *ev)
 {
     if (ev->button() == Qt::LeftButton)
         drag_pos = ev->pos();
@@ -98,14 +98,14 @@ tree_widget::mousePressEvent(QMouseEvent *ev)
 
 
 void
-tree_widget::mouseReleaseEvent(QMouseEvent *ev)
+QTtreeWidget::mouseReleaseEvent(QMouseEvent *ev)
 {
     QTreeWidget::mouseReleaseEvent(ev);
 }
 
 
 void
-tree_widget::mouseMoveEvent(QMouseEvent *ev)
+QTtreeWidget::mouseMoveEvent(QMouseEvent *ev)
 {
     if (ev->buttons() & Qt::LeftButton) {
         int dist = (ev->pos() - drag_pos).manhattanLength();
@@ -125,7 +125,7 @@ tree_widget::mouseMoveEvent(QMouseEvent *ev)
     }
     QTreeWidget::mouseMoveEvent(ev);
 }
-// End of tree_widget functions.
+// End of QTtreeWidget functions.
 
 
 #define TREE_WIDTH 400
@@ -258,25 +258,26 @@ QTtreeDlg::QTtreeDlg(GRobject c, const char *root, TreeUpdMode dmode)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTtreeDlg::help_btn_slot);
 
     // scrolled tree
     //
-    t_tree = new tree_widget();
+    t_tree = new QTtreeWidget();
     vbox->addWidget(t_tree);
     t_tree->setHeaderHidden(true);
     t_tree->setDragDropMode(QAbstractItemView::NoDragDrop);
 
-    connect(t_tree, SIGNAL(itemCollapsed(QTreeWidgetItem*)),
-        this, SLOT(item_collapsed_slot(QTreeWidgetItem*)));
-    connect(t_tree, SIGNAL(itemSelectionChanged()),
-        this, SLOT(item_selection_changed_slot()));
+    connect(t_tree, &QTtreeWidget::itemCollapsed,
+        this, &QTtreeDlg::item_collapsed_slot);
+    connect(t_tree, &QTtreeWidget::itemSelectionChanged,
+        this, &QTtreeDlg::item_selection_changed_slot);
 
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_PROP))
         t_tree->setFont(*fnt);
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTtreeDlg::font_changed_slot, Qt::QueuedConnection);
 
     hbox = new QHBoxLayout();
     hbox->setContentsMargins(qm);
@@ -314,7 +315,8 @@ QTtreeDlg::QTtreeDlg(GRobject c, const char *root, TreeUpdMode dmode)
     for (int i = 0; i < TR_MAXBTNS && buttons[i]; i++) {
         tbtn = new QToolButton();
         tbtn->setText(tr(buttons[i]));
-        connect(tbtn, SIGNAL(clicked()), this, SLOT(user_btn_slot()));
+        connect(tbtn, &QAbstractButton::clicked,
+            this, &QTtreeDlg::user_btn_slot);
         t_buttons[i] = tbtn;
         hbox->addWidget(tbtn);
     }
@@ -322,7 +324,8 @@ QTtreeDlg::QTtreeDlg(GRobject c, const char *root, TreeUpdMode dmode)
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTtreeDlg::dismiss_btn_slot);
 
     update(0, 0, dmode);
 }

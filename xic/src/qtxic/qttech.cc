@@ -112,18 +112,18 @@ QTwriteTechDlg::QTwriteTechDlg(GRobject caller)
 
     tc_none = new QRadioButton(tr("Omit default definitions"));
     vbox->addWidget(tc_none);
-    connect(tc_none, SIGNAL(toggled(bool)),
-        this, SLOT(none_btn_slot(bool)));
+    connect(tc_none, &QRadioButton::toggled,
+        this, &QTwriteTechDlg::none_btn_slot);
 
     tc_cmt = new QRadioButton(tr("Comment default definitions"));
     vbox->addWidget(tc_cmt);
-    connect(tc_cmt, SIGNAL(toggled(bool)),
-        this, SLOT(cmt_btn_slot(bool)));
+    connect(tc_cmt, &QRadioButton::toggled,
+        this, &QTwriteTechDlg::cmt_btn_slot);
 
     tc_use = new QRadioButton(tr("Include default definitions"));
     vbox->addWidget(tc_use);
-    connect(tc_use, SIGNAL(toggled(bool)),
-        this, SLOT(use_btn_slot(bool)));
+    connect(tc_use, &QRadioButton::toggled,
+        this, &QTwriteTechDlg::use_btn_slot);
 
     QHBoxLayout *hbox = new QHBoxLayout(0);
     hbox->setContentsMargins(qm);
@@ -137,7 +137,8 @@ QTwriteTechDlg::QTwriteTechDlg(GRobject caller)
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
     tbtn->setMaximumWidth(60);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTwriteTechDlg::help_btn_slot);
 
     char string[256];
     if (Tech()->TechExtension() && *Tech()->TechExtension())
@@ -158,12 +159,14 @@ QTwriteTechDlg::QTwriteTechDlg(GRobject caller)
     tc_write = new QToolButton();
     tc_write->setText(tr("Write File"));
     hbox->addWidget(tc_write);
-    connect(tc_write, SIGNAL(clicked()), this, SLOT(write_btn_slot()));
+    connect(tc_write, &QAbstractButton::clicked,
+        this, &QTwriteTechDlg::write_btn_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTwriteTechDlg::dismiss_btn_slot);
 
     update();
 }

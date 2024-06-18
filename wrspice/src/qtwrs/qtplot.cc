@@ -177,23 +177,23 @@ QTplotDlg::init(cGraph *gr)
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_SCREEN))
         gd_viewport->set_font(fnt);
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTplotDlg::font_changed_slot, Qt::QueuedConnection);
 
-    connect(gd_viewport, SIGNAL(resize_event(QResizeEvent*)),
-        this, SLOT(resize_slot(QResizeEvent*)));
-    connect(gd_viewport, SIGNAL(press_event(QMouseEvent*)),
-        this, SLOT(button_down_slot(QMouseEvent*)));
-    connect(gd_viewport, SIGNAL(release_event(QMouseEvent*)),
-        this, SLOT(button_up_slot(QMouseEvent*)));
-    connect(gd_viewport, SIGNAL(motion_event(QMouseEvent*)),
-        this, SLOT(motion_slot(QMouseEvent*)));
-    connect(gd_viewport, SIGNAL(key_press_event(QKeyEvent*)),
-        this, SLOT(key_down_slot(QKeyEvent*)));
-    connect(gd_viewport, SIGNAL(drag_enter_event(QDragEnterEvent*)),
-        this, SLOT(drag_enter_slot(QDragEnterEvent*)));
-    connect(gd_viewport, SIGNAL(drop_event(QDropEvent*)),
-        this, SLOT(drop_slot(QDropEvent*)));
+    connect(gd_viewport, &QTcanvas::resize_event,
+        this, &QTplotDlg::resize_slot);
+    connect(gd_viewport, &QTcanvas::press_event,
+        this, &QTplotDlg::button_down_slot);
+    connect(gd_viewport, &QTcanvas::release_event,
+        this, &QTplotDlg::button_up_slot);
+    connect(gd_viewport, &QTcanvas::motion_event,
+        this, &QTplotDlg::motion_slot);
+    connect(gd_viewport, &QTcanvas::key_press_event,
+        this, &QTplotDlg::key_down_slot);
+    connect(gd_viewport, &QTcanvas::drag_enter_event,
+        this, &QTplotDlg::drag_enter_slot);
+    connect(gd_viewport, &QTcanvas::drop_event,
+        this, &QTplotDlg::drop_slot);
 
     pb_gbox = new QGroupBox();
     hbox->addWidget(pb_gbox);
@@ -247,7 +247,8 @@ QTplotDlg::init_gbuttons()
         vbox->addWidget(btn);
         btn->setToolTip(tr("Delete this window"));
         pb_checkwins[pbtn_dismiss] = btn;
-        connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+        connect(btn, &QAbstractButton::clicked,
+            this, &QTplotDlg::dismiss_btn_slot);
     }
 
     if (!pb_checkwins[pbtn_help]) {
@@ -256,7 +257,8 @@ QTplotDlg::init_gbuttons()
         btn->setAutoDefault(false);
         btn->setToolTip(tr("Press for help"));
         pb_checkwins[pbtn_help] = btn;
-        connect(btn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+        connect(btn, &QAbstractButton::clicked,
+            this, &QTplotDlg::help_btn_slot);
     }
 
     if (!pb_checkwins[pbtn_redraw]) {
@@ -266,8 +268,8 @@ QTplotDlg::init_gbuttons()
         btn->setAutoDefault(false);
         btn->setToolTip(tr("Redraw the plot"));
         pb_checkwins[pbtn_redraw] = btn;
-        connect(btn, SIGNAL(clicked()),
-            this, SLOT(redraw_btn_slot()));
+        connect(btn, &QAbstractButton::clicked,
+            this, &QTplotDlg::redraw_btn_slot);
     }
 
     if (!pb_checkwins[pbtn_print]) {
@@ -277,8 +279,8 @@ QTplotDlg::init_gbuttons()
         btn->setAutoDefault(false);
         btn->setToolTip(tr("Print control panel"));
         pb_checkwins[pbtn_print] = btn;
-        connect(btn, SIGNAL(toggled(bool)),
-            this, SLOT(print_btn_slot(bool)));
+        connect(btn, &QAbstractButton::toggled,
+            this, &QTplotDlg::print_btn_slot);
     }
 
     if (pb_graph->apptype() == GR_PLOT) {
@@ -288,8 +290,8 @@ QTplotDlg::init_gbuttons()
             btn->setAutoDefault(false);
             btn->setToolTip(tr("Save the plot in a plot file"));
             pb_checkwins[pbtn_saveplot] = btn;
-            connect(btn, SIGNAL(clicked()),
-                this, SLOT(saveplt_btn_slot()));
+            connect(btn, &QAbstractButton::clicked,
+                this, &QTplotDlg::saveplt_btn_slot);
         }
 
         if (!pb_checkwins[pbtn_saveprint]) {
@@ -298,8 +300,8 @@ QTplotDlg::init_gbuttons()
             btn->setAutoDefault(false);
             btn->setToolTip(tr("Save the plot in a print file"));
             pb_checkwins[pbtn_saveprint] = btn;
-            connect(btn, SIGNAL(clicked()),
-                this, SLOT(savepr_btn_slot()));
+            connect(btn, &QAbstractButton::clicked,
+                this, &QTplotDlg::savepr_btn_slot);
         }
 
         if (!pb_checkwins[pbtn_points]) {
@@ -311,8 +313,8 @@ QTplotDlg::init_gbuttons()
             btn->setAutoDefault(false);
             btn->setToolTip(tr("Plot data as points"));
             pb_checkwins[pbtn_points] = btn;
-            connect(btn, SIGNAL(toggled(bool)),
-                this, SLOT(ptype_btn_slot(bool)));
+            connect(btn, &QAbstractButton::toggled,
+                this, &QTplotDlg::ptype_btn_slot);
         }
 
         if (!pb_checkwins[pbtn_comb]) {
@@ -324,8 +326,8 @@ QTplotDlg::init_gbuttons()
             btn->setAutoDefault(false);
             btn->setToolTip(tr("Plot data as histogram"));
             pb_checkwins[pbtn_comb] = btn;
-            connect(btn, SIGNAL(toggled(bool)),
-                this, SLOT(ptype_btn_slot(bool)));
+            connect(btn, &QAbstractButton::toggled,
+                this, &QTplotDlg::ptype_btn_slot);
         }
 
         if (pb_graph->rawdata().xmin > 0) {
@@ -340,8 +342,8 @@ QTplotDlg::init_gbuttons()
                 btn->setToolTip(tr(
                     "Use logarithmic horizontal scale"));
                 pb_checkwins[pbtn_logx] = btn;
-                connect(btn, SIGNAL(toggled(bool)),
-                    this, SLOT(logx_btn_slot(bool)));
+                connect(btn, &QAbstractButton::toggled,
+                    this, &QTplotDlg::logx_btn_slot);
             }
         }
         else {
@@ -363,8 +365,8 @@ QTplotDlg::init_gbuttons()
                 btn->setToolTip(tr(
                     "Use logarithmic vertical scale"));
                 pb_checkwins[pbtn_logy] = btn;
-                connect(btn, SIGNAL(toggled(bool)),
-                    this, SLOT(logy_btn_slot(bool)));
+                connect(btn, &QAbstractButton::toggled,
+                    this, &QTplotDlg::logy_btn_slot);
             }
         }
         else {
@@ -382,8 +384,8 @@ QTplotDlg::init_gbuttons()
             btn->setAutoDefault(false);
             btn->setToolTip(tr("Show marker"));
             pb_checkwins[pbtn_marker] = btn;
-            connect(btn, SIGNAL(toggled(bool)),
-                this, SLOT(marker_btn_slot(bool)));
+            connect(btn, &QAbstractButton::toggled,
+                this, &QTplotDlg::marker_btn_slot);
         }
 
         if (pb_graph->numtraces() > 1 && pb_graph->numtraces() <= MAXNUMTR) {
@@ -396,8 +398,8 @@ QTplotDlg::init_gbuttons()
                 btn->setAutoDefault(false);
                 btn->setToolTip(tr("Show traces separately"));
                 pb_checkwins[pbtn_separate] = btn;
-                connect(btn, SIGNAL(toggled(bool)),
-                    this, SLOT(separate_btn_slot(bool)));
+                connect(btn, &QAbstractButton::toggled,
+                    this, &QTplotDlg::separate_btn_slot);
             }
 
             int i = 0;
@@ -421,8 +423,8 @@ QTplotDlg::init_gbuttons()
                     btn->setToolTip(tr(
                         "Use single vertical scale"));
                     pb_checkwins[pbtn_single] = btn;
-                    connect(btn, SIGNAL(toggled(bool)),
-                        this, SLOT(single_btn_slot(bool)));
+                    connect(btn, &QAbstractButton::toggled,
+                        this, &QTplotDlg::single_btn_slot);
                 }
             }
             else if (!i) {
@@ -437,8 +439,8 @@ QTplotDlg::init_gbuttons()
                     btn->setToolTip(tr( 
                         "Use single vertical scale"));
                     pb_checkwins[pbtn_single] = btn;
-                    connect(btn, SIGNAL(toggled(bool)),
-                        this, SLOT(single_btn_slot(bool)));
+                    connect(btn, &QAbstractButton::toggled,
+                        this, &QTplotDlg::single_btn_slot);
                 }
 
                 if (!pb_checkwins[pbtn_group]) {
@@ -451,8 +453,8 @@ QTplotDlg::init_gbuttons()
                     btn->setToolTip(tr(
                         "Same scale for groups: V, I, other"));
                     pb_checkwins[pbtn_group] = btn;
-                    connect(btn, SIGNAL(toggled(bool)),
-                        this, SLOT(group_btn_slot(bool)));
+                    connect(btn, &QAbstractButton::toggled,
+                        this, &QTplotDlg::group_btn_slot);
                 }
             }
         }

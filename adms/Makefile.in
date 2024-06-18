@@ -30,7 +30,7 @@ REGEN = no
 
 all: unpack
 	@if [ -f adms_wr/admsXml/Makefile ]; then \
-	    cd adms_wr/admsXml; $(MAKE); \
+	    $(MAKE) -C adms_wr/admsXml ; \
 	else \
 	    echo "ADMS configuration failed. cleaning..."; \
 	    rm -rf adms_wr; \
@@ -65,12 +65,12 @@ unpack:
 
 clean:
 	-@if [ -d adms_wr ]; then \
-	    cd adms_wr/admsXml; $(MAKE) $@; \
+	    $(MAKE) -C adms_wr/admsXml $@; \
 	fi
 
 distclean:
 	-@rm -rf adms_wr Makefile
-	-@cd packages; $(MAKE) $@
+	-@$(MAKE) -C packages $@
 
 depend: unpack
 
@@ -184,6 +184,6 @@ package::
 	-rm -rf packages/root
 	mkdir packages/root
 	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install
-	cd packages; $(MAKE) package
+	$(MAKE) -C packages package
 
 #######################################################################

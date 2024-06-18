@@ -217,7 +217,7 @@ miscutil::net_if_list()
                     for (ifc_t *ix = i0; ix; ix = ix->next()) {
                         if (ix->ip() && !strcmp(ix->ip(), ipaddr)) {
                             // Already have it.
-                            delete ipaddr;
+                            delete [] ipaddr;
                             ipaddr = 0;
                             break;
                         }
@@ -236,7 +236,7 @@ miscutil::net_if_list()
                     for (ifc_t *ix = i0; ix; ix = ix->next()) {
                         if (ix->hw() && !strcmp(ix->hw(), hwaddr)) {
                             // Already have it.
-                            delete hwaddr;
+                            delete [] hwaddr;
                             hwaddr = 0;
                             break;
                         }
@@ -287,7 +287,7 @@ miscutil::net_if_list()
                     for (ifc_t *ix = i0; ix; ix = ix->next()) {
                         if (ix->ip() && !strcmp(ix->ip(), ipaddr)) {
                             // Already have it.
-                            delete ipaddr;
+                            delete [] ipaddr;
                             ipaddr = 0;
                             break;
                         }
@@ -307,7 +307,7 @@ miscutil::net_if_list()
                     for (ifc_t *ix = i0; ix; ix = ix->next()) {
                         if (ix->hw() && !strcmp(ix->hw(), hwaddr)) {
                             // Already have it.
-                            delete hwaddr;
+                            delete [] hwaddr;
                             hwaddr = 0;
                             break;
                         }

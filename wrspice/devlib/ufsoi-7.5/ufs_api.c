@@ -4844,7 +4844,7 @@ struct ufsAPI_InstData  *pInst;
     return 0;
 }
 
-ufsInitModelFlag( pModel )
+int ufsInitModelFlag( pModel )
 struct ufsAPI_ModelData  *pModel;
 {
 time_t tloc, TimeDiff, CompileTime;

@@ -148,42 +148,43 @@ QTeditSetupDlg::QTeditSetupDlg(GRobject c)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTeditSetupDlg::help_btn_slot);
 
     // check boxes
     //
     ed_cons45 = new QCheckBox(tr("Constrain angles to 45 degree multiples"));
     vbox->addWidget(ed_cons45);
-    connect(ed_cons45, SIGNAL(stateChanged(int)),
-        this, SLOT(cons45_btn_slot(int)));
+    connect(ed_cons45, &QCheckBox::stateChanged,
+        this, &QTeditSetupDlg::cons45_btn_slot);
 
     ed_merge = new QCheckBox(tr(
         "Merge new boxes and polys with existing boxes/polys"));
     vbox->addWidget(ed_merge);
-    connect(ed_merge, SIGNAL(stateChanged(int)),
-        this, SLOT(merge_btn_slot(int)));
+    connect(ed_merge, &QCheckBox::stateChanged,
+        this, &QTeditSetupDlg::merge_btn_slot);
 
     ed_noply = new QCheckBox(tr("Clip and merge new boxes only, not polys"));
     vbox->addWidget(ed_noply);
-    connect(ed_noply, SIGNAL(stateChanged(int)),
-        this, SLOT(noply_btn_slot(int)));
+    connect(ed_noply, &QCheckBox::stateChanged,
+        this, &QTeditSetupDlg::noply_btn_slot);
 
     ed_prompt = new QCheckBox(tr("Prompt to save modified native cells"));
     vbox->addWidget(ed_prompt);
-    connect(ed_prompt, SIGNAL(stateChanged(int)),
-        this, SLOT(prompt_btn_slot(int)));
+    connect(ed_prompt, &QCheckBox::stateChanged,
+        this, &QTeditSetupDlg::prompt_btn_slot);
 
     ed_noww = new QCheckBox(tr("No wire width change in magnification"));
     vbox->addWidget(ed_noww);
-    connect(ed_noww, SIGNAL(stateChanged(int)),
-        this, SLOT(noww_btn_slot(int)));
+    connect(ed_noww, &QCheckBox::stateChanged,
+        this, &QTeditSetupDlg::noww_btn_slot);
 
     ed_crcovr = new QCheckBox(tr(
         "Allow Create Cell to overwrite existing cell"));
     vbox->addWidget(ed_crcovr);
     vbox->addSpacing(10);
-    connect(ed_crcovr, SIGNAL(stateChanged(int)),
-        this, SLOT(crcovr_btn_slot(int)));
+    connect(ed_crcovr, &QCheckBox::stateChanged,
+        this, &QTeditSetupDlg::crcovr_btn_slot);
 
     // integer parameters
     //
@@ -209,8 +210,8 @@ QTeditSetupDlg::QTeditSetupDlg(GRobject c)
     ed_sb_ulen->setRange(0, 1000);
     ed_sb_ulen->setValue(DEF_MAX_UNDO_LEN);
     col2->addWidget(ed_sb_ulen);
-    connect(ed_sb_ulen, SIGNAL(valueChanged(int)),
-        this, SLOT(ulen_changed_slot(int)));
+    connect(ed_sb_ulen, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTeditSetupDlg::ulen_changed_slot);
 
     label = new QLabel(tr("Maximum number of ghost-drawn objects"));
     col1->addWidget(label);
@@ -219,8 +220,8 @@ QTeditSetupDlg::QTeditSetupDlg(GRobject c)
     ed_sb_maxgobjs->setRange(50, 50000);
     ed_sb_maxgobjs->setValue(DEF_MAX_GHOST_OBJECTS);
     col2->addWidget(ed_sb_maxgobjs);
-    connect(ed_sb_maxgobjs, SIGNAL(valueChanged(int)),
-        this, SLOT(maxgobs_changed_slot(int)));
+    connect(ed_sb_maxgobjs, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTeditSetupDlg::maxgobs_changed_slot);
 
     hbox = new QHBoxLayout(0);
     hbox->setContentsMargins(qm);
@@ -234,15 +235,16 @@ QTeditSetupDlg::QTeditSetupDlg(GRobject c)
     hbox->addWidget(ed_depth);
     for (int i = 0; ed_depthvals[i]; i++)
         ed_depth->addItem(ed_depthvals[i]);
-    connect(ed_depth, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(depth_changed_slot(int)));
+    connect(ed_depth, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTeditSetupDlg::depth_changed_slot);
 
     // Dismiss button
     //
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTeditSetupDlg::dismiss_btn_slot);
 
     update();
 }

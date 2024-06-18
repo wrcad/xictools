@@ -178,7 +178,8 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c) : QTbag(this)
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTfastHenryDlg::help_btn_slot);
 
     QTabWidget *nbook = new QTabWidget();
     vbox->addWidget(nbook);
@@ -197,13 +198,13 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c) : QTbag(this)
 
     fh_foreg = new QCheckBox(tr("Run in foreground"));
     hb->addWidget(fh_foreg);
-    connect(fh_foreg, SIGNAL(stateChanged(int)),
-        this, SLOT(foreg_btn_slot(int)));
+    connect(fh_foreg, &QCheckBox::stateChanged,
+        this, &QTfastHenryDlg::foreg_btn_slot);
 
     fh_out = new QCheckBox(tr("Out to console"));
     hb->addWidget(fh_out);
-    connect(fh_out, SIGNAL(stateChanged(int)),
-        this, SLOT(console_btn_slot(int)));
+    connect(fh_out, &QCheckBox::stateChanged,
+        this, &QTfastHenryDlg::console_btn_slot);
 
     vb->addStretch(1);
 
@@ -215,7 +216,8 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c) : QTbag(this)
     tbtn = new QToolButton();
     tbtn->setText(tr("Run File"));
     hb->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(runfile_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTfastHenryDlg::runfile_btn_slot);
 
     fh_file = new QLineEdit();
     hb->addWidget(fh_file);
@@ -228,12 +230,14 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c) : QTbag(this)
     tbtn = new QToolButton();
     tbtn->setText(tr("Run FastHenry"));
     hb->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(runext_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTfastHenryDlg::runext_btn_slot);
 
     tbtn = new QToolButton();
     tbtn->setText(tr("Dump FastHenry File"));
     hb->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(dumplist_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTfastHenryDlg::dumplist_btn_slot);
 
     gb = new QGroupBox("FhArgs");
     vb->addWidget(gb);
@@ -243,8 +247,8 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c) : QTbag(this)
 
     fh_args = new QLineEdit();
     hb->addWidget(fh_args);
-    connect(fh_args, SIGNAL(textChanged(const QString&)),
-        this, SLOT(args_changed_slot(const QString&)));
+    connect(fh_args, &QLineEdit::textChanged,
+        this, &QTfastHenryDlg::args_changed_slot);
 
     gb = new QGroupBox("FhFreq");
     vb->addWidget(gb);
@@ -257,24 +261,24 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c) : QTbag(this)
     fh_fmin = new QLineEdit();
     fh_fmin->setMaximumWidth(70);
     hb->addWidget(fh_fmin);
-    connect(fh_fmin, SIGNAL(textChanged(const QString&)),
-        this, SLOT(fmin_changed_slot(const QString&)));
+    connect(fh_fmin, &QLineEdit::textChanged,
+        this, &QTfastHenryDlg::fmin_changed_slot);
 
     label = new QLabel(" fmax=");
     hb->addWidget(label);
     fh_fmax = new QLineEdit();
     fh_fmax->setMaximumWidth(70);
     hb->addWidget(fh_fmax);
-    connect(fh_fmax, SIGNAL(textChanged(const QString&)),
-        this, SLOT(fmax_changed_slot(const QString&)));
+    connect(fh_fmax, &QLineEdit::textChanged,
+        this, &QTfastHenryDlg::fmax_changed_slot);
 
     label = new QLabel(" ndec=");
     hb->addWidget(label);
     fh_ndec = new QLineEdit();
     hb->addWidget(fh_ndec);
     fh_ndec->setMaximumWidth(50);
-    connect(fh_ndec, SIGNAL(textChanged(const QString&)),
-        this, SLOT(ndec_changed_slot(const QString&)));
+    connect(fh_ndec, &QLineEdit::textChanged,
+        this, &QTfastHenryDlg::ndec_changed_slot);
 
     gb = new QGroupBox(tr("Path to FastHenry"));
     vb->addWidget(gb);
@@ -284,8 +288,8 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c) : QTbag(this)
 
     fh_path = new QLineEdit();
     hb->addWidget(fh_path);
-    connect(fh_path, SIGNAL(textChanged(const QString&)),
-        this, SLOT(path_changed_slot(const QString&)));
+    connect(fh_path, &QLineEdit::textChanged,
+        this, &QTfastHenryDlg::path_changed_slot);
 
     // Params page
     //
@@ -308,8 +312,8 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c) : QTbag(this)
     for (int i = 0; unit_t::units_strings[i]; i++)
         fh_units->addItem(unit_t::units_strings[i]);
     fh_units->setCurrentIndex(FHif()->getUnitsIndex(0));
-    connect(fh_units, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(units_changed_slot(int)));
+    connect(fh_units, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &QTfastHenryDlg::units_changed_slot);
 
     gb = new QGroupBox("FhManhGridCnt");
     hb->addWidget(gb);
@@ -321,8 +325,8 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c) : QTbag(this)
     hb1->addWidget(fh_sb_manh_grid_cnt);
     fh_sb_manh_grid_cnt->setRange(FH_MIN_MANH_GRID_CNT, FH_MAX_MANH_GRID_CNT);
     fh_sb_manh_grid_cnt->setValue(FH_DEF_MANH_GRID_CNT);
-    connect(fh_sb_manh_grid_cnt, SIGNAL(valueChanged(int)),
-        this, SLOT(manh_grid_changed_slot(int)));
+    connect(fh_sb_manh_grid_cnt, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTfastHenryDlg::manh_grid_changed_slot);
 
     gb = new QGroupBox("FhDefaults");
     vb->addWidget(gb);
@@ -332,8 +336,8 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c) : QTbag(this)
 
     fh_defs = new QLineEdit();
     hb->addWidget(fh_defs);
-    connect(fh_defs, SIGNAL(textChanged(const QString&)),
-        this, SLOT(defaults_changed_slot(const QString&)));
+    connect(fh_defs, &QLineEdit::textChanged,
+        this, &QTfastHenryDlg::defaults_changed_slot);
 
     hb = new QHBoxLayout();
     vb->addLayout(hb);
@@ -350,8 +354,8 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c) : QTbag(this)
     hb1->addWidget(fh_sb_nhinc);
     fh_sb_nhinc->setRange(FH_MIN_DEF_NHINC, FH_MAX_DEF_NHINC);
     fh_sb_nhinc->setValue(DEF_FH_NHINC); 
-    connect(fh_sb_nhinc, SIGNAL(valueChanged(int)),
-        this, SLOT(nhinc_changed_slot(int)));
+    connect(fh_sb_nhinc, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTfastHenryDlg::nhinc_changed_slot);
 
     gb = new QGroupBox("FhDefRh");
     hb->addWidget(gb);
@@ -364,18 +368,18 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c) : QTbag(this)
     fh_sb_rh->setRange(FH_MIN_DEF_RH, FH_MAX_DEF_RH);
     fh_sb_rh->setDecimals(3);
     fh_sb_rh->setValue(DEF_FH_RH);
-    connect(fh_sb_rh, SIGNAL(valueChanged(double)),
-        this, SLOT(rh_changed_slot(double)));
+    connect(fh_sb_rh, QOverload<double>::of(&QTdoubleSpinBox::valueChanged),
+        this, &QTfastHenryDlg::rh_changed_slot);
 
     fh_nhinc_ovr = new QCheckBox(tr("Override Layer NHINC, RH"));
     vb->addWidget(fh_nhinc_ovr);
-    connect(fh_nhinc_ovr, SIGNAL(stateChanged(int)),
-        this, SLOT(override_btn_slot(int)));
+    connect(fh_nhinc_ovr, &QCheckBox::stateChanged,
+        this, &QTfastHenryDlg::override_btn_slot);
 
     fh_nhinc_fh = new QCheckBox(tr("Use FastHenry Internal NHINC, RH"));
     vb->addWidget(fh_nhinc_fh);
-    connect(fh_nhinc_fh, SIGNAL(stateChanged(int)),
-        this, SLOT(internal_btn_slot(int)));
+    connect(fh_nhinc_fh, &QCheckBox::stateChanged,
+        this, &QTfastHenryDlg::internal_btn_slot);
 
     gb = new QGroupBox();
     vb->addWidget(gb);
@@ -394,8 +398,8 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c) : QTbag(this)
 
     fh_enab = new QCheckBox(tr("Enable"));
     hb->addWidget(fh_enab);
-    connect(fh_enab, SIGNAL(stateChanged(int)),
-        this, SLOT(enable_btn_slot(int)));
+    connect(fh_enab, &QCheckBox::stateChanged,
+        this, &QTfastHenryDlg::enable_btn_slot);
 
     gb = new QGroupBox("FhVolElMin");
     hb->addWidget(gb);
@@ -408,8 +412,9 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c) : QTbag(this)
     fh_sb_volel_min->setRange(FH_MIN_VOLEL_MIN, FH_MAX_VOLEL_MIN);
     fh_sb_volel_min->setDecimals(2);
     fh_sb_volel_min->setValue(FH_DEF_VOLEL_MIN);
-    connect(fh_sb_volel_min, SIGNAL(valueChanged(double)),
-        this, SLOT(volel_min_changed_slot(double)));
+    connect(fh_sb_volel_min,
+        QOverload<double>::of(&QTdoubleSpinBox::valueChanged),
+        this, &QTfastHenryDlg::volel_min_changed_slot);
     fh_sb_volel_min->setEnabled(false);
 
     gb = new QGroupBox("FhVolElTarget");
@@ -422,8 +427,8 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c) : QTbag(this)
     hb1->addWidget(fh_sb_volel_target);
     fh_sb_volel_target->setRange(FH_MIN_VOLEL_TARG, FH_MAX_VOLEL_TARG);
     fh_sb_volel_target->setValue(FH_DEF_VOLEL_TARG);
-    connect(fh_sb_volel_target, SIGNAL(valueChanged(int)),
-        this, SLOT(volel_target_changed_slot(int)));
+    connect(fh_sb_volel_target, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &QTfastHenryDlg::volel_target_changed_slot);
     fh_sb_volel_target->setEnabled(false);
 
     // Jobs page
@@ -438,19 +443,20 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c) : QTbag(this)
     vb->addWidget(fh_jobs);
     fh_jobs->setReadOnly(true);
     fh_jobs->setMouseTracking(true);
-    connect(fh_jobs, SIGNAL(press_event(QMouseEvent*)),
-        this, SLOT(mouse_press_slot(QMouseEvent*)));
+    connect(fh_jobs, &QTtextEdit::press_event,
+        this, &QTfastHenryDlg::mouse_press_slot);
 
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_FIXED))
         fh_jobs->setFont(*fnt);
-    connect(QTfont::self(), SIGNAL(fontChanged(int)),
-        this, SLOT(font_changed_slot(int)), Qt::QueuedConnection);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTfastHenryDlg::font_changed_slot, Qt::QueuedConnection);
 
     fh_kill = new QToolButton();
     fh_kill->setText(tr("Abort job"));
     vb->addWidget(fh_kill);
-    connect(fh_kill, SIGNAL(clicked()), this, SLOT(abort_btn_slot()));
+    connect(fh_kill, &QAbstractButton::clicked,
+        this, &QTfastHenryDlg::abort_btn_slot);
 
     // End of pages.
     // Status line and Dismiss button
@@ -470,7 +476,8 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c) : QTbag(this)
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTfastHenryDlg::dismiss_btn_slot);
 
     update();
 }

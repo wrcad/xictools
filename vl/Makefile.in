@@ -64,15 +64,15 @@ $(LIB_TARGET): $(COBJS)
 
 $(BASE)/lib/miscutil.a::
 	if [ -d $(BASE)/miscutil ]; then \
-	    cd $(BASE)/miscutil; $(MAKE); \
+	    $(MAKE) -C $(BASE)/miscutil ; \
 	fi
 
 clean:
-	-@cd test; $(MAKE) $@
+	-@$(MAKE) -C test $@
 	-@rm -f *.o *.a vl$(EXESUFFIX)
 
 distclean: clean
-	-@cd packages; $(MAKE) $@
+	-@$(MAKE) -C packages $@
 	-@rm -f verilog_yacc.cc verilog_yacc.h verilog_lex.cc
 	-@rm -f config.cache config.h config.log config.status Makefile
 
@@ -102,7 +102,7 @@ depend:
 	fi
 
 test::
-	-@cd test; $(MAKE) $@
+	-@$(MAKE) -C test $@
 
 #######################################################################
 ####### Installation ##################################################
@@ -154,6 +154,6 @@ package::
 	-rm -rf packages/root
 	mkdir packages/root
 	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install
-	cd packages; $(MAKE) package
+	$(MAKE) -C packages package
 
 #######################################################################

@@ -210,7 +210,8 @@ QTpcellParamsDlg::QTpcellParamsDlg(GRobject c, PCellParam *prm,
     QToolButton *tbtn = new QToolButton();
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTpcellParamsDlg::help_btn_slot);
 
     pcp_swin = new QScrollArea();
     vbox->addWidget(pcp_swin);
@@ -226,24 +227,28 @@ QTpcellParamsDlg::QTpcellParamsDlg(GRobject c, PCellParam *prm,
         tbtn = new QToolButton();
         tbtn->setText(tr("Open"));
         hbox->addWidget(tbtn);
-        connect(tbtn, SIGNAL(clicked()), this, SLOT(open_btn_slot()));
+        connect(tbtn, &QAbstractButton::clicked,
+            this, &QTpcellParamsDlg::open_btn_slot);
     }
     else {
         tbtn = new QToolButton();
         tbtn->setText(tr("Apply"));
         hbox->addWidget(tbtn);
-        connect(tbtn, SIGNAL(clicked()), this, SLOT(apply_btn_slot()));
+        connect(tbtn, &QAbstractButton::clicked,
+            this, &QTpcellParamsDlg::apply_btn_slot);
     }
 
     tbtn = new QToolButton();
     tbtn->setText(tr("Reset"));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(reset_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTpcellParamsDlg::reset_btn_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTpcellParamsDlg::dismiss_btn_slot);
 
     update(dbname, prm);
 }
@@ -367,8 +372,8 @@ QTpcellParamsDlg::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
         QCheckBox *w = new QCheckBox();
         w->setObjectName(qsname);
         QTdev::SetStatus(w, p->boolVal());
-        connect(w, SIGNAL(stateChanged(int)),
-            this, SLOT(bool_type_slot(int)));
+        connect(w, &QCheckBox::stateChanged,
+            this, &QTpcellParamsDlg::bool_type_slot);
         return (w);
     }
 
@@ -426,8 +431,8 @@ QTpcellParamsDlg::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
                 i++;
             }
 
-            connect(w, SIGNAL(currentTextChanged(const QString&)),
-                this, SLOT(choice_type_slot(const QString&)));
+            connect(w, &QComboBox::currentTextChanged,
+                this, &QTpcellParamsDlg::choice_type_slot);
             if (hstv >= 0)
                 w->setCurrentIndex(hstv);
             else {
@@ -492,8 +497,8 @@ QTpcellParamsDlg::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
             }
             else
                 return (0);
-            connect(w, SIGNAL(valueChanged(double)),
-                this, SLOT(num_type_slot(double)));
+            connect(w, QOverload<double>::of(&QTdoubleSpinBox::valueChanged),
+                this, &QTpcellParamsDlg::num_type_slot);
 
             if (!pc->checkConstraint(p)) {
                 w->setEnabled(false);
@@ -563,8 +568,8 @@ QTpcellParamsDlg::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
                 return (0);
             if (del > 0.0)
                 w->setSingleStep(del);
-            connect(w, SIGNAL(valueChanged(double)),
-                this, SLOT(num_type_slot(double)));
+            connect(w, QOverload<double>::of(&QTdoubleSpinBox::valueChanged),
+                this, &QTpcellParamsDlg::num_type_slot);
 
             if (!pc->checkConstraint(p)) {
                 w->setEnabled(false);
@@ -646,8 +651,8 @@ QTpcellParamsDlg::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
                 return (0);
             if (del > 0.0)
                 w->setSingleStep(del);
-            connect(w, SIGNAL(valueChanged(double)),
-                this, SLOT(num_type_slot(double)));
+            connect(w, QOverload<double>::of(&QTdoubleSpinBox::valueChanged),
+                this, &QTpcellParamsDlg::num_type_slot);
 
             if (!pc->checkConstraint(p)) {
                 w->setEnabled(false);
@@ -674,8 +679,8 @@ QTpcellParamsDlg::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
         w->setObjectName(qsname);
         w->setRange(0xffffffff, 0xefffffff);
         w->setValue(p->intVal());
-        connect(w, SIGNAL(valueChanged(int)),
-            this, SLOT(ncint_type_slot(int)));
+        connect(w, QOverload<int>::of(&QSpinBox::valueChanged),
+            this, &QTpcellParamsDlg::ncint_type_slot);
         return (w);
     }
     else if (p->type() == PCPtime) {
@@ -683,8 +688,8 @@ QTpcellParamsDlg::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
         w->setObjectName(qsname);
         w->setRange(0xffffffff, 0xefffffff);
         w->setValue(p->timeVal());
-        connect(w, SIGNAL(valueChanged(int)),
-            this, SLOT(nctime_type_slot(int)));
+        connect(w, QOverload<int>::of(&QSpinBox::valueChanged),
+            this, &QTpcellParamsDlg::nctime_type_slot);
         return (w);
     }
     else if (p->type() == PCPfloat) {
@@ -693,8 +698,8 @@ QTpcellParamsDlg::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
         w->setRange(-1e30, 1e30);
         w->setDecimals(4);
         w->setValue(p->floatVal());
-        connect(w, SIGNAL(valueChanged(double)),
-            this, SLOT(ncfd_type_slot(double)));
+        connect(w, QOverload<double>::of(&QTdoubleSpinBox::valueChanged),
+            this, &QTpcellParamsDlg::ncfd_type_slot);
         return (w);
     }
     else if (p->type() == PCPdouble) {
@@ -703,16 +708,16 @@ QTpcellParamsDlg::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
         w->setRange(-1e30, 1e30);
         w->setDecimals(4);
         w->setValue(p->doubleVal());
-        connect(w, SIGNAL(valueChanged(double)),
-            this, SLOT(ncfd_type_slot(double)));
+        connect(w, QOverload<double>::of(&QTdoubleSpinBox::valueChanged),
+            this, &QTpcellParamsDlg::ncfd_type_slot);
         return (w);
     }
     else if (p->type() == PCPstring) {
         QLineEdit *w = new QLineEdit();
         w->setObjectName(qsname);
         w->setText(p->stringVal());
-        connect(w, SIGNAL(textChanged(const QString&)),
-            this, SLOT(string_type_slot(const QString&)));
+        connect(w, &QLineEdit::textChanged,
+            this, &QTpcellParamsDlg::string_type_slot);
         return (w);
     }
     return (0);

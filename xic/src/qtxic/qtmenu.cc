@@ -407,6 +407,6 @@ QTmenuButton::QTmenuButton(MenuEnt *ent, QWidget *prnt) : QToolButton(prnt)
     if (ent->is_toggle())
         setCheckable(true);
     entry = ent;
-    connect(this, SIGNAL(clicked()), this, SLOT(pressed_slot()));
+    connect(this, &QTmenuButton::clicked, this, &QTmenuButton::pressed_slot);
 }
 

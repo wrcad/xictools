@@ -105,7 +105,8 @@ QTexpandDlg::QTexpandDlg(QTbag *owner, const char *string, bool nopeek,
     tbtn->setText(tr("Help"));
     hbox->addWidget(tbtn);
     tbtn->setMaximumWidth(70);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(help_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTexpandDlg::help_slot);
 
     hbox = new QHBoxLayout();
     vbox->addLayout(hbox);
@@ -120,53 +121,56 @@ QTexpandDlg::QTexpandDlg(QTbag *owner, const char *string, bool nopeek,
     b_plus = new QToolButton();
     hbox->addWidget(b_plus);
     b_plus->setText(QString("+"));
-    connect(b_plus, SIGNAL(clicked()), this, SLOT(plus_slot()));
+    connect(b_plus, &QAbstractButton::clicked,
+        this, &QTexpandDlg::plus_slot);
 
     b_minus = new QToolButton();
     hbox->addWidget(b_minus);
     b_minus->setText(QString("-"));
-    connect(b_minus, SIGNAL(clicked()), this, SLOT(minus_slot()));
+    connect(b_minus, &QAbstractButton::clicked,
+        this, &QTexpandDlg::minus_slot);
 
     b_all = new QToolButton();
     hbox->addWidget(b_all);
     b_all->setText(QString(tr("all")));
-    connect(b_all, SIGNAL(clicked()), this, SLOT(all_slot()));
+    connect(b_all, &QAbstractButton::clicked, this, &QTexpandDlg::all_slot);
 
     b_0 = new QToolButton();
     hbox->addWidget(b_0);
     b_0->setText(QString("0"));
-    connect(b_0, SIGNAL(clicked()), this, SLOT(b0_slot()));
+    connect(b_0, &QAbstractButton::clicked, this, &QTexpandDlg::b0_slot);
 
     b_1 = new QToolButton();
     hbox->addWidget(b_1);
     b_1->setText(QString("1"));
-    connect(b_1, SIGNAL(clicked()), this, SLOT(b1_slot()));
+    connect(b_1, &QAbstractButton::clicked, this, &QTexpandDlg::b1_slot);
 
     b_2 = new QToolButton();
     hbox->addWidget(b_2);
     b_2->setText(QString("2"));
-    connect(b_2, SIGNAL(clicked()), this, SLOT(b2_slot()));
+    connect(b_2, &QAbstractButton::clicked, this, &QTexpandDlg::b2_slot);
 
     b_3 = new QToolButton();
     hbox->addWidget(b_3);
     b_3->setText(QString("3"));
-    connect(b_3, SIGNAL(clicked()), this, SLOT(b3_slot()));
+    connect(b_3, &QAbstractButton::clicked, this, &QTexpandDlg::b3_slot);
 
     b_4 = new QToolButton();
     hbox->addWidget(b_4);
     b_4->setText(QString("4"));
-    connect(b_4, SIGNAL(clicked()), this, SLOT(b4_slot()));
+    connect(b_4, &QAbstractButton::clicked, this, &QTexpandDlg::b4_slot);
 
     b_5 = new QToolButton();
     hbox->addWidget(b_5);
     b_5->setText(QString("5"));
-    connect(b_5, SIGNAL(clicked()), this, SLOT(b5_slot()));
+    connect(b_5, &QAbstractButton::clicked, this, &QTexpandDlg::b5_slot);
 
     if (!nopeek) {
         tbtn = new QToolButton();
         tbtn->setText(tr("Peek Mode"));
         hbox->addWidget(tbtn);
-        connect(tbtn, SIGNAL(clicked()), this, SLOT(peek_slot()));
+        connect(tbtn, &QAbstractButton::clicked,
+            this, &QTexpandDlg::peek_slot);
     }
 
     hbox = new QHBoxLayout(0);
@@ -178,12 +182,12 @@ QTexpandDlg::QTexpandDlg(QTbag *owner, const char *string, bool nopeek,
     btn->setAutoDefault(true);
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(apply_slot()));
+    connect(btn, &QAbstractButton::clicked, this, &QTexpandDlg::apply_slot);
 
     btn = new QPushButton(tr("Dismiss"));
     btn->setAutoDefault(false);
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_slot()));
+    connect(btn, &QAbstractButton::clicked, this, &QTexpandDlg::dismiss_slot);
 }
 
 

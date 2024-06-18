@@ -135,28 +135,33 @@ QTsearchDlg::QTsearchDlg(QTbag *owner, const char *initstr) : se_timer(this)
     QToolButton *tbtn = new QToolButton();
     tbtn->setIcon(QIcon(QPixmap(down_xpm)));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(down_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTsearchDlg::down_btn_slot);
 
     tbtn = new QToolButton();
     tbtn->setIcon(QIcon(QPixmap(up_xpm)));
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(clicked()), this, SLOT(up_btn_slot()));
+    connect(tbtn, &QAbstractButton::clicked,
+        this, &QTsearchDlg::up_btn_slot);
 
     hbox->addSpacing(20);
     se_nc = new QCheckBox(this);
     se_nc->setText(tr("No Case"));
     hbox->addWidget(se_nc);
-    connect(se_nc, SIGNAL(toggled(bool)), this, SLOT(icase_btn_slot(bool)));
+    connect(se_nc, &QAbstractButton::toggled,
+        this, &QTsearchDlg::icase_btn_slot);
 
     hbox->addSpacing(20);
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     btn->setObjectName("Default");
     hbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTsearchDlg::dismiss_btn_slot);
 
     se_timer.setInterval(1000);
     set_message("Enter search text:");
-    connect(&se_timer, SIGNAL(timeout()), this, SLOT(timeout_slot()));
+    connect(&se_timer, &QTimer::timeout,
+        this, &QTsearchDlg::timeout_slot);
 }
 
 

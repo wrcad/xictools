@@ -122,7 +122,8 @@ QTsimParamDlg::QTsimParamDlg(int xx, int yy)
     tbtn->setText(tr("Help"));
     tbtn->setCheckable(true);
     hbox->addWidget(tbtn);
-    connect(tbtn, SIGNAL(toggled(bool)), this, SLOT(help_btn_slot(bool)));
+    connect(tbtn, &QAbstractButton::toggled,
+        this, &QTsimParamDlg::help_btn_slot);
 
     si_notebook = new QTabWidget();
     vbox->addWidget(si_notebook);
@@ -734,7 +735,8 @@ QTsimParamDlg::QTsimParamDlg(int xx, int yy)
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));
     vbox->addWidget(btn);
-    connect(btn, SIGNAL(clicked()), this, SLOT(dismiss_btn_slot()));
+    connect(btn, &QAbstractButton::clicked,
+        this, &QTsimParamDlg::dismiss_btn_slot);
 
     if (xx || yy) {
         TB()->FixLoc(&xx, &yy);

@@ -402,7 +402,7 @@ sLx::sLx(GRobject c)
         gtk_widget_show(mi);
         gtk_menu_shell_append(GTK_MENU_SHELL(lx_recall_menu), mi);
         g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(lx_recall_proc), (void*)(long)i);
+            G_CALLBACK(lx_recall_proc), (void*)(uintptr_t)i);
     }
     g_signal_connect(G_OBJECT(lx_recall), "button-press-event",
         G_CALLBACK(lx_popup_menu), lx_recall_menu);
@@ -423,7 +423,7 @@ sLx::sLx(GRobject c)
         gtk_widget_show(mi);
         gtk_menu_shell_append(GTK_MENU_SHELL(lx_save_menu), mi);
         g_signal_connect(G_OBJECT(mi), "activate",
-            G_CALLBACK(lx_save_proc), (void*)(long)i);
+            G_CALLBACK(lx_save_proc), (void*)(uintptr_t)i);
     }
     g_signal_connect(G_OBJECT(lx_save), "button-press-event",
         G_CALLBACK(lx_popup_menu), lx_save_menu);

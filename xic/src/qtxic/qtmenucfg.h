@@ -1,5 +1,5 @@
 
-/*========================================================================*
+/*========================================================================
  *                                                                        *
  *  Distributed by Whiteley Research Inc., Sunnyvale, California, USA     *
  *                       http://wrcad.com                                 *
@@ -69,6 +69,7 @@ public:
     void updateDynamicMenus();
     void switch_menu_mode(DisplayMode, int);
     void set_main_global_sens(const MenuList*, bool);
+    static int exec_idle_proc(void*);
 
     bool menu_disabled() const  { return (mc_menu_disabled); }
 
@@ -78,9 +79,6 @@ public:
                 on_null_ptr();
             return (instancePtr);
         }
-
-signals:
-    void exec_idle(MenuEnt*);
 
 private slots:
     void file_menu_slot(QAction*);
@@ -105,7 +103,6 @@ private slots:
     void subwin_help_menu_slot(QAction*);
     void subwin_help_slot();
 
-    void idle_exec_slot(MenuEnt*);
     void exec_slot(MenuEnt*);
     void style_slot(MenuEnt*);
     void shape_slot(MenuEnt*);

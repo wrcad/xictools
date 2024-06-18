@@ -456,7 +456,7 @@ sEC::ec_btn_hdlr(GtkWidget *caller, GdkEvent *event, void*)
                     break;
                 }
             }
-            delete cname;
+            delete [] cname;
         }
     }
     delete [] string;
