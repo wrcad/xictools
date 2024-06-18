@@ -859,7 +859,7 @@ QTfileDlg::QTfileDlg(QTbag *owner, FsMode mode, void *arg,
         menubar->addMenu(f_helpmenu);
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         f_helpmenu->addAction(tr("&Help"),
-            Qt::CTRL|Qt::Key_H, this, &QTfileDlg::help_slot()));
+            Qt::CTRL|Qt::Key_H, this, &QTfileDlg::help_slot);
 #else
         f_helpmenu->addAction(tr("&Help"),
             this, &QTfileDlg::help_slot, Qt::CTRL|Qt::Key_H);
