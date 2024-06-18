@@ -367,7 +367,7 @@ cDisplay::OpenSubwin(const CDs *sdesc, const hyEnt *ent, bool no_top_sym)
 // graphics system (such as the X-window).
 //
 WindowDesc *
-cDisplay::Windesc(unsigned long n)
+cDisplay::Windesc(uintptr_t n)
 {
     for (int i = 0; i < DSP_NUMWINS; i++) {
         if (d_windows[i] && d_windows[i]->WindowId() == n)

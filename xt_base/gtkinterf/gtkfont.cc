@@ -287,7 +287,7 @@ GTKfont::trackFontChange(GtkWidget *widget, int fnum)
 {
     gtk_font.registerCallback(widget, fnum);
     g_signal_connect(G_OBJECT(widget), "destroy",
-        G_CALLBACK(unreg_hdlr), (void*)(long)fnum);
+        G_CALLBACK(unreg_hdlr), (void*)(uintptr_t)fnum);
 }
 
 

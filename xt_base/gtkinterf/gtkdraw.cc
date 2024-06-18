@@ -48,8 +48,8 @@
 #include <winsock2.h>
 #include <windowsx.h>
 #include <gdk/gdkwin32.h>
-#include "mswdraw.h"
-#include "mswpdev.h"
+#include "miscutil/mswdraw.h"
+#include "miscutil/mswpdev.h"
 using namespace mswinterf;
 #endif
 
@@ -559,17 +559,11 @@ GTKdraw::Line(int x1, int y1, int x2, int y2)
     return;
     *****/
 
-// XXX WIN32 needs support
-
-#ifdef WIN32
-#else
 #if GTK_CHECK_VERSION(3,0,0)
     Drawable xid = gd_dw.get_xid();
-#else
-    Drawable xid = gdk_x11_drawable_get_xid(gd_window);
-#endif
     if (xid == None)
         return;
+#endif
     if (XorLineDb()) {
         // We are drawing in XOR mode, filter the Manhattan lines so
         // none is overdrawn.
@@ -621,7 +615,7 @@ GTKdraw::Line(int x1, int y1, int x2, int y2)
 #else
     gdk_draw_line(gd_window, GC(), x1, y1, x2, y2);
 #endif
-#endif
+//#endif
 }
 
 

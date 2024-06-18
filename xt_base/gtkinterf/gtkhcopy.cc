@@ -46,8 +46,8 @@
 #include "miscutil/childproc.h"
 #ifdef WIN32
 #include "miscutil/msw.h"
-#include "mswdraw.h"
-#include "mswpdev.h"
+#include "miscutil/mswdraw.h"
+#include "miscutil/mswpdev.h"
 #include <algorithm>
 using namespace mswinterf;
 #endif
