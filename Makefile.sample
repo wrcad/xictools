@@ -16,22 +16,78 @@ PREFIX = --prefix=/usr/local
 
 # This is the name of the top-level installation directory under
 # PREFIX.  You can change this if you want to have different builds
-# under PREFIX, for example QT and GTK,
+# under PREFIX, for example for Qt and GTK,
 #
 TOOLROOT = --enable-toolroot=xictools
 
-# The traditional way to build and install xictools is to build a set
+# The traditional way to build and install XicTools is to build a set
 # of packages, and then install the packages.  "make install" is
 # actually prevented from installing directly to the default
 # installation location, since typically packages and direct
-# installation don't mix well.  If this variable is set to "yes",
-# installation to the PREFIX/TOOLROOT location is allowed.  This is
-# for users who wish to skip the packaging step.  Package installers
-# may require root permission to run, so users can avoid this and keep
-# all files in their local space with the PREFIX variable set
-# appropriately and this variable set to "yes" instead of "no".
+# installation don't mix well, confusing the package management
+# program.  If this variable is set to "yes", installation to the
+# PREFIX/TOOLROOT location is allowed.  This is for users who wish to
+# skip the packaging step.  Package installers may require root
+# permission to run, so users can avoid this and keep all files in
+# their local space with the PREFIX variable set appropriately and
+# this variable set to "yes" instead of "no".
 #
 ITOPOK = --enable-itopok=no
+
+# Graphics package.  The programs can build with GTK2, GTK3, Qt5, and
+# Qt6.  GTK2 is still the reference graphics system and is recommended
+# for actual work.  Qt support is in "beta test" and will replace GTK. 
+# Ignore GTK3, it can build but has serious flaws.  Virtually all GTK
+# functionality has been ported to Qt and at present fine tuning and
+# bug fixing is being done.  Bug reports and comments would be
+# appreciated!
+#
+# If this variable is not set, the programs will be built without a
+# GUI toolkit.  Mozy will not build in this case, Xic can be used in
+# server-mode only, and WRspice will be command-line only.
+#
+# To select a graphics library, uncomment exactly one of the examples
+# below, or create your own assignment appropriate for your computer. 
+# Most of the time this variable can be set to something like
+# "--enable-gtk2=yes", which should always be true for GTK if the
+# pkg-config utility is working.  If can be set to the directory
+# containing pkg-config for GTK.  Otherwise, the value can be the
+# installation location for Qt5/6.  If the qmake program is in your
+# search path "yes" should work here as well.
+#
+# For Windows (MSYS2/MinGW64)
+#GFXLOC = --enable_qt6=/mingw64
+#GFXLOC = --enable_gtk2=/mingw64/bin
+#
+# For macOS
+#GFXLOC = --enable-qt6=/opt/local/libexec/qt6
+#GFXLOC = --enable-gtk2=yes
+#
+# For CentOS/RedHat/Rocky/AlmaLinux (7 or 8) OpenSuSE 15.4
+#GFXLOC = --enable-qt5=/usr/lib64/qt5
+#GFXLOC = --enable-gtk2=yes
+#
+# For Fedora 40 Linux
+#GFXLOC = --enable-qt6=/usr/lib64/qt6
+#GFXLOC = --enable-gtk2=yes
+#
+# For Ubuntu-22.04, Debian 11
+#GFXLOC = --enable-qt5=/usr/lib/qt5
+#GFXLOC = --enable-gtk2=yes
+
+# Windows setup.  UNCOMMENT for Windows!  Currently, the programs are
+# built under the MinGW64 environment in MSYS2.  Set this to the
+# mingw64 root and uncomment.
+#
+#MINGW  = --enable-mingw=/mingw64
+
+# The system will attempt to set the paths to Python and Tcl, but
+# this may not be reliable.  These can be uncommented and set to
+# provide the correct paths on your system.
+#
+#PYTHON = --enable-pylib="/usr/lib64 -lpython2.7"  --enable-pyinc="-I/usr/include/python2.7"
+#TCL = --enable-tcllib=no  --enable-tclinc=no
+#TK = --enable-tklib=no  --enable-tkinc=no
 
 # The licensing system for Xic and WRspice is disabled by default, but
 # can be enabled by uncommenting the assignment below.  The code for
@@ -44,44 +100,18 @@ ITOPOK = --enable-itopok=no
 # transfer, screen dumps, and package management.  This was used to
 # avoid the GNU-licensed code when building commercial packages. 
 # Since the tools are now open-source this is not an issue.  There
-# presently is other GNU-licensed code within the tools, users need
-# to be aware of the license restrictions this imposes for non-open
+# presently is other GNU-licensed code within the tools, users need to
+# be aware of the license restrictions this imposes for non-open
 # source applications, which are allowed by the Apache license but not
 # GNU.
 #
 #NOMOZY = --enable-nomozy=yes
 
-# Force 32-bit build on x86_64 Linux systems.
+# Force 32-bit build on x86_64 Linux systems.  This may not work
+# anymore, and in any case requires 32-bit versions of all libraries
+# to be present.
 #
 #32BIT = --enable-force32=yes
-
-# Graphics package.  The programs can build with GTK-2, GTK-3, QT-5,
-# and QT-6.  GTK-2 is still the production graphics system and is
-# recommended for actual work.  QT support is in progress and will
-# replace GTK.  Virtually all GTK functionality has been ported to QT
-# and at present fine tuning and bug fixing is being done.  Bug
-# reports and comments would be appreciated!  GTK-3 semi-works
-# (X-Windoes only) but has numerous issues.  The Cairo graphics is not
-# suitable for a program like Xic (or any EDA tool with performance
-# requirements) thus has to be worked around, which is a challenge. 
-# It is unlikely that further effort will be directed toward GTK.
-#
-# If this variable is not set, the programs will be built without a
-# GUI toolkit.  Mozy will not build in this case, Xic can be used in
-# server-mode only, and WRspice will be command-line only.
-#
-# To select a graphics library, most of the time this variable can be
-# set to something like "--enable-gtk2=yes", which should always be
-# true for GTK if the pkg-config utility is working.  If can be set to
-# the directory containing pkg-config for GTK.  Otherwise, the value
-# can be the installation location for QT-5/6.  If the qmake program
-# is in your search path "yes" should work here as well.
-#
-#GFXLOC = --enable-gtk2=/mingw64/bin
-#GFXLOC = --enable-qt5=/opt/local/libexec/qt5
-#GFXLOC = --enable-qt5=/usr/lib64/qt5
-#GFXLOC = --enable-qt5=yes
-GFXLOC = --enable-gtk2=yes
 
 # OpenAccess support, Linux only.
 # If you have an OpenAccess source tree, specify its location in this
@@ -104,19 +134,6 @@ GFXLOC = --enable-gtk2=yes
 #
 #KITLOC = --enable-psf=/home/stevew/cadence/oasis-kit/tools.lnx86
 
-# Windows setup.  Currently, the programs are built under the MINGW
-# X64 environment in MSYS2.  Set this to the mingw64 root and uncomment.
-#
-#MINGW  = --enable-mingw=/mingw64
-
-# The system will attempt to set the paths to Python and Tcl, but
-# this may not be reliable.  These can be uncommented and set to
-# provide the correct paths on your system.
-#
-#PYTHON = --enable-pylib="/usr/lib64 -lpython2.7"  --enable-pyinc="-I/usr/include/python2.7"
-#TCL = --enable-tcllib=no  --enable-tclinc=no
-#TK = --enable-tklib=no  --enable-tkinc=no
-
 # If you don't want to build all the tools, you can choose what to
 # build below.  The xt_base is required for everything, other
 # dependencies are represented by the two lines below.  You can change
@@ -136,6 +153,8 @@ endif
 
 SUBDIRS = xt_base $(SECURE) $(MOZY) $(WRSPICE) $(XIC) fastcap fasthenry
 
+# END of user configuration section.
+#
 #######################################################################
 CFARGS = $(PREFIX) $(TOOLROOT) $(ITOPOK) $(HVSECURE) $(NOMOZY) $(32BIT) \
   $(OALOC) $(CNILOC) $(KITLOC) $(MINGW) $(GFXLOC) $(PYTHON) $(TCL) $(TK)

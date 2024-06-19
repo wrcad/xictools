@@ -1,6 +1,7 @@
                   XicTools Open-Source  Release
                          October 1, 2017
                        Revised May 29, 2022
+                       Revised June 18, 2024
 
 Whiteley Research is pleased to offer the XicTools programs:  Xic
 (graphical editor) and WRspice (circuit simulator) as open-source. 
@@ -166,7 +167,7 @@ Status as of April 27, 2024
 Historically, pre-built packages were available for various operating
 systems on wrcad.com.  However, due to time constraints the packages
 have not kept up with operating system or code changes, and only
-Windows has up-to-date packages available at this point.
+Windows may have reasonably current packages available.
 
 The plan is to drop packages entirely, and instead users will build
 from source.  By providing detailed information and possibly
@@ -177,7 +178,7 @@ users.  This will provide several advantages for users:
 2. If the operating system is updated, the tools can be rebuilt if
    necessary.
 3. Users can track either the "master" branch, which is stable, or
-   the "devel" branch, which contains the latest code (or both).
+   the "devel" branch, which contains the latest code, or both.
 4. Users can control aspects of the build, such as file locations,
    GTK vs. Qt, etc.
 5. We at the factory can focus on improving the programs instead of
@@ -204,13 +205,14 @@ several different libraries installed.  As you encounter missing
 header files, etc., these should be installed on your system from your
 operating system source repositories.  It can be a bit of a challenge
 to figure out which packages to install, Google is your friend. 
-Requirements are partially listed below for various operting systems.
+Requirements are partially listed below for various operating systems.
 
-To install system software as above on Linux, you will need root
-permission, or an IT department that can do this for you.  If you
-are already in a corporate software development environment, then
-this software will quite likely be installed already, as it is at
-Synopsys, for example.
+3.3.a  Installing Needed Packages on Linux
+
+To install system software on Linux, you will need root permission, or
+an IT department that can do this for you.  If you are already in a
+corporate software development environment, then this software will
+quite likely be installed already, as it is at Synopsys, for example.
 
 Programs and Utilities:
 There may be a meta-package containing the development toolchain,
@@ -218,7 +220,7 @@ which should be installed.  These programs may be missing and would
 require installation.
 
   git, autoconf, flex, bison,
-  pkg-config for GTK only
+  pkg-config (GTK only)
 
 Libraries and Development Packages:
 Often, the basic libraries are provided, but a separate "devel"
@@ -231,16 +233,18 @@ Install the devel version, which will also install the bare library if
 necessary.
 
   libgsl, libjpeg, libtiff, ncurses
-  gtk2, (GTK only)
+  gtk2 (GTK only)
+  Qt5  (For Qt.  You can alternatively install the newer Qt6 if available)
 
-The gtk2 package will bring in a large number of dependent packages.
+The gtk2 and Qt packages will bring in a large number of dependent
+packages.
 
 Below are lists of package names that I had to install on some
-operating systems.  Note that I've specified the Qt-5 libraries here. 
-These may well be already installed, and seemed to be the standard. 
-You should also be able to build with the newer Qt-6 libraries if
-available.  These would have the same form as below but with "qt5" ->
-"qt6".
+operating systems.  Note that I've mostly specified the Qt5 libraries
+here.  These may well be already installed, and seemed to be the
+standard.  You should also be able to build with the newer Qt6
+libraries if available.  These would have the same form as below but
+with "qt5" -> "qt6".
 
 I've indicated the requirements for GTK and Qt below. You can choose
 either one or both, depending on the tools version(s) you intend to
@@ -272,7 +276,7 @@ Fedora 40
     dnf install gtk2-devel  (for GTK)
     dnf install qt5-qtbase-devel  (for Qt)
 
-CentOS 8 Stream/ Rocky 8/ Red Hat 8
+CentOS 8 Stream/ Rocky 8/ AlmaLinux8/ Red Hat 8
     The first line installs the development tools, including for C++.
 
     dnf group install "Development Tools"
@@ -280,179 +284,103 @@ CentOS 8 Stream/ Rocky 8/ Red Hat 8
     dnf install gtk2-devel  (for GTK)
     dnf install qt5-qtbase-devel  (for Qt)
 
+3.3.b  Installing MSYS2 and Needed Packages on Windows
 
-3.4  Obtaining the Git Repository
+This is based on experience installing on a new Windows 11 machine,
+June 2024.
 
-The file you are presently reading (README) is at the top level of the
-XicTools source tree.  It may or may not be part of a git repository
-depending on how the files were obtained.  You really want to have a
-git repository, and not just a collection of files from a zip or tar
-file.  The "git" program is a software management tool, and using a
-git repository allows you to update the files from the primary
-repository on github.com with a simple command.
-
-If there is a subdirectory named ".git" in the directory containing
-this file, then you probably have a git repository.  If not, lets
-start over.  Go to the parent directory containing this one, and use
-"rm -rf" to delete this directory and everything under it (which will
-include this file unless you save a copy some place).
-
-Next, give the following command to clone the xictools repository into
-the current directory:
-
-git clone https://github.com/wrcad/xictools.git
-
-If this fails because "git" is not found, then you will need to install
-it (see previous section).  This would be uncommon to not find git
-installed on a Linux system, however you will need to instal the MSYS2
-version on Windows or the MacPorts version on macOS, see instructions
-that follow.
-
-Otherwise, you should have a subdirectory named "xictools" which contains
-this README file, and a whole lot more.
-  
-
-3.4  Build Procedure for Linux
-
-This section assumes that you are in the directory containing this
-README file in your xictools git repository.  It assumes that you have
-installed the software build tools and development libraries as listed
-above, or a best guess depending on your system.
-
-The procedure is as follows.
-
-    1.  Copy Makefile.sample into "Makefile", edit Makefile to set the
-        configuration flags, as described in the Makefile.
-    2.  Give the command "make config" to configure the source tree to
-        your build environment.  You may see errors and early termination
-        if there are missing utilities or libraries.  This should take
-        maybe 5 minutes.
-    3.  Give "make all" to build all of the programs.  If all went
-        right for Xic and WRspice, there should be files present:
-        xic/bin/xic and wrspice/bin/wrspice
-    4.  in the future, after changes, do "make reconfig" followed by
-        "make all" to rebuild the programs.  Alternatively, if you
-        want to start over from a fresh environment, give
-        "make distclean", then "make config" and "make all".
-
-The present default build procedure assumes that the intended
-installation procedure is to first build a binary package (e.g., RPM)
-for each program, then install the packages on your system using the
-wr_install script.  The wr_install script is available on wrcad.com
-with the package files, and in the source tree under
-xictools/xt_base/packages/util/wr_install.  The Makefiles will
-actually prevent running "make install" to the default location
-(typically under /usr/local).  However, you can modify the top-level
-Makefile (in this directory) to allow this (see the ITOPOK variable),
-and skip the packaging step entirely if you wish.
-
-If you are buikding/installing packages:
-    5. "make packages" will create all of the package files.
-       Packages are left in xictools/xt_base/packages/pkgfiles.
-
-    6. cd to xt_base/packages/pkgfiles, then give
-       "../util/wr_install all". This will install the programs from
-       the package files.  If you are installing to a system location
-       such as the default under /usr/local, you need to have sudo
-       privileges.  The wr_install script will ask for your password. 
-       It doesn't matter if this fails of you are installing to a
-       location where you have write permission.
-
-Otherwise:
-    5,6.  If you are installing to a system location like the default
-       under /usr/local, you must get root privileges somehow.  On
-       Current Linux systems this means that you will probably use the
-       sudo command and your account will be listed in the
-       /etc/sudoers file.  If at work, you may have to get help from
-       IT.  However you can install to a directory where you have
-       write permission without becomming root.  Next, give "make
-       install".  It may take half an hour or so, since this builds
-       the example Verilog-A models for WRspice which takes a while.
-    
-In either case:
-    7. Set your shell search path to include the main XicTools
-       bin, by default /usr/local/xictools/bin.
-
-You should now be able to use the programs.
-
-
-3.3  Windows
-
-Currently the MSYS2/MINGWx64 environment is used to build and run on
-Windows.  The user will have to install this environment, or at least
-the run-time components.  This replaces the "gtk2-bundle" which
-provided the needed libraries previously and was distributed with the
-program packages.
+Currently the MSYS2/MinGWx64 environment is used to build and run on
+Windows.  This replaces the "gtk2-bundle" which provided the needed
+libraries previously and was distributed with the program packages. 
+The user will have to install the MSYS2/MinGW64 environment.
 
 Go to msys2.org, download and run the installer, and follow the
 instructions, using the defaults.  When done you will have a shell
-window on screen.  Add packages as needed, but you will want the
-development toolchain for mingw64:
+window on screen.  The package manager program for MSYS2 is named
+"pacman".  Basic information on this can be found in the installation
+web site.  It will be used to add packages to the shell environment to
+support building/running XicTools.  Type the commands below to install
+the needed packages.  In the future, you may wish to install extra
+goodies, a lot is available.
+
+Add the software development commands for the "MinGW" environment. 
+MinGW "Minimal GNU for Windows" is a simplified Linux-like environment
+called "Posix" provided by Microsoft as part of Windows.
 
     pacman -S base-devel
     pacman -S mingw-w64-x86_64-toolchain
 
-Add the vim editor, the winpty program needed to run wrspice, and
-the mingw64 versions of the gtk2 and gsl libraries.
+Add the vim editor, the winpty program needed to run WRspice, and
+the mingw64 versions of the gtk2 and/or Qt and gsl libraries.
 
     pacman -S vim
     pacman -S winpty
-    pacman -S mingw_w64-x86_64-gsl
-    pacman -S mingw_w64-x86_64-gtk2  (for GTK)
-    pacman -S mingw_w64-x86_64-qt6  (for Qt)
+    pacman -S mingw-w64-x86_64-gsl
+    pacman -S mingw-w64-x86_64-gtk2  (for GTK)
+    pacman -S mingw-w64-x86_64-qt6  (for Qt)
 
 Add some other needed utilities:
 
+    pacman -S git
     pacman -S autoconf-wrapper
-    pacman -S bison
-    pacman -S flex
-    pacman -S make
-    pacman -S patch
-    pacman -S libiconv-devel
-    pacman -S ncurses-devel
 
-Use the vim editor to edit the .bash_profile file that exists in the
-current (and home) directory adding the following lines to the bottom
-of the file.
+That is all of the packages that need to be installed currently.  You
+should now close the shell window.
+
+In the future, to upgrade the packeges to the lastest, give the command
+
+    pacman -Syu
+
+This should be done every so often to keep current.  When this is done,
+the XicTools programs should be rebuilt, as will be described below.
+
+To continue with the configuration and build, you should open a new
+shell window specificly for the MinGW64 environment.  In the Start
+menu, scroll down to th MSYS2 entry and open the sub-menu.  There are
+five alternative environments available.  Select the one with the
+MinGW64 lable.  You should ALWAYS choose only this option for working
+with XicTools programs, the others will probably NOT WORK!  Making the
+selection will bring up a new shell window, similar to what you had
+before, but the prompt will include "MinGW64".
+
+You will always use a window like this to build and run XicTools
+programs.  It is similar to a Linux shell, and provides many of the
+same commands.  You can add more of your favorite Linux commands with
+the pacman tool.
+
+We can now continue the first time only configuration.
+
+1.  Type the following command.
+
+    mkdir -p /c/usr/local/xictools
+
+2.  Use the vim editor to edit the .bash_profile file that exists in
+    the current (and home) directory adding the following lines to the
+    bottom of the file.  Of course, replace <your_username> with the
+    correct text.  This is the name of the current directory, or the
+    name printed when you give the "whoami" command.
 
     mount c:/usr/local/xictools /usr/local/xictools
     export PATH="/usr/local/xictools/bin:$PATH"
     export XT_HOMEDIR=c:/msys64/home/<your_username>
 
-Of course, replace <your_username> with the correct text.
+3.  You will need to set "Developer Mode".  Developer mode is required
+    to create symbolic links, used in the install.
+    a. From Settings (grear-shaped icon in the Start menu) select System
+    b. Scroll down to "For Developers" and select.
+    c. Turn on "Developer Mode", answer prompt.
 
-Also used is the inno-setup 5.5.9 packager
-(http://www.jrsoftware.org/).  You might wish to get this (or a newer
-release) if you intend to produce packages for Windows.  The XicTools
-Makefile assumes that this is installed at c:/inno-5.5.9 which is
-mounted on /inno-5.5.9 in MSYS2.
+4.  Finally, if you intend to create packages, you will need the
+    inno-setup packager (http://www.jrsoftware.org/).
+    The Makefiles assume release 5.5.9.  You might wish to get this
+    (or a newer release) if you intend to produce packages for Windows.
+    The XicTools Makefile assumes that this is installed at c:/inno-5.5.9
+    which is mounted on /inno-5.5.9 in MSYS2.
 
-To start the shell window the next time, click "MSYS2 64bit" in the
-Start menu, then click "MSYS2 MinGW x64" in the sub-menu.  This
-provides the MSYS2 shell environment with support for mingw64.  MinGW
-is "minimal Gnu (for) Windows" and is a library that provides a
-limited Linux-like programming environment under Windows.  The
-XicTools programs use this environment and are thus Windows-native
-programs.
+You will run the pacman installer in the future to update your
+packages, and to add any packages needed later.
 
-This is about complete to build XicTools, but there may be a thing or
-two missing.  You will have to use the "pacman" package manager
-commands to find the package needed, then use commands like above to
-install it.
-
-You will run the installer in the future to update your packages, and
-to add packages needed later.
-
-The actual build procedure follows the Linux procedure above, but there
-is no need to worry about root access.
-
-
-3.4  macOS
-
-The Qt versions of the tools are "native" masOS applications.  Other
-than not needing an X-server, the main difference is that the
-application main menus appear in the Mac location at the top of the
-screen, and not in the application window.
+3.3.c  Installing MacPorts and Needed Packages on macOS.
 
 1.  Install xcode
     This is Apple's development package, available as a download from the
@@ -475,26 +403,191 @@ screen, and not in the application window.
     If you will build and run the Qt versions only, you do not need
     XQuartz.
 
-5.  Download the MacPorts installer from macports.org.  This provides
-    the graphical libraries used by the programs.  Following the
-    instructions, install MacPorts for your operating system.  Be sure
-    to install the default package which installs in the default
+5.  Download the MacPorts installer from macports.org.  This will
+    provide the graphical libraries used by the programs.  Following
+    the instructions, install MacPorts for your operating system.  Be
+    sure to install the default package which installs in the default
     location (i.e., don't build from source and change the location).
 
-    Once the basic installation is done, run, as root, the following
-    commands:
+    Once the basic installation is done, run, the following commands:
 
-    port -v selfupdate
-    port install gtk2  (for GTK)
-    port install pkgconfig  (for GTK)
-    port install qt6  (for Qt)
-    port install gsl
-    port install python2_select
-    port install python27
-    port install autoconf
+    sudo port -v selfupdate
+    sudo port install autoconf
+    sudo port install python27
+    sudo port install python2_select
+    sudo port install gsl
+    sudo port install gtk2  (for GTK)
+    sudo port install pkgconfig  (for GTK)
+    sudo port install qt6  (for Qt)
 
 6.  Set your shell search path to include /usr/local/xictools/bin.
 
-You should now be able to build XicTools following the procedure above
-for Linux.
+In the future you will want to update the ports every so often to keep
+current.  This can be done with the commands
 
+    sudo port -v selfupdate
+    sudo port upgrade outdated
+
+After doing this you will need to rebuild and reinstall the XicTools
+programs as will be described below.
+
+The Qt versions of the tools are "native" masOS applications.  Other
+than not needing an X-server, the main difference is that the
+application main menus appear in the Mac location at the top of the
+screen, and not in the application window.
+
+3.4  Obtaining the Git Repository
+
+The file you are presently reading (README) is at the top level of the
+XicTools source tree.  It may or may not be part of a git repository
+depending on how the files were obtained.  You really want to have a
+git repository, and not just a collection of files from a zip or tar
+file.  The "git" program is a software management tool, and using a
+git repository allows you to update the files from the primary
+repository on github.com with a simple command.
+
+If there is a subdirectory named ".git" in the directory containing
+this file, then you probably have a git repository.  If not, lets
+start over.  Go to the parent directory containing this one, and use
+"rm -rf" to delete this directory and everything under it (which will
+include this file unless you save a copy some place).
+
+Here is the starting point to create a new xictools git repository. 
+Make sure that you have the git program installed (the command "which
+git" should provide a path to the git program).  It needs to be installed
+if not.  From terminal (shell) window give the following command to
+clone the xictools repository into the current directory:
+
+    git clone https://github.com/wrcad/xictools.git
+
+You should have a subdirectory named "xictools" which contains this
+README file, and a whole lot more.  This contains all of the source
+code for XicTools, and a "hidden" compressed git database.  You will
+build the tooks in this area.  The top directory (xictools) can be
+moved or renamed if desired.  For example, you may want to create two
+such directory trees, "xictools" and "xictools.gtk" to separately
+build Qt and GTK versions of the tools.
+
+3.5  The Build Procedure.
+
+First, change to the top directory of the cloned repository created as
+above.
+
+This section assumes that you are in the directory containing this
+README file in your xictools git repository.  It assumes that you have
+installed the software build tools and development libraries as listed
+above, or a best guess depending on your system.
+
+The procedure is as follows.
+
+The first time, you will need to set up the main Makefile.
+
+1.  Copy Makefile.sample into "Makefile", edit Makefile to set the
+    configuration flags, as described by the comments in the Makefile.
+
+2.  Give the command "make config" to configure the source tree to
+    your build environment.  You may see errors and early termination
+    if there are missing utilities or libraries.  This should take
+    maybe 5 minutes.
+
+3.  Give "make all" to build all of the programs.  If everything went
+    correctly for Xic and WRspice, there should be files present:
+    xic/bin/xic and wrspice/bin/wrspice
+
+4.  in the future, after changes, do "make reconfig" followed by
+    "make all" to rebuild the programs.  Alternatively, if you
+    want to start over from a fresh environment, give
+    "make distclean", then "make config" and "make all".
+
+5. Make sure that your shell search path includes the main XicTools
+   bin, which is by default /usr/local/xictools/bin.  Use the actual
+   path if you changed PREFIX or TOOLROOT in the Makefile.
+
+3.6  The Installation Procedure.
+
+The present default installation procedure assumes that the intended
+installation procedure is to first build a binary package (e.g., RPM)
+for each program, then install the packages on your system using the
+wr_install script.  The wr_install script is available in the source
+tree under xictools/xt_base/packages/util/wr_install.  The Makefiles
+will actually prevent running "make install" to the default location
+(typically under /usr/local).  However, you can modify the top-level
+Makefile (in this directory) to allow this (see the ITOPOK variable),
+and skip the packaging step entirely if you wish.
+
+If you are building/installing packages:
+1. "make packages" will create all of the package files.
+   Packages are left in xictools/xt_base/packages/pkgfiles.  It may
+   take half an hour or so, since this builds the example Verilog-A
+   models for WRspice which takes a while.
+
+2. cd to xt_base/packages/pkgfiles, then give
+   "../util/wr_install all". This will install the programs from
+   the package files.  If you are installing to a system location
+   such as the default under /usr/local, you need to have sudo
+   privileges.  The wr_install script will ask for your password. 
+   It doesn't matter if this fails if you are installing to a
+   location where you have write permission.
+
+Otherwise:
+1,2.  If you are installing to a system location like the default
+   under /usr/local, you must get root privileges somehow.  On
+   Current Linux systems this means that you will probably use the
+   sudo command and your account will be listed in the
+   /etc/sudoers file.  If at work, you may have to get help from
+   IT.  However you can install to a directory where you have
+   write permission without becoming root.  Next, give "make
+   install".  It may take half an hour or so, since this builds
+   the example Verilog-A models for WRspice which takes a while.
+
+You should now be able to use the programs.  Have fun!
+
+
+4.0  Maintaining the Installation Using Git
+
+There are two "branches" in the git repository:  "master" (the
+default) and "devel".  The "master" branch is intended to provide
+stable releases of the tools for effective use, and most users should
+choose this.  The devel branch represents the latest development code. 
+You should track this if you are helping develop the programs, or just
+want the latest.  However, programs may not build and other transient
+problems may be encountered.
+
+To check out the devel branch, give the command
+    git checkout devel
+To revert to the master branch
+    git checkout master
+To see which branch you're on
+    git branch
+
+To update the current branch code to the latest from the github
+repository:
+    git pull
+
+You should do this every so often to update your source code so as
+to not get too out of date.
+
+On Windows and macOS, you should periodically upgrade the packages you
+have installed to support XicTools.  For Windows the command is
+
+    pacman -Syu
+
+For macOS the commands are
+
+    sudo port selfupdate
+    sudo port upgrade outdated 
+
+After updating, or changing the branch, you will need to recompile
+and reinstall the programs.  This means repeating the procedure described
+above:
+    make reconfig
+    make all
+    follow the installation procedure you have chosen
+
+If your operating system is updated, you may also want to rebuild the
+programs, however this is only required if a program no longer works. 
+This can happen if a system library is updated, and no backwards
+compatibility library is provided.  In this case, run the same
+commands as above to rebuild/reinstall the tools.
+
+End of document.
