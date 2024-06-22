@@ -117,8 +117,8 @@ SOI3cap(double /*vgB*/,double /*Phiplusvsb*/,double /*gammaB*/,
 /****** Part 1 - declare local variables.  ******/
 
 {
-double WCox,WCob,L;
-double gamma,eta_s,vt,delta,sigma,chiFB;
+double WCox,/*WCob,*/L;
+double gamma,/*eta_s,*/vt,delta,sigma,chiFB;
 double Bf,pDBf_Dpsi_st0;
 double alpha,Dalpha_Dvgfb,Dalpha_Dvdb,Dalpha_Dvsb,Dalpha_DdeltaT;
 double Dpsi_st0_Dvgfb,Dpsi_st0_Dvdb,Dpsi_st0_Dvsb,Dpsi_st0_DdeltaT;
@@ -153,10 +153,10 @@ double csf;
 WCox  = paramargs[0];
 L     = paramargs[1];
 gamma = paramargs[2];
-eta_s = paramargs[3];
+//eta_s = paramargs[3];
 vt    = paramargs[4];
 delta = paramargs[5];
-WCob  = paramargs[6];
+//WCob  = paramargs[6];
 sigma = paramargs[7];
 chiFB = paramargs[8];
 csf   = paramargs[9];
@@ -581,10 +581,11 @@ SOI3capEval(sCKT *ckt,
     double *qgatef,double *qbody,double *qdrn,double *qsrc,double *qgateb)
 
 {
+    (void)Backcapargs;
 double vgfd,vgfs,vgfb;
-double vgbd,vgbs,vgbb;
+//double vgbd,vgbs,vgbb;
 double cgd0,cgs0,cgb0;
-double cgbd0,cgbs0,cgbb0;
+//double cgbd0,cgbs0,cgbb0;
 double ag0;
 double qgd,qgs,qgb;
 double qgb_d,qgb_s,qgb_b;
@@ -596,12 +597,12 @@ vgfd = Frontcapargs[3];
 vgfs = Frontcapargs[4];
 vgfb = Frontcapargs[5];
 
-cgbd0 = Backcapargs[0];
-cgbs0 = Backcapargs[1];
-cgbb0 = Backcapargs[2];
-vgbd = Backcapargs[3];
-vgbs = Backcapargs[4];
-vgbb = Backcapargs[5];
+//cgbd0 = Backcapargs[0];
+//cgbs0 = Backcapargs[1];
+//cgbb0 = Backcapargs[2];
+//vgbd = Backcapargs[3];
+//vgbs = Backcapargs[4];
+//vgbb = Backcapargs[5];
 
 /* stuff below includes overlap caps' conductances */
 ag0 = ckt->CKTag[0];

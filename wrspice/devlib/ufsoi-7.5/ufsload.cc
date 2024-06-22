@@ -73,8 +73,11 @@ struct ufsAPI_InstData *pInst;
 struct ufsAPI_OPData *pOpInfo;
 struct ufsTDModelData *pTempModel;
 
-double vbs, vgfs, vds, vbd, vgfd, vgfdo, delvgfs, delvds, delvbd, delvbs;
-double delvgfd, cdhat, cbhat, cghat, T, delt, xfact, Tprev, vgbs, Vgbs, gdpr, gspr;    /* 7.0Y */
+double vbs=0.0, vgfs, vds, vbd, vgfd, vgfdo, delvgfs, delvds, delvbd, delvbs;
+double delvgfd, cdhat, cbhat, /*cghat,*/ T, delt, xfact, Tprev, vgbs, Vgbs, gdpr, gspr;    /* 7.0Y */
+#ifndef NEWCONV
+double cghat;
+#endif
 double gcggb, gcgdb, gcgsb, gcgbb, gcdgb, gcddb, gcdsb, gcdbb, tempv;
 double gcsgb, gcsdb, gcssb, gcsbb, gcbgb, gcbdb, gcbsb, gcbbb;
 double qgate, qdrn, qsrc, qbulk, /*vgbso,*/ Cth, vgbd, delvgbd, delvgbs;
@@ -84,7 +87,7 @@ double dId_dVg, dId_dVd, dId_dVs, dId_dVb, dId_dT, dP_dT, dP_dVg;
 double dIs_dVg, dIs_dVd, dIs_dVs, dIs_dVb, dIs_dT, dP_dVd, dP_dVs;
 double dIgf_dVg, dIgf_dVd, dIgf_dVs, dIgf_dVb, dIgf_dT;                                /* 7.0Y */
 double dIb_dVg, dIb_dVd, dIb_dVs, dIb_dVb, dIb_dT, dP_dVb, gbpr, Qt, cqt, ceqqt;
-double vgb, Vds, Vgfs, Vbs, ag0, ceqg, ceqd, ceqs, ceqb, ceqp/*, ceqgb*/;
+double /*vgb,*/ Vds, Vgfs, Vbs, ag0, ceqg, ceqd, ceqs, ceqb, ceqp/*, ceqgb*/;
 double cqback, T0, /*T1, T2,*/ Cgfdo, Cgfso, Cgfbo, ceqqgb;                     
 double Cgbbo, Qgfdo, Qgfso, Qgfbo, Qgbbo, Csg, Csd, Csb, Csgb, qback;
 double gcggbb, gcdgbb, gcbgbb, gcgbgbb, gcgbgb, gcgbdb, gcgbbb;
@@ -93,10 +96,10 @@ double Vthf, Vthb, Idtot, Ibtot, Igtot, Weff, Leff, Vtemp, Qnqff, Qnqfb;        
 int SH;                                                                                /* 4.5 */
 struct ufsAPI_EnvData Env;
 char *DevName;
-double Rhs[6], Gmat[6][6]; 
-int NodeNum[6];
+//double Rhs[6], Gmat[6][6]; 
+//int NodeNum[6];
 
-int ByPass, Check, DynamicNeeded, J, error, I, ACNeeded;                         /* 4.5d */
+int ByPass, Check, DynamicNeeded, /*J,*/ error, /*I,*/ ACNeeded;                         /* 4.5d */
 Env.Temperature = ckt->CKTtemp;
 Env.Tnom = ckt->CKTnomTemp;
 Env.Gmin = ckt->CKTgmin;
@@ -273,11 +276,13 @@ for (; model != NULL; model = model->UFSnextModel)
                          - pOpInfo->dIgi_dVb - pOpInfo->dIgb_dVb) * delvbs
                          + (pOpInfo->dIgt_dVgb - pOpInfo->dIgi_dVgb
                          - pOpInfo->dIgb_dVgb) * delvgbs;                               /* 7.0Y */
+#ifndef NEWCONV
                    cghat = Igtot                                                         /* 7.0Y */
                          + (pOpInfo->dIgb_dVgf) * delvgfs                               /* 7.0Y */
                          + (pOpInfo->dIgb_dVd) * delvds                                 /* 7.0Y */
                          + (pOpInfo->dIgb_dVb) * delvbs                                 /* 7.0Y */
                          + (pOpInfo->dIgb_dVgb) * delvgbs;                              /* 7.0Y */
+#endif
 	       }
                else
 	       {   cdhat = Idtot + (pOpInfo->dId_dVgf + pOpInfo->dIgi_dVgf
@@ -297,11 +302,13 @@ for (; model != NULL; model = model->UFSnextModel)
                          - pOpInfo->dIgi_dVb - pOpInfo->dIgb_dVb) * delvbd
                          + (pOpInfo->dIgt_dVgb - pOpInfo->dIgi_dVgb
                          - pOpInfo->dIgb_dVgb) * delvgbd;                               /* 7.0Y */
+#ifndef NEWCONV
                    cghat = Igtot                                                         /* 7.0Y */
                          + (pOpInfo->dIgb_dVgf) * delvgfd                               /* 7.0Y */
                          - (pOpInfo->dIgb_dVd) * delvds                                 /* 7.0Y */
                          + (pOpInfo->dIgb_dVb) * delvbd                                 /* 7.0Y */
                          + (pOpInfo->dIgb_dVgb) * delvgbd;                              /* 7.0Y */
+#endif
 
 	       }
 	       if (pModel->Selft > 1)
@@ -310,7 +317,9 @@ for (; model != NULL; model = model->UFSnextModel)
 			 - pOpInfo->dIgt_dT) * delt; 
                    cbhat += (pOpInfo->dIgt_dT + pOpInfo->dIr_dT
                          - pOpInfo->dIgi_dT - pOpInfo->dIgb_dT) * delt;                 /* 7.0Y */
+#ifndef NEWCONV
                    cghat += (pOpInfo->dIgb_dT) * delt;                                  /* 7.0Y */
+#endif
 	       }
 	       else
 	       {   delt = 0.0;
@@ -447,7 +456,7 @@ for (; model != NULL; model = model->UFSnextModel)
           vbd = vbs - vds;
           vgfd = vgfs - vds;
           vgbd = vgbs - vds;
-          vgb = vgfs - vbs;
+//          vgb = vgfs - vbs;
 
           if (vds >= 0.0)
 	  {   /* normal mode */
@@ -490,7 +499,7 @@ for (; model != NULL; model = model->UFSnextModel)
 		           DynamicNeeded, ACNeeded);                             /* 4.5d */
 	  }
 
-finished: /* returning Values to Calling Routine */
+//finished: /* returning Values to Calling Routine */
           /*
            *  COMPUTE EQUIVALENT DRAIN CURRENT SOURCE
            */

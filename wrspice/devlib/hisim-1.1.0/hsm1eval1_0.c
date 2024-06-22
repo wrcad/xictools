@@ -141,6 +141,7 @@ int HSM1evaluate1_0( sIN , pOT , pMS )
      HiSIM_messenger *pMS ;
 #endif
 {
+    (void)pMS;
 
 /*---------------------------------------------------*
 * Local variables. 
@@ -171,9 +172,9 @@ double  cn_im53 =  2.9693154855770998e-1 ;
 double  cn_im54 = -7.0536542840097616e-2 ;
 double  cn_im55 =  6.1152888951331797e-3 ;
 /* 3-dgree polynomial approx for ( exp[Chi]-Chi-1 )^{1/2} */
-double  cn_ik53 =  2.6864599830664019e-1 ;
-double  cn_ik54 = -6.1399531828413338e-2 ;
-double  cn_ik55 =  5.3528499428744690e-3 ;
+//double  cn_ik53 =  2.6864599830664019e-1 ;
+//double  cn_ik54 = -6.1399531828413338e-2 ;
+//double  cn_ik55 =  5.3528499428744690e-3 ;
 /** initial guess **/
 double  c_ps0ini_2  = 8.0e-4 ;
 double  c_pslini_1  = 0.3e0 ;
@@ -190,7 +191,7 @@ double  Vbd_min    = -10.0e0 ;
 double  epsm10   = 10.0e0 * C_EPS_M ;
 double  small  = 1.0e-50 ;
 /*-----*/
-double  Vz_dlt = 5.0e-3 ;
+//double  Vz_dlt = 5.0e-3 ;
 /*-----*/
 double  Gdsmin = 1.0e-12 ;
 /*-----*/
@@ -206,7 +207,7 @@ double  pol_dlt = 1.0e-2 ;
 
 /* Internal flags  --------------------*/
 int     flg_err = 0 ; /* error level */
-int     flg_ncnv = 0 ; /* Flag for negative conductance */
+//int     flg_ncnv = 0 ; /* Flag for negative conductance */
 int     flg_rsrd ; /* Flag for bias loop accounting Rs and Rd */
 int     flg_iprv ; /* Flag for initial guess of Ids */
 int     flg_pprv ; /* Flag for initial guesses of Ps0 and Pds */
@@ -253,7 +254,7 @@ double  Xi0_dVbs , Xi0_dVds , Xi0_dVgs ;
 double  Xi0p12 ;
 double  Xi0p12_dVbs , Xi0p12_dVds , Xi0p12_dVgs ;
 double  Xi0p32 ;
-double  Xi0p32_dVbs , Xi0p32_dVds , Xi0p32_dVgs ;
+//double  Xi0p32_dVbs , Xi0p32_dVds , Xi0p32_dVgs ;
 /* Xil := beta * ( Psl - Vbs ) - 1. */
 double  Xilp12 ;
 double  Xilp32 ;
@@ -263,12 +264,12 @@ double  Vbsz , Vdsz , Vgsz ;
 double  Vbsz_dVbs , Vbsz_dVds ;
 double  Vdsz_dVds ;
 double  Vgsz_dVgs , Vgsz_dVds ;
-double  Vbszm ; 
-double  Vbszm_dVbs , Vbszm_dVds ;
+//double  Vbszm ; 
+//double  Vbszm_dVbs , Vbszm_dVds ;
 double  Vbs1 , Vbs2 , Vbsd ;
-double  Vbsd_dVbs , Vbsd_dVds ;
-double  Vzadd , Vzadd_dVds , Vzadd_dA ;
-double  VzaddA , VzaddA_dVds ;
+//double  Vbsd_dVbs , Vbsd_dVds ;
+double  Vzadd , Vzadd_dVds /*, Vzadd_dA*/ ;
+//double  VzaddA , VzaddA_dVds ;
 double  Ps0z , Ps0z_dVbs , Ps0z_dVds , Ps0z_dVgs ;
 double  Pzadd , Pzadd_dVbs , Pzadd_dVds , Pzadd_dVgs ;
 double  Ps0Vbsz , Ps0Vbsz_dVbs , Ps0Vbsz_dVds , Ps0Vbsz_dVgs ;
@@ -320,13 +321,13 @@ double  Ids_dVbse , Ids_dVdse , Ids_dVgse ;
 double  Ids0 ;
 double  Ids0_dVbs , Ids0_dVds , Ids0_dVgs ;
 /* (for debug) */
-double  user1 , user2 , user3 , user4 ;
+//double  user1 , user2 , user3 , user4 ;
 
 /* constants ------- */
 double  beta ;
 double  beta2 ;
 /* device instances  */
-double  Leff , Leff_inv ;
+double  Leff /*, Leff_inv*/ ;
 double  Weff ;
 double  Ldby ;
 double  Nsub , q_Nsub ;
@@ -381,21 +382,21 @@ double  Qbnm_dVbs , Qbnm_dVds , Qbnm_dVgs ;
 double  DtPds ;
 double  DtPds_dVbs , DtPds_dVds , DtPds_dVgs ;
 /*-----*/
-double  Fid2 ;
-double  Fid2_dVbs , Fid2_dVds , Fid2_dVgs ;
-double  Fid3 ;
-double  Fid3_dVbs , Fid3_dVds , Fid3_dVgs ;
-double  Fid4 ;
-double  Fid4_dVbs , Fid4_dVds , Fid4_dVgs ;
-double  Fid5 ;
-double  Fid5_dVbs , Fid5_dVds , Fid5_dVgs ;
+//double  Fid2 ;
+//double  Fid2_dVbs , Fid2_dVds , Fid2_dVgs ;
+//double  Fid3 ;
+//double  Fid3_dVbs , Fid3_dVds , Fid3_dVgs ;
+//double  Fid4 ;
+//double  Fid4_dVbs , Fid4_dVds , Fid4_dVgs ;
+//double  Fid5 ;
+//double  Fid5_dVbs , Fid5_dVds , Fid5_dVgs ;
 /*-----*/
-double  PVds0 ;
-double  XiVds0 ;
-double  XiVds0p12 ;
-double  XiVds0p12_dVbs , XiVds0p12_dVds , XiVds0p12_dVgs ;
-double  XiVds0p32 ;
-double  XiVds0p32_dVbs , XiVds0p32_dVds , XiVds0p32_dVgs ;
+//double  PVds0 ;
+//double  XiVds0 ;
+//double  XiVds0p12 ;
+//double  XiVds0p12_dVbs , XiVds0p12_dVds , XiVds0p12_dVgs ;
+//double  XiVds0p32 ;
+//double  XiVds0p32_dVbs , XiVds0p32_dVds , XiVds0p32_dVgs ;
 double  Qbm ;
 double  Qbm_dVbs , Qbm_dVds , Qbm_dVgs ;
 /*-----*/
@@ -466,10 +467,10 @@ double  Epkf_dVbs , Epkf_dVds , Epkf_dVgs ;
 /* PART-3 (overlap) */
 double  yn , yn2 , yn3 ;
 double  yn_dVbs , yn_dVds , yn_dVgs ;
-double  yned , yned2 ;
-double  yned_dVbs , yned_dVds , yned_dVgs ;
-double  Lov , Lov2 , Lov23 ; 
-double  Ndsat , Gjnp; 
+//double  yned , yned2 ;
+//double  yned_dVbs , yned_dVds , yned_dVgs ;
+double  Lov , Lov2 /*, Lov23*/ ; 
+//double  Ndsat , Gjnp; 
 double  Qgos , Qgos_dVbs , Qgos_dVds , Qgos_dVgs ;
 double  Qgos_dVbse , Qgos_dVdse , Qgos_dVgse ;
 double  Qgod , Qgod_dVbs , Qgod_dVds , Qgod_dVgs ;
@@ -491,7 +492,7 @@ double  czbd , czbdsw , czbdswg , czbs , czbssw , czbsswg ;
 double  arg , sarg ;
 /* PART-5 (noise) */
 /* matsu */
-double  NFalp , NFtrp , Freq , Cit , Nflic ;
+double  NFalp , NFtrp /*, Freq*/ , Cit , Nflic ;
 /* Bias iteration accounting Rs/Rd */
 int     lp_bs  ;
 double  Ids_last ;
@@ -539,7 +540,7 @@ double  Igs , Igs_dVbs , Igs_dVds , Igs_dVgs ;
 double  Igs_dVbse , Igs_dVdse , Igs_dVgse ;
 double  Ilg , Ilg_dVbs , Ilg_dVds , Ilg_dVgs ;
 double  Ilg_dVbse , Ilg_dVdse , Ilg_dVgse ;
-double  Cox0 ;
+//double  Cox0 ;
 double  Lgate ;
 double  rp1 , rp1_dVds ;
 /* connecting function */
@@ -555,12 +556,12 @@ double  TY , TY_dVbs , TY_dVds , TY_dVgs ;
 double  T1_dVbs , T1_dVds , T1_dVgs ;
 double  T2_dVbs , T2_dVds , T2_dVgs ;
 double  T3_dVbs , T3_dVds , T3_dVgs ;
-double  T4_dVbs , T4_dVds , T4_dVgs ;
-double  T5_dVbs , T5_dVds , T5_dVgs ;
-double  T6_dVbs , T6_dVds , T6_dVgs ;
+double  T4_dVbs , T4_dVds /*, T4_dVgs*/ ;
+//double  T5_dVbs , T5_dVds , T5_dVgs ;
+//double  T6_dVbs , T6_dVds , T6_dVgs ;
 double  T7_dVbs , T7_dVds , T7_dVgs ;
 double  T8_dVbs , T8_dVds , T8_dVgs ;
-double  T9_dVbs , T9_dVds , T9_dVgs ;
+//double  T9_dVbs , T9_dVds , T9_dVgs ;
 double  T10 , T20 , T21 , T30 , T31 ;
 
 /* intrinsic finging capacitance */
@@ -720,7 +721,7 @@ FMD_dVds = 0;
 /*-----------------------------------------------------------*
 * Start of the routine. (label)
 *-----------------*/
-start_of_routine:
+//start_of_routine:
 
 
  
@@ -763,7 +764,7 @@ start_of_routine:
 /* Metallurgical channel geometry */
     Weff    = sIN.xw - 2.0e0 * sIN.xwd ;
     Leff    = sIN.xl - 2.0e0 * sIN.xld ;
-    Leff_inv    = 1.0e0 / Leff ;
+//    Leff_inv    = 1.0e0 / Leff ;
  
 /* Flat band voltage */
     Vfb = sIN.vfbc ;
@@ -798,7 +799,7 @@ start_of_routine:
     T1  = Nin / Nsub ;
     cnst1   = T1 * T1 ;
 /* Cox (clasical) */
-    Cox0 = C_EOX / sIN.tox ;
+//    Cox0 = C_EOX / sIN.tox ;
 
 
 
@@ -1100,16 +1101,16 @@ start_of_routine:
     Vbs2    = - Vbsz ;
     
     Vbsd    = Vbs1 - Vbs2 - Delta ; 
-    Vbsd_dVbs = 0.75 * Vbsz_dVbs ;
-    Vbsd_dVds = 0.75 * Vbsz_dVds ;
+//    Vbsd_dVbs = 0.75 * Vbsz_dVbs ;
+//    Vbsd_dVds = 0.75 * Vbsz_dVds ;
 
     T1      = sqrt( Vbsd * Vbsd + 4.0 * Delta ) ;
     
-    Vbszm   = - Vbs1 + 0.5 * ( Vbsd + T1 ) ;
-    Vbszm_dVbs = 0.25 * Vbsz_dVbs
-               + 0.5 * ( Vbsd_dVbs + Vbsd * Vbsd_dVbs / T1 ) ;
-    Vbszm_dVds = 0.25 * Vbsz_dVds
-               + 0.5 * ( Vbsd_dVds + Vbsd * Vbsd_dVds / T1 ) ;
+//    Vbszm   = - Vbs1 + 0.5 * ( Vbsd + T1 ) ;
+//    Vbszm_dVbs = 0.25 * Vbsz_dVbs
+//               + 0.5 * ( Vbsd_dVbs + Vbsd * Vbsd_dVbs / T1 ) ;
+//    Vbszm_dVds = 0.25 * Vbsz_dVds
+//               + 0.5 * ( Vbsd_dVds + Vbsd * Vbsd_dVds / T1 ) ;
 
     Psum    = ( Pb20 - Vbsz ) ;
 
@@ -1910,9 +1911,9 @@ start_of_routine:
         Xi0p12_dVds = 0.5e0 * Xi0_dVds / Xi0p12 ;
         Xi0p12_dVgs = 0.5e0 * Xi0_dVgs / Xi0p12 ;
  
-        Xi0p32_dVbs = 1.5e0 * Xi0_dVbs * Xi0p12 ;
-        Xi0p32_dVds = 1.5e0 * Xi0_dVds * Xi0p12 ;
-        Xi0p32_dVgs = 1.5e0 * Xi0_dVgs * Xi0p12 ;
+//        Xi0p32_dVbs = 1.5e0 * Xi0_dVbs * Xi0p12 ;
+//        Xi0p32_dVds = 1.5e0 * Xi0_dVds * Xi0p12 ;
+//        Xi0p32_dVgs = 1.5e0 * Xi0_dVgs * Xi0p12 ;
 
         Qn00 = Qn0 ;
         Qn00_dVbs = Qn0_dVbs ;
@@ -1986,9 +1987,9 @@ start_of_routine:
         Xi0p12_dVds = 0.5e0 * Xi0_dVds / Xi0p12 ;
         Xi0p12_dVgs = 0.5e0 * Xi0_dVgs / Xi0p12 ;
  
-        Xi0p32_dVbs = 1.5e0 * Xi0_dVbs * Xi0p12 ;
-        Xi0p32_dVds = 1.5e0 * Xi0_dVds * Xi0p12 ;
-        Xi0p32_dVgs = 1.5e0 * Xi0_dVgs * Xi0p12 ;
+//        Xi0p32_dVbs = 1.5e0 * Xi0_dVbs * Xi0p12 ;
+//        Xi0p32_dVds = 1.5e0 * Xi0_dVds * Xi0p12 ;
+//        Xi0p32_dVgs = 1.5e0 * Xi0_dVgs * Xi0p12 ;
 
         flg_noqi = 0 ;
 
@@ -2157,7 +2158,7 @@ start_of_routine:
 /*-----------------------------------------------------------*
 * Start point of Psl (= Ps0 + Pds) calculation. (label)
 *-----------------*/
-start_of_Psl: ;
+//start_of_Psl: ;
 
     exp_bVbsVds    = exp( beta * ( Vbs - Vds ) ) ;
  
@@ -2765,7 +2766,7 @@ end_of_loopl: ;
 * Modify Lred for symmetry.
 *-----------------*/
 
-  end_of_CLM2: ;
+//  end_of_CLM2: ;
 
         TX = Vds / cclmmdf ;
         T2 = TX * TX ;
@@ -3224,7 +3225,7 @@ end_of_CLM: ;
     Mu_dVgs = Muun_dVgs * T5 - Muun / Vmax * T6 * T3 * Em_dVgs ;
 
 
-end_of_mobility : ;
+//end_of_mobility : ;
 
 /*-----------------------------------------------------------*
 * Ids: channel current.
@@ -3346,7 +3347,7 @@ end_of_mobility : ;
 /*-----------------------------------------------------------*
 * Bottom of bias loop. (label) 
 *-----------------*/
-bottom_of_bias_loop : ;
+//bottom_of_bias_loop : ;
 
 
 
@@ -3560,7 +3561,7 @@ end_of_Isub: ;
 /*-----------------------------------------------------------*
 * End of PART-2. (label) 
 *-----------------*/
-end_of_part_2: ;
+//end_of_part_2: ;
 
 
 /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
@@ -3705,7 +3706,7 @@ end_of_part_2: ;
 /*-----------------------------------------------------------* 
 * End of PART-3. (label) 
 *-----------------*/ 
-end_of_part_3: ;
+//end_of_part_3: ;
 
 
 /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
@@ -3990,7 +3991,7 @@ end_of_part_3: ;
 /*-----------------------------------------------------------* 
 * End of PART-4. (label) 
 *-----------------*/ 
-end_of_part_4: ;
+//end_of_part_4: ;
 
 
 /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
@@ -4016,7 +4017,7 @@ end_of_part_4: ;
 /*-----------------------------------------------------------* 
 * End of PART-5. (label) 
 *-----------------*/ 
-end_of_part_5: ;
+//end_of_part_5: ;
 
 
 
@@ -4369,15 +4370,15 @@ end_of_part_5: ;
 
     if ( Ids_dVbse < 0.0e0 ) {
         fprintf( stderr , " Ids_dVbse   = %12.5e\n" , Ids_dVbse ) ;
-        flg_ncnv ++ ;
+//        flg_ncnv ++ ;
     }
     if ( T1 < 0.0e0 ) {
         fprintf( stderr , " Ids_dVdse   = %12.5e\n" , T1 ) ;
-        flg_ncnv ++ ;
+//        flg_ncnv ++ ;
     }
     if ( Ids_dVgse < 0.0e0 ) {
         fprintf( stderr , " Ids_dVgse   = %12.5e\n" , Ids_dVgse ) ;
-        flg_ncnv ++ ;
+//        flg_ncnv ++ ;
     }
     
 
@@ -4707,7 +4708,7 @@ end_of_part_5: ;
 /*-----------------------------------------------------------* 
 * End of PART-6. (label) 
 *-----------------*/ 
-end_of_part_6: ;
+//end_of_part_6: ;
 
 
 /*-----------------------------------------------------------* 

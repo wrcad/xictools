@@ -63,7 +63,7 @@ B4SOIdev::acLoad(sGENmodel *genmod, sCKT *ckt)
     sB4SOImodel *model = static_cast<sB4SOImodel*>(genmod);
     sB4SOIinstance *here;
 
-    register int selfheat;
+    /*register*/ int selfheat;
     double xcggb, xcgdb, xcgsb, xcgeb, xcgT;
     double xcdgb, xcddb, xcdsb, xcdeb, xcdT;
     double xcsgb, xcsdb, xcssb, xcseb, xcsT;

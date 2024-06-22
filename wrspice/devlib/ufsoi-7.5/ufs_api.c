@@ -55,13 +55,12 @@
 
 
 int 
-ufsInitModel(model, pEnv)
-struct ufsAPI_ModelData *model;
-struct ufsAPI_EnvData *pEnv;
+ufsInitModel(struct ufsAPI_ModelData *model, struct ufsAPI_EnvData *pEnv)
 {
-double T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13;
-double Ef, Efg, Efgb, Nldd, Tnom, TempRatio, SqrtTempRatio, Eg, Arg, Vtmnom;
-double Coxf, Coxb, Cb, Tb, Vtmref, Efs, Phib;                                    /* 4.5 */
+    (void)pEnv;
+double T0, T1, T2, T3, T4, T5, T6, T7/*, T8, T9, T10, T11, T12, T13*/;
+double /*Ef,*/ Efg, Efgb, Nldd, Tnom, TempRatio, SqrtTempRatio, Eg, Arg, Vtmnom;
+double Coxf, Coxb, Cb, Tb, Vtmref, Efs/*, Phib*/;                                    /* 4.5 */
 #define ESI SILICON_PERMITTIVITY
 
 /* Begin `ufsoiInitModel' */
@@ -201,13 +200,12 @@ double Coxf, Coxb, Cb, Tb, Vtmref, Efs, Phib;                                   
 }
 
 int 
-ufsInitInst(pModel, pInst, pEnv)
-struct ufsAPI_ModelData  *pModel;
-struct ufsAPI_InstData  *pInst;
-struct ufsAPI_EnvData *pEnv;
+ufsInitInst(struct ufsAPI_ModelData  *pModel, struct ufsAPI_InstData  *pInst,
+    struct ufsAPI_EnvData *pEnv)
 {
-double T1, Rldd, Xarg, Xarg1, Vtmnom, Tnom, Eg, Efs, Efg, Ef, T0, T8, T9, T6;    /* 4.5r */
-double T7, T10, T2, T3, T4, T5, Ft0;                                             /* 4.5r */
+    (void)pEnv;
+double T1, Rldd, Xarg, Xarg1, Vtmnom, Tnom, Eg, Efs, Efg, /*Ef,*/ T0, /*T8, T9,*/ T6;    /* 4.5r */
+double /*T7, T10,*/ T2, T3, T4, T5, Ft0;                                             /* 4.5r */
 
     pInst->Leff = pInst->Length - pModel->Dl;
     pInst->Weff = pInst->Width - pModel->Dw;
@@ -358,16 +356,12 @@ double T7, T10, T2, T3, T4, T5, Ft0;                                            
 }
 
 int 
-ufsTempEffect(pModel, pInst, pEnv, T, SH)                                        /* 4.5 */
-struct ufsAPI_ModelData  *pModel;
-struct ufsAPI_InstData  *pInst;
-struct ufsAPI_EnvData *pEnv;
-double T;
-int SH;                                                                          /* 4.5 */
+ufsTempEffect(struct ufsAPI_ModelData  *pModel, struct ufsAPI_InstData  *pInst,
+    struct ufsAPI_EnvData *pEnv, double T, int SH)
 {
-double T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10;
-double Tnom, Vtm, RatioRef, SqrtRatioRef, Ratio, SqrtRatio, Arg, PstOld;
-double Eg, Ef, Efg, Efgb, Nldd, Leff, Weff, WL, Coxf, Coxb, Vtmref;
+double T0, T1, T2, T3, T4, T5, T6, T7, T8, T9/*, T10*/;
+double /*Tnom,*/ Vtm, RatioRef, SqrtRatioRef/*, Ratio, SqrtRatio*/, Arg/*, PstOld*/;
+double Eg, Ef, Efg, Efgb, Nldd, Leff, Weff, /*WL,*/ Coxf, Coxb, Vtmref;
 double Igt, Ir0, Ir1, Igtb;                                                      /* 4.5 */
 struct ufsTDModelData *pTempModel;
 
@@ -375,7 +369,7 @@ struct ufsTDModelData *pTempModel;
         return 0;                                                                /* 6.0 */
     Leff = pInst->Leff;
     Weff = pInst->Weff;
-    WL = Weff * Leff;
+//    WL = Weff * Leff;
     Coxf = pModel->Coxf;
     Coxb = pModel->Coxb;
     pTempModel = pInst->pTempModel;
@@ -385,7 +379,7 @@ struct ufsTDModelData *pTempModel;
     else if (T > T0)
         T = T0;
     pInst->Temperature = T;
-    Tnom = pModel->Tnom;
+//    Tnom = pModel->Tnom;
     Vtm = KoverQ * T;
     Eg = 1.16 - 7.02e-4 * T * T / (T + 1108.0);
     RatioRef = T / 300.15;
@@ -597,63 +591,59 @@ struct ufsTDModelData *pTempModel;
 }
 
 int 
-fdEvalMod(Vds, Vgfs, Vbs, Vgbs, pOpInfo, pInst, pModel, pEnv, DynamicNeeded,     /* 5.0 */
-          ACNeeded)                                                              /* 5.0 */
-double Vds, Vgfs, Vbs, Vgbs;
-struct ufsAPI_InstData  *pInst;
-struct ufsAPI_ModelData *pModel;
-struct ufsAPI_OPData *pOpInfo;
-struct ufsAPI_EnvData *pEnv;
-int DynamicNeeded, ACNeeded;                                                     /* 5.0 */
+fdEvalMod(double Vds, double Vgfs, double Vbs, double Vgbs,
+    struct ufsAPI_OPData *pOpInfo, struct ufsAPI_InstData  *pInst,
+    struct ufsAPI_ModelData *pModel, struct ufsAPI_EnvData *pEnv,
+    int DynamicNeeded, int ACNeeded)
 {
-register struct ufsTDModelData *pTempModel;
-struct ufsDebugData *pDebug;
+/*register*/ struct ufsTDModelData *pTempModel;
+//struct ufsDebugData *pDebug;
 double Xnin, Xnin2, Xdumv, Arg, Sqrt_s, Sqrt_d, RootEtb, Etb;
-double Vtm, Vthso, Vths, Vthw, Vfbf, Vfbb, Qbeff, Qst, Leff, Weff, D;
-double Psblong, Psb, PsbOld, Pst, Vbi, Part, Cap1, Ldd, Lds, Vdss;
-double T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14;
+double Vtm, /*Vthso,*/ Vths, Vthw, Vfbf, Vfbb, Qbeff, Qst, Leff, Weff, D;
+double Psblong, Psb, /*PsbOld,*/ Pst, Vbi, Part, Cap1, Ldd, /*Lds,*/ Vdss;
+double T0, T1, T2, T3, T4, T5, /*T6, T7, T8, T9,*/ T10, T11, T12, T13/*, T14*/;
 double Vdsat, Vbs_bjt, Argbjts, Vbd_bjt, Argbjtd, Delvtf;
 double Vthwf, Vthwb, Sinhf, Coshf, Sinhb, Coshb, Sinh1, Cosh1, Sinh3;
-double Yfm, Yfmold, Phib1, F1, F2, Vthwfold, Xk, Sinh2, Cosh2, Cosh3;
-double Gbwk, Xkb, Dxm, Xm, Ybm, Ybmold, Vthwbold, Vgstart, Vgfso;
+double Yfm, Yfmold, Phib1, F1, F2, Vthwfold, Xk, Sinh2/*, Cosh2, Cosh3*/;
+double /*Gbwk,*/ Xkb, Dxm, Xm, Ybm, Ybmold, Vthwbold, Vgstart, Vgfso;
 double Vgfbf, Vgwbb, Psfmin, Psbmin, Psfbm, Psbfm, Coxf, Coxb, Cb;
-double Vlddd, Vgbwk, Dumchg, Yfb, Xminf, Am, Bm, Cm, Xkm, Vxmf, Xminb;
+double Vlddd, Vgbwk, Dumchg, /*Yfb,*/ Xminf, Am, Bm, Cm, Xkm, Vxmf, Xminb;
 double Aam, Vxmb, Qmobf, Qmobb, Uef, Ueb, Efs, Efd, Ebs, Ebd, Xftl, Xbtl;
-double Lf, Lb, Iwkf, Iwkb, Iwk, Xemwk, Xem, Xk11, Xk22, Vgbwk11, Vgbwk22;
-double Ich, Vo1, Xbfact, Mobred, Mobref, Xbmu, Lcfac, Lefac, Ist, Arg3;
+double Lf, Lb, Iwkf, Iwkb, Iwk, Xemwk, Xem, Xk11, Xk22/*, Vgbwk11, Vgbwk22*/;
+double Ich, /*Vo1,*/ Xbfact, Mobred, Mobref, Xbmu, Lcfac, Lefac, Ist, Arg3;
 double Ist1, Ist2, Mobref1, Mobref2, Mobred1, Mobred2, Xbmu1, Xbmu2;
-double DeltaVth, Gst, Gwk, R2, R3, Vref, Xs, Psf_bjt, Dellwk1, Dellwk2;          /* 4.5 */
-double Vbseff, Vbdeff, Ds, Dd, Xlbjt, Xleff, Feff, Psb_bjt, Xaf, Exp_af;
+double DeltaVth, Gst, Gwk, R2, R3, Vref, Xs, Psf_bjt/*, Dellwk1, Dellwk2*/;          /* 4.5 */
+double Vbseff, Vbdeff, /*Ds, Dd,*/ Xlbjt, Xleff, Feff, Psb_bjt, Xaf, Exp_af;
 double Xbf, Exp_bf, Ph_f, P0f, Tf1, Tf2, Xintegf, Xintegr, Ph_r, Tr1, Tr2;
 double Ibjtf, Ibjtr, Ibjt, Itot, Eslope, Igts0, Igtd0, Irs0, Ird0, Dell_f;
 double Irs1, Ird1, Rgtd, Rgts, Igt_g, Igt_r, Igt, Ir_g, Ir_r, Ir, Igi;
 double Xecf, Xemf, Betap, Te_ch, Mult_ch, Mult_dep, Mult_qnr, Mult_drn;
-double Mult, Mult_wk, Te_ldd, Ldep, Tempdell, Xstart, Xend, Te_dep, Dellwk;      /* 4.5 */
-double Lcf, Power, CoxWL, Qd, Qn, Qgf, Qby, Xingvsf, Psiwk, Xvbys, Psieff;
-double Xco0, Xco1, Xco2, Vgfsacc, Vgfseff, Qgfwk1, Qgfwk2;
-double Vgfvt, Qnqsh, Qdqsh, Covf, Vdsx, Arg2, Dnmgf, Args;
+double Mult, Mult_wk, Te_ldd, Ldep, Tempdell, Xstart, Xend, Te_dep/*, Dellwk*/;      /* 4.5 */
+double Lcf, Power, CoxWL, Qd, Qn, Qgf, Qby, Xingvsf, Psiwk/*, Xvbys, Psieff*/;
+double Xco0, Xco1, Xco2, Vgfsacc, /*Vgfseff,*/ Qgfwk1, Qgfwk2;
+double Vgfvt, /*Qnqsh,*/ Qdqsh, Covf, Vdsx, Arg2, Dnmgf, Args;
 double Qdeta, Xp, Argu, Argz, Xfactd, Tzm1, Qcfle, Qns, Zfact, Qgfst1;
 double Qgfst2, Qdst1, Qdst2, Qnst1, Qnst2, Cst, Cwk, Vp, Qp;
-double X3a, X3b, X3c, Xarg, t, Qnqff, Qnqfb, Qddep, Qsdep, Qterm, Qterms;
+double X3a, X3b, X3c, Xarg, t, Qnqff, Qnqfb, Qddep, Qsdep, /*Qterm,*/ Qterms;
 double Qtermd, Qnd, Qps, Qpd, Vgfst, Xemst, Iwk1, Iwk2, Qds, Qgb, Ad, As;
 double Vldd[40], Vd[40];
 double Vdsx1, Vdsx2, Lefac1, Lefac2, Vdseff, Xchk;				 /* 4.41 */
-double Egbgn, Wkfgd, Vfbgd, Vgdx, Esd, Vgdt;                                     /* 4.41 */
+double /*Egbgn,*/ Wkfgd, Vfbgd, Vgdx, Esd, Vgdt;                                     /* 4.41 */
 double Igidl, Rmass, h, Eg, Qacc, Qinv;                                          /* 4.5 */
-double Pdj, Psj, E_db, hnt, htoc, Itun, Ueffwk, Ueffst, Qs, Qnwk1;               /* 4.5 */
+double Pdj, Psj, /*E_db, hnt, htoc, Itun,*/ Ueffwk, Ueffst, Qs, Qnwk1;               /* 4.5 */
 double Qnwk2, Lewk, Igtb0, Ueffwk1, Ueffst1, Xemst1, Xemwk1, Qsst1;              /* 4.5 */
 double Vgfstp, Alphap, Psigf1, Alphap1, Psigf2, Alphap2, Psigf, Vo1p;            /* 4.5pd */
 double Qmobff, Qmobfb, Qmobbf, Qmobbb, Exf, Exb, Mult_st1, Mult_st2;             /* 4.5 */
 double Xchk2, Xchk3, Xchk4, Xchk5, Xchk10, Xx, Vdseff1, Lewk1, Qsst2;	         /* 5.0 */
 double Ess, DelEg, PhibQM, XninQM, Vths1, Pst1, Psb1, Qbeff1, Qst1;              /* 4.5qm */
-double Pst_bjt, Vths_bjt, D_bjt, Vths0, PstOld, Es1, Es2, DelEg1, DelEg2;        /* 4.5qm */
-double DumchgQM1, DumchgQM2, Vthsx, Vthsxo, Vthsx1, Vthsx2, Pst2, Qst2;          /* 4.5qm */
+double Pst_bjt, Vths_bjt, D_bjt, /*Vths0,*/ PstOld, Es1, Es2, DelEg1, DelEg2;        /* 4.5qm */
+double DumchgQM1, DumchgQM2, Vthsx, /*Vthsxo,*/ Vthsx1, Vthsx2, Pst2, Qst2;          /* 4.5qm */
 double ExfLim, QmT1, QmT2, QmT3, QmT4, QmT5, Coeffz, VthsOld, Pst0, DVgfs;       /* 4.5F */
 double T, Exo, Ueffo, Sich, Lc, Sis1, Sis2, Siw1, Siw2, Ich0, Le;                /* 5.0 */
 int I, J, K, IB, Region, ICONT, JFlg;                                            /* 4.5F */
-double Vo, Vsat, Vth, Vds_dif, Vds_eff, Uo, Toxf, Theta, Vtfa, Vgba;             /* 5.0vo */
-double Xalpha, Ldf, Ld, Xec, Xex, Tau_w, Phib, Qb, Qcbycox;
-double Vdsdemo, Xsinh, Xcosh, Vdemo, Xueff, Vsat_eff, Fsat, Vbdx; /* Vbdo; */    /* 6.0 */ 
+double Vo, Vsat, Vth, Vds_dif, Vds_eff, Uo, /*Toxf,*/ Theta, Vtfa, Vgba;             /* 5.0vo */
+double Xalpha, Ldf, Ld, Xec, Xex, Tau_w, /*Phib, Qb,*/ Qcbycox;
+double Vdsdemo, Xsinh, Xcosh, Vdemo, Xueff, Vsat_eff, /*Fsat,*/ Vbdx; /* Vbdo; */    /* 6.0 */ 
 double Vbsx, Vgst, Vgsx, Igisl;                                                  /* 6.0 */
 
 /* Begin `fdEvalMod'. */
@@ -699,7 +689,7 @@ double Vbsx, Vgst, Vgsx, Igisl;                                                 
     
 /* SET VSAT INITIAL VALUE  */
      Vo = pModel->Vo;
-     Toxf = pModel->Toxf;
+//     Toxf = pModel->Toxf;
      Vsat = pTempModel->Vsat;
      Uo = pTempModel->Uo;
      Theta = pModel->Theta;
@@ -767,7 +757,7 @@ double Vbsx, Vgst, Vgsx, Igisl;                                                 
     }
     Xchk = 1.0 - Vbseff / Vbi;						         /* 4.41 */
     if (Xchk <0) Xchk = 0;						         /* 4.41 */
-    Ds = pTempModel->D0 * sqrt(Xchk);					         /* 4.41 */
+//    Ds = pTempModel->D0 * sqrt(Xchk);					         /* 4.41 */
 
     if (Vgfs > 0.6)	            					         /* 4.5qm */
     {   Vldd[0] = 0.0;
@@ -807,7 +797,7 @@ double Vbsx, Vgst, Vgsx, Igisl;                                                 
 	 }
 	 Xchk = 1.0 - Vbdeff / Vbi;						 /* 4.41 */
 	 if (Xchk <0) Xchk = 0;						         /* 4.41 */
-	 Dd = pTempModel->D0 * sqrt(Xchk);					 /* 4.5qm */
+//	 Dd = pTempModel->D0 * sqrt(Xchk);					 /* 4.5qm */
 
          ExfLim = 2.0 * Vtm / pModel->Tb;                                        /* 4.5F */
          Delvtf = -pModel->Factor1 / (Leff * Leff) * Vdss;                       /* 4.5F */
@@ -855,7 +845,7 @@ double Vbsx, Vgst, Vgsx, Igisl;                                                 
            Psb = Psblong;                                                        /* 4.5F */
            for (I = 0; I < 3; I++)                                               /* 4.5F */
            { Psb = MIN(Psb, Vbi);                                                /* 4.5F */
-	     PsbOld = Psb;                                                       /* 4.5F */
+//	     PsbOld = Psb;                                                       /* 4.5F */
 	     RootEtb = sqrt(QmT2 * (Vbi - Psb));                                 /* 4.5F */
 	     T2 = 0.4 * (Vbi * Part + (1.0 - Part) * Psb)                        /* 4.5F */
 	        - 0.2 * Psb - 0.2 * (Vgbs - Vfbb);                               /* 4.5F */
@@ -1103,7 +1093,7 @@ double Vbsx, Vgst, Vgsx, Igisl;                                                 
 		  Psfbm = (T2 * (Sinh1 + Sinh2) + Sinh1 * Vdss)
 		        / Sinhf - Xk;
 		  Dumchg = ELECTRON_CHARGE * Xnin2 * Vtm / pModel->Nbody;
-	          Yfb = Yfm - Ybm;
+//	          Yfb = Yfm - Ybm;
 		  Xminf = Coxf * (Psfmin - Vgfbf) / (2.0 * ESI
 		        * (pModel->A * Psfmin - pModel->B * Vgfbf
 			- pModel->C * Vgwbb));
@@ -1358,7 +1348,7 @@ double Vbsx, Vgst, Vgsx, Igisl;                                                 
                   }                                                              /* 5.0 */
 		  if (I == 0)
 		  {   Xk11 = Xk;
-		      Vgbwk11 = Vgbwk;
+//		      Vgbwk11 = Vgbwk;
 		      Iwk1 = Iwk;
 		      Qnwk1 = -(Qmobf + Qmobb) * Weff * Leff;                    /* 4.5 */
 		      Ueffwk1 = Ueffwk;                                          /* 4.5 */
@@ -1368,7 +1358,7 @@ double Vbsx, Vgst, Vgsx, Igisl;                                                 
 		  }
 		  else
 		  {   Xk22 = Xk;
-		      Vgbwk22 = Vgbwk;
+//		      Vgbwk22 = Vgbwk;
 		      Iwk2 = Iwk;
 		      Qnwk2 = -(Qmobf + Qmobb) * Weff * Leff;                    /* 4.5 */
                       if(ACNeeded == 1) Siw2 = Sich;                             /* 5.0 */
@@ -1421,7 +1411,7 @@ double Vbsx, Vgst, Vgsx, Igisl;                                                 
                     Psb = Psblong;                                               /* 4.5F */
                     for (J = 0; J < 3; J++)                                      /* 4.5F */
                     { Psb = MIN(Psb, Vbi);                                       /* 4.5F */
-	              PsbOld = Psb;                                              /* 4.5F */
+//	              PsbOld = Psb;                                              /* 4.5F */
 	              RootEtb = sqrt(QmT2 * (Vbi - Psb));                        /* 4.5F */
 	              T2 = 0.4 * (Vbi * Part + (1.0 - Part) * Psb)               /* 4.5F */
 	                 - 0.2 * Psb - 0.2 * (Vgbs - Vfbb);                      /* 4.5F */
@@ -1455,7 +1445,7 @@ double Vbsx, Vgst, Vgsx, Igisl;                                                 
 		  Vgfstp = Vgfs - Vthsx - Psigf;                                 /* 4.5qm */
 
 		  T10 = Vgfst - Qst / Coxf;
-		  Vo1 = T10 / pModel->Xalpha;
+//		  Vo1 = T10 / pModel->Xalpha;
 		  Vo1p = (Vgfstp - Qst / Coxf) / Alphap;                         /* 4.5pd */
 
 		  T1 = 0.5 * pModel->Theta * Coxf / (pModel->Tb * Cb);
@@ -2080,9 +2070,9 @@ double Vbsx, Vgst, Vgsx, Igisl;                                                 
     pOpInfo->Vts = Vths;
     pOpInfo->Vtw = Vthw;
 
-    if (pInst->pDebug)
-    {   pDebug = pInst->pDebug;
-    }
+//    if (pInst->pDebug)
+//    {   pDebug = pInst->pDebug;
+//    }
     if (DynamicNeeded)
     {   CoxWL = Coxf * Weff * Leff;
         Qby = pInst->Qb * Weff * Leff;                                           /* 4.5r */
@@ -2452,25 +2442,21 @@ double Vbsx, Vgst, Vgsx, Igisl;                                                 
 }
 
 int 
-nfdEvalMod( Vds, Vgfs, Vbs, Vgbs, pOpInfo, pInst, pModel, pEnv, DynamicNeeded,
-            ACNeeded)                                                            /* 7.0Y */
-double Vds, Vgfs, Vbs, Vgbs;                                                     /* 4.5F */
-struct ufsAPI_InstData  *pInst;
-struct ufsAPI_ModelData *pModel;
-struct ufsAPI_OPData *pOpInfo;
-struct ufsAPI_EnvData *pEnv;
-int DynamicNeeded, ACNeeded;                                                     /* 5.0 */
+nfdEvalMod(double Vds, double Vgfs, double Vbs, double Vgbs,
+    struct ufsAPI_OPData *pOpInfo, struct ufsAPI_InstData  *pInst,
+    struct ufsAPI_ModelData *pModel, struct ufsAPI_EnvData *pEnv,
+    int DynamicNeeded, int ACNeeded)
 {
-register struct ufsTDModelData *pTempModel;
-struct ufsDebugData *pDebug;
+/*register*/ struct ufsTDModelData *pTempModel;
+//struct ufsDebugData *pDebug;
 double Xnin, Xnin2, Arg, Sqrt_s, Sqrt_d, Dell, Dshare, Qshare, Delqc;
-double Vtm, Qc, Qc0, Qcs, Vths, Vthw, Vfbf, Vfbb, Qbeff, Leff, Weff;
-double Vbi, Ldd, Lds, Vdss, Qc1, Qc2, Psis, Psiw, Coeffa, Mobfac1;
-double T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14;
+double Vtm, Qc, Qc0, Qcs, Vths, Vthw, Vfbf, /*Vfbb,*/ Qbeff, Leff, Weff;
+double Vbi, Ldd, /*Lds,*/ Vdss, Qc1, Qc2, Psis, Psiw, Coeffa, Mobfac1;
+double T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13/*, T14*/;
 double Vdsat, Vbs_bjt, Argbjts, Vbd_bjt, Argbjtd, Qp_b;
-double Exf00, Exf0, Exf, Sinh1, Cosh1, Dsh, Ddh, Qinv, Qacc, Qcle;               /* 4.5 */
-double Gbwk, Mobrefwk, Vgstart, Vgfso, PsiwOld, PsisOld;                         /* 4.5F */
-double Coxf, Coxb, Cb, Tshare, Vlddd, Dumchg, Veff, Xleff_b;
+double Exf00, Exf0, Exf, Sinh1, Cosh1, Dsh, Ddh, Qinv, Qacc/*, Qcle*/;               /* 4.5 */
+double /*Gbwk, Mobrefwk,*/ Vgstart, Vgfso, /*PsiwOld,*/ PsisOld;                         /* 4.5F */
+double Coxf, Coxb, Cb, Tshare, Vlddd, /*Dumchg, Veff,*/ Xleff_b;
 double Xem, WL, WLe, CoxWLe, Le, Lefac1, Lefac2, Qsst1, Qsst2;
 double Ich, Xbfact, Mobred, Mobref, Xbmu, Lcfac, Lefac, Ist;
 double Ist1, Ist2, Mobref1, Mobref2, Mobred1, Mobred2, Xbmu1, Xbmu2;
@@ -2482,23 +2468,23 @@ double Ibjtf, Ibjtr, Ibjt, Itot, Eslope, Igts0, Igtd0, Irs0, Ird0, Dell_f;
 double Irs1, Ird1, Rgtd, Rgts, Igt_g, Igt_r, Igt, Ir_g, Ir_r, Ir, Igi, Igb;      /* 7.0Y */
 double Xecf, Xemf, Betap, Te_ch, Mult_ch, Mult_dep, Mult_qnr, Mult_drn;
 double Mult, Mult_st1, Mult_wk, Te_ldd, Ldep, Tempdell, Xstart, Xend, Te_dep;    /* 4.5 */
-double Lcf, Power, CoxWL, Qd, Qn, Qgf, Qby, Xingvsf, Psiwk;
-double Xco0, Xco1, Xco2, Vgfsacc, Vgfseff, Qgfwk;
-double Qnqsh, Qdqsh, Covf, Vdsx, Arg2, Dnmgf, Args;
+double /*Lcf,*/ Power, CoxWL, Qd, Qn=0.0, Qgf, Qby, /*Xingvsf,*/ Psiwk;
+//double Xco0, Xco1, Xco2, Vgfsacc, Vgfseff, Qgfwk;
+double /*Qnqsh, Qdqsh,*/ Covf, Vdsx, /*Arg2,*/ Dnmgf, Args;
 double Qdeta, Xp, Argu, Argz, Xfactd, Tzm1, Qcfle, Qns, Zfact, Qgfst1;
 double Qgfst2, Qdst1, Qdst2, Qnst1, Qnst2, Cst, Cwk, Vp, Qp;
-double X3a, X3b, X3c, Xarg, t, Qnqff, Qnqfb, Qddep, Qsdep, Qterm, Qterms;
-double Qtermd, Qnd, Qps, Qpd, Iwkpr, Qds, Qgb, Ad, As;
+double X3a, X3b, X3c, Xarg, t, Qnqff, Qnqfb, Qddep, Qsdep, /*Qterm,*/ Qterms;
+double Qtermd, Qnd, Qps, Qpd, /*Iwkpr,*/ Qds, Qgb, Ad, As;
 double Xlbjt_t, Xlbjt_b, Qs, Ibjtf_b, Ibjtr_b, Ibjt_b;
 double Vldd[40], Vd[40];
 double Vdsx1, Vdsx2, Vdseff, Xchk;						 /* 4.41 */
 double Egbgn, Wkfgd, Vfbgd, Vgdx, Esd, Vgdt;                                     /* 4.41 */
 double Igidl, Rmass, h, Eg;                                                      /* 4.41 */
-double Pdj, Psj, Qnwk, Ueff, Qc01, Qc02, Igtb0, Eo;                              /* 4.5 */
+double Pdj, Psj, /*Qnwk,*/ Ueff, Qc01, Qc02, Igtb0, Eo;                              /* 4.5 */
 double T11pd, Alphap, Psigf1, Alphap1, Psigf2, Alphap2, Psigf;                   /* 4.5pd */
-double toc, Btrev, E_dbm, E_dbo, E_sbm, E_sbo, Ituns, Itund;                     /* 4.5 */
+double toc, Btrev, E_dbm, /*E_dbo,*/ E_sbm, /*E_sbo,*/ Ituns, Itund;                     /* 4.5 */
 double Mult_st2, Qnwk1, Qnwk2, Psiwk1, Psiwk2, Mobrefwk1, Qgfwk1, Qgfwk2;        /* 4.5F */
-double VthsOld, Ess, DelEg, PhibQM, XniFac, XniFac2, Coeffz, Psis_str, Psis_bjt; /* 4.5F */
+double /*VthsOld,*/ Ess, DelEg, PhibQM, XniFac, XniFac2, Coeffz, Psis_str, Psis_bjt; /* 4.5F */
 double DelEgQM, DelEgEx, QinvEx, NinvEx, NvlyEx;                                 /* 7.0Y */
 double Vths_bjt, Esw, Psis1, Psis2, QmT00, QmT0, QmT1, QmT2, QmT3, QmT4, Exf02;  /* 4.5F */
 double Coeffz0, ExfLim, QmT5, DVgfs, Iwk1, Iwk2;                                 /* 4.5F */
@@ -2510,12 +2496,12 @@ double dGst, dGwk, Gom, Gichgfs, Gibjtds, Gidds, Gigtds;                        
 double Gitundds, Gigidlgfs, Gigidlds, Gigigfs, Gigids;                           /* 5.0 */
 double Gigbds, Gigbgfs, Vdsx_gb, Vgfsx_gb, Igb_ds, Igb_gfs;                      /* 7.0Y */
 double dMult_chds, dMult_drnds, dMultds, dMult_wk, dMult_st1, Gidgfs;            /* 5.0 */
-double CobWL, Cgfgfswk1, Cgfdswk1, Cgfgfs, Cgfds, Cdds, Csds, Cddsst;            /* 5.0 */
+double CobWL, Cgfgfswk1, Cgfdswk1, Cgfgfs, Cgfds, Cdds, Csds/*, Cddsst*/;            /* 5.0 */
 double Cdgfs, Csgfs, Cdgbs, Cbgfs, Cgbds, Csgbs, Cgbgbs, Cbds, Cbgbs;            /* 5.0 */
 double T, Exo, Ueffo, Sich, Lc, Sis1, Sis2, Siw1, Siw2, Ich0;                    /* 5.0 */
 double Ibjt_t, dSqrt_dds, dArgbjtdds, dVbdefflds;                                /* 5.0 */
 double dDdhds, dDdds, dDdhdsi, dDddsi, dQpdds, Qpd_t, Qpd_b,dQpd_bds;            /* 5.0 */
-int I, J, K, IB, Region, ICONT, Irfldd;                                          /* 4.5F */
+int I, /*J,*/ K, IB, Region, ICONT, Irfldd;                                          /* 4.5F */
 double Vo, Vsat, Vth, Vds_dif, Vds_eff, Uo, Toxf, Theta;                         /* 5.0vo */ 
 int Num_div;                                                                     /* 7.0Y */
 double TempRatio, SqrtTempRatio, Nc, Nv, Psiw0;                                  /* 7.0Y */
@@ -2525,8 +2511,8 @@ double Meff, Meffv, Meffc, Atun, Btun, Fox, Ktun1, Ktun2, Jtun1, Jtun2, Jtun;   
 double Igb1, Igb2, Dell_t, Psi_oxwk, Barr, BarrLim;                              /* 7.0Y */
 double Kcbe, Kcbe1, Arg_cbe, Psibb, Psi_oxwkb, Sfb, Eox, Eoxb, J1, J1Sum;        /* 7.0Y */
 double E_div, Excs, Excg, Exfg, Exfs, Fds, Fdg, Fd, Pt, Pt1, Pt2, Jcbe;          /* 7.0Y */
-double Xalpha, Ldf, Ld, Xec, Xex, Tau_w, Phib, Qb, Qcbycox;
-double Vdsdemo, Xsinh, Xcosh, Vdemo, Xueff, Vsat_eff, Fsat, Vbdx, DVbdds; /* Vbdo, */ /* 6.0 */
+double Xalpha, Ldf, Ld, Xec, Xex, Tau_w, /*Phib, Qb,*/ Qcbycox;
+double Vdsdemo, Xsinh, Xcosh, Vdemo, Xueff, Vsat_eff, /*Fsat,*/ Vbdx, DVbdds; /* Vbdo, */ /* 6.0 */
 double Vbsx, Vgst, Vgsx, Igisl;                                                  /* 6.0 */
 double Dum2, DelEgGe, Esige, Vbih, D0h, D0, XninGe, XninGe2, JroGe;              /* 7.5W */
 
@@ -2548,7 +2534,7 @@ double Dum2, DelEgGe, Esige, Vbih, D0h, D0, XninGe, XninGe2, JroGe;             
     Coxb = pModel->Coxb;
     Cb = pModel->Cb;
     Vfbf = pTempModel->Vfbf;
-    Vfbb = pTempModel->Vfbb;
+//    Vfbb = pTempModel->Vfbb;
     Ldd = pModel->Lldd;
     Dicefac = ESI * pModel->Tb / (Leff * Leff);                                  /* 4.5d */
     CbbyCof = Cb / Coxf;                                                         /* 4.5d */
@@ -4270,9 +4256,9 @@ double Dum2, DelEgGe, Esige, Vbih, D0h, D0, XninGe, XninGe2, JroGe;             
     pOpInfo->dIgt_dVgb = 0.0;                                                    /* 4.5d */
 
 
-    if (pInst->pDebug)
-    {   pDebug = pInst->pDebug;
-    }
+//    if (pInst->pDebug)
+//    {   pDebug = pInst->pDebug;
+//    }
     if (DynamicNeeded)
     {   WL = Weff * Leff;
         CoxWL = Coxf * WL;
@@ -4700,10 +4686,9 @@ double Dum2, DelEgGe, Esige, Vbih, D0h, D0, XninGe, XninGe2, JroGe;             
 }
 
 double
-Xnonlocm(Xstart, Xend, Alpha, Betap, Ldep, Tempdell, Ldd, Cst, Xemf,
-         Eslope, Rldd, Itot, Te_ldd, Te_dep)
-double Xstart, Xend, Alpha, Betap, Ldep, Tempdell, Ldd, Cst, Xemf;
-double Eslope, Rldd, Itot, Te_ldd, Te_dep;
+Xnonlocm(double Xstart, double Xend, double Alpha, double Betap,
+    double Ldep, double Tempdell, double Ldd, double Cst, double Xemf,
+    double Eslope, double Rldd, double Itot, double Te_ldd, double Te_dep)
 {
 double Hrom, T0, T1, T2, Sum, Xpos, Xtemp;
 double R[31][31];
@@ -4755,11 +4740,12 @@ int L, La, Lb, Lc, M;
 }
 
 double
-Xnonloct(X, Xend, Ldep, Tempdell, Ldd, Cst, Xem, Eslope, Rldd, Itot, 
-	 Te_ldd, Te_dep)
-double X, Xend, Ldep, Tempdell, Ldd, Cst, Xem, Eslope, Rldd, Itot;
-double Te_ldd, Te_dep;
+Xnonloct(double X, double Xend, double Ldep, double Tempdell, double Ldd,
+    double Cst, double Xem, double Eslope, double Rldd, double Itot,
+    double Te_ldd, double Te_dep)
 {
+    (void)Ldd;
+    (void)Te_ldd;
 double Y, Y1, T1, T2;
 
     if (Xend <= Ldep)
@@ -4778,8 +4764,8 @@ double Y, Y1, T1, T2;
 }
 
 double                                                                         /* 5.0 */
-XIntSich(Weff, Leff, T, Vdseff, Le, lc, Ich, Qc0, Ueffo)                       /* 5.0 */
-double Weff, Leff, T, Vdseff, Le, lc, Ich, Qc0, Ueffo;                         /* 5.0 */
+XIntSich(double Weff, double Leff, double T, double Vdseff, double Le,
+    double lc, double Ich, double Qc0, double Ueffo)                       /* 5.0 */
 {                                                                              /* 5.0 */
 double lambda, T1, T2, T3, T4, T5, T6, Eyo, Ey, Ec, dy, TcLe, dSich;           /* 5.0 */
 double Tc, dSich_old, y, Sich;                                                 /* 5.0 */
@@ -4824,8 +4810,7 @@ int I, N;                                                                      /
 }                                                                              /* 5.0 */
 
 int 
-ufsInitInstFlag( pInst )
-struct ufsAPI_InstData  *pInst;
+ufsInitInstFlag(struct ufsAPI_InstData  *pInst)
 {   
     pInst->LengthGiven = 0;
     pInst->WidthGiven = 0;
@@ -4844,11 +4829,10 @@ struct ufsAPI_InstData  *pInst;
     return 0;
 }
 
-int ufsInitModelFlag( pModel )
-struct ufsAPI_ModelData  *pModel;
+int ufsInitModelFlag(struct ufsAPI_ModelData  *pModel)
 {
-time_t tloc, TimeDiff, CompileTime;
-double DayPast;
+//time_t tloc, TimeDiff, CompileTime;
+//double DayPast;
 
     pModel->Tmax = 1000.0;
     pModel->Imax = 1.0;
@@ -4928,10 +4912,8 @@ double DayPast;
 }
 
 double
-ufsLimiting(pInst, OldVbs, Gbs, abstol, DynamicNeeded, Ibtot, vbs)
-struct ufsAPI_InstData *pInst;
-int DynamicNeeded;
-double Ibtot, vbs, OldVbs, abstol, Gbs;
+ufsLimiting(struct ufsAPI_InstData *pInst, double OldVbs, double Gbs,
+    double abstol, int DynamicNeeded, double Ibtot, double vbs)
 {
 double T1, T2;
 
@@ -4965,10 +4947,7 @@ double T1, T2;
 }
 
 int
-ufsGetModelParam(pModel, Index, pValue)
-struct ufsAPI_ModelData *pModel;
-int Index;
-double *pValue;
+ufsGetModelParam(struct ufsAPI_ModelData *pModel, int Index, double *pValue)
 {
     switch(Index) 
     {   case UFS_MOD_SELFT:
@@ -5184,10 +5163,7 @@ double *pValue;
 }
 
 int
-ufsSetModelParam(pModel, Index, Value)
-struct ufsAPI_ModelData *pModel;
-int Index;
-double Value;
+ufsSetModelParam(struct ufsAPI_ModelData *pModel, int Index, double Value)
 {
     switch(Index)
     {   case  UFS_MOD_SELFT:
@@ -5479,10 +5455,7 @@ double Value;
 }
 
 int
-ufsSetInstParam(pInst, Index, Value)
-struct ufsAPI_InstData *pInst;
-int Index;
-double Value;
+ufsSetInstParam(struct ufsAPI_InstData *pInst, int Index, double Value)
 {
     switch(Index) 
     {   case UFS_W:
@@ -5542,10 +5515,7 @@ double Value;
 }
 
 int
-ufsGetInstParam(pInst, Index, pValue)
-struct ufsAPI_InstData *pInst;
-int Index;
-double *pValue;
+ufsGetInstParam(struct ufsAPI_InstData *pInst, int Index, double *pValue)
 {
     switch(Index) 
     {   case UFS_L:
@@ -5596,10 +5566,7 @@ double *pValue;
 
 
 int
-ufsGetOpParam(pOpInfo, Index, pValue)
-struct ufsAPI_OPData *pOpInfo;
-int Index;
-double *pValue;
+ufsGetOpParam(struct ufsAPI_OPData *pOpInfo, int Index, double *pValue)
 {
     switch(Index)
     {
@@ -5909,9 +5876,8 @@ double *pValue;
 }
 
 int
-ufsDefaultModelParam(pModel, pEnv)
-struct ufsAPI_ModelData *pModel;
-struct ufsAPI_EnvData *pEnv;
+ufsDefaultModelParam( struct ufsAPI_ModelData *pModel,
+    struct ufsAPI_EnvData *pEnv)
 {
     pModel->Debug = 0;
     if (!pModel->TypeGiven)
@@ -6088,11 +6054,11 @@ struct ufsAPI_EnvData *pEnv;
 }
 
 int
-ufsDefaultInstParam(pModel, pInst, pEnv)
-struct ufsAPI_ModelData *pModel;
-struct ufsAPI_InstData *pInst;
-struct ufsAPI_EnvData *pEnv;
+ufsDefaultInstParam(struct ufsAPI_ModelData *pModel,
+    struct ufsAPI_InstData *pInst, struct ufsAPI_EnvData *pEnv)
 {
+    (void)pModel;
+    (void)pEnv;
     if (!pInst->WidthGiven)
         pInst->Width = 1.0e-6;
     if (!pInst->LengthGiven)
@@ -6124,14 +6090,10 @@ struct ufsAPI_EnvData *pEnv;
 }
 
 int 
-fdEvalDeriv(Vds, Vgfs, Vbs, Vgbs, pOpInfo, pInst, pModel, pEnv, DynamicNeeded,   /* 5.0 */
-            ACNeeded)                                                            /* 5.0 */
-double Vds, Vgfs, Vbs, Vgbs;
-struct ufsAPI_InstData  *pInst;
-struct ufsAPI_ModelData *pModel;
-struct ufsAPI_OPData *pOpInfo;
-struct ufsAPI_EnvData *pEnv;
-int DynamicNeeded, ACNeeded;                                                     /* 5.0 */
+fdEvalDeriv(double Vds, double Vgfs, double Vbs, double Vgbs,
+    struct ufsAPI_OPData *pOpInfo, struct ufsAPI_InstData  *pInst,
+    struct ufsAPI_ModelData *pModel, struct ufsAPI_EnvData *pEnv,
+    int DynamicNeeded, int ACNeeded)                                                            /* 5.0 */
 {
 struct ufsAPI_OPData OpInfog, OpInfod, OpInfob, OpInfobg, OpInfot;
 double Idrain, Idrain1, Vtemp;
@@ -6279,24 +6241,20 @@ int SH;
 }
 
 int 
-nfdEvalDeriv( Vds, Vgfs, Vbs, Vgbs, pOpInfo, pInst, pModel, pEnv,
-	      DynamicNeeded, ACNeeded )                                          /* 4.5d */
-double Vds, Vgfs, Vbs, Vgbs;
-struct ufsAPI_InstData  *pInst;
-struct ufsAPI_ModelData *pModel;
-struct ufsAPI_OPData *pOpInfo;
-struct ufsAPI_EnvData *pEnv;
-int DynamicNeeded, ACNeeded;                                                     /* 4.5d */
+nfdEvalDeriv(double Vds, double Vgfs, double Vbs, double Vgbs,
+    struct ufsAPI_OPData *pOpInfo, struct ufsAPI_InstData  *pInst,
+    struct ufsAPI_ModelData *pModel, struct ufsAPI_EnvData *pEnv,
+    int DynamicNeeded, int ACNeeded)                                          /* 4.5d */
 {
-register struct ufsTDModelData *pTempModel;                                      /* 4.5F */
+// /*register*/ struct ufsTDModelData *pTempModel;                                      /* 4.5F */
 struct ufsAPI_OPData OpInfog, OpInfod, OpInfob, OpInfobg, OpInfot;
 double Idrain, Idrain1, Vtemp;
-double q, esi;                                               /* 4.5F */
+//double q, esi;                                               /* 4.5F */
 int SH;
 
-    pTempModel = pInst->pTempModel;                                              /* 4.5F */
-    q = ELECTRON_CHARGE;
-    esi = SILICON_PERMITTIVITY;
+//    pTempModel = pInst->pTempModel;                                              /* 4.5F */
+//    q = ELECTRON_CHARGE;
+//    esi = SILICON_PERMITTIVITY;
     nfdEvalMod(Vds, Vgfs, Vbs, Vgbs, pOpInfo, pInst, pModel, pEnv,
 	       DynamicNeeded, ACNeeded);                                         /* 7.0Y */
     if (!ACNeeded)                                                               /* 4.5d */

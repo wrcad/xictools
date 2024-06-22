@@ -130,8 +130,8 @@ SOI3dev::load(sGENinstance *in_inst, sCKT *ckt)
     double BackGateSourceOverlapCap;
     double Frontcapargs[6];
     double Backcapargs[6];
-    double FrontOxideCap;
-    double BackOxideCap;
+//    double FrontOxideCap;
+//    double BackOxideCap;
     double arg;
     double ibhat;
     double idhat;
@@ -303,10 +303,10 @@ if (ieee_handler("set", "overflow", common_handler) !=0)
             /* reset mu_eff to ambient temp value in SI units */
             here->SOI3ueff = here->SOI3tTransconductance/
                              model->SOI3frontOxideCapFactor;
-            FrontOxideCap = model->SOI3frontOxideCapFactor * EffectiveLength *
-                    here->SOI3w;
-            BackOxideCap = model->SOI3backOxideCapFactor * EffectiveLength *
-                    here->SOI3w;
+//            FrontOxideCap = model->SOI3frontOxideCapFactor * EffectiveLength *
+//                    here->SOI3w;
+//            BackOxideCap = model->SOI3backOxideCapFactor * EffectiveLength *
+//                    here->SOI3w;
             /*
              * ok - now to do the start-up operations
              *

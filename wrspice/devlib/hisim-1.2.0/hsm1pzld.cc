@@ -56,7 +56,7 @@
 
 
 int
-HSM1dev::pzLoad(sGENmodel *genmod, sCKT *ckt, IFcomplex *s)
+HSM1dev::pzLoad(sGENmodel *genmod, sCKT*, IFcomplex *s)
 {
     sHSM1model *model = static_cast<sHSM1model*>(genmod);
     sHSM1instance *here;

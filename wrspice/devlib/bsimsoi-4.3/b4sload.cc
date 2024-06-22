@@ -169,10 +169,15 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     int selfheat;
 
     double /* SourceSatCurrent, DrainSatCurrent, */ Gmin;
-    double ag0, qgd, qgs, /* qgb, von,*/ cbhat, VgstNVt, ExpVgst;
-    double cdhat, cdreq, ceqbd, ceqbs, ceqqb, ceqqd, ceqqg /*, ceq, geq */;
+    double ag0, qgd, qgs, /* qgb, von, cbhat,*/ VgstNVt, ExpVgst;
+    double /*cdhat,*/ cdreq, ceqbd, ceqbs, ceqqb, ceqqd, ceqqg /*, ceq, geq */;
+#if (!defined(NOBYPASS) || !defined(NEWCONV))
+    double cbhat, cdhat;
+#endif
     double /* evbd, evbs, */ arg /*, sarg */;
+#if (!defined(NOBYPASS) || !defined(NEWCONV))
     double delvbd, delvbs, delvds, delvgd, delvgs;
+#endif
     double Vfbeff, dVfbeff_dVg, dVfbeff_dVd, dVfbeff_dVb, V3, V4;
     double /* tol, PhiB, */ PhiBSWG, MJSWG;
     double gcgdb, gcggb, gcgsb, gcgeb, gcgT;
@@ -181,7 +186,10 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double gcbdb, gcbgb, gcbsb, gcbeb, gcbT;
     double gcedb, gcegb, gcesb, gceeb, gceT;
     double gcTt, gTtg, gTtb, gTtdp, gTtt, gTtsp;
-    double vbd, vbs, vds, vgb, vgd, vgs, vgdo, xfact;
+    double vbd, vbs, vds, vgb, vgd, vgs, /*vgdo,*/ xfact;
+#if (!defined(NOBYPASS) || !defined(NEWCONV))
+    double vgdo;
+#endif
     double vg, vd, vs, vp, ve/*, vb*/;
     double Vds, Vgs, Vbs, Gmbs, FwdSum, RevSum;
 
@@ -255,8 +263,11 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double gddpsp, gddpdp, gddpg, gddpb, gddpT;
     double gsspsp, gsspdp, gsspg, gsspb, gsspT;
     double Gbpbs, Gbpps;
-    double /* vse, vde, */ ves, ved, veb, vge, delves, vedo, delved;
-    double vps, vpd, Vps, delvps;
+    double /* vse, vde, */ ves, ved, veb, vge/*, delves, vedo, delved*/;
+#if (!defined(NOBYPASS) || !defined(NEWCONV))
+    double delves, delved, delvps, vedo;
+#endif
+    double vps, vpd, Vps/*, delvps*/;
     double Vbd, Ves, Vesfb, /* sqrtXdep, */ DeltVthtemp, dDeltVthtemp_dT;
     double Vbp, dVbp_dVb;
     double DeltVthw, dDeltVthw_dVb, dDeltVthw_dT;
@@ -268,7 +279,10 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double Gjsd, /* Gjss, */ Gjsb, GjsT, Gjdd, Gjdb, GjdT;
     double Ibp, Iii, Giid, Giig, Giib, GiiT, Gcd, Gcb, GcT, ceqbody, ceqbodcon;
     double gppb, gppp;
-    double delTemp, deldelTemp, Temp;
+    double delTemp, /*deldelTemp,*/ Temp;
+#if (!defined(NOBYPASS) || !defined(NEWCONV))
+    double deldelTemp;
+#endif
     double ceqth, ceqqth;
 //    double K1 /*, WL */;
     double qjs, gcjsbs, gcjsT;
@@ -374,7 +388,10 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     /* v3.1 added for RF */
     double geltd, gcrg, gcrgg, gcrgd, gcrgs, gcrgb, ceqgcrg;
     double vges, vgms, /*vgedo, vgmdo,*/ vged, vgmd/*, delvged, delvgmd*/;
-    double delvges, delvgms, vgme;
+    double /*delvges, delvgms,*/ vgme;
+#ifndef NOBYPASS
+    double delvges, delvgms;
+#endif
     double gcgmgmb, gcgmdb, gcgmsb, gcdgmb, gcsgmb;
     double gcgmeb, gcegmb, qgme, qgmid, ceqqgmid;
     double gcgbb;
@@ -428,7 +445,13 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
 //    double IdovVds;
     double vdbs, vsbs, /* vdb, vsb, */ vdbd=0, vsbd, vsbdo, vbs_jct, vbd_jct;
     double Vsbs, Vdbd, Vdbs;
-    double delvdbd, delvsbs, delvdbs, delvbd_jct,  delvbs_jct;
+//    double delvdbd, delvsbs, /*delvdbs,*/ delvbd_jct,  delvbs_jct;
+#if (!defined(NOBYPASS) || !defined(NEWCONV))
+    double delvbd_jct, delvdbd, delvsbs;
+#endif
+#ifndef NOBYPASS
+    double delvdbs;
+#endif
     double gcdbdb, gcsbsb, gcsbb, gcdbb;
     double ceqqjd, ceqqjs;
     double Lpe_Vb; /* v4.0 for Vth */
@@ -438,7 +461,14 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double Iii_Igidl, /*Giigidl_b, Giigidl_d, Giigidl_g, Giigidl_e,*/ Giigidl_T;
 //    double gjsdb;
     double Idbdp, Isbsp, cdbdp, csbsp, gcjdbdp, gcjsbsp, GGjdb, GGjsb;
-    double vdes, vses, vdedo, delvdes, delvses, delvded, Isestot, cseshat, Idedtot,        cdedhat;
+    double vdes, vses/*, vdedo, delvdes, delvses, delvded, Isestot,*/
+        /*cseshat, Idedtot, cdedhat*/;
+#if (!defined(NOBYPASS) || !defined(NEWCONV))
+    double delvses, delvded, Isestot, Idedtot, vdedo;
+#endif
+#ifndef NOBYPASS
+    double delvdes, cseshat, cdedhat;
+#endif
     double PowWeffWr, rd0, rs0, rdwmin, rswmin, drs0_dT, drd0_dT, drswmin_dT,
            drdwmin_dT, Rd, dRd_dVg, dRd_dVb, dRd_dT, Rs, dRs_dVg, dRs_dVb, dRs_dT;
     double dgstot_dvd, dgstot_dvg, dgstot_dvs, dgstot_dvb, dgstot_dve, dgstot_dT;
@@ -815,10 +845,12 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
 
                 vgd = vgs - vds;
                 ved = ves - vds;
+#if (!defined(NOBYPASS) || !defined(NEWCONV))
                 vgdo = *(ckt->CKTstate0 + here->B4SOIvgs)
                        - *(ckt->CKTstate0 + here->B4SOIvds);
                 vedo = *(ckt->CKTstate0 + here->B4SOIves)
                        - *(ckt->CKTstate0 + here->B4SOIvds);
+#endif
 
                 /* v3.1 for RF */
 //                vgedo = *(ckt->CKTstate0 + here->B4SOIvges)
@@ -831,6 +863,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
 //                delvgmd = vgmd - vgmdo;
                 /* v3.1 for RF end*/
 
+#if (!defined(NOBYPASS) || !defined(NEWCONV))
                 delvbs = vbs - *(ckt->CKTstate0 + here->B4SOIvbs);
                 delvbd = vbd - *(ckt->CKTstate0 + here->B4SOIvbd);
                 delvgs = vgs - *(ckt->CKTstate0 + here->B4SOIvgs);
@@ -840,19 +873,27 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
                 delvds = vds - *(ckt->CKTstate0 + here->B4SOIvds);
                 delvgd = vgd - vgdo;
                 delved = ved - vedo;
+#endif
+#ifndef NOBYPASS
                 delvges = vges - *(ckt->CKTstate0 + here->B4SOIvges); /* v3.1 */
                 delvgms = vgms - *(ckt->CKTstate0 + here->B4SOIvgms); /* v3.1 */
                 delvdbd = vdbd - *(ckt->CKTstate0 + here->B4SOIvdbd); /* v4.0 */
                 delvdbs = vdbs - *(ckt->CKTstate0 + here->B4SOIvdbs); /* v4.0 */
                 delvsbs = vsbs - *(ckt->CKTstate0 + here->B4SOIvsbs); /* v4.0 */
+#endif
 
+#if (!defined(NOBYPASS) || !defined(NEWCONV))
                 delvbd_jct = (!here->B4SOIrbodyMod) ? delvbd : delvdbd; /*v4.0*/
                 delvbs_jct = (!here->B4SOIrbodyMod) ? delvbs : delvsbs; /*v4.0*/
 
                 delvses = vses - *(ckt->CKTstate0 + here->B4SOIvses);/*v4.0*/
                 vdedo = *(ckt->CKTstate0 + here->B4SOIvdes)
                         - *(ckt->CKTstate0 + here->B4SOIvds);   /* v4.0 */
+#endif
+#ifndef NOBYPASS
                 delvdes = vdes - *(ckt->CKTstate0 + here->B4SOIvdes); /* v4.0 */
+#endif
+#if (!defined(NOBYPASS) || !defined(NEWCONV))
                 delvded = vdes - vds - vdedo;       /* v4.0 */
 
                 if (here->B4SOImode >= 0)
@@ -884,14 +925,21 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
                         + here->B4SOIgbT * deldelTemp; /* v3.0 */
 
                 Isestot = here->B4SOIgstot * (*(ckt->CKTstate0 + here->B4SOIvses));
+#endif
+#ifndef NOBYPASS
                 cseshat = Isestot + here->B4SOIgstot * delvses
                           + here->B4SOIgstotd * delvds + here->B4SOIgstotg * delvgs
                           + here->B4SOIgstotb * delvbs;
+#endif
 
+#if (!defined(NOBYPASS) || !defined(NEWCONV))
                 Idedtot = here->B4SOIgdtot * vdedo;
+#endif
+#ifndef NOBYPASS
                 cdedhat = Idedtot + here->B4SOIgdtot * delvded
                           + here->B4SOIgdtotd * delvds + here->B4SOIgdtotg * delvgs
                           + here->B4SOIgdtotb * delvbs;
+#endif
 
 #ifndef NOBYPASS
                 /* following should be one big if connected by && all over

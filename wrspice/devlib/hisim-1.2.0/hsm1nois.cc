@@ -94,7 +94,7 @@ HSM1dev::noise(int mode, int operation, sGENmodel *genmod, sCKT *ckt,
   double tempInoise;
   double noizDens[HSM1NSRCS];
   double lnNdens[HSM1NSRCS];
-  register int /*error,*/ i;
+  /*register*/ int /*error,*/ i;
 
   /* define the names of the noise sources */
   static const char * HSM1nNames[HSM1NSRCS] = {

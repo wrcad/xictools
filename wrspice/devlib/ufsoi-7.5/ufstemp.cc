@@ -57,7 +57,7 @@ sUFSmodel *model = (sUFSmodel*)genmod;
 sUFSinstance *here;
 struct ufsAPI_InstData *pInst;
 struct ufsAPI_ModelData *pModel;
-struct ufsTDModelData *pTempModel;
+//struct ufsTDModelData *pTempModel;
 struct ufsAPI_EnvData Env;
 double T;
 int SH;                                                                          /* 4.5 */
@@ -74,7 +74,7 @@ int SH;                                                                         
               here = here->UFSnextInstance) 
 	 {    pInst = here->pInst;
 	      pInst->pDebug = NULL;
-	      pTempModel = pInst->pTempModel;
+//	      pTempModel = pInst->pTempModel;
 	      T = ckt->CKTtemp;
 	      SH = 1;                                                            /* 4.5 */
 	      ufsTempEffect(pModel, pInst, &Env, T, SH);                         /* 4.5 */
