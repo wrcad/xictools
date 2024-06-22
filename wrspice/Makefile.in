@@ -617,7 +617,7 @@ devkit_examples:
 	            ADMST=../../admst \
 	            ADMSXML=../../../../../adms/adms_wr/admsXml/admsXml \
 	            DLL_LOC=../../../../bin \
-	            WRSPICE=../../../../bin/wrspice realclean module); \
+	            WRSPICE=../../../../bin/wrspice realclean module; \
 	    done \
         )
 

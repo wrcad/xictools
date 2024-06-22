@@ -43,8 +43,7 @@ schmitt.cir \
 senstest.cir \
 simplepz.cir \
 tab.cir \
-trapcheck.cir \
-wrspice_ipc_demo.tar.gz"
+trapcheck.cir"
 
 JJexamples="\
 ex8.cir \
