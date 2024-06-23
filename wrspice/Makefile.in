@@ -55,8 +55,6 @@ INSTALL_SCRIPT = $(INSTALL) -c -m 0755
 INSTALL_LIB    = $(INSTALL) -c -m 0644
 INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 
-WDEMODIR = wrspice_ipc_demo
-
 ifdef GRPREF
 GRPREF_DIR = src/$(GRPREF)wrs
 GRPREF_LIB = src/$(GRPREF)wrs/$(GRPREF)wrs.a
@@ -116,7 +114,7 @@ LOCAL_LIBS = \
 
 TARGETS = wrspice wrspiced csvtoraw multidec proc2mod printtoraw
 MMJCO = mmjco/mmjco
-all: cptest $(TARGETS) $(MMJCO) wdemo
+all: cptest $(TARGETS) $(MMJCO)
 
 cptest:
 	$(MAKE) -C help cptest
@@ -336,16 +334,15 @@ clean: eclean
 	    $(MAKE) -C $$a $@; \
 	done
 	$(MAKE) -C mmjco clean
-	-@rm -f bin/*.o $(WDEMODIR).tar.gz
+	-@rm -f bin/*.o
 
 distclean: eclean
 	-@for a in $(SUBDIRS) include devlib packages help startup \
-  ipc_demo_files; do \
+  ipc_demo; do \
 	    $(MAKE) -C $$a $@; \
 	done
 	-@$(MAKE) -C mmjco distclean
-	-@rm -f bin/*.o wrspice_ipc_demo.tar.gz Makefile
-	-@rm -f examples/wrspice_ipc_demo.tar.gz
+	-@rm -f bin/*.o Makefile
 	-@rm -f devlib/adms/admst/device.xml
 
 ifdef GRPREF
@@ -357,44 +354,6 @@ endif
 
 #######################################################################
 ####### Install into another location #################################
-
-# Create the wrspice_ipc_demo source code tarball, copy to the WRspice
-# examples directory.  This is included in the WRspice distribution.
-
-UTIL_HFILES =  miscutil.h tvals.h filestat.h pathlist.h miscmath.h \
-  childproc.h errorrec.h lstring.h services.h largefile.h msw.h
-UTIL_CCFILES = miscutil.cc tvals.cc filestat.cc pathlist.cc miscmath.cc \
-  childproc.cc errorrec.cc lstring.cc msw.cc
-
-wdemo wrspice_ipc_demo:
-	@if [ ! -f ../xic/src/sced/sced_spiceipc.cc ]; then \
-	    echo "Xic IPC code not found, aborting."; \
-	    exit 1; \
-	fi
-	@if [ -d $(WDEMODIR) ]; then \
-	    rm -rf $(WDEMODIR); \
-	fi
-	@cp -pfr ipc_demo_files $(WDEMODIR)
-	@for a in $(UTIL_HFILES); do \
-	    cp -f $(BASE)/include/miscutil/$$a $(WDEMODIR); \
-	done
-	@for a in $(UTIL_CCFILES); do \
-	    cp -f $(BASE)/miscutil/$$a $(WDEMODIR); \
-	done
-	@cp -pf $(BASE)/include/config.h.in $(WDEMODIR)
-	@cp -pf $(BASE)/include/config.h $(WDEMODIR)
-	@cp -pf $(BASE)/configure.in $(WDEMODIR)
-	@cp -pf $(BASE)/configure $(WDEMODIR)
-	@cp -pf ../xic/src/sced/sced_spiceipc.cc $(WDEMODIR)
-	@cp -pf ../xic/include/sced_spiceipc.h $(WDEMODIR)
-	@cp -pf bin/wrspiced.cc $(WDEMODIR)
-	@cp -pf release.sh $(WDEMODIR)
-	@tar czf $(WDEMODIR).tar.gz $(WDEMODIR)
-	@rm -rf $(WDEMODIR)
-	@cp -f $(WDEMODIR).tar.gz examples
-	@echo
-	@echo "Export source created in $(WDEMODIR).tar.gz"
-	@echo
 
 INSTALL_PREFIX ?= $(prefix)
 destn = $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice.current
@@ -510,13 +469,14 @@ $(destn)/help::
 	@$(BASE)/util/mkdirpth $@ $@/screenshots
 	help=`packages/util/wrspice_files help`; \
 	for a in $$help; do \
-	    if [ $$a == mmjco.txt ]; then
-	        cp -f mmjco/README $@/mmjco.txt;
-	    else
+	    if [ $$a == mmjco.txt ]; then \
+	        cp -f mmjco/README $@/mmjco.txt; \
+	    else \
 	        $(INSTALL_LIB) help/$$a $@; \
+	    fi \
 	done
 	helpss=`packages/util/wrspice_files help_screenshots`; \
-        for a in $$helpss; do \
+	for a in $$helpss; do \
 	    $(INSTALL_LIB) help/screenshots/$$a $@/screenshots; \
 	done
 

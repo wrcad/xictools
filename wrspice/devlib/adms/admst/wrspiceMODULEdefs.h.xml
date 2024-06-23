@@ -501,57 +501,9 @@ inline double _d1_pow(double x,double y)   { return x==0.0?0.0:log(x)*pow(x,y); 
   <admst:text format="$(indent)int topology(sCKT*, s$(moduc)model*, s$(moduc)instance*);\n"/>
   <admst:text format="};\n"/>
 
-  <admst:text format="\n\nstruct s$(moduc)instance : public sGENinstance\n"/>
+  <!-- Start of instance POD -->
+  <admst:text format="\n\nstruct s$(moduc)instancePOD\n"/>
   <admst:text format="{\n"/>
-
-<!-- XXX -->
-  <admst:text format="$(indent)s$(moduc)instance()\n"/>
-  <admst:apply-templates select="." match="push_indent"/>
-  <admst:text format="$(indent){\n"/>
-  <admst:apply-templates select="." match="push_indent"/>
-  <admst:text format="$(indent)memset(this, 0, sizeof(s$(moduc)instance));\n"/>
-  <admst:text format="$(indent)GENnumNodes = %(count(node[location='external']));\n"/>
-  <admst:apply-templates select="." match="pop_indent"/>
-  <admst:text format="$(indent)}\n"/>
-  <admst:apply-templates select="." match="pop_indent"/>
-
-  <admst:text format="$(indent)~s$(moduc)instance() { delete [] (char*)$(moduc)backing; }\n\n"/>
-  <admst:text format="$(indent)s$(moduc)instance *next()\n"/>
-  <admst:apply-templates select="." match="push_indent"/>
-  <admst:text format="$(indent){ return ((s$(moduc)instance*)GENnextInstance); }\n\n"/>
-  <admst:apply-templates select="." match="pop_indent"/>
-  <admst:text format="$(indent)void backup(DEV_BKMODE bkm)\n"/>
-  <admst:apply-templates select="." match="push_indent"/>
-  <admst:text format="$(indent){\n"/>
-  <admst:apply-templates select="." match="push_indent"/>
-  <admst:text format="$(indent)if (bkm == DEV_SAVE) {\n"/>
-  <admst:apply-templates select="." match="push_indent"/>
-  <admst:text format="$(indent)if (!$(moduc)backing)\n"/>
-  <admst:apply-templates select="." match="push_indent"/>
-  <admst:text format="$(indent)$(moduc)backing = new char[sizeof(s$(moduc)instance)];\n"/>
-  <admst:apply-templates select="." match="pop_indent"/>
-  <admst:text format="$(indent)memcpy($(moduc)backing, this, sizeof(s$(moduc)instance));\n"/>
-  <admst:apply-templates select="." match="pop_indent"/>
-  <admst:text format="$(indent)}\n"/>
-  <admst:text format="$(indent)else if (bkm == DEV_RESTORE) {\n"/>
-  <admst:apply-templates select="." match="push_indent"/>
-  <admst:text format="$(indent)if ($(moduc)backing)\n"/>
-  <admst:apply-templates select="." match="push_indent"/>
-  <admst:text format="$(indent)memcpy(this, $(moduc)backing, sizeof(s$(moduc)instance));\n"/>
-  <admst:apply-templates select="." match="pop_indent"/>
-  <admst:apply-templates select="." match="pop_indent"/>
-  <admst:text format="$(indent)}\n"/>
-  <admst:text format="$(indent)else {\n"/>
-  <admst:apply-templates select="." match="push_indent"/>
-  <admst:text format="$(indent)// DEV_CLEAR\n"/>
-  <admst:text format="$(indent)delete [] (char*)$(moduc)backing;\n"/>
-  <admst:text format="$(indent)$(moduc)backing = 0;\n"/>
-  <admst:apply-templates select="." match="pop_indent"/>
-  <admst:text format="$(indent)}\n"/>
-  <admst:apply-templates select="." match="pop_indent"/>
-  <admst:text format="$(indent)}\n\n"/>
-  <admst:apply-templates select="." match="pop_indent"/>
-  <admst:text format="$(indent)int resolve_ties();\n"/>
 
   <admst:text format="\n$(indent)// The nodes MUST come first.\n"/>
   <admst:for-each select="node[grounded='no']">
@@ -822,6 +774,8 @@ inline double _d1_pow(double x,double y)   { return x==0.0?0.0:log(x)*pow(x,y); 
     <admst:text format="$(indent)double JDVAL_$(bname)_BB;\n"/>
   </admst:for-each>
   <admst:text format="};\n"/>
+  <!-- End of instance POD -->
+
 
   <!-- Add defines for instance state variables -->
   <admst:text format="\n// Indices into state table for this device.\n"/>
@@ -851,11 +805,59 @@ inline double _d1_pow(double x,double y)   { return x==0.0?0.0:log(x)*pow(x,y); 
   </admst:for-each>
   <admst:text format="#define $(moduc)_NUM_STATES %(incrementer(.)/value)\n"/>
 
-  <admst:text format="\n\nstruct s$(moduc)model : public sGENmodel\n"/>
+
+  <!-- Start of instance struct -->
+  <admst:text format="\n\nstruct s$(moduc)instance : public sGENinstance, s$(moduc)instancePOD\n"/>
   <admst:text format="{\n"/>
-  <admst:text format="$(indent)s$(moduc)model() { memset(this, 0, sizeof(s$(moduc)model)); }\n"/>
-  <admst:text format="$(indent)s$(moduc)model *next() { return ((s$(moduc)model*)GENnextModel); }\n"/>
-  <admst:text format="$(indent)s$(moduc)instance *inst() { return ((s$(moduc)instance*)GENinstances); }\n"/>
+
+  <admst:text format="$(indent)s$(moduc)instance() : sGENinstance(), s$(moduc)instancePOD()\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent){ GENnumNodes = %(count(node[location='external'])); }\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+
+  <admst:text format="$(indent)~s$(moduc)instance() { delete [] (char*)$(moduc)backing; }\n\n"/>
+  <admst:text format="$(indent)s$(moduc)instance *next()\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent){ return (static_cast<s$(moduc)instance*>(GENnextInstance)); }\n\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)void backup(DEV_BKMODE bkm)\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent){\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)if (bkm == DEV_SAVE) {\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)if (!$(moduc)backing)\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)$(moduc)backing = new char[sizeof(s$(moduc)instance)];\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)memcpy($(moduc)backing, this, sizeof(s$(moduc)instance));\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+  <admst:text format="$(indent)else if (bkm == DEV_RESTORE) {\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)if ($(moduc)backing)\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)memcpy(this, $(moduc)backing, sizeof(s$(moduc)instance));\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+  <admst:text format="$(indent)else {\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)// DEV_CLEAR\n"/>
+  <admst:text format="$(indent)delete [] (char*)$(moduc)backing;\n"/>
+  <admst:text format="$(indent)$(moduc)backing = 0;\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)int resolve_ties();\n"/>
+  <admst:text format="};\n"/>
+  <!-- End of instance struct -->
+
+  <!-- Start of model POD -->
+  <admst:text format="\n\nstruct s$(moduc)modelPOD\n"/>
+  <admst:text format="{\n"/>
 
   <!--
     Model Parameters.
@@ -959,6 +961,16 @@ inline double _d1_pow(double x,double y)   { return x==0.0?0.0:log(x)*pow(x,y); 
   </admst:if>
 
   <admst:text format="};\n"/>
+  <!-- End of model POD -->
+
+  <!-- Start of model struct -->
+  <admst:text format="\n\nstruct s$(moduc)model : public sGENmodel, s$(moduc)modelPOD\n"/>
+  <admst:text format="{\n"/>
+  <admst:text format="$(indent)s$(moduc)model() : sGENmodel(), s$(moduc)modelPOD() { }\n"/>
+  <admst:text format="$(indent)s$(moduc)model *next() { return (static_cast<s$(moduc)model*>(GENnextModel)); }\n"/>
+  <admst:text format="$(indent)s$(moduc)instance *inst() { return (static_cast<s$(moduc)instance*>(GENinstances)); }\n"/>
+  <admst:text format="};\n"/>
+  <!-- End of model struct -->
 
   <admst:text format="\n} // namespace adms$(moduc)\n"/>
   <admst:text format="using namespace adms$(moduc);\n"/>

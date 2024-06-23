@@ -165,12 +165,12 @@ private:
 };
 
 
-struct sMenu *Menu();
+struct sMenu *MainMenu();
 
 // This manages the Xic menus.
 struct sMenu
 {
-    friend sMenu *Menu() { return (_menu); }
+    friend sMenu *MainMenu() { return (_menu); }
 
     sMenu() { _menu = this; }
 

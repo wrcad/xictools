@@ -168,7 +168,11 @@ GRpkg::DevDepInit(unsigned int)
 // Need to bypass local malloc to use this.
 // const char *_malloc_options = "J";
 
-// These are set as compiler -D defines
+// These are set as compiler -D defines.
+// In MSYS2 there is danger here,  The make program will prepend something like "C:/mingw64"
+// to a path in the form "/usr/local", causing the PREFIX inherited from the top level to
+// be whacko.  To prevent this, add a drive letter to the PREFIX definition in the top
+// level makefile, e.g. "c:/usr/local".
 #ifndef PREFIX
 #define PREFIX "/usr/local"
 #endif

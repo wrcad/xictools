@@ -590,7 +590,7 @@ pathlist::expand_path(const char *string, bool expdot, bool strip_space)
 char *
 pathlist::mk_path(const char *d, const char *f)
 {
-    if (!d || !*d)
+    if (!d || !*d || lstring::is_rooted(f))
         return (lstring::copy(f));
     if (!f || !*f)
         return (lstring::copy(d));

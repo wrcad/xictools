@@ -484,6 +484,8 @@ The first time, you will need to set up the main Makefile.
 
 1.  Copy Makefile.sample into "Makefile", edit Makefile to set the
     configuration flags, as described by the comments in the Makefile.
+    Crucial for Windows:  Make sure you add a drive letter to the
+    PREFIX path, and uncomment the MINGW define.
 
 2.  Give the command "make config" to configure the source tree to
     your build environment.  You may see errors and early termination
