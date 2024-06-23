@@ -61,8 +61,8 @@ ITOPOK = --enable-itopok=no
 # search path "yes" should work here as well.
 #
 # For Windows (MSYS2/MinGW64)
-#GFXLOC = --enable_qt6=/mingw64
-#GFXLOC = --enable_gtk2=/mingw64/bin
+#GFXLOC = --enable-qt6=/mingw64
+#GFXLOC = --enable-gtk2=/mingw64/bin
 #
 # For macOS
 #GFXLOC = --enable-qt6=/opt/local/libexec/qt6
