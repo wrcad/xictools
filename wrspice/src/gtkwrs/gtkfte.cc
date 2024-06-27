@@ -58,6 +58,7 @@
 #include "help/help_defs.h"
 #endif
 
+#include <stdint.h>     // for uintptr_t
 
 // Keywords referenced in help database:
 //  plotspanel
