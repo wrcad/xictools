@@ -260,10 +260,6 @@ namespace {
                             Selections.show(wd);
                     }
                     wd->ShowHighlighting();
-//XXX rid this
-// Used to periodically refresh the drawing windows.  This is no longer
-// needed as all QTcanvas drawing is asynchronous.
-//                    sw->Viewport()->update();
                 }
             }
         }

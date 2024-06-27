@@ -466,6 +466,9 @@ AC_SUBST([NO_IGNORED_QUALIFIERS])
 AC_PROG_MAKE_SET
 
 AC_PATH_XTRA
+if test x$no_x != xyes; then
+    WITH_X11=-DWITH_X11
+fi
 
 case $sys_os in
 MINGW)
@@ -675,6 +678,7 @@ if test $profiling = yes; then
    LFLAGS="-pg $LFLAGS"
 fi
 
+AC_SUBST(WITH_X11)
 AC_SUBST(SDK)
 AC_SUBST(UFLAGS)
 AC_SUBST(MSW)

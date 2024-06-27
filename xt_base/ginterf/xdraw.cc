@@ -53,9 +53,9 @@
 #else
 #ifdef WIN32
 #include "miscutil/mswdraw.h"
+#endif
+#endif
 #include <stdio.h>
-#endif
-#endif
 
 
 //
@@ -180,7 +180,7 @@ namespace ginterf
         void TextExtent(const char*, int*, int*);
         void SetGhost(GhostDrawFunc, int, int)                  { }
         void ShowGhost(bool)                                    { }
-//        bool ShowingGhost()                                 { return(false); }
+        bool ShowingGhost()                                 { return(false); }
         void UndrawGhost(bool = false)                          { }
         void DrawGhost(int, int)                                { }
         void DrawGhost()                                        { }
@@ -194,12 +194,12 @@ namespace ginterf
         void SetLinestyle(const GRlineType*);
         void DefineFillpattern(GRfillType*);
         void SetFillpattern(const GRfillType*);
-//        void Refresh(int, int, int, int)                        { }
-//        void Refresh()                                          { }
-//        void Update(int, int, int, int)                         { }
+        void Refresh(int, int, int, int)                        { }
+        void Refresh()                                          { }
+        void Update(int, int, int, int)                         { }
         void Update();
-//        void SetOverlayMode(bool)                               { }
-//        void CreateOverlayBackg()                               { }
+        void SetOverlayMode(bool)                               { }
+        void CreateOverlayBackg()                               { }
         void Input(int*, int*, int*, int*)                      { }
         void SetXOR(int);
 

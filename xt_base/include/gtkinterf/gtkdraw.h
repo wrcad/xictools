@@ -41,13 +41,6 @@
 #ifndef GTKDRAW_H
 #define GTKDRAW_H
 
-
-#ifndef WITH_QUARTZ
-#ifndef WIN32
-#define WITH_X11
-#endif
-#endif
-
 #ifdef WITH_X11
 #include "gtkinterf/gtkx11.h"
 #endif

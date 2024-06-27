@@ -53,7 +53,6 @@
 using namespace mswinterf;
 #endif
 
-
 //#define USE_XSHM
 
 #include <gdk/gdkkeysyms.h>

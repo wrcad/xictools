@@ -6,14 +6,14 @@ DATE = @DATE@
 
 CXX = @CXX@
 CC = @CC@
-CFLAGS = @CFLAGSG@ @UFLAGS@ -DGRPREF=@GRPREF@
+CFLAGS = @CFLAGSG@ @UFLAGS@ -DGRPREF=@GRPREF@ @WITH_X11@
 DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@
 AR = @AR@
 RANLIB = @RANLIB@
 FILTER = @FILTER@
 GRPREF = @GRPREF@
 
-INCLUDE = -I../include -I../include/ginterf -I../../mozy/include
+INCLUDE = -I../include -I../include/ginterf -I../../mozy/include @IMG_INCLUDES@
 
 LIB_TARGET = ../lib/ginterf.a
 

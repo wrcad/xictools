@@ -59,75 +59,7 @@
 
 #include "imsave.h"
 
-#ifdef WIN32
-
-#include <windows.h>
-
-
-Image *
-create_image_from_drawable(void *drawable, unsigned long, int x, int y,
-    int width, int height)
-{
-    // Since we don't have the window here, assume that x, y, width, height
-    // have been clipped to the window
-    //
-    HDC dc = (HDC)drawable;
-    HDC dcmem = CreateCompatibleDC(dc);
-    HBITMAP hbm = CreateCompatibleBitmap(dc, width, height);
-    SelectObject(dcmem, hbm);
-    BitBlt(dcmem, 0, 0, width, height, dc, x, y, SRCCOPY);
-
-    BITMAPINFO bmi;
-    BITMAPINFOHEADER *h = &bmi.bmiHeader;
-    h->biSize = sizeof(BITMAPINFOHEADER);
-    h->biWidth = width;
-    h->biHeight = -height;
-    h->biPlanes = 1;
-    h->biBitCount = 32;
-    h->biCompression = BI_RGB;
-    h->biSizeImage = 0;
-    h->biXPelsPerMeter = 0;
-    h->biYPelsPerMeter = 0;
-    h->biClrUsed = 0;
-    h->biClrImportant = 0;
-
-    unsigned char *vals = new unsigned char[4*width*height];
-    GetDIBits(dcmem, hbm, 0, height, vals, &bmi, DIB_RGB_COLORS);
-
-    unsigned char *data = new unsigned char[width * height * 3];
-    unsigned char *ptr = data;
-    for (int yy = 0; yy < height; yy++) {
-        unsigned char *p = vals + 4*yy*width;
-        for (int xx = 0; xx < width; xx++) {
-            *ptr++ = p[2];
-            *ptr++ = p[1];
-            *ptr++ = p[0];
-            p += 4;
-        }
-    }
-    delete [] vals;
-    DeleteObject(hbm);
-    DeleteDC(dcmem);
-
-    return (new Image(width, height, data));
-    
-    /******
-     ** old slow method
-    unsigned char *data = new unsigned char[width * height * 3];
-    unsigned char *ptr = data;
-    for (int yy = y; yy < y + height; yy++) {
-        for (int xx = x; xx < x + width; xx++) {
-            unsigned long pixel = GetPixel(dc, xx, yy);
-            *ptr++ = GetRValue(pixel);
-            *ptr++ = GetGValue(pixel);
-            *ptr++ = GetBValue(pixel);
-        }
-    }
-    return (new Image(width, height, data));
-    ******/
-}
-
-#else
+#ifdef WITH_X11
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -384,5 +316,78 @@ create_image_from_drawable(void *dp, unsigned long drawable, int x, int y,
     return (new Image(w, h, data));
 }
 
+#else
+#ifdef WIN32
+
+#include <windows.h>
+
+
+Image *
+create_image_from_drawable(void *drawable, unsigned long, int x, int y,
+    int width, int height)
+{
+    // Since we don't have the window here, assume that x, y, width, height
+    // have been clipped to the window
+    //
+    HDC dc = (HDC)drawable;
+    HDC dcmem = CreateCompatibleDC(dc);
+    HBITMAP hbm = CreateCompatibleBitmap(dc, width, height);
+    SelectObject(dcmem, hbm);
+    BitBlt(dcmem, 0, 0, width, height, dc, x, y, SRCCOPY);
+
+    BITMAPINFO bmi;
+    BITMAPINFOHEADER *h = &bmi.bmiHeader;
+    h->biSize = sizeof(BITMAPINFOHEADER);
+    h->biWidth = width;
+    h->biHeight = -height;
+    h->biPlanes = 1;
+    h->biBitCount = 32;
+    h->biCompression = BI_RGB;
+    h->biSizeImage = 0;
+    h->biXPelsPerMeter = 0;
+    h->biYPelsPerMeter = 0;
+    h->biClrUsed = 0;
+    h->biClrImportant = 0;
+
+    unsigned char *vals = new unsigned char[4*width*height];
+    GetDIBits(dcmem, hbm, 0, height, vals, &bmi, DIB_RGB_COLORS);
+
+    unsigned char *data = new unsigned char[width * height * 3];
+    unsigned char *ptr = data;
+    for (int yy = 0; yy < height; yy++) {
+        unsigned char *p = vals + 4*yy*width;
+        for (int xx = 0; xx < width; xx++) {
+            *ptr++ = p[2];
+            *ptr++ = p[1];
+            *ptr++ = p[0];
+            p += 4;
+        }
+    }
+    delete [] vals;
+    DeleteObject(hbm);
+    DeleteDC(dcmem);
+
+    return (new Image(width, height, data));
+    
+    /******
+     ** old slow method
+    unsigned char *data = new unsigned char[width * height * 3];
+    unsigned char *ptr = data;
+    for (int yy = y; yy < y + height; yy++) {
+        for (int xx = x; xx < x + width; xx++) {
+            unsigned long pixel = GetPixel(dc, xx, yy);
+            *ptr++ = GetRValue(pixel);
+            *ptr++ = GetGValue(pixel);
+            *ptr++ = GetBValue(pixel);
+        }
+    }
+    return (new Image(width, height, data));
+    ******/
+}
+
+#else
+// No X11, no Windows, no dice!
+#warning:  "CANNOT BUILD IMSAVE WITHOUT X11 OR WINDOWS"
+#endif
 #endif
 

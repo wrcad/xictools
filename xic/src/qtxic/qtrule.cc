@@ -1238,10 +1238,6 @@ QTruleDlg::apply()
             }
             if (ru_opp_sb1->value() > 0.0 || ru_opp_sb2->value() > 0.0) {
                 lstr.add_c(' ');
-#ifdef Q_OS_X11
-#undef Opposite
-// Stupid thing in X.h.
-#endif
                 lstr.add(Dkw.Opposite());
                 lstr.add_c(' ');
                 lstr.add(ru_opp_sb1->cleanText().toLatin1().constData());
