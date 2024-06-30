@@ -40,8 +40,8 @@
 
 #ifdef WIN32
 
-#include "ginterf/graphics.h"
-#include "ginterf/xdraw.h"
+#include "graphics.h"
+#include "x11draw.h"
 #include "miscutil/lstring.h"
 #include "mswdraw.h"
 #include "hcmswpdev.h"

@@ -76,7 +76,7 @@ namespace mswinterf {
         HCdata *data;
     };
 
-    struct MSPparams : public msw_draw
+    struct MSPparams : public MSWdraw
     {
         MSPparams() { dev = 0; lcx = 0; md_gbag = new sGbagMsw; }
         virtual ~MSPparams() { delete md_gbag; }

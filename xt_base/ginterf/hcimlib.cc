@@ -47,7 +47,7 @@
 #endif
 
 #ifdef WIN32
-#include "miscutil/mswdraw.h"
+#include "mswdraw.h"
 #else
 #ifdef WITH_X11
 #include "x11draw.h"
@@ -143,7 +143,7 @@ namespace ginterf
 {
     struct IMparams : public MSWdraw
     {
-        IMparams() { dev = 0; lcx = 0; }
+        IMparams() { pm_dev = 0; pm_lcx = 0; }
         virtual ~IMparams() { }
 
         void Halt();
@@ -204,8 +204,8 @@ IMparams::Halt()
     HDC dcMem = SetMemDC(0);
     if (dcMem) {
 
-        if (dev->data()->filename &&
-                !strcasecmp(dev->data()->filename, "clipboard")) {
+        if (pm_dev->data()->filename &&
+                !strcasecmp(pm_dev->data()->filename, "clipboard")) {
 
             int width = pm_dev->width;
             int height = pm_dev->height;

@@ -38,11 +38,13 @@
  $Id:$
  *========================================================================*/
 
-#ifdef WITH_X11
 
 #include "config.h"
 #include "graphics.h"
 #include "x11draw.h"
+
+#ifdef WITH_X11
+
 #include "miscutil/texttf.h"
 
 #include <math.h>
