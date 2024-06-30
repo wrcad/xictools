@@ -1289,7 +1289,7 @@ GTKprintPopup::hc_hcpopup(GRobject caller, GTKbag *wb, HCcb *cb,
         }
     }
     gtk_combo_box_set_active(GTK_COMBO_BOX(hc->hc_prntmenu), 0);
-    g_signal_connect(G_OBJECT(hc->hc_prntmenu), "activate",
+    g_signal_connect(G_OBJECT(hc->hc_prntmenu), "changed",
         G_CALLBACK(hc_prntmenu_proc), wb);
     hc_set_printer(wb);
 #endif
