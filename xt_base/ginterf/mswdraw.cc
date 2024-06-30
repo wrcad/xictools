@@ -40,11 +40,11 @@
 
 #ifdef WIN32
 
-#include "ginterf/graphics.h"
-#include "ginterf/grfont.h"
+#include "graphics.h"
+#include "grfont.h"
+#include "mswdraw.h"
 #include "miscutil/texttf.h"
 #include "miscutil/lstring.h"
-#include "mswdraw.h"
 #include <math.h>
 
 

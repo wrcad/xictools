@@ -317,7 +317,11 @@ the mingw64 versions of the gtk2 and/or Qt and gsl libraries.
     pacman -S winpty
     pacman -S mingw-w64-x86_64-gsl
     pacman -S mingw-w64-x86_64-gtk2  (for GTK)
+    pacman -S mingw-w64-x86_64-qt5  (for Qt)
     pacman -S mingw-w64-x86_64-qt6  (for Qt)
+Note: 6/30/2024  The Qt6 display looks terrible on my NVidia GeForce
+laptop, but is fine on an older system.  Qt5 looks fine on both
+systems.
 
 Add some other needed utilities:
 

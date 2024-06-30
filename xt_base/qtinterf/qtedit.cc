@@ -246,8 +246,13 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::EditorType type,
     }
 #ifdef WIN32
     if (ed_editor_type == Editor) {
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
         ed_File_CRLF = ed_filemenu->addAction(tr("&Write CRLF"), 0,
             this, &QTeditDlg::write_crlf_slot);
+#else
+        ed_File_CRLF = ed_filemenu->addAction(tr("&Write CRLF"), this,
+            &QTeditDlg::write_crlf_slot, 0);
+#endif
         ed_File_CRLF->setCheckable(true);
         ed_File_CRLF->setChecked(QTdev::self()->GetCRLFtermination());
     }
