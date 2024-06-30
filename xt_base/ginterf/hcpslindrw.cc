@@ -43,7 +43,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <time.h>
-#include "pslindrw.h"
+#include "hcpslindrw.h"
 #include "miscutil/texttf.h"
 
 

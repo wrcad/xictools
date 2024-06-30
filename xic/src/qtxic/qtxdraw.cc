@@ -42,7 +42,7 @@
 #include "dsp_layer.h"
 #include "dsp_color.h"
 #include "qtmain.h"
-#include "ginterf/xdraw.h"
+#include "ginterf/x11draw.h"
 #ifdef WITH_X11
 #include <X11/Xlib.h>
 #endif

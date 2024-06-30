@@ -38,36 +38,35 @@
  $Id:$
  *========================================================================*/
 
-#ifndef PCL_H
-#define PCL_H
+#ifndef HCXFIG_H
+#define HCXFIG_H
 
-#include "ginterf/raster.h"
+#include "graphics.h"
+#include "pixtab.h"
+#include <stdio.h>
 
-// Driver for in-core bitmap generation with output in HP PCL
-// format.
+// Driver for xfig output
 //
-// Call with: "-f filename -r resolution -w width -h height
-//            -x left_marg -y top_marg"
+// Call with "-f filename -w width -h height -x left_marg -y top_marg"
 //
-// width, height, left_marg, and top_marg in inches (float format)
-// resolution: 75, 100, 150, or 300 (pixels/inch)
+// dimensions are in inches (float format)
 
 namespace ginterf
 {
-    extern HCdesc PCLdesc;
+    extern HCdesc XFdesc;
 
-    class PCLdev : public GRdev
+    class XFdev : public GRdev
     {
     public:
-        PCLdev()
-            {
-                name = "PCL";
-                ident = _devPCL_;
-                devtype = GRhardcopy;
-                data = 0;
-            }
+        XFdev()
+        {
+            name = "XF";
+            ident = _devXF_;
+            devtype = GRhardcopy;
+            data = 0;
+        }
 
-        friend struct PCLparams;
+        friend struct XFparams;
 
         void RGBofPixel(int, int *r, int *g, int *b)    { *r = *g = *b = 0; }
 
@@ -78,33 +77,53 @@ namespace ginterf
         HCdata *data;       // internal private data struct
     };
 
-    struct PCLtext
+    struct XFparams : public HCdraw
     {
-        PCLtext() { x = y = xform = 0; text = 0; next = 0; }
-
-        int x;
-        int y;
-        int xform;
-        char *text;
-        PCLtext *next;
-    };
-
-    struct PCLparams : public RASparams
-    {
-        PCLparams() { dev = 0; textlist = 0; }
-
-        HCdata *devdata() { return (((PCLdev*)dev)->data); }
-        void dump();
+        XFparams()
+            {
+                dev = 0;
+                fp = 0;
+                lastx = lasty = -1;
+                linestyle = 0;
+                fillpattern = -1;
+                color = 0;
+                numcolors = 0;
+                depth = 0;
+            }
+        virtual ~XFparams() { }
 
         void Halt();
         void ResetViewport(int, int);
-        void DefineViewport()               { }
+        void DefineViewport();
         void Dump(int)                      { }
+        void Pixel(int, int);
+        void Pixels(GRmultiPt*, int);
+        void Line(int, int, int, int);
+        void PolyLine(GRmultiPt*, int);
+        void Lines(GRmultiPt*, int);
+        void Box(int, int, int, int);
+        void Boxes(GRmultiPt*, int);
+        void Arc(int, int, int, int, double, double);
+        void Polygon(GRmultiPt*, int);
+        void Zoid(int, int, int, int, int, int);
         void Text(const char*, int, int, int, int = -1, int = -1);
         void TextExtent(const char*, int*, int*);
+        void SetColor(int);
+        void SetLinestyle(const GRlineType*);
+        void SetFillpattern(const GRfillType*);
+        void DisplayImage(const GRimage*, int, int, int, int);
         double Resolution();
 
-        PCLtext *textlist;          // linked list head or text segs
+        XFdev *dev;
+        FILE *fp;
+        int lastx;
+        int lasty;
+        int linestyle;
+        int fillpattern;
+        int color;
+        int numcolors;
+        int depth;
+        ptab ctab;
     };
 }
 

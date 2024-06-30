@@ -55,8 +55,8 @@
 #include "fio_library.h"
 #include "fio_alias.h"
 #include "si_parsenode.h"
-// xdraw.h must come before si_handle.h to enable xdraw handle.
-#include "ginterf/xdraw.h"
+// xdraw.h must come before si_handle.h to enable x11draw handle.
+#include "ginterf/x11draw.h"
 #include "si_handle.h"
 #include "si_args.h"
 #include "si_parser.h"

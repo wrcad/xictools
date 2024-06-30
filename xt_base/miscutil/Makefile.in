@@ -17,7 +17,7 @@ INCLUDE = -I../include -I../include/miscutil
 LIB_TARGET = ../lib/miscutil.a
 
 ifdef MSW
-MSWFILES = msw.cc mswdraw.cc mswpdev.cc
+MSWFILES = msw.cc
 endif
 
 HFILES =

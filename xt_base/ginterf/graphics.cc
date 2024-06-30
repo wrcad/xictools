@@ -63,13 +63,13 @@
 #endif
 
 #include "nulldev.h"
-#include "xdraw.h"
-#include "pslindrw.h"
-#include "psbm.h"
-#include "psbc.h"
-#include "hpgl.h"
-#include "pcl.h"
-#include "xfig.h"
+#include "hcimlib.h"
+#include "hcpslindrw.h"
+#include "hcpsbm.h"
+#include "hcpsbc.h"
+#include "hchpgl.h"
+#include "hcpcl.h"
+#include "hcxfig.h"
 
 
 bool GRmultiPt::xshort;

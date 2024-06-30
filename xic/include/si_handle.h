@@ -380,8 +380,8 @@ struct sHdlGen : public sHdl
     gdrec *rec;
 };
 
-#ifdef XDRAW_H
-// defined in xdraw.h
+#ifdef WITH_XDRAW
+// defined in x11draw.h
 
 // Handle type for graphical interface.
 //

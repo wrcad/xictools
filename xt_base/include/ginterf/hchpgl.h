@@ -32,66 +32,98 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * GtkInterf Graphical Interface Library                                  *
+ * Ginterf Graphical Interface Library                                    *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#ifndef MSWPDEV_H
-#define MSWPDEV_H
-#ifdef WIN32
+#ifndef HCHPGL_H
+#define HCHPGL_H
 
+#include "ginterf/graphics.h"
+#include "miscutil/texttf.h"
+#include <stdio.h>
 
-// Windows Native hardcopy driver
+// Driver for HPGL plotters
 //
+// Call with "-f filename -w width -h height -x left_marg -y top_marg"
+//
+// dimensions are in inches (float format)
 
-namespace mswinterf {
-    extern HCdesc MSPdesc;
+namespace ginterf
+{
+    extern HCdesc HPdesc;
 
-    struct MSWdev : public GRdev
-    {
-    };
-
-    class MSPdev : public MSWdev
+    class HPdev : public GRdev
     {
     public:
-        MSPdev()
+        HPdev()
             {
-                name = "MSP";
-                ident = _devMSP_;
+                name = "HP";
+                ident = _devHP_;
                 devtype = GRhardcopy;
-                printer = 0;
-                media = 0;
                 data = 0;
             }
+
+        friend struct HPparams;
+
+        void RGBofPixel(int, int *r, int *g, int *b)    { *r = *g = *b = 0; }
+
         bool Init(int*, char**);
         GRdraw *NewDraw(int);
 
-        friend struct MSPparams;
-
     private:
-        char *printer;
-        int media;
-        HCdata *data;
+        HCdata *data;       // internal private data struct
     };
 
-    struct MSPparams : public msw_draw
+    struct HPparams : public HCdraw
     {
-        MSPparams() { dev = 0; lcx = 0; md_gbag = new sGbagMsw; }
-        virtual ~MSPparams() { delete md_gbag; }
-        int SwathHeight(int*);
-        void ResetViewport(int, int);
+        HPparams()
+            {
+                dev = 0;
+                fp = 0;
+                lastx = lasty = -1;
+                curpen = curline = 0;
+                nofill = false;
+                landscape = false;
+            }
+
+        int invert(int yy) { return (2*dev->yoff + dev->height - yy - 1); }
+
         void Halt();
 
-        friend class MSPdev;
+        void ResetViewport(int, int);
+        void DefineViewport();
+        void Dump(int)                      { }
+        void Pixel(int, int);
+        void Pixels(GRmultiPt*, int);
+        void Line(int, int, int, int);
+        void PolyLine(GRmultiPt*, int);
+        void Lines(GRmultiPt*, int);
+        void Box(int, int, int, int);
+        void Boxes(GRmultiPt*, int);
+        void Arc(int, int, int, int, double, double);
+        void Polygon(GRmultiPt*, int);
+        void Zoid(int, int, int, int, int, int);
+        void Text(const char*, int, int, int, int = -1, int = -1);
+        void TextExtent(const char*, int*, int*);
+        void SetColor(int);
+        void SetLinestyle(const GRlineType*);
+        void SetFillpattern(const GRfillType*);
+        void DisplayImage(const GRimage*, int, int, int, int);
+        double Resolution();
 
-    private:
-        MSPdev *dev;               // pointer to driver desc
-        void *lcx;                 // layer context
+        HPdev *dev;
+        FILE *fp;
+        int lastx;
+        int lasty;
+        int curpen;
+        int curline;
+        bool nofill;
+        bool landscape;
     };
 }
 
-#endif
 #endif
 

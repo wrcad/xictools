@@ -32,100 +32,66 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * Ginterf Graphical Interface Library                                    *
+ * GtkInterf Graphical Interface Library                                  *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-#ifndef XFIG_H
-#define XFIG_H
+#ifndef HCMSWPDEV_H
+#define HCMSWPDEV_H
+#ifdef WIN32
 
-#include "ginterf/graphics.h"
-#include "ginterf/pixtab.h"
-#include <stdio.h>
 
-// Driver for xfig output
+// Windows Native hardcopy driver
 //
-// Call with "-f filename -w width -h height -x left_marg -y top_marg"
-//
-// dimensions are in inches (float format)
 
-namespace ginterf
-{
-    extern HCdesc XFdesc;
+namespace mswinterf {
+    extern HCdesc MSPdesc;
 
-    class XFdev : public GRdev
+    struct MSWdev : public GRdev
+    {
+    };
+
+    class MSPdev : public MSWdev
     {
     public:
-        XFdev()
-        {
-            name = "XF";
-            ident = _devXF_;
-            devtype = GRhardcopy;
-            data = 0;
-        }
-
-        friend struct XFparams;
-
-        void RGBofPixel(int, int *r, int *g, int *b)    { *r = *g = *b = 0; }
-
+        MSPdev()
+            {
+                name = "MSP";
+                ident = _devMSP_;
+                devtype = GRhardcopy;
+                printer = 0;
+                media = 0;
+                data = 0;
+            }
         bool Init(int*, char**);
         GRdraw *NewDraw(int);
 
+        friend struct MSPparams;
+
     private:
-        HCdata *data;       // internal private data struct
+        char *printer;
+        int media;
+        HCdata *data;
     };
 
-    struct XFparams : public HCdraw
+    struct MSPparams : public msw_draw
     {
-        XFparams()
-            {
-                dev = 0;
-                fp = 0;
-                lastx = lasty = -1;
-                linestyle = 0;
-                fillpattern = -1;
-                color = 0;
-                numcolors = 0;
-                depth = 0;
-            }
-        virtual ~XFparams() { }
-
-        void Halt();
+        MSPparams() { dev = 0; lcx = 0; md_gbag = new sGbagMsw; }
+        virtual ~MSPparams() { delete md_gbag; }
+        int SwathHeight(int*);
         void ResetViewport(int, int);
-        void DefineViewport();
-        void Dump(int)                      { }
-        void Pixel(int, int);
-        void Pixels(GRmultiPt*, int);
-        void Line(int, int, int, int);
-        void PolyLine(GRmultiPt*, int);
-        void Lines(GRmultiPt*, int);
-        void Box(int, int, int, int);
-        void Boxes(GRmultiPt*, int);
-        void Arc(int, int, int, int, double, double);
-        void Polygon(GRmultiPt*, int);
-        void Zoid(int, int, int, int, int, int);
-        void Text(const char*, int, int, int, int = -1, int = -1);
-        void TextExtent(const char*, int*, int*);
-        void SetColor(int);
-        void SetLinestyle(const GRlineType*);
-        void SetFillpattern(const GRfillType*);
-        void DisplayImage(const GRimage*, int, int, int, int);
-        double Resolution();
+        void Halt();
 
-        XFdev *dev;
-        FILE *fp;
-        int lastx;
-        int lasty;
-        int linestyle;
-        int fillpattern;
-        int color;
-        int numcolors;
-        int depth;
-        ptab ctab;
+        friend class MSPdev;
+
+    private:
+        MSPdev *dev;               // pointer to driver desc
+        void *lcx;                 // layer context
     };
 }
 
+#endif
 #endif
 

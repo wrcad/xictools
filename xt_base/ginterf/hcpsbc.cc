@@ -47,7 +47,7 @@
 #include <math.h>
 #include <sys/types.h>
 #include <time.h>
-#include "psbc.h"
+#include "hcpsbc.h"
 #include "miscutil/lstring.h"
 #include "miscutil/texttf.h"
 

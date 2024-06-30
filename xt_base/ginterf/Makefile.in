@@ -12,17 +12,26 @@ AR = @AR@
 RANLIB = @RANLIB@
 FILTER = @FILTER@
 GRPREF = @GRPREF@
+MSW = @MSW@
 
 INCLUDE = -I../include -I../include/ginterf -I../../mozy/include @IMG_INCLUDES@
 
 LIB_TARGET = ../lib/ginterf.a
 
+ifdef MSW
+MSWDRAW = mswdraw.cc
+MSWHCDEV = hcmswpdev.cc
+endif
+
+HCFILES = \
+  hcimlib.cc hchpgl.cc hcpcl.cc hcpsbc.cc hcpsbm.cc hcpslindrw.cc hcxfig.cc \
+  $(MSWHCDEV)
+
 HFILES =
 CCFILES = \
   colorname.cc graphics.cc grfont.cc grimage.cc grlinedb.cc \
-  grvecfont.cc hpgl.cc pcl.cc pixtab.cc polydecomp.cc psbc.cc psbm.cc \
-  psencode.cc pslindrw.cc raster.cc rgbmap.cc rgbzimg.cc shmctl.cc \
-  xdraw.cc xfig.cc
+  grvecfont.cc pixtab.cc polydecomp.cc psencode.cc raster.cc rgbmap.cc \
+  rgbzimg.cc shmctl.cc x11draw.cc $(HCFILES) $(MSWDRAW)
 
 CCOBJS = $(CCFILES:.cc=.o)
 

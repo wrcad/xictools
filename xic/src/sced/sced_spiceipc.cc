@@ -1658,14 +1658,22 @@ display_string = ":0";
         DSPpkg::self()->CloseGraphicsConnection();
         dup2(ipc_stdout_skt2, fileno(stdout));
         dup2(ipc_stdout_skt2, fileno(stderr));
-        if (has_graphics && *display_string) {
-            if (ipc_no_toolbar) {
-                execl(ipc_spice_path, prog_name, "-P", "-D",
-                    display_string, (char*)0);
+        if (has_graphics) {
+            if (display_string) {
+                if (ipc_no_toolbar) {
+                    execl(ipc_spice_path, prog_name, "-P", "-D",
+                        display_string, (char*)0);
+                }
+                else {
+                    execl(ipc_spice_path, prog_name, "-P", "-I", "-D",
+                        display_string, (char*)0);
+                }
             }
             else {
-                execl(ipc_spice_path, prog_name, "-P", "-I", "-D",
-                    display_string, (char*)0);
+                if (ipc_no_toolbar)
+                    execl(ipc_spice_path, prog_name, "-P", (char*)0);
+                else
+                    execl(ipc_spice_path, prog_name, "-P", "-I", (char*)0);
             }
         }
         else

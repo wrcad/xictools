@@ -38,12 +38,12 @@
  $Id:$
  *========================================================================*/
 
-#ifndef PSBC_H
-#define PSBC_H
+#ifndef HCPSBM_H
+#define HCPSBM_H
 
-#include "ginterf/rgbmap.h"
+#include "raster.h"
 
-// Driver for 24-bit color in-core bitmap generation with output
+// Driver for single plane in-core bitmap generation with output
 // in PostScript (TM) format.
 //
 // Call with: "-f filename -r resolution -w width -h height
@@ -55,23 +55,23 @@
 
 namespace ginterf
 {
-    extern HCdesc PSBCdesc;
-    extern HCdesc PSBCdesc_e;
+    extern HCdesc PSBMdesc;
+    extern HCdesc PSBMdesc_e;
 
     extern bool PS_rll85dump(FILE*, unsigned char*, int, int, int);
 
-    class PSBCdev : public GRdev
+    class PSBMdev : public GRdev
     {
     public:
-        PSBCdev()
+        PSBMdev()
             {
-                name = "PSBC";
-                ident = _devPSBC_;
+                name = "PSBM";
+                ident = _devPSBM_;
                 devtype = GRhardcopy;
                 data = 0;
             }
 
-        friend struct PSBCparams;
+        friend struct PSBMparams;
 
         void RGBofPixel(int, int *r, int *g, int *b)    { *r = *g = *b = 0; }
 
@@ -82,24 +82,21 @@ namespace ginterf
         HCdata *data;       // internal private data struct
     };
 
-    struct PSBCtext
+    struct PSBMtext
     {
-        PSBCtext() { x = y = 0; w = h = 0; xform = 0; text = 0; next = 0;
-            r = g = b = 0; }
+        PSBMtext() { x = y = 0; w = h = 0; xform = 0; text = 0; next = 0; }
 
         int x, y, w, h;
-        int r, g, b;
         int xform;
         char *text;
-        struct PSBCtext *next;
+        PSBMtext *next;
     };
 
-    struct PSBCparams : public RGBparams
+    struct PSBMparams : public RASparams
     {
-        PSBCparams() : RGBparams(true)
-            { dev = 0; textlist = 0; dev_flags = GRhasOwnText; }
+        PSBMparams() { dev = 0; textlist = 0; dev_flags = GRhasOwnText; }
 
-        HCdata *devdata() { return (((PSBCdev*)dev)->data); }
+        HCdata *devdata() { return (((PSBMdev*)dev)->data); }
         void dump();
 
         void Halt();
@@ -110,7 +107,7 @@ namespace ginterf
         void TextExtent(const char*, int*, int*);
         double Resolution();
 
-        PSBCtext *textlist;         // linked list head or text segs
+        PSBMtext *textlist;         // linked list head or text segs
     };
 }
 

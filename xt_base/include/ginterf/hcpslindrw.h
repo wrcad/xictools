@@ -38,10 +38,10 @@
  $Id:$
  *========================================================================*/
 
-#ifndef PSLINDRW_H
-#define PSLINDRW_H
+#ifndef HCPSLINDRW_H
+#define HCPSLINDRW_H
 
-#include "ginterf/graphics.h"
+#include "graphics.h"
 #include <stdio.h>
 
 // Driver for PostScript (TM) line drawing

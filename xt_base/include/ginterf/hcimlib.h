@@ -38,20 +38,47 @@
  $Id:$
  *========================================================================*/
 
-#ifndef XDRAW_H
-#define XDRAW_H
+#ifndef HCIMLIB_H
+#define HCIMLIB_H
 
 #define XD_NUM_LINESTYLES 16
 #define XD_NUM_FILLPATTS  16
 
 namespace ginterf
 {
+    extern HCdesc IMdesc;
+
+    class IMdev : public GRdev
+    {
+    public:
+        IMdev()
+            {
+                name = "IM";
+                ident = _devIM_;
+                devtype = GRhardcopy;
+                im_data = 0;
+            }
+
+        friend struct Xparams;
+
+        void RGBofPixel(int, int *r, int *g, int *b)    { *r = *g = *b = 0; }
+
+        bool Init(int*, char**);
+        GRdraw *NewDraw(int);
+
+        HCdata *data()  { return (im_data); }
+
+    private:
+        HCdata *im_data;
+    };
+
+    /*
     struct Xparams;
 
-    struct Xdraw
+    struct X11draw
     {
-        Xdraw(const char*, unsigned long);
-        ~Xdraw();
+        X11draw(const char*, unsigned long);
+        ~X11draw();
 
         static bool check_error();
         unsigned long create_pixmap(int, int);
@@ -89,30 +116,18 @@ namespace ginterf
     private:
         Xparams *xp;
     };
+        unsigned long create_pixmap(int, int);
+        bool destroy_pixmap(Pixmap);
+        bool copy_drawable(Drawable, Drawable, int, int, int, int, int, int);
+        bool draw(int, int, int, int);
+        bool get_drawable_size(Drawable, int*, int*);
 
-    extern HCdesc Xdesc;
+        Window reset_drawable(Drawable d)
+            { Window prev = window; window = d; return (prev); }
+        Xdev *dev;
+        void *lcx;
+    */
 
-    class Xdev : public GRdev
-    {
-    public:
-        Xdev()
-            {
-                name = "X";
-                ident = _devX_;
-                devtype = GRhardcopy;
-                data = 0;
-            }
-
-        friend struct Xparams;
-
-        void RGBofPixel(int, int *r, int *g, int *b)    { *r = *g = *b = 0; }
-
-        bool Init(int*, char**);
-        GRdraw *NewDraw(int);
-
-    private:
-        HCdata *data;
-    };
 }
 
 #endif

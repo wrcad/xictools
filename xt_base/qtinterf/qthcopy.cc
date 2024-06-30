@@ -989,11 +989,12 @@ QTprintDlg::portrait_slot(bool set)
         pd_orient &= ~HClandscape;
         // See if we should swap the margin label
         if (GRpkg::self()->HCof(pd_fmt)->limits.flags & HClandsSwpYmarg) {
-            const char *str = pd_ylabel->text().toLatin1().constData();
+            QByteArray ba = pd_ylabel->text().toLatin1();
+            const char *str = ba.constData();
             if (!strcmp(str, "Top"))
-                pd_ylabel->setText(QString("Bottom"));
+                pd_ylabel->setText("Bottom");
             else
-                pd_ylabel->setText(QString("Top"));
+                pd_ylabel->setText("Top");
         }
     }
     else if (!pd_landsbtn->isChecked())
@@ -1012,11 +1013,12 @@ QTprintDlg::landscape_slot(bool set)
         pd_orient |= HClandscape;
         // See if we should swap the margin label
         if (GRpkg::self()->HCof(pd_fmt)->limits.flags & HClandsSwpYmarg) {
-            const char *str = pd_ylabel->text().toLatin1().constData();
+            QByteArray ba = pd_ylabel->text().toLatin1();
+            const char *str = ba.constData();
             if (!strcmp(str, "Top"))
-                pd_ylabel->setText(QString("Bottom"));
+                pd_ylabel->setText("Bottom");
             else
-                pd_ylabel->setText(QString("Top"));
+                pd_ylabel->setText("Top");
         }
     }
     else if (!pd_portbtn->isChecked())
@@ -1042,18 +1044,19 @@ void
 QTprintDlg::tofile_slot(bool set)
 {
     pd_tofile = set;
-    const char *s = pd_cmdtxtbox->text().toLatin1().constData();
+    QByteArray ba = pd_cmdtxtbox->text().toLatin1();
+    const char *s = ba.constData();
     if (set) {
-        pd_cmdlab->setText(QString("File Name"));
+        pd_cmdlab->setText("File Name");
         delete [] pd_cmdtext;
         pd_cmdtext = lstring::copy(s);
-        pd_cmdtxtbox->setText(QString(pd_tofilename));
+        pd_cmdtxtbox->setText(pd_tofilename);
     }
     else {
-        pd_cmdlab->setText(QString("Print Command"));
+        pd_cmdlab->setText("Print Command");
         delete [] pd_tofilename;
         pd_tofilename = lstring::copy(s);
-        pd_cmdtxtbox->setText(QString(pd_cmdtext));
+        pd_cmdtxtbox->setText(pd_cmdtext);
     }
 }
 
@@ -1155,7 +1158,8 @@ QTprintDlg::print_slot()
     if (!pd_owner)
         return;
 
-    const char *str = pd_cmdtxtbox->text().toLatin1().constData();
+    QByteArray ba = pd_cmdtxtbox->text().toLatin1();
+    const char *str = ba.constData();
     if (!str || !*str) {
         if (pd_tofile)
             pd_owner->PopUpMessage("No filename given!", true);
@@ -1198,7 +1202,8 @@ QTprintDlg::print_slot()
                 delete [] all_text;
                 fclose(fp);
                 if (!pd_tofile) {
-                    const char *st = pd_cmdtxtbox->text().toLatin1().constData();
+                    QByteArray tba = pd_cmdtxtbox->text().toLatin1();
+                    const char *st = tba.constData();
                     fork_and_submit(st, filename);
                     // note that the file is NOT unlinked
                 }
@@ -1261,7 +1266,8 @@ QTprintDlg::print_slot()
             if (pd_textfmt != HtmlText)
                 delete [] text;
             if (!pd_tofile) {
-                const char *st = pd_cmdtxtbox->text().toLatin1().constData();
+                QByteArray tba = pd_cmdtxtbox->text().toLatin1();
+                const char *st = tba.constData();
                 fork_and_submit(st, filename);
                 // note that the file is NOT unlinked
             }

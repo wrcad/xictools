@@ -44,7 +44,7 @@
 #include "ginterf/xdraw.h"
 #include "miscutil/lstring.h"
 #include "mswdraw.h"
-#include "mswpdev.h"
+#include "hcmswpdev.h"
 #include <time.h>
 #include <string.h>
 #include <stdio.h>

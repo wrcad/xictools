@@ -7,7 +7,7 @@ DATE = @DATE@
 
 CXX = @CXX@
 CC = @CC@
-CFLAGS = @CFLAGSG@ @NEEDINT64@ @UFLAGS@
+CFLAGS = @CFLAGSG@ @NEEDINT64@ @UFLAGS@ @WITH_X11@
 DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @NEEDINT64@
 AR = @AR@
 RANLIB = @RANLIB@
@@ -18,7 +18,7 @@ LIB_TARGET = main.a
 
 BASE = ../../../xt_base
 SECURE = ../../../secure
-INCLUDE = -I../../include -I$(BASE)/include -I$(SECURE)/include
+INCLUDE = -I../../include -I$(BASE)/include -I$(SECURE)/include @IMG_INCLUDES@
 
 HFILES =
 CCFILES = \

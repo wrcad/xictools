@@ -38,35 +38,36 @@
  $Id:$
  *========================================================================*/
 
-#ifndef HPGL_H
-#define HPGL_H
+#ifndef HCPCL_H
+#define HCPCL_H
 
-#include "ginterf/graphics.h"
-#include "miscutil/texttf.h"
-#include <stdio.h>
+#include "raster.h"
 
-// Driver for HPGL plotters
+// Driver for in-core bitmap generation with output in HP PCL
+// format.
 //
-// Call with "-f filename -w width -h height -x left_marg -y top_marg"
+// Call with: "-f filename -r resolution -w width -h height
+//            -x left_marg -y top_marg"
 //
-// dimensions are in inches (float format)
+// width, height, left_marg, and top_marg in inches (float format)
+// resolution: 75, 100, 150, or 300 (pixels/inch)
 
 namespace ginterf
 {
-    extern HCdesc HPdesc;
+    extern HCdesc PCLdesc;
 
-    class HPdev : public GRdev
+    class PCLdev : public GRdev
     {
     public:
-        HPdev()
+        PCLdev()
             {
-                name = "HP";
-                ident = _devHP_;
+                name = "PCL";
+                ident = _devPCL_;
                 devtype = GRhardcopy;
                 data = 0;
             }
 
-        friend struct HPparams;
+        friend struct PCLparams;
 
         void RGBofPixel(int, int *r, int *g, int *b)    { *r = *g = *b = 0; }
 
@@ -77,51 +78,33 @@ namespace ginterf
         HCdata *data;       // internal private data struct
     };
 
-    struct HPparams : public HCdraw
+    struct PCLtext
     {
-        HPparams()
-            {
-                dev = 0;
-                fp = 0;
-                lastx = lasty = -1;
-                curpen = curline = 0;
-                nofill = false;
-                landscape = false;
-            }
+        PCLtext() { x = y = xform = 0; text = 0; next = 0; }
 
-        int invert(int yy) { return (2*dev->yoff + dev->height - yy - 1); }
+        int x;
+        int y;
+        int xform;
+        char *text;
+        PCLtext *next;
+    };
+
+    struct PCLparams : public RASparams
+    {
+        PCLparams() { dev = 0; textlist = 0; }
+
+        HCdata *devdata() { return (((PCLdev*)dev)->data); }
+        void dump();
 
         void Halt();
-
         void ResetViewport(int, int);
-        void DefineViewport();
+        void DefineViewport()               { }
         void Dump(int)                      { }
-        void Pixel(int, int);
-        void Pixels(GRmultiPt*, int);
-        void Line(int, int, int, int);
-        void PolyLine(GRmultiPt*, int);
-        void Lines(GRmultiPt*, int);
-        void Box(int, int, int, int);
-        void Boxes(GRmultiPt*, int);
-        void Arc(int, int, int, int, double, double);
-        void Polygon(GRmultiPt*, int);
-        void Zoid(int, int, int, int, int, int);
         void Text(const char*, int, int, int, int = -1, int = -1);
         void TextExtent(const char*, int*, int*);
-        void SetColor(int);
-        void SetLinestyle(const GRlineType*);
-        void SetFillpattern(const GRfillType*);
-        void DisplayImage(const GRimage*, int, int, int, int);
         double Resolution();
 
-        HPdev *dev;
-        FILE *fp;
-        int lastx;
-        int lasty;
-        int curpen;
-        int curline;
-        bool nofill;
-        bool landscape;
+        PCLtext *textlist;          // linked list head or text segs
     };
 }
 

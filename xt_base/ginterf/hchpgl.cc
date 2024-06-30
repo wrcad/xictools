@@ -43,7 +43,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <time.h>
-#include "hpgl.h"
+#include "hchpgl.h"
 
 #ifndef M_PI
 #define	M_PI  3.14159265358979323846  // pi

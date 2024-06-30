@@ -68,11 +68,11 @@
 // GetDC does not appear to be too expensive, but I hate to call it for
 // every rendered object.
 
-HDC msw_draw::md_lastDC = 0;
-HWND msw_draw::md_lastHWND = 0;
+HDC MSWdraw::md_lastDC = 0;
+HWND MSWdraw::md_lastHWND = 0;
 
 
-msw_draw::msw_draw()
+MSWdraw::MSWdraw()
 {
     md_gbag = new sGbagMsw;
     md_window = 0;
@@ -82,14 +82,14 @@ msw_draw::msw_draw()
 }
 
 
-msw_draw::~msw_draw()
+MSWdraw::~MSWdraw()
 {
     delete md_gbag;
 }
 
 
 HDC
-msw_draw::check_dc()
+MSWdraw::check_dc()
 {
     if (md_memDC)
         return (md_memDC);
@@ -105,7 +105,7 @@ msw_draw::check_dc()
 // operations on an ordinary DC.
 //
 HDC
-msw_draw::InitDC(HDC ndc)
+MSWdraw::InitDC(HDC ndc)
 {
     if (!md_window && !ndc)
         return (0);
@@ -127,7 +127,7 @@ msw_draw::InitDC(HDC ndc)
 
 
 HDC
-msw_draw::SetMemDC(HDC dcMem)
+MSWdraw::SetMemDC(HDC dcMem)
 {
     md_lastDC = 0;
     md_lastHWND = 0;
@@ -142,7 +142,7 @@ msw_draw::SetMemDC(HDC dcMem)
 // to the *same* window.
 //
 void
-msw_draw::ReleaseDC()
+MSWdraw::ReleaseDC()
 {
     if (md_lastDC) {
         HPEN pen = SelectPen(md_lastDC, GetStockObject(BLACK_PEN));
@@ -159,7 +159,7 @@ msw_draw::ReleaseDC()
 
 
 void
-msw_draw::Halt()
+MSWdraw::Halt()
 {
     // Applies to hard copy drivers only.
 }
@@ -168,7 +168,7 @@ msw_draw::Halt()
 // Clear the drawing window.
 //
 void
-msw_draw::Clear()
+MSWdraw::Clear()
 {
     RECT r;
     GetClientRect(md_window, &r);
@@ -189,7 +189,7 @@ msw_draw::Clear()
 // Draw a pixel at x, y.
 //
 void
-msw_draw::Pixel(int x, int y)
+MSWdraw::Pixel(int x, int y)
 {
     SetPixelV(check_dc(), x, y, md_foreg);
 }
@@ -198,7 +198,7 @@ msw_draw::Pixel(int x, int y)
 // Draw multiple pixels from list.
 //
 void
-msw_draw::Pixels(GRmultiPt *data, int n)
+MSWdraw::Pixels(GRmultiPt *data, int n)
 {
     // This seems a bit faster than SetPixelV
     HDC dc = check_dc();
@@ -233,7 +233,7 @@ msw_draw::Pixels(GRmultiPt *data, int n)
 // Draw line function.
 //
 void
-msw_draw::Line(int x1, int y1, int x2, int y2)
+MSWdraw::Line(int x1, int y1, int x2, int y2)
 {
     LinePrv(x1, y1, x2, y2);
 }
@@ -243,7 +243,7 @@ msw_draw::Line(int x1, int y1, int x2, int y2)
 // Microsoft makes this too difficult and slow.
 //
 void
-msw_draw::LinePrv(int x1, int y1, int x2, int y2)
+MSWdraw::LinePrv(int x1, int y1, int x2, int y2)
 {
     HDC dc = check_dc();
 #ifdef USE_MY_LINES
@@ -346,7 +346,7 @@ msw_draw::LinePrv(int x1, int y1, int x2, int y2)
 // Draw a path.
 //
 void
-msw_draw::PolyLine(GRmultiPt *data, int n)
+MSWdraw::PolyLine(GRmultiPt *data, int n)
 {
     if (n < 2)
         return;
@@ -370,7 +370,7 @@ msw_draw::PolyLine(GRmultiPt *data, int n)
 // Draw a collection of lines.
 //
 void
-msw_draw::Lines(GRmultiPt *data, int n)
+MSWdraw::Lines(GRmultiPt *data, int n)
 {
     if (n < 1)
         return;
@@ -388,7 +388,7 @@ msw_draw::Lines(GRmultiPt *data, int n)
 // Draw a filled box.
 //
 void
-msw_draw::Box(int x1, int y1, int x2, int y2)
+MSWdraw::Box(int x1, int y1, int x2, int y2)
 {
     if (x1 > x2) {
         int temp = x1;
@@ -424,7 +424,7 @@ msw_draw::Box(int x1, int y1, int x2, int y2)
 // Draw a collection of filled boxes.
 //
 void
-msw_draw::Boxes(GRmultiPt *data, int n)
+MSWdraw::Boxes(GRmultiPt *data, int n)
 {
     // order: x, y, width, height
     HDC dc = check_dc();
@@ -470,7 +470,7 @@ namespace {
 // Draw an arc.
 //
 void
-msw_draw::Arc(int x0, int y0, int rx, int ry, double theta1, double theta2)
+MSWdraw::Arc(int x0, int y0, int rx, int ry, double theta1, double theta2)
 {
 
     if (rx <= 0 || ry <= 0)
@@ -489,7 +489,7 @@ msw_draw::Arc(int x0, int y0, int rx, int ry, double theta1, double theta2)
 // Draw a filled polygon.
 //
 void
-msw_draw::Polygon(GRmultiPt *data, int numv)
+MSWdraw::Polygon(GRmultiPt *data, int numv)
 {
     HRGN rgn = CreatePolygonRgn((POINT*)data->data(), numv, WINDING);
     if (md_gbag->get_fillpattern() && md_gbag->get_fillpattern()->xPixmap()) {
@@ -515,7 +515,7 @@ msw_draw::Polygon(GRmultiPt *data, int numv)
 
 // Draw a trapezoid.
 void
-msw_draw::Zoid(int yl, int yu, int xll, int xul, int xlr, int xur)
+MSWdraw::Zoid(int yl, int yu, int xll, int xul, int xlr, int xur)
 {
     if (yl >= yu)
         return;
@@ -568,7 +568,7 @@ msw_draw::Zoid(int yl, int yu, int xll, int xul, int xlr, int xur)
 // Transformations are not supported.
 //
 void
-msw_draw::Text(const char *str, int x, int y, int xform, int, int)
+MSWdraw::Text(const char *str, int x, int y, int xform, int, int)
 {
     if (!str)
         return;
@@ -605,7 +605,7 @@ msw_draw::Text(const char *str, int x, int y, int xform, int, int)
 // the max bounds of any character.
 //
 void
-msw_draw::TextExtent(const char *text, int *wid, int *hei)
+MSWdraw::TextExtent(const char *text, int *wid, int *hei)
 {
     if (!text || !*text)
         text = "x";
@@ -622,7 +622,7 @@ msw_draw::TextExtent(const char *text, int *wid, int *hei)
 // new pixel with a matching color.
 //
 void
-msw_draw::DefineColor(int *address, int red, int green, int blue)
+MSWdraw::DefineColor(int *address, int red, int green, int blue)
 {
     if (md_blackout) {
         *address = 0;
@@ -636,7 +636,7 @@ msw_draw::DefineColor(int *address, int red, int green, int blue)
 // Set the text background.
 //
 void
-msw_draw::SetBackground(int pixel)
+MSWdraw::SetBackground(int pixel)
 {
     md_backg = pixel;
     SetBkColor(check_dc(), pixel);
@@ -647,7 +647,7 @@ msw_draw::SetBackground(int pixel)
 // THIS CHANGES ALL WINDOWS IN THE CLASS
 //
 void
-msw_draw::SetWindowBackground(int pixel)
+MSWdraw::SetWindowBackground(int pixel)
 {
     HBRUSH brush = CreateSolidBrush(pixel);
     brush = (HBRUSH)SetClassLongPtr(md_window, GCLP_HBRBACKGROUND,
@@ -660,7 +660,7 @@ msw_draw::SetWindowBackground(int pixel)
 // Set the current foreground color.
 //
 void
-msw_draw::SetColor(int pixel)
+MSWdraw::SetColor(int pixel)
 {
     if (md_blackout)
         return;
@@ -684,7 +684,7 @@ msw_draw::SetColor(int pixel)
 // Set the current linestyle.
 //
 void
-msw_draw::SetLinestyle(const GRlineType *lineptr)
+MSWdraw::SetLinestyle(const GRlineType *lineptr)
 {
     md_gbag->set_linestyle(lineptr);
 #ifndef USE_MY_LINES
@@ -720,7 +720,7 @@ namespace {
 // Create a new pixmap for the fill pattern.
 //
 void
-msw_draw::DefineFillpattern(GRfillType *fillp)
+MSWdraw::DefineFillpattern(GRfillType *fillp)
 {
     if (!fillp)
         return;
@@ -764,7 +764,7 @@ msw_draw::DefineFillpattern(GRfillType *fillp)
 // Set the current fill pattern.
 //
 void
-msw_draw::SetFillpattern(const GRfillType *fillp)
+MSWdraw::SetFillpattern(const GRfillType *fillp)
 {
     md_gbag->set_fillpattern(fillp);
     HBRUSH brush;
@@ -781,7 +781,7 @@ msw_draw::SetFillpattern(const GRfillType *fillp)
 // Update the display.
 //
 void
-msw_draw::Update()
+MSWdraw::Update()
 {
     GdiFlush();
 }
@@ -818,7 +818,7 @@ namespace {
 
 
 void
-msw_draw::ShowGlyph(int gnum, int x, int y)
+MSWdraw::ShowGlyph(int gnum, int x, int y)
 {
     x -= GlyphWidth/2;
     y -= GlyphWidth/2;
@@ -856,7 +856,7 @@ msw_draw::ShowGlyph(int gnum, int x, int y)
 
 
 GRobject
-msw_draw::GetRegion(int x, int y, int wid, int hei)
+MSWdraw::GetRegion(int x, int y, int wid, int hei)
 {
     HDC dcMem = CreateCompatibleDC(check_dc());
     HBITMAP bm = CreateCompatibleBitmap(check_dc(), wid, hei);
@@ -867,14 +867,14 @@ msw_draw::GetRegion(int x, int y, int wid, int hei)
 
 
 void
-msw_draw::PutRegion(GRobject pm, int x, int y, int wid, int hei)
+MSWdraw::PutRegion(GRobject pm, int x, int y, int wid, int hei)
 {
     BitBlt(check_dc(), x, y, wid, hei, (HDC)pm, 0, 0, SRCCOPY);
 }
 
 
 void
-msw_draw::FreeRegion(GRobject pm)
+MSWdraw::FreeRegion(GRobject pm)
 {
     HDC dcMem = (HDC)pm;
     HBITMAP bm = (HBITMAP)GetCurrentObject(dcMem, OBJ_BITMAP);
@@ -884,7 +884,7 @@ msw_draw::FreeRegion(GRobject pm)
 
 
 void
-msw_draw::DisplayImage(const GRimage *image, int x, int y,
+MSWdraw::DisplayImage(const GRimage *image, int x, int y,
     int width, int height)
 {
     // custom BITMAPINFO
@@ -1032,7 +1032,7 @@ msw_draw::DisplayImage(const GRimage *image, int x, int y,
 
 // Static function.
 HPEN
-msw_draw::new_pen(COLORREF cref, const GRlineType *lineptr)
+MSWdraw::new_pen(COLORREF cref, const GRlineType *lineptr)
 {
 #ifdef USE_MY_LINES
     (void)lineptr;
@@ -1081,7 +1081,7 @@ msw_draw::new_pen(COLORREF cref, const GRlineType *lineptr)
     return (pen);
 #endif
 }
-// End of msw_draw functions
+// End of MSWdraw functions
 
 #endif
 

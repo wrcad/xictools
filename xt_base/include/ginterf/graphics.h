@@ -63,7 +63,7 @@
 #define         _devHP_          0x0100
 #define         _devPCL_         0x0200
 #define         _devXF_          0x0400
-#define         _devX_           0x0800     // xdraw interface
+#define         _devIM_          0x0800
 
 // Turn on any supported graphics package.
 #define GR_ALL_PKGS    0xf

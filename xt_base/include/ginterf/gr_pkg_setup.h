@@ -54,25 +54,25 @@
 
 #include "nulldev.h"
 #if (GR_CONFIG & _devPS_)
-#include "pslindrw.h"
+#include "hcpslindrw.h"
 #endif
 #if (GR_CONFIG & _devPSBM_)
-#include "psbm.h"
+#include "hcpsbm.h"
 #endif
 #if (GR_CONFIG & _devPSBC_)
-#include "psbc.h"
+#include "hcpsbc.h"
 #endif
 #if (GR_CONFIG & _devHP_)
-#include "hpgl.h"
+#include "hchpgl.h"
 #endif
 #if (GR_CONFIG & _devPCL_)
-#include "pcl.h"
+#include "hcpcl.h"
 #endif
 #if (GR_CONFIG & _devXF_)
-#include "xfig.h"
+#include "hcxfig.h"
 #endif
-#if (GR_CONFIG & _devX_)
-#include "xdraw.h"
+#if (GR_CONFIG & _devIM_)
+#include "hcimlib.h"
 #endif
 
 // Initialize the package list and the screen package.  Return false
@@ -130,10 +130,10 @@ GRpkg::InitPkg(unsigned int cfg, int *argc, char **argv)
         RegisterHcopyDesc(&XFdesc);
     }
 #endif
-#if (GR_CONFIG & _devX_)
-    if (cfg & _devX_) {
-        RegisterDevice(new Xdev);
-        RegisterHcopyDesc(&Xdesc);
+#if (GR_CONFIG & _devIM_)
+    if (cfg & _devIM_) {
+        RegisterDevice(new IMdev);
+        RegisterHcopyDesc(&IMdesc);
     }
 #endif
 

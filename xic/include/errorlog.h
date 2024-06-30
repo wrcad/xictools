@@ -61,6 +61,8 @@ namespace mh {
     extern const char *JobControl;
     extern const char *Processing;
     extern const char *OpenAccess;
+// XXX defined in X.h
+#undef InputOutput
     extern const char *InputOutput;
 }
 

@@ -43,7 +43,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <time.h>
-#include "xfig.h"
+#include "hcxfig.h"
 #include "miscutil/texttf.h"
 
 

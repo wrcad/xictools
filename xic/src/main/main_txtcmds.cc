@@ -75,7 +75,7 @@
 #include "errorlog.h"
 #include "cvrt.h"
 #include "ginterf/grfont.h"
-#include "ginterf/xdraw.h"
+#include "ginterf/x11draw.h"
 #include "miscutil/timer.h"
 #include "miscutil/pathlist.h"
 #include "miscutil/filestat.h"
