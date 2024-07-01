@@ -70,16 +70,17 @@ namespace ginterf
         const GRfillType *gb_fillpattern;
     };
 
-    struct MSWdraw : virtual public GRdraw
+    struct MSWdraw : public GRdraw
     {
         MSWdraw();
         virtual ~MSWdraw();
 
-        void Halt();
+        void *WindowID()                            { return (md_window); }
+        virtual void Halt()                                     { }
         void Clear();
-        void ResetViewport(int, int)                    { }
-        void DefineViewport()                           { }
-        void Dump(int)                                  { }
+        virtual void ResetViewport(int, int)                    { }
+        virtual void DefineViewport()                           { }
+        void Dump(int)                                          { }
         void Pixel(int, int);
         void Pixels(GRmultiPt*, int);
         void Line(int, int, int, int);
@@ -94,38 +95,37 @@ namespace ginterf
         void Text(const char*, int, int, int, int = -1, int = -1);
         void TextExtent(const char*, int*, int*);
 
-        void SetGhost(GhostDrawFunc, int, int)          { }
+        void SetGhost(GhostDrawFunc, int, int)                  { }
         void ShowGhost(bool) { }
-        bool ShowingGhost()                             { return (false); }
-        void UndrawGhost(bool = false)                  { }
-        void DrawGhost(int, int)                        { }
-        void DrawGhost()                                { }
+        bool ShowingGhost()                                 { return(false); }
+        void UndrawGhost(bool = false)                          { }
+        void DrawGhost(int, int)                                { }
+        void DrawGhost()                                        { }
 
-        void QueryPointer(int*, int*, unsigned*)        { }
-
+        void QueryPointer(int*, int*, unsigned*)                { }
         void DefineColor(int*, int, int, int);
         void SetBackground(int);
         void SetWindowBackground(int);
-        void SetGhostColor(int)                         { }
+        void SetGhostColor(int)                                 { }
         void SetColor(int);
-        void DefineLinestyle(GRlineType*)               { }
+        void DefineLinestyle(GRlineType*)                       { }
         void SetLinestyle(const GRlineType*);
         void DefineFillpattern(GRfillType*);
         void SetFillpattern(const GRfillType*);
-        void Refresh(int, int, int, int)                { }
-        void Refresh()                                  { }
-        void Update(int, int, int, int)                 { }
+        void Refresh(int, int, int, int)                        { }
+        void Refresh()                                          { }
+        void Update(int, int, int, int)                         { }
         void Update();
-        void Input(int*, int*, int*, int*)              { }
-        void SetOverlayMode(bool)                       { }
-        void CreateOverlayBackg()                       { }
-        void SetXOR(int)                                { }
+        void Input(int*, int*, int*, int*)                      { }
+        void SetOverlayMode(bool)                               { }
+        void CreateOverlayBackg()                               { }
+        void SetXOR(int)                                        { }
         void ShowGlyph(int, int, int);
         GRobject GetRegion(int, int, int, int);
         void PutRegion(GRobject, int, int, int, int);
         void FreeRegion(GRobject);
         void DisplayImage(const GRimage*, int, int, int, int);
-        double Resolution()                             { return (1.0); }
+        double Resolution()                                 { return (1.0); }
 
         // non-overrides
 
@@ -134,7 +134,6 @@ namespace ginterf
         HDC SetMemDC(HDC);
         void ReleaseDC();
 
-        void *WindowID()            { return (md_window); }
         void set_monochrome(bool b) { md_blackout = b; }
 
         HWND Window()               { return (md_window); }

@@ -57,7 +57,7 @@ namespace ginterf
         X11draw(Display*, Window);
         virtual ~X11draw();
 
-        void *WindowID()                                        { return (0); }
+        void *WindowID()                                    { return (0); }
         virtual void Halt()                                     { }
         void Clear();
         virtual void ResetViewport(int, int)                    { }
@@ -75,12 +75,14 @@ namespace ginterf
         void Zoid(int, int, int, int, int, int);
         void Text(const char*, int, int, int, int = -1, int = -1);
         void TextExtent(const char*, int*, int*);
+
         void SetGhost(GhostDrawFunc, int, int)                  { }
         void ShowGhost(bool)                                    { }
         bool ShowingGhost()                                 { return(false); }
         void UndrawGhost(bool = false)                          { }
         void DrawGhost(int, int)                                { }
         void DrawGhost()                                        { }
+
         void QueryPointer(int*, int*, unsigned*)                { }
         void DefineColor(int*, int, int, int);
         void SetBackground(int);
@@ -100,7 +102,7 @@ namespace ginterf
         void CreateOverlayBackg()                               { }
         void SetXOR(int);
         void ShowGlyph(int, int, int)                           { }
-        GRobject GetRegion(int, int, int, int)          { return (0); }
+        GRobject GetRegion(int, int, int, int)              { return (0); }
         void PutRegion(GRobject, int, int, int, int)            { }
         void FreeRegion(GRobject)                               { }
         void DisplayImage(const GRimage*, int, int, int, int);

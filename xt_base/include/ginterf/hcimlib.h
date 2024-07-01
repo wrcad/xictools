@@ -71,63 +71,6 @@ namespace ginterf
     private:
         HCdata *im_data;
     };
-
-    /*
-    struct Xparams;
-
-    struct X11draw
-    {
-        X11draw(const char*, unsigned long);
-        ~X11draw();
-
-        static bool check_error();
-        unsigned long create_pixmap(int, int);
-        bool destroy_pixmap(unsigned long);
-        bool copy_drawable(unsigned long, unsigned long, int, int, int, int,
-            int, int);
-        bool draw(int, int, int, int);
-        bool get_drawable_size(unsigned long, int*, int*);
-        unsigned long reset_drawable(unsigned long);
-
-        void Clear();
-        void Pixel(int, int);
-        void Pixels(GRmultiPt*, int);
-        void Line(int, int, int, int);
-        void PolyLine(GRmultiPt*, int);
-        void Lines(GRmultiPt*, int);
-        void Box(int, int, int, int);
-        void Boxes(GRmultiPt*, int);
-        void Arc(int, int, int, int, double, double);
-        void Polygon(GRmultiPt*, int);
-        void Zoid(int, int, int, int, int, int);
-        void Text(const char*, int, int, int);
-        void TextExtent(const char*, int*, int*);
-        void DefineColor(int*, int, int, int);
-        void SetBackground(int);
-        void SetWindowBackground(int);
-        void SetColor(int);
-        void DefineLinestyle(int, int);
-        void SetLinestyle(int);
-        void DefineFillpattern(int, int, int, unsigned char*);
-        void SetFillpattern(int);
-        void Update();
-        void SetXOR(int);
-
-    private:
-        Xparams *xp;
-    };
-        unsigned long create_pixmap(int, int);
-        bool destroy_pixmap(Pixmap);
-        bool copy_drawable(Drawable, Drawable, int, int, int, int, int, int);
-        bool draw(int, int, int, int);
-        bool get_drawable_size(Drawable, int*, int*);
-
-        Window reset_drawable(Drawable d)
-            { Window prev = window; window = d; return (prev); }
-        Xdev *dev;
-        void *lcx;
-    */
-
 }
 
 #endif

@@ -158,13 +158,6 @@ MSWdraw::ReleaseDC()
 }
 
 
-void
-MSWdraw::Halt()
-{
-    // Applies to hard copy drivers only.
-}
-
-
 // Clear the drawing window.
 //
 void

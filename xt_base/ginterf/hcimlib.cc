@@ -167,7 +167,7 @@ IMdev::NewDraw(int)
 {
     if (!im_data)
         return (0);
-    IMparams *px = new IMparams;
+    IMparams *px = new IMparams();
     px->set_dev(this);
     px->set_lcx(GRappIf()->SetupLayers(0, px, 0));
     if (width && height) {
@@ -187,7 +187,6 @@ IMdev::NewDraw(int)
         SelectBitmap(dcMem, pm);
         px->SetMemDC(dcMem);
         px->InitDC(dcMem);
-
         px->SetFillpattern(0);
         px->SetColor(GRappIf()->BackgroundPixel());
         px->Box(0, 0, width, height);
@@ -203,7 +202,6 @@ IMparams::Halt()
 {
     HDC dcMem = SetMemDC(0);
     if (dcMem) {
-
         if (pm_dev->data()->filename &&
                 !strcasecmp(pm_dev->data()->filename, "clipboard")) {
 
