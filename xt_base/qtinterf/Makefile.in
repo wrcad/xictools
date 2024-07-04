@@ -20,6 +20,7 @@ MOC_INCLUDE = ../include/qtinterf
 LIB_TARGET = ../lib/qtinterf.a
 
 CCFILES = \
+    hcimlib.cc \
     polysplit.cc \
     qtactivity.cc \
     qtaffirm.cc \

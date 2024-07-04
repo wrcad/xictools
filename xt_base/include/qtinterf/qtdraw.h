@@ -68,12 +68,12 @@ public:
 
     // GRdraw virtual overrides
     void *WindowID()                { return (this); }
-    void Halt();
+    virtual void Halt();
     void Clear()
         { if (gd_viewport) gd_viewport->clear(); }
-    void ResetViewport(int, int)    { }
-    void DefineViewport()           { }
-    void Dump(int)                  { }
+    virtual void ResetViewport(int, int)    { }
+    virtual void DefineViewport()           { }
+    void Dump(int)                          { }
 
     void Pixel(int x, int y)
         { if (gd_viewport) gd_viewport->draw_pixel(x, y); }

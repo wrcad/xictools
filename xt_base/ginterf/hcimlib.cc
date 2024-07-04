@@ -39,6 +39,7 @@
  *========================================================================*/
 
 #include "config.h"
+#if !defined(WITH_QT5) && !defined(WITH_QT6)
 #include "graphics.h"
 #include "hcimlib.h"
 #include "miscutil/texttf.h"
@@ -58,7 +59,9 @@
 
 //
 // Hard-copy driver which makes use of the Imlib library for producing
-// image files in many different formats.
+// image files in many different formats.  This is NOT used with Qt, which
+// has its own analogous driver. Otherwise it is active under Windows and
+// X.
 //
 
 namespace {
@@ -483,5 +486,6 @@ IMparams::DefineViewport()
 
 
 #else
+#endif
 #endif
 #endif

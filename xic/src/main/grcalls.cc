@@ -450,10 +450,3 @@ cMain::FillStyle(int id, int lnum, int *opt1, int *opt2)
     return (0);
 }
 
-
-// XDraw interface function.  These are in the graphical application code.
-//
-// void *cMain::SetupLayers(void *dp, GRdraw *cx, void *ptr)
-// bool cMain::DrawCallback(void *dp, GRdraw *cx, int l, int b, int r, int t,
-//    int w, int h)
-
