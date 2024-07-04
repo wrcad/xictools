@@ -42,7 +42,7 @@
 #include "dsp_layer.h"
 #include "dsp_color.h"
 #include "gtkmain.h"
-#include "ginterf/xdraw.h"
+#include "ginterf/x11draw.h"
 #ifdef WITH_X11
 #include "gtkinterf/gtkx11.h"
 #endif
