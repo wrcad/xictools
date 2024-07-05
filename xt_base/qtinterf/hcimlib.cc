@@ -45,6 +45,7 @@
 #include "ginterf/hcimlib.h"
 
 #include <QResizeEvent>
+#include <QBitmap>
 #include <stdio.h>
 
 
