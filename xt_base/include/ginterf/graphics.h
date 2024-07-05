@@ -631,6 +631,7 @@ namespace ginterf
 #define HCnoAutoHei      (1 << 11)
 #define HCfileOnly       (1 << 12)
 #define HCfixedResol     (1 << 13)
+#define HCnoBackground   (1 << 14)
         const char **resols;     // strings representing dpi choices
     };
     // FLAG BITS:
@@ -646,6 +647,7 @@ namespace ginterf
     // HCnoAutoHei        No auto-height capability
     // HCfileOnly         Output to file only.
     // HCfixedResol       No choice of resolution.
+    // HCnoBackground     Allow transparent background (image driver)
 
     // Structure expressing parameter defaults.
     //
@@ -723,15 +725,9 @@ namespace ginterf
     //
     struct HCdata
     {
-        HCdata()
-        {
-            xoff = yoff = 0.0;
-            width = height = 0.0;
-            linewidth = 0.0;
-            filename = 0;
-            resol = hctype = 0;
-            doRLE = encode = landscape = false;
-        }
+        HCdata() : xoff(0.0), yoff(0.0), width(0.0), height(0.0),
+            linewidth(0.0), filename(0), resol(0), hctype(0),
+            encode(false), doRLE(false), landscape(false), nobackg(false) { }
 
         double xoff;
         double yoff;
@@ -744,6 +740,7 @@ namespace ginterf
         bool encode;
         bool doRLE;
         bool landscape;
+        bool nobackg;
     };
 }
 

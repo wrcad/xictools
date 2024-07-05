@@ -49,6 +49,7 @@
 
 class QCheckBox;
 class QComboBox;
+class QRadioButton;
 class QDoubleSpinBox;
 class QLabel;
 class QLineEdit;
@@ -127,6 +128,7 @@ private slots:
     void frame_slot(bool);
     void portrait_slot(bool);
     void landscape_slot(bool);
+    void nobg_slot(bool);
     void best_fit_slot(bool);
     void tofile_slot(bool);
     void legend_slot(bool);
@@ -177,8 +179,9 @@ private:
     QDoubleSpinBox  *pd_hei;
     QDoubleSpinBox  *pd_left;
     QDoubleSpinBox  *pd_top;
-    QCheckBox       *pd_portbtn;
-    QCheckBox       *pd_landsbtn;
+    QRadioButton    *pd_portbtn;
+    QRadioButton    *pd_landsbtn;
+    QCheckBox       *pd_nobg;
     QCheckBox       *pd_fitbtn;
     QCheckBox       *pd_legbtn;
     QCheckBox       *pd_tofbtn;

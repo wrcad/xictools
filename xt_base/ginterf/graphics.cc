@@ -666,6 +666,11 @@ GRdev::HCdevParse(HCdata *hd, int *acp, char **av)
             shift(i, acp, av);
             continue;
         }
+        if (!strcmp(av[i], "-b")) {
+            shift(i, acp, av);
+            hd->nobackg = true;
+            continue;
+        }
         if (!strcmp(av[i], "-e")) {
             shift(i, acp, av);
             hd->encode = true;

@@ -48,6 +48,7 @@
 #include <QApplication>
 #include <QCheckBox>
 #include <QComboBox>
+#include <QRadioButton>
 #include <QDoubleSpinBox>
 #include <QGroupBox>
 #include <QLabel>
@@ -183,6 +184,7 @@ QTprintDlg::QTprintDlg(GRobject caller, HCcb *cb, HCmode textmode, QTbag *wbag) 
     pd_top = 0;
     pd_portbtn = 0;
     pd_landsbtn = 0;
+    pd_nobg = 0;
     pd_fitbtn = 0;
     pd_legbtn = 0;
     pd_tofbtn = 0;
@@ -411,14 +413,18 @@ QTprintDlg::QTprintDlg(GRobject caller, HCcb *cb, HCmode textmode, QTbag *wbag) 
         QHBoxLayout *hb = new QHBoxLayout(gb);
         hb->setContentsMargins(qmtop);
         hb->setSpacing(2);
-        pd_portbtn = new QCheckBox(tr("Portrait"));
+        pd_portbtn = new QRadioButton(tr("Portrait"));
         hb->addWidget(pd_portbtn);
-        connect(pd_portbtn, &QCheckBox::toggled,
+        connect(pd_portbtn, &QRadioButton::toggled,
             this, &QTprintDlg::portrait_slot);
-        pd_landsbtn = new QCheckBox(tr("Landscape"));
+        pd_landsbtn = new QRadioButton(tr("Landscape"));
         hb->addWidget(pd_landsbtn);
-        connect(pd_landsbtn, &QCheckBox::toggled,
+        connect(pd_landsbtn, &QRadioButton::toggled,
             this, &QTprintDlg::landscape_slot);
+        pd_nobg = new QCheckBox(tr("No Backg"));
+        hb->addWidget(pd_nobg);
+        connect(pd_nobg, &QCheckBox::toggled,
+            this, &QTprintDlg::nobg_slot);
         vb->addWidget(gb);
 
         pd_fmtmenu = new QComboBox();
@@ -1026,6 +1032,14 @@ QTprintDlg::landscape_slot(bool set)
 }
 
 
+void
+QTprintDlg::nobg_slot(bool set)
+{
+    if (set) {
+    }
+}
+
+
 // If the "best fit" button is active, allow rotation of the image.
 //
 void
@@ -1324,6 +1338,10 @@ QTprintDlg::print_slot()
         filename, resol, w, h, xx, yy);
     if (pd_orient & HClandscape)
         strcat(buf, " -l");
+
+    if (pd_nobg->isVisible() && pd_nobg->isChecked())
+        strcat(buf, " -b");
+
     char *cmdstr = lstring::copy(buf);
     char *argv[MAX_ARGS];
     int argc;
@@ -1484,6 +1502,10 @@ QTprintDlg::set_sens(unsigned int word)
             pd_landsbtn->setChecked(false);
         }
     }
+    if (word & HCnoBackground)
+        pd_nobg->show();
+    else
+        pd_nobg->hide();
 
     if (word & HCnoBestOrient) {
         pd_fitbtn->setChecked(false);

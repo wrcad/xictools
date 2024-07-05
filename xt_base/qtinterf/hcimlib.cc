@@ -80,7 +80,7 @@ namespace ginterf
             1.0, 16.5,  // minwidth, maxwidth
             1.0, 16.5,  // minheight, maxheight
                         // flags
-            HCdontCareXoff | HCdontCareYoff | HCfileOnly,
+            HCdontCareXoff | HCdontCareYoff | HCfileOnly | HCnoBackground,
             IMresols    // resolutions
         ),
         HCdefaults(
@@ -108,6 +108,7 @@ IMdev::Init(int *ac, char **av)
     hd->xoff = .25;
     hd->yoff = .25;
     hd->landscape = false;
+    hd->nobackg = false;
     if (HCdevParse(hd, ac, av)) {
         delete hd;
         return (true);
@@ -184,7 +185,17 @@ IMparams::Halt()
 {
     QPixmap *pmap = Viewport()->pixmap();
     if (pmap) {
-        bool ret_ok = pmap->save(pm_dev->data()->filename);
+        bool transp = pm_dev->data()->nobackg;;
+        bool ret_ok = false;
+        if (transp) {
+            QColor backg(GRappIf()->BackgroundPixel());
+            QPixmap tpmap(*pmap);
+            QBitmap bmap = pmap->createMaskFromColor(backg);
+            tpmap.setMask(bmap);
+            ret_ok = tpmap.save(pm_dev->data()->filename);
+        }
+        else
+            ret_ok = pmap->save(pm_dev->data()->filename);
         if (!ret_ok) {
             GRpkg::self()->HCabort("Image creation error");
         }
