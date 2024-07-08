@@ -343,6 +343,7 @@ paths.scr \
 spiral.scr \
 spiralform.scr \
 whitebg.scr \
+whitebw.scr \
 yank.scr"
 
 scrkit="\

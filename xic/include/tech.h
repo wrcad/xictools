@@ -460,7 +460,7 @@ public:
     bool GetBoolean(const char*);
     int GetInt(const char*);
     bool GetWord(const char**, char**);
-    bool GetRgb(int*);
+    int GetRgb(int(*)[4]);
     bool GetFilled(CDl*);
     bool GetFilled(sLayerAttr*);
     bool GetPmap(const char**, unsigned char*, int*, int*);

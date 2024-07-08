@@ -1,0 +1,66 @@
+# This script simply changes the layer and attribute colors so that
+# electrical schematics will be displayed with a white background,
+# and all other colors will be displayed as black.
+#
+
+if (TechParseLine("ElecLayer SCED RGB 0 0 0") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer ETC1 RGB 0 0 0") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer ETC2 RGB 0 0 0") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer NAME RGB 0 0 0") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer MODL RGB 0 0 0") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer VALU RGB 0 0 0") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer PARM RGB 0 0 0") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer NODE RGB 0 0 0") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer SPTX RGB 0 0 0") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecBackground 255 255 255") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecGhostColor 1 1 1") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecHighlightingColor 1 1 1") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecSelectColor1 109 255 105") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecMarkerColor 0 0 0") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecInstanceBBColor 0 0 0") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecInstanceNameColor 0 0 0") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecCoarseGridColor 28 23 15") == 0)
+    Print(GetError())
+end
+if (TechParseLine("PhysCoarseGridColor 0 215 215") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecFineGridColor 0 157 160") == 0)
+    Print(GetError())
+end
+if (TechParseLine("PhysFineGridColor 0 0 207") == 0)
+    Print(GetError())
+end
+

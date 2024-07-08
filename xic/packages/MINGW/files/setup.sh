@@ -87,6 +87,7 @@ $utod $scripts/paths.scr
 $utod $scripts/spiral.scr
 $utod $scripts/spiralform.scr
 $utod $scripts/whitebg.scr
+$utod $scripts/whitebw.scr
 $utod $scripts/yank.scr
 
 scrkit=$top/xictools/$appdir/scrkit

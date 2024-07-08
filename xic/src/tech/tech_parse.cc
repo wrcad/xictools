@@ -482,27 +482,51 @@ cTech::GetWord(const char **s, char **tok)
 }
 
 
-// Parse a color and return the rgb values.
+// Parse a color and return the rgb values.  On success, return 3 and
+// r,g,b,255 if three values, 4 and r,g,b,a if four values.  Return 0
+// on error.
 //
-bool
-cTech::GetRgb(int *rgb)
+int
+cTech::GetRgb(int(*rgb)[4])
 {
-    int r, g, b;
-    if (sscanf(tc_inbuf, "%d %d %d", &r, &g, &b) == 3 && r >= 0 && r <= 255 &&
-            g >= 0 && g <= 255 && b >= 0 && b <= 255) {
-        rgb[0] = r;
-        rgb[1] = g;
-        rgb[2] = b;
-        return (true);
+    int r, g, b, a;
+    int rval = sscanf(tc_inbuf, "%d %d %d %d", &r, &g, &b, &a);
+    if (rval >= 3 &&
+            r >= 0 && r <= 255 && g >= 0 && g <= 255 && b >= 0 && b <= 255) {
+        if (rval == 3) {
+            (*rgb)[0] = r;
+            (*rgb)[1] = g;
+            (*rgb)[2] = b;
+            (*rgb)[3] = 255;
+            return (3);
+        }
+        if (rval == 4 && a >= 0 && a <= 255) {
+            (*rgb)[0] = r;
+            (*rgb)[1] = g;
+            (*rgb)[2] = b;
+            (*rgb)[3] = a;
+            return (4);
+        }
     }
+    // Color by name is always non-alpha.
     char *t = tc_inbuf + strlen(tc_inbuf) - 1;
     while (isspace(*t) && t >= tc_inbuf)
         *t-- = 0;
-    if (!DSPpkg::self()->NameToRGB(tc_inbuf, rgb)) {
-        rgb[0] = rgb[1] = rgb[2] = 0;
-        return (false);
+    int tmp[4];
+    if (!DSPpkg::self()->NameToRGB(tc_inbuf, tmp)) {
+        (*rgb)[0] = 0;
+        (*rgb)[1] = 0;
+        (*rgb)[2] = 0;
+        (*rgb)[3] = 256;
+        return (0);
     }
-    return (true);
+    else {
+        (*rgb)[0] = tmp[0];
+        (*rgb)[1] = tmp[1];
+        (*rgb)[2] = tmp[2];
+        (*rgb)[3] = 256;
+    }
+    return (3);
 }
 
 
@@ -1415,7 +1439,7 @@ cTech::dispatchLayerBlock()
 
     const char *lmsg = "Layer %s: Bad %s specification.";
 
-    int rgb[3];  // color buffer
+    int rgb[4];  // color buffer, RGBA
     const char *kw = tc_kwbuf;
 
     // Keywords for layer definitions
@@ -1574,7 +1598,8 @@ cTech::dispatchLayerBlock()
         TCret tcret = CheckLD();
         if (tcret != TCnone)
             return (tcret);
-        bool ret = GetRgb(rgb);
+        int (*p)[4] = &rgb;
+        int ret = GetRgb(p);
         dsp_prm(tc_last_layer)->set_red(rgb[0]);
         dsp_prm(tc_last_layer)->set_green(rgb[1]);
         dsp_prm(tc_last_layer)->set_blue(rgb[2]);

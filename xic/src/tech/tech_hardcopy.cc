@@ -543,8 +543,9 @@ cTech::dispatch_drvr(int curdrvr, sAttrContext *ac, sLayerAttr **pla)
     }
     if (Matching(Tkw.kwRGB())) {
         if (*pla) {
-            int rgb[3];
-            bool ret = GetRgb(rgb);
+            int rgb[4];
+            int (*p)[4] = &rgb;
+            bool ret = GetRgb(p);
             int pix = 0;
             DSPmainDraw(DefineColor(&pix, rgb[0], rgb[1], rgb[2]))
             (*pla)->set_rgbp(rgb[0], rgb[1], rgb[2], pix);
