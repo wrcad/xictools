@@ -157,8 +157,10 @@ New hash table class used for finding of gates/nets/pins by name.
 Merge into XicTools, see release.sh.
 Initial xictools release 1.2.6
 
-1.2.7 01/15/24
+1.2.7 01/15/2024
 Replacement of sprintf with snprintf to avoid security warning from
 compilers.  This includes third party lef/def code, patches updated.
 
+1.2.8 07/21/2024
+Add test to avoid use of a null pointer (bug fixed in 3rd party def code).
 
