@@ -4678,7 +4678,24 @@ diff -r -c source.lefdef/def.orig/def/def.y def/def/def.y
                 defFree(defData->defMsg);
 diff -r -c source.lefdef/def.orig/defdiff/diffDefRW.cpp def/defdiff/diffDefRW.cpp
 *** source.lefdef/def.orig/defdiff/diffDefRW.cpp	2016-02-05 14:39:14.000000000 -0800
---- def/defdiff/diffDefRW.cpp	2024-07-21 10:46:28.252693128 -0700
+--- def/defdiff/diffDefRW.cpp	2024-07-21 11:56:04.014547929 -0700
+***************
+*** 91,97 ****
+    checkType(c);
+    if (ud != userData) dataError();
+  
+!     if (co->numMaskShiftLayers()) {
+  	fprintf(fout, "\nCOMPONENTMASKSHIFT ");
+  	
+  	for (i = 0; i < co->numMaskShiftLayers(); i++) {
+--- 91,97 ----
+    checkType(c);
+    if (ud != userData) dataError();
+  
+!     if (co && co->numMaskShiftLayers()) {
+  	fprintf(fout, "\nCOMPONENTMASKSHIFT ");
+  	
+  	for (i = 0; i < co->numMaskShiftLayers(); i++) {
 ***************
 *** 169,176 ****
       if (co->maskShiftSize()) {
@@ -4901,30 +4918,19 @@ diff -r -c source.lefdef/def.orig/defdiff/diffDefRW.cpp def/defdiff/diffDefRW.cp
                            gxh[i], gyh[i]);
            }
 ***************
-*** 1781,1789 ****
+*** 1779,1805 ****
+           --numObjs;
+           break;
     case defrComponentMaskShiftLayerCbkType :
-  	 fprintf(fout, "COMPONENTMASKSHIFT ");
+! 	 fprintf(fout, "COMPONENTMASKSHIFT ");
           
 !         for (i = 0; i < maskShiftLayer->numMaskShiftLayers(); i++) {
 !            fprintf(fout, "%s ", maskShiftLayer->maskShiftLayer(i));
 !         } 
-          fprintf(fout, ";\n");
+!         fprintf(fout, ";\n");
   	 break;
     case defrScanchainCbkType :
---- 1782,1792 ----
-    case defrComponentMaskShiftLayerCbkType :
-  	 fprintf(fout, "COMPONENTMASKSHIFT ");
-          
-!         if (maskShiftLayer) {
-!             for (i = 0; i < maskShiftLayer->numMaskShiftLayers(); i++) {
-!                 fprintf(fout, "%s ", maskShiftLayer->maskShiftLayer(i));
-!             } 
-!         }
-          fprintf(fout, ";\n");
-  	 break;
-    case defrScanchainCbkType :
-***************
-*** 1791,1805 ****
+           sc = (defiScanchain*)cl;
            fprintf(fout, "SCANCHAINS %s", sc->name());
            if (sc->hasStart()) {
                sc->start(&a1, &b1);
@@ -4940,7 +4946,21 @@ diff -r -c source.lefdef/def.orig/defdiff/diffDefRW.cpp def/defdiff/diffDefRW.cp
                if (sc->hasCommonInPin())
                   fprintf(fout, " ( IN %s )", sc->commonInPin());
                if (sc->hasCommonOutPin())
---- 1794,1808 ----
+--- 1780,1808 ----
+           --numObjs;
+           break;
+    case defrComponentMaskShiftLayerCbkType :
+!          if (maskShiftLayer && maskShiftLayer->numMaskShiftLayers()) {
+! 	     fprintf(fout, "COMPONENTMASKSHIFT ");
+          
+!              for (i = 0; i < maskShiftLayer->numMaskShiftLayers(); i++) {
+!                  fprintf(fout, "%s ", maskShiftLayer->maskShiftLayer(i));
+!              } 
+!          }
+!          fprintf(fout, ";\n");
+  	 break;
+    case defrScanchainCbkType :
+           sc = (defiScanchain*)cl;
            fprintf(fout, "SCANCHAINS %s", sc->name());
            if (sc->hasStart()) {
                sc->start(&a1, &b1);
@@ -5094,7 +5114,7 @@ diff -r -c source.lefdef/def.orig/defdiff/differDef.cpp def/defdiff/differDef.cp
   #include "diffDefRW.hpp"
 diff -r -c source.lefdef/def.orig/defrw/defrw.cpp def/defrw/defrw.cpp
 *** source.lefdef/def.orig/defrw/defrw.cpp	2016-02-05 14:39:14.000000000 -0800
---- def/defrw/defrw.cpp	2020-12-30 16:46:37.000000000 -0800
+--- def/defrw/defrw.cpp	2024-07-21 11:59:12.409632253 -0700
 ***************
 *** 77,90 ****
   }
@@ -5126,6 +5146,31 @@ diff -r -c source.lefdef/def.orig/defrw/defrw.cpp def/defrw/defrw.cpp
     checkType(c);
     if (ud != userData) dataError();
     return 0;
+***************
+*** 111,121 ****
+    checkType(c);
+    if (ud != userData) dataError();
+  
+!     if (co->numMaskShiftLayers()) {
+  	fprintf(fout, "\nCOMPONENTMASKSHIFT ");
+  	
+  	for (i = 0; i < co->numMaskShiftLayers(); i++) {
+!            fprintf(fout, "%s ", co->maskShiftLayer(i));
+  	}
+  	fprintf(fout, ";\n");
+      }
+--- 111,121 ----
+    checkType(c);
+    if (ud != userData) dataError();
+  
+!     if (co && co->numMaskShiftLayers()) {
+  	fprintf(fout, "\nCOMPONENTMASKSHIFT ");
+  	
+  	for (i = 0; i < co->numMaskShiftLayers(); i++) {
+!             fprintf(fout, "%s ", co->maskShiftLayer(i));
+  	}
+  	fprintf(fout, ";\n");
+      }
 ***************
 *** 192,199 ****
           if (co->maskShiftSize()) {
@@ -5372,6 +5417,35 @@ diff -r -c source.lefdef/def.orig/defrw/defrw.cpp def/defrw/defrw.cpp
                    fprintf(fout, "  + ENCLOSURE %d %d %d %d\n", xbe, ybe, xte, yte);
                    if (via->hasRowCol()) {
 ***************
+*** 2342,2353 ****
+           }
+           break;
+    case defrComponentMaskShiftLayerCbkType :
+! 	 fprintf(fout, "COMPONENTMASKSHIFT ");
+          
+!         for (i = 0; i < maskShiftLayer->numMaskShiftLayers(); i++) {
+!            fprintf(fout, "%s ", maskShiftLayer->maskShiftLayer(i));
+!         } 
+!         fprintf(fout, ";\n");
+  	 break;
+    case defrGroupCbkType :
+           group = (defiGroup*)cl;
+--- 2342,2355 ----
+           }
+           break;
+    case defrComponentMaskShiftLayerCbkType :
+!          if (maskShiftLayer && maskShiftLayer->numMaskShiftLayers()) {
+! 	     fprintf(fout, "COMPONENTMASKSHIFT ");
+          
+!              for (i = 0; i < maskShiftLayer->numMaskShiftLayers(); i++) {
+!                  fprintf(fout, "%s ", maskShiftLayer->maskShiftLayer(i));
+!              } 
+!              fprintf(fout, ";\n");
+!          }
+  	 break;
+    case defrGroupCbkType :
+           group = (defiGroup*)cl;
+***************
 *** 2366,2374 ****
                fprintf(fout, "\n  + REGION %s ", group->regionName());
            if (group->hasRegionBox()) {
@@ -5382,7 +5456,7 @@ diff -r -c source.lefdef/def.orig/defrw/defrw.cpp def/defrw/defrw.cpp
                    fprintf(fout, "REGION %d %d %d %d ", gxl[i], gyl[i],
                            gxh[i], gyh[i]);
            }
---- 2366,2374 ----
+--- 2368,2376 ----
                fprintf(fout, "\n  + REGION %s ", group->regionName());
            if (group->hasRegionBox()) {
                int *gxl, *gyl, *gxh, *gyh;
@@ -5401,7 +5475,7 @@ diff -r -c source.lefdef/def.orig/defrw/defrw.cpp def/defrw/defrw.cpp
                        td->fromInst(),
                        td->fromPin(),
                        td->toInst(),
---- 2539,2545 ----
+--- 2541,2547 ----
     case defrTimingDisableCbkType :
            td = (defiTimingDisable*)cl;
            if (td->hasFromTo())
@@ -5418,7 +5492,7 @@ diff -r -c source.lefdef/def.orig/defrw/defrw.cpp def/defrw/defrw.cpp
                        td->macroName(),
                        td->fromPin());
            fprintf(fout, ";\n");
---- 2554,2560 ----
+--- 2556,2562 ----
                        td->fromPin(),
                        td->toPin());
            if (td->hasMacroThru())
@@ -5435,7 +5509,7 @@ diff -r -c source.lefdef/def.orig/defrw/defrw.cpp def/defrw/defrw.cpp
            styles = (defiStyles*)cl;
            fprintf(fout, "- STYLE %d ", styles->style());
            points = styles->getPolygon();
---- 2794,2800 ----
+--- 2796,2802 ----
            }
            break;
     case defrStylesCbkType :
@@ -5459,7 +5533,7 @@ diff -r -c source.lefdef/def.orig/defrw/defrw.cpp def/defrw/defrw.cpp
     fprintf(fout, "This callback is not used.\n");
     return 0;
   }
---- 2880,2889 ----
+--- 2882,2891 ----
           ccr1131444 = 0;
       }
   
@@ -5479,7 +5553,7 @@ diff -r -c source.lefdef/def.orig/defrw/defrw.cpp def/defrw/defrw.cpp
     int noCalls = 0;
   //  long start_mem;
     int retStr = 0;
---- 2898,2904 ----
+--- 2900,2906 ----
     char* inFile[6];
     char* outFile;
     FILE* f;
@@ -5500,7 +5574,7 @@ diff -r -c source.lefdef/def.orig/defrw/defrw.cpp def/defrw/defrw.cpp
       defrSetRegionCbk((defrRegionCbkFnType)cls);
       defrSetGroupNameCbk((defrStringCbkFnType)cls);
       defrSetGroupMemberCbk((defrStringCbkFnType)cls);
---- 3092,3102 ----
+--- 3094,3104 ----
       defrSetPinCapCbk((defrPinCapCbkFnType)cls);
       defrSetPinCbk((defrPinCbkFnType)cls);
       defrSetPinPropCbk((defrPinPropCbkFnType)cls);
@@ -5521,7 +5595,7 @@ diff -r -c source.lefdef/def.orig/defrw/defrw.cpp def/defrw/defrw.cpp
   
          (void)defrPrintUnusedCallbacks(fout);
          (void)defrReleaseNResetMemory();
---- 3188,3194 ----
+--- 3190,3196 ----
          res = defrRead(f, inFile[fileCt], userData, 1);
   
          if (res)
@@ -5538,7 +5612,7 @@ diff -r -c source.lefdef/def.orig/defrw/defrw.cpp def/defrw/defrw.cpp
       int dMsgs[2];
   
       for (fileCt = 0; fileCt < numInFile; fileCt++) {
---- 3205,3211 ----
+--- 3207,3213 ----
       // 2nd will enable 7016 by calling defrEnableParserMsgs
       // 3rd enable all msgs by call defrEnableAllMsgs
   
@@ -5555,7 +5629,7 @@ diff -r -c source.lefdef/def.orig/defrw/defrw.cpp def/defrw/defrw.cpp
    
          (void)defrPrintUnusedCallbacks(fout);
          (void)defrReleaseNResetMemory();
---- 3227,3233 ----
+--- 3229,3235 ----
          res = defrRead(f, inFile[fileCt], userData, 1);
    
          if (res)
@@ -5572,7 +5646,7 @@ diff -r -c source.lefdef/def.orig/defrw/defrw.cpp def/defrw/defrw.cpp
   
          // Testing the aliases API.
          defrAddAlias ("alias1", "aliasValue1", 1);
---- 3249,3255 ----
+--- 3251,3257 ----
          res = defrRead(f, inFile[fileCt], userData, 1);
   
          if (res)
