@@ -126,6 +126,14 @@ QTdev::Init(int *argc, char **argv)
         static int ac = *argc;
         // QApplications takes a reference as first arg, must not be
         // on stack.
+
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+        // Mostly for Windows, force any DPI compensation to round
+        // to int, otherwise the display looks awful.
+        // See setup System/Display/Scale
+        QGuiApplication::setHighDpiScaleFactorRoundingPolicy(
+            Qt::HighDpiScaleFactorRoundingPolicy::RoundPreferFloor);
+#endif
         new QApplication(ac, argv);
         *argc = ac;
     }
