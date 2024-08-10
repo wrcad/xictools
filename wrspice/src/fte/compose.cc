@@ -63,16 +63,8 @@ Authors: 1986 Wayne A. Christopher
 // 'let' command.
 //
 
-struct sCompose
+struct sComposePOD
 {
-    sCompose() { memset(this, 0, sizeof(sCompose)); }
-    bool cmp_parse(wordlist*);
-    bool cmp_pattern(wordlist*, int*, double**);
-    bool cmp_linsweep(int*, double**);
-    bool cmp_logsweep(int*, double**);
-    bool cmp_random(int*, double**);
-    bool cmp_gauss(int*, double**);
-
     double start;
     double stop;
     double step;
@@ -99,6 +91,19 @@ struct sCompose
     bool gaussgiven;
     bool randmgiven;
 };
+
+struct sCompose : public sComposePOD
+{
+    sCompose() : sComposePOD() { }
+
+    bool cmp_parse(wordlist*);
+    bool cmp_pattern(wordlist*, int*, double**);
+    bool cmp_linsweep(int*, double**);
+    bool cmp_logsweep(int*, double**);
+    bool cmp_random(int*, double**);
+    bool cmp_gauss(int*, double**);
+};
+
 
 namespace {
     void dimxpand(sDataVec*, int*, double*);
@@ -176,9 +181,14 @@ CommandTab::com_compose(wordlist *wl)
         // Now see what we have... start and stop are pretty much
         // compatible with everything...
         //
+        // We allow step==0 if lin is given and stop==start if stop
+        // given.
+        //
         if (sc.stepgiven && (sc.step == 0.0)) {
-            GRpkg::self()->ErrPrintf(ET_ERROR, "step cannot be 0.\n");
-            return;
+            if (!sc.lingiven || (sc.stopgiven && sc.stop != sc.start)) {
+                GRpkg::self()->ErrPrintf(ET_ERROR, "step cannot be 0.\n");
+                return;
+            }
         }
         if (sc.lingiven + sc.loggiven + sc.decgiven +
             sc.randmgiven + sc.gaussgiven > 1) {
