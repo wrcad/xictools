@@ -2269,8 +2269,8 @@ GTKsubwin::motion_hdlr(GtkWidget*, GdkEvent *event, void *client_data)
         if (Gst()->ShowingGhostInWindow(w->wib_windesc)) {
             bool skipit = false;
             if (Gst()->Snapping()) {
-                int x = w->wib_x;
-                int y = w->wib_y;
+                int x = (int)mev->x;
+                int y = (int)mev->y;
                 w->windesc()->PToL(x, y, x, y);
                 w->windesc()->Snap(&x, &y);
                 if (x == w->wib_x0 && y == w->wib_y0)
