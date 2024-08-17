@@ -59,9 +59,7 @@
 
 
 #define DEFAULT_FUNC ghost_snap_point
-
 cGhost *cGhost::instancePtr = 0;
-
 
 cGhost::cGhost()
 {

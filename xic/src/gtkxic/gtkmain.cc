@@ -1064,6 +1064,7 @@ GTKsubwin::GTKsubwin() : GTKdraw(XW_DRAWING)
     wib_id = 0;
     wib_state = 0;
     wib_x = wib_y = 0;
+    wib_x0 = wib_y0 = 1;
 }
 
 
@@ -2266,16 +2267,31 @@ GTKsubwin::motion_hdlr(GtkWidget*, GdkEvent *event, void *client_data)
     if (w->wib_windesc) {
         EV()->MotionCallback(w->wib_windesc, mev->state);
         if (Gst()->ShowingGhostInWindow(w->wib_windesc)) {
-            w->UndrawGhost();
-            w->DrawGhost((int)mev->x, (int)mev->y);
+            bool skipit = false;
+            if (Gst()->Snapping()) {
+                int x = w->wib_x;
+                int y = w->wib_y;
+                w->windesc()->PToL(x, y, x, y);
+                w->windesc()->Snap(&x, &y);
+                if (x == w->wib_x0 && y == w->wib_y0)
+                    skipit = true;
+                else {
+                    w->wib_x0 = x;
+                    w->wib_y0 = y;
+                }
+            }
+            if (!skipit) {
+                w->UndrawGhost();
+                w->DrawGhost((int)mev->x, (int)mev->y);
 #ifdef WITH_QUARTZ
-            // This has some extra magic to get around broken Quartz
-            // back-end.
-            WindowDesc *wd;
-            WDgen wgen(WDgen::MAIN, WDgen::CHD);
-            while ((wd = wgen.next()) != 0)
-                wd->Wdraw()->Update();
+                // This has some extra magic to get around broken Quartz
+                // back-end.
+                WindowDesc *wd;
+                WDgen wgen(WDgen::MAIN, WDgen::CHD);
+                while ((wd = wgen.next()) != 0)
+                    wd->Wdraw()->Update();
 #endif
+            }
         }
         if (Coord()) {
             int x = (int)mev->x;
@@ -2297,16 +2313,31 @@ GTKsubwin::motion_idle(void *arg)
     if (w->windesc()) {
         EV()->MotionCallback(w->windesc(), w->wib_state);
         if (Gst()->ShowingGhostInWindow(w->wib_windesc)) {
-            w->UndrawGhost();
-            w->DrawGhost(w->wib_x, w->wib_y);
+            bool skipit = false;
+            if (Gst()->Snapping()) {
+                int x = w->wib_x;
+                int y = w->wib_y;
+                w->windesc()->PToL(x, y, x, y);
+                w->windesc()->Snap(&x, &y);
+                if (x == w->wib_x0 && y == w->wib_y0)
+                    skipit = true;
+                else {
+                    w->wib_x0 = x;
+                    w->wib_y0 = y;
+                }
+            }
+            if (!skipit) {
+                w->UndrawGhost();
+                w->DrawGhost(w->wib_x, w->wib_y);
 #ifdef WITH_QUARTZ
-            // This has some extra magic to get around broken Quartz
-            // back-end.
-            WindowDesc *wd;
-            WDgen wgen(WDgen::MAIN, WDgen::CHD);
-            while ((wd = wgen.next()) != 0)
-                wd->Wdraw()->Update();
+                // This has some extra magic to get around broken Quartz
+                // back-end.
+                WindowDesc *wd;
+                WDgen wgen(WDgen::MAIN, WDgen::CHD);
+                while ((wd = wgen.next()) != 0)
+                    wd->Wdraw()->Update();
 #endif
+            }
         }
         if (Coord()) {
             int x = w->wib_x;

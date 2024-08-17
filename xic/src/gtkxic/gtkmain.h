@@ -245,6 +245,7 @@ protected:
     int wib_id;                 // motion idle id
     int wib_state;              // motion state
     int wib_x, wib_y;           // motion coords
+    int wib_x0, wib_y0;         // reference coords
 };
 
 struct sKeyEvent;

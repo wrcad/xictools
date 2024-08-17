@@ -206,6 +206,42 @@ public:
         }
     }
 
+    // Return true if the current ghost snaps to the grid.
+    bool Snapping() {
+        switch (g_context[g_level].type) {
+        case GFnone:        return (true);
+        case GFline:        return (true);
+        case GFline_ns:     return (false);
+        case GFvector:      return (true);
+        case GFvector_ns:   return (false);
+        case GFbox:         return (true);
+        case GFbox_ns:      return (false);
+        case GFzoom:        return (false);
+        case GFruler:       return (false);
+        case GFscript:      return (false);
+        case GFpathseg:     return (true);
+        case GFwireseg:     return (true);
+        case GFdisk:        return (true);
+        case GFdonut:       return (true);
+        case GFarc:         return (true);
+        case GFstretch:     return (true);
+        case GFrotate:      return (true);
+        case GFmove:        return (true);
+        case GFplace:       return (true);
+        case GFlabel:       return (true);
+        case GFput:         return (true);
+        case GFgrip:        return (true);
+        case GFdiskpth:     return (true);
+        case GFarcpth:      return (true);
+        case GFshape:       return (true);
+        case GFeterms:      return (true);
+        case GFpterms:      return (true);
+        case GFmeasbox:     return (true);
+        case GF_END:        return (false);
+        }
+        return (false);
+    }
+
     // GFline/GFline_ns orientation.
     bool GhostLineVert()            { return (g_ghost_line_vert); }
     void SetGhostLineVert(bool b)   { g_ghost_line_vert = b; }
