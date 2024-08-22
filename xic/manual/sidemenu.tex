@@ -407,7 +407,7 @@ one connection.
 
 
 % -----------------------------------------------------------------------------
-% xic:devs 020615
+% xic:devs 082024
 \section{The {\cb devs} Button: Device Menu}
 \label{devmenu}
 \index{devs button}
@@ -445,6 +445,12 @@ positioned such that the reference terminal is located at the point
 where the user clicked.  Devices are placed according to the current
 transform, which is defined from the pop-up produced by the {\cb
 xform} button in the side menu.
+
+When the menu becomes active, the current transform is cleared.  The
+current transform is saved in Register 0 and cleared when switching
+between devices to place or upon pressing the {\cb Desel} button.
+Pressing the {\kb Forward Slash} button swaps the current and saved
+transforms.
 
 The devices available and other details depend upon the definitions in
 the device library file.  By default, this file is named ``{\vt
@@ -2045,7 +2051,7 @@ with the usage by the extraction system.
 
 
 % -----------------------------------------------------------------------------
-% xic:place 100416
+% xic:place 082024
 \section{The {\cb Place} Button: Cell Placement Control Panel}
 \index{Place button}
 \index{Cell Placement Control panel}
@@ -2155,6 +2161,12 @@ the replaced cell on the new cell.
 Cells can be placed or replaced only when place mode is active, i.e.,
 when the {\cb Place} button in the {\cb Cell Placement Control} pop-up
 or the {\cb place} button in the side menu is active.
+
+When place mode becomes active, the current transform is cleared.  The
+current transform is saved in Register 0 and cleared when switching
+between cells to place or upon pressing the {\cb Desel} button.
+Pressing the {\kb Forward Slash} button swaps the current and saved
+transforms.
 
 \index{place panel!editing array parameters}
 If the {\cb Use Array} button is active when cells are being replaced,

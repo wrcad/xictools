@@ -71,13 +71,6 @@ programs expecting to find a cmd.com type of window to work with
 the mintty.
 
 *****************************************************
-IMPORTANT -- Mac OS X note!
-
-The Darwin64 package release is now generated on High Sierra (10.13),
-but the programs are fully compatible with Sierra (10.12), Mojave
-(10.14), and Catalina (10.15).
-
-*****************************************************
 IMPORTANT -- Font Size (March 2020)
 
 The default GTK font sizes generally seem reasonable on Linux and
@@ -115,6 +108,93 @@ End of general info.
 
 
 ===============================================================================
+xic-4.3.14  08/18/2024
+Current Release
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* New User menu command whitebw, uses a white background and maps all
+  other colors to black.  This may be useful for exporting schematics
+  to B/W media.
+
+* The new default is to show connection dots in schematics.
+
+* New boolean variable OutAllCells.  This tracks the state of the
+  "Consider ALL cells ...  for output" button in the Export Control
+  panel from the Convert menu.
+
+* The File/Open "temporary" entry is now "prev".  Pressing
+  "prev" will load the previous current cell that was loaded, if any. 
+  The "temporary" functionality still exists:  hold Shift while
+  clicking "new" and a new cell with a unique name will be loaded for
+  editing.
+
+* Logic for setting current transform (CT) while moving,
+  copying, and placing cells was updated, hopefully to be more
+  efficient and to avoid doing operations with the wrong CT left over
+  from something else.  In the main state:  after every operation, the
+  CT is saved (using register 0 always).  The current transform is
+  subsequently cleared after a move operation.  It is also cleared
+  when pressing Esc and saved and cleared on pressing Desel.  Pressing
+  the '/' key swaps the current transform value with the saved value.
+
+  In the Move command:  similarly, CT is saved/cleared after every
+  operation.  '/' can get transform back by swapping current with
+  register 0.  CT is saved and cleared when Desel is pressed and
+  cleared when the command exits.
+
+  In the Copy command:  CT is saved after each copy is placed,
+  otherwise like Move.
+
+  In the Place command:  CT is cleared when Place becomes active, CT
+  is saved and cleared when switching between cells to place or
+  pressing Desel.  '/' swaps current and saved transform.  Devices
+  menu:  similar.
+
+  The Desel button now resets any operating mode in the main state
+  (e.g.  move, copy).  Previously it would leave Copy (at least) with
+  messed up logic.
+
+* The Qt port is about done, new features (below) are being added to
+  the Qt releases only.  Presently you need to build from source to
+  get the Qt releases - see the README file on github.com/wrcad/xictools
+
+* Qt only:  the Image print driver in the Print panel has a new No
+  Backg check box.  When checked, the background will be transparent,
+  so created images will allow the existing background to show through
+  when placed in a document.  This works in PNG and other formats that
+  support this.
+
+* Qt only:  the Image driver now uses QT's graphics format translation
+  capability.  An earlier version relied on the X Windows client
+  libraries being present.
+
+* Qt, macOS only; by default Xic uses the Apple menu at the top of the
+  main window, which has no tooltips and can not be selected
+  programmatically.  If the environment variable XIC_NO_MAC_MENU is
+  set, Xic will use Linux-style menus which behave as they do in
+  Linux, enabling access in macros.
+
+
+BUGS FIXED
+---- -----
+
+* GTK only:  Exclusive-OR "ghost" drawing for transient indications
+  has been broken for some time in Windows.  A bug prevented lines
+  from being rendered.  This has been fixed, but XOR drawing mode is
+  not supported in GDI+ in Windows, and a very slow emulation is used. 
+  The ghosting can lag the mouse pointer badly.  Qt versions do not
+  have this problem since XOR drawing is not used.
+
+* Current cell could have bad instance BBs after opening a cell for
+  placement and overwriting.  Then, the instance can't be selected by
+  clicking on it.
+
+* Instances with NOSYMBLC set could be unselectable after instance is
+  moved.
+
+------------------------------------------------------------------------------
 xic-4.3.13  10/28/2023
 Current Release
 

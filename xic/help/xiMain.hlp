@@ -50,6 +50,7 @@ keyboard
 keyescape
 keytab
 keydelet
+keyfwdsl
 keyarrow
 key+-
 keyhome
@@ -579,6 +580,9 @@ Quick Reference
       <td>Redo last undone operation</td></tr>
     <tr><td><a href="keydelet"><b>Delete</b></td>
       <td>Delete selected objects</td></tr>
+    <tr><td><a href="keyfwdsl"><b>/ (Forward Slash) Key</b></a></td>
+        <td>Swap <a href="xic:xform">current transform</a> with saved
+        (Register 0) transform value</td></tr>
     <tr><td><a href="keyarrow"><b>Arrow Keys</b></td>
       <td>Pan</td></tr>
     <tr><td><a href="keyarrow"><b>Shift-Arrow Keys</b></td>
@@ -1345,7 +1349,7 @@ Menu Selection and Accelerators
 !!SEEALSO
 xic:commands
 
-!! 082710
+!! 082024
 !!KEYWORD
 keyboard
 !!TITLE
@@ -1408,6 +1412,9 @@ Keyboard Commands
       <td>Redo last undone operation</td></tr>
     <tr><td><a href="keydelet"><b>Delete</b></td>
       <td>Delete selected objects</td></tr>
+    <tr><td><a href="keyfwdsl"><b>/ (Forward Slash) Key</b></a></td>
+        <td>Swap <a href="xic:xform">current transform</a> with saved
+        (Register 0) transform value.</td></tr>
     <tr><td><a href="keyarrow"><b>Arrow Keys</b></td>
       <td>Pan</td></tr>
     <tr><td><a href="keyarrow"><b>Shift-Arrow Keys</b></td>
@@ -1591,6 +1598,24 @@ Delete
     href="xic:ruler"><b>Rulers</b></a> button in the <a
     href="xic:viewmenu"><b>View Menu</b></a> is active, the
     <b>Delete</b> key will delete rulers and not other objects.
+
+!!SEEALSO
+keyboard
+
+!! 082024
+!!KEYWORD
+keyfwdsl
+!!TITLE
+/ (Forward Slash)
+!!HTML
+    Outside of any command, pressing the forward slash '<b>/</b>'
+    key will swap the <a href="xic:xform">current transform</a> with
+    the saved transform in Register 0, if any.  The saved transform
+    is the one in force for the last <a href="button1#movecopy>move
+    or copy</a> operation.  The current transform is also saved when
+    terminating a <a href="xic:move"><b>Move</b></a>,
+    <a href="xic:copy"></b>Copy</b></a>, or <a href="xic:place">Place</b></a>
+    command.
 
 !!SEEALSO
 keyboard

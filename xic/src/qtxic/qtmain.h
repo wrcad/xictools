@@ -417,6 +417,8 @@ protected:
     WindowDesc  *sw_windesc;
     int         sw_win_number;
     int         sw_cursor_type;
+    int         sw_x0;
+    int         sw_y0;
 };
 
 struct RunQueuedStruct

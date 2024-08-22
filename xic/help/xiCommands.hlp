@@ -562,7 +562,7 @@ The deck Button: Save SPICE File
 sidemenu
 xic:run
 
-!! 020615
+!! 082024
 !!KEYWORD
 xic:devs devtoolbar
 !!TITLE
@@ -618,6 +618,14 @@ The devs Button: Device Menu
     to the current transform, which is defined from the pop-up
     produced by the <a href="xic:xform"><b>xform</b></a> button in the
     side menu.
+
+    <p>
+    When the menu becomes active, the <a href="xic:xform">current
+    transform</a> is cleared.  The current transform is saved in
+    Register 0 and cleared when switching between devices to place or
+    upon pressing the <a href="xic:desel"><b>Desel</b></a> button.
+    Pressing the <a href="keyfwdsl"><b>Forward Slash</b></a> button
+    swaps the current and saved transforms.
 
     <p>
     The devices available and other details depend upon the
@@ -2039,7 +2047,7 @@ The nodmp Button: Node (Net) Name Assignments
 !!SEEALSO
 sidemenu
 
-!! 100416
+!! 082024
 !!KEYWORD
 xic:place placepanel
 !!TITLE
@@ -2171,6 +2179,14 @@ Cell Placement Control
     i.e., when the <b>Place</b> button in the <b>Cell Placement
     Control</b> pop-up or the <b>place</b> button in the side menu is
     active.
+
+    <p>
+    When place mode becomes active, the <a href="xic:xform">current
+    transform</a> is cleared.  The current transform is saved in
+    Register 0 and cleared when switching between cells to place or
+    upon pressing the <a href="xic:desel"><b>Desel</b></a> button.
+    Pressing the <a href="keyfwdsl"><b>Forward Slash</b></a> button
+    swaps the current and saved transforms.
 
     <p>
     If the <b>Use Array</b> button is active when cells are being

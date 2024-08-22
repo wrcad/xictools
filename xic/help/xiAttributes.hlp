@@ -785,7 +785,7 @@ Window Attributes
 !!SEEALSO
 xic:attrmenu
 
-!! 022712
+!! 081824
 !!KEYWORD
 xic:dots
 !!TITLE
@@ -803,7 +803,7 @@ Connection Dots
 
     <p>
     If <b>Don't show dots</b> is selected, there will not be any
-    indication of connection points.  This is the default.
+    indication of connection points.
 
     <p>
     If the <b>Show dots normally</b> button is selected, a "dot" will
@@ -811,7 +811,7 @@ Connection Dots
     common to two or more wires (except for common end vertices of two
     wires), non-endpoint wire vertices common with device or
     subcircuit terminals, and any point common to three or more
-    terminals or wire vertices.
+    terminals or wire vertices.  This selection is the default.
 
     <p>
     A dot will also be shown if a cell connection point lies on an

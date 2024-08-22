@@ -1206,6 +1206,7 @@ Command Line Options
 !!REDIRECT XIC_PYSO_PATH        xic:env#XIC_PYSO_PATH
 !!REDIRECT XIC_TCLSO_PATH       xic:env#XIC_TCLSO_PATH
 !!REDIRECT XIC_LIBRARY_PATH     xic:env#XIC_LIBRARY_PATH
+!!REDIRECT XIC_NO_MAC_MENU      xic:env#XIC_NO_MAC_MENU
 !!REDIRECT XICNOMAIL            xic:env#XICNOMAIL
 !!REDIRECT XTNOMAIL             xic:env#XTNOMAIL
 !!REDIRECT SPICE_HOST           xic:env#SPICE_HOST
@@ -1213,7 +1214,7 @@ Command Line Options
 !!REDIRECT SPICE_EXEC_NAME      xic:env#SPICE_EXEC_NAME
 !!REDIRECT IMSAVE_PATH          xic:env#IMSAVE_PATH
 
-!! 052822
+!! 081824
 !!KEYWORD
 xic:env
 !!TITLE
@@ -1786,6 +1787,16 @@ Environment Variables
 !!ENDIF
     without having to set <tt>LD_LIBRARY_PATH</tt> in the
     environment.
+    </dl>
+
+    <a name="XIC_NO_MAC_MENU"></a>
+    <dl>
+    <dt><b>XIC_NO_MAC_MENU</b><dd>
+    (Qt macOS only) By default, <i>Xic</i> will use the Apple menu
+    in the upper left of the screen.  This has no tooltips and can
+    not be selected programmatically.  It this variable is set,
+    <i>Xic</i> will use Linux-style menus in the main window which
+    behave as they do in Linux, enabling access to macros.
     </dl>
 
     <a name="XICNOMAIL"></a>

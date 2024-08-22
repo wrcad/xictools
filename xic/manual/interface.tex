@@ -589,6 +589,7 @@ Macro} command button in the {\cb Attributes Menu}.
 \index{keyboard!buffer}
 \index{keyboard!Ctrl-u}
 \index{keyboard!Backspace}
+\index{keyboard!ForwardSlash}
 
 The main window must have the keyboard focus in order for {\Xic} to
 receive keyboard input.  Under some window managers, including under
@@ -616,7 +617,7 @@ The {\kb Backspace} key will delete the last character entered.  There
 are other accelerators for most menu commands.
 
 % -----------------------------------------------------------------------------
-% keyboard 102208
+% keyboard 082024
 The `!' character will switch the prompt line to editing mode to
 solicit one of the text-mode commands.  The `?' character will switch
 the prompt line to editing mode to obtain a help keyword or directive. 
@@ -632,6 +633,8 @@ user, as there is no alternative way to invoke their function.
 \bf Tab & Undo operation\\ \hline
 \bf Shift-Tab & Redo last undone operation\\ \hline
 \bf Delete & Delete selected objects\\ \hline
+\bf Forward Slash & Swap current transform with saved (Register 0)
+    transform value.\\ \hline
 \bf Arrow Keys & Pan\\ \hline
 \bf Shift-Arrow Keys & Fine pan\\ \hline
 \bf Ctrl-Arrow Keys & Cycle rotation and mirror transformations\\ \hline
@@ -751,6 +754,15 @@ operations (see \ref{btnsel}).  This has the same effect as the {\cb
 Delete} button in the {\cb Modify Menu}.  If the {\cb Rulers} button in
 the {\cb View Menu} is active, the {\kb Delete} key will delete rulers
 and not other objects.
+
+% -----------------------------------------------------------------------------
+% keydelet 082024
+\index{keyboard!ForwardSlash}
+Outside of any command, pressing the forward slash `{\cb /}' key will
+swap the current transform with the saved transform in Register 0, if
+any.  The saved transform is the one in force for the last move or copy
+operation.  The current transform is also saved when
+terminating a {\cb Move}, {\cb Copy}, or {\cb Place} command.
 
 % -----------------------------------------------------------------------------
 % keyarrow 020715

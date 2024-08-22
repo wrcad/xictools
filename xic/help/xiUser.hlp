@@ -20,14 +20,17 @@ scr:library
 scr:crypt
 xic:debug
 xic:hash
-user:fullcursor
-user:paths
-user:spiral
-user:spiralform
-user:yank
 
+!!REDIRECT blackbg xic:usermenu#blackbg
+!!REDIRECT fullcursor xic:usermenu#fullcursor
+!!REDIRECT paths xic:usermenu#paths
+!!REDIRECT spiral xic:usermenu#spiral
+!!REDIRECT spiralform xic:usermenu#spiralform
+!!REDIRECT whitebg xic:usermenu#whitebg
+!!REDIRECT whitebw xic:usermenu#whitebw
+!!REDIRECT yank xic:usermenu#yank
 
-!! 101208
+!! 081824
 !!KEYWORD
 xic:usermenu
 !!TITLE
@@ -147,14 +150,94 @@ User Menu
     provided.  This allows the content of scripts to be hidden from
     users.
 
+    <h2>Example Scripts in User Menu</h2>
+
+    <p>
+    The <i>Xic</i> installation provides some example scripts, which
+    will appear in the <b>User Menu</b>.  To use these buttons (or
+    any menu buttons) while in help mode, press <b>Shift</b> while
+    pressing the menu button.
+
+    <a name="blackbg"></a>
+    <dl>
+    <dt><b>blackbg</b>: Use a black drawing window blackground.<dd>
+    This reverts drawing window colors to use a black background,
+    which is the default.
+    </dl>
+
+    <a name="fullcursor"></a>
+    <dl>
+    <dt><b>fullcursor</b>: Set/unset full-window cursor.<dd>
+    This command executes a script that toggles whether the <a
+    href="FullWinCursor"><tt>FullWinCursor</tt></a> variable is set. 
+    When set, the default cursor consists of horizontal and vertical
+    lines that extend completely across the drawing window.  The lines
+    intersect at the nearest snap point in the current window.
+    </dl>
+
+    <a name="paths"></a>
+    <dl>
+    <dt><b>paths</b>: Set search paths script.<dd>
+    This command executes a script which allows the search path
+    variables to be edited graphically.  These variables are
+    otherwise set with the <a href="!set"><b>!set</b></a> command, or
+    from the <a href="techfile:paths">technology file</a>.
+    </dl>
+
+    <a name="spiral"></a>
+    <dl>
+    <dt><b>spiral</b>: Spiral generator demo script<dd>
+    This is a text-based command for creating a spiral feature.  A
+    series of prompts is given on in the prompt line, where the user
+    supplies dimensions, number of turns, etc.  When the prompts are
+    complete, an outline of the spiral is attached to the mouse
+    pointer, and will be instantiated in the drawing window where the
+    user clicks, on the current layer.  To run the script while in
+    help mode, press <b>Shift</b> while clicking the <b>spiral</b>
+    menu button.
+    </dl>
+
+    <a name="spiralform"></a>
+    <dl>
+    <dt><b>spiralform</b>: Form-based spiral generator demo script<dd>
+    This is a graphical version of the <b>spiral</b> script above,
+    where the user fills in a form instead of responding to prompts. 
+    This is a demonstration of the capability of <i>Xic</i> to use <a
+    href="scr:forms">HTML forms</a> as a front-end to command scripts. 
+    To run the script while in help mode, press <b>Shift</b> while
+    clicking the <b>spiralform</b> menu button.
+    </dl>
+
+    <a name="whitebg"></a>
+    <dl>
+    <dt><b>whitebg</b>: Use a white drawing window background.<dd>
+    Switch to use of a white background color in drawing windows.
+    This adjusts certain attribute colors for greater contrast,
+    and is intended for schematics.
+    </dl>
+
+    <a name="whitebw"></a>
+    <dl>
+    <dt><b>whitebw</b>: Use black on white in drawing windows.<dd>
+    Similar to <b>whitebg</b> except that non-background is black.
+    This is intetended for export of schematics to black and white
+    media.
+    </dl>
+
+    <a name="yank"></a>
+    <dl>
+    <dt><b>yank</b>: Copy geometry to new cell demo script<dd>
+    This example script allows the user to copy all geometry in a
+    rectangular area, independent of hierarchy, to a new flat cell. 
+    The user clicks twice to define the area, and responds to the
+    prompt for a new cell name.  All geometry in the area is copied,
+    clipped to the area, and added to the new cell.  The original
+    objects are not affected.
+    </dl>
+
 !!SEEALSO
 submenu
 xic:commands
-user:fullcursor
-user:paths
-user:spiral
-user:spiralform
-user:yank
 
 !! 020611
 !!KEYWORD
@@ -827,86 +910,5 @@ Rehash
 
 !!SEEALSO
 !rehash
-xic:usermenu
-
-
-!! 062808
-!!KEYWORD
-user:fullcursor
-!!TITLE
-fullcursor: Set/Unset Full-Window Cursor
-!!HTML
-    This command executes a script that toggles whether the <a
-    href="FullWinCursor"><tt>FullWinCursor</tt></a> variable is set. 
-    When set, the default cursor consists of horizontal and vertical
-    lines that extend completely across the drawing window.  The lines
-    intersect at the nearest snap point in the current window.
-
-!!SEEALSO
-xic:usermenu
-
-!! 102114
-!!KEYWORD
-user:paths
-!!TITLE
-paths: Set Search Paths Script
-!!HTML
-    This command executes a script which allows the search path
-    variables to be edited graphically.  These variables are
-    otherwise set with the <a href="!set"><b>!set</b></a> command, or
-    from the <a href="techfile:paths">technology file</a>.
-
-!!SEEALSO
-xic:usermenu
-
-!! 062808
-!!KEYWORD
-user:spiral
-!!TITLE
-spiral: Spiral Generator Demo Script
-!!HTML
-    This is a text-based command for creating a spiral feature.  A
-    series of prompts is given on in the prompt line, where the user
-    supplies dimensions, number of turns, etc.  When the prompts are
-    complete, an outline of the spiral is attached to the mouse
-    pointer, and will be instantiated in the drawing window where the
-    user clicks, on the current layer.  To run the script while in
-    help mode, press <b>Shift</b> while clicking the <b>spiral</b>
-    menu button.
-
-!!SEEALSO
-xic:usermenu
-
-!! 062808
-!!KEYWORD
-user:spiralform
-!!TITLE
-spiralform: Form-Based Spiral Generator Demo Script
-!!HTML
-    This is a graphical version of the <a
-    href="user:spiral"><tt>spiral</tt></a> script, where the user
-    fills in a form instead of responding to prompts.  This is a
-    demonstration of the capability of <i>Xic</i> to use <a
-    href="scr:forms">HTML forms</a> as a front-end to command scripts. 
-    To run the script while in help mode, press <b>Shift</b> while
-    clicking the <b>spiralform</b> menu button.
-
-!!SEEALSO
-xic:usermenu
-
-!! 062808
-!!KEYWORD
-user:yank
-!!TITLE
-yank: Copy Geometry to New Cell Demo Script
-!!HTML
-    This example script allows the user to copy all geometry in a
-    rectangular area, independent of hierarchy, to a new flat cell. 
-    The user clicks twice to define the area, and responds to the
-    prompt for a new cell name.  All geometry in the area is copied,
-    clipped to the area, and added to the new cell.  The original
-    objects are not affected.
-
-!!SEEALSO
 xic:usermenu
 

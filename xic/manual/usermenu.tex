@@ -5,7 +5,7 @@
 % -----------------------------------------------------------------------------
 
 % -----------------------------------------------------------------------------
-% xic:usermenu 101208
+% xic:usermenu 081824
 \chapter{The User Menu:  User Commands and {\Xic} Scripts}
 \label{chpscript}
 
@@ -97,6 +97,70 @@ priority is observed in this case.
 
 An encryption capability for scripts is provided.  This allows the
 content of scripts to be hidden from users.
+
+\section{Example Scripts in User Menu}
+The {\Xic} installation provides some example scripts, which will
+appear in the {\cb User Menu}.  To use these buttons (or any menu
+buttons) while in help mode, press {\kb Shift} while pressing the
+menu button.
+
+\begin{description}
+\index{blackbg script}
+\item{\cb blackbg}: Use a black drawing window background.\\
+This reverts drawing window colors to use a black background,
+which is the default.
+
+\index{fullcursor script}
+\item{\cb fullcursor}: Set/unset full-window cursor.\\
+This command executes a script that toggles whether the {\et
+FullWinCursor} variable is set.  When set, the default cursor consists
+of horizontal and vertical lines that extend completely across the
+drawing window.  The lines intersect at the nearest snap point in the
+current window.
+
+\index{paths script}
+\item{\cb paths}: Set search-path script.\\
+This command executes a script which allows the search path variables
+to be edited graphically.  These variables are otherwise set with the
+{\cb !set} command, or from the technology file.
+
+\index{spiral script}
+\item{\cb spiral}: Spiral generator demo script.\\
+This is a text-based command for creating a spiral feature.  A series
+of prompts is given on in the prompt line, where the user supplies
+dimensions, number of turns, etc.  When the prompts are complete, an
+outline of the spiral is attached to the mouse pointer, and will be
+instantiated in the drawing window where the user clicks, on the
+current layer.
+
+\index{spiralform script}
+\item{\cb spiralform}: Form-based spiral generator demo script.\\
+This is a graphical version of the {\cb spiral} script, where the user
+fills in a form instead of responding to prompts.  This is a
+demonstration of the capability of {\Xic} to use HTML forms as a
+front-end to command scripts.
+
+\index{whitebg script}
+\item{\cb whitebg}: Use a white drawing window background.\\
+Switch to use of a white background color in drawing windows.
+This adjusts certain attribute colors for greater contrast,
+and is intended for schematics.
+
+\index{whitebw script}
+\item{\cb whitebw}: Use black on white in drawing windows.\\
+    Similar to {\cb whitebg} except that non-background is black.
+This is intetended for export of schematics to black and white
+media.
+
+\index{yank script}
+\item{\cb yank}: Copy geometry to new cell demo script.\\
+This example script allows the user to copy all geometry in a
+rectangular area, independent of hierarchy, to a new flat cell.  The
+user clicks twice to define the area, and responds to the prompt for a
+new cell name.  All geometry in the area is copied, clipped to the
+area, and added to the new cell.  The original objects are not
+affected.
+\end{description}
 
 
 % -----------------------------------------------------------------------------
@@ -640,65 +704,4 @@ function will also load the contents of files named ``{\vt library}''
 found in the script search path.  These files contain function
 definitions only.  Like the {\cb Debugger} button but unlike other
 buttons in the {\cb User Menu}, this is an internal command.
-
-
-% -----------------------------------------------------------------------------
-% not in help
-\section{Supplied Example Scripts}
-The {\Xic} installation provides some example scripts, which will
-appear in the {\cb User Menu}.
-
-To use these buttons (or any menu buttons) while in help mode, press
-{\kb Shift} while pressing the menu button.
-
-\begin{description}
-% -----------------------------------------------------------------------------
-% user:fullcursor 062808
-\index{fullcursor script}
-\item{\cb fullcursor}\\
-This command executes a script that toggles whether the {\et
-FullWinCursor} variable is set.  When set, the default cursor consists
-of horizontal and vertical lines that extend completely across the
-drawing window.  The lines intersect at the nearest snap point in the
-current window.
-
-% -----------------------------------------------------------------------------
-% user:paths 102114
-\index{paths script}
-\item{\cb paths}\\
-This command executes a script which allows the search path variables
-to be edited graphically.  These variables are otherwise set with the
-{\cb !set} command, or from the technology file.
-
-% -----------------------------------------------------------------------------
-% user:spiral 062808
-\index{spiral script}
-\item{\cb spiral}\\
-This is a text-based command for creating a spiral feature.  A series
-of prompts is given on in the prompt line, where the user supplies
-dimensions, number of turns, etc.  When the prompts are complete, an
-outline of the spiral is attached to the mouse pointer, and will be
-instantiated in the drawing window where the user clicks, on the
-current layer.
-
-% -----------------------------------------------------------------------------
-% user:spiralform 062808
-\index{spiralform script}
-\item{\cb spiralform}\\
-This is a graphical version of the {\cb spiral} script, where the user
-fills in a form instead of responding to prompts.  This is a
-demonstration of the capability of {\Xic} to use HTML forms as a
-front-end to command scripts.
-
-% -----------------------------------------------------------------------------
-% user:yank 062808
-\index{yank script}
-\item{\cb yank}\\
-This example script allows the user to copy all geometry in a
-rectangular area, independent of hierarchy, to a new flat cell.  The
-user clicks twice to define the area, and responds to the prompt for a
-new cell name.  All geometry in the area is copied, clipped to the
-area, and added to the new cell.  The original objects are not
-affected.
-\end{description}
 

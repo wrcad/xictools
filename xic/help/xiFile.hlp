@@ -1184,7 +1184,7 @@ Save As Device, Editing Devices
 xic:filemenu
 cdsimport
 
-!! 071310
+!! 081824
 !!KEYWORD
 xic:hcopy
 !!TITLE
@@ -1249,6 +1249,14 @@ Print
     the technology file by use of the <a
     href="HPGLfilled"><tt>HPGLfilled</tt></a> and <a
     href="XfigFilled"><tt>XfigFilled</tt></a> keywords, respectively.
+
+    <p>
+    When using the Image driver, a <b>No Backg</b> check box will
+    appear above the driver selection menu.  When checked, image
+    files produced will use a transparent background, meaning that
+    existing background will show through when the image is used in
+    a document.  This applies to PNG and other formats that support
+    this feature. (Qt releazes only)
 
     <p>
     The temporary file produced may be quite large in some cases. 

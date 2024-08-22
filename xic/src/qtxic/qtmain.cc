@@ -1360,6 +1360,8 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
     sw_windesc = 0;
     sw_win_number = wnum < 0 ? -1 : wnum;
     sw_cursor_type = 0;
+    sw_x0 = 1;
+    sw_y0 = 1;
 
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -2182,6 +2184,8 @@ QTsubwin::motion_slot(QMouseEvent *ev)
         if (!cvs) {
             UndrawGhost();
             ev->ignore();
+            sw_x0 = 1;
+            sw_y0 = 1;
             return;
         }
 
@@ -2200,8 +2204,22 @@ QTsubwin::motion_slot(QMouseEvent *ev)
                 QPoint gg = w->Viewport()->mapFromGlobal(gpos);
                 EV()->MotionCallback(wd, mod_state(ev->modifiers()));
                 if (Gst()->ShowingGhostInWindow(wd)) {
-                    w->UndrawGhost();
-                    w->DrawGhost(gg.x(), gg.y());
+                    bool skipit = false;
+                    if (Gst()->Snapping()) {
+                        int xl, yl;
+                        sw_windesc->PToL(gg.x(), gg.y(), xl, yl);
+                        sw_windesc->Snap(&xl, &yl);
+                        if (xl == sw_x0 && yl == sw_y0)
+                            skipit = true;
+                        else {
+                            sw_x0 = xl;
+                            sw_y0 = yl;
+                        }
+                    }
+                    if (!skipit) {
+                        w->UndrawGhost();
+                        w->DrawGhost(gg.x(), gg.y());
+                    }
                 }
                 wd->PToL(gg.x(), gg.y(), xx, yy);
                 emit update_coords(xx, yy);
@@ -2211,18 +2229,35 @@ QTsubwin::motion_slot(QMouseEvent *ev)
         }
     }
 
+
     // Haven't changed windows.
     QRect r(QPoint(0, 0), gd_viewport->size());
     if (!r.contains(xx, yy)) {
         UndrawGhost(true);
         ev->ignore();
+        sw_x0 = 1;
+        sw_y0 = 1;
         return;
     }
 
     EV()->MotionCallback(sw_windesc, mod_state(ev->modifiers()));
     if (Gst()->ShowingGhostInWindow(sw_windesc)) {
-        UndrawGhost();
-        DrawGhost(xx, yy);
+        bool skipit = false;
+        if (Gst()->Snapping()) {
+            int xl, yl;
+            sw_windesc->PToL(xx, yy, xl, yl);
+            sw_windesc->Snap(&xl, &yl);
+            if (xl == sw_x0 && yl == sw_y0)
+                skipit = true;
+            else {
+                sw_x0 = xl;
+                sw_y0 = yl;
+            }
+        }
+        if (!skipit) {
+            UndrawGhost();
+            DrawGhost(xx, yy);
+        }
     }
     sw_windesc->PToL(xx, yy, xx, yy);
     emit update_coords(xx, yy);

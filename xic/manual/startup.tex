@@ -993,7 +993,7 @@ Open} command.
 
 
 % -----------------------------------------------------------------------------
-% xic:env 052822
+% xic:env 081824
 \section{{\Xic} Environment Variables}
 \label{xicenv}
 \index{environment}
@@ -1459,6 +1459,15 @@ This can be used to point to installed libraries needed for plugins,
 for example the OpenAccess libraries,
 %\fi
 without having to set {\vt LD\_LIBRARY\_PATH} in the environment. 
+
+\index{environment!XIC\_NO\_MAC\_MENU\}
+\index{XIC\_NO\_MAC\_MENU environment variable}
+\item{\et XIC\_NO\_MAC\_MENU}\\
+(Qt macOS only) By default, {\Xic} will use the Apple menu
+in the upper left of the screen.  This has no tooltips and can
+not be selected programmatically.  It this variable is set,
+{\Xic} will use Linux-style menus in the main window which
+behave as they do in Linux, enabling access to macros.
 
 \index{environment!XICNOMAIL}
 \index{XICNOMAIL environment variable}

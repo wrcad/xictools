@@ -95,7 +95,7 @@ the disk object.
 
 
 % -----------------------------------------------------------------------------
-% xic:move 120615
+% xic:move 082024
 \section{The {\cb Move} Button: Move Objects}
 \index{Move button}
 \index{move objects}
@@ -123,6 +123,13 @@ set of selections needed.
 At any time, pressing the {\cb Deselect} button to the left of the
 coordinate readout will revert the command state to the level where
 objects may be selected to move.
+
+The current transform is saved in Register 0 then cleared after every
+move operation.  Pressing the {\kb Forward Slash} key will swap the
+current and saved transforms, allowing the last-used transform to be
+retrieved.  The current transform is saved and cleared when
+{\cb Deselect} is pressed, and cleared when the {\cb Move} command
+exits.
 
 The undo and redo operations (the {\kb Tab} and {\kb Shift-Tab}
 keypreses and {\cb Undo}/{\cb Redo} in the {\cb Modify Menu}) will
@@ -170,7 +177,7 @@ interface with the {\cb !mo} command.
 
 
 % -----------------------------------------------------------------------------
-% xic:copy 120615
+% xic:copy 082024
 \section{The {\cb Copy} Button: Copy Objects}
 \index{Copy button}
 \index{object copying}
@@ -240,6 +247,12 @@ previous objects but with a different reference location.
 At any time, pressing the {\cb Deselect} button to the left of the
 coordinate readout will revert the command state to the level where
 objects may be selected to copy (in any mode-compatible window).
+
+The current transform is saved in Register 0 after each copy is placed.
+Pressing the {\cb Forward Slash} key will swap the current and saved
+transforms, allowing the last-used transform to be retrieved.  The
+current transform is saved and cleared when {\cb Deselect} is pressed,
+and cleared when the {\cb Copy} command exits.
 
 The undo and redo operations (the {\kb Tab} and {\kb Shift-Tab}
 keypreses and {\cb Undo}/{\cb Redo} in the {\cb Modify Menu}) will

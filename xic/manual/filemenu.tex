@@ -1101,7 +1101,7 @@ somewhere safe, at least out of the search path.
 
 
 % -----------------------------------------------------------------------------
-% xic:hcopy 071310
+% xic:hcopy 081824
 \section{The {\cb Print} Button: Print Control Panel}
 \index{hcopy button}
 \index{hardcopy plots}
@@ -1152,6 +1152,13 @@ drivers have a means to use predefined fill patterns defined in the
 specific interface protocol.  This can be set up in the technology
 file by use of the {\vt HPGLfilled} and {\vt XfigFilled} keywords,
 respectively.
+
+When using the Image driver, a {\cb No Backg} check box will appear
+above the driver selection menu.  When checked, image files produced
+will use a transparent background, meaning that existing background
+will show through when the image is used in a document.  This
+applies to PNG and other formats that support this feature.
+(Qt releazes only)
 
 \index{XIC\_TMP\_DIR environment variable}
 The temporary file produced may be quite large in some cases.  This
