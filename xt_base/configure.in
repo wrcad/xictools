@@ -95,6 +95,15 @@ elif test $enable_mingw = yes; then
 fi
 )
 
+dnl --enable-innoloc=/path/to/inno_installer
+innoloc="/c/inno-6.3.3"
+AC_ARG_ENABLE(innoloc,
+    [  ]--enable_innoloc=DIR   specify path to inno installer,
+if test $enable_innoloc != yes -a $enable_innoloc != no; then
+    innoloc="$enable_mingwlib"
+fi
+)
+
 dnl --enable-mingwlib=/path/to/mingw_libs
 dnl This sets a -L/path to extra libraries used with mingw.
 mingwlib=
@@ -1589,6 +1598,7 @@ echo "osname) echo $OSNAME;;"   >> info.sh
 echo "arch) echo $ARCH;;"       >> info.sh
 echo "dist_suffix) echo $DIST_SUFFIX;;" >> info.sh
 echo "with_oa) echo $with_oa;;" >> info.sh
+echo "innoloc) echo $innoloc;;" >> info.sh
 echo "esac"                     >> info.sh
 chmod 755 info.sh
 

@@ -376,10 +376,10 @@ We can now continue the first time only configuration.
 
 4.  Finally, if you intend to create packages, you will need the
     inno-setup packager (http://www.jrsoftware.org/).
-    The Makefiles assume release 5.5.9.  You might wish to get this
+    The Makefiles assume release 6.6.3.  You might wish to get this
     (or a newer release) if you intend to produce packages for Windows.
-    The XicTools Makefile assumes that this is installed at c:/inno-5.5.9
-    which is mounted on /inno-5.5.9 in MSYS2.
+    The XicTools Makefile assumes that this is installed at c:/inno-6.6.3
+    which is mounted on /inno-6.6.3 in MSYS2.
 
 You will run the pacman installer in the future to update your
 packages, and to add any packages needed later.

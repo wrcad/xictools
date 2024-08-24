@@ -18,41 +18,41 @@ DirExistsWarning=no
 
 PrivilegesRequired=admin
 
-UninstallFilesDir={app}\xictools\wrspice.current\uninstall
-UninstallDisplayIcon={app}\xictools\wrspice.current\bin\wrspice.exe
+UninstallFilesDir={app}\TOOLROOT\wrspice.current\uninstall
+UninstallDisplayIcon={app}\TOOLROOT\wrspice.current\bin\wrspice.exe
 
 [Files]
 
-Source: "..\root\usr\local\xictools\wrspice.current\bin\preinstall.bat"; DestDir: "{app}\xictools\wrspice.current\bin";
-Source: "..\root\usr\local\xictools\wrspice.current\bin\postinstall.bat"; DestDir: "{app}\xictools\wrspice.current\bin"; BeforeInstall: DoBeforeInstall
-Source: "..\root\usr\local\xictools\wrspice.current\bin\wrspice.exe"; DestDir: "{app}\xictools\wrspice.current\bin";
-Source: "..\root\usr\local\xictools\wrspice.current\bin\wrspice.dll"; DestDir: "{app}\xictools\wrspice.current\bin";
-Source: "..\root\usr\local\xictools\wrspice.current\bin\wrspiced.exe"; DestDir: "{app}\xictools\wrspice.current\bin";
-Source: "..\root\usr\local\xictools\wrspice.current\bin\mmjco.exe"; DestDir: "{app}\xictools\wrspice.current\bin";
-Source: "..\root\usr\local\xictools\wrspice.current\bin\multidec.exe"; DestDir: "{app}\xictools\wrspice.current\bin";
-Source: "..\root\usr\local\xictools\wrspice.current\bin\proc2mod.exe"; DestDir: "{app}\xictools\wrspice.current\bin";
-Source: "..\root\usr\local\xictools\wrspice.current\bin\printtoraw.exe"; DestDir: "{app}\xictools\wrspice.current\bin"; AfterInstall: DoAfterInstall
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\bin\preinstall.bat"; DestDir: "{app}\TOOLROOT\wrspice.current\bin";
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\bin\postinstall.bat"; DestDir: "{app}\TOOLROOT\wrspice.current\bin"; BeforeInstall: DoBeforeInstall
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\bin\wrspice.exe"; DestDir: "{app}\TOOLROOT\wrspice.current\bin";
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\bin\wrspice.dll"; DestDir: "{app}\TOOLROOT\wrspice.current\bin";
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\bin\wrspiced.exe"; DestDir: "{app}\TOOLROOT\wrspice.current\bin";
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\bin\mmjco.exe"; DestDir: "{app}\TOOLROOT\wrspice.current\bin";
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\bin\multidec.exe"; DestDir: "{app}\TOOLROOT\wrspice.current\bin";
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\bin\proc2mod.exe"; DestDir: "{app}\TOOLROOT\wrspice.current\bin";
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\bin\printtoraw.exe"; DestDir: "{app}\TOOLROOT\wrspice.current\bin"; AfterInstall: DoAfterInstall
 
-Source: "..\root\usr\local\xictools\wrspice.current\examples\*"; DestDir: "{app}\xictools\wrspice.current\examples"
-Source: "..\root\usr\local\xictools\wrspice.current\examples\JJexamples\*"; DestDir: "{app}\xictools\wrspice.current\examples\JJexamples"
-Source: "..\root\usr\local\xictools\wrspice.current\examples\JJexamples_old\*"; DestDir: "{app}\xictools\wrspice.current\examples\JJexamples_old"
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\examples\*"; DestDir: "{app}\TOOLROOT\wrspice.current\examples"
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\examples\JJexamples\*"; DestDir: "{app}\TOOLROOT\wrspice.current\examples\JJexamples"
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\examples\JJexamples_old\*"; DestDir: "{app}\TOOLROOT\wrspice.current\examples\JJexamples_old"
 
-Source: "..\root\usr\local\xictools\wrspice.current\help\*"; DestDir: "{app}\xictools\wrspice.current\help"
-Source: "..\root\usr\local\xictools\wrspice.current\help\screenshots\*"; DestDir: "{app}\xictools\wrspice.current\help\screenshots"
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\help\*"; DestDir: "{app}\TOOLROOT\wrspice.current\help"
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\help\screenshots\*"; DestDir: "{app}\TOOLROOT\wrspice.current\help\screenshots"
 
-Source: "..\root\usr\local\xictools\wrspice.current\startup\*"; DestDir: "{app}\xictools\wrspice.current\startup"
-Source: "..\root\usr\local\xictools\wrspice.current\startup\devices\*"; DestDir: "{app}\xictools\wrspice.current\startup\devices"
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\startup\*"; DestDir: "{app}\TOOLROOT\wrspice.current\startup"
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\startup\devices\*"; DestDir: "{app}\TOOLROOT\wrspice.current\startup\devices"
 
-Source: "..\root\usr\local\xictools\wrspice.current\scripts\*"; DestDir: "{app}\xictools\wrspice.current\scripts"
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\scripts\*"; DestDir: "{app}\TOOLROOT\wrspice.current\scripts"
 
-Source: "..\root\usr\local\xictools\wrspice.current\docs\wrs*"; DestDir: "{app}\xictools\wrspice.current\docs";
-Source: "..\root\usr\local\xictools\wrspice.current\docs\README"; DestDir: "{app}\xictools\wrspice.current\docs"
-Source: "..\root\usr\local\xictools\wrspice.current\docs\MSWINFO.TXT"; DestDir: "{app}\xictools\wrspice.current\docs"
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\docs\wrs*"; DestDir: "{app}\TOOLROOT\wrspice.current\docs";
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\docs\README"; DestDir: "{app}\TOOLROOT\wrspice.current\docs"
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\docs\MSWINFO.TXT"; DestDir: "{app}\TOOLROOT\wrspice.current\docs"
 
 [Icons]
 
 # bat file is no longer needed or included.
-#Name: "{group}\wrspice"; Filename: "{app}\xictools\wrspice.current\bin\wrspice.bat"; WorkingDir: "c:\"; IconFilename: "{app}\xictools\wrspice.current\bin\wrspice.exe"
+#Name: "{group}\wrspice"; Filename: "{app}\TOOLROOT\wrspice.current\bin\wrspice.bat"; WorkingDir: "c:\"; IconFilename: "{app}\TOOLROOT\wrspice.current\bin\wrspice.exe"
 
 [code]
 
@@ -67,8 +67,8 @@ procedure DoBeforeInstall();
 var
     resultCode:  Integer;
 begin
-    Exec(ExpandConstant('{app}\xictools\wrspice.current\bin\preinstall.bat'),
-        '', ExpandConstant('{app}\xictools'), SW_HIDE, ewWaitUntilTerminated,
+    Exec(ExpandConstant('{app}\TOOLROOT\wrspice.current\bin\preinstall.bat'),
+        '', ExpandConstant('{app}\TOOLROOT'), SW_HIDE, ewWaitUntilTerminated,
         resultCode);
 end;
 
@@ -76,8 +76,8 @@ procedure DoAfterInstall();
 var
     resultCode:  Integer;
 begin
-    Exec(ExpandConstant('{app}\xictools\wrspice.current\bin\postinstall.bat'),
-        '', ExpandConstant('{app}\xictools'), SW_HIDE, ewWaitUntilTerminated,
+    Exec(ExpandConstant('{app}\TOOLROOT\wrspice.current\bin\postinstall.bat'),
+        '', ExpandConstant('{app}\TOOLROOT'), SW_HIDE, ewWaitUntilTerminated,
         resultCode);
 end;
 

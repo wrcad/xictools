@@ -270,8 +270,15 @@ DARGS = \
   -DBUG_ADDR=\"$(BUG_ADDR)\" \
   -DBUILD_DATE="\"$(DATE)\""
 
+# The MSYS2 thing below prevents munging of the prefix path, which will
+# cause serious errors when using MSYS2 (Windows only).  We used to
+# require a drive letter in the prefix which also fixes this, but that
+# breaks the "package" target.
+#
 bin/xic.o: bin/xic.cc Makefile ../Makefile
 	$(CXX) $(CFLAGS) $(DARGS) $(INCLUDE) $(MOZYINC) -c $*.cc -o $*.o
+	MSYS2_ARG_CONV_EXCL="-DPREFIX=" $(CXX) $(CFLAGS) $(DARGS) \
+ $(INCLUDE) $(MOZYINC) -c $*.cc -o $*.o
 
 .cc.o:
 	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc -o $*,o

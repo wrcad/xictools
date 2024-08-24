@@ -1,6 +1,6 @@
 #! /bin/sh
 
-inno="/c/inno-5.5.9"
+inno=`../../../xt_base/info.sh innoloc`
 
 appname=xictools_xic
 appdir=xic.current
@@ -8,6 +8,7 @@ version=`../../release.sh`
 osname=`../../../xt_base/info.sh osname`
 arch=`uname -m`
 top=../root/usr/local
+toolroot=`../../../xt_base/info.sh toolroot`
 base=../../../xt_base
 baseutil=$base/packages/util
 basefiles=$base/packages/files
@@ -27,16 +28,16 @@ if [ ! -f $utod ]; then
     cd $cwd
 fi
 
-chmod 755 $top/xictools/$appdir/bin/xic.bat
-$utod $top/xictools/$appdir/bin/xic.bat
-cp -f files/postinstall.bat $top/xictools/$appdir/bin
-chmod 755 $top/xictools/$appdir/bin/postinstall.bat
-$utod $top/xictools/$appdir/bin/postinstall.bat
-cp -f files/preinstall.bat $top/xictools/$appdir/bin
-chmod 755 $top/xictools/$appdir/bin/preinstall.bat
-$utod $top/xictools/$appdir/bin/preinstall.bat
+chmod 755 $top/$toolroot/$appdir/bin/xic.bat
+$utod $top/$toolroot/$appdir/bin/xic.bat
+cp -f files/postinstall.bat $top/$toolroot/$appdir/bin
+chmod 755 $top/$toolroot/$appdir/bin/postinstall.bat
+$utod $top/$toolroot/$appdir/bin/postinstall.bat
+cp -f files/preinstall.bat $top/$toolroot/$appdir/bin
+chmod 755 $top/$toolroot/$appdir/bin/preinstall.bat
+$utod $top/$toolroot/$appdir/bin/preinstall.bat
 
-examples=$top/xictools/$appdir/examples
+examples=$top/$toolroot/$appdir/examples
 $utod $examples/README
 $utod $examples/cgdtest.scr
 $utod $examples/cgdtest1.scr
@@ -60,11 +61,11 @@ $utod $examples/PCells/*
 $utod $examples/memchip_example/README
 $utod $examples/memchip_example/xic_tech.demo
 
-help=$top/xictools/$appdir/help
+help=$top/$toolroot/$appdir/help
 $utod $help/*.hlp
 $utod $help/*.xpm
 
-startup=$top/xictools/$appdir/startup
+startup=$top/$toolroot/$appdir/startup
 $utod $startup/README
 $utod $startup/device.lib
 $utod $startup/model.lib
@@ -80,7 +81,7 @@ $utod $startup/xic_tech.hyp
 $utod $startup/xic_tech.n65
 $utod $startup/xic_tech.scmos
 
-scripts=$top/xictools/$appdir/scripts
+scripts=$top/$toolroot/$appdir/scripts
 $utod $scripts/blackbg.scr
 $utod $scripts/fullcursor.scr
 $utod $scripts/paths.scr
@@ -90,7 +91,7 @@ $utod $scripts/whitebg.scr
 $utod $scripts/whitebw.scr
 $utod $scripts/yank.scr
 
-scrkit=$top/xictools/$appdir/scrkit
+scrkit=$top/$toolroot/$appdir/scrkit
 $utod $scrkit/Makefile
 $utod $scrkit/miscmath.h
 $utod $scrkit/README
@@ -101,14 +102,14 @@ $utod $scrkit/si_scrfunc.h
 $utod $scrkit/template.cc
 $utod $scrkit/test.scr
 
-docs=$top/xictools/$appdir/docs
+docs=$top/$toolroot/$appdir/docs
 cp $basefiles/MSWINFO.TXT $docs
 $utod $docs/$relnote
 $utod $docs/README
 $utod $docs/MSWINFO.TXT
 
 sed -e s/OSNAME/$osname/ -e s/VERSION/$version/ -e s/ARCH/$arch/ \
-  < files/$appname.iss.in > $appname.iss
+  -e s/TOOLROOT/$toolroot/g < files/$appname.iss.in > $appname.iss
 $utod $appname.iss
 
 $inno/iscc $appname.iss > build.log

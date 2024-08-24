@@ -287,8 +287,14 @@ DARGS = \
   -DSPICE_NOTICE="\"$(SPICE_NOTICE)\"" \
   -DAN_`echo $(ANALYSES) |sed -e "s/ / -DAN_/g"`
 
+# The MSYS2 thing below prevents munging of the prefix path, which will
+# cause serious errors when using MSYS2 (Windows only).  We used to
+# require a drive letter in the prefix which also fixes this, but that
+# breaks the "package" target.
+#
 bin/wrspice.o: bin/wrspice.cc
-	$(CXX) $(CFLAGS) $(DARGS) $(INCLUDE) $(MOZYINC) -c $*.cc -o $*.o
+	MSYS2_ARG_CONV_EXCL="-DPREFIX=" $(CXX) $(CFLAGS) $(DARGS) \
+  $(INCLUDE) $(MOZYINC) -c $*.cc -o $*.o
 
 bin/wrspiced.o: bin/wrspiced.cc
 	$(CXX) $(CFLAGS) $(INCLUDE) -c \

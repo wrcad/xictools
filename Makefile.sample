@@ -12,16 +12,11 @@
 # destination can be set when installing from packages (macOS and
 # Debian/Ubuntu don't allow relocation).
 #
-# MSYS2 WARNING!!!  If building for Windows using MSYS2, you MUST
-# modify the line below to start with a drive letter, for example
-# prefix=c:/usr/local.  Otherwise the path will be incorrect due to
-# a bug in make and the programs probably won't work.
-#
 PREFIX = --prefix=/usr/local
 
 # This is the name of the top-level installation directory under
 # PREFIX.  You can change this if you want to have different builds
-# under PREFIX, for example for Qt and GTK,
+# under PREFIX, for example for Qt and GTK.
 #
 TOOLROOT = --enable-toolroot=xictools
 

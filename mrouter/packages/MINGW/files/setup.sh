@@ -1,6 +1,6 @@
 #! /bin/sh
 
-inno="/c/inno-5.5.9"
+inno=`../../../xt_base/info.sh innoloc`
 
 appname=xictools_mrouter
 appdir=mrouter

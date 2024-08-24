@@ -1,6 +1,6 @@
 #! /bin/sh
 
-inno="/c/inno-5.5.9"
+inno=`../../../xt_base/info.sh innoloc`
 
 appname=xictools_wrspice
 appdir=wrspice.current
@@ -8,6 +8,7 @@ version=`../../release.sh`
 osname=`../../../xt_base/info.sh osname`
 arch=`uname -m`
 top=../root/usr/local
+toolroot=`../../../xt_base/info.sh toolroot`
 base=../../../xt_base
 baseutil=$base/packages/util
 basefiles=$base/packages/files
@@ -27,37 +28,37 @@ if [ ! -f $utod ]; then
     cd $cwd
 fi
 
-chmod 755 $top/xictools/$appdir/bin/wrspice.bat
-$utod $top/xictools/$appdir/bin/wrspice.bat
-cp -f files/postinstall.bat $top/xictools/$appdir/bin
-chmod 755 $top/xictools/$appdir/bin/postinstall.bat
-$utod $top/xictools/$appdir/bin/postinstall.bat
-cp -f files/preinstall.bat $top/xictools/$appdir/bin
-chmod 755 $top/xictools/$appdir/bin/preinstall.bat
-$utod $top/xictools/$appdir/bin/preinstall.bat
+chmod 755 $top/$toolroot/$appdir/bin/wrspice.bat
+$utod $top/$toolroot/$appdir/bin/wrspice.bat
+cp -f files/postinstall.bat $top/$toolroot/$appdir/bin
+chmod 755 $top/$toolroot/$appdir/bin/postinstall.bat
+$utod $top/$toolroot/$appdir/bin/postinstall.bat
+cp -f files/preinstall.bat $top/$toolroot/$appdir/bin
+chmod 755 $top/$toolroot/$appdir/bin/preinstall.bat
+$utod $top/$toolroot/$appdir/bin/preinstall.bat
 
-examples=$top/xictools/$appdir/examples
+examples=$top/$toolroot/$appdir/examples
 $utod $examples/*
 $utod $examples/JJexamples/*
 $utod $examples/JJexamples_old/*
 
-help=$top/xictools/$appdir/help
+help=$top/$toolroot/$appdir/help
 $utod $help/*.hlp
 
-startup=$top/xictools/$appdir/startup
+startup=$top/$toolroot/$appdir/startup
 $utod $startup/*
 $utod $startup/devices/README
 
-scripts=$top/xictools/$appdir/scripts
+scripts=$top/$toolroot/$appdir/scripts
 $utod $scripts/*
 
-docs=$top/xictools/$appdir/docs
+docs=$top/$toolroot/$appdir/docs
 cp $basefiles/MSWINFO.TXT $docs
 $utod $docs/$relnote
 $utod $docs/README
 $utod $docs/MSWINFO.TXT
 
-devkit=$top/xictools/$appdir/devkit
+devkit=$top/$toolroot/$appdir/devkit
 if [ -d $devkit ]; then
     $utod $devkit/README
     $utod $devkit/README.adms
@@ -69,10 +70,11 @@ if [ -d $devkit ]; then
         $utod $devkit/$a
     done
     sed -e s/OSNAME/$osname/ -e s/VERSION/$version/ -e s/ARCH/$arch/ \
-      < files/$appname.iss.in > $appname.iss
+      -e s/TOOLROOT/$toolroot/g < files/$appname.iss.in > $appname.iss
 else
     sed -e s/OSNAME/$osname/ -e s/VERSION/$version/ -e s/ARCH/$arch/ \
-      < files/${appname}_nodk.iss.in > $appname.iss
+      -e s/TOOLROOT/$toolroot/g < files/${appname}_nodk.iss.in
+      > $appname.iss
 fi
 $utod $appname.iss
 
