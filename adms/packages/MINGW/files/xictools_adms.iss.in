@@ -18,26 +18,26 @@ DirExistsWarning=no
 
 PrivilegesRequired=admin
 
-UninstallFilesDir={app}\xictools\adms\uninstall
+UninstallFilesDir={app}\TOOLROOT\adms\uninstall
 
 [Files]
 
-Source: "..\root\usr\local\xictools\bin\admsXml.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\TOOLROOT\bin\admsXml.exe"; DestDir: "{app}\TOOLROOT\bin"; Flags: ignoreversion
 
-Source: "..\root\usr\local\xictools\adms\README"; DestDir: "{app}\xictools\adms"
-Source: "..\root\usr\local\xictools\adms\doc\README"; DestDir: "{app}\xictools\adms\doc\README"
-Source: "..\root\usr\local\xictools\adms\doc\html\*"; DestDir: "{app}\xictools\adms\doc\html"
-Source: "..\root\usr\local\xictools\adms\doc\html\doc\*"; DestDir: "{app}\xictools\adms\doc\html\doc"
-Source: "..\root\usr\local\xictools\adms\doc\html\introduction\*"; DestDir: "{app}\xictools\adms\doc\html\introduction"
-Source: "..\root\usr\local\xictools\adms\doc\html\scripts\*"; DestDir: "{app}\xictools\adms\doc\html\scripts"
-Source: "..\root\usr\local\xictools\adms\doc\html\tutorials\*"; DestDir: "{app}\xictools\adms\doc\html\tutorials"
-Source: "..\root\usr\local\xictools\adms\doc\html\tutorials\Ilya-Lisichkin/MOSlevel1\*"; DestDir: "{app}\xictools\adms\doc\html\tutorials\Ilya-Lisichkin/MOSlevel1"
-Source: "..\root\usr\local\xictools\adms\doc\man\admsXml.1"; DestDir: "{app}\xictools\adms\doc\man"
-Source: "..\root\usr\local\xictools\adms\doc\xml\*"; DestDir: "{app}\xictools\adms\doc\xml"
-Source: "..\root\usr\local\xictools\adms\examples\admsCheck.exe"; DestDir: "{app}\xictools\adms\examples"
-Source: "..\root\usr\local\xictools\adms\examples\admsCheck.1"; DestDir: "{app}\xictools\adms\examples"
-Source: "..\root\usr\local\xictools\adms\examples\scripts\*"; DestDir: "{app}\xictools\adms\examples\scripts"
-Source: "..\root\usr\local\xictools\adms\examples\testcases\*"; DestDir: "{app}\xictools\adms\examples\testcases"
+Source: "..\root\usr\local\TOOLROOT\adms\README"; DestDir: "{app}\TOOLROOT\adms"
+Source: "..\root\usr\local\TOOLROOT\adms\doc\README"; DestDir: "{app}\TOOLROOT\adms\doc\README"
+Source: "..\root\usr\local\TOOLROOT\adms\doc\html\*"; DestDir: "{app}\TOOLROOT\adms\doc\html"
+Source: "..\root\usr\local\TOOLROOT\adms\doc\html\doc\*"; DestDir: "{app}\TOOLROOT\adms\doc\html\doc"
+Source: "..\root\usr\local\TOOLROOT\adms\doc\html\introduction\*"; DestDir: "{app}\TOOLROOT\adms\doc\html\introduction"
+Source: "..\root\usr\local\TOOLROOT\adms\doc\html\scripts\*"; DestDir: "{app}\TOOLROOT\adms\doc\html\scripts"
+Source: "..\root\usr\local\TOOLROOT\adms\doc\html\tutorials\*"; DestDir: "{app}\TOOLROOT\adms\doc\html\tutorials"
+Source: "..\root\usr\local\TOOLROOT\adms\doc\html\tutorials\Ilya-Lisichkin/MOSlevel1\*"; DestDir: "{app}\TOOLROOT\adms\doc\html\tutorials\Ilya-Lisichkin/MOSlevel1"
+Source: "..\root\usr\local\TOOLROOT\adms\doc\man\admsXml.1"; DestDir: "{app}\TOOLROOT\adms\doc\man"
+Source: "..\root\usr\local\TOOLROOT\adms\doc\xml\*"; DestDir: "{app}\TOOLROOT\adms\doc\xml"
+Source: "..\root\usr\local\TOOLROOT\adms\examples\admsCheck.exe"; DestDir: "{app}\TOOLROOT\adms\examples"
+Source: "..\root\usr\local\TOOLROOT\adms\examples\admsCheck.1"; DestDir: "{app}\TOOLROOT\adms\examples"
+Source: "..\root\usr\local\TOOLROOT\adms\examples\scripts\*"; DestDir: "{app}\TOOLROOT\adms\examples\scripts"
+Source: "..\root\usr\local\TOOLROOT\adms\examples\testcases\*"; DestDir: "{app}\TOOLROOT\adms\examples\testcases"
 
 [code]
 

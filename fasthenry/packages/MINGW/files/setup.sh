@@ -8,6 +8,7 @@ version=`../../release.sh`
 osname=`../../../xt_base/info.sh osname`
 arch=`uname -m`
 top=../root/usr/local
+toolroot=`../../../xt_base/info.sh toolroot`
 base=../../../xt_base
 baseutil=$base/packages/util
 basefiles=$base/packages/files
@@ -21,7 +22,7 @@ if [ ! -f $utod ]; then
     cd $cwd
 fi
 
-libdir=$top/xictools/fasthenry
+libdir=$top/$toolroot/fasthenry
 $utod $libdir/README
 $utod $libdir/README.mit
 $utod $libdir/examples/*
@@ -32,7 +33,7 @@ $utod $libdir/examples/results/linux_sparse/*
 $utod $libdir/examples/torture/*
 
 sed -e s/OSNAME/$osname/ -e s/VERSION/$version/ -e s/ARCH/$arch/ \
-  < files/$appname.iss.in > $appname.iss
+  -e s/TOOLROOT/$toolroot/g < files/$appname.iss.in > $appname.iss
 $utod $appname.iss
 
 $inno/iscc $appname.iss > build.log

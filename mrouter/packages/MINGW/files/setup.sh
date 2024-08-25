@@ -8,6 +8,7 @@ version=`../../release.sh`
 osname=`../../../xt_base/info.sh osname`
 arch=`uname -m`
 top=../root/usr/local
+toolroot=`../../../xt_base/info.sh toolroot`
 base=../../../xt_base
 baseutil=$base/packages/util
 basefiles=$base/packages/files
@@ -21,7 +22,7 @@ if [ ! -f $utod ]; then
     cd $cwd
 fi
 
-lib=$top/xictools/$appdir
+lib=$top/$toolroot/$appdir
 
 $utod $lib/examples/*
 $utod $lib/examples/osu35/*.lef
@@ -29,7 +30,7 @@ $utod $lib/examples/xic/*
 $utod $lib/include/*
 
 sed -e s/OSNAME/$osname/ -e s/VERSION/$version/ -e s/ARCH/$arch/ \
-  < files/$appname.iss.in > $appname.iss
+  -e s/TOOLROOT/$toolroot/g < files/$appname.iss.in > $appname.iss
 $utod $appname.iss
 
 $inno/iscc $appname.iss > build.log

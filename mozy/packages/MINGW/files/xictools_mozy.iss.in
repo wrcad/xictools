@@ -18,27 +18,27 @@ DirExistsWarning=no
 
 PrivilegesRequired=admin
 
-UninstallFilesDir={app}\xictools\mozy\uninstall
-UninstallDisplayIcon={app}\xictools\bin\mozy.exe
+UninstallFilesDir={app}\TOOLROOT\mozy\uninstall
+UninstallDisplayIcon={app}\TOOLROOT\bin\mozy.exe
 
 [Files]
 
-Source: "..\root\usr\local\xictools\bin\mozy.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
-Source: "..\root\usr\local\xictools\bin\mozy.bat"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
-Source: "..\root\usr\local\xictools\bin\xeditor.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
-Source: "..\root\usr\local\xictools\bin\xeditor.bat"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
-Source: "..\root\usr\local\xictools\bin\httpget.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
-Source: "..\root\usr\local\xictools\bin\httpget.bat"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
-Source: "..\root\usr\local\xictools\bin\hlp2html.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
-Source: "..\root\usr\local\xictools\bin\hlpsrv.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\TOOLROOT\bin\mozy.exe"; DestDir: "{app}\TOOLROOT\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\TOOLROOT\bin\mozy.bat"; DestDir: "{app}\TOOLROOT\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\TOOLROOT\bin\xeditor.exe"; DestDir: "{app}\TOOLROOT\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\TOOLROOT\bin\xeditor.bat"; DestDir: "{app}\TOOLROOT\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\TOOLROOT\bin\httpget.exe"; DestDir: "{app}\TOOLROOT\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\TOOLROOT\bin\httpget.bat"; DestDir: "{app}\TOOLROOT\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\TOOLROOT\bin\hlp2html.exe"; DestDir: "{app}\TOOLROOT\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\TOOLROOT\bin\hlpsrv.exe"; DestDir: "{app}\TOOLROOT\bin"; Flags: ignoreversion
 
-Source: "..\root\usr\local\xictools\mozy\help\*"; DestDir: "{app}\xictools\mozy\help"
-Source: "..\root\usr\local\xictools\mozy\help\screenshots\*"; DestDir: "{app}\xictools\mozy\help\screenshots"
-Source: "..\root\usr\local\xictools\mozy\startup\*"; DestDir: "{app}\xictools\mozy\startup"
+Source: "..\root\usr\local\TOOLROOT\mozy\help\*"; DestDir: "{app}\TOOLROOT\mozy\help"
+Source: "..\root\usr\local\TOOLROOT\mozy\help\screenshots\*"; DestDir: "{app}\TOOLROOT\mozy\help\screenshots"
+Source: "..\root\usr\local\TOOLROOT\mozy\startup\*"; DestDir: "{app}\TOOLROOT\mozy\startup"
 
 [Icons]
 
-Name: "{group}\mozy"; Filename: "{app}\xictools\bin\mozy.bat"; WorkingDir: "c:\"; IconFilename: "{app}\xictools\bin\mozy.exe"
+Name: "{group}\mozy"; Filename: "{app}\TOOLROOT\bin\mozy.bat"; WorkingDir: "c:\"; IconFilename: "{app}\TOOLROOT\bin\mozy.exe"
 
 [code]
 

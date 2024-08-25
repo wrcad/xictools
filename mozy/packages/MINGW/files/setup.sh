@@ -8,6 +8,7 @@ version=`../../release.sh`
 osname=`../../../xt_base/info.sh osname`
 arch=`uname -m`
 top=../root/usr/local
+toolroot=`../../../xt_base/info.sh toolroot`
 base=../../../xt_base
 baseutil=$base/packages/util
 basefiles=$base/packages/files
@@ -22,26 +23,26 @@ if [ ! -f $utod ]; then
 fi
 
 program=mozy
-cp $base/util/program.bat $top/xictools/bin/$program.bat
-chmod 755 $top/xictools/bin/$program.bat
-$utod $top/xictools/bin/$program.bat
+cp $base/util/program.bat $top/$toolroot/bin/$program.bat
+chmod 755 $top/$toolroot/bin/$program.bat
+$utod $top/$toolroot/bin/$program.bat
 program=xeditor
-cp $base/util/program.bat $top/xictools/bin/$program.bat
-chmod 755 $top/xictools/bin/$program.bat
-$utod $top/xictools/bin/$program.bat
+cp $base/util/program.bat $top/$toolroot/bin/$program.bat
+chmod 755 $top/$toolroot/bin/$program.bat
+$utod $top/$toolroot/bin/$program.bat
 program=httpget
-cp $base/util/program.bat $top/xictools/bin/$program.bat
-chmod 755 $top/xictools/bin/$program.bat
-$utod $top/xictools/bin/$program.bat
+cp $base/util/program.bat $top/$toolroot/bin/$program.bat
+chmod 755 $top/$toolroot/bin/$program.bat
+$utod $top/$toolroot/bin/$program.bat
 
-help=$top/xictools/$appdir/help
+help=$top/$toolroot/$appdir/help
 $utod $help/*.hlp
 
-startup=$top/xictools/$appdir/startup
+startup=$top/$toolroot/$appdir/startup
 $utod $startup/README
 
 sed -e s/OSNAME/$osname/ -e s/VERSION/$version/ -e s/ARCH/$arch/ \
-  < files/$appname.iss.in > $appname.iss
+  -e s/TOOLROOT/$toolroot/g < files/$appname.iss.in > $appname.iss
 $utod $appname.iss
 
 $inno/iscc $appname.iss > build.log

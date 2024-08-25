@@ -18,23 +18,23 @@ DirExistsWarning=no
 
 PrivilegesRequired=admin
 
-UninstallFilesDir={app}\xictools\fasthenry\uninstall
+UninstallFilesDir={app}\TOOLROOT\fasthenry\uninstall
 
 [Files]
 
-Source: "..\root\usr\local\xictools\bin\fasthenry.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
-Source: "..\root\usr\local\xictools\bin\zbuf.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\TOOLROOT\bin\fasthenry.exe"; DestDir: "{app}\TOOLROOT\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\TOOLROOT\bin\zbuf.exe"; DestDir: "{app}\TOOLROOT\bin"; Flags: ignoreversion
 
-Source: "..\root\usr\local\xictools\fasthenry\README"; DestDir: "{app}\xictools\fasthenry"
-Source: "..\root\usr\local\xictools\fasthenry\README.mit"; DestDir: "{app}\xictools\fasthenry"
+Source: "..\root\usr\local\TOOLROOT\fasthenry\README"; DestDir: "{app}\TOOLROOT\fasthenry"
+Source: "..\root\usr\local\TOOLROOT\fasthenry\README.mit"; DestDir: "{app}\TOOLROOT\fasthenry"
 
-Source: "..\root\usr\local\xictools\fasthenry\doc\*"; DestDir: "{app}\xictools\fasthenry\doc"
-Source: "..\root\usr\local\xictools\fasthenry\examples\*"; DestDir: "{app}\xictools\fasthenry\examples"
-Source: "..\root\usr\local\xictools\fasthenry\examples\input\*"; DestDir: "{app}\xictools\fasthenry\examples\input"
-Source: "..\root\usr\local\xictools\fasthenry\examples\results\linux_dss\*"; DestDir: "{app}\xictools\fasthenry\examples\results\linux_dss"
-Source: "..\root\usr\local\xictools\fasthenry\examples\results\linux_klu\*"; DestDir: "{app}\xictools\fasthenry\examples\results\linux_klu"
-Source: "..\root\usr\local\xictools\fasthenry\examples\results\linux_sparse\*"; DestDir: "{app}\xictools\fasthenry\examples\results\linux_sparse"
-Source: "..\root\usr\local\xictools\fasthenry\examples\torture\*"; DestDir: "{app}\xictools\fasthenry\examples\torture"
+Source: "..\root\usr\local\TOOLROOT\fasthenry\doc\*"; DestDir: "{app}\TOOLROOT\fasthenry\doc"
+Source: "..\root\usr\local\TOOLROOT\fasthenry\examples\*"; DestDir: "{app}\TOOLROOT\fasthenry\examples"
+Source: "..\root\usr\local\TOOLROOT\fasthenry\examples\input\*"; DestDir: "{app}\TOOLROOT\fasthenry\examples\input"
+Source: "..\root\usr\local\TOOLROOT\fasthenry\examples\results\linux_dss\*"; DestDir: "{app}\TOOLROOT\fasthenry\examples\results\linux_dss"
+Source: "..\root\usr\local\TOOLROOT\fasthenry\examples\results\linux_klu\*"; DestDir: "{app}\TOOLROOT\fasthenry\examples\results\linux_klu"
+Source: "..\root\usr\local\TOOLROOT\fasthenry\examples\results\linux_sparse\*"; DestDir: "{app}\TOOLROOT\fasthenry\examples\results\linux_sparse"
+Source: "..\root\usr\local\TOOLROOT\fasthenry\examples\torture\*"; DestDir: "{app}\TOOLROOT\fasthenry\examples\torture"
 
 [code]
 

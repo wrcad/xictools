@@ -18,24 +18,24 @@ DirExistsWarning=no
 
 PrivilegesRequired=admin
 
-UninstallFilesDir={app}\xictools\mrouter\uninstall
-UninstallDisplayIcon={app}\xictools\bin\mrouter.exe
+UninstallFilesDir={app}\TOOLROOT\mrouter\uninstall
+UninstallDisplayIcon={app}\TOOLROOT\bin\mrouter.exe
 
 [Files]
 
-Source: "..\root\usr\local\xictools\bin\mrouter.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\TOOLROOT\bin\mrouter.exe"; DestDir: "{app}\TOOLROOT\bin"; Flags: ignoreversion
 
-Source: "..\root\usr\local\xictools\mrouter\lib\libmrouter.dll"; DestDir: "{app}\xictools\mrouter\lib"
+Source: "..\root\usr\local\TOOLROOT\mrouter\lib\libmrouter.dll"; DestDir: "{app}\TOOLROOT\mrouter\lib"
 
-Source: "..\root\usr\local\xictools\mrouter\help\MRouter.hlp"; DestDir: "{app}\xictools\mrouter\help"
+Source: "..\root\usr\local\TOOLROOT\mrouter\help\MRouter.hlp"; DestDir: "{app}\TOOLROOT\mrouter\help"
 
-Source: "..\root\usr\local\xictools\mrouter\include\*"; DestDir: "{app}\xictools\mrouter\include"
+Source: "..\root\usr\local\TOOLROOT\mrouter\include\*"; DestDir: "{app}\TOOLROOT\mrouter\include"
 
-Source: "..\root\usr\local\xictools\mrouter\doc\*"; DestDir: "{app}\xictools\mrouter\doc"
+Source: "..\root\usr\local\TOOLROOT\mrouter\doc\*"; DestDir: "{app}\TOOLROOT\mrouter\doc"
 
-Source: "..\root\usr\local\xictools\mrouter\examples\*"; DestDir: "{app}\xictools\mrouter\examples"
-Source: "..\root\usr\local\xictools\mrouter\examples\xic\*"; DestDir: "{app}\xictools\mrouter\examples\xic"
-Source: "..\root\usr\local\xictools\mrouter\examples\osu35\*"; DestDir: "{app}\xictools\mrouter\examples\osu35"
+Source: "..\root\usr\local\TOOLROOT\mrouter\examples\*"; DestDir: "{app}\TOOLROOT\mrouter\examples"
+Source: "..\root\usr\local\TOOLROOT\mrouter\examples\xic\*"; DestDir: "{app}\TOOLROOT\mrouter\examples\xic"
+Source: "..\root\usr\local\TOOLROOT\mrouter\examples\osu35\*"; DestDir: "{app}\TOOLROOT\mrouter\examples\osu35"
 
 [code]
 
