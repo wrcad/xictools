@@ -1,3 +1,7 @@
+bin/GTK2
+bin/GTK3
+bin/QT5
+bin/QT6
 bin/csvtoraw
 bin/csvtoraw.exe
 bin/multidec

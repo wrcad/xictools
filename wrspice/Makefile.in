@@ -23,6 +23,7 @@ OSNAME = @OSNAME@
 ARCH = @ARCH@
 DIST_SUFFIX = @DIST_SUFFIX@
 GRPREF = @GRPREF@
+GRPKG = @GRPKG@
 DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @DYNAMIC_LIBS@ @TOOLKITCFLAGS@ -DWRSPICE
 INSTALL = @INSTALL@
 EXESUFFIX = @EXESUFFIX@
@@ -41,6 +42,9 @@ WINPTHREADFIX = @WINPTHREADFIX@
 TKTOOLS = @TKTOOLS@
 PSLIBS = @PSLIBS@
 WITH_X11 = @WITH_X11@
+
+# Where the binaries go, used to just be bin.
+BINDIR = bin/$(GRPKG)
 
 ifdef WITH_X11
 X_LIB = -lX11
@@ -142,55 +146,58 @@ syntaxlevel:
 	sed -e s/"SyntaxLevel 0"/"$$lvlstr2"/ < $$f2.sed > $$f2; \
 
 $(TARGETS)::
-	$(MAKE) bin/$@
+	if [ ! -d $(BINDIR) ]; then \
+	    mkdir $(BINDIR); \
+	fi    
+	$(MAKE) $(BINDIR)/$@
 
 ifeq ($(OSNAME), MINGW)
 
 # For Windows, create wrspice with everything in a DLL, so that we can
 # link plugins against the DLL.
 
-bin/wrspice: bin/main.cc bin/wrspice.dll
-	$(CC) -o bin/wrspice bin/main.cc src/$(GRPREF)wrs/resource.o -Lbin \
-  -lwrspice
+$(BINDIR)/wrspice: bin/main.cc $(BINDIR)/wrspice.dll
+	$(CC) -o $(BINDIR)/wrspice bin/main.cc src/$(GRPREF)wrs/resource.o \
+  -Lbin -lwrspice
 
-bin/wrspice.dll: bin/wrspice.o $(LOCAL_LIBS) $(MALLOC)
+$(BINDIR)/wrspice.dll: bin/wrspice.o $(LOCAL_LIBS) $(MALLOC)
 	@echo $@: dynamic link
-	@$(LINKCC) $(LSHFLAG) -o bin/wrspice.dll $(LFLAGS) bin/wrspice.o \
+	@$(LINKCC) $(LSHFLAG) -o $(BINDIR)/wrspice.dll $(LFLAGS) bin/wrspice.o \
   $(LOCAL_LIBS) $(LIBS) $(MALLOC) $(STDCLIB)
 
 else
 
-bin/wrspice: bin/wrspice.o $(LOCAL_LIBS) $(MALLOC)
+$(BINDIR)/wrspice: bin/wrspice.o $(LOCAL_LIBS) $(MALLOC)
 	@echo $@: dynamic link
-	@$(LINKCC) -o bin/wrspice $(LFLAGS) bin/wrspice.o \
+	@$(LINKCC) -o $(BINDIR)/wrspice $(LFLAGS) bin/wrspice.o \
   $(LOCAL_LIBS) $(LIBS) $(MALLOC) $(STDCLIB) $(PSLIBS)
 
 endif
 
-bin/wrspiced: bin/wrspiced.o $(BASE)/lib/miscutil.a
+$(BINDIR)/wrspiced: bin/wrspiced.o $(BASE)/lib/miscutil.a
 	@echo $@: dynamic link
-	@$(LINKCC) -o bin/wrspiced $(LFLAGS) bin/wrspiced.o \
+	@$(LINKCC) -o $(BINDIR)/wrspiced $(LFLAGS) bin/wrspiced.o \
   $(BASE)/lib/miscutil.a $(SLIBS) $(STDCLIB) $(WINPTHREADFIX)
 
-bin/csvtoraw: bin/csvtoraw.o $(BASE)/lib/miscutil.a
+$(BINDIR)/csvtoraw: bin/csvtoraw.o $(BASE)/lib/miscutil.a
 	@echo $@: dynamic link
-	@$(LINKCC) -o bin/csvtoraw bin/csvtoraw.o $(BASE)/lib/miscutil.a \
+	@$(LINKCC) -o $(BINDIR)/csvtoraw bin/csvtoraw.o $(BASE)/lib/miscutil.a \
   $(STDCLIB) $(WINPTHREADFIX)
 
-bin/multidec: bin/multidec.o src/sparse/sparse.a src/misc/misc.a
+$(BINDIR)/multidec: bin/multidec.o src/sparse/sparse.a src/misc/misc.a
 	@echo $@: dynamic link
-	@$(LINKCC) -o bin/multidec bin/multidec.o src/sparse/sparse.a \
+	@$(LINKCC) -o $(BINDIR)/multidec bin/multidec.o src/sparse/sparse.a \
   src/misc/misc.a $(CURSES) $(STDCLIB) -lm $(WINPTHREADFIX)
 
-bin/proc2mod: bin/proc2mod.o src/cp/cp.a src/inp/inp.a src/misc/misc.a
+$(BINDIR)/proc2mod: bin/proc2mod.o src/cp/cp.a src/inp/inp.a src/misc/misc.a
 	@echo $@: dynamic link
-	@$(LINKCC) -o bin/proc2mod bin/proc2mod.o src/cp/cp.a src/inp/inp.a \
-  src/misc/misc.a $(STDCLIB) -lm $(WINPTHREADFIX)
+	@$(LINKCC) -o $(BINDIR)/proc2mod bin/proc2mod.o src/cp/cp.a \
+  src/inp/inp.a src/misc/misc.a $(STDCLIB) -lm $(WINPTHREADFIX)
 
-bin/printtoraw: bin/printtoraw.o $(BASE)/lib/miscutil.a
+$(BINDIR)/printtoraw: bin/printtoraw.o $(BASE)/lib/miscutil.a
 	@echo $@: dynamic link
-	@$(LINKCC) -o bin/printtoraw bin/printtoraw.o $(BASE)/lib/miscutil.a \
-  $(STDCLIB) $(WINPTHREADFIX)
+	@$(LINKCC) -o $(BINDIR)/printtoraw bin/printtoraw.o \
+  $(BASE)/lib/miscutil.a $(STDCLIB) $(WINPTHREADFIX)
 
 mmjco/mmjco::
 	$(MAKE) -C mmjco
@@ -335,10 +342,7 @@ depend: syntaxlevel
 ####### Clean up ######################################################
 
 eclean:
-	-@for a in $(TARGETS); do \
-	    rm -f bin/$$a$(EXESUFFIX); \
-	done
-	-@rm -f bin/wrspice.dll
+	-@rm -f $(BINDIR)
 
 clean: eclean
 	-@for a in $(SUBDIRS) devlib; do \

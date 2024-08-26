@@ -277,7 +277,7 @@ if test $enable_profiling = yes; then
 fi
 )
 
-grpkg=""
+GRPKG=""
 
 dnl --enable-qt5[=config_dir]
 dnl link with qt5
@@ -285,50 +285,50 @@ AC_ARG_ENABLE(qt5,   [  ]--enable-qt5[[=config_dir]]            link with qt5,
 if test $enable_qt5 != yes -a $enable_qt5 != no; then
     qtloc=$enable_qt5
     qtlocd="$enable_qt5/"
-    grpkg="QT5"
+    GRPKG="QT5"
 elif test $enable_qt5 == yes; then
-    grpkg="QT5"
+    GRPKG="QT5"
 fi
 )
 
-if test -z $grpkg; then
+if test -z $GRPKG; then
 dnl --enable-qt6[=config_dir]
 dnl link with qt6
 AC_ARG_ENABLE(qt6,   [  ]--enable-qt6[[=config_dir]]            link with qt6,
 if test $enable_qt6 != yes -a $enable_qt6 != no; then
     qtloc=$enable_qt6
     qtlocd="$enable_qt6/"
-    grpkg="QT6"
+    GRPKG="QT6"
 elif test $enable_qt6 == yes; then
-    grpkg="QT6"
+    GRPKG="QT6"
 fi
 )
 fi
 
-if test -z $grpkg; then
+if test -z $GRPKG; then
 dnl --enable-gtk2[=config_dir]
 dnl redundant except for giving pkg-config path
 AC_ARG_ENABLE(gtk2,  [  ]--enable-gtk2[[=config_dir]]           link with gtk2,
 if test $enable_gtk2 != yes -a $enable_gtk2 != no; then
     gtkloc="$enable_gtk2"
     gtklocd="$enable_gtk2/"
-    grpkg="GTK2"
+    GRPKG="GTK2"
 elif test $enable_gtk2 == yes; then
-    grpkg="GTK2"
+    GRPKG="GTK2"
 fi
 )
 fi
 
-if test -z $grpkg; then
+if test -z $GRPKG; then
 dnl --enable-gtk3[=config_dir]
 dnl redundant except for giving pkg-config path
 AC_ARG_ENABLE(gtk3,  [  ]--enable-gtk3[[=config_dir]]           link with gtk3,
 if test $enable_gtk3 != yes -a $enable_gtk3 != no; then
     gtkloc="$enable_gtk3"
     gtklocd="$enable_gtk3/"
-    grpkg="GTK3"
+    GRPKG="GTK3"
 elif test $enable_gtk3 == yes; then
-    grpkg="GTK3"
+    GRPKG="GTK3"
 fi
 )
 fi
@@ -342,10 +342,10 @@ if test $enable_quartz = yes; then
 fi
 )
 
-if test -z $grpkg; then
+if test -z $GRPKG; then
     nomozy=yes
 fi
-echo "#define WITH_$grpkg 1">> confdefs.h
+echo "#define WITH_$GRPKG 1">> confdefs.h
 if test $nomozy = no; then
     echo '#define HAVE_MOZY 1'>> confdefs.h
     USEMOZY=yes
@@ -784,9 +784,9 @@ dnl ***
 dnl *** Graphical interface configuration
 dnl ***
 
-if test -z "$grpkg"; then
+if test -z "$GRPKG"; then
    echo "No graphics toolkit specified, building tools without one."
-elif test $grpkg == QT5 -o $grpkg == QT6 ; then
+elif test $GRPKG == QT5 -o $GRPKG == QT6 ; then
     QTBASE=$qtloc
 
     # Msys Bug?  If tmpdir is in /tmp, the include paths are relative
@@ -801,11 +801,11 @@ elif test $grpkg == QT5 -o $grpkg == QT6 ; then
     mkdir $tmpdir
     cd $tmpdir
     touch empty.cc
-    if test $grpkg == QT5; then
+    if test $GRPKG == QT5; then
         if test -f $QTBASE/bin/qmake5.exe; then
             qmake=$QTBASE/bin/qmake5
         fi
-    elif test $grpkg == QT6 ; then
+    elif test $GRPKG == QT6 ; then
         if test -f $QTBASE/bin/qmake6.exe; then
             qmake=$QTBASE/bin/qmake6
         fi
@@ -907,9 +907,9 @@ dnl        done
     fi
 
     GRPREF=qt
-    if test $grpkg == QT5 ; then
+    if test $GRPKG == QT5 ; then
         MOC="$QTBASE/bin/moc"
-    elif test $grpkg == QT6 ; then
+    elif test $GRPKG == QT6 ; then
         if test -f "$QTBASE/share/qt6/bin/moc.exe"; then
             MOC="$QTBASE/share/qt6/bin/moc"
         else
@@ -921,7 +921,7 @@ dnl        done
     TOOLKITCFLAGS="$QT_CFLAGS $QT_DEFINES"
     TOOLKITLFLAGS="$QT_LFLAGS"
 
-elif test $grpkg == "GTK2"; then
+elif test $GRPKG == "GTK2"; then
     AC_CHECK_PROG(have_cfg, pkg-config, "yes", "no", $PATH:$gtkloc)
     if test $have_cfg = yes; then
         ${gtklocd}pkg-config --exists gtk+-2.0
@@ -953,7 +953,7 @@ dnl     -DGDK_DISABLE_DEPRECATED -DGTK_DISABLE_DEPRECATED -DGSEAL_ENABLE"
         exit
     fi
 
-elif test $grpkg == "GTK3"; then
+elif test $GRPKG == "GTK3"; then
     AC_CHECK_PROG(have_cfg, pkg-config, "yes", "no", $PATH:$gtkloc)
     if test $have_cfg = yes; then
         XLIBS="-lXrender -lXinerama -lXi -lXrandr -lXcursor -lXcomposite \
@@ -987,11 +987,12 @@ dnl     -DGSEAL_ENABLE"
         exit
     fi
 else
-   echo "Unknown graphics toolkit $grpkg specified, fatal error."
+   echo "Unknown graphics toolkit \$GRPKG specified, fatal error."
    exit 1;
 fi
 
 AC_SUBST(GRPREF)
+AC_SUBST(GRPKG)
 AC_SUBST(TOOLKITINC)
 AC_SUBST(TOOLKITLIBS)
 AC_SUBST(TOOLKITCFLAGS)

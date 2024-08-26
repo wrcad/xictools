@@ -16,6 +16,7 @@ LIBS = @LIBS@ @TOOLKITLIBS@ @EXTRALIBS@
 OSNAME = @OSNAME@
 ARCH = @ARCH@
 GRPREF = @GRPREF@
+GRPKG = @GRPKG@
 DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @DYNAMIC_LIBS@ -DXICTOOLS
 RANLIB = @RANLIB@
 STDCLIB = @STDCLIB@
@@ -27,6 +28,9 @@ MOZYRES = @MOZYRES@
 XEDRES = @XEDRES@
 TOOLROOT = @TOOLROOT@
 WINPTHREADFIX = @WINPTHREADFIX@
+
+# Where the binaries go, used to just be bin.
+BINDIR = bin/$(GRPKG)
 
 BASE = ../xt_base
 INCLUDE = -Iinclude -I$(BASE)/include
@@ -61,31 +65,36 @@ TARGETS = mozy xeditor hlpsrv hlp2html httpget
 all:  $(TARGETS)
 
 $(TARGETS)::
-	$(MAKE) bin/$@
+	if [ ! -d $(BINDIR) ]; then \
+	    mkdir $(BINDIR); \
+	fi    
+	$(MAKE) $(BINDIR)/$@
 
-bin/mozy: bin/mozy.o $(LOCAL_LIBS) $(MOZYRES)
+$(BINDIR)/mozy: bin/mozy.o $(LOCAL_LIBS) $(MOZYRES)
 	@echo $@: dynamic link mozy
-	@$(LINKCC) -o bin/mozy $(LFLAGS) bin/mozy.o $(LOCAL_LIBS) \
+	@$(LINKCC) -o $(BINDIR)/mozy $(LFLAGS) bin/mozy.o $(LOCAL_LIBS) \
   $(LIBS) $(MOZYRES) $(STDCLIB)
 
-bin/xeditor: bin/xeditor.o $(LOCAL_LIBS) $(XEDRES)
+$(BINDIR)/xeditor: bin/xeditor.o $(LOCAL_LIBS) $(XEDRES)
 	@echo $@: dynamic link
-	@$(LINKCC) -o bin/xeditor $(LFLAGS) bin/xeditor.o $(LOCAL_LIBS) \
+	@$(LINKCC) -o $(BINDIR)/xeditor $(LFLAGS) bin/xeditor.o $(LOCAL_LIBS) \
   $(LIBS) $(XEDRES) $(STDCLIB)
 
-bin/hlpsrv: bin/hlpsrv.o lib/help.a $(BASE)/lib/ginterf.a $(BASE)/lib/miscutil.a
-	@$(LINKCC) -o bin/hlpsrv $(LFLAGS) bin/hlpsrv.o \
+$(BINDIR)/hlpsrv: bin/hlpsrv.o lib/help.a $(BASE)/lib/ginterf.a \
+  $(BASE)/lib/miscutil.a
+	@$(LINKCC) -o $(BINDIR)/hlpsrv $(LFLAGS) bin/hlpsrv.o \
   src/help/help_read.o $(BASE)/ginterf/graphics.o \
   $(BASE)/lib/miscutil.a $(REGEX) $(MSLIBS) $(STDCLIB) $(WINPTHREADFIX)
 
-bin/hlp2html: bin/hlp2html.o lib/help.a $(BASE)/lib/ginterf.a $(BASE)/lib/miscutil.a Makefile
-	@$(LINKCC) -o bin/hlp2html $(LFLAGS) bin/hlp2html.o \
+$(BINDIR)/hlp2html: bin/hlp2html.o lib/help.a $(BASE)/lib/ginterf.a \
+  $(BASE)/lib/miscutil.a Makefile
+	@$(LINKCC) -o $(BINDIR)/hlp2html $(LFLAGS) bin/hlp2html.o \
   src/help/help_read.o $(BASE)/ginterf/graphics.o \
   $(BASE)/lib/miscutil.a $(REGEX) $(MSLIBS) $(STDCLIB) $(WINPTHREADFIX)
 
-bin/httpget: bin/httpget.o $(LOCAL_LIBS)
+$(BINDIR)/httpget: bin/httpget.o $(LOCAL_LIBS)
 	@echo $@: dynamic link httpget
-	@$(LINKCC) -o bin/httpget $(LFLAGS) bin/httpget.o lib/httpget.a \
+	@$(LINKCC) -o $(BINDIR)/httpget $(LFLAGS) bin/httpget.o lib/httpget.a \
   $(LOCAL_LIBS) $(LIBS) $(STDCLIB)
 
 bin/mozy.o: bin/mozy.cc
@@ -157,9 +166,7 @@ depend::
 ####### Clean up ######################################################
 
 eclean::
-	-@for a in $(TARGETS); do \
-	    rm -f bin/$$a$(EXESUFFIX); \
-	done
+	rm -f $(BINDIR)
 
 clean:: eclean
 	-@rm -f bin/*.o

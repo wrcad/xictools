@@ -20,6 +20,7 @@ OSNAME = @OSNAME@
 ARCH = @ARCH@
 DIST_SUFFIX = @DIST_SUFFIX@
 GRPREF = @GRPREF@
+GRPKG = @GRPKG@
 DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @DYNAMIC_LIBS@ @NEEDINT64@
 INSTALL = @INSTALL@
 SOEXT = @SOEXT@
@@ -33,6 +34,9 @@ OA_SUBDIR = @OA_SUBDIR@
 TOOLROOT = @TOOLROOT@
 WINPTHREADFIX = @WINPTHREADFIX@
 WITH_X11 = @WITH_X11@
+
+# Where the binaries go, used to just be bin.
+BINDIR = bin/$(GRPKG)
 
 ifdef WITH_X11
 X_LIB = -lX11
@@ -121,26 +125,30 @@ cptest:
 	$(MAKE) -C src/wrspif cptest
 
 $(TARGETS)::
-	$(MAKE) bin/$@
+	if [ ! -d $(BINDIR) ]; then \
+	    mkdir $(BINDIR); \
+	fi    
+	$(MAKE) $(BINDIR)/$@
 
 ifeq ($(OSNAME), MINGW)
 
 # For Windows, create xic with everything in a DLL, so that we can
 # link plugins against the DLL.
 
-bin/xic: bin/main.cc bin/xic.dll
-	$(CC) -o bin/xic bin/main.cc src/$(GRPREF)xic/resource.o -Lbin -lxic
+$(BINDIR)/xic: bin/main.cc $(BINDIR)/xic.dll
+	$(CC) -o $(BINDIR)/xic bin/main.cc src/$(GRPREF)xic/resource.o \
+  -Lbin -lxic
 
-bin/xic.dll: bin/xic.o $(LOCAL_LIBS) $(MALLOC)
+$(BINDIR)/xic.dll: bin/xic.o $(LOCAL_LIBS) $(MALLOC)
 	@echo $@: dynamic link
-	@$(LINKCC) $(LSHFLAG) -o bin/xic.dll $(LFLAGS) bin/xic.o \
+	@$(LINKCC) $(LSHFLAG) -o $(BINDIR)/xic.dll $(LFLAGS) bin/xic.o \
   $(LOCAL_LIBS) $(LIBS) $(MALLOC) $(STDCLIB)
 
 else
 
-bin/xic: bin/xic.o $(LOCAL_LIBS) $(MALLOC) $(OA_SUBDIR)
+$(BINDIR)/xic: bin/xic.o $(LOCAL_LIBS) $(MALLOC) $(OA_SUBDIR)
 	-@echo $@: dynamic link;
-	-@$(LINKCC) -o bin/xic $(LFLAGS) bin/xic.o \
+	-@$(LINKCC) -o $(BINDIR)/xic $(LFLAGS) bin/xic.o \
   $(LOCAL_LIBS) $(LIBS) $(MALLOC) $(STDCLIB)
 
 endif
@@ -167,24 +175,24 @@ FT_LIBS = \
   $(BASE)/lib/malloc.a \
   $(FT_MOZYLIBS)
 
-bin/sa-filetool: bin/sa-filetool.o $(FT_LIBS)
-	$(LINKCC) -o bin/sa-filetool bin/sa-filetool.o $(FT_LIBS) \
+$(BINDIR)/sa-filetool: bin/sa-filetool.o $(FT_LIBS)
+	$(LINKCC) -o $(BINDIR)/sa-filetool bin/sa-filetool.o $(FT_LIBS) \
   -lm -lz $(LIBDL) $(STDCLIB)
 	rm -f bin/sa-filetool.o
 
-bin/wrencode: bin/cryptmain.cc src/parser/parser.a $(BASE)/lib/miscutil.a
-	$(LINKCC) $(CFLAGS) -o bin/wrencode $(INCLUDE) -DENCODING \
+$(BINDIR)/wrencode: bin/cryptmain.cc src/parser/parser.a $(BASE)/lib/miscutil.a
+	$(LINKCC) $(CFLAGS) -o $(BINDIR)/wrencode $(INCLUDE) -DENCODING \
   bin/cryptmain.cc src/parser/parser.a $(BASE)/lib/miscutil.a $(STDCLIB) \
   $(WINPTHREADFIX)
 
-bin/wrdecode: bin/cryptmain.cc src/parser/parser.a $(BASE)/lib/miscutil.a
-	$(LINKCC) $(CFLAGS) -o bin/wrdecode $(INCLUDE) bin/cryptmain.cc \
+$(BINDIR)/wrdecode: bin/cryptmain.cc src/parser/parser.a $(BASE)/lib/miscutil.a
+	$(LINKCC) $(CFLAGS) -o $(BINDIR)/wrdecode $(INCLUDE) bin/cryptmain.cc \
   src/parser/parser.a $(BASE)/lib/miscutil.a  $(STDCLIB) $(WINPTHREADFIX)
 
-bin/wrsetpass: bin/cryptmain.cc src/parser/parser.a $(BASE)/lib/miscutil.a
-	$(LINKCC) $(CFLAGS) -o bin/wrsetpass $(INCLUDE) -DENCODING -DSETPASS \
-  bin/cryptmain.cc src/parser/parser.a $(BASE)/lib/miscutil.a $(STDCLIB) \
-  $(WINPTHREADFIX)
+$(BINDIR)/wrsetpass: bin/cryptmain.cc src/parser/parser.a $(BASE)/lib/miscutil.a
+	$(LINKCC) $(CFLAGS) -o $(BINDIR)/wrsetpass $(INCLUDE) -DENCODING \
+  -DSETPASS bin/cryptmain.cc src/parser/parser.a $(BASE)/lib/miscutil.a \
+  $(STDCLIB) $(WINPTHREADFIX)
 
 #######################################################################
 ####### Recursively generate libraries ################################
@@ -309,10 +317,7 @@ depend:
 ####### Clean up ######################################################
 
 eclean:
-	-@for a in $(TARGETS); do \
-	    rm -f bin/$$a$(EXESUFFIX); \
-	done
-	-@rm -f bin/sa-filetool$(EXESUFFIX) bin/xic.dll
+	-@rm -f $(BINDIR)
 
 clean: eclean
 	-@for a in $(SUBDIRS) plugins; do \
