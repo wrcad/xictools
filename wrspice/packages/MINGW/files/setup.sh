@@ -1,14 +1,13 @@
 #! /bin/sh
 
 inno=`../../../xt_base/info.sh innoloc`
-
-appname=xictools_wrspice
+toolroot=`../../../xt_base/info.sh toolroot`
+appname=${toolroot}_wrspice
 appdir=wrspice.current
 version=`../../release.sh`
 osname=`../../../xt_base/info.sh osname`
 arch=`uname -m`
 top=../root/usr/local
-toolroot=`../../../xt_base/info.sh toolroot`
 base=../../../xt_base
 baseutil=$base/packages/util
 basefiles=$base/packages/files
@@ -69,11 +68,14 @@ if [ -d $devkit ]; then
     for a in $foo; do
         $utod $devkit/$a
     done
-    sed -e s/OSNAME/$osname/ -e s/VERSION/$version/ -e s/ARCH/$arch/ \
-      -e s/TOOLROOT/$toolroot/g < files/$appname.iss.in > $appname.iss
+    sed -e s/APPNAME/$appname/ -e s/OSNAME/$osname/ \
+      -e s/VERSION/$version/ -e s/ARCH/$arch/ \
+      -e s/TOOLROOT/$toolroot/g < files/xictools_wrspice.iss.in \
+      > $appname.iss
 else
-    sed -e s/OSNAME/$osname/ -e s/VERSION/$version/ -e s/ARCH/$arch/ \
-      -e s/TOOLROOT/$toolroot/g < files/${appname}_nodk.iss.in
+    sed -e s/APPNAME/$appname/ -e s/OSNAME/$osname/ \
+      -e s/VERSION/$version/ -e s/ARCH/$arch/ \
+      -e s/TOOLROOT/$toolroot/g < files/xictools_wrspice_nodk.iss.in \
       > $appname.iss
 fi
 $utod $appname.iss

@@ -8,7 +8,7 @@ AppPublisher=Whiteley Research Inc.
 AppPublisherURL=http://wrcad.com
 AppMutex=xicMutex
 
-OutputBaseFilename=xictools_xic-OSNAME-VERSION-ARCH
+OutputBaseFilename=APPNAME-OSNAME-VERSION-ARCH
 
 Compression=bzip
 

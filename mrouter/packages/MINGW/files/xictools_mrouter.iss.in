@@ -8,7 +8,7 @@ AppPublisher=Whiteley Research Inc.
 AppPublisherURL=http://wrcad.com
 AppMutex=mrouterMutex
 
-OutputBaseFilename=xictools_mrouter-OSNAME-VERSION-ARCH
+OutputBaseFilename=APPNAME-OSNAME-VERSION-ARCH
 
 Compression=bzip
 

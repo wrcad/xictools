@@ -81,7 +81,7 @@ if [ $? != 0 ]; then
 The sudo command is not found.  You can fake it by creating a file
 named \"sudo\" somewhere in your search path, with content
 
-#!/bin/bash
+#! /bin/bash
 \$@
 
 Make the file executable with "chmod 755 sudo".  This creates a
@@ -488,8 +488,10 @@ do_update()
     # All 4.3 distribution files have a program name field in the form
     # xictools_progname.  This was split at the underscore, xt is the
     # first token, progname the second.
+    
+# SRW allow xictools[something]    
 
-    if [ x$xt != xxictools ]; then
+    if [ "${xt:0:8}" != xictools ]; then
         nmok=no
         case $osname in
         Darwin*|Win*)
@@ -646,6 +648,8 @@ done
 
 shopt -s nullglob
 
+# SRW 082524: Allow forms like "xictools.gtk_xic".
+ 
 pkgs=""
 for a in $list; do
     case $a in
@@ -653,47 +657,47 @@ for a in $list; do
         pkgs="$pkgs $a"
     ;;
     ad|adm|adms)
-	pkg=xictools_adms-*
+	pkg="xictools*_adms-*"
 	if [ -n "$pkg" ]; then
             pkgs="$pkgs $pkg"
         fi;;
     fc|fastc|fastca|fastcap)
-	pkg=xictools_fastcap-*
+	pkg="xictools*_fastcap-*"
 	if [ -n "$pkg" ]; then
             pkgs="$pkgs $pkg"
         fi;;
     fh|fasth|fasthe|fasthen|fasthenr|fasthenry)
-	pkg=xictools_fasthenry-*
+	pkg="xictools*_fasthenry-*"
 	if [ -n "$pkg" ]; then
             pkgs="$pkgs $pkg"
         fi;;
     mo|moz|mozy)
-	pkg=xictools_mozy-*
+	pkg="xictools*_mozy-*"
 	if [ -n "$pkg" ]; then
             pkgs="$pkgs $pkg"
         fi;;
     mr|mro|mrou|mrout|mroute|mrouter)
-	pkg=xictools_mrouter-*
+	pkg="xictools*_mrouter-*"
 	if [ -n "$pkg" ]; then
             pkgs="$pkgs $pkg"
         fi;;
     v|vl)
-	pkg=xictools_vl-*
+	pkg="xictools*_vl-*"
 	if [ -n "$pkg" ]; then
             pkgs="$pkgs $pkg"
         fi;;
     w|wr|wrs|wrsp|wrspi|wrspic|wrspice)
-	pkg=xictools_wrspice-*
+	pkg="xictools*_wrspice-*"
 	if [ -n "$pkg" ]; then
             pkgs="$pkgs $pkg"
         fi;;
     xi|xic)
-	pkg=xictools_xic-*
+	pkg="xictools*_xic-*"
 	if [ -n "$pkg" ]; then
             pkgs="$pkgs $pkg"
         fi;;
     xt|xtl|xtls|xtlse|xtlser|xtlserv)
-	pkg=xictools_xtlserv-*
+	pkg="xictools*_xtlserv-*"
 	if [ -n "$pkg" ]; then
             pkgs="$pkgs $pkg"
         fi;;

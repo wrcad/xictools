@@ -1,14 +1,13 @@
 #! /bin/sh
 
 inno=`../../../xt_base/info.sh innoloc`
-
-appname=xictools_xic
+toolroot=`../../../xt_base/info.sh toolroot`
+appname=${toolroot}_xic
 appdir=xic.current
 version=`../../release.sh`
 osname=`../../../xt_base/info.sh osname`
 arch=`uname -m`
 top=../root/usr/local
-toolroot=`../../../xt_base/info.sh toolroot`
 base=../../../xt_base
 baseutil=$base/packages/util
 basefiles=$base/packages/files
@@ -108,8 +107,9 @@ $utod $docs/$relnote
 $utod $docs/README
 $utod $docs/MSWINFO.TXT
 
-sed -e s/OSNAME/$osname/ -e s/VERSION/$version/ -e s/ARCH/$arch/ \
-  -e s/TOOLROOT/$toolroot/g < files/$appname.iss.in > $appname.iss
+sed -e s/APPNAME/$appname/ -e s/OSNAME/$osname/ \
+  -e s/VERSION/$version/ -e s/ARCH/$arch/ \
+  -e s/TOOLROOT/$toolroot/g < files/xictools_xic.iss.in > $appname.iss
 $utod $appname.iss
 
 $inno/iscc $appname.iss > build.log
