@@ -60,7 +60,7 @@ SUBDIRS = src/$(GRPREF)mozy src/help src/htm src/httpget src/imsave
 #######################################################################
 ####### Executable and related targets ################################
 
-TARGETS = mozy xeditor hlpsrv hlp2html httpget
+TARGETS = $(GRPKG)/mozy $(GRPKG)/xeditor hlpsrv hlp2html httpget
 
 all:  $(TARGETS)
 
@@ -68,7 +68,7 @@ $(TARGETS)::
 	if [ ! -d $(BINDIR) ]; then \
 	    mkdir $(BINDIR); \
 	fi    
-	$(MAKE) $(BINDIR)/$@
+	$(MAKE) bin/$@
 
 $(BINDIR)/mozy: bin/mozy.o $(LOCAL_LIBS) $(MOZYRES)
 	@echo $@: dynamic link mozy
@@ -80,21 +80,21 @@ $(BINDIR)/xeditor: bin/xeditor.o $(LOCAL_LIBS) $(XEDRES)
 	@$(LINKCC) -o $(BINDIR)/xeditor $(LFLAGS) bin/xeditor.o $(LOCAL_LIBS) \
   $(LIBS) $(XEDRES) $(STDCLIB)
 
-$(BINDIR)/hlpsrv: bin/hlpsrv.o lib/help.a $(BASE)/lib/ginterf.a \
+bin/hlpsrv: bin/hlpsrv.o lib/help.a $(BASE)/lib/ginterf.a \
   $(BASE)/lib/miscutil.a
-	@$(LINKCC) -o $(BINDIR)/hlpsrv $(LFLAGS) bin/hlpsrv.o \
+	@$(LINKCC) -o bin/hlpsrv $(LFLAGS) bin/hlpsrv.o \
   src/help/help_read.o $(BASE)/ginterf/graphics.o \
   $(BASE)/lib/miscutil.a $(REGEX) $(MSLIBS) $(STDCLIB) $(WINPTHREADFIX)
 
-$(BINDIR)/hlp2html: bin/hlp2html.o lib/help.a $(BASE)/lib/ginterf.a \
+bin/hlp2html: bin/hlp2html.o lib/help.a $(BASE)/lib/ginterf.a \
   $(BASE)/lib/miscutil.a Makefile
-	@$(LINKCC) -o $(BINDIR)/hlp2html $(LFLAGS) bin/hlp2html.o \
+	@$(LINKCC) -o bin/hlp2html $(LFLAGS) bin/hlp2html.o \
   src/help/help_read.o $(BASE)/ginterf/graphics.o \
   $(BASE)/lib/miscutil.a $(REGEX) $(MSLIBS) $(STDCLIB) $(WINPTHREADFIX)
 
-$(BINDIR)/httpget: bin/httpget.o $(LOCAL_LIBS)
+bin/httpget: bin/httpget.o $(LOCAL_LIBS)
 	@echo $@: dynamic link httpget
-	@$(LINKCC) -o $(BINDIR)/httpget $(LFLAGS) bin/httpget.o lib/httpget.a \
+	@$(LINKCC) -o bin/httpget $(LFLAGS) bin/httpget.o lib/httpget.a \
   $(LOCAL_LIBS) $(LIBS) $(STDCLIB)
 
 bin/mozy.o: bin/mozy.cc
@@ -166,6 +166,9 @@ depend::
 ####### Clean up ######################################################
 
 eclean::
+	-@for a in $(TARGETS); do \
+	    rm -f bin/$$a$(EXESUFFIX); \
+	done
 	rm -f $(BINDIR)
 
 clean:: eclean
@@ -180,6 +183,7 @@ distclean:: eclean
 	    $(MAKE) -C $$a distclean; \
 	done
 	-@$(MAKE) -C packages $@
+	-@rm -rf bin/QT5 bin/QT6 bin/GTK2 bin/GTK3
 
 #######################################################################
 ####### Installation ##################################################

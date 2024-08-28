@@ -121,7 +121,7 @@ LOCAL_LIBS = \
 #######################################################################
 ####### Executable targets ############################################
 
-TARGETS = wrspice wrspiced csvtoraw multidec proc2mod printtoraw
+TARGETS = $(GRPKG)/wrspice wrspiced csvtoraw multidec proc2mod printtoraw
 MMJCO = mmjco/mmjco
 all: cptest $(TARGETS) $(MMJCO)
 
@@ -149,7 +149,7 @@ $(TARGETS)::
 	if [ ! -d $(BINDIR) ]; then \
 	    mkdir $(BINDIR); \
 	fi    
-	$(MAKE) $(BINDIR)/$@
+	$(MAKE) bin/$@
 
 ifeq ($(OSNAME), MINGW)
 
@@ -174,29 +174,29 @@ $(BINDIR)/wrspice: bin/wrspice.o $(LOCAL_LIBS) $(MALLOC)
 
 endif
 
-$(BINDIR)/wrspiced: bin/wrspiced.o $(BASE)/lib/miscutil.a
+bin/wrspiced: bin/wrspiced.o $(BASE)/lib/miscutil.a
 	@echo $@: dynamic link
-	@$(LINKCC) -o $(BINDIR)/wrspiced $(LFLAGS) bin/wrspiced.o \
+	@$(LINKCC) -o bin/wrspiced $(LFLAGS) bin/wrspiced.o \
   $(BASE)/lib/miscutil.a $(SLIBS) $(STDCLIB) $(WINPTHREADFIX)
 
-$(BINDIR)/csvtoraw: bin/csvtoraw.o $(BASE)/lib/miscutil.a
+bin/csvtoraw: bin/csvtoraw.o $(BASE)/lib/miscutil.a
 	@echo $@: dynamic link
-	@$(LINKCC) -o $(BINDIR)/csvtoraw bin/csvtoraw.o $(BASE)/lib/miscutil.a \
+	@$(LINKCC) -o bin/csvtoraw bin/csvtoraw.o $(BASE)/lib/miscutil.a \
   $(STDCLIB) $(WINPTHREADFIX)
 
-$(BINDIR)/multidec: bin/multidec.o src/sparse/sparse.a src/misc/misc.a
+bin/multidec: bin/multidec.o src/sparse/sparse.a src/misc/misc.a
 	@echo $@: dynamic link
-	@$(LINKCC) -o $(BINDIR)/multidec bin/multidec.o src/sparse/sparse.a \
+	@$(LINKCC) -o bin/multidec bin/multidec.o src/sparse/sparse.a \
   src/misc/misc.a $(CURSES) $(STDCLIB) -lm $(WINPTHREADFIX)
 
-$(BINDIR)/proc2mod: bin/proc2mod.o src/cp/cp.a src/inp/inp.a src/misc/misc.a
+bin/proc2mod: bin/proc2mod.o src/cp/cp.a src/inp/inp.a src/misc/misc.a
 	@echo $@: dynamic link
-	@$(LINKCC) -o $(BINDIR)/proc2mod bin/proc2mod.o src/cp/cp.a \
+	@$(LINKCC) -o bin/proc2mod bin/proc2mod.o src/cp/cp.a \
   src/inp/inp.a src/misc/misc.a $(STDCLIB) -lm $(WINPTHREADFIX)
 
-$(BINDIR)/printtoraw: bin/printtoraw.o $(BASE)/lib/miscutil.a
+bin/printtoraw: bin/printtoraw.o $(BASE)/lib/miscutil.a
 	@echo $@: dynamic link
-	@$(LINKCC) -o $(BINDIR)/printtoraw bin/printtoraw.o \
+	@$(LINKCC) -o bin/printtoraw bin/printtoraw.o \
   $(BASE)/lib/miscutil.a $(STDCLIB) $(WINPTHREADFIX)
 
 mmjco/mmjco::
@@ -342,6 +342,9 @@ depend: syntaxlevel
 ####### Clean up ######################################################
 
 eclean:
+	-@for a in $(TARGETS); do \
+	    rm -f bin/$$a$(EXESUFFIX); \
+	done
 	-@rm -f $(BINDIR)
 
 clean: eclean
@@ -359,6 +362,7 @@ distclean: eclean
 	-@$(MAKE) -C mmjco distclean
 	-@rm -f bin/*.o Makefile
 	-@rm -f devlib/adms/admst/device.xml
+	-@rm -rf bin/QT5 bin/QT6 bin/GTK2 bin/GTK3
 
 ifdef GRPREF
 grclean:

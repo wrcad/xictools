@@ -116,7 +116,7 @@ LOCAL_LIBS = \
 #######################################################################
 ####### Executable targets ############################################
 
-TARGETS = xic wrencode wrdecode wrsetpass
+TARGETS = $(GRPKG)/xic wrencode wrdecode wrsetpass
 all:  cptest $(TARGETS) plugins
 
 cptest:
@@ -128,7 +128,7 @@ $(TARGETS)::
 	if [ ! -d $(BINDIR) ]; then \
 	    mkdir $(BINDIR); \
 	fi    
-	$(MAKE) $(BINDIR)/$@
+	$(MAKE) bin/$@
 
 ifeq ($(OSNAME), MINGW)
 
@@ -156,9 +156,6 @@ endif
 plugins::
 	$(MAKE) -C plugins
 
-# sa-filetool will always rebuild fietool.o, to set a three-month lifetime
-# for the binary.
-
 ifeq ($(USEMOZY), yes)
 FT_MOZYLIBS = $(MOZY)/lib/httpget.a
 endif
@@ -175,22 +172,22 @@ FT_LIBS = \
   $(BASE)/lib/malloc.a \
   $(FT_MOZYLIBS)
 
-$(BINDIR)/sa-filetool: bin/sa-filetool.o $(FT_LIBS)
-	$(LINKCC) -o $(BINDIR)/sa-filetool bin/sa-filetool.o $(FT_LIBS) \
+bin/sa-filetool: bin/sa-filetool.o $(FT_LIBS)
+	$(LINKCC) -o bin/sa-filetool bin/sa-filetool.o $(FT_LIBS) \
   -lm -lz $(LIBDL) $(STDCLIB)
 	rm -f bin/sa-filetool.o
 
-$(BINDIR)/wrencode: bin/cryptmain.cc src/parser/parser.a $(BASE)/lib/miscutil.a
-	$(LINKCC) $(CFLAGS) -o $(BINDIR)/wrencode $(INCLUDE) -DENCODING \
+bin/wrencode: bin/cryptmain.cc src/parser/parser.a $(BASE)/lib/miscutil.a
+	$(LINKCC) $(CFLAGS) -o bin/wrencode $(INCLUDE) -DENCODING \
   bin/cryptmain.cc src/parser/parser.a $(BASE)/lib/miscutil.a $(STDCLIB) \
   $(WINPTHREADFIX)
 
-$(BINDIR)/wrdecode: bin/cryptmain.cc src/parser/parser.a $(BASE)/lib/miscutil.a
-	$(LINKCC) $(CFLAGS) -o $(BINDIR)/wrdecode $(INCLUDE) bin/cryptmain.cc \
+bin/wrdecode: bin/cryptmain.cc src/parser/parser.a $(BASE)/lib/miscutil.a
+	$(LINKCC) $(CFLAGS) -o bin/wrdecode $(INCLUDE) bin/cryptmain.cc \
   src/parser/parser.a $(BASE)/lib/miscutil.a  $(STDCLIB) $(WINPTHREADFIX)
 
-$(BINDIR)/wrsetpass: bin/cryptmain.cc src/parser/parser.a $(BASE)/lib/miscutil.a
-	$(LINKCC) $(CFLAGS) -o $(BINDIR)/wrsetpass $(INCLUDE) -DENCODING \
+bin/wrsetpass: bin/cryptmain.cc src/parser/parser.a $(BASE)/lib/miscutil.a
+	$(LINKCC) $(CFLAGS) -o bin/wrsetpass $(INCLUDE) -DENCODING \
   -DSETPASS bin/cryptmain.cc src/parser/parser.a $(BASE)/lib/miscutil.a \
   $(STDCLIB) $(WINPTHREADFIX)
 
@@ -317,6 +314,10 @@ depend:
 ####### Clean up ######################################################
 
 eclean:
+	-@for a in $(TARGETS); do \
+	    rm -f bin/$$a$(EXESUFFIX); \
+	done
+	-@rm -f bin/sa-filetool$(EXESUFFIX)
 	-@rm -f $(BINDIR)
 
 clean: eclean
@@ -331,6 +332,7 @@ distclean: eclean
 	    $(MAKE) -C $$a $@; \
 	done
 	-@rm -f bin/*.o Makefile
+	-@rm -rf bin/QT5 bin/QT6 bin/GTK2 bin/GTK3
 
 ifdef GRPREF
 grclean:
