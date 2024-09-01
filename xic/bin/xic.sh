@@ -6,12 +6,22 @@
 # be replaced on package update.  If you need to modify, make a copy
 # for yourself and keep it somewhere safe.
 
+# This is used to change the graphics package to use.  The .xtrc file
+# in the home or current directory can contain things to use here,
+# specifically a line like "grpref=QT6" or similar (used below).
+
+if [ -f ./.xtrc ]; then 
+    source ./.xtrc
+elif [ -f $HOME/.xtrc ]; then
+    source $HOME/.xtrc
+fi
+
 # Handle the XIC_LIBRARY_PATH variable by prepending it to the dynamic
 # linker search path.  This can be used to pass the location of
 # libraries needed by plugins, for example for OpenAccess.  Set
 # XIC_LIBRARY_PATH in your shell startup script (e.g., .bashrc)
 # instead of LD_LIBRARY_PATH.
-#
+
 if [ -n "$XIC_LIBRARY_PATH" ]; then
     if [ -n "$LD_LIBRARY_PATH" ]; then
         LD_LIBRARY_PATH="$XIC_LIBRARY_PATH:$LD_LIBRARY_PATH"
@@ -44,6 +54,14 @@ fi
 
 # Call the Xic program, passing along the argument list.
 
+if [ -z "$grpref" ]; then
+    grpref=GTK2
+fi
+if [ $grpref != GTK2 -a $grpref != QT6 -a $grpref != QT5 ]; then
+    echo "Unknown graphics setting $grpref, known are GTK2, QT6, and QT5."
+    exit 1
+fi
+
 export LD_LIBRARY_PATH
-/usr/local/xictools/xic/bin/xic $*
+XICPATH/$grpref/xic $*
 

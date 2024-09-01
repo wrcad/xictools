@@ -196,7 +196,7 @@ install: install_test install_force
 
 install_force: uninstall_clean install_bin install_startup install_help
 
-install_bin: $(dst_bin)
+install_bin: $(dst_lib)/mozy/bin $(dst_bin)
 install_startup: $(dst_lib)/mozy/startup
 install_help: $(dst_lib)/mozy/help
 
@@ -208,11 +208,74 @@ install_test::
 	    fi; \
 	fi
 
+$(dst_lib)/mozy/bin::
+	@$(BASE)/util/mkdirpth $@
+	@if [ -d bin/GTK2 ]; then \
+	    mkdir $@/GTK2; \
+	    $(INSTALL_BIN) bin/GTK2/mozy$(EXESUFFIX) $@/GTK2; \
+	    $(INSTALL_BIN) bin/GTK2/xeditor$(EXESUFFIX) $@/GTK2; \
+	    if [ -n "$(EXESUFFIX)" ]; then \
+	        cp $(BASE)/util/program.bat mozy.bat; \
+	        cp $(BASE)/util/program.bat xeditor.bat; \
+	        $(INSTALL_SCRIPT) mozy.bat $@; \
+	        $(INSTALL_SCRIPT) xeditor.bat $@; \
+	        rm -f mozy.bat; \
+	        rm -f xeditor.bat; \
+	    else \
+	        $(INSTALL_SCRIPT) bin/mozy.sh $@; \
+	        $(INSTALL_SCRIPT) bin/xeditor.sh $@; \
+	    fi; \
+	fi
+	@if [ -d bin/QT6 ]; then \
+	    mkdir $@/QT6; \
+	    $(INSTALL_BIN) bin/QT6/mozy$(EXESUFFIX) $@/QT6; \
+	    $(INSTALL_BIN) bin/QT6/xeditor$(EXESUFFIX) $@/QT6; \
+	    if [ -n "$(EXESUFFIX)" ]; then \
+	        cp $(BASE)/util/program.bat mozy.bat; \
+	        cp $(BASE)/util/program.bat xeditor.bat; \
+	        $(INSTALL_SCRIPT) mozy.bat $@; \
+	        $(INSTALL_SCRIPT) xeditor.bat $@ \
+	        rm -f mozy.bat; \
+	        rm -f xeditor.bat; \
+	    else \
+	        $(INSTALL_SCRIPT) bin/mozy.sh $@; \
+	        $(INSTALL_SCRIPT) bin/xeditor.sh $@; \
+	    fi; \
+	elif [ -d bin/QT5 ]; then \
+	    mkdir $@/QT5; \
+	    $(INSTALL_BIN) bin/QT5/mozy$(EXESUFFIX) $@/QT5; \
+	    $(INSTALL_BIN) bin/QT5/xeditor$(EXESUFFIX) $@/QT5; \
+	    if [ -n "$(EXESUFFIX)" ]; then \
+	        cp $(BASE)/util/program.bat mozy.bat; \
+	        cp $(BASE)/util/program.bat xeditor.bat; \
+	        $(INSTALL_SCRIPT) mozy.bat $@; \
+	        $(INSTALL_SCRIPT) xeditor.bat $@; \
+	        rm -f mozy.bat; \
+	        rm -f xeditor.bat; \
+	    else \
+	        $(INSTALL_SCRIPT) bin/mozy.sh $@; \
+	        $(INSTALL_SCRIPT) bin/xeditor.sh $@; \
+	    fi; \
+	fi
+
 $(dst_bin)::
 	@$(BASE)/util/mkdirpth $@
-	for aa in $(TARGETS); do \
-	    $(INSTALL_BIN) bin/$$aa$(EXESUFFIX) $@; \
-	done
+	$(INSTALL_BIN) bin/hlpsrv$(EXESUFFIX) $@; \
+	$(INSTALL_BIN) bin/hlp2html$(EXESUFFIX) $@; \
+	$(INSTALL_BIN) bin/httpget$(EXESUFFIX) $@; \
+	if [ -n "$(EXESUFFIX)" ]; then \
+	    sed -e s%MOZYPATH%$(INSTALL_PREFIX)/$(TOOLROOT)/mozy/bin/GTK2% \
+  < $(dst_lib)/mozy/bin/mozy.bat > $(toolbin)/mozy.bat; \
+	chmod 755 $(toolbin)/xic.bat; \
+	    sed -e s%MOZYPATH%$(INSTALL_PREFIX)/$(TOOLROOT)/mozy/bin/GTK2% \
+  < $(dst_lib)/mozy/bin/xeditor.bat > $(toolbin)/xeditor.bat; \
+	chmod 755 $(toolbin)/xeditor.bat; \
+	else \
+	    sed -e s%MOZYPATH%$(INSTALL_PREFIX)/$(TOOLROOT)/mozy/bin% \
+  < $(dst_lib)/mozy/bin/mozy.sh > $@/mozy; chmod 755 $@/mozy; \
+	    sed -e s%MOZYPATH%$(INSTALL_PREFIX)/$(TOOLROOT)/mozy/bin% \
+  < $(dst_lib)/mozy/bin/xeditor.sh > $@/xeditor; chmod 755 $@/xeditor; \
+	fi
 
 $(dst_lib)/mozy/startup::
 	@$(BASE)/util/mkdirpth $@

@@ -238,7 +238,7 @@ examples/mextram/tests/mex_out.sp
 examples/mextram/tests/tran.sp
 examples/mextram/tscaling.inc
 examples/mextram/variables.inc
-examples/mextram/VERSION
+examples/mextram/MEXTRAM_VERSION
 examples/psp102/Common102_macrodefs.include
 examples/psp102/IP_ACKNOWLEDGMENT
 examples/psp102/IP_NOTICE_DISCLAIMER_LICENSE

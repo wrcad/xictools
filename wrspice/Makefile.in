@@ -418,27 +418,22 @@ install_links::
   $(destn)/bin/printtoraw$(EXESUFFIX); \
 	    $(BASE)/util/make_link $(toolbin)/proc2mod$(EXESUFFIX) \
   $(destn)/bin/proc2mod$(EXESUFFIX); \
-	    $(BASE)/util/make_link $(toolbin)/wrspice$(EXESUFFIX) \
-  $(destn)/bin/wrspice$(EXESUFFIX); \
 	    $(BASE)/util/make_link $(toolbin)/wrspiced$(EXESUFFIX) \
   $(destn)/bin/wrspiced$(EXESUFFIX); \
 	    $(BASE)/util/make_link $(toolbin)/wrspice.dll \
   $(destn)/bin/wrspice.dll; \
-	    cp -f $(destn)/bin/wrspice.bat $(toolbin); \
+	    sed -e s%WRSPATH%$(INSTALL_PREFIX)/$(TOOLROOT)/wrspice/bin/GTK2% \
+  < $(destn)/bin/wrspice.bat > $(toolbin)/wrspice.bat; \
 	else \
 	    ln -s $(destn) $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice; \
-	    ln -s $(destn)/bin/mmjco$(EXESUFFIX) \
-  $(toolbin)/mmjco$(EXESUFFIX); \
-	    ln -s $(destn)/bin/multidec$(EXESUFFIX) \
-  $(toolbin)/multidec$(EXESUFFIX); \
-	    ln -s $(destn)/bin/printtoraw$(EXESUFFIX) \
-  $(toolbin)/printtoraw$(EXESUFFIX); \
-	    ln -s $(destn)/bin/proc2mod$(EXESUFFIX) \
-  $(toolbin)/proc2mod$(EXESUFFIX); \
-	    ln -s $(destn)/bin/wrspice$(EXESUFFIX) \
-  $(toolbin)/wrspice$(EXESUFFIX); \
-	    ln -s $(destn)/bin/wrspiced$(EXESUFFIX) \
-  $(toolbin)/wrspiced$(EXESUFFIX); \
+	    ln -s $(destn)/bin/mmjco $(toolbin)/mmjco; \
+	    ln -s $(destn)/bin/multidec $(toolbin)/multidec; \
+	    ln -s $(destn)/bin/printtoraw $(toolbin)/printtoraw; \
+	    ln -s $(destn)/bin/proc2mod $(toolbin)/proc2mod; \
+	    ln -s $(destn)/bin/wrspiced $(toolbin)/wrspiced; \
+	    sed -e s%WRSPATH%$(INSTALL_PREFIX)/$(TOOLROOT)/wrspice/bin% \
+  < $(destn)/bin/wrspice.sh > $(toolbin)/wrspice; \
+	    chmod 755 $(toolbin)/wrspice; \
 	fi
 
 # Under MSYS2, rm deletes Windows links and junctions.
@@ -449,11 +444,12 @@ clean_links::
 	-@rm -f $(toolbin)/multidec$(EXESUFFIX)
 	-@rm -f $(toolbin)s/printtoraw$(EXESUFFIX)
 	-@rm -f $(toolbin)/proc2mod$(EXESUFFIX)
-	-@rm -f $(toolbin)/wrspice$(EXESUFFIX)
 	-@rm -f $(toolbin)/wrspiced$(EXESUFFIX)
 	-@if [ -n "$(EXESUFFIX)" ]; then \
             rm -f $(toolbin)/wrspice.bat; \
             rm -f $(toolbin)/wrspice.dll; \
+	else \
+            rm -f $(toolbin)/wrspice; \
 	fi
 
 install_clean::
@@ -465,15 +461,40 @@ $(destn)/bin::
 	    $(INSTALL_BIN) bin/$$aa$(EXESUFFIX) $@; \
 	done
 	@$(INSTALL_BIN) mmjco/mmjco$(EXESUFFIX) $@;
-# Don't strip wrspice.exe, Webroot will think its a virus!
-	@if [ -n "$(EXESUFFIX)" ]; then \
-	    $(INSTALL_BIN) bin/wrspice.dll $@; \
-	    $(INSTALL_SCRIPT) bin/wrspice$(EXESUFFIX) $@; \
-	    cp $(BASE)/util/program.bat wrspice.bat; \
-            $(INSTALL_SCRIPT) wrspice.bat $@; \
-	    rm -f wrspice.bat; \
-	else \
-	    $(INSTALL_BIN) bin/wrspice$(EXESUFFIX) $@; \
+	@if [ -d bin/GTK2 ]; then \
+	    mkdir $@/GTK2; \
+	    $(INSTALL_BIN) bin/GTK2/wrspice$(EXESUFFIX) $@/GTK2; \
+	    if [ -n "$(EXESUFFIX)" ]; then \
+	        $(INSTALL_BIN) bin/GTK2/wrspice.dll $@/GTK2; \
+	        cp $(BASE)/util/program.bat wrspice.bat; \
+	        $(INSTALL_SCRIPT) wrspice.bat $@; \
+	        rm -f wrspice.bat; \
+	    else \
+	        $(INSTALL_SCRIPT) bin/wrspice.sh $@; \
+	    fi; \
+	fi
+	@if [ -d bin/QT6 ]; then \
+	    mkdir $@/QT6; \
+	    $(INSTALL_BIN) bin/QT6/wrspice$(EXESUFFIX) $@/QT6; \
+	    if [ -n "$(EXESUFFIX)" ]; then \
+	        $(INSTALL_BIN) bin/QT6/wrspice.dll $@/QT6; \
+	        cp $(BASE)/util/program.bat wrspice.bat; \
+	        $(INSTALL_SCRIPT) wrspice.bat $@; \
+	        rm -f wrspice.bat; \
+	    else \
+	        $(INSTALL_SCRIPT) bin/wrspice.sh $@; \
+	    fi; \
+	elif [ -d bin/QT5 ]; then ] \
+	    mkdir $@/QT5; \
+	    $(INSTALL_BIN) bin/QT5/wrspice$(EXESUFFIX) $@/QT5; \
+	    if [ -n "$(EXESUFFIX)" ]; then \
+	        $(INSTALL_BIN) bin/QT5/wrspice.dll $@/QT5; \
+	        cp $(BASE)/util/program.bat wrspice.bat; \
+	        $(INSTALL_SCRIPT) wrspice.bat $@; \
+	        rm -f wrspice.bat; \
+	    else \
+	        $(INSTALL_SCRIPT) bin/wrspice.sh $@; \
+	    fi; \
 	fi
 
 $(destn)/icons::
@@ -595,8 +616,8 @@ devkit_examples:
 	        $(MAKE) -C `dirname $$a` \
 	            ADMST=../../admst \
 	            ADMSXML=../../../../../adms/adms_wr/admsXml/admsXml \
-	            DLL_LOC=../../../../bin \
-	            WRSPICE=../../../../bin/wrspice realclean module; \
+	            DLL_LOC=../../../../GTK2/bin \
+	            WRSPICE=../../../../GTK2/bin/wrspice realclean module; \
 	    done \
         )
 

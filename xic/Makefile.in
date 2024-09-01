@@ -389,24 +389,22 @@ install_links::
  $(destn)/bin/wrdecode$(EXESUFFIX); \
 	    $(BASE)/util/make_link $(toolbin)/wrsetpass$(EXESUFFIX) \
  $(destn)/bin/wrsetpass$(EXESUFFIX); \
-	    cp -f $(destn)/bin/xic.bat $(toolbin); \
+	    sed -e s%XICPATH%$(INSTALL_PREFIX)/$(TOOLROOT)/xic/bin/GTK2% \
+  < $(destn)/bin/xic.bat > $(toolbin)/xic.bat; \
 	    if [ ! -h $(destn)/startup/xic_tech ]; then \
 	        $(BASE)/util/make_link $(destn)/startup/xic_tech \
  $(destn)/startup/xic_tech.scmos; \
 	    fi \
 	else \
 	    ln -s $(destn) $(INSTALL_PREFIX)/$(TOOLROOT)/xic; \
-	    ln -s $(destn)/bin/wrencode$(EXESUFFIX) \
- $(toolbin)/wrencode$(EXESUFFIX); \
-	    ln -s $(destn)/bin/wrdecode$(EXESUFFIX) \
- $(toolbin)/wrdecode$(EXESUFFIX); \
-	    ln -s $(destn)/bin/wrsetpass$(EXESUFFIX) \
- $(toolbin)/wrsetpass$(EXESUFFIX); \
+	    ln -s $(destn)/bin/wrencode $(toolbin)/wrencode; \
+	    ln -s $(destn)/bin/wrdecode $(toolbin)/wrdecode; \
+	    ln -s $(destn)/bin/wrsetpass $(toolbin)/wrsetpass; \
 	    if [ ! -h $(destn)/startup/xic_tech ]; then \
 	        ln -s $(destn)/startup/xic_tech.scmos \
  $(destn)/startup/xic_tech; \
 	    fi; \
-	    sed -e s%/usr/local%$(INSTALL_PREFIX)% -e s%xictools%$(TOOLROOT)% \
+	    sed -e s%XICPATH%$(INSTALL_PREFIX)/$(TOOLROOT)/xic/bin% \
   < $(destn)/bin/xic.sh > $(toolbin)/xic; chmod 755 $(toolbin)/xic; \
 	fi
 
@@ -428,22 +426,46 @@ clean_links::
 install_xic_clean::
 	-@rm -rf $(destn)
 
-# Don't strip xic.exe in Windows, Webroot will think its a virus!
 $(destn)/bin::
 	@$(BASE)/util/mkdirpth $@
 	$(INSTALL_BIN) bin/wrencode$(EXESUFFIX) $@
 	$(INSTALL_BIN) bin/wrdecode$(EXESUFFIX) $@
 	$(INSTALL_BIN) bin/wrsetpass$(EXESUFFIX) $@
-	$(INSTALL_BIN) bin/xic$(EXESUFFIX) $@
-	@if [ -n "$(EXESUFFIX)" ]; then \
-	    $(INSTALL_BIN) bin/xic.dll $@; \
-	    cp $(BASE)/util/program.bat xic.bat; \
-            $(INSTALL_SCRIPT) xic.bat $@; \
-	    rm -f xic.bat; \
-	else \
-	    $(INSTALL_SCRIPT) bin/xic.sh $@; \
+	@if [ -d bin/GTK2 ]; then \
+	    mkdir $@/GTK2; \
+	    $(INSTALL_BIN) bin/GTK2/xic$(EXESUFFIX) $@/GTK2; \
+	    if [ -n "$(EXESUFFIX)" ]; then \
+	        $(INSTALL_BIN) bin/GTK2/xic.dll $@/GTK2; \
+	        cp $(BASE)/util/program.bat xic.bat; \
+	        $(INSTALL_SCRIPT) xic.bat $@; \
+	        rm -f xic.bat; \
+	    else \
+	        $(INSTALL_SCRIPT) bin/xic.sh $@; \
+	    fi; \
 	fi
-	@$(BASE)/util/mkdirpth $(toolbin)
+	@if [ -d bin/QT6 ]; then \
+	    mkdir $@/QT6; \
+	    $(INSTALL_BIN) bin/QT6/xic$(EXESUFFIX) $@/QT6; \
+	    if [ -n "$(EXESUFFIX)" ]; then \
+	        $(INSTALL_BIN) bin/QT6/xic.dll $@/QT6; \
+	        cp $(BASE)/util/program.bat xic.bat; \
+	        $(INSTALL_SCRIPT) xic.bat $@; \
+	        rm -f xic.bat; \
+	    else \
+	        $(INSTALL_SCRIPT) bin/xic.sh $@; \
+	    fi; \
+	elif [ -d bin/QT5 ]; then ] \
+	    mkdir $@/QT5; \
+	    $(INSTALL_BIN) bin/QT5/xic$(EXESUFFIX) $@/QT5; \
+	    if [ -n "$(EXESUFFIX)" ]; then \
+	        $(INSTALL_BIN) bin/QT5/xic.dll $@/QT5; \
+	        cp $(BASE)/util/program.bat xic.bat; \
+	        $(INSTALL_SCRIPT) xic.bat $@; \
+	        rm -f xic.bat; \
+	    else \
+	        $(INSTALL_SCRIPT) bin/xic.sh $@; \
+	    fi; \
+	fi
 
 $(destn)/help::
 	$(MAKE) -C help
