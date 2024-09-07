@@ -14,8 +14,8 @@ rm -f $tbin/mmjco $tbin/multidec $tbin/proc2mod $tbin/printtoraw $tbin/wrspice \
 
 # Back up for Safe Install.
 prog=wrspice
-if [ -x $prefix/xictools/$prog.current/bin/$prog ]; then
-    curver=$($prefix/xictools/$prog.current/bin/$prog --v)
+if [ -x $prefix/xictools/$prog.current/bin/GTK2/$prog ]; then
+    curver=$($prefix/xictools/$prog.current/bin/GTK2/$prog --v)
     set -- $curver
     curver=$1
     if [ -n "$curver" ]; then
