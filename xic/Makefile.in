@@ -137,7 +137,7 @@ ifeq ($(OSNAME), MINGW)
 
 $(BINDIR)/xic: bin/main.cc $(BINDIR)/xic.dll
 	$(CC) -o $(BINDIR)/xic bin/main.cc src/$(GRPREF)xic/resource.o \
-  -Lbin -lxic
+  -L$(BINDIR) -lxic
 
 $(BINDIR)/xic.dll: bin/xic.o $(LOCAL_LIBS) $(MALLOC)
 	@echo $@: dynamic link
@@ -380,17 +380,13 @@ install_test::
 install_links::
 	@if [ -n "$(EXESUFFIX)" ]; then \
 	    $(BASE)/util/make_link $(INSTALL_PREFIX)/$(TOOLROOT)/xic $(destn); \
-	    $(BASE)/util/make_link $(toolbin)/xic$(EXESUFFIX) \
- $(destn)/bin/xic$(EXESUFFIX); \
-	    $(BASE)/util/make_link $(toolbin)/xic.dll $(destn)/bin/xic.dll; \
 	    $(BASE)/util/make_link $(toolbin)/wrencode$(EXESUFFIX) \
  $(destn)/bin/wrencode$(EXESUFFIX); \
 	    $(BASE)/util/make_link $(toolbin)/wrdecode$(EXESUFFIX) \
  $(destn)/bin/wrdecode$(EXESUFFIX); \
 	    $(BASE)/util/make_link $(toolbin)/wrsetpass$(EXESUFFIX) \
  $(destn)/bin/wrsetpass$(EXESUFFIX); \
-	    sed -e s%XICPATH%$(INSTALL_PREFIX)/$(TOOLROOT)/xic/bin/GTK2% \
-  < $(destn)/bin/xic.bat > $(toolbin)/xic.bat; \
+ 	    cp -f $(destn)/bin/xic.bat $(toolbin); \
 	    if [ ! -h $(destn)/startup/xic_tech ]; then \
 	        $(BASE)/util/make_link $(destn)/startup/xic_tech \
  $(destn)/startup/xic_tech.scmos; \
@@ -404,9 +400,9 @@ install_links::
 	        ln -s $(destn)/startup/xic_tech.scmos \
  $(destn)/startup/xic_tech; \
 	    fi; \
-	    sed -e s%XICPATH%$(INSTALL_PREFIX)/$(TOOLROOT)/xic/bin% \
-  < $(destn)/bin/xic.sh > $(toolbin)/xic; chmod 755 $(toolbin)/xic; \
 	fi
+	cp -f $(destn)/bin/xic.sh $(toolbin)/xic
+	chmod 755 $(toolbin)/xic
 
 # Under MSYS2, rm deletes Windows links and junctions.
 
@@ -415,13 +411,10 @@ clean_links::
 	-@rm -f $(toolbin)/wrencode$(EXESUFFIX)
 	-@rm -f $(toolbin)/wrdecode$(EXESUFFIX)
 	-@rm -f $(toolbin)/wrsetpass$(EXESUFFIX)
-	-@rm -f $(toolbin)/xic$(EXESUFFIX)
+	-@rm -f $(toolbin)/xic
 	-@if [ -n "$(EXESUFFIX)" ]; then \
-            rm -f $(toolbin)/xic.bat; \
-            rm -f $(toolbin)/xic.dll; \
-	else \
-            rm -f $(toolbin)/xic; \
-	fi
+	    rm -f $(toolbin)/xic.bat; \
+	fi    
 
 install_xic_clean::
 	-@rm -rf $(destn)
@@ -431,16 +424,15 @@ $(destn)/bin::
 	$(INSTALL_BIN) bin/wrencode$(EXESUFFIX) $@
 	$(INSTALL_BIN) bin/wrdecode$(EXESUFFIX) $@
 	$(INSTALL_BIN) bin/wrsetpass$(EXESUFFIX) $@
+	$(INSTALL_SCRIPT) bin/xic.sh $@
+	-@if [ -n "$(EXESUFFIX)" ]; then \
+	    cp -f $(BASE)/util/program.bat $@/xic.bat; \
+	fi
 	@if [ -d bin/GTK2 ]; then \
 	    mkdir $@/GTK2; \
 	    $(INSTALL_BIN) bin/GTK2/xic$(EXESUFFIX) $@/GTK2; \
 	    if [ -n "$(EXESUFFIX)" ]; then \
 	        $(INSTALL_BIN) bin/GTK2/xic.dll $@/GTK2; \
-	        cp $(BASE)/util/program.bat xic.bat; \
-	        $(INSTALL_SCRIPT) xic.bat $@; \
-	        rm -f xic.bat; \
-	    else \
-	        $(INSTALL_SCRIPT) bin/xic.sh $@; \
 	    fi; \
 	fi
 	@if [ -d bin/QT6 ]; then \
@@ -448,22 +440,12 @@ $(destn)/bin::
 	    $(INSTALL_BIN) bin/QT6/xic$(EXESUFFIX) $@/QT6; \
 	    if [ -n "$(EXESUFFIX)" ]; then \
 	        $(INSTALL_BIN) bin/QT6/xic.dll $@/QT6; \
-	        cp $(BASE)/util/program.bat xic.bat; \
-	        $(INSTALL_SCRIPT) xic.bat $@; \
-	        rm -f xic.bat; \
-	    else \
-	        $(INSTALL_SCRIPT) bin/xic.sh $@; \
 	    fi; \
 	elif [ -d bin/QT5 ]; then ] \
 	    mkdir $@/QT5; \
 	    $(INSTALL_BIN) bin/QT5/xic$(EXESUFFIX) $@/QT5; \
 	    if [ -n "$(EXESUFFIX)" ]; then \
 	        $(INSTALL_BIN) bin/QT5/xic.dll $@/QT5; \
-	        cp $(BASE)/util/program.bat xic.bat; \
-	        $(INSTALL_SCRIPT) xic.bat $@; \
-	        rm -f xic.bat; \
-	    else \
-	        $(INSTALL_SCRIPT) bin/xic.sh $@; \
 	    fi; \
 	fi
 
@@ -552,6 +534,16 @@ $(destn)/docs::
 	tmp=$(GFX_VERSION); \
 	set -- $$tmp; \
 	cp docs/xic$$1.$$2 $@
+
+uninstall: uninstall_test clean_links
+
+uninstall_test::
+	@if [ $(INSTALL_PREFIX) = $(prefix) ]; then \
+	    if [ $(itopok) != yes ]; then \
+	echo "No!  Use operating system or wr_uninstall script to uninstall!"; \
+	        exit 1; \
+	    fi; \
+	fi
 
 package::
 	$(MAKE) all

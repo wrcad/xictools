@@ -974,7 +974,7 @@ asm("mosptf:");
             double Egx0,EgxL;
             double vgx0,vgxL;
             double psi_si0,psi_siL,psi_st0;
-            double Esi0,EsiL,Ess0;
+            double Esi0,EsiL=0.0,Ess0;
             double theta2;
             double TVF; /* thermal velocity-saturation factor */
             double Mmob;

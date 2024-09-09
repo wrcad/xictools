@@ -1449,10 +1449,12 @@ if test x$MALLOC != x; then
     fi
 fi
 
+MKMOD=1
 LINKCC=$CXX
 if test $OSNAME = "MINGW"; then
     LINKCC="$CXX -static-libgcc -static-libstdc++"
     DEVWINDLL="-L../../wrspice/bin -lwrspice"
+    MKMOD=0
 fi
 dnl # No longer attempt to statically link gcc stuff, impossible as
 dnl # other libraries link to it.
@@ -1461,6 +1463,7 @@ dnl #STDCLIB="-Wl,-Bstatic -lstdc++ -Wl,-Bdynamic -lgcc -lgcc_eh -lc"
 AC_SUBST(LINKCC)
 AC_SUBST(STDCLIB)
 AC_SUBST(DEVWINDLL)
+AC_SUBST(MKMOD)
 
 dnl delete graphics-specific libraries
 if test -f ginterf/ginterf.a; then

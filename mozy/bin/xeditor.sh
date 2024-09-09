@@ -26,5 +26,18 @@ if [ $grpref != GTK2 -a $grpref != QT6 -a $grpref != QT5 ]; then
     exit 1
 fi
 
-MOZYPATH/$grpref/xeditor $*
+mypath=$(dirname $(readlink -f "$0"))
+# mypath is now the full path to the directory containing this file.
+# If the directory is named "bin" and it has the grpref subdirectory,
+# execute the binary from grpref.
+if [ $(basename $mypath) == bin ]; then
+    if [ -d $mypath/$grpref ]; then
+        $mypath/$grpref/xeditor $*
+        exit $?
+    fi    
+fi 
+# Otherwise, as in installed area, go to ../mozy/bin.
+mypath=$(dirname $mypath)/mozy/bin
+$mypath/$grpref/xeditor $*
+exit $?
 

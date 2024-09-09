@@ -189,16 +189,17 @@ distclean:: eclean
 ####### Installation ##################################################
 
 INSTALL_PREFIX ?= $(prefix)
-dst_lib = $(INSTALL_PREFIX)/$(TOOLROOT)
-dst_bin = $(INSTALL_PREFIX)/$(TOOLROOT)/bin
+destn = $(INSTALL_PREFIX)/$(TOOLROOT)/mozy
+dst_bin = $(INSTALL_PREFIX)/$(TOOLROOT)/mozy/bin
+toolbin = $(INSTALL_PREFIX)/$(TOOLROOT)/bin
 
-install: install_test install_force
+install: install_test install_force clean_links install_links
 
 install_force: uninstall_clean install_bin install_startup install_help
 
-install_bin: $(dst_lib)/mozy/bin $(dst_bin)
-install_startup: $(dst_lib)/mozy/startup
-install_help: $(dst_lib)/mozy/help
+install_bin: $(dst_bin)
+install_startup: $(destn)/startup
+install_help: $(destn)/help
 
 install_test::
 	@if [ $(INSTALL_PREFIX) = $(prefix) ]; then \
@@ -208,83 +209,75 @@ install_test::
 	    fi; \
 	fi
 
-$(dst_lib)/mozy/bin::
+# In order to use the Windows mklink command, user must be running with
+# Admin privileges, or Developer Mode must be on.  Set this from
+# Settings/Update & Security/For Developers
+
+install_links::
+	@if [ -n "$(EXESUFFIX)" ]; then \
+	    $(BASE)/util/make_link $(toolbin)/hlpsrv$(EXESUFFIX) \
+ $(dst_bin)/hlpsrv$(EXESUFFIX); \
+	    $(BASE)/util/make_link $(toolbin)/hlp2html$(EXESUFFIX) \
+ $(dst_bin)/hlp2html$(EXESUFFIX); \
+	    $(BASE)/util/make_link $(toolbin)/httpget$(EXESUFFIX) \
+ $(dst_bin)/httpget$(EXESUFFIX); \
+	    cp -f $(dst_bin)/mozy.bat $(toolbin); \
+	    cp -f $(dst_bin)/xeditor.bat $(toolbin); \
+	else \
+	    ln -s $(dst_bin)/hlpsrv $(toolbin)/hlpsrv; \
+	    ln -s $(dst_bin)/hlp2html $(toolbin)/hlp2html; \
+	    ln -s $(dst_bin)/httpget $(toolbin)/httpget; \
+	fi
+	cp -f $(dst_bin)/mozy.sh $(toolbin)/mozy
+	chmod 755 $(toolbin)/mozy
+	cp -f $(dst_bin)/xeditor.sh $(toolbin)/xeditor
+	chmod 755 $(toolbin)/xeditor
+
+clean_links::
+	-@rm -f $(toolbin)/hlpsrv$(EXESUFFIX)
+	-@rm -f $(toolbin)/hlp2html$(EXESUFFIX)
+	-@rm -f $(toolbin)/httpget$(EXESUFFIX)
+	-@rm -f $(toolbin)/mozy
+	-@rm -f $(toolbin)/xeditor
+	-@if [ -n "$(EXESUFFIX)" ]; then \
+	    rm -f $(toolbin)/mozy.bat; \
+	    rm -f $(toolbin)/xeditor.bat; \
+	fi    
+
+$(dst_bin)::
 	@$(BASE)/util/mkdirpth $@
+	$(INSTALL_BIN) bin/hlpsrv$(EXESUFFIX) $@
+	$(INSTALL_BIN) bin/hlp2html$(EXESUFFIX) $@
+	$(INSTALL_BIN) bin/httpget$(EXESUFFIX) $@
+	$(INSTALL_SCRIPT) bin/mozy.sh $@
+	$(INSTALL_SCRIPT) bin/xeditor.sh $@
+	@if [ -n "$(EXESUFFIX)" ]; then \
+	    cp -f $(BASE)/util/program.bat $@/mozy.bat; \
+	    cp -f $(BASE)/util/program.bat $@/xeditor.bat; \
+	fi    
 	@if [ -d bin/GTK2 ]; then \
 	    mkdir $@/GTK2; \
 	    $(INSTALL_BIN) bin/GTK2/mozy$(EXESUFFIX) $@/GTK2; \
 	    $(INSTALL_BIN) bin/GTK2/xeditor$(EXESUFFIX) $@/GTK2; \
-	    if [ -n "$(EXESUFFIX)" ]; then \
-	        cp $(BASE)/util/program.bat mozy.bat; \
-	        cp $(BASE)/util/program.bat xeditor.bat; \
-	        $(INSTALL_SCRIPT) mozy.bat $@; \
-	        $(INSTALL_SCRIPT) xeditor.bat $@; \
-	        rm -f mozy.bat; \
-	        rm -f xeditor.bat; \
-	    else \
-	        $(INSTALL_SCRIPT) bin/mozy.sh $@; \
-	        $(INSTALL_SCRIPT) bin/xeditor.sh $@; \
-	    fi; \
 	fi
 	@if [ -d bin/QT6 ]; then \
 	    mkdir $@/QT6; \
 	    $(INSTALL_BIN) bin/QT6/mozy$(EXESUFFIX) $@/QT6; \
 	    $(INSTALL_BIN) bin/QT6/xeditor$(EXESUFFIX) $@/QT6; \
-	    if [ -n "$(EXESUFFIX)" ]; then \
-	        cp $(BASE)/util/program.bat mozy.bat; \
-	        cp $(BASE)/util/program.bat xeditor.bat; \
-	        $(INSTALL_SCRIPT) mozy.bat $@; \
-	        $(INSTALL_SCRIPT) xeditor.bat $@ \
-	        rm -f mozy.bat; \
-	        rm -f xeditor.bat; \
-	    else \
-	        $(INSTALL_SCRIPT) bin/mozy.sh $@; \
-	        $(INSTALL_SCRIPT) bin/xeditor.sh $@; \
-	    fi; \
 	elif [ -d bin/QT5 ]; then \
 	    mkdir $@/QT5; \
 	    $(INSTALL_BIN) bin/QT5/mozy$(EXESUFFIX) $@/QT5; \
 	    $(INSTALL_BIN) bin/QT5/xeditor$(EXESUFFIX) $@/QT5; \
-	    if [ -n "$(EXESUFFIX)" ]; then \
-	        cp $(BASE)/util/program.bat mozy.bat; \
-	        cp $(BASE)/util/program.bat xeditor.bat; \
-	        $(INSTALL_SCRIPT) mozy.bat $@; \
-	        $(INSTALL_SCRIPT) xeditor.bat $@; \
-	        rm -f mozy.bat; \
-	        rm -f xeditor.bat; \
-	    else \
-	        $(INSTALL_SCRIPT) bin/mozy.sh $@; \
-	        $(INSTALL_SCRIPT) bin/xeditor.sh $@; \
-	    fi; \
 	fi
 
-$(dst_bin)::
-	@$(BASE)/util/mkdirpth $@
-	$(INSTALL_BIN) bin/hlpsrv$(EXESUFFIX) $@; \
-	$(INSTALL_BIN) bin/hlp2html$(EXESUFFIX) $@; \
-	$(INSTALL_BIN) bin/httpget$(EXESUFFIX) $@; \
-	if [ -n "$(EXESUFFIX)" ]; then \
-	    sed -e s%MOZYPATH%$(INSTALL_PREFIX)/$(TOOLROOT)/mozy/bin/GTK2% \
-  < $(dst_lib)/mozy/bin/mozy.bat > $(toolbin)/mozy.bat; \
-	chmod 755 $(toolbin)/xic.bat; \
-	    sed -e s%MOZYPATH%$(INSTALL_PREFIX)/$(TOOLROOT)/mozy/bin/GTK2% \
-  < $(dst_lib)/mozy/bin/xeditor.bat > $(toolbin)/xeditor.bat; \
-	chmod 755 $(toolbin)/xeditor.bat; \
-	else \
-	    sed -e s%MOZYPATH%$(INSTALL_PREFIX)/$(TOOLROOT)/mozy/bin% \
-  < $(dst_lib)/mozy/bin/mozy.sh > $@/mozy; chmod 755 $@/mozy; \
-	    sed -e s%MOZYPATH%$(INSTALL_PREFIX)/$(TOOLROOT)/mozy/bin% \
-  < $(dst_lib)/mozy/bin/xeditor.sh > $@/xeditor; chmod 755 $@/xeditor; \
-	fi
-
-$(dst_lib)/mozy/startup::
+$(destn)/startup::
 	@$(BASE)/util/mkdirpth $@
 	startup=`packages/util/mozy_files startup`; \
 	for a in $$startup; do \
 	    $(INSTALL_LIB) startup/$$a $@; \
 	done
 
-$(dst_lib)/mozy/help::
+$(destn)/help::
 	if [ -f help/Makefile ]; then \
 	    $(MAKE) -C help ; \
 	fi
@@ -309,11 +302,8 @@ uninstall_test::
 	    fi; \
 	fi
 
-uninstall_clean::
-	-@for aa in $(TARGETS); do \
-	    rm -f $(dst_bin)/$$aa$(EXESUFFIX); \
-	done
-	-@rm -rf $(dst_lib)/mozy
+uninstall_clean:: clean_links
+	-@rm -rf $(destn)
 
 package::
 	$(MAKE)

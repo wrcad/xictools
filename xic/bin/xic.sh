@@ -63,5 +63,18 @@ if [ $grpref != GTK2 -a $grpref != QT6 -a $grpref != QT5 ]; then
 fi
 
 export LD_LIBRARY_PATH
-XICPATH/$grpref/xic $*
+mypath=$(dirname $(readlink -f "$0"))
+# mypath is now the full path to the directory containing this file.
+# If the directory is named "bin" and it has the grpref subdirectory,
+# execute the binary from grpref.
+if [ $(basename $mypath) == bin ]; then
+    if [ -d $mypath/$grpref ]; then
+        $mypath/$grpref/xic $*
+        exit $?
+    fi    
+fi 
+# Otherwise, as in installed area, go to ../xic/bin.
+mypath=$(dirname $mypath)/xic/bin
+$mypath/$grpref/xic $*
+exit $?
 

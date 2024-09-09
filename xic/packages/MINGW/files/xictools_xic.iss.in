@@ -25,9 +25,10 @@ UninstallDisplayIcon={app}\TOOLROOT\xic.current\bin\xic.exe
 
 Source: "..\root\usr\local\TOOLROOT\xic.current\bin\preinstall.bat"; DestDir: "{app}\TOOLROOT\xic.current\bin";
 Source: "..\root\usr\local\TOOLROOT\xic.current\bin\postinstall.bat"; DestDir: "{app}\TOOLROOT\xic.current\bin"; BeforeInstall: DoBeforeInstall
-Source: "..\root\usr\local\TOOLROOT\xic.current\bin\xic.exe"; DestDir: "{app}\TOOLROOT\xic.current\bin";
-Source: "..\root\usr\local\TOOLROOT\xic.current\bin\xic.dll"; DestDir: "{app}\TOOLROOT\xic.current\bin";
-Source: "..\root\usr\local\TOOLROOT\xic.current\bin\xic.bat"; DestDir: "{app}\TOOLROOT\xic.current\bin";
+Source: "..\root\usr\local\TOOLROOT\xic.current\bin\GTK2\xic.exe"; DestDir: "{app}\TOOLROOT\xic.current\bin\GTK2";
+Source: "..\root\usr\local\TOOLROOT\xic.current\bin\GTK2\xic.dll"; DestDir: "{app}\TOOLROOT\xic.current\bin\GTK2";
+Source: "..\root\usr\local\TOOLROOT\xic.current\bin\QT6\xic.exe"; DestDir: "{app}\TOOLROOT\xic.current\bin\QT6";
+Source: "..\root\usr\local\TOOLROOT\xic.current\bin\QT6\xic.dll"; DestDir: "{app}\TOOLROOT\xic.current\bin\QT6";
 Source: "..\root\usr\local\TOOLROOT\xic.current\bin\wrdecode.exe"; DestDir: "{app}\TOOLROOT\xic.current\bin";
 Source: "..\root\usr\local\TOOLROOT\xic.current\bin\wrencode.exe"; DestDir: "{app}\TOOLROOT\xic.current\bin";
 Source: "..\root\usr\local\TOOLROOT\xic.current\bin\wrsetpass.exe"; DestDir: "{app}\TOOLROOT\xic.current\bin"; AfterInstall: DoAfterInstall

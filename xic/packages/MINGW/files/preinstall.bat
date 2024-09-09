@@ -21,6 +21,7 @@ if exist bin\%prog%.exe\ ( rmdir bin\%prog%.exe
 if exist bin\%prog%.dll\ ( rmdir bin\%prog%.dll
 ) else ( if exist bin\%prog%.dll del bin\%prog%.dll )
 if exist bin\%prog%.bat ( del bin\%prog%.bat )
+if exist bin\%prog% ( del bin\%prog% )
 
 @rem   Xic-specific exported utilities.
 if exist bin\wrdecode.exe\ ( rmdir bin\wrdecode.exe

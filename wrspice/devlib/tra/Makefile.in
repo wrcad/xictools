@@ -18,6 +18,7 @@ FILTER = @FILTER@
 PIC_OPT = @PIC_OPT@
 SOEXT = @SOEXT@
 DEVWINDLL = @DEVWINDLL@
+MKMOD = @MKMOD@
 
 MODULE = tra
 TARGET = $(MODULE).$(SOEXT)
@@ -30,7 +31,9 @@ INCLUDE = -I../include
 DEFS = -D__WRMODULE__=$(MODULE) -D__WRVERSION__=$(DEVLIB_VERSION)
 
 $(TARGET): $(COBJS)
-	$(LINKCC) -o $(TARGET) $(LSHFLAG) $(COBJS) $(DEVWINDLL)
+	@if [ $(MKMOD) == 1 ]; then \
+	    $(LINKCC) -o $(TARGET) $(LSHFLAG) $(COBJS) $(DEVWINDLL); \
+	fi    
 
 .cc.o:
 	$(CXX) $(CFLAGS) $(PIC_OPT) $(INCLUDE) $(DEFS) -c $*.cc

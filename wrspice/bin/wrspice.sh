@@ -40,5 +40,18 @@ if [ $grpref != GTK2 -a $grpref != QT6 -a $grpref != QT5 ]; then
 fi
 
 export LD_LIBRARY_PATH
-WRSPATH/$grpref/wrspice $*
+mypath=$(dirname $(readlink -f "$0"))
+# mypath is now the full path to the directory containing this file.
+# If the directory is named "bin" and it has the grpref subdirectory,
+# execute the binary from grpref.
+if [ $(basename $mypath) == bin ]; then
+    if [ -d $mypath/$grpref ]; then
+        $mypath/$grpref/wrspice $*
+        exit $?
+    fi    
+fi 
+# Otherwise, as in installed area, go to ../wrspice/bin.
+mypath=$(dirname $mypath)/wrspice/bin
+$mypath/$grpref/wrspice $*
+exit $?
 

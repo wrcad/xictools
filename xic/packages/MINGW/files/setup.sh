@@ -27,8 +27,8 @@ if [ ! -f $utod ]; then
     cd $cwd
 fi
 
-chmod 755 $top/$toolroot/$appdir/bin/xic.bat
-$utod $top/$toolroot/$appdir/bin/xic.bat
+#chmod 755 $top/$toolroot/$appdir/bin/xic.bat
+#$utod $top/$toolroot/$appdir/bin/xic.bat
 cp -f files/postinstall.bat $top/$toolroot/$appdir/bin
 chmod 755 $top/$toolroot/$appdir/bin/postinstall.bat
 $utod $top/$toolroot/$appdir/bin/postinstall.bat

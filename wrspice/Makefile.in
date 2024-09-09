@@ -158,7 +158,7 @@ ifeq ($(OSNAME), MINGW)
 
 $(BINDIR)/wrspice: bin/main.cc $(BINDIR)/wrspice.dll
 	$(CC) -o $(BINDIR)/wrspice bin/main.cc src/$(GRPREF)wrs/resource.o \
-  -Lbin -lwrspice
+  -L$(BINDIR) -lwrspice
 
 $(BINDIR)/wrspice.dll: bin/wrspice.o $(LOCAL_LIBS) $(MALLOC)
 	@echo $@: dynamic link
@@ -410,67 +410,64 @@ install_links::
 	-@if [ -n "$(EXESUFFIX)" ]; then \
 	    $(BASE)/util/make_link $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice \
   $(destn); \
-	    $(BASE)/util/make_link $(toolbin)/mmjco$(EXESUFFIX) \
-  $(destn)/bin/mmjco$(EXESUFFIX); \
-	    $(BASE)/util/make_link $(toolbin)/multidec$(EXESUFFIX) \
-  $(destn)/bin/multidec$(EXESUFFIX); \
-	    $(BASE)/util/make_link $(toolbin)/printtoraw$(EXESUFFIX) \
-  $(destn)/bin/printtoraw$(EXESUFFIX); \
-	    $(BASE)/util/make_link $(toolbin)/proc2mod$(EXESUFFIX) \
-  $(destn)/bin/proc2mod$(EXESUFFIX); \
 	    $(BASE)/util/make_link $(toolbin)/wrspiced$(EXESUFFIX) \
   $(destn)/bin/wrspiced$(EXESUFFIX); \
-	    $(BASE)/util/make_link $(toolbin)/wrspice.dll \
-  $(destn)/bin/wrspice.dll; \
-	    sed -e s%WRSPATH%$(INSTALL_PREFIX)/$(TOOLROOT)/wrspice/bin/GTK2% \
-  < $(destn)/bin/wrspice.bat > $(toolbin)/wrspice.bat; \
+	    $(BASE)/util/make_link $(toolbin)/csvtoraw$(EXESUFFIX) \
+  $(destn)/bin/csvtoraw$(EXESUFFIX); \
+	    $(BASE)/util/make_link $(toolbin)/multidec$(EXESUFFIX) \
+  $(destn)/bin/multidec$(EXESUFFIX); \
+	    $(BASE)/util/make_link $(toolbin)/proc2mod$(EXESUFFIX) \
+  $(destn)/bin/proc2mod$(EXESUFFIX); \
+	    $(BASE)/util/make_link $(toolbin)/printtoraw$(EXESUFFIX) \
+  $(destn)/bin/printtoraw$(EXESUFFIX); \
+	    $(BASE)/util/make_link $(toolbin)/mmjco$(EXESUFFIX) \
+  $(destn)/bin/mmjco$(EXESUFFIX); \
+	    cp -f $(destn)/bin/wrspice.bat $(toolbin); \
 	else \
 	    ln -s $(destn) $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice; \
-	    ln -s $(destn)/bin/mmjco $(toolbin)/mmjco; \
-	    ln -s $(destn)/bin/multidec $(toolbin)/multidec; \
-	    ln -s $(destn)/bin/printtoraw $(toolbin)/printtoraw; \
-	    ln -s $(destn)/bin/proc2mod $(toolbin)/proc2mod; \
 	    ln -s $(destn)/bin/wrspiced $(toolbin)/wrspiced; \
-	    sed -e s%WRSPATH%$(INSTALL_PREFIX)/$(TOOLROOT)/wrspice/bin% \
-  < $(destn)/bin/wrspice.sh > $(toolbin)/wrspice; \
-	    chmod 755 $(toolbin)/wrspice; \
+	    ln -s $(destn)/bin/csvtoraw $(toolbin)/csvtoraw; \
+	    ln -s $(destn)/bin/multidec $(toolbin)/multidec; \
+	    ln -s $(destn)/bin/proc2mod $(toolbin)/proc2mod; \
+	    ln -s $(destn)/bin/printtoraw $(toolbin)/printtoraw; \
+	    ln -s $(destn)/bin/mmjco $(toolbin)/mmjco; \
 	fi
+	cp -f $(destn)/bin/wrspice.sh $(toolbin)/wrspice
+	chmod 755 $(toolbin)/wrspice
 
 # Under MSYS2, rm deletes Windows links and junctions.
 
 clean_links::
 	-@rm -f $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice
-	-@rm -f $(toolbin)/mmjco$(EXESUFFIX)
-	-@rm -f $(toolbin)/multidec$(EXESUFFIX)
-	-@rm -f $(toolbin)s/printtoraw$(EXESUFFIX)
-	-@rm -f $(toolbin)/proc2mod$(EXESUFFIX)
 	-@rm -f $(toolbin)/wrspiced$(EXESUFFIX)
+	-@rm -f $(toolbin)/csvtoraw$(EXESUFFIX)
+	-@rm -f $(toolbin)/multidec$(EXESUFFIX)
+	-@rm -f $(toolbin)/proc2mod$(EXESUFFIX)
+	-@rm -f $(toolbin)/printtoraw$(EXESUFFIX)
+	-@rm -f $(toolbin)/mmjco$(EXESUFFIX)
+	-@rm -f $(toolbin)/wrspice
 	-@if [ -n "$(EXESUFFIX)" ]; then \
-            rm -f $(toolbin)/wrspice.bat; \
-            rm -f $(toolbin)/wrspice.dll; \
-	else \
-            rm -f $(toolbin)/wrspice; \
-	fi
+	    rm -f $(toolbin)/wrspice.bat; \
+	fi    
 
 install_clean::
 	-@rm -rf $(destn)
 
 $(destn)/bin::
 	@$(BASE)/util/mkdirpth $@
-	@for aa in wrspiced multidec proc2mod printtoraw; do \
+	@for aa in wrspiced csvtoraw multidec proc2mod printtoraw; do \
 	    $(INSTALL_BIN) bin/$$aa$(EXESUFFIX) $@; \
 	done
-	@$(INSTALL_BIN) mmjco/mmjco$(EXESUFFIX) $@;
+	@$(INSTALL_BIN) mmjco/mmjco$(EXESUFFIX) $@
+	@$(INSTALL_SCRIPT) bin/wrspice.sh $@
+	-@if [ -n "$(EXESUFFIX)" ]; then \
+	    cp -f $(BASE)/util/program.bat $@/wrspice.bat; \
+	fi
 	@if [ -d bin/GTK2 ]; then \
 	    mkdir $@/GTK2; \
 	    $(INSTALL_BIN) bin/GTK2/wrspice$(EXESUFFIX) $@/GTK2; \
 	    if [ -n "$(EXESUFFIX)" ]; then \
 	        $(INSTALL_BIN) bin/GTK2/wrspice.dll $@/GTK2; \
-	        cp $(BASE)/util/program.bat wrspice.bat; \
-	        $(INSTALL_SCRIPT) wrspice.bat $@; \
-	        rm -f wrspice.bat; \
-	    else \
-	        $(INSTALL_SCRIPT) bin/wrspice.sh $@; \
 	    fi; \
 	fi
 	@if [ -d bin/QT6 ]; then \
@@ -478,22 +475,12 @@ $(destn)/bin::
 	    $(INSTALL_BIN) bin/QT6/wrspice$(EXESUFFIX) $@/QT6; \
 	    if [ -n "$(EXESUFFIX)" ]; then \
 	        $(INSTALL_BIN) bin/QT6/wrspice.dll $@/QT6; \
-	        cp $(BASE)/util/program.bat wrspice.bat; \
-	        $(INSTALL_SCRIPT) wrspice.bat $@; \
-	        rm -f wrspice.bat; \
-	    else \
-	        $(INSTALL_SCRIPT) bin/wrspice.sh $@; \
 	    fi; \
 	elif [ -d bin/QT5 ]; then ] \
 	    mkdir $@/QT5; \
 	    $(INSTALL_BIN) bin/QT5/wrspice$(EXESUFFIX) $@/QT5; \
 	    if [ -n "$(EXESUFFIX)" ]; then \
 	        $(INSTALL_BIN) bin/QT5/wrspice.dll $@/QT5; \
-	        cp $(BASE)/util/program.bat wrspice.bat; \
-	        $(INSTALL_SCRIPT) wrspice.bat $@; \
-	        rm -f wrspice.bat; \
-	    else \
-	        $(INSTALL_SCRIPT) bin/wrspice.sh $@; \
 	    fi; \
 	fi
 
@@ -610,22 +597,33 @@ $(destn)/cadence-oasis::
 	    cp -pfr cadence-oasis $(destn); \
 	fi
 
+uninstall: uninstall_test clean_links
+
+uninstall_test::
+	@if [ $(INSTALL_PREFIX) = $(prefix) ]; then \
+	    if [ $(itopok) != yes ]; then \
+	echo "No!  Use operating system or wr_uninstall script to uninstall!"; \
+	        exit 1; \
+	    fi; \
+	fi
+
 devkit_examples:
 	(cd devlib/adms/examples; \
 	    for a in */Makefile; do \
 	        $(MAKE) -C `dirname $$a` \
 	            ADMST=../../admst \
 	            ADMSXML=../../../../../adms/adms_wr/admsXml/admsXml \
-	            DLL_LOC=../../../../GTK2/bin \
-	            WRSPICE=../../../../GTK2/bin/wrspice realclean module; \
+	            DLL_LOC=../../../../bin/GTK2 \
+	            WRSPICE=../../../../bin/GTK2/wrspice realclean module; \
 	    done \
         )
 
 package::
 	$(MAKE) all
-	if [ -z "$(quick_pkgs)" ]; then \
-	    $(MAKE) devkit_examples; \
-	fi
+	$(MAKE) devkit_examples
+	$(MAKE) quick_pkg
+
+quick_pkg::
 	-rm -rf packages/root
 	mkdir packages/root
 	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install_wrspice_pkg

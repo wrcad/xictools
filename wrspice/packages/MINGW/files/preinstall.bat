@@ -21,18 +21,21 @@ if exist bin\%prog%.exe\ ( rmdir bin\%prog%.exe
 if exist bin\%prog%.dll\ ( rmdir bin\%prog%.dll
 ) else ( if exist bin\%prog%.dll del bin\%prog%.dll )
 if exist bin\%prog%.bat ( del bin\%prog%.bat )
+if exist bin\%prog% ( del bin\%prog% )
 
 @rem   WRspice-specific exported utilities.
-if exist bin\mmjco.exe\ ( rmdir bin\mmjco.exe
-) else ( if exist bin\mmjco.exe del bin\mmjco.exe )
+if exist bin\wrspiced.exe\ ( rmdir bin\wrspiced.exe
+) else ( if exist bin\wrspiced.exe del bin\wrspiced.exe )
+if exist bin\csvtoraw.exe\ ( rmdir bin\csvtoraw.exe
+) else ( if exist bin\csvtoraw.exe del bin\csvtoraw.exe )
 if exist bin\multidec.exe\ ( rmdir bin\multidec.exe
 ) else ( if exist bin\multidec.exe del bin\multidec.exe )
 if exist bin\proc2mod.exe\ ( rmdir bin\proc2mod.exe
 ) else ( if exist bin\proc2mod.exe del bin\proc2mod.exe )
 if exist bin\printtoraw.exe\ ( rmdir bin\printtoraw.exe
 ) else ( if exist bin\printtoraw.exe del bin\printtoraw.exe )
-if exist bin\wrspiced.exe\ ( rmdir bin\wrspiced.exe
-) else ( if exist bin\wrspiced.exe del bin\wrspiced.exe )
+if exist bin\mmjco.exe\ ( rmdir bin\mmjco.exe
+) else ( if exist bin\mmjco.exe del bin\mmjco.exe )
 
 @rem   Copy to backup for Safe Install.
 
