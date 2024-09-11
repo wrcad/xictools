@@ -411,10 +411,10 @@ cKbMacro::on_null_ptr()
 }
 
 
+#ifndef WITH_GRFXTK
+
 // Stubs for functions defined in graphical toolkit, include when
 // not building with toolkit.
-#if (!defined(WITH_QT5) && !defined(WITH_QT6) && !defined(WITH_GTK2) &&\
-    !defined(GTK3))
 sKeyMap *cKbMacro::getKeyToMap() { return (0); }
 bool cKbMacro::isModifier(unsigned int) { return (false); }
 bool cKbMacro::isControl(unsigned int) { return (false); }
@@ -426,6 +426,7 @@ bool cKbMacro::isModifierDown() { return (false); }
 bool cKbMacro::notMappable(unsigned int, unsigned int) { return (false); }
 bool cKbMacro::execKey(sKeyEvent*) { return (false); }
 bool cKbMacro::execBtn(sBtnEvent*) { return (false); }
+
 #endif
 
 

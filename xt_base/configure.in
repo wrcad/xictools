@@ -335,6 +335,7 @@ fi
 
 dnl --enable-quartz
 dnl use OS X GTK-2 Quartz backend
+dnl NOT CURRENTLY SUPPORTED
 with_quartz="no"
 AC_ARG_ENABLE(quartz, [  ]--enable-quartz   use Quartz backend for OS X,
 if test $enable_quartz = yes; then
@@ -344,8 +345,10 @@ fi
 
 if test -z $GRPKG; then
     nomozy=yes
+else
+    echo "#define WITH_$GRPKG 1">> confdefs.h
+    echo "#define WITH_GRFXTK 1">> confdefs.h
 fi
-echo "#define WITH_$GRPKG 1">> confdefs.h
 if test $nomozy = no; then
     echo '#define HAVE_MOZY 1'>> confdefs.h
     USEMOZY=yes
@@ -1474,6 +1477,11 @@ if test -f config.h.in; then
     AC_CONFIG_HEADERS([config.h])
 elif test -f include/config.h.in; then
     AC_CONFIG_HEADERS([include/config.h])
+fi
+if test -f grconfig.h.in; then
+    AC_CONFIG_HEADERS([grconfig.h])
+elif test -f include/grconfig.h.in; then
+    AC_CONFIG_HEADERS([include/grconfig.h])
 fi
 
 makefiles="Makefile"

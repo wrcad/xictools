@@ -207,13 +207,8 @@ public:
 
 private:
     sKeyMap *km_key_list;
-#if defined(WITH_GTK2) || defined(WITH_GTK3)
-    void *km_last_btn;
-    void *km_last_menu;
-#else
     const void *km_last_btn;
     const void *km_last_menu;
-#endif
     sMqueue *km_mqueue;
     sMqueue *km_mex;
     sContext *km_context;

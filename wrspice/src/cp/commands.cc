@@ -754,8 +754,7 @@ CommandTab::arg_display(wordlist*, sCommand*)
 }
 
 
-#if (!defined(WITH_QT5) && !defined(WITH_QT6) && \
-    !defined(WITH_GTK2) && !defined(WITH_GTK3))
+#ifndef WITH_GRFXTK
 
 // Stubs for commands provided by graphics code for linking without
 // a graphics toolkit.

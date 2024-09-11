@@ -104,15 +104,16 @@ cDRC::cDRC()
 };
 
 
+#ifndef WITH_GRFXTK
+
 // Stubs for functions defined in graphical toolkit, include when
 // not building with toolkit.
-#if (!defined(WITH_QT5) && !defined(WITH_QT6) && !defined(WITH_GTK2) &&\
-    !defined(GTK3))
 void cDRC::PopUpRules(      GRobject, ShowMode) { }
 void cDRC::PopUpDrcLimits(  GRobject, ShowMode) { }
 void cDRC::PopUpDrcRun(     GRobject, ShowMode) { }
 void cDRC::PopUpRuleEdit(   GRobject, ShowMode, DRCtype, const char*,
     bool (*)(const char*, void*), void*, const DRCtestDesc*) { }
+
 #endif
 
 

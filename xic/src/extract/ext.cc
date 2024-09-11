@@ -132,10 +132,10 @@ cExt::cExt()
     loadScriptFuncs();
 }
 
+#ifndef WITH_GRFXTK
+
 // Stubs for functions defined in graphical toolkit, include when
 // not building with toolkit.
-#if (!defined(WITH_QT5) && !defined(WITH_QT6) && !defined(WITH_GTK2) &&\
-    !defined(GTK3))
 void cExt::PopUpExtCmd(     GRobject, ShowMode, sExtCmd*,
     bool (*)(const char*, void*, bool, const char*, int, int), void*, int) { }
 void cExt::PopUpDevices(    GRobject, ShowMode) { }
@@ -143,6 +143,7 @@ void cExt::PopUpSelections( GRobject, ShowMode) { }
 void cExt::PopUpExtSetup(   GRobject, ShowMode) { }
 void cExt::PopUpPhysTermEdit(GRobject, ShowMode, TermEditInfo*,
     void(*)(TermEditInfo*, CDsterm*), CDsterm*, int, int) { }
+
 #endif
 
 

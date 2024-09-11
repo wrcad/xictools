@@ -123,10 +123,10 @@ cEdit::cEdit()
 }
 
 
+#ifndef WITH_GRFXTK
+
 // Stubs for functions defined in graphical toolkit, include when
 // not building with toolkit.
-#if (!defined(WITH_QT5) && !defined(WITH_QT6) && !defined(WITH_GTK2) &&\
-    !defined(GTK3))
 void cEdit::PopUpEditSetup( GRobject, ShowMode) { }
 void cEdit::PopUpFlatten(   GRobject, ShowMode,
     bool (*)(const char*, bool, const char*, void*), void*, int,
@@ -157,6 +157,7 @@ void cEdit::PropertyInfoPurge(CDo*, CDo*) { }
 void cEdit::PopUpStdVia(    GRobject, ShowMode, CDc*) { }
 void cEdit::PopUpTransform( GRobject, ShowMode,
     bool (*)(const char*, bool, const char*, void*), void*) { }
+
 #endif
 
 

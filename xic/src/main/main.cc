@@ -184,10 +184,10 @@ cMain::on_null_ptr()
 }
 
 
+#ifndef WITH_GRFXTK
+
 // Stubs for functions defined in graphical toolkit, include when
 // not building with toolkit.
-#if (!defined(WITH_QT5) && !defined(WITH_QT6) && !defined(WITH_GTK2) &&\
-    !defined(GTK3))
 CursorType cMain::GetCursor() { return (CursorDefault); }
 void cMain::UpdateCursor(WindowDesc*, CursorType, bool) { }
 void cMain::PopUpAttributes(GRobject, ShowMode) { }
@@ -231,6 +231,7 @@ void cMain::PopUpTree(      GRobject, ShowMode, const char*, TreeUpdMode
 void *cMain::SetupLayers(void*, GRdraw*, void*) { return (0); }
 bool cMain::DrawCallback(void*, GRdraw*, int, int, int, int, int, int)
     { return (false); }
+
 #endif
 
 

@@ -95,10 +95,7 @@ Copyright (c) Whiteley Research Inc 1996
 #undef HAVE_VSNPRINTF
 #undef HAVE_VASPRINTF
 
-#undef WITH_GTK2
-#undef WITH_GTK3
-#undef WITH_QT5
-#undef WITH_QT6
+#undef WITH_GRFXTK
 
 #undef HAVE_OA
 #undef HAVE_PYTHON

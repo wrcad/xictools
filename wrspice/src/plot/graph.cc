@@ -46,6 +46,7 @@ Authors: 1988 Jeffrey M. Hsu
 ****************************************************************************/
 
 #include "config.h"
+#include "grconfig.h"
 #include "graph.h"
 #include "cshell.h"
 #include "kwords_fte.h"
@@ -5018,9 +5019,7 @@ cGraph::start_drag_zoom(void *arg)
 // Below are stubs needed to link without a graphics package.  The
 // functions below are gemerally implemented in graphics code.
 
-#if (!defined(WITH_QT5) && !defined(WITH_QT6) && \
-    !defined(WITH_GTK2) && !defined(WITH_GTK3))
-
+#ifndef WITH_GRFXTK
 
 // Return a new graphics context struct.
 //

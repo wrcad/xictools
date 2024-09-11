@@ -1,0 +1,17 @@
+/***************************************************************************
+XICtools graphics configuration header template
+Copyright (c) Whiteley Research Inc 2024
+****************************************************************************
+* $Id:$
+****************************************************************************/
+
+// Graphics toolkit, at most one is defined per build.  This removes
+// toolkit dependence from the main configure header config.h.  This
+// header should be included in non-core graphical files that have
+// toolkit dependence.
+
+#undef WITH_GTK2
+#undef WITH_GTK3
+#undef WITH_QT5
+#undef WITH_QT6
+

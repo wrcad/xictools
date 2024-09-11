@@ -51,6 +51,7 @@ Authors: 1985 Thomas L. Quarles
 
 
 #include "config.h"
+#include "grconfig.h"
 #ifdef HAVE_SECURE
 #include "secure.h"
 #endif
@@ -200,8 +201,7 @@ Authors: 1985 Thomas L. Quarles
 #define SPICE_NOTICE ""
 #endif
 
-#if (!defined(WITH_QT5) && !defined(WITH_QT6) && \
-    !defined(WITH_GTK2) && !defined(WITH_GTK3))
+#ifndef WITH_GRFXTK
 // No graphics, provide a phony toolbar.
 namespace { sNullToolbar _dummy_tb_; }
 sToolbar *ToolBar() { return (&_dummy_tb_); }
@@ -211,7 +211,6 @@ GRpkg::DevDepInit(unsigned int)
 {
 //    GRpkg::self()->RegisterDevice(new NULLdev);
 }
-
 #endif
 
 // WRspice creates and listens on a named pipe.  Text written to the

@@ -95,12 +95,13 @@ cFH::on_null_ptr()
 }
 
 
+#ifndef WITH_GRFXTK
+
 // Stubs for functions defined in graphical toolkit, include when
 // not building with toolkit.
-#if (!defined(WITH_QT5) && !defined(WITH_QT6) && !defined(WITH_GTK2) &&\
-    !defined(GTK3))
 void cFH::PopUpExtIf(GRobject, ShowMode) { }
 void cFH::updateString() { }
+
 #endif
 
 

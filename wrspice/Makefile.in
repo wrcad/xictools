@@ -476,7 +476,7 @@ $(destn)/bin::
 	    if [ -n "$(EXESUFFIX)" ]; then \
 	        $(INSTALL_BIN) bin/QT6/wrspice.dll $@/QT6; \
 	    fi; \
-	elif [ -d bin/QT5 ]; then ] \
+	elif [ -d bin/QT5 ]; then \
 	    mkdir $@/QT5; \
 	    $(INSTALL_BIN) bin/QT5/wrspice$(EXESUFFIX) $@/QT5; \
 	    if [ -n "$(EXESUFFIX)" ]; then \

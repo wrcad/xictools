@@ -4,6 +4,7 @@ config.log
 config.status
 configure
 include/config.h
+include/grconfig.h
 info.sh
 packages/pkgfiles
 packages/files/fetch_form.html

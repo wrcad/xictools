@@ -58,7 +58,7 @@ distclean:
 	done
 	-@rm -f config.cache config.log config.status configure Makefile
 	-@rm -rf lib autom4te.cache
-	-@rm -f include/config.h
+	-@rm -f include/config.h include/grconfig.h
 
 install uninstall package:
 

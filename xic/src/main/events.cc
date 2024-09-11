@@ -38,7 +38,7 @@
  $Id:$
  *========================================================================*/
 
-#include "config.h"
+#include "grconfig.h"
 #include "main.h"
 #include "editif.h"
 #include "drcif.h"

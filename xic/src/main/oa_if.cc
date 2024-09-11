@@ -262,14 +262,15 @@ cOAif::on_null_ptr()
 }
 
 
+#ifndef WITH_GRFXTK
+
 // Stubs for functions defined in graphical toolkit, include when
 // not building with toolkit.
-#if (!defined(WITH_QT5) && !defined(WITH_QT6) && !defined(WITH_GTK2) &&\
-    !defined(GTK3))
 void cOAif::PopUpOAdefs(        GRobject, ShowMode, int, int) { }
 void cOAif::PopUpOAlibraries(   GRobject, ShowMode) { }
 void cOAif::GetSelection(const char**, const char**) { }
 void cOAif::PopUpOAtech(        GRobject, ShowMode, int, int) { }
+
 #endif
 
 

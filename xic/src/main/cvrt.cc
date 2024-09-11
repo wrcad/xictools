@@ -94,10 +94,10 @@ cConvert::on_null_ptr()
     exit(1);
 }
 
+#ifndef WITH_GRFXTK
+
 // Stubs for functions defined in graphical toolkit, include when
 // not building with toolkit.
-#if (!defined(WITH_QT5) && !defined(WITH_QT6) && !defined(WITH_GTK2) &&\
-    !defined(GTK3))
 void cConvert::PopUpAssemble(   GRobject, ShowMode) { }
 void cConvert::PopUpAuxTab(     GRobject, ShowMode) { }
 void cConvert::PopUpGeometries( GRobject, ShowMode) { }
@@ -124,6 +124,7 @@ void cConvert::PopUpLibraries(  GRobject caller, ShowMode mode) { }
 bool cConvert::PopUpMergeControl(ShowMode, mitem_t*) { return (false); }
 void cConvert::PopUpOasAdv(     GRobject, ShowMode, int, int) { }
 void cConvert::PopUpPropertyFilter(GRobject, ShowMode) { }
+
 #endif
 
 
