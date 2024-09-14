@@ -1,0 +1,23 @@
+#! /bin/sh
+
+prefix=/usr/local
+
+libdir=$prefix/xictools/mozy
+
+# Create xictools/bin if necessary.
+tbin=$prefix/xictools/bin
+if [ ! -d $tbin ]; then
+    mkdir $tbin
+fi
+
+# Copy in the xic wrapper scripts.
+cp -f $libdir/bin/mozy.sh $tbin/mozy
+chmod 755 $tbin/mozy
+cp -f $libdir/bin/xeditor.sh $tbin/xeditor
+chmod 755 $tbin/xeditor
+
+# Create the links in xictools/bin.
+ln -s $libdir/bin/hlpsrv $tbin/hlpsrv
+ln -s $libdir/bin/hlp2html $tbin/hlp2html
+ln -s $libdir/bin/httpget $tbin/httpget
+

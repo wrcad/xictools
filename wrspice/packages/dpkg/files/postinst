@@ -14,10 +14,15 @@ if [ ! -d $tbin ]; then
     mkdir $tbin
 fi
 
+# Copy in the wrspice wrapper script.
+cp -f $libdir/bin/wrspice.sh $tbin/wrspice
+chmod 755 $tbin/wrspice
+
 # Create the links in xictools/bin.
+ln -s $twrs/bin/csvtoraw $tbin/csvtoraw
 ln -s $twrs/bin/multidec $tbin/multidec
 ln -s $twrs/bin/proc2mod $tbin/proc2mod
 ln -s $twrs/bin/printtoraw $tbin/printtoraw
-ln -s $twrs/bin/wrspice $tbin/wrspice
+ln -s $twrs/bin/mmjco $tbin/mmjco
 ln -s $twrs/bin/wrspiced $tbin/wrspiced
 

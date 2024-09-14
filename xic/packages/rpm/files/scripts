@@ -48,7 +48,7 @@ tbin=$prefix/xictools/bin
 if [ ! -d $tbin ]; then
     mkdir $tbin
 fi
-sed -e s%/usr/local%$prefix% < $libdir/bin/xic.sh > $tbin/xic
+cp -f $libdir/bin/xic.sh $tbin/xic
 chmod 755 $tbin/xic
 ln -s $txic/bin/wrencode $tbin/wrencode
 ln -s $txic/bin/wrdecode $tbin/wrdecode
@@ -68,12 +68,13 @@ if [ $1 == 0 ]; then
     # Make sure that this is entirely gone.
     rm -rf $prefix/xictools/xic.current
 
+    # Remove wrapper and links.
+
     txic=$prefix/xictools/xic
     if [ -h $txic ]; then
         rm -f $txic
     fi
 
-    # Remove wrapper and links.
     tbin=$prefix/xictools/bin
     rm -f $tbin/xic
     if [ -h $tbin/wrencode ]; then

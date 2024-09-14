@@ -5,8 +5,7 @@
 bin="\
 wrdecode \
 wrencode \
-wrsetpass \
-xic"
+wrsetpass"
 
 examples="\
 amd2901.gds.gz \

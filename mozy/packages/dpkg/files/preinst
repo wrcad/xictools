@@ -1,0 +1,9 @@
+#! /bin/sh
+
+prefix=/usr/local
+
+# Remove wrapper scripts and links in xictools/bin.
+# These should already be gone.
+tbin=$prefix/xictools/bin
+rm -f $tbin/mozy $tbin/xeditor $tbin/hlpsrv $tbin/hlp2html $tbin/httpget
+

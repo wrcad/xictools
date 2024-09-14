@@ -30,13 +30,22 @@ echo
 
 echo '%files'
 echo
+echo "%dir /usr/local/xictools/mozy"
 bin=`$files bin`
 for a in $bin; do
-    echo "%attr(0755, root, root) /usr/local/xictools/bin/$a"
+    echo "%attr(0755, root, root) /usr/local/xictools/mozy/bin/$a"
 done
+echo "%attr(0644, root, root) /usr/local/xictools/mozy/bin/mozy.sh"
+echo "%attr(0644, root, root) /usr/local/xictools/mozy/bin/xeditor.sh"
+
+echo "%dir /usr/local/xictools/mozy/bin/GTK2"
+echo "%attr(0755, root, root) /usr/local/xictools/mozy/bin/GTK2/mozy"
+echo "%attr(0755, root, root) /usr/local/xictools/mozy/bin/GTK2/xeditor"
+echo "%dir /usr/local/xictools/mozy/bin/QT5"
+echo "%attr(0755, root, root) /usr/local/xictools/mozy/bin/QT5/mozy"
+echo "%attr(0755, root, root) /usr/local/xictools/mozy/bin/QT5/xeditor"
 
 echo
-echo "%dir /usr/local/xictools/mozy"
 echo "%dir /usr/local/xictools/mozy/help"
 help=`$files help`
 for a in $help; do
