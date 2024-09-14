@@ -1139,21 +1139,33 @@
         <admst:value-of select="returned('x')/value"/>
         <admst:variable name="x" select="%s"/>
       </admst:apply-templates>
-      <admst:apply-templates select="arg2" match="af:print:expression">
-        <admst:value-of select="returned('x')/value"/>
-        <admst:variable name="y" select="%s"/>
-      </admst:apply-templates>
-      <admst:apply-templates select="arg3" match="af:print:expression">
-        <admst:value-of select="returned('x')/value"/>
-        <admst:variable name="z" select="%s"/>
-      </admst:apply-templates>
       <admst:if test="[name='conditional']">
+        <admst:apply-templates select="arg2" match="af:print:expression">
+          <admst:value-of select="returned('x')/value"/>
+          <admst:variable name="y" select="%s"/>
+          <admst:for-each select="$globalanalogfunction/variable[input='yes']">
+            <admst:value-of select="name"/>
+            <admst:value-of select="returned('dx.%s')/value"/>
+            <admst:value-of select="name"/>
+            <admst:variable name="dy_%s" select="%s"/>
+          </admst:for-each>
+        </admst:apply-templates>
+        <admst:apply-templates select="arg3" match="af:print:expression">
+          <admst:value-of select="returned('x')/value"/>
+          <admst:variable name="z" select="%s"/>
+          <admst:for-each select="$globalanalogfunction/variable[input='yes']">
+            <admst:value-of select="name"/>
+            <admst:value-of select="returned('dx.%s')/value"/>
+            <admst:value-of select="name"/>
+            <admst:variable name="dz_%s" select="%s"/>
+          </admst:for-each>
+        </admst:apply-templates>
         <admst:return name="x" value="($x?$y:$z)"/>
         <admst:for-each select="$globalanalogfunction/variable[input='yes']">
           <admst:value-of select="name"/>
           <admst:value-of select="name"/>
           <admst:value-of select="name"/>
-          <admst:return name="dx.%s" value="($x?$dy_%s:$dz_%s)"/>
+          <admst:return name="dx.%s" value="($x?$(dy_%s):$(dz_%s))"/>
         </admst:for-each>
       </admst:if>
     </admst:when>
