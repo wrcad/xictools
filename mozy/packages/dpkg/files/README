@@ -1,0 +1,26 @@
+
+The scripts are run differently in dpkg than rpm, here's the order and
+what they do here.
+
+prerm
+    (run if old install found)
+    Remove xic link, xic wrapper script and links in xictools/bin.
+    Move xic.current to xic-version for Safe Install.
+
+preinst
+    Remove xic link, xic wrapper script and links in xictools/bin.
+    These should already be gone.
+
+(unpack new files)
+
+postrm
+    (run if old install found)
+    Nothing to do.
+
+postinst
+    Link technology file xic_tech.scmos to xic_tech.
+    Link xic.current to xic.
+    Create xictools/bin if necessary.
+    Copy in through sed the xic wrapper script.
+    Create the links in xictools/bin.
+

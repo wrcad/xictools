@@ -1,0 +1,6 @@
+#! /bin/sh
+
+# Remove wrapper scripts and links in xictools/bin.
+tbin=$prefix/xictools/bin
+rm -f $tbin/mozy $tbin/xeditor $tbin/hlpsrv $tbin/hlp2html $tbin/httpget
+

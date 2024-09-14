@@ -2,10 +2,10 @@
 # $Id: wrspice_files,v 1.37 2016/09/29 00:25:03 stevew Exp $
 
 bin="\
+csvtoraw \
 multidec \
 proc2mod \
 printtoraw \
-wrspice \
 wrspiced \
 mmjco"
 

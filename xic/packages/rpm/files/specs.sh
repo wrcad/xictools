@@ -36,15 +36,19 @@ echo
 
 echo '%files'
 echo
+echo "%dir /usr/local/xictools/bin"
 echo "%dir /usr/local/xictools/$top"
 echo "%dir /usr/local/xictools/$top/bin"
 bin=`$files bin`
 for a in $bin; do
     echo "%attr(0755, root, root) /usr/local/xictools/$top/bin/$a"
 done
-
-echo "%dir /usr/local/xictools/bin"
 echo "%attr(0644, root, root) /usr/local/xictools/$top/bin/xic.sh"
+
+echo "%dir /usr/local/xictools/$top/bin/GTK2"
+echo "%attr(0755, root, root) /usr/local/xictools/$top/bin/GTK2/xic"
+echo "%dir /usr/local/xictools/$top/bin/QT5"
+echo "%attr(0755, root, root) /usr/local/xictools/$top/bin/QT5/xic"
 
 echo
 echo "%dir /usr/local/xictools/$top/docs"

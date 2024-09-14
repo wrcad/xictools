@@ -1,8 +1,6 @@
 #! /bin/sh
 
 bin="\
-mozy \
-xeditor \
 httpget \
 hlp2html \
 hlpsrv"

@@ -8,8 +8,8 @@ fi
 # Remove links.
 rm -rf $prefix/xictools/wrspice
 tbin=$prefix/xictools/bin
-rm -f $tbin/multidec $tbin/proc2mod $tbin/printtoraw $tbin/wrspice \
-  $tbin/wrspiced
+rm -f $tbin/wrspice $tbin/csvtoraw $tbin/multidec $tbin/proc2mod \
+  $tbin/printtoraw $tbin/mmjco $tbin/wrspiced
 
 # Back up for Safe Install.
 prog=wrspice
@@ -42,10 +42,13 @@ tbin=$prefix/xictools/bin
 if [ ! -d $tbin ]; then
     mkdir $tbin
 fi
+cp -f $libdir/bin/wrspice.sh $tbin/wrspice
+chmod 755 $tbin/wrspice
+ln -s $twrs/bin/csvtoraw $tbin/csvtoraw
 ln -s $twrs/bin/multidec $tbin/multidec
 ln -s $twrs/bin/proc2mod $tbin/proc2mod
 ln -s $twrs/bin/printtoraw $tbin/printtoraw
-ln -s $twrs/bin/wrspice $tbin/wrspice
+ln -s $twrs/bin/mmjco $tbin/mmjco
 ln -s $twrs/bin/wrspiced $tbin/wrspiced
 
 
@@ -58,10 +61,11 @@ if [ $1 == 0 ]; then
     else
         prefix=$RPM_INSTALL_PREFIX
     fi
+
     # Make sure that this is entirely gone.
     rm -rf $prefix/xictools/wrspice.current
 
-    # Remove the links.
+    # Remove wrapper and links.
 
     twrs=$prefix/xictools/wrspice
     if [ -h $twrs ]; then
@@ -69,6 +73,10 @@ if [ $1 == 0 ]; then
     fi
 
     tbin=$prefix/xictools/bin
+    rm -f $tbin/wrspice
+    if [ -h $tbin/csvtoraw ]; then
+        rm -f $tbin/csvtoraw
+    fi
     if [ -h $tbin/multidec ]; then
         rm -f $tbin/multidec
     fi
@@ -78,8 +86,8 @@ if [ $1 == 0 ]; then
     if [ -h $tbin/printtoraw ]; then
         rm -f $tbin/printtoraw
     fi
-    if [ -h $tbin/wrspice ]; then
-        rm -f $tbin/wrspice
+    if [ -h $tbin/mmjco ]; then
+        rm -f $tbin/mmjco
     fi
     if [ -h $tbin/wrspiced ]; then
         rm -f $tbin/wrspiced

@@ -19,8 +19,8 @@ if [ ! -d $tbin ]; then
     mkdir $tbin
 fi
 
-# Copy in through sed the xic wrapper script.
-sed -e s%/usr/local%$prefix% < $libdir/bin/xic.sh > $tbin/xic
+# Copy in the xic wrapper script.
+cp -f $libdir/bin/xic.sh $tbin/xic
 chmod 755 $tbin/xic
 
 # Create the links in xictools/bin.

@@ -5,10 +5,9 @@ else
     prefix=$RPM_INSTALL_PREFIX
 fi
 
-bindir=$prefix/xictools/bin
-libdir=$prefix/xictools/mozy
-
-# nothing to do
+# Remove wrapper and links.
+tbin=$prefix/xictools/bin
+rm -f $tbin/mozy $tbin/xeditor $tbin/hlpsrv $tbin/hlp2html $tbin/httpget
 
 
 %post
@@ -20,30 +19,45 @@ fi
 
 libdir=$prefix/xictools/mozy
 
-# nothing to do
+tmozy=$prefix/xictools/mozy
 
-
-%preun
-if [ x"$RPM_INSTALL_PREFIX" = "x" ]; then
-    prefix=/usr/local
-else
-    prefix=$RPM_INSTALL_PREFIX
+# Set up executables in tools bin.
+tbin=$prefix/xictools/bin
+if [ ! -d $tbin ]; then
+    mkdir $tbin
 fi
-
-bindir=$prefix/xictools/bin
-libdir=$prefix/xictools/mozy
-
-# nothing to do
+cp -f $libdir/bin/mozy.sh $tbin/mozy
+cp -f $libdir/bin/xeditor.sh $tbin/xeditor
+chmod 755 $tbin/mozy
+chmod 755 $tbin/xeditor
+ln -s $tmozy/bin/hlpsrv $tbin/hlpsrv
+ln -s $tmozy/bin/hlp2html $tbin/hlp2html
+ln -s $tmozy/bin/httpget $tbin/httpget
 
 
 %postun
-if [ x"$RPM_INSTALL_PREFIX" = "x" ]; then
-    prefix=/usr/local
-else
-    prefix=$RPM_INSTALL_PREFIX
+if [ $1 == 0 ]; then
+    # Do this when erasing only, not updating (this is called AFTER pre/post)!
+
+    if [ x"$RPM_INSTALL_PREFIX" = "x" ]; then
+        prefix=/usr/local
+    else
+        prefix=$RPM_INSTALL_PREFIX
+    fi
+
+    # Remove wrapper and links.
+
+    tbin=$prefix/xictools/bin
+    rm -f $tbin/mozy
+    rm -f $tbin/xeditor
+    if [ -h $tbin/hlpsrv ]; then
+        rm -f $tbin/hlpsrv
+    fi
+    if [ -h $tbin/hlp2html ]; then
+        rm -f $tbin/hlp2html
+    fi
+    if [ -h $tbin/httpget ]; then
+        rm -f $tbin/httpget
+    fi
 fi
-
-libdir=$prefix/xictools/mozy
-
-# nothing to do
 
