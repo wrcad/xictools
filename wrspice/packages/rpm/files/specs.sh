@@ -42,7 +42,6 @@ echo
 
 echo '%files'
 echo
-echo "%dir /usr/local/xictools/bin"
 echo "%dir /usr/local/xictools/$top"
 echo "%dir /usr/local/xictools/$top/bin"
 bin=`$files bin`
@@ -53,8 +52,13 @@ echo "%attr(0644, root, root) /usr/local/xictools/$top/bin/wrspice.sh"
 
 echo "%dir /usr/local/xictools/$top/bin/GTK2"
 echo "%attr(0755, root, root) /usr/local/xictools/$top/bin/GTK2/wrspice"
-echo "%dir /usr/local/xictools/$top/bin/QT5"
-echo "%attr(0755, root, root) /usr/local/xictools/$top/bin/QT5/wrspice"
+if [ -d ../root/usr/local/xictools/$top/bin/QT6 ]; then
+    echo "%dir /usr/local/xictools/$top/bin/QT6"
+    echo "%attr(0755, root, root) /usr/local/xictools/$top/bin/QT6/wrspice"
+elif [ -d ../root/usr/local/xictools/$top/bin/QT5 ]; then
+    echo "%dir /usr/local/xictools/$top/bin/QT5"
+    echo "%attr(0755, root, root) /usr/local/xictools/$top/bin/QT5/wrspice"
+fi
 
 echo
 echo "%dir /usr/local/xictools/$top/docs"
