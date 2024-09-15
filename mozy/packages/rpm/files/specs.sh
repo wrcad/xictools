@@ -31,6 +31,7 @@ echo
 echo '%files'
 echo
 echo "%dir /usr/local/xictools/mozy"
+echo "%dir /usr/local/xictools/mozy/bin"
 bin=`$files bin`
 for a in $bin; do
     echo "%attr(0755, root, root) /usr/local/xictools/mozy/bin/$a"
@@ -41,9 +42,15 @@ echo "%attr(0644, root, root) /usr/local/xictools/mozy/bin/xeditor.sh"
 echo "%dir /usr/local/xictools/mozy/bin/GTK2"
 echo "%attr(0755, root, root) /usr/local/xictools/mozy/bin/GTK2/mozy"
 echo "%attr(0755, root, root) /usr/local/xictools/mozy/bin/GTK2/xeditor"
-echo "%dir /usr/local/xictools/mozy/bin/QT5"
-echo "%attr(0755, root, root) /usr/local/xictools/mozy/bin/QT5/mozy"
-echo "%attr(0755, root, root) /usr/local/xictools/mozy/bin/QT5/xeditor"
+if [ -d ../root/usr/local/xictools/mozy/bin/QT6 ]; then
+    echo "%dir /usr/local/xictools/mozy/bin/QT6"
+    echo "%attr(0755, root, root) /usr/local/xictools/mozy/bin/QT6/mozy"
+    echo "%attr(0755, root, root) /usr/local/xictools/mozy/bin/QT6/xeditor"
+elif [ -d ../root/usr/local/xictools/mozy/bin/QT5 ]; then
+    echo "%dir /usr/local/xictools/mozy/bin/QT5"
+    echo "%attr(0755, root, root) /usr/local/xictools/mozy/bin/QT5/mozy"
+    echo "%attr(0755, root, root) /usr/local/xictools/mozy/bin/QT5/xeditor"
+fi
 
 echo
 echo "%dir /usr/local/xictools/mozy/help"
