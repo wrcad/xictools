@@ -317,12 +317,13 @@ double *num_parse(const char **line, bool no_units_txt)
 }
 
 
-// cvstoraw:  convert a space/comma separated file to a rwfile.
+// cvstoraw:  convert a space/comma separated file to a rawfile.
 //
-// Usage:  csvtoraw -|filename
-// output to standard output.
+// Usage:  csvtoraw [filename]
+// Output goes to standard output.  Input from the file is a name
+// was given, or stdin otherwise.
 //
-// A "csv" (comma-separated values) is assumed to have a form as
+// A "csv" (comma-separated values) file is assumed to have a form as
 // described below.
 // o Any lines that start with white space or a comment character
 //   ahead of the header line are ignored.  Comment characters are *#!.

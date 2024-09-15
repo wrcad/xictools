@@ -3503,6 +3503,39 @@ printtoraw
 proc2mod
 wrspiced
 
+!! utilities.tex 091524
+!!KEYWORD
+csvtoraw
+!!TITLE
+    The <tt>csvtoraw</tt> Utility: CSV to Rawfile Conversion
+!!HTML 
+    This program will convert a space/comma separated file to a rawfile.
+
+    <p>
+    Usage:  <tt>csvtoraw</tt> [<i>filename</i>]<br>
+    Output goes to the standard output channel.  Input comes from the
+    file if a name was given, or standard input otherwise.
+
+    <p>
+    A "csv" (comma-separated values) file is assumed to have a form as
+    described below.
+    <ul>
+    <li>Any lines that start with white space or a comment character
+    ahead of the header line are ignored.  Comment characters are <tt>*#!</tt>.
+    <li>The header line contains a number of words, space and/or comma
+    separated, these are the vector names.  If they contain a comment
+    character or comma the word should be double-quoted.
+    <li>Lines that follow are ignored if the first non-space character is
+    a comment character, comma, or the line is blank.
+    <li>Otherwise the lines should contain the same number of numbers as
+    words in the header line.  Any number format as used in <i>WRspice</i>
+    is fine, numbers are separated by spaces and/or commas.
+    <li>The leftmost logical column will be taken as the scale vector.
+    </ul>
+
+!!SEEALSO
+utilities
+
 !! utilities.tex 090222
 !!KEYWORD
 mmjco

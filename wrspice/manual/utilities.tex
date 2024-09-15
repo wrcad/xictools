@@ -7,6 +7,34 @@ The {\WRspice} distribution provides a few supplemental utility
 and accessory programs.
 
 %S-----------------------------------------------------------------------------
+\section{The {\vt csvtoraw} Utility: CSV to Rawfile Conversion}
+\index{csvtoraw program}
+
+% spMain.hlp:csvtpraw 091524
+
+This program will convert a space/comma separated file to a rawfile.
+
+Usage:  {\vt csvtoraw} [{\it filename/\}]\\
+Output goes to the standard output channel.  Input is taken from the
+file if a name was given, otherwise from standard input.
+
+A ``csv'' (comma-separated values) file is assumed to have a form as
+described below.
+\begin{itemize}
+\item{Any lines that start with white space or a comment character
+ahead of the header line are ignored.  Comment characters are {\vt *#!}.}
+\item{The header line contains a number of words, space and/or comma
+separated, these are the vector names.  If they contain a comment
+character or comma the word should be double-quoted.}
+\item{Lines that follow are ignored if the first non-space character is
+a comment character, comma, or the line is blank.}
+\item{Otherwise the lines should contain the same number of numbers as
+words in the header line.  Any number format as used in {\WRspice}
+is fine, numbers are separated by spaces and/or commas.}
+\item{The leftmost logical column will be taken as the scale vector.}
+\end{itemize}
+
+%S-----------------------------------------------------------------------------
 \section{The {\vt mmjco} Utility: Tunnel Junction Model Calculator}
 \index{mmjco program}
 \label{mmjco}

@@ -117,8 +117,46 @@ End of general info.
 
 
 ===============================================================================
-wrspice-4.3.19  01/28/2024
+wrspice-4.3.20  09/15/2024
 Current Release
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Continued behind-the-scenes revision due to evolution to Qt.
+
+* Revised drag between plot windows, previous approach did not work in Qt.
+  Much better approach now.
+  1) new "file cabinet" icon in upper left, drag traces there to hide,
+     can be dragged back out.
+  2) New indicator when text editing showing horizontal justification.
+
+* Compose command forms like "compose x lin=10 start=1 step=0"
+  are now accepted, the vector contains the start value repeated lin
+  times.
+
+* Image/Imlib print driver for Qt:  there is a new "No Backg" check box
+  just above the driver selection entry area.  When checked, image file
+  output will have transparent background pixels, so that when the image
+  is placed, any existing background will show through.
+
+* New csvtoraw conversion function utility.
+
+
+BUGS FIXED
+---- -----
+
+* Tri-conditional (A ? B : C) now handled correctly by adms in Verilog-A
+  input.
+
+* Fix bugs and error reporting in PWL parser.
+
+* Move dimension icon in plot window away from the "file cabinet" icon
+  in plot windows.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.3.19  01/28/2024
 
 CHANGES AND NEW FEATURES
 ------- --- --- --------
