@@ -420,6 +420,7 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QDialog(prnt),
 
     h_viewer->freeze();
 
+#if QT_VERSION >= QT_VERSION_CHECK(5,15,11)
     h_Backward = menubar->addAction(tr("back"),
         this, &QThelpDlg::backward_slot);
     h_Backward->setIcon(QIcon(QPixmap(backward_xpm)));
@@ -431,6 +432,17 @@ QThelpDlg::QThelpDlg(bool has_menu, QWidget *prnt) : QDialog(prnt),
     h_Stop = menubar->addAction(tr("stop"),
         this, &QThelpDlg::stop_slot);
     h_Stop->setIcon(QIcon(QPixmap(stop_xpm)));
+#else
+    h_Backward = menubar->addAction(tr("back"));
+    h_Backward->setIcon(QIcon(QPixmap(backward_xpm)));
+    connect(h_Backward, &QAction::triggered, this, &QThelpDlg::backward_slot);
+    h_Forward = menubar->addAction(tr("forw"));
+    h_Forward->setIcon(QIcon(QPixmap(forward_xpm)));
+    connect(h_Forward, &QAction::triggered, this, &QThelpDlg::forward_slot);
+    h_Stop = menubar->addAction(tr("stop"));
+    h_Stop->setIcon(QIcon(QPixmap(stop_xpm)));
+    connect(h_Stop, &QAction::triggered, this, &QThelpDlg::stop_slot);
+#endif
 
 #ifdef USE_QTOOLBAR
     QAction *a = menubar->addAction(tr("&File"));
@@ -1872,7 +1884,7 @@ QThelpDlg::htm_activate_proc(htmAnchorCallbackStruct *cbs)
 {
     if (cbs == 0 || cbs->href == 0)
         return;
-    HLPtopic *parent = h_cur_topic;
+    HLPtopic *prnt = h_cur_topic;
     cbs->visited = true;
 
     // add link to visited table
@@ -1888,8 +1900,8 @@ QThelpDlg::htm_activate_proc(htmAnchorCallbackStruct *cbs)
     bool spawn = false;
     if (!force_download) {
         if (cbs->target) {
-            if (!parent->target() ||
-                    strcmp(parent->target(), cbs->target)) {
+            if (!prnt->target() ||
+                    strcmp(prnt->target(), cbs->target)) {
                 for (HLPtopic *t = HLP()->context()->topList(); t;
                         t = t->sibling()) {
                     if (t->target() && !strcmp(t->target(), cbs->target)) {

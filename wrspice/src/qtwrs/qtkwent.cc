@@ -225,14 +225,28 @@ QTkwent::QTkwent(EntryMode m, EntryCallback cb, xKWent *kwstr,
     if (ke_spbox) {
         if (v && ke_update)
             (*ke_update)(true, v, this);
+#if QT_VERSION >= QT_VERSION_CHECK(5,15,2)
         connect(ke_spbox, &QTdoubleSpinBox::textChanged,
             this, &QTkwent::val_changed_slot);
+#else
+        connect(ke_spbox,
+                static_cast<void (QTdoubleSpinBox::*)(const QString&)>
+                (&QTdoubleSpinBox::valueChanged),
+            this, &QTkwent::val_changed_slot);
+#endif
     }
     if (ke_expsb) {
         if (v && ke_update)
             (*ke_update)(true, v, this);
+#if QT_VERSION >= QT_VERSION_CHECK(5,15,2)
         connect(ke_expsb, &QTexpDoubleSpinBox::textChanged,
             this, &QTkwent::val_changed_slot);
+#else
+        connect(ke_expsb,
+                static_cast<void (QTexpDoubleSpinBox::*)(const QString&)>
+                (&QTexpDoubleSpinBox::valueChanged),
+            this, &QTkwent::val_changed_slot);
+#endif
     }
     if (ke_choice) {
         if (!v) {
@@ -246,8 +260,15 @@ QTkwent::QTkwent(EntryMode m, EntryCallback cb, xKWent *kwstr,
         }
         else if (v && ke_update)
             (*ke_update)(true, v, this);
+#if QT_VERSION >= QT_VERSION_CHECK(5,15,2)
         connect(ke_choice, &QTchoiceSpinBox::textChanged,
             this, &QTkwent::val_changed_slot);
+#else
+        connect(ke_choice,
+                static_cast<void (QTchoiceSpinBox::*)(const QString&)>
+                (&QTchoiceSpinBox::valueChanged),
+            this, &QTkwent::val_changed_slot);
+#endif
     }
 
     if (ke_mode != KW_NO_CB) {

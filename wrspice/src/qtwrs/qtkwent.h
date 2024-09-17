@@ -66,6 +66,8 @@ using namespace qtinterf;
 
 class QTchoiceSpinBox : public QSpinBox
 {
+    Q_OBJECT
+
 public:
     explicit QTchoiceSpinBox(QWidget *prnt = nullptr) : QSpinBox(prnt)
     {

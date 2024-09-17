@@ -1722,9 +1722,10 @@ hs_functions
 !!REDIRECT mpp          measfuncs#mpp
 !!REDIRECT mpw          measfuncs#mpw
 !!REDIRECT mrft         measfuncs#mrft
+!!REDIRECT mrft2        measfuncs#mrft2
 !!REDIRECT mrms         measfuncs#mrms
 
-!! useriface.tex 032220
+!! useriface.tex 020324
 !!KEYWORD
 measfuncs
 !!TITLE
@@ -1797,6 +1798,19 @@ Measure Functions
     <dd>
     Find the 10% to 90% rise or fall duration for an edge assumed to
     be framed by <i>start</i> and <i>end</i>.
+    </dl>
+
+    <a name="mrft2"></a>
+    <dl>
+    <dt><b>mrft2 function</b>:
+        <tt>mrft2</tt>(<i>vec</i>, <i>start</i>, <i>end</i>,
+        <i>firstval</i>, <i>secondval</i>)<dd>
+    <dd>
+    This is identical to <b>mrft</b>, except that two additional real
+    valued variables provide the measurement thresholds rather than
+    being fixed at 0.1 and 0.9.  This will find rise or fall duration
+    (time between threshold crossings) for an edge assumed to be
+    framed by <i>start</i> and <i>end</i>.
     </dl>
 
     <a name="mrms"></a>
