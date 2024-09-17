@@ -30,6 +30,12 @@ if [ -n "$XIC_LIBRARY_PATH" ]; then
     fi
 fi
 
+# Hook to Custom Compiler, PyCellStudio (Synopsys only!)
+snps_xic=$(dirname $(readlink -f "$0"))/snps_xic
+if [-f "$snps_xic" ]; then
+    source $snps_xic
+fi
+
 # Connect to Custom Compiler, PyCellStudio if  found.
 
 if [ -n "$CC_HOME" ]; then
