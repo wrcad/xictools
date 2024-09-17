@@ -749,8 +749,14 @@ QTfileDlg::QTfileDlg(QTbag *owner, FsMode mode, void *arg,
     QMenuBar *menubar = new QMenuBar();
     f_Up = menubar->addAction("");
     f_Up->setIcon(QIcon(QPixmap(up_xpm)));
+#if QT_VERSION >= QT_VERSION_CHECK(5,15,11)
     f_Go = menubar->addAction("go", this, &QTfileDlg::open_slot);
     f_Go->setIcon(QIcon(QPixmap(go_xpm)));
+#else
+    f_Go = menubar->addAction("go");
+    f_Go->setIcon(QIcon(QPixmap(go_xpm)));
+    connect(f_Go, &QAction::triggered, this, &QTfileDlg::open_slot);
+#endif
 #endif
 
     if (f_config == fsSEL || f_config == fsSAVE || f_config == fsOPEN) {

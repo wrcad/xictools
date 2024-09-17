@@ -53,6 +53,8 @@ namespace qtinterf {
 
 class qtinterf::QTexpDoubleSpinBox : public QDoubleSpinBox
 {
+    Q_OBJECT
+
 public:
     explicit QTexpDoubleSpinBox(QWidget *prnt = nullptr) :
         QDoubleSpinBox(prnt)

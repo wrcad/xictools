@@ -200,11 +200,11 @@ QTviewer::get_widget_bag()
 void
 QTviewer::set_source(const char *string)
 {
-    int x = htm_viewarea.x;
-    int y = htm_viewarea.y;
+    int xx = htm_viewarea.x;
+    int yy = htm_viewarea.y;
     setSource(string);
-    set_scroll_position(x, true);
-    set_scroll_position(y, false);
+    set_scroll_position(xx, true);
+    set_scroll_position(yy, false);
     if (!htm_in_layout && htm_initialized)
         trySync();
 }

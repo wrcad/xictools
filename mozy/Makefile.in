@@ -309,7 +309,7 @@ package::
 	$(MAKE)
 	-rm -rf packages/root
 	mkdir packages/root
-	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install
+	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install_force
 	$(MAKE) -C packages package
 
 #######################################################################

@@ -432,26 +432,26 @@ QTtextEdit::dropEvent(QDropEvent *ev)
 
 
 bool
-QTtextEdit::canInsertFromMimeData(const QMimeData *source) const
+QTtextEdit::canInsertFromMimeData(const QMimeData *src) const
 {
     // handled: if > 0 accept, if < 0 reject, if == 0 default action.
     int handled = 0;
-    emit mime_data_handled(source, &handled);
+    emit mime_data_handled(src, &handled);
     if (handled > 0)
         return (true);
     if (handled < 0)
         return (false);
-    return (QTextEdit::canInsertFromMimeData(source));
+    return (QTextEdit::canInsertFromMimeData(src));
 }
 
 
 void
-QTtextEdit::insertFromMimeData(const QMimeData *source)
+QTtextEdit::insertFromMimeData(const QMimeData *src)
 {
     int handled = 0;
-    emit mime_data_delivered(source, &handled);
+    emit mime_data_delivered(src, &handled);
     if (!handled)
-        QTextEdit::insertFromMimeData(source);
+        QTextEdit::insertFromMimeData(src);
 }
 
 
