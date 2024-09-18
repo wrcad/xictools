@@ -32,7 +32,7 @@ fi
 
 # Hook to Custom Compiler, PyCellStudio (Synopsys only!)
 snps_xic=$(dirname $(readlink -f "$0"))/snps_xic
-if [-f "$snps_xic" ]; then
+if [ -f "$snps_xic" ]; then
     source $snps_xic
 fi
 

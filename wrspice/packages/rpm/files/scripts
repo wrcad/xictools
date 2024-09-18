@@ -13,8 +13,14 @@ rm -f $tbin/wrspice $tbin/csvtoraw $tbin/multidec $tbin/proc2mod \
 
 # Back up for Safe Install.
 prog=wrspice
-if [ -x $prefix/xictools/$prog.current/bin/$prog ]; then
-    curver=$($prefix/xictools/$prog.current/bin/$prog --v)
+if [ -x $prefix/xictools/$prog.current/bin/GTK2/$prog ]; then
+    curver=$($prefix/xictools/$prog.current/bin/GTK2/$prog --v)
+elif [ -x $prefix/xictools/$prog.current/bin/QT6/$prog ]; then
+    curver=$($prefix/xictools/$prog.current/bin/QT6/$prog --v)
+elif [ -x $prefix/xictools/$prog.current/bin/QT5/$prog ]; then
+    curver=$($prefix/xictools/$prog.current/bin/QT5/$prog --v)
+fi
+if [ -n "$curver" ]; then
     set -- $curver
     curver=$1
     if [ -n "$curver" ]; then
@@ -44,12 +50,12 @@ if [ ! -d $tbin ]; then
 fi
 cp -f $libdir/bin/wrspice.sh $tbin/wrspice
 chmod 755 $tbin/wrspice
+ln -s $twrs/bin/wrspiced $tbin/wrspiced
 ln -s $twrs/bin/csvtoraw $tbin/csvtoraw
 ln -s $twrs/bin/multidec $tbin/multidec
 ln -s $twrs/bin/proc2mod $tbin/proc2mod
 ln -s $twrs/bin/printtoraw $tbin/printtoraw
 ln -s $twrs/bin/mmjco $tbin/mmjco
-ln -s $twrs/bin/wrspiced $tbin/wrspiced
 
 
 %postun
@@ -74,6 +80,9 @@ if [ $1 == 0 ]; then
 
     tbin=$prefix/xictools/bin
     rm -f $tbin/wrspice
+    if [ -h $tbin/wrspiced ]; then
+        rm -f $tbin/wrspiced
+    fi
     if [ -h $tbin/csvtoraw ]; then
         rm -f $tbin/csvtoraw
     fi
@@ -88,9 +97,6 @@ if [ $1 == 0 ]; then
     fi
     if [ -h $tbin/mmjco ]; then
         rm -f $tbin/mmjco
-    fi
-    if [ -h $tbin/wrspiced ]; then
-        rm -f $tbin/wrspiced
     fi
 fi
 

@@ -9,13 +9,19 @@ prefix=$2
 # Remove links.
 rm -rf $prefix/xictools/wrspice
 tbin=$prefix/xictools/bin
-rm -f $tbin/mmjco $tbin/multidec $tbin/proc2mod $tbin/printtoraw $tbin/wrspice \
-  $tbin/wrspiced
+rm -f $tbin/wrspice $tbin/wrspiced $tbin/csvtoraw $tbin/multidec \
+  $tbin/proc2mod $tbin/printtoraw $tbin/mmjco
 
 # Back up for Safe Install.
 prog=wrspice
 if [ -x $prefix/xictools/$prog.current/bin/GTK2/$prog ]; then
     curver=$($prefix/xictools/$prog.current/bin/GTK2/$prog --v)
+elif [ -x $prefix/xictools/$prog.current/bin/QT6/$prog ]; then
+    curver=$($prefix/xictools/$prog.current/bin/QT6/$prog --v)
+elif [ -x $prefix/xictools/$prog.current/bin/QT5/$prog ]; then
+    curver=$($prefix/xictools/$prog.current/bin/QT5/$prog --v)
+fi
+if [ -n "$curver" ]; then
     set -- $curver
     curver=$1
     if [ -n "$curver" ]; then

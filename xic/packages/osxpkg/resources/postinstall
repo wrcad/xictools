@@ -25,7 +25,7 @@ tbin=$prefix/xictools/bin
 if [ ! -d $tbin ]; then
     mkdir $tbin
 fi
-sed -e s%/usr/local%$prefix% < $libdir/bin/xic.sh > $tbin/xic
+cp -f $libdir/bin/xic.sh $tbin/xic
 chmod 755 $tbin/xic
 ln -s $txic/bin/wrencode $tbin/wrencode
 ln -s $txic/bin/wrdecode $tbin/wrdecode

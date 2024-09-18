@@ -13,8 +13,14 @@ rm -f $tbin/xic $tbin/wrencode $tbin/wrdecode $tbin/wrsetpass
 
 # Back up for Safe Install.
 prog=xic
-if [ -x $prefix/xictools/$prog.current/bin/$prog ]; then
-    curver=$($prefix/xictools/$prog.current/bin/$prog --v)
+if [ -x $prefix/xictools/$prog.current/bin/GTK2/$prog ]; then
+    curver=$($prefix/xictools/$prog.current/bin/GTK2/$prog --v)
+elif [ -x $prefix/xictools/$prog.current/bin/QT6/$prog ]; then
+    curver=$($prefix/xictools/$prog.current/bin/QT6/$prog --v)
+elif [ -x $prefix/xictools/$prog.current/bin/QT5/$prog ]; then
+    curver=$($prefix/xictools/$prog.current/bin/QT5/$prog --v)
+fi
+if [ -n "$curver" ]; then
     set -- $curver
     curver=$1
     if [ -n "$curver" ]; then

@@ -7,6 +7,10 @@
 prefix=$2
 prog=mozy
 
+# Remove wrappers and links.
+tbin=$prefix/xictools/bin
+rm -f $tbin/mozy $tbin/xeditor $tbin/hlpsrv $tbin/hlp2html $tbin/httpget
+
 # Do a manual un-install if an existing package is found, Apple's
 # install system apparently doesn't do this.
 

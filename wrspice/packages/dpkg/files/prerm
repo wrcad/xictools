@@ -10,8 +10,15 @@ rm -f $tbin/wrspice $tbin/csvtoraw $tbin/multidec $tbin/proc2mod \
 
 # Move wrspice.current to wrspice-version for Safe Install.
 prog=wrspice
-if [ -x $prefix/xictools/$prog.current/bin/$prog ]; then
-    curver=$($prefix/xictools/$prog.current/bin/$prog --v)
+curver=
+if [ -x $prefix/xictools/$prog.current/bin/GTK2/$prog ]; then
+    curver=$($prefix/xictools/$prog.current/bin/GTK2/$prog --v)
+elif [ -x $prefix/xictools/$prog.current/bin/QT6/$prog ]; then
+    curver=$($prefix/xictools/$prog.current/bin/QT6/$prog --v)
+elif [ -x $prefix/xictools/$prog.current/bin/QT5/$prog ]; then
+    curver=$($prefix/xictools/$prog.current/bin/QT5/$prog --v)
+fi
+if [ -n "$curver" ]; then
     set -- $curver
     curver=$1
     if [ -n "$curver" ]; then

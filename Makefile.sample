@@ -14,12 +14,6 @@
 #
 PREFIX = --prefix=/usr/local
 
-# This is the name of the top-level installation directory under
-# PREFIX.  You can change this if you want to have different builds
-# under PREFIX, for example for Qt and GTK.
-#
-TOOLROOT = --enable-toolroot=xictools
-
 # The traditional way to build and install XicTools is to build a set
 # of packages, and then install the packages.  "make install" is
 # actually prevented from installing directly to the default
@@ -63,12 +57,8 @@ ITOPOK = --enable-itopok=no
 #GFXLOC = --enable-qt6=/opt/local/libexec/qt6
 #GFXLOC = --enable-gtk2=yes
 #
-# For CentOS/RedHat/Rocky/AlmaLinux (7 or 8) OpenSuSE 15.4
+# For CentOS/RedHat/Rocky/AlmaLinux (7 or 8) OpenSuSE 15.4 Fedora 40 Linux
 #GFXLOC = --enable-qt5=/usr/lib64/qt5
-#GFXLOC = --enable-gtk2=yes
-#
-# For Fedora 40 Linux
-#GFXLOC = --enable-qt6=/usr/lib64/qt6
 #GFXLOC = --enable-gtk2=yes
 #
 # For Ubuntu-22.04, Debian 11

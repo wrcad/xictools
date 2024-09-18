@@ -19,8 +19,6 @@ fi
 
 libdir=$prefix/xictools/mozy
 
-tmozy=$prefix/xictools/mozy
-
 # Set up executables in tools bin.
 tbin=$prefix/xictools/bin
 if [ ! -d $tbin ]; then
@@ -30,9 +28,9 @@ cp -f $libdir/bin/mozy.sh $tbin/mozy
 cp -f $libdir/bin/xeditor.sh $tbin/xeditor
 chmod 755 $tbin/mozy
 chmod 755 $tbin/xeditor
-ln -s $tmozy/bin/hlpsrv $tbin/hlpsrv
-ln -s $tmozy/bin/hlp2html $tbin/hlp2html
-ln -s $tmozy/bin/httpget $tbin/httpget
+ln -s $libdir/bin/hlpsrv $tbin/hlpsrv
+ln -s $libdir/bin/hlp2html $tbin/hlp2html
+ln -s $libdir/bin/httpget $tbin/httpget
 
 
 %postun

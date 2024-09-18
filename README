@@ -151,8 +151,7 @@ the GTK-2.0 toolkit.  This, however, is rather old and obsolete.
 After an abortive effort to migrate to GTK-3.0 (which is also obsolete
 but less so) it became clear that a major change of direction was
 required, and a huge effort was initiated to switch to the Qt toolkit. 
-This is mostly done, but details are still being fixed and probably a
-lot of issues will be uncovered in use.
+This is done, but use will likely uncover things that need fixing.
 
 Status as of April 27, 2024
 - The GTK-2.0 remains as the "reference".
@@ -161,6 +160,12 @@ Status as of April 27, 2024
 - Qt releases are equivalent and users are encouraged to try them.
 - New features will be developed in the Qt branch, and may not be
   ported to the GTK branch.
+
+Status as of September 17, 2024
+- The build and packaging systems can generate and contain separate
+  binaries for GTK2, Qt-5, and Qt-6 toolkits.  This is temporary,
+  as GTK2 will go away at some point.
+- Pre-built packages contain GTK2 and Qt binaries.
 
 3.2  Packages vs. Building from Source
 
@@ -317,11 +322,7 @@ the mingw64 versions of the gtk2 and/or Qt and gsl libraries.
     pacman -S winpty
     pacman -S mingw-w64-x86_64-gsl
     pacman -S mingw-w64-x86_64-gtk2  (for GTK)
-    pacman -S mingw-w64-x86_64-qt5  (for Qt)
     pacman -S mingw-w64-x86_64-qt6  (for Qt)
-Note: 6/30/2024  The Qt6 display looks terrible on my NVidia GeForce
-laptop, but is fine on an older system.  Qt5 looks fine on both
-systems.
 
 Add some other needed utilities:
 
@@ -342,7 +343,7 @@ To continue with the configuration and build, you should open a new
 shell window specificly for the MinGW64 environment.  In the Start
 menu, scroll down to th MSYS2 entry and open the sub-menu.  There are
 five alternative environments available.  Select the one with the
-MinGW64 lable.  You should ALWAYS choose only this option for working
+MinGW64 label.  You should ALWAYS choose this option for working
 with XicTools programs, the others will probably NOT WORK!  Making the
 selection will bring up a new shell window, similar to what you had
 before, but the prompt will include "MinGW64".
@@ -370,7 +371,7 @@ We can now continue the first time only configuration.
 
 3.  You will need to set "Developer Mode".  Developer mode is required
     to create symbolic links, used in the install.
-    a. From Settings (grear-shaped icon in the Start menu) select System
+    a. From Settings (gear-shaped icon in the Start menu) select System
     b. Scroll down to "For Developers" and select.
     c. Turn on "Developer Mode", answer prompt.
 
@@ -435,7 +436,7 @@ current.  This can be done with the commands
 After doing this you will need to rebuild and reinstall the XicTools
 programs as will be described below.
 
-The Qt versions of the tools are "native" masOS applications.  Other
+The Qt versions of the tools are "native" macOS applications.  Other
 than not needing an X-server, the main difference is that the
 application main menus appear in the Mac location at the top of the
 screen, and not in the application window.
@@ -459,18 +460,15 @@ include this file unless you save a copy some place).
 Here is the starting point to create a new xictools git repository. 
 Make sure that you have the git program installed (the command "which
 git" should provide a path to the git program).  It needs to be installed
-if not.  From terminal (shell) window give the following command to
+if not.  From a terminal (shell) window give the following command to
 clone the xictools repository into the current directory:
 
     git clone https://github.com/wrcad/xictools.git
 
-You should have a subdirectory named "xictools" which contains this
+You should then have a subdirectory named "xictools" which contains this
 README file, and a whole lot more.  This contains all of the source
 code for XicTools, and a "hidden" compressed git database.  You will
-build the tooks in this area.  The top directory (xictools) can be
-moved or renamed if desired.  For example, you may want to create two
-such directory trees, "xictools" and "xictools.gtk" to separately
-build Qt and GTK versions of the tools.
+build the tools in this area.
 
 3.5  The Build Procedure.
 
@@ -488,8 +486,7 @@ The first time, you will need to set up the main Makefile.
 
 1.  Copy Makefile.sample into "Makefile", edit Makefile to set the
     configuration flags, as described by the comments in the Makefile.
-    Crucial for Windows:  Make sure you add a drive letter to the
-    PREFIX path, and uncomment the MINGW define.
+    Crucial for Windows:  uncomment the MINGW define.
 
 2.  Give the command "make config" to configure the source tree to
     your build environment.  You may see errors and early termination
@@ -507,7 +504,7 @@ The first time, you will need to set up the main Makefile.
 
 5. Make sure that your shell search path includes the main XicTools
    bin, which is by default /usr/local/xictools/bin.  Use the actual
-   path if you changed PREFIX or TOOLROOT in the Makefile.
+   path if you changed PREFIX in the Makefile.
 
 3.6  The Installation Procedure.
 

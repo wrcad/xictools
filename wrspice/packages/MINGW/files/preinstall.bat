@@ -39,11 +39,25 @@ if exist bin\mmjco.exe\ ( rmdir bin\mmjco.exe
 
 @rem   Copy to backup for Safe Install.
 
-if exist %prog%.current\bin\%prog%.exe (
+if exist %prog%.current\bin\GTK2\%prog%.exe (
     for /f "Tokens=1-3" %%a in (
-        '%prog%.current\bin\%prog%.exe --v'
+        '%prog%.current\bin\GTK2\%prog%.exe --v'
     ) do (
         set version=%%a
+    )
+) else ( if exist %prog%.current\bin\QT6\%prog%.exe (
+        for /f "Tokens=1-3" %%a in (
+            '%prog%.current\bin\QT6\%prog%.exe --v'
+        ) do (
+            set version=%%a
+        )
+    ) else ( if exist %prog%.current\bin\QT5\%prog%.exe (
+            for /f "Tokens=1-3" %%a in (
+                '%prog%.current\bin\QT5\%prog%.exe --v'
+            ) do (
+                set version=%%a
+            )
+        )
     )
 )
 
