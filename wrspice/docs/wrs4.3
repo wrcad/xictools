@@ -142,6 +142,11 @@ CHANGES AND NEW FEATURES
 
 * New csvtoraw conversion function utility.
 
+* The resmin variable default and minimum value have changed from
+  1e-5, 1e-15 to 1e-3, 1e-5.  The default value would cause numerical
+  trouble in cryo-CMOS models.  The 1e-15 minimum was probably a typo
+  since it is ridiculously low.
+
 
 BUGS FIXED
 ---- -----

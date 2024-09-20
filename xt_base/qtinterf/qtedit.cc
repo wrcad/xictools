@@ -434,9 +434,12 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::EditorType type,
 
     if (ed_editor_type == Editor || ed_editor_type == Browser) {
         if (ed_editor_type == Browser) {
-            ed_text_editor->setReadOnly(true);
+            ed_text_editor->set_editable(false);
             ed_text_editor->viewport()->setCursor(Qt::ArrowCursor);
         }
+//XXX
+        else
+            ed_text_editor->set_editable(true);
 
         char *fname = pathlist::expand_path(file_or_string, false, true);
         check_t which = filestat::check_file(fname, R_OK);
@@ -457,7 +460,7 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::EditorType type,
         }
         else {
             ed_status_bar->showMessage("Read-Only");
-            ed_text_editor->setReadOnly(true);
+            ed_text_editor->set_editable(false);
         }
         set_source(fname);
         delete [] fname;
@@ -631,11 +634,11 @@ QTeditDlg::load_file_slot(const char *fnamein, void*)
         delete [] fname;
         return;
     }
-    ed_text_editor->setReadOnly(true);
+    ed_text_editor->set_editable(false);
 
     bool ok = read_file(fname, true);
     if (ed_editor_type != Browser)
-        ed_text_editor->setReadOnly(false);
+        ed_text_editor->set_editable(true);
     if (wb_input)
         wb_input->popdown();
     if (!ok) {
@@ -716,7 +719,7 @@ QTeditDlg::read_file_slot(const char *fnamein, void*)
         delete [] fname;
         return;
     }
-    ed_text_editor->setReadOnly(true);
+    ed_text_editor->set_editable(false);
 
     char tbuf[256];
     if (!read_file(fname, false)) {
@@ -727,7 +730,7 @@ QTeditDlg::read_file_slot(const char *fnamein, void*)
     }
     else {
         text_changed_slot();  // this isn't called otherwise
-        ed_text_editor->setReadOnly(false);
+        ed_text_editor->set_editable(true);
         if (strlen(fname) > 64)
             strcpy(fname + 60, "...");
         snprintf(tbuf, sizeof(tbuf), "Successfully read %s", fname);

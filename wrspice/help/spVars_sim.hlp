@@ -836,7 +836,7 @@ Simulation Option Variables
     </dl>
 
 !! 110923
-    <a name="resmin>
+    <a name="resmin"></a>
     <dl>
     <dt><tt>resmin><dd>
     This is the smallest absolute value of a resistor, smaller given
@@ -846,7 +846,7 @@ Simulation Option Variables
     <table border=1 cellpadding=2 bgcolor="#ffffee">
     <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
       <th>Set From</th></tr>
-    <tr><td>1e-15</td> <td>10</td> <td>1e-5</td>
+    <tr><td>1e-3</td> <td>1e-5</td> <td>10</td>
       <th>Simulation Options/Devices</th></tr>
     </table>
     </dl>

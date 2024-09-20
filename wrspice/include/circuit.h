@@ -527,8 +527,8 @@ enum OMRG_TYPE { OMRG_GLOBAL, OMRG_LOCAL, OMRG_NOSHELL };
 #define DEF_reltol_MIN          1e-8
 #define DEF_reltol_MAX          1e-2
 
-#define DEF_resmin              1e-5
-#define DEF_resmin_MIN          1e-15
+#define DEF_resmin              1e-3
+#define DEF_resmin_MIN          1e-5
 #define DEF_resmin_MAX          10
 
 #define DEF_temp                wrsREFTEMP
