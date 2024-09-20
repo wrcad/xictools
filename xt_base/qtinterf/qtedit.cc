@@ -272,7 +272,7 @@ QTeditDlg::QTeditDlg(QTbag *owner, QTeditDlg::EditorType type,
         this, &QTeditDlg::quit_slot);
 #else
     ed_filemenu->addAction(tr("&Quit"), this, &QTeditDlg::quit_slot,
-            Qt::CTRL|Qt::Key_Q);
+        Qt::CTRL|Qt::Key_Q);
 #endif
 
 #ifdef USE_QTOOLBAR
@@ -1067,7 +1067,8 @@ QTeditDlg::quit_slot()
             return;
         }
     }
-    delete this;
+    // Old QT5 will crash here without delayed delete.
+    deleteLater();
 }
 
 

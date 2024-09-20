@@ -1362,7 +1362,8 @@ QTfileDlg::filter_change_slot(const QString &qs)
 void
 QTfileDlg::quit_slot()
 {
-    delete this;
+    // Old QT5 will crash here without delayed delete.
+    deleteLater();
 }
 
 

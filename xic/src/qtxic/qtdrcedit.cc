@@ -81,7 +81,8 @@ cDRC::PopUpRules(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        delete QTdrcRuleEditDlg::self();
+        // Old QT5 will crash without delayed delete.
+        QTdrcRuleEditDlg::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {

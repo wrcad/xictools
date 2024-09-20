@@ -79,7 +79,8 @@ cMain::PopUpLayerParamEditor(GRobject caller, ShowMode mode, const char *msg,
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        delete QTlayerParamDlg::self();
+        // Old QT5 will crash without deleyed delete.
+        QTlayerParamDlg::self()->deleteLater();;
         return;
     }
     if (mode == MODE_UPD) {

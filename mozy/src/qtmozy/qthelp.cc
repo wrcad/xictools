@@ -1411,6 +1411,7 @@ QThelpDlg::make_fifo_slot(bool state)
 void
 QThelpDlg::quit_slot()
 {
+    // Old QT5 will crash without delayed delete.
     deleteLater();
 }
 

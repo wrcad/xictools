@@ -87,7 +87,8 @@ cConvert::PopUpAssemble(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        delete QTasmDlg::self();
+        // Old QT5 will crash unless delayed delete.
+        QTasmDlg::self()->deleteLater();
         return;
     }
     if (mode == MODE_UPD) {

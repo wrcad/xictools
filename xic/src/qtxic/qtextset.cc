@@ -64,7 +64,6 @@
 #include <QTabWidget>
 #include <QCheckBox>
 #include <QComboBox>
-#include <QMenuBar>
 #include <QToolBar>
 #include <QMenu>
 #include <QAction>

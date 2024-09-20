@@ -98,7 +98,8 @@ cMain::PopUpDebug(GRobject caller, ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        delete QTscriptDebuggerDlg::self();
+        // Old QT5 will crash without delayed delete.
+        QTscriptDebuggerDlg::self()->deleteLater();
         return;
     }
 

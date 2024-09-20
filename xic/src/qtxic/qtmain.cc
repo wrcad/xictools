@@ -532,7 +532,8 @@ QTpkg::SubwinDestroy(int wnum)
     WindowDesc *wdesc = DSP()->Window(wnum);
     if (!wdesc)
         return;
-    delete dynamic_cast<QTsubwin*>(wdesc->Wbag());
+    // Old QT5 will crash unless delete delayed.
+    dynamic_cast<QTsubwin*>(wdesc->Wbag())->deleteLater();
 }
 
 
