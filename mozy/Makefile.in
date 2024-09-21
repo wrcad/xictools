@@ -97,6 +97,9 @@ bin/httpget: bin/httpget.o $(LOCAL_LIBS)
 	@$(LINKCC) -o bin/httpget $(LFLAGS) bin/httpget.o lib/httpget.a \
   $(LOCAL_LIBS) $(LIBS) $(STDCLIB)
 
+bin/httpget.o: bin/httpget.cc
+	$(CXX) $(CFLAGS) $(INCLUDE) -DNO_GRAPHICS -c $*.cc -o $*.o
+
 bin/mozy.o: bin/mozy.cc
 	$(CXX) $(CFLAGS) -DPREFIX=\"$(prefix)\" \
   -DVERSION_STR=\"$(MOZY_VERSION)\" -DOSNAME_STR=\"$(OSNAME)\" \

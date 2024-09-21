@@ -21,18 +21,20 @@ if [ ! -f $utod ]; then
     cd $cwd
 fi
 
-program=mozy
-cp $base/util/program.bat $top/$toolroot/bin/$program.bat
-chmod 755 $top/$toolroot/bin/$program.bat
-$utod $top/$toolroot/bin/$program.bat
-program=xeditor
-cp $base/util/program.bat $top/$toolroot/bin/$program.bat
-chmod 755 $top/$toolroot/bin/$program.bat
-$utod $top/$toolroot/bin/$program.bat
-program=httpget
-cp $base/util/program.bat $top/$toolroot/bin/$program.bat
-chmod 755 $top/$toolroot/bin/$program.bat
-$utod $top/$toolroot/bin/$program.bat
+cp -f files/postinstall.bat $top/$toolroot/mozy/bin
+cp -f files/preinstall.bat $top/$toolroot/mozy/bin
+$utod $top/$toolroot/mozy/bin/postinstall.bat
+$utod $top/$toolroot/mozy/bin/preinstall.bat
+$utod $top/$toolroot/mozy/bin/mozy.bat
+$utod $top/$toolroot/mozy/bin/xeditor.bat
+$utod $top/$toolroot/mozy/bin/mozy.sh
+$utod $top/$toolroot/mozy/bin/xeditor.sh
+chmod 755 $top/$toolroot/mozy/bin/postinstall.bat
+chmod 755 $top/$toolroot/mozy/bin/preinstall.bat
+chmod 755 $top/$toolroot/mozy/bin/mozy.bat
+chmod 755 $top/$toolroot/mozy/bin/xeditor.bat
+chmod 644 $top/$toolroot/mozy/bin/mozy.sh
+chmod 644 $top/$toolroot/mozy/bin/xeditor.sh
 
 help=$top/$toolroot/$appdir/help
 $utod $help/*.hlp

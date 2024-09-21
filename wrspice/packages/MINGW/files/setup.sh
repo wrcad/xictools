@@ -27,14 +27,16 @@ if [ ! -f $utod ]; then
     cd $cwd
 fi
 
-#chmod 755 $top/$toolroot/$appdir/bin/wrspice.bat
-#$utod $top/$toolroot/$appdir/bin/wrspice.bat
 cp -f files/postinstall.bat $top/$toolroot/$appdir/bin
-chmod 755 $top/$toolroot/$appdir/bin/postinstall.bat
-$utod $top/$toolroot/$appdir/bin/postinstall.bat
 cp -f files/preinstall.bat $top/$toolroot/$appdir/bin
-chmod 755 $top/$toolroot/$appdir/bin/preinstall.bat
+$utod $top/$toolroot/$appdir/bin/postinstall.bat
 $utod $top/$toolroot/$appdir/bin/preinstall.bat
+$utod $top/$toolroot/$appdir/bin/wrspice.bat
+$utod $top/$toolroot/$appdir/bin/wrspice.sh
+chmod 755 $top/$toolroot/$appdir/bin/postinstall.bat
+chmod 755 $top/$toolroot/$appdir/bin/preinstall.bat
+chmod 755 $top/$toolroot/$appdir/bin/wrspice.bat
+chmod 644 $top/$toolroot/$appdir/bin/wrspice.sh
 
 examples=$top/$toolroot/$appdir/examples
 $utod $examples/*

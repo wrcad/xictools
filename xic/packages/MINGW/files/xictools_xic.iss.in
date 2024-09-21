@@ -19,12 +19,14 @@ DirExistsWarning=no
 PrivilegesRequired=admin
 
 UninstallFilesDir={app}\TOOLROOT\xic.current\uninstall
-UninstallDisplayIcon={app}\TOOLROOT\xic.current\bin\xic.exe
+UninstallDisplayIcon={app}\TOOLROOT\xic.current\bin\GTK2\xic.exe
 
 [Files]
 
 Source: "..\root\usr\local\TOOLROOT\xic.current\bin\preinstall.bat"; DestDir: "{app}\TOOLROOT\xic.current\bin";
 Source: "..\root\usr\local\TOOLROOT\xic.current\bin\postinstall.bat"; DestDir: "{app}\TOOLROOT\xic.current\bin"; BeforeInstall: DoBeforeInstall
+Source: "..\root\usr\local\TOOLROOT\xic.current\bin\xic.sh"; DestDir: "{app}\TOOLROOT\xic.current\bin";
+Source: "..\root\usr\local\TOOLROOT\xic.current\bin\xic.bat"; DestDir: "{app}\TOOLROOT\xic.current\bin";
 Source: "..\root\usr\local\TOOLROOT\xic.current\bin\GTK2\xic.exe"; DestDir: "{app}\TOOLROOT\xic.current\bin\GTK2";
 Source: "..\root\usr\local\TOOLROOT\xic.current\bin\GTK2\xic.dll"; DestDir: "{app}\TOOLROOT\xic.current\bin\GTK2";
 Source: "..\root\usr\local\TOOLROOT\xic.current\bin\QT6\xic.exe"; DestDir: "{app}\TOOLROOT\xic.current\bin\QT6";
@@ -52,7 +54,7 @@ Source: "..\root\usr\local\TOOLROOT\xic.current\docs\MSWINFO.TXT"; DestDir: "{ap
 
 [Icons]
 
-Name: "{group}\xic"; Filename: "{app}\TOOLROOT\xic.current\bin\xic.bat"; WorkingDir: "c:\"; IconFilename: "{app}\TOOLROOT\xic.current\bin\xic.exe"
+Name: "{group}\xic"; Filename: "{app}\TOOLROOT\xic.current\bin\xic.bat"; WorkingDir: "c:\"; IconFilename: "{app}\TOOLROOT\xic.current\bin\GTK2\xic.exe"
 
 [code]
 

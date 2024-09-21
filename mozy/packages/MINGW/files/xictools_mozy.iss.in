@@ -17,20 +17,26 @@ DefaultGroupName=XicTools
 DirExistsWarning=no
 
 PrivilegesRequired=admin
+SetupLogging=yes
 
 UninstallFilesDir={app}\TOOLROOT\mozy\uninstall
-UninstallDisplayIcon={app}\TOOLROOT\bin\mozy.exe
+UninstallDisplayIcon={app}\TOOLROOT\mozy\bin\GTK2\mozy.exe
 
 [Files]
 
-Source: "..\root\usr\local\TOOLROOT\bin\mozy.exe"; DestDir: "{app}\TOOLROOT\bin"; Flags: ignoreversion
-Source: "..\root\usr\local\TOOLROOT\bin\mozy.bat"; DestDir: "{app}\TOOLROOT\bin"; Flags: ignoreversion
-Source: "..\root\usr\local\TOOLROOT\bin\xeditor.exe"; DestDir: "{app}\TOOLROOT\bin"; Flags: ignoreversion
-Source: "..\root\usr\local\TOOLROOT\bin\xeditor.bat"; DestDir: "{app}\TOOLROOT\bin"; Flags: ignoreversion
-Source: "..\root\usr\local\TOOLROOT\bin\httpget.exe"; DestDir: "{app}\TOOLROOT\bin"; Flags: ignoreversion
-Source: "..\root\usr\local\TOOLROOT\bin\httpget.bat"; DestDir: "{app}\TOOLROOT\bin"; Flags: ignoreversion
-Source: "..\root\usr\local\TOOLROOT\bin\hlp2html.exe"; DestDir: "{app}\TOOLROOT\bin"; Flags: ignoreversion
-Source: "..\root\usr\local\TOOLROOT\bin\hlpsrv.exe"; DestDir: "{app}\TOOLROOT\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\TOOLROOT\mozy\bin\preinstall.bat"; DestDir: "{app}\TOOLROOT\mozy\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\TOOLROOT\mozy\bin\postinstall.bat"; DestDir: "{app}\TOOLROOT\mozy\bin"; Flags: ignoreversion; BeforeInstall: DoBeforeInstall
+Source: "..\root\usr\local\TOOLROOT\mozy\bin\mozy.sh"; DestDir: "{app}\TOOLROOT\mozy\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\TOOLROOT\mozy\bin\xeditor.sh"; DestDir: "{app}\TOOLROOT\mozy\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\TOOLROOT\mozy\bin\mozy.bat"; DestDir: "{app}\TOOLROOT\mozy\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\TOOLROOT\mozy\bin\xeditor.bat"; DestDir: "{app}\TOOLROOT\mozy\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\TOOLROOT\mozy\bin\GTK2\mozy.exe"; DestDir: "{app}\TOOLROOT\mozy\bin\GTK2"; Flags: ignoreversion
+Source: "..\root\usr\local\TOOLROOT\mozy\bin\GTK2\xeditor.exe"; DestDir: "{app}\TOOLROOT\mozy\bin\GTK2"; Flags: ignoreversion
+Source: "..\root\usr\local\TOOLROOT\mozy\bin\QT6\mozy.exe"; DestDir: "{app}\TOOLROOT\mozy\bin\QT6"; Flags: ignoreversion
+Source: "..\root\usr\local\TOOLROOT\mozy\bin\QT6\xeditor.exe"; DestDir: "{app}\TOOLROOT\mozy\bin\QT6"; Flags: ignoreversion
+Source: "..\root\usr\local\TOOLROOT\mozy\bin\httpget.exe"; DestDir: "{app}\TOOLROOT\mozy\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\TOOLROOT\mozy\bin\hlp2html.exe"; DestDir: "{app}\TOOLROOT\mozy\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\TOOLROOT\mozy\bin\hlpsrv.exe"; DestDir: "{app}\TOOLROOT\mozy\bin"; Flags: ignoreversion; AfterInstall: DoAfterInstall
 
 Source: "..\root\usr\local\TOOLROOT\mozy\help\*"; DestDir: "{app}\TOOLROOT\mozy\help"
 Source: "..\root\usr\local\TOOLROOT\mozy\help\screenshots\*"; DestDir: "{app}\TOOLROOT\mozy\help\screenshots"
@@ -38,7 +44,7 @@ Source: "..\root\usr\local\TOOLROOT\mozy\startup\*"; DestDir: "{app}\TOOLROOT\mo
 
 [Icons]
 
-Name: "{group}\mozy"; Filename: "{app}\TOOLROOT\bin\mozy.bat"; WorkingDir: "c:\"; IconFilename: "{app}\TOOLROOT\bin\mozy.exe"
+Name: "{group}\mozy"; Filename: "{app}\TOOLROOT\bin\mozy.bat"; WorkingDir: "c:\"; IconFilename: "{app}\TOOLROOT\mozy\bin\GTK2\mozy.exe"
 
 [code]
 
@@ -48,3 +54,28 @@ function InitializeSetup(): Boolean;
 begin
   Result := True;
 end;
+
+procedure DoBeforeInstall();
+var
+    resultCode:  Integer;
+begin
+    Exec(ExpandConstant('{app}\TOOLROOT\mozy\bin\preinstall.bat'),
+        '', ExpandConstant('{app}\TOOLROOT'), SW_HIDE, ewWaitUntilTerminated,
+        resultCode);
+end;
+
+procedure DoAfterInstall();
+var
+    resultCode:  Integer;
+begin
+    Exec(ExpandConstant('{app}\TOOLROOT\mozy\bin\postinstall.bat'),
+        '', ExpandConstant('{app}\TOOLROOT'), SW_HIDE, ewWaitUntilTerminated,
+        resultCode);
+end;
+
+function InitializeUninstall(): Boolean;
+begin
+    DoBeforeInstall();
+    Result := True;
+end;
+

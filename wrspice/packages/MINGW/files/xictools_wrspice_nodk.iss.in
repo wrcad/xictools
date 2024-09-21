@@ -25,6 +25,8 @@ UninstallDisplayIcon={app}\TOOLROOT\wrspice.current\bin\wrspice.exe
 
 Source: "..\root\usr\local\TOOLROOT\wrspice.current\bin\preinstall.bat"; DestDir: "{app}\TOOLROOT\wrspice.current\bin";
 Source: "..\root\usr\local\TOOLROOT\wrspice.current\bin\postinstall.bat"; DestDir: "{app}\TOOLROOT\wrspice.current\bin"; BeforeInstall: DoBeforeInstall
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\bin\wrspice.bat"; DestDir: "{app}\TOOLROOT\wrspice.current\bin";
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\bin\wrspice.sh"; DestDir: "{app}\TOOLROOT\wrspice.current\bin";
 Source: "..\root\usr\local\TOOLROOT\wrspice.current\bin\GTK2\wrspice.exe"; DestDir: "{app}\TOOLROOT\wrspice.current\bin\GTK2";
 Source: "..\root\usr\local\TOOLROOT\wrspice.current\bin\GTK2\wrspice.dll"; DestDir: "{app}\TOOLROOT\wrspice.current\bin\GTK2";
 Source: "..\root\usr\local\TOOLROOT\wrspice.current\bin\QT6\wrspice.exe"; DestDir: "{app}\TOOLROOT\wrspice.current\bin\QT6";
