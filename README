@@ -167,6 +167,7 @@ Status as of September 17, 2024
   as GTK2 will go away at some point.
 - Pre-built packages contain GTK2 and Qt binaries.
 
+
 3.2  Packages vs. Building from Source
 
 Historically, pre-built packages were available for various operating
@@ -191,6 +192,7 @@ users.  This will provide several advantages for users:
 6. The make system used to build the programs can also generate
    package files, so if anyone wants to produce their own, this is
    possible.
+
 
 3.3  Building from Source, Prerequisites
 
@@ -441,6 +443,7 @@ than not needing an X-server, the main difference is that the
 application main menus appear in the Mac location at the top of the
 screen, and not in the application window.
 
+
 3.4  Obtaining the Git Repository
 
 The file you are presently reading (README) is at the top level of the
@@ -470,6 +473,7 @@ README file, and a whole lot more.  This contains all of the source
 code for XicTools, and a "hidden" compressed git database.  You will
 build the tools in this area.
 
+
 3.5  The Build Procedure.
 
 First, change to the top directory of the cloned repository created as
@@ -480,7 +484,7 @@ README file in your xictools git repository.  It assumes that you have
 installed the software build tools and development libraries as listed
 above, or a best guess depending on your system.
 
-The procedure is as follows.
+The basic procedure is as follows.
 
 The first time, you will need to set up the main Makefile.
 
@@ -505,6 +509,33 @@ The first time, you will need to set up the main Makefile.
 5. Make sure that your shell search path includes the main XicTools
    bin, which is by default /usr/local/xictools/bin.  Use the actual
    path if you changed PREFIX in the Makefile.
+
+The present package releases of the XicTools contain separate binaries
+using the GTK2 and Qt graphics packages used for the GUI display.  This
+is likely to be temporary as the Qt versions will replace the GTK
+versions, as the GTK2 library is considered to be obsolete.  For now,
+both version are included for comparison purposes, and possibly as a
+work around if there is trouble with one or the other.
+
+When building the source, you can use the following procedure to build
+both versions.
+
+1. After setting up the top-level Makefile as normal, run
+   make reconfig
+   make all
+   (Note: if this is the first time building, or you have run "make distclean"
+   run "make config" rather than "make reconfig".)
+
+2. Edit the top-level Makefile to switch the chosen graphical toolkit
+   to Qt from GTK2 or vice-versa.  If doesn't matter which you start with.
+
+3. Give the commands
+   make reconfig
+   make all
+   (Note: only the parts that change will be rebuilt, not the whole thing!
+
+This completes the build procedure.
+
 
 3.6  The Installation Procedure.
 
@@ -544,6 +575,30 @@ Otherwise:
    the example Verilog-A models for WRspice which takes a while.
 
 You should now be able to use the programs.  Have fun!
+
+
+3.7  Switching between running GTK2 and Qt-based tools.
+
+You can switch between the two versions using a .xtrc file which is
+found either in the current directory or your home directory.  You
+will need to create this file to use the Qt version.  This is easily
+done with a text editor.  If this file is not gound, GTK2 is the
+default.
+
+The .xtrc file contains a single line that looks like
+grpref=GTK2
+
+Note that there is no white space around the '=' character.  The GTK2
+is replaced by QT5 or QT6 when you want to run Qt.  The 5/6 corresponds
+to the Qt version, either of which can be used if you build from source.
+For the packages, the Qt versions included are
+Windows     QT6
+macOS       QT6
+all Linux   QT5
+
+You can change which version to run by modifying the .xtrc file with a
+text editor.  This will take effect the next time a graphical tool is
+started.
 
 
 4.0  Maintaining the Installation Using Git
