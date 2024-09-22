@@ -33,9 +33,9 @@ oses)
   echo \
 "Darwin.arm64 \
 Darwin.x86_64 \
-LinuxCentos8 \
+LinuxRocky8 \
 LinuxDebian11 \
-LinuxFedora36 \
+LinuxFedora40 \
 LinuxOpenSUSE15 \
 LinuxRHEL7 \
 LinuxUbuntu22 \
@@ -50,18 +50,18 @@ host)
     echo stephens-air;;
   Darwin.x86_64)
     echo macbook2;;
-  LinuxCentos8)
+  LinuxRocky8)
     echo poe;;
   LinuxDebian11)
     echo debby;;
-  LinuxFedora36)
+  LinuxFedora40)
     echo fedor;;
   LinuxOpenSUSE15)
     echo byron;;
   LinuxRHEL7)
     echo frost;;
   LinuxUbuntu22)
-    echo ubun;;
+    echo ubun2;;
   MINGW)
     echo marlowe;;
   esac
@@ -72,11 +72,11 @@ sfx)
     echo pkg;;
   Darwin.x86_64)
     echo pkg;;
-  LinuxCentos8)
+  LinuxRocky8)
     echo rpm;;
   LinuxDebian11)
     echo deb;;
-  LinuxFedora36)
+  LinuxFedora40)
     echo rpm;;
   LinuxOpenSUSE15)
     echo rpm;;
