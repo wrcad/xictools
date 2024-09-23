@@ -16,8 +16,81 @@ the repository, for those wishing to track the latest.
 Scroll down to the notes for the current Xic release, which follows
 some important general information.
 
-*****************************************************
-IMPORTANT -- New Windows framework, releases.
+*******************************************************************************
+IMPORTANT -- Search path setup.
+
+In 4.3 releases, all executables are linked into the
+   /usr/local/xictools/bin
+directory, or the equivalent if you installed xictools in another
+location.  The directory should be added to your shell search path.
+
+*******************************************************************************
+IMPORTANT -- 09/22/2024 -- Dual support, GTK and QT
+
+From XicTools git tag xt-4.3.20 (xic-4.3.14, wrspice-4.3.20) package
+releases contain separate binaries using the GTK2 and Qt graphics
+libraries used for the GUI display.  This is likely to be temporary as
+the Qt versions will replace the GTK versions, as the GTK2 library is
+considered to be obsolete.  For now, both version are included for
+comparison purposes, and possibly as a work around if there is trouble
+with one or the other.
+
+For the packages, the Qt versions used are
+Windows     QT6
+macOS       QT6
+all Linux   QT5
+
+To use Qt, you will probably have to install it.  Use these commands:
+Windows: pacman -S mingw-w64-x86_64-qt6
+macOS: sudo port install qt6
+Linux: Qt5 is likely installed already, but if not you can give
+commands like (as root)
+Debian/Ubuntu: apt-install qt5-qtbase-devel
+Red Hat equiv: dnf install qt5-qtbase-devel
+
+You can switch between the two versions using a .xtrc file which is
+found either in the current directory or your home directory.  You
+will need to create this file to use the Qt version.  This is easily
+done with a text editor.  If this file is not found, GTK2 is the
+default.
+
+The .xtrc file contains a single line that looks like
+grpref=GTK2
+
+Note that there is no white space around the '=' character.  The GTK2
+is replaced by QT5 or QT6 when you want to run Qt.  The 5/6 corresponds
+to the Qt version, either of which can be used if you build from source.
+You can change which version to run by modifying the .xtrc file with a
+text editor.
+
+The same applies if you build from source and install directly without
+building packages.  Follow this procedure:
+
+1.  After setting up the top-level Makefile as normal, run
+make reconfig
+make all
+(Note: if this is the first time building, or you have run "make
+distclean" run "make config" rather than "make reconfig".)
+
+2.  Edit the top-level Makefile to switch the chosen graphical toolkit
+to Qt from GTK2 or vice-versa.  If doesn't matter which you start with.
+
+3. Give the commands
+make reconfig
+make all
+
+4a.  To build a set of package files, give the command
+make packages
+The package files are saved in xt_base/packages/pkgfiles in the source
+tree.  From this directory, give
+../util/wr_install all
+to install the packages
+
+4b.  To install the programs directly, skipping package file generation:
+sudo make install
+
+*******************************************************************************
+IMPORTANT -- 01/01/2021 -- New Windows framework, releases.
 
 Starting January 2021, all Windows binaries are 64-bit, compiled under
 the MINGW64 subsystem of MSYS2 (64-bit version).
@@ -41,8 +114,9 @@ things you'll need.
 
  pacman -S vim
  pacman -S winpty
- pacman -S mingw-w64-x86_64-gtk2
  pacman -S mingw-w64-x86_64-gsl
+ pacman -S mingw-w64-x86_64-gtk2
+ pacman -S mingw-w64-x86_64-qt6
 
 Then, use the vim editor to edit the .bash_profile file that exists in
 the current (your home) directory.  Add the following lines to the
@@ -70,8 +144,8 @@ The winpty program performs some magic that enables native Windows
 programs expecting to find a cmd.com type of window to work with
 the mintty.
 
-*****************************************************
-IMPORTANT -- Font Size (March 2020)
+*******************************************************************************
+IMPORTANT -- 03/01/2020 --  Font Size
 
 The default GTK font sizes generally seem reasonable on Linux and
 Windows, but not on Apple, where they are too small on my old 2010 13
@@ -95,15 +169,7 @@ the best size for your screen.  For my old MacBook I use 18, for the
 new one 10.  Linux and Windows seem to get this right in the first
 place, 10 being about the default.
 
-*****************************************************
-IMPORTANT -- Search path setup.
-
-In 4.3 releases, all executables are linked into the
-   /usr/local/xictools/bin
-directory, or the equivalent if you installed xictoiols in another
-location.  The directory should be added to your shell search path.
-
-*****************************************************
+*******************************************************************************
 End of general info.
 
 

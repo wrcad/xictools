@@ -14,7 +14,6 @@
 @rem   directory.
 
 set prog=mozy
-if exist %prog%\ rmdir /s /q %prog% 
 
 if exist bin\%prog%.exe\ ( rmdir bin\%prog%.exe
 ) else ( if exist bin\%prog%.exe del bin\%prog%.exe )

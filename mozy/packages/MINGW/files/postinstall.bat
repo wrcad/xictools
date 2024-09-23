@@ -7,11 +7,11 @@ if not exist bin\ (
     if exist bin ( del bin )
     mkdir bin
 )
-mklink bin\hlpsrv.exe %cd%\xic\bin\hlpsrv.exe
-mklink bin\help2html.exe %cd%\xic\bin\help2html.exe
-mklink bin\httpget.exe %cd%\xic\bin\httpget.exe
-copy %cd%\xic\bin\mozy.bat bin
-copy %cd%\xic\bin\mozy.sh bin\mozy
-copy %cd%\xic\bin\xeditor.bat bin
-copy %cd%\xic\bin\xeditor.sh bin\xeditor
+mklink bin\hlpsrv.exe %cd%\mozy\bin\hlpsrv.exe
+mklink bin\hlp2html.exe %cd%\mozy\bin\hlp2html.exe
+mklink bin\httpget.exe %cd%\mozy\bin\httpget.exe
+copy %cd%\mozy\bin\mozy.bat bin
+copy %cd%\mozy\bin\mozy.sh bin\mozy
+copy %cd%\mozy\bin\xeditor.bat bin
+copy %cd%\mozy\bin\xeditor.sh bin\xeditor
 

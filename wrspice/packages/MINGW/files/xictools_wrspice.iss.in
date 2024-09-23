@@ -19,12 +19,14 @@ DirExistsWarning=no
 PrivilegesRequired=admin
 
 UninstallFilesDir={app}\TOOLROOT\wrspice.current\uninstall
-UninstallDisplayIcon={app}\TOOLROOT\wrspice.current\bin\wrspice.exe
+UninstallDisplayIcon={app}\TOOLROOT\wrspice.current\bin\GTK2\wrspice.exe
 
 [Files]
 
 Source: "..\root\usr\local\TOOLROOT\wrspice.current\bin\preinstall.bat"; DestDir: "{app}\TOOLROOT\wrspice.current\bin";
 Source: "..\root\usr\local\TOOLROOT\wrspice.current\bin\postinstall.bat"; DestDir: "{app}\TOOLROOT\wrspice.current\bin"; BeforeInstall: DoBeforeInstall
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\bin\wrspice.bat"; DestDir: "{app}\TOOLROOT\wrspice.current\bin";
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\bin\wrspice.sh"; DestDir: "{app}\TOOLROOT\wrspice.current\bin";
 Source: "..\root\usr\local\TOOLROOT\wrspice.current\bin\GTK2\wrspice.exe"; DestDir: "{app}\TOOLROOT\wrspice.current\bin\GTK2";
 Source: "..\root\usr\local\TOOLROOT\wrspice.current\bin\GTK2\wrspice.dll"; DestDir: "{app}\TOOLROOT\wrspice.current\bin\GTK2";
 Source: "..\root\usr\local\TOOLROOT\wrspice.current\bin\QT6\wrspice.exe"; DestDir: "{app}\TOOLROOT\wrspice.current\bin\QT6";
@@ -97,6 +99,10 @@ Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\include\*"; DestDir: 
 Source: "..\root\usr\local\TOOLROOT\wrspice.current\docs\wrs*"; DestDir: "{app}\TOOLROOT\wrspice.current\docs";
 Source: "..\root\usr\local\TOOLROOT\wrspice.current\docs\README"; DestDir: "{app}\TOOLROOT\wrspice.current\docs"
 Source: "..\root\usr\local\TOOLROOT\wrspice.current\docs\MSWINFO.TXT"; DestDir: "{app}\TOOLROOT\wrspice.current\docs"
+
+[Icons]
+
+Name: "{group}\wrspice"; Filename: "{app}\TOOLROOT\wrspice.current\bin\wrspice.bat"; WorkingDir: "c:\"; IconFilename: "{app}\TOOLROOT\wrspice.current\bin\GTK2\wrspice.exe"
 
 [code]
 
