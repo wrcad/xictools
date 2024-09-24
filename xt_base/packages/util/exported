@@ -38,7 +38,7 @@ LinuxDebian11 \
 LinuxFedora40 \
 LinuxOpenSUSE15 \
 LinuxRHEL7 \
-LinuxUbuntu22 \
+LinuxUbuntu24 \
 MINGW"
 ;;
 progs)
@@ -60,7 +60,7 @@ host)
     echo byron;;
   LinuxRHEL7)
     echo frost;;
-  LinuxUbuntu22)
+  LinuxUbuntu24)
     echo ubun2;;
   MINGW)
     echo marlowe;;
@@ -82,7 +82,7 @@ sfx)
     echo rpm;;
   LinuxRHEL7)
     echo rpm;;
-  LinuxUbuntu22)
+  LinuxUbuntu24)
     echo deb;;
   MINGW)
     echo exe;;
