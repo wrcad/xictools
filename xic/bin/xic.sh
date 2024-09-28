@@ -16,6 +16,13 @@ elif [ -f $HOME/.xtrc ]; then
     source $HOME/.xtrc
 fi
 
+# Hook to Custom Compiler, PyCellStudio (Synopsys only!)
+ 
+snps_xic=$(dirname $(readlink -f "$0"))/snps_xic
+if [ -f "$snps_xic" ]; then
+    source $snps_xic
+fi
+
 # Handle the XIC_LIBRARY_PATH variable by prepending it to the dynamic
 # linker search path.  This can be used to pass the location of
 # libraries needed by plugins, for example for OpenAccess.  Set
@@ -28,34 +35,6 @@ if [ -n "$XIC_LIBRARY_PATH" ]; then
     else
         LD_LIBRARY_PATH="$XIC_LIBRARY_PATH"
     fi
-fi
-
-# Hook to Custom Compiler, PyCellStudio (Synopsys only!)
-snps_xic=$(dirname $(readlink -f "$0"))/snps_xic
-if [ -f "$snps_xic" ]; then
-    source $snps_xic
-fi
-
-# Connect to Custom Compiler, PyCellStudio if  found.
-
-if [ -n "$CC_HOME" ]; then
-    export SYNOPSYS_CUSTOM_INSTALL=$CC_HOME/auxx
-    export CNI_ROOT=$CC_HOME/linux64/PyCellStudio
-fi
-if [ -n "$CNI_ROOT" ]; then
-    cni_bin=$CNI_ROOT/bin
-
-    . $cni_bin/functions.bash
-
-    setup_PYTHON_VERSION "$@"
-    check_CNI_ROOT
-    get_platform
-    check_platform
-    setup_OpenAccess
-    setup_CNI_env
-    setup_Python_env
-    setup_LD_LIBRARY_PATH "$@"
-    setup_PATH
 fi
 
 # Call the Xic program, passing along the argument list.
