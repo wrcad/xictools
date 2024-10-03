@@ -3150,7 +3150,7 @@ OpenAccess
     <a name="OaIsCellView"></a>
     <dl>
     <dt><b>(int) <tt>OaIsCellView</tt>(<i>cellname</i>, <i>viewname</i>,
-      <i>open\_only</i>)</b>
+      <i>open_only</i>)</b>
     <dd><br>
     Return 1 if the cellname and viewname resolve as a cellview in an
     OpenAccess library, 0 otherwise.  If the boolean <i>open_only</i> is

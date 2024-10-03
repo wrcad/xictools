@@ -261,8 +261,7 @@ Note:  It doesn't hurt to attempt to install software that is already
 installed with the commands below.  If the software is alredy installed.
 you will get a message indicating this.
 
-Ubuntu 20
-Debian 11
+Ubuntu, Debian
    These use the same packages.  The "build-essential" provides the
    program development toolchain.  The package names can be listed after
    "apt install", or the command can be invoked on the packages
@@ -582,7 +581,7 @@ You should now be able to use the programs.  Have fun!
 You can switch between the two versions using a .xtrc file which is
 found either in the current directory or your home directory.  You
 will need to create this file to use the Qt version.  This is easily
-done with a text editor.  If this file is not gound, GTK2 is the
+done with a text editor.  If this file is not found, GTK2 is the
 default.
 
 The .xtrc file contains a single line that looks like

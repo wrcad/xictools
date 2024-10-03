@@ -3388,7 +3388,7 @@ Attributes Menu Commands
     release 4.3.13 and earlier was to not show connection dots.
 
     <p>
-    If set to "<tt>none</tt>" or any word starting with '<tt>n<\tt>'
+    If set to "<tt>none</tt>" or any word starting with '<tt>n</tt>'
     or '<tt>N</tt>' no connection point indication is used.  If set to
     "<tt>all</tt>" or any word starting with '<tt>a</tt>' or
     '<tt>A</tt>', all connections are marked with a dot.  This is

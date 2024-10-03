@@ -1202,40 +1202,80 @@ IFpulseData::parse(const char *args, IFparseNode *p, int *error)
 void
 IFpulseData::setup(sCKT *ckt, double step, double finaltime, bool skipbr)
 {
-    // This is called with zeroed arguments to disable tran funcs while
-    // not in transient analysis.
+    memset(td_parms, 0, 8*sizeof(double));
+    set_V1(td_coeffs[0]);
+    set_V2(td_numcoeffs >= 2 ? td_coeffs[1] : td_coeffs[0]);
+    set_TD(td_numcoeffs >= 3 ? td_coeffs[2] : 0.0);
+    set_TR(td_numcoeffs >= 4 ? td_coeffs[3] : 0.0);
+    set_TF(td_numcoeffs >= 5 ? td_coeffs[4] : 0.0);
+    set_PW(td_numcoeffs >= 6 ? td_coeffs[5] : 0.0);
+    set_PER(td_numcoeffs >= 7 ? td_coeffs[6] : 0.0);
+    td_cache[0] = TR() > 0.0 ? (V2() - V1())/TR() : 0.0;
+    td_cache[1] = TF() > 0.0 ? (V2() - V1())/TF() : 0.0;
+
+    delete [] td_parray;
+    td_parray = 0;
+    td_plen = 0;
+    td_prst = 0;
+
+    // Disable tran funcs while not in transient analysis.
     //
-    if (step > 0.0 && finaltime > 0.0) {
-        if (td_enable_tran)
-            setup(ckt, 0.0, 0.0, false);
-        td_enable_tran = true;
+    td_enable_tran = (step > 0.0 && finaltime > 0.0);
+    if (!td_enable_tran)
+        return;
+
+    if (TR() <= 0.0)
+        set_TR(step);
+    if (TF() > 0.0 && PW() <= 0.0)
+        set_PW(0.0);
+    else {
+        if (TF() <= 0.0)
+            set_TF(step);
+        if (PW() <= 0.0)
+            set_PW(MAXFLOAT);
     }
-    else
-        td_enable_tran = false;
+    if (PER() <= 0.0)
+        set_PER(MAXFLOAT);
+    else if (PER() < TR() + PW() + TF())
+        set_PER(TR() + PW() + TF());
 
-    if (td_enable_tran) {
-        if (TR() <= 0.0)
-            set_TR(step);
-        if (TF() > 0.0 && PW() <= 0.0)
-            set_PW(0.0);
-        else {
-            if (TF() <= 0.0)
-                set_TF(step);
-            if (PW() <= 0.0)
-                set_PW(MAXFLOAT);
+    // Reset these, may have changed.
+    td_cache[0] = (V2() - V1())/TR();
+    td_cache[1] = (V1() - V2())/TF();
+
+    if (!skipbr && ckt) {
+        if (PER() < finaltime) {
+            double time = TD();
+            ckt->breakSetLattice(time, PER());
+            time += TR();
+            ckt->breakSetLattice(time, PER());
+            if (PW() != 0) {
+                time += PW();
+                ckt->breakSetLattice(time, PER());
+            }
+            if (TF() != 0) {
+                time += TF();
+                ckt->breakSetLattice(time, PER());
+            }
         }
-        if (PER() <= 0.0)
-            set_PER(MAXFLOAT);
-        else if (PER() < TR() + PW() + TF())
-            set_PER(TR() + PW() + TF());
-
-        // Reset these, may have changed.
-        td_cache[0] = (V2() - V1())/TR();
-        td_cache[1] = (V1() - V2())/TF();
-
-        if (!skipbr && ckt) {
+        else {
+            double time = TD();
+            ckt->breakSet(time);
+            time += TR();
+            ckt->breakSet(time);
+            if (PW() != 0) {
+                time += PW();
+                ckt->breakSet(time);
+            }
+            if (TF() != 0) {
+                time += TF();
+                ckt->breakSet(time);
+            }
+        }
+        // set for additional offsets
+        for (int i = 7; i < td_numcoeffs; i++) {
             if (PER() < finaltime) {
-                double time = TD();
+                double time = td_coeffs[i];
                 ckt->breakSetLattice(time, PER());
                 time += TR();
                 ckt->breakSetLattice(time, PER());
@@ -1249,7 +1289,7 @@ IFpulseData::setup(sCKT *ckt, double step, double finaltime, bool skipbr)
                 }
             }
             else {
-                double time = TD();
+                double time = td_coeffs[i];
                 ckt->breakSet(time);
                 time += TR();
                 ckt->breakSet(time);
@@ -1262,67 +1302,19 @@ IFpulseData::setup(sCKT *ckt, double step, double finaltime, bool skipbr)
                     ckt->breakSet(time);
                 }
             }
-            // set for additional offsets
-            for (int i = 7; i < td_numcoeffs; i++) {
-                if (PER() < finaltime) {
-                    double time = td_coeffs[i];
-                    ckt->breakSetLattice(time, PER());
-                    time += TR();
-                    ckt->breakSetLattice(time, PER());
-                    if (PW() != 0) {
-                        time += PW();
-                        ckt->breakSetLattice(time, PER());
-                    }
-                    if (TF() != 0) {
-                        time += TF();
-                        ckt->breakSetLattice(time, PER());
-                    }
-                }
-                else {
-                    double time = td_coeffs[i];
-                    ckt->breakSet(time);
-                    time += TR();
-                    ckt->breakSet(time);
-                    if (PW() != 0) {
-                        time += PW();
-                        ckt->breakSet(time);
-                    }
-                    if (TF() != 0) {
-                        time += TF();
-                        ckt->breakSet(time);
-                    }
-                }
-            }
-        }
-        if (PER() < finaltime) {
-            // Construct the pattern array.
-            if (td_pblist) {
-                pbitAry ba;
-                ba.add(td_pblist);
-                if (ba.count()) {
-                    td_parray = ba.final();
-                    td_plen = ba.count();
-                    td_prst = ba.rep_start();
-                }
-            }
         }
     }
-    else {
-        memset(td_parms, 0, 8*sizeof(double));
-        set_V1(td_coeffs[0]);
-        set_V2(td_numcoeffs >= 2 ? td_coeffs[1] : td_coeffs[0]);
-        set_TD(td_numcoeffs >= 3 ? td_coeffs[2] : 0.0);
-        set_TR(td_numcoeffs >= 4 ? td_coeffs[3] : 0.0);
-        set_TF(td_numcoeffs >= 5 ? td_coeffs[4] : 0.0);
-        set_PW(td_numcoeffs >= 6 ? td_coeffs[5] : 0.0);
-        set_PER(td_numcoeffs >= 7 ? td_coeffs[6] : 0.0);
-        td_cache[0] = TR() > 0.0 ? (V2() - V1())/TR() : 0.0;
-        td_cache[1] = TF() > 0.0 ? (V2() - V1())/TF() : 0.0;
-
-        delete [] td_parray;
-        td_parray = 0;
-        td_plen = 0;
-        td_prst = 0;
+    if (PER() < finaltime) {
+        // Construct the pattern array.
+        if (td_pblist) {
+            pbitAry ba;
+            ba.add(td_pblist);
+            if (ba.count()) {
+                td_parray = ba.final();
+                td_plen = ba.count();
+                td_prst = ba.rep_start();
+            }
+        }
     }
 }
 
@@ -1678,75 +1670,64 @@ IFgpulseData::parse(const char *args, IFparseNode *p, int *error)
 
 
 void
-IFgpulseData::setup(sCKT *ckt, double step, double finaltime, bool skipbr)
+IFgpulseData::setup(sCKT*, double step, double finaltime, bool)
 {
-    (void)skipbr;
-    // This is called with zeroed arguments to disable tran funcs while
-    // not in transient analysis.
-    //
-    if (step > 0.0 && finaltime > 0.0) {
-        if (td_enable_tran)
-            setup(ckt, 0.0, 0.0, false);
-        td_enable_tran = true;
+    memset(td_parms, 0, 8*sizeof(double));
+    set_V1(td_coeffs[0]);
+    set_V2(td_numcoeffs >= 2 ? td_coeffs[1] : td_coeffs[0]);
+    set_TD(td_numcoeffs >= 3 ? td_coeffs[2] : 0.0);
+
+    // New in 4.3.3, default is to take pulse width as FWHM, used
+    // to just take this as the "variance".  However, if the value
+    // is negative, use the old setup with the absolute value.
+    set_GPW(td_numcoeffs >= 4 ? (td_coeffs[3] >= 0.0 ?
+        td_coeffs[3]/TWOSQRTLN2 : -td_coeffs[3]) : 0.0);
+
+    set_RPT(td_numcoeffs >= 5 ? td_coeffs[4] : 0.0);
+    if (RPT() < 2*GPW())
+        set_RPT(0.0);
+
+    delete [] td_parray;
+    td_parray = 0;
+    td_plen = 0;
+    td_prst = 0;
+
+    td_enable_tran = (step > 0.0 && finaltime > 0.0);
+    if (!td_enable_tran)
+        return;
+
+    if (GPW() == 0.0) {
+
+        // If no pulse width was given, new default in 4.3.3 is to
+        // generate an SFQ pulse with given amplitude, or if the
+        // amplitude is zero, use TSTEP as FWHM for SFQ.
+
+        if (V2() != V1())
+            set_GPW(PHI0_SQRTPI/fabs(V2() - V1()));
+        else
+            set_GPW(step/TWOSQRTLN2);
     }
-    else
-        td_enable_tran = false;
 
-    if (td_enable_tran) {
-        if (GPW() == 0.0) {
+    // If the pulse has zero amplitude, take it to be a single
+    // flux quantum (SFQ) pulse.  This is a pulse that when
+    // applied to an inductor will induce one quantum of flux (I
+    // * L = the physical constant PHI0).  Such pulses are
+    // encountered in superconducting electronics.
 
-            // If no pulse width was given, new default in 4.3.3 is to
-            // generate an SFQ pulse with given amplitude, or if the
-            // amplitude is zero, use TSTEP as FWHM for SFQ.
+    if (V2() == V1())
+        set_V2(V1() + PHI0_SQRTPI/GPW());
 
-            if (V2() != V1())
-                set_GPW(PHI0_SQRTPI/fabs(V2() - V1()));
-            else
-                set_GPW(step/TWOSQRTLN2);
-        }
-
-        // If the pulse has zero amplitude, take it to be a single
-        // flux quantum (SFQ) pulse.  This is a pulse that when
-        // applied to an inductor will induce one quantum of flux (I
-        // * L = the physical constant PHI0).  Such pulses are
-        // encountered in superconducting electronics.
-
-        if (V2() == V1())
-            set_V2(V1() + PHI0_SQRTPI/GPW());
-
-        if (RPT() > 0.0) {
-            // Construct the pattern array.
-            if (td_pblist) {
-                pbitAry ba;
-                ba.add(td_pblist);
-                if (ba.count()) {
-                    td_parray = ba.final();
-                    td_plen = ba.count();
-                    td_prst = ba.rep_start();
-                }
+    if (RPT() > 0.0) {
+        // Construct the pattern array.
+        if (td_pblist) {
+            pbitAry ba;
+            ba.add(td_pblist);
+            if (ba.count()) {
+                td_parray = ba.final();
+                td_plen = ba.count();
+                td_prst = ba.rep_start();
             }
         }
-    }
-    else {
-        memset(td_parms, 0, 8*sizeof(double));
-        set_V1(td_coeffs[0]);
-        set_V2(td_numcoeffs >= 2 ? td_coeffs[1] : td_coeffs[0]);
-        set_TD(td_numcoeffs >= 3 ? td_coeffs[2] : 0.0);
-
-        // New in 4.3.3, default is to take pulse width as FWHM, used
-        // to just take this as the "variance".  However, if the value
-        // is negative, use the old setup with the absolute value.
-        set_GPW(td_numcoeffs >= 4 ? (td_coeffs[3] >= 0.0 ?
-            td_coeffs[3]/TWOSQRTLN2 : -td_coeffs[3]) : 0.0);
-
-        set_RPT(td_numcoeffs >= 5 ? td_coeffs[4] : 0.0);
-        if (RPT() < 2*GPW())
-            set_RPT(0.0);
-
-        delete [] td_parray;
-        td_parray = 0;
-        td_plen = 0;
-        td_prst = 0;
     }
 }
 
@@ -2333,18 +2314,8 @@ again:
 void
 IFpwlData::setup(sCKT *ckt, double step, double finaltime, bool skipbr)
 {
-    // This is called with zeroed arguments to disable tran funcs while
-    // not in transient analysis.
-    //
-    if (step > 0.0 && finaltime > 0.0) {
-        if (td_enable_tran)
-            setup(ckt, 0.0, 0.0, false);
-        td_enable_tran = true;
-    }
-    else
-        td_enable_tran = false;
-
     td_pwlindex = 0;
+    td_enable_tran = (step > 0.0 && finaltime > 0.0);
     if (td_enable_tran && !skipbr && ckt) {
         // Only call this when time is independent variable.
 
@@ -2609,17 +2580,15 @@ IFsinData::parse(const char *args, IFparseNode *p, int *error)
 void
 IFsinData::setup(sCKT *ckt, double step, double finaltime, bool skipbr)
 {
-    // This is called with zeroed arguments to disable tran funcs while
-    // not in transient analysis.
-    //
-    if (step > 0.0 && finaltime > 0.0) {
-        if (td_enable_tran)
-            setup(ckt, 0.0, 0.0, false);
-        td_enable_tran = true;
-    }
-    else
-        td_enable_tran = false;
+    memset(td_parms, 0, 8*sizeof(double));
+    set_VO(td_coeffs[0]);
+    set_VA(td_numcoeffs >= 2 ? td_coeffs[1] : 0.0);
+    set_FREQ(td_numcoeffs >= 3 ? td_coeffs[2] : 0.0);
+    set_TDL(td_numcoeffs >= 4 ? td_coeffs[3] : 0.0);
+    set_THETA(td_numcoeffs >= 5 ? td_coeffs[4] : 0.0);
+    set_PHI(td_numcoeffs >= 6 ? td_coeffs[5] : 0.0);
 
+    td_enable_tran = (step > 0.0 && finaltime > 0.0);
     if (td_enable_tran) {
         if (!FREQ())
             set_FREQ(1.0/finaltime);
@@ -2627,15 +2596,6 @@ IFsinData::setup(sCKT *ckt, double step, double finaltime, bool skipbr)
             if (TDL() > 0.0)
                 ckt->breakSet(TDL());
         }
-    }
-    else {
-        memset(td_parms, 0, 8*sizeof(double));
-        set_VO(td_coeffs[0]);
-        set_VA(td_numcoeffs >= 2 ? td_coeffs[1] : 0.0);
-        set_FREQ(td_numcoeffs >= 3 ? td_coeffs[2] : 0.0);
-        set_TDL(td_numcoeffs >= 4 ? td_coeffs[3] : 0.0);
-        set_THETA(td_numcoeffs >= 5 ? td_coeffs[4] : 0.0);
-        set_PHI(td_numcoeffs >= 6 ? td_coeffs[5] : 0.0);
     }
 }
 
@@ -2831,17 +2791,14 @@ IFspulseData::parse(const char *args, IFparseNode *p, int *error)
 void
 IFspulseData::setup(sCKT *ckt, double step, double finaltime, bool skipbr)
 {
-    // This is called with zeroed arguments to disable tran funcs while
-    // not in transient analysis.
-    //
-    if (step > 0.0 && finaltime > 0.0) {
-        if (td_enable_tran)
-            setup(ckt, 0.0, 0.0, false);
-        td_enable_tran = true;
-    }
-    else
-        td_enable_tran = false;
+    memset(td_parms, 0, 8*sizeof(double));
+    set_V1(td_coeffs[0]);
+    set_V2(td_numcoeffs >= 2 ? td_coeffs[1] : td_coeffs[0]);
+    set_SPER(td_numcoeffs >= 3 ? td_coeffs[2] : 0.0);
+    set_SDEL(td_numcoeffs >= 4 ? td_coeffs[3] : 0.0);
+    set_THETA(td_numcoeffs >= 5 ? td_coeffs[4] : 0.0);
 
+    td_enable_tran = (step > 0.0 && finaltime > 0.0);
     if (td_enable_tran) {
         if (!SPER())
             set_SPER(finaltime);
@@ -2849,14 +2806,6 @@ IFspulseData::setup(sCKT *ckt, double step, double finaltime, bool skipbr)
             if (SDEL() > 0.0)
                 ckt->breakSet(SDEL());
         }
-    }
-    else {
-        memset(td_parms, 0, 8*sizeof(double));
-        set_V1(td_coeffs[0]);
-        set_V2(td_numcoeffs >= 2 ? td_coeffs[1] : td_coeffs[0]);
-        set_SPER(td_numcoeffs >= 3 ? td_coeffs[2] : 0.0);
-        set_SDEL(td_numcoeffs >= 4 ? td_coeffs[3] : 0.0);
-        set_THETA(td_numcoeffs >= 5 ? td_coeffs[4] : 0.0);
     }
 }
 
@@ -3037,17 +2986,15 @@ IFexpData::parse(const char *args, IFparseNode *p, int *error)
 void
 IFexpData::setup(sCKT *ckt, double step, double finaltime, bool skipbr)
 {
-    // This is called with zeroed arguments to disable tran funcs while
-    // not in transient analysis.
-    //
-    if (step > 0.0 && finaltime > 0.0) {
-        if (td_enable_tran)
-            setup(ckt, 0.0, 0.0, false);
-        td_enable_tran = true;
-    }
-    else
-        td_enable_tran = false;
+    memset(td_parms, 0, 8*sizeof(double));
+    set_V1(td_coeffs[0]);
+    set_V2(td_numcoeffs >= 2 ? td_coeffs[1] : td_coeffs[0]);
+    set_TD1(td_numcoeffs >= 3 ? td_coeffs[2] : 0.0);
+    set_TAU1(td_numcoeffs >= 4 ? td_coeffs[3] : 0.0);
+    set_TD2(td_numcoeffs >= 5 ? td_coeffs[4] : 0.0);
+    set_TAU2(td_numcoeffs >= 6 ? td_coeffs[5] : 0.0);
 
+    td_enable_tran = (step > 0.0 && finaltime > 0.0);
     if (td_enable_tran) {
         if (!TAU2())
             set_TAU2(step);
@@ -3063,15 +3010,6 @@ IFexpData::setup(sCKT *ckt, double step, double finaltime, bool skipbr)
             if (TD2() > TD1())
                 ckt->breakSet(TD2());
         }
-    }
-    else {
-        memset(td_parms, 0, 8*sizeof(double));
-        set_V1(td_coeffs[0]);
-        set_V2(td_numcoeffs >= 2 ? td_coeffs[1] : td_coeffs[0]);
-        set_TD1(td_numcoeffs >= 3 ? td_coeffs[2] : 0.0);
-        set_TAU1(td_numcoeffs >= 4 ? td_coeffs[3] : 0.0);
-        set_TD2(td_numcoeffs >= 5 ? td_coeffs[4] : 0.0);
-        set_TAU2(td_numcoeffs >= 6 ? td_coeffs[5] : 0.0);
     }
 }
 
@@ -3254,36 +3192,23 @@ IFsffmData::parse(const char *args, IFparseNode *p, int *error)
     p->v.td = new IFsffmData(da.final(), da.count());
 }
 
-
 void
-IFsffmData::setup(sCKT *ckt, double step, double finaltime, bool skipbr)
+IFsffmData::setup(sCKT*, double step, double finaltime, bool)
 {
-    (void)skipbr;
-    // This is called with zeroed arguments to disable tran funcs while
-    // not in transient analysis.
-    //
-    if (step > 0.0 && finaltime > 0.0) {
-        if (td_enable_tran)
-            setup(ckt, 0.0, 0.0, false);
-        td_enable_tran = true;
-    }
-    else
-        td_enable_tran = false;
+    memset(td_parms, 0, 8*sizeof(double));
+    set_VO(td_coeffs[0]);
+    set_VA(td_numcoeffs >= 2 ? td_coeffs[1] : 0.0);
+    set_FC(td_numcoeffs >= 3 ? td_coeffs[2] : 0.0);
+    set_MDI(td_numcoeffs >= 4 ? td_coeffs[3] : 0.0);
+    set_FS(td_numcoeffs >= 5 ? td_coeffs[4] : 0.0);
 
+    td_enable_tran = (step > 0.0 && finaltime > 0.0);
     if (td_enable_tran) {
         if (!FC())
             set_FC(1.0/finaltime);
         if (!FS())
             set_FS(1.0/finaltime);
         // no breakpoints
-    }
-    else {
-        memset(td_parms, 0, 8*sizeof(double));
-        set_VO(td_coeffs[0]);
-        set_VA(td_numcoeffs >= 2 ? td_coeffs[1] : 0.0);
-        set_FC(td_numcoeffs >= 3 ? td_coeffs[2] : 0.0);
-        set_MDI(td_numcoeffs >= 4 ? td_coeffs[3] : 0.0);
-        set_FS(td_numcoeffs >= 5 ? td_coeffs[4] : 0.0);
     }
 }
 
@@ -3446,33 +3371,20 @@ IFamData::parse(const char *args, IFparseNode *p, int *error)
     p->v.td = new IFamData(da.final(), da.count());
 }
 
-
 void
-IFamData::setup(sCKT *ckt, double step, double finaltime, bool skipbr)
+IFamData::setup(sCKT*, double step, double finaltime, bool)
 {
-    (void)skipbr;
-    // This is called with zeroed arguments to disable tran funcs while
-    // not in transient analysis.
-    //
-    if (step > 0.0 && finaltime > 0.0) {
-        if (td_enable_tran)
-            setup(ckt, 0.0, 0.0, false);
-        td_enable_tran = true;
-    }
-    else
-        td_enable_tran = false;
+    memset(td_parms, 0, 8*sizeof(double));
+    set_SA(td_coeffs[0]);
+    set_OC(td_numcoeffs >= 2 ? td_coeffs[1] : 0.0);
+    set_MF(td_numcoeffs >= 3 ? td_coeffs[2] : 0.0);
+    set_CF(td_numcoeffs >= 4 ? td_coeffs[3] : 0.0);
+    set_DL(td_numcoeffs >= 5 ? td_coeffs[4] : 0.0);
 
+    td_enable_tran = (step > 0.0 && finaltime > 0.0);
     if (td_enable_tran) {
         if (!MF())
             set_MF(1.0/finaltime);
-    }
-    else {
-        memset(td_parms, 0, 8*sizeof(double));
-        set_SA(td_coeffs[0]);
-        set_OC(td_numcoeffs >= 2 ? td_coeffs[1] : 0.0);
-        set_MF(td_numcoeffs >= 3 ? td_coeffs[2] : 0.0);
-        set_CF(td_numcoeffs >= 4 ? td_coeffs[3] : 0.0);
-        set_DL(td_numcoeffs >= 5 ? td_coeffs[4] : 0.0);
     }
 }
 
@@ -3668,17 +3580,7 @@ IFgaussData::parse(const char *args, IFparseNode *p, int *error)
 void
 IFgaussData::setup(sCKT *ckt, double step, double finaltime, bool skipbr)
 {
-    // This is called with zeroed arguments to disable tran funcs while
-    // not in transient analysis.
-    //
-    if (step > 0.0 && finaltime > 0.0) {
-        if (td_enable_tran)
-            setup(ckt, 0.0, 0.0, false);
-        td_enable_tran = true;
-    }
-    else
-        td_enable_tran = false;
-
+    td_enable_tran = (step > 0.0 && finaltime > 0.0);
     if (td_enable_tran && !skipbr && ckt) {
         if (LATTICE() != 0.0)
             ckt->breakSetLattice(0.0, LATTICE());
@@ -3891,20 +3793,9 @@ IFinterpData::parse(const char *args, IFparseNode *p, int *error)
 
 
 void
-IFinterpData::setup(sCKT *ckt, double step, double finaltime, bool skipbr)
+IFinterpData::setup(sCKT*, double step, double finaltime, bool)
 {
-    (void)skipbr;
-    // This is called with zeroed arguments to disable tran funcs while
-    // not in transient analysis.
-    //
-    if (step > 0.0 && finaltime > 0.0) {
-        if (td_enable_tran)
-            setup(ckt, 0.0, 0.0, false);
-        td_enable_tran = true;
-    }
-    else
-        td_enable_tran = false;
-
+    td_enable_tran = (step > 0.0 && finaltime > 0.0);
     td_index = 0;
 }
 

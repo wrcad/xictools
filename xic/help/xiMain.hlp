@@ -450,7 +450,7 @@ Quick Reference
 
     <h2><a href="mouse">Mouse Operations</a></h2>
 
-    <h4><a href="button1">Button 1 (left)</a><\h4>
+    <h4><a href="button1">Button 1 (left)</a></h4>
 
     <ul>
     <li>General GUI operations: button pressing, etc.
@@ -563,9 +563,9 @@ Quick Reference
       </ul>
     </ul>
 
-    <h2><a href="keyboard">Keyboard</a><h2>
+    <h2><a href="keyboard">Keyboard</a></h2>
 
-    <--! this same table is used in 'keyboard' -->
+    <!-- this same table is used in 'keyboard' -->
     <blockquote>
     <table border=1 cellpadding=2 bgcolor="#ffffee">
     <tr><td><a href="keybang"><b>!</b></td>
@@ -1397,7 +1397,7 @@ Keyboard Commands
     memorized by the user, as there is no alternative way to invoke
     their function.
 
-    <--! this same table is used in 'quickref' -->
+    <!-- this same table is used in 'quickref' -->
     <blockquote>
     <table border=1 cellpadding=2 bgcolor="#ffffee">
     <tr><td><a href="keybang"><b>!</b></td>

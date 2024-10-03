@@ -57,7 +57,7 @@ ITOPOK = --enable-itopok=no
 #GFXLOC = --enable-qt6=/opt/local/libexec/qt6
 #GFXLOC = --enable-gtk2=yes
 #
-# For CentOS/RedHat/Rocky/AlmaLinux (7 or 8) OpenSuSE 15.4 Fedora 40 Linux
+# For CentOS/RedHat/Rocky/AlmaLinux (7 or 8), OpenSuSE 15, Fedora 40 Linux
 #GFXLOC = --enable-qt5=/usr/lib64/qt5
 #GFXLOC = --enable-gtk2=yes
 #
