@@ -1221,61 +1221,29 @@ IFpulseData::setup(sCKT *ckt, double step, double finaltime, bool skipbr)
     // Disable tran funcs while not in transient analysis.
     //
     td_enable_tran = (step > 0.0 && finaltime > 0.0);
-    if (!td_enable_tran)
-        return;
-
-    if (TR() <= 0.0)
-        set_TR(step);
-    if (TF() > 0.0 && PW() <= 0.0)
-        set_PW(0.0);
-    else {
-        if (TF() <= 0.0)
-            set_TF(step);
-        if (PW() <= 0.0)
-            set_PW(MAXFLOAT);
-    }
-    if (PER() <= 0.0)
-        set_PER(MAXFLOAT);
-    else if (PER() < TR() + PW() + TF())
-        set_PER(TR() + PW() + TF());
-
-    // Reset these, may have changed.
-    td_cache[0] = (V2() - V1())/TR();
-    td_cache[1] = (V1() - V2())/TF();
-
-    if (!skipbr && ckt) {
-        if (PER() < finaltime) {
-            double time = TD();
-            ckt->breakSetLattice(time, PER());
-            time += TR();
-            ckt->breakSetLattice(time, PER());
-            if (PW() != 0) {
-                time += PW();
-                ckt->breakSetLattice(time, PER());
-            }
-            if (TF() != 0) {
-                time += TF();
-                ckt->breakSetLattice(time, PER());
-            }
-        }
+    if (td_enable_tran) {
+        if (TR() <= 0.0)
+            set_TR(step);
+        if (TF() > 0.0 && PW() <= 0.0)
+            set_PW(0.0);
         else {
-            double time = TD();
-            ckt->breakSet(time);
-            time += TR();
-            ckt->breakSet(time);
-            if (PW() != 0) {
-                time += PW();
-                ckt->breakSet(time);
-            }
-            if (TF() != 0) {
-                time += TF();
-                ckt->breakSet(time);
-            }
+            if (TF() <= 0.0)
+                set_TF(step);
+            if (PW() <= 0.0)
+                set_PW(MAXFLOAT);
         }
-        // set for additional offsets
-        for (int i = 7; i < td_numcoeffs; i++) {
+        if (PER() <= 0.0)
+            set_PER(MAXFLOAT);
+        else if (PER() < TR() + PW() + TF())
+            set_PER(TR() + PW() + TF());
+
+        // Reset these, may have changed.
+        td_cache[0] = (V2() - V1())/TR();
+        td_cache[1] = (V1() - V2())/TF();
+
+        if (!skipbr && ckt) {
             if (PER() < finaltime) {
-                double time = td_coeffs[i];
+                double time = TD();
                 ckt->breakSetLattice(time, PER());
                 time += TR();
                 ckt->breakSetLattice(time, PER());
@@ -1289,7 +1257,7 @@ IFpulseData::setup(sCKT *ckt, double step, double finaltime, bool skipbr)
                 }
             }
             else {
-                double time = td_coeffs[i];
+                double time = TD();
                 ckt->breakSet(time);
                 time += TR();
                 ckt->breakSet(time);
@@ -1302,17 +1270,48 @@ IFpulseData::setup(sCKT *ckt, double step, double finaltime, bool skipbr)
                     ckt->breakSet(time);
                 }
             }
+            // set for additional offsets
+            for (int i = 7; i < td_numcoeffs; i++) {
+                if (PER() < finaltime) {
+                    double time = td_coeffs[i];
+                    ckt->breakSetLattice(time, PER());
+                    time += TR();
+                    ckt->breakSetLattice(time, PER());
+                    if (PW() != 0) {
+                        time += PW();
+                        ckt->breakSetLattice(time, PER());
+                    }
+                    if (TF() != 0) {
+                        time += TF();
+                        ckt->breakSetLattice(time, PER());
+                    }
+                }
+                else {
+                    double time = td_coeffs[i];
+                    ckt->breakSet(time);
+                    time += TR();
+                    ckt->breakSet(time);
+                    if (PW() != 0) {
+                        time += PW();
+                        ckt->breakSet(time);
+                    }
+                    if (TF() != 0) {
+                        time += TF();
+                        ckt->breakSet(time);
+                    }
+                }
+            }
         }
-    }
-    if (PER() < finaltime) {
-        // Construct the pattern array.
-        if (td_pblist) {
-            pbitAry ba;
-            ba.add(td_pblist);
-            if (ba.count()) {
-                td_parray = ba.final();
-                td_plen = ba.count();
-                td_prst = ba.rep_start();
+        if (PER() < finaltime) {
+            // Construct the pattern array.
+            if (td_pblist) {
+                pbitAry ba;
+                ba.add(td_pblist);
+                if (ba.count()) {
+                    td_parray = ba.final();
+                    td_plen = ba.count();
+                    td_prst = ba.rep_start();
+                }
             }
         }
     }
@@ -1693,39 +1692,38 @@ IFgpulseData::setup(sCKT*, double step, double finaltime, bool)
     td_prst = 0;
 
     td_enable_tran = (step > 0.0 && finaltime > 0.0);
-    if (!td_enable_tran)
-        return;
+    if (td_enable_tran) {
+        if (GPW() == 0.0) {
 
-    if (GPW() == 0.0) {
+            // If no pulse width was given, new default in 4.3.3 is to
+            // generate an SFQ pulse with given amplitude, or if the
+            // amplitude is zero, use TSTEP as FWHM for SFQ.
 
-        // If no pulse width was given, new default in 4.3.3 is to
-        // generate an SFQ pulse with given amplitude, or if the
-        // amplitude is zero, use TSTEP as FWHM for SFQ.
+            if (V2() != V1())
+                set_GPW(PHI0_SQRTPI/fabs(V2() - V1()));
+            else
+                set_GPW(step/TWOSQRTLN2);
+        }
 
-        if (V2() != V1())
-            set_GPW(PHI0_SQRTPI/fabs(V2() - V1()));
-        else
-            set_GPW(step/TWOSQRTLN2);
-    }
+        // If the pulse has zero amplitude, take it to be a single
+        // flux quantum (SFQ) pulse.  This is a pulse that when
+        // applied to an inductor will induce one quantum of flux (I
+        // * L = the physical constant PHI0).  Such pulses are
+        // encountered in superconducting electronics.
 
-    // If the pulse has zero amplitude, take it to be a single
-    // flux quantum (SFQ) pulse.  This is a pulse that when
-    // applied to an inductor will induce one quantum of flux (I
-    // * L = the physical constant PHI0).  Such pulses are
-    // encountered in superconducting electronics.
+        if (V2() == V1())
+            set_V2(V1() + PHI0_SQRTPI/GPW());
 
-    if (V2() == V1())
-        set_V2(V1() + PHI0_SQRTPI/GPW());
-
-    if (RPT() > 0.0) {
-        // Construct the pattern array.
-        if (td_pblist) {
-            pbitAry ba;
-            ba.add(td_pblist);
-            if (ba.count()) {
-                td_parray = ba.final();
-                td_plen = ba.count();
-                td_prst = ba.rep_start();
+        if (RPT() > 0.0) {
+            // Construct the pattern array.
+            if (td_pblist) {
+                pbitAry ba;
+                ba.add(td_pblist);
+                if (ba.count()) {
+                    td_parray = ba.final();
+                    td_plen = ba.count();
+                    td_prst = ba.rep_start();
+                }
             }
         }
     }

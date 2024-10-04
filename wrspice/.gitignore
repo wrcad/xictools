@@ -10,8 +10,6 @@ bin/printtoraw
 bin/printtoraw.exe
 bin/proc2mod
 bin/proc2mod.exe
-bin/wrspice
-bin/wrspice.exe
 bin/wrspiced
 bin/wrspiced.exe
 help/FileSel.hlp

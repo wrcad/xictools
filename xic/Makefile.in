@@ -318,7 +318,7 @@ eclean:
 	    rm -f bin/$$a$(EXESUFFIX); \
 	done
 	-@rm -f bin/sa-filetool$(EXESUFFIX)
-	-@rm -rf $(BINDIR)
+	-@rm -rf $(BINDIR) bin/xic$(EXESUFFIX)
 
 clean: eclean
 	-@for a in $(SUBDIRS) plugins; do \

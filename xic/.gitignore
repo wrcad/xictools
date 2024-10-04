@@ -8,8 +8,6 @@ bin/wrencode
 bin/wrencode.exe
 bin/wrsetpass
 bin/wrsetpass.exe
-bin/xic
-bin/xic.exe
 help/FileSel.hlp
 help/Hardcopy.hlp
 help/HelpSys.hlp

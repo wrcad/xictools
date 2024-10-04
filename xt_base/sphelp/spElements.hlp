@@ -1745,13 +1745,13 @@ Josephson Junctions (Tunnel Junction Model)
     <tr><td><tt>pnode</tt> (read only)</td> <td>
       Phase node number.</td></tr>
     <tr><td><tt>lsernode</tt> (read only)</td> <td>
-      Internal {\vt lser} node number.</td></tr>
+      Internal <tt>lser</tt> node number.</td></tr>
     <tr><td><tt>lserbrn</tt> (read only)</td> <td>
-      Internal {\vt lser} branch number.</td></tr>
+      Internal <tt>lser</tt> branch number.</td></tr>
     <tr><td><tt>lshnode</tt> (read only)</td> <td>
-      Internal {\vt lsh} node number.</td></tr>
+      Internal <tt>lsh</tt> node number.</td></tr>
     <tr><td><tt>lshbrn</tt> (read only)</td> <td>
-      Internal {\vt lsh} branch number.</td></tr>
+      Internal <tt>lsh</tt> branch number.</td></tr>
     </table>
 
     <p>

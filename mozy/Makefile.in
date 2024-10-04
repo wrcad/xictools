@@ -172,7 +172,7 @@ eclean::
 	-@for a in $(TARGETS); do \
 	    rm -f bin/$$a$(EXESUFFIX); \
 	done
-	-@rm -rf $(BINDIR)
+	-@rm -rf $(BINDIR) bin/mozy$(EXESUFFIX) bin/xeditor$(EXESUFFIX)
 
 clean:: eclean
 	-@rm -f bin/*.o
