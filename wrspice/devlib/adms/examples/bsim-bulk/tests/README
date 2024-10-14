@@ -1,0 +1,17 @@
+
+The xxx.wrs files were added by Whiteley Research Inc.  for WRspice. 
+The modelcard files were also modified illustrativelty for WRspice,
+just the header and not the parameters, and this is not required.  We
+assume here that bsim6 is level=80 in WRspice.
+
+The Hspice (.sp) files don't work in WRspice, mostly due to the use of
+'x' as the device key letter.
+
+Instructions:
+
+Start WRspice in interactive mode.
+
+Use the devload command (or similar) to load the bsim6 module.
+
+Run the .wrs files - they run automatically when sourced.
+

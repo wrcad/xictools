@@ -1,0 +1,27 @@
+#! /bin/sh
+
+# Create the Makefile by copying the template and substituting text.
+
+# bsim-cmg
+SOURCE=bsimcmg.va
+MODELNAME=bsimcmg
+MODULE=bsimcmg
+KEY=m
+LEVEL=72
+ADD_M=yes
+PREDICTOR=yes
+LIMITING=yes
+FLAGS=DV_NODIST
+
+cat ../../Makefile | sed \
+  -e "s%^SOURCE = .*%SOURCE = $SOURCE%" \
+  -e "s%^MODELNAME = .*%MODELNAME = $MODELNAME%" \
+  -e "s%^MODULE = .*%MODULE = $MODULE%" \
+  -e "s%^KEY = .*%KEY = $KEY%" \
+  -e "s%^LEVEL = .*%LEVEL = $LEVEL%" \
+  -e "s%^ADD_M = .*%ADD_M = $ADD_M%" \
+  -e "s%^PREDICTOR = .*%PREDICTOR = $PREDICTOR%" \
+  -e "s%^LIMITING = .*%LIMITING = $LIMITING%" \
+  -e "s%^FLAGS = .*%FLAGS = $FLAGS%" \
+  > Makefile
+

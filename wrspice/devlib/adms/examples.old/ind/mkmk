@@ -1,0 +1,27 @@
+#! /bin/sh
+
+# Create the Makefile by copying the template and substituting text.
+
+# ind
+SOURCE=ind.va
+MODELNAME=ind
+MODULE=ind
+KEY=l
+LEVEL=2
+ADD_M=no
+PREDICTOR=no
+LIMITING=no
+FLAGS=
+
+cat ../../Makefile | sed \
+  -e "s%^SOURCE = .*%SOURCE = $SOURCE%" \
+  -e "s%^MODELNAME = .*%MODELNAME = $MODELNAME%" \
+  -e "s%^MODULE = .*%MODULE = $MODULE%" \
+  -e "s%^KEY = .*%KEY = $KEY%" \
+  -e "s%^LEVEL = .*%LEVEL = $LEVEL%" \
+  -e "s%^ADD_M = .*%ADD_M = $ADD_M%" \
+  -e "s%^PREDICTOR = .*%PREDICTOR = $PREDICTOR%" \
+  -e "s%^LIMITING = .*%LIMITING = $LIMITING%" \
+  -e "s%^FLAGS = .*%FLAGS = $FLAGS%" \
+  > Makefile
+

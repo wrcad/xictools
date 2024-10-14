@@ -1,0 +1,521 @@
+ ****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+  Copyright (C) 2012 Synopsys, Inc. All Rights Reserved.                        
+  Unpublished-rights reserved under US copyright laws.
+  This program is protected by law and is subject to the
+  terms and conditions of the license agreement from Synopsys.
+  Use of this program is your acceptance to be bound by the
+  license agreement. HSPICE is the trademark of Synopsys, Inc.
+  Input File: test3.sp                                                          
+  Command line options: -hdlpath ../code -i test3.sp -o test3
+ lic:  
+ lic: FLEXlm: v10.8 
+ lic: USER:   navidp               HOSTNAME: bwrcrdsl-2.EECS.Berkeley.EDU 
+ lic: HOSTID:                      PID:      26539 
+ lic: Using FLEXlm license file: 
+ lic: 1701@sunv40z-1.eecs.berkeley.edu 
+ lic: Checkout 1 hspice 
+ lic: License/Maintenance for hspice will expire on 19-dec-2013/2013.03 
+ lic: 1(in_use)/50(total) FLOATING license(s) on SERVER sunv40z-1.eecs.berkeley.
+ lic:   
+ Init: read install configuration file: /tools/synopsys/hspice/G-2012.06/hspice/meta.cfg
+ Loading pVA library test3.pvadir/pvaRTL_linux.so...
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *id-vd characteristics for nmos -- tanvir morshed 2010
+
+  ******  circuit name directory
+ circuit number to circuit name directory
+   number circuitname                     definition         multiplier
+        0 main circuit
+        1 x1.                             bsimsoi(va)        1.00 
+ **info** *pvaI* Creating Verilog-A module 'bsimsoi' for X1
+
+  
+      
+ *****************************************************************
+ ******  option summary
+ ******
+ runlvl  = 3         bypass  = 2         
+  Opening plot unit= 15
+ file=test3.pa0                                                                
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ SOIMOD=2 cannot support given Nch=1e+19 cm^-3 and Tsi=9e-08 m 
+Exceeds maximum allowed band bending of (Eg-0.1)eV
+Nch is set to  1.62842e+17 cm^-3
+
+ **warning** too many 50 repeated identical pVA messages given, further will be suppressed in the log file
+ ******  
+ *id-vd characteristics for nmos -- tanvir morshed 2010
+
+  ******  dc transfer curves tnom=  25.000 temp=  25.000 *****
+
+   *** source        0:vd =  5.000e-02       ***
+
+x
+
+        volt    current    
+                    vd     
+    0.         -2.856e-11  
+  2.0000e-02   -6.978e-11  
+  4.0000e-02   -1.701e-10  
+  6.0000e-02   -4.131e-10  
+  8.0000e-02   -9.983e-10  
+    0.10000    -2.396e-09  
+    0.12000    -5.691e-09  
+    0.14000    -1.332e-08  
+    0.16000    -3.058e-08  
+    0.18000    -6.834e-08  
+    0.20000    -1.475e-07  
+    0.22000    -3.045e-07  
+    0.24000    -5.949e-07  
+    0.26000    -1.085e-06  
+    0.28000    -1.824e-06  
+    0.30000    -2.824e-06  
+    0.32000    -4.056e-06  
+    0.34000    -5.472e-06  
+    0.36000    -7.014e-06  
+    0.38000    -8.633e-06  
+    0.40000    -1.029e-05  
+    0.42000    -1.194e-05  
+    0.44000    -1.358e-05  
+    0.46000    -1.519e-05  
+    0.48000    -1.676e-05  
+    0.50000    -1.830e-05  
+    0.52000    -1.979e-05  
+    0.54000    -2.124e-05  
+    0.56000    -2.266e-05  
+    0.58000    -2.403e-05  
+    0.60000    -2.537e-05  
+    0.62000    -2.667e-05  
+    0.64000    -2.794e-05  
+    0.66000    -2.918e-05  
+    0.68000    -3.038e-05  
+    0.70000    -3.155e-05  
+    0.72000    -3.269e-05  
+    0.74000    -3.381e-05  
+    0.76000    -3.489e-05  
+    0.78000    -3.595e-05  
+    0.80000    -3.698e-05  
+    0.82000    -3.799e-05  
+    0.84000    -3.897e-05  
+    0.86000    -3.993e-05  
+    0.88000    -4.086e-05  
+    0.90000    -4.177e-05  
+    0.92000    -4.266e-05  
+    0.94000    -4.353e-05  
+    0.96000    -4.437e-05  
+    0.98000    -4.520e-05  
+    1.00000    -4.600e-05  
+    1.02000    -4.679e-05  
+    1.04000    -4.756e-05  
+    1.06000    -4.831e-05  
+    1.08000    -4.904e-05  
+    1.10000    -4.975e-05  
+    1.12000    -5.045e-05  
+    1.14000    -5.113e-05  
+    1.16000    -5.180e-05  
+    1.18000    -5.245e-05  
+    1.20000    -5.308e-05  
+y
+-----------------------------------------------
+ ******  
+ *id-vd characteristics for nmos -- tanvir morshed 2010
+
+  ******  dc transfer curves tnom=  25.000 temp=  25.000 *****
+
+   *** source        0:vd =    0.5500        ***
+
+x
+
+        volt    current    
+                    vd     
+    0.         -1.169e-10  
+  2.0000e-02   -2.856e-10  
+  4.0000e-02   -6.961e-10  
+  6.0000e-02   -1.687e-09  
+  8.0000e-02   -4.060e-09  
+    0.10000    -9.668e-09  
+    0.12000    -2.270e-08  
+    0.14000    -5.222e-08  
+    0.16000    -1.170e-07  
+    0.18000    -2.536e-07  
+    0.20000    -5.274e-07  
+    0.22000    -1.044e-06  
+    0.24000    -1.945e-06  
+    0.26000    -3.383e-06  
+    0.28000    -5.483e-06  
+    0.30000    -8.327e-06  
+    0.32000    -1.195e-05  
+    0.34000    -1.633e-05  
+    0.36000    -2.141e-05  
+    0.38000    -2.712e-05  
+    0.40000    -3.336e-05  
+    0.42000    -4.007e-05  
+    0.44000    -4.717e-05  
+    0.46000    -5.459e-05  
+    0.48000    -6.231e-05  
+    0.50000    -7.027e-05  
+    0.52000    -7.845e-05  
+    0.54000    -8.682e-05  
+    0.56000    -9.536e-05  
+    0.58000    -1.040e-04  
+    0.60000    -1.129e-04  
+    0.62000    -1.218e-04  
+    0.64000    -1.308e-04  
+    0.66000    -1.399e-04  
+    0.68000    -1.491e-04  
+    0.70000    -1.584e-04  
+    0.72000    -1.677e-04  
+    0.74000    -1.770e-04  
+    0.76000    -1.863e-04  
+    0.78000    -1.956e-04  
+    0.80000    -2.050e-04  
+    0.82000    -2.143e-04  
+    0.84000    -2.236e-04  
+    0.86000    -2.329e-04  
+    0.88000    -2.421e-04  
+    0.90000    -2.512e-04  
+    0.92000    -2.603e-04  
+    0.94000    -2.693e-04  
+    0.96000    -2.782e-04  
+    0.98000    -2.871e-04  
+    1.00000    -2.958e-04  
+    1.02000    -3.044e-04  
+    1.04000    -3.129e-04  
+    1.06000    -3.213e-04  
+    1.08000    -3.296e-04  
+    1.10000    -3.378e-04  
+    1.12000    -3.458e-04  
+    1.14000    -3.537e-04  
+    1.16000    -3.614e-04  
+    1.18000    -3.691e-04  
+    1.20000    -3.766e-04  
+y
+-----------------------------------------------
+ ******  
+ *id-vd characteristics for nmos -- tanvir morshed 2010
+
+  ******  dc transfer curves tnom=  25.000 temp=  25.000 *****
+
+   *** source        0:vd =    1.0500        ***
+
+x
+
+        volt    current    
+                    vd     
+    0.         -3.877e-10  
+  2.0000e-02   -9.466e-10  
+  4.0000e-02   -2.300e-09  
+  6.0000e-02   -5.547e-09  
+  8.0000e-02   -1.323e-08  
+    0.10000    -3.111e-08  
+    0.12000    -7.162e-08  
+    0.14000    -1.604e-07  
+    0.16000    -3.467e-07  
+    0.18000    -7.174e-07  
+    0.20000    -1.408e-06  
+    0.22000    -2.591e-06  
+    0.24000    -4.439e-06  
+    0.26000    -7.077e-06  
+    0.28000    -1.057e-05  
+    0.30000    -1.494e-05  
+    0.32000    -2.014e-05  
+    0.34000    -2.610e-05  
+    0.36000    -3.271e-05  
+    0.38000    -3.988e-05  
+    0.40000    -4.753e-05  
+    0.42000    -5.558e-05  
+    0.44000    -6.396e-05  
+    0.46000    -7.265e-05  
+    0.48000    -8.159e-05  
+    0.50000    -9.077e-05  
+    0.52000    -1.002e-04  
+    0.54000    -1.097e-04  
+    0.56000    -1.195e-04  
+    0.58000    -1.294e-04  
+    0.60000    -1.394e-04  
+    0.62000    -1.496e-04  
+    0.64000    -1.599e-04  
+    0.66000    -1.703e-04  
+    0.68000    -1.808e-04  
+    0.70000    -1.914e-04  
+    0.72000    -2.020e-04  
+    0.74000    -2.128e-04  
+    0.76000    -2.236e-04  
+    0.78000    -2.344e-04  
+    0.80000    -2.453e-04  
+    0.82000    -2.563e-04  
+    0.84000    -2.673e-04  
+    0.86000    -2.783e-04  
+    0.88000    -2.893e-04  
+    0.90000    -3.004e-04  
+    0.92000    -3.115e-04  
+    0.94000    -3.226e-04  
+    0.96000    -3.337e-04  
+    0.98000    -3.448e-04  
+    1.00000    -3.559e-04  
+    1.02000    -3.670e-04  
+    1.04000    -3.781e-04  
+    1.06000    -3.892e-04  
+    1.08000    -4.003e-04  
+    1.10000    -4.113e-04  
+    1.12000    -4.224e-04  
+    1.14000    -4.334e-04  
+    1.16000    -4.444e-04  
+    1.18000    -4.554e-04  
+    1.20000    -4.663e-04  
+y
+-----------------------------------------------
+
+          ***** job concluded
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *id-vd characteristics for nmos -- tanvir morshed 2010
+
+  ******  job statistics summary tnom=  25.000 temp=  25.000 *****
+  
+  
+ ******  Machine Information  ******
+ CPU:
+ model name	: Intel(R) Xeon(R) CPU           E5645  @ 2.40GHz
+ cpu MHz	: 2395.000
+  
+ OS:
+ Linux version 2.6.32-358.18.1.el6.x86_64 (mockbuild@x86-003.build.bos.redhat.com) (gcc version 4.4.7 20120313 (Red Hat 4.4.7-3) (GCC) ) #1 SMP Fri Aug 2 17:04:38 EDT 2013
+
+
+  ******  HSPICE Threads Information  ******
+
+  Command Line Threads Count :     1
+  Available CPU Count        :    24
+  Actual Threads Count       :     1
+
+
+  ******  Circuit Statistics  ******
+  # nodes       =      15 # elements   =       5
+  # resistors   =       0 # capacitors =       0 # inductors   =       0
+  # mutual_inds =       0 # vccs       =       0 # vcvs        =       0
+  # cccs        =       0 # ccvs       =       0 # volt_srcs   =       4
+  # curr_srcs   =       0 # diodes     =       0 # bjts        =       0
+  # jfets       =       0 # mosfets    =       0 # U elements  =       0
+  # T elements  =       0 # W elements =       0 # B elements  =       0
+  # S elements  =       0 # P elements =       0 # va device   =       1
+  # vector_srcs =       0 # N elements =       0
+
+
+  ******  Runtime Statistics (seconds)  ******
+
+  analysis           time    # points   tot. iter  conv.iter
+  op point           0.00           1           0
+  dc sweep           0.04         183         381
+  readin             0.04
+  errchk             0.05
+  setup              0.00
+  output             0.00
+
+
+           peak memory used        110.12 megabytes
+           total cpu time            0.13 seconds
+           total elapsed time        0.42 seconds
+           job started at     12:48:15 11/06/2013
+           job ended   at     12:48:15 11/06/2013
+
+
+ lic: Release hspice token(s) 
+ lic: total license checkout elapse time:        0.22(s)

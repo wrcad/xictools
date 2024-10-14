@@ -378,8 +378,7 @@ INSTALL_PREFIX ?= $(prefix)
 destn = $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice.current
 toolbin = $(INSTALL_PREFIX)/$(TOOLROOT)/bin
 
-install: install_wrspice_pkg clean_links install_links devkit_examples \
-  install_devkit
+install: install_wrspice_pkg clean_links install_links install_devkit
 
 install_wrspice_pkg: install_test install_clean install_bin install_help \
   install_icons install_startup install_scripts install_examples install_docs
@@ -586,11 +585,14 @@ $(destn)/devkit::
 	done; \
 	for a in $$efiles; do \
 	    $(INSTALL_LIB) devlib/adms/$$a $@/`dirname $$a`; \
+	    if [ -f $@/`dirname $$a`/mkmk ]; then \
+	        chmod 755 $@/`dirname $$a`/mkmk; \
+	    fi \
         done; \
-	for a in $$edirs; do \
-	    mkdir $@/examples/$$a/module_dist; \
-	    cp devlib/adms/examples/$$a/*.$(SOEXT) $@/examples/$$a/module_dist; \
-	done;
+	#for a in $$edirs; do \
+	#    mkdir $@/examples/$$a/module_dist; \
+	#    cp devlib/adms/examples/$$a/*.$(SOEXT) $@/examples/$$a/module_dist; \
+	#done;
 
 $(destn)/cadence-oasis::
 	if [ -d cadence-oasis ]; then \
@@ -620,7 +622,7 @@ devkit_examples:
 
 package::
 	$(MAKE) all
-	$(MAKE) devkit_examples
+	# $(MAKE) devkit_examples
 	$(MAKE) quick_pkg
 
 quick_pkg::

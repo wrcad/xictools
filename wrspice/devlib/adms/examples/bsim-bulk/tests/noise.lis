@@ -1,0 +1,4121 @@
+Using: /cad/synopsys/Hspice/G-2012.06/hspice/linux/hspice noise.sp
+ ****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+  Copyright (C) 2012 Synopsys, Inc. All Rights Reserved.                        
+  Unpublished-rights reserved under US copyright laws.
+  This program is protected by law and is subject to the
+  terms and conditions of the license agreement from Synopsys.
+  Use of this program is your acceptance to be bound by the
+  license agreement. HSPICE is the trademark of Synopsys, Inc.
+  Input File: noise.sp                                                          
+  Command line options: noise.sp
+ lic: No 'setenv LM_LICENSE_FILE' in current environment' 
+ lic:  
+ lic: FLEXlm: v10.8 
+ lic: USER:   agarwalh             HOSTNAME: xcel1.vlsi.iitk.ac.in 
+ lic: HOSTID: 0008a1953eea         PID:      1597 
+ lic: Using FLEXlm license file: 
+ lic: 27000@xcel0 
+ lic: Checkout 1 hspice 
+ lic: License/Maintenance for hspice will expire on 15-jun-2013/2011.09 
+ lic: 1(in_use)/5(total) FLOATING license(s) on SERVER xcel0 
+ lic:   
+ Init: read install configuration file: /cad/synopsys/Hspice/G-2012.06/hspice/meta.cfg
+
+
+ --------------------------------------------------------
+|                                                        |
+|          Synopsys Unified Verilog-A (pVA v2.0)         |
+|                                                        |
+|           Machine Name: xcel1.vlsi.iitk.ac.in          |
+| Copyright (c) 2011 Synopsys Inc., All Rights Reserved. |
+|                                                        |
+ --------------------------------------------------------
+
+libepva built by pvamgr synmake_pva_build  on Tue May  1 20:03:16 PDT 2012
+HSP_HOME:   /cad/synopsys/Hspice/G-2012.06/hspice
+HSP_ARCH:   linux
+HSP_GCC :   /cad/synopsys/Hspice/G-2012.06/hspice/GNU/amd64/gcc-4.5.2-static/bin/gcc -m32 
+HSP_GCC_VER:   4.5.2
+Working-Dir: /users/phd/agarwalh/synopsys_designs/BSIM6/QA/BSIM6 Release/Release_5_May
+Args:        -p hsp -t spi -f noise.pvadir/pvaHDL.lis -o noise.pvadir 
+
+
+Begin of pVA compiling on Sun May  5 21:48:10 2013
+
+Parsing './bsim6.va'
+Parsing include file '/cad/synopsys/Hspice/G-2012.06/hspice/include/constants.vams'
+Parsing include file '/cad/synopsys/Hspice/G-2012.06/hspice/include/disciplines.vams'
+
+End of pVA compiling on Sun May  5 21:48:10 2013
+
+
+End of build pVA DB on Sun May  5 21:48:10 2013
+
+*pvaI* Module (bsim6): 4 unexpanded port, 0 init, 2191 behav, 65 contrib, 43/2272 expr(s)
+*pvaI* Resizing DB size for v count = 1
+*pvaI*        Has DIS (SB), 3 afCount
+*pvaI*        0 const-G and 0 const-C, Has switch branch.
+*pvaI* Module (bsim6): generated 7 flow node(s) during compilation.
+
+End of pVA genC on Sun May  5 21:48:13 2013
+
+*pvaI* #### Total 316 line-size(s), 43 expr(s), 65 contr(s), 0 init(s), 2191 behav(s), 4 port(s)
+
+Generating noise.pvadir/pvaRTL_linux.so
+
+
+End of submitting pVA noise.pvadir/pvaRTL.mak on Sun May  5 21:48:22 2013
+
+
+End of pVA elaboration on Sun May  5 21:48:22 2013
+
+ Loading pVA library noise.pvadir/pvaRTL_linux.so...
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  circuit name directory
+ circuit number to circuit name directory
+   number circuitname                     definition         multiplier
+        0 main circuit
+        1 x1.                             bsim6(va)          1.00 
+*pvaI* Creating Verilog-A module 'bsim6' for X1
+  
+      
+ *****************************************************************
+ ******  option summary
+ ******
+ runlvl  = 3         bypass  = 2         
+  Opening plot unit= 15
+ file=noise.pa0                                                                
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  operating point information tnom=  25.000 temp=  27.000 *****
+ ***** operating point status is all       simulation time is     0.     
+    node    =voltage      node    =voltage      node    =voltage
+
+ +0:1       =   1.0000  0:2       =   0.      0:bulk    =   0.     
+ +0:drain   =   1.0000  0:gate    =   0.5000 
+
+
+ **** voltage sources
+
+ subckt                                   
+ element  0:vbs      0:vds      0:vgs     
+  volts      0.         1.0000     0.5000 
+  current  8.881e-10 -3.332e-05    0.     
+  power      0.       3.332e-05    0.     
+
+     total voltage source power dissipation=  3.332e-05       watts
+
+
+
+ **** resistors
+
+ subckt             
+ element  0:rload   
+  r value    1.0000 
+  v drop     0.     
+  current    0.     
+  power      0.     
+
+
+ **** inductors
+
+ subckt             
+ element  0:lbias   
+  l value  1.000e-03
+  v drop     0.     
+  current    0.     
+  power      0.     
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 1.000e+03      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0126     
+
+
+
+
+ **** total output noise voltage         = 9.109e-24       sq v/hz
+                                         = 3.018e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.752e-04      
+      equivalent input noise at vgs                           
+                                         = 1.723e-08       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  1.000e+03      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =    0.            volts
+ **** total equivalent input noise =    0.           
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 1.232e+03      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0083     
+
+
+
+
+ **** total output noise voltage         = 7.628e-24       sq v/hz
+                                         = 2.762e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.737e-04      
+      equivalent input noise at vgs                           
+                                         = 1.590e-08       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  1.232e+03      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  4.414e-11       volts
+ **** total equivalent input noise =  2.530e-07      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 1.519e+03      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0055     
+
+
+
+
+ **** total output noise voltage         = 6.477e-24       sq v/hz
+                                         = 2.545e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.727e-04      
+      equivalent input noise at vgs                           
+                                         = 1.474e-08       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  1.519e+03      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  6.303e-11       volts
+ **** total equivalent input noise =  3.626e-07      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 1.873e+03      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0036     
+
+
+
+
+ **** total output noise voltage         = 5.571e-24       sq v/hz
+                                         = 2.360e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.721e-04      
+      equivalent input noise at vgs                           
+                                         = 1.372e-08       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  1.873e+03      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  7.813e-11       volts
+ **** total equivalent input noise =  4.508e-07      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 2.310e+03      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0024     
+
+
+
+
+ **** total output noise voltage         = 4.851e-24       sq v/hz
+                                         = 2.203e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.716e-04      
+      equivalent input noise at vgs                           
+                                         = 1.283e-08       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  2.310e+03      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  9.153e-11       volts
+ **** total equivalent input noise =  5.293e-07      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 2.848e+03      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0016     
+
+
+
+
+ **** total output noise voltage         = 4.276e-24       sq v/hz
+                                         = 2.068e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.714e-04      
+      equivalent input noise at vgs                           
+                                         = 1.207e-08       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  2.848e+03      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  1.041e-10       volts
+ **** total equivalent input noise =  6.030e-07      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 3.511e+03      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0010     
+
+
+
+
+ **** total output noise voltage         = 3.813e-24       sq v/hz
+                                         = 1.953e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.712e-04      
+      equivalent input noise at vgs                           
+                                         = 1.141e-08       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  3.511e+03      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  1.163e-10       volts
+ **** total equivalent input noise =  6.745e-07      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 4.328e+03      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0007     
+
+
+
+
+ **** total output noise voltage         = 3.441e-24       sq v/hz
+                                         = 1.855e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.711e-04      
+      equivalent input noise at vgs                           
+                                         = 1.084e-08       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  4.328e+03      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  1.284e-10       volts
+ **** total equivalent input noise =  7.458e-07      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 5.336e+03      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0004     
+
+
+
+
+ **** total output noise voltage         = 3.140e-24       sq v/hz
+                                         = 1.772e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.710e-04      
+      equivalent input noise at vgs                           
+                                         = 1.036e-08       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  5.336e+03      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  1.407e-10       volts
+ **** total equivalent input noise =  8.183e-07      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 6.579e+03      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0003     
+
+
+
+
+ **** total output noise voltage         = 2.897e-24       sq v/hz
+                                         = 1.702e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.709e-04      
+      equivalent input noise at vgs                           
+                                         = 9.958e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  6.579e+03      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  1.535e-10       volts
+ **** total equivalent input noise =  8.933e-07      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 8.111e+03      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0002     
+
+
+
+
+ **** total output noise voltage         = 2.701e-24       sq v/hz
+                                         = 1.643e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.709e-04      
+      equivalent input noise at vgs                           
+                                         = 9.616e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  8.111e+03      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  1.668e-10       volts
+ **** total equivalent input noise =  9.720e-07      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 1.000e+04      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0001     
+
+
+
+
+ **** total output noise voltage         = 2.541e-24       sq v/hz
+                                         = 1.594e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.709e-04      
+      equivalent input noise at vgs                           
+                                         = 9.329e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  1.000e+04      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  1.811e-10       volts
+ **** total equivalent input noise =  1.056e-06      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 1.232e+04      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0001     
+
+
+
+
+ **** total output noise voltage         = 2.412e-24       sq v/hz
+                                         = 1.553e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.709e-04      
+      equivalent input noise at vgs                           
+                                         = 9.090e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  1.232e+04      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  1.964e-10       volts
+ **** total equivalent input noise =  1.145e-06      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 1.519e+04      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0001     
+
+
+
+
+ **** total output noise voltage         = 2.308e-24       sq v/hz
+                                         = 1.519e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.709e-04      
+      equivalent input noise at vgs                           
+                                         = 8.891e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  1.519e+04      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  2.129e-10       volts
+ **** total equivalent input noise =  1.243e-06      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 1.873e+04      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 2.223e-24       sq v/hz
+                                         = 1.491e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.708e-04      
+      equivalent input noise at vgs                           
+                                         = 8.727e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  1.873e+04      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  2.310e-10       volts
+ **** total equivalent input noise =  1.349e-06      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 2.310e+04      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 2.154e-24       sq v/hz
+                                         = 1.468e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.708e-04      
+      equivalent input noise at vgs                           
+                                         = 8.591e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  2.310e+04      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  2.508e-10       volts
+ **** total equivalent input noise =  1.465e-06      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 2.848e+04      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 2.099e-24       sq v/hz
+                                         = 1.449e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.708e-04      
+      equivalent input noise at vgs                           
+                                         = 8.479e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  2.848e+04      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  2.726e-10       volts
+ **** total equivalent input noise =  1.593e-06      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 3.511e+04      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 2.053e-24       sq v/hz
+                                         = 1.433e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.708e-04      
+      equivalent input noise at vgs                           
+                                         = 8.388e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  3.511e+04      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  2.968e-10       volts
+ **** total equivalent input noise =  1.735e-06      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 4.328e+04      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 2.017e-24       sq v/hz
+                                         = 1.420e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.708e-04      
+      equivalent input noise at vgs                           
+                                         = 8.313e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  4.328e+04      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  3.236e-10       volts
+ **** total equivalent input noise =  1.892e-06      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 5.336e+04      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.987e-24       sq v/hz
+                                         = 1.410e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.708e-04      
+      equivalent input noise at vgs                           
+                                         = 8.251e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  5.336e+04      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  3.534e-10       volts
+ **** total equivalent input noise =  2.067e-06      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 6.579e+04      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.963e-24       sq v/hz
+                                         = 1.401e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.708e-04      
+      equivalent input noise at vgs                           
+                                         = 8.201e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  6.579e+04      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  3.866e-10       volts
+ **** total equivalent input noise =  2.261e-06      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 8.111e+04      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.943e-24       sq v/hz
+                                         = 1.394e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.708e-04      
+      equivalent input noise at vgs                           
+                                         = 8.160e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  8.111e+04      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  4.235e-10       volts
+ **** total equivalent input noise =  2.477e-06      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 1.000e+05      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.928e-24       sq v/hz
+                                         = 1.388e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.708e-04      
+      equivalent input noise at vgs                           
+                                         = 8.127e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  1.000e+05      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  4.647e-10       volts
+ **** total equivalent input noise =  2.718e-06      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 1.232e+05      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.915e-24       sq v/hz
+                                         = 1.384e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.708e-04      
+      equivalent input noise at vgs                           
+                                         = 8.100e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  1.232e+05      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  5.106e-10       volts
+ **** total equivalent input noise =  2.987e-06      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 1.519e+05      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.904e-24       sq v/hz
+                                         = 1.380e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.708e-04      
+      equivalent input noise at vgs                           
+                                         = 8.078e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  1.519e+05      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  5.617e-10       volts
+ **** total equivalent input noise =  3.286e-06      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 1.873e+05      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.896e-24       sq v/hz
+                                         = 1.377e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.708e-04      
+      equivalent input noise at vgs                           
+                                         = 8.060e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  1.873e+05      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  6.186e-10       volts
+ **** total equivalent input noise =  3.620e-06      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 2.310e+05      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.889e-24       sq v/hz
+                                         = 1.374e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.708e-04      
+      equivalent input noise at vgs                           
+                                         = 8.045e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  2.310e+05      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  6.821e-10       volts
+ **** total equivalent input noise =  3.992e-06      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 2.848e+05      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.883e-24       sq v/hz
+                                         = 1.372e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.708e-04      
+      equivalent input noise at vgs                           
+                                         = 8.033e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  2.848e+05      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  7.528e-10       volts
+ **** total equivalent input noise =  4.406e-06      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 3.511e+05      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.879e-24       sq v/hz
+                                         = 1.371e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.708e-04      
+      equivalent input noise at vgs                           
+                                         = 8.023e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  3.511e+05      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  8.316e-10       volts
+ **** total equivalent input noise =  4.867e-06      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 4.328e+05      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.875e-24       sq v/hz
+                                         = 1.369e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.708e-04      
+      equivalent input noise at vgs                           
+                                         = 8.016e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  4.328e+05      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  9.192e-10       volts
+ **** total equivalent input noise =  5.380e-06      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 5.336e+05      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.872e-24       sq v/hz
+                                         = 1.368e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.708e-04      
+      equivalent input noise at vgs                           
+                                         = 8.009e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  5.336e+05      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  1.017e-09       volts
+ **** total equivalent input noise =  5.951e-06      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 6.579e+05      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.870e-24       sq v/hz
+                                         = 1.367e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.708e-04      
+      equivalent input noise at vgs                           
+                                         = 8.004e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  6.579e+05      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  1.125e-09       volts
+ **** total equivalent input noise =  6.586e-06      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 8.111e+05      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.868e-24       sq v/hz
+                                         = 1.367e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.708e-04      
+      equivalent input noise at vgs                           
+                                         = 8.000e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  8.111e+05      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  1.246e-09       volts
+ **** total equivalent input noise =  7.293e-06      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 1.000e+06      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.866e-24       sq v/hz
+                                         = 1.366e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.709e-04      
+      equivalent input noise at vgs                           
+                                         = 7.996e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  1.000e+06      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  1.380e-09       volts
+ **** total equivalent input noise =  8.079e-06      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 1.232e+06      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.865e-24       sq v/hz
+                                         = 1.366e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.709e-04      
+      equivalent input noise at vgs                           
+                                         = 7.993e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  1.232e+06      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  1.530e-09       volts
+ **** total equivalent input noise =  8.953e-06      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 1.519e+06      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.864e-24       sq v/hz
+                                         = 1.365e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.709e-04      
+      equivalent input noise at vgs                           
+                                         = 7.990e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  1.519e+06      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  1.696e-09       volts
+ **** total equivalent input noise =  9.924e-06      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 1.873e+06      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.863e-24       sq v/hz
+                                         = 1.365e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.709e-04      
+      equivalent input noise at vgs                           
+                                         = 7.987e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  1.873e+06      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  1.880e-09       volts
+ **** total equivalent input noise =  1.100e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 2.310e+06      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.862e-24       sq v/hz
+                                         = 1.365e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.709e-04      
+      equivalent input noise at vgs                           
+                                         = 7.984e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  2.310e+06      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  2.085e-09       volts
+ **** total equivalent input noise =  1.220e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 2.848e+06      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.862e-24       sq v/hz
+                                         = 1.365e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.710e-04      
+      equivalent input noise at vgs                           
+                                         = 7.981e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  2.848e+06      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  2.313e-09       volts
+ **** total equivalent input noise =  1.353e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 3.511e+06      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.861e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.710e-04      
+      equivalent input noise at vgs                           
+                                         = 7.976e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  3.511e+06      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  2.566e-09       volts
+ **** total equivalent input noise =  1.501e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 4.328e+06      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.861e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.712e-04      
+      equivalent input noise at vgs                           
+                                         = 7.971e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  4.328e+06      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  2.847e-09       volts
+ **** total equivalent input noise =  1.665e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 5.336e+06      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.861e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.713e-04      
+      equivalent input noise at vgs                           
+                                         = 7.962e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  5.336e+06      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  3.159e-09       volts
+ **** total equivalent input noise =  1.848e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 6.579e+06      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.861e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.716e-04      
+      equivalent input noise at vgs                           
+                                         = 7.950e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  6.579e+06      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  3.506e-09       volts
+ **** total equivalent input noise =  2.049e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 8.111e+06      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.860e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.719e-04      
+      equivalent input noise at vgs                           
+                                         = 7.932e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  8.111e+06      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  3.891e-09       volts
+ **** total equivalent input noise =  2.273e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 1.000e+07      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.860e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.725e-04      
+      equivalent input noise at vgs                           
+                                         = 7.906e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  1.000e+07      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  4.319e-09       volts
+ **** total equivalent input noise =  2.520e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 1.232e+07      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.860e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.734e-04      
+      equivalent input noise at vgs                           
+                                         = 7.866e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  1.232e+07      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  4.795e-09       volts
+ **** total equivalent input noise =  2.793e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 1.519e+07      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.860e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.747e-04      
+      equivalent input noise at vgs                           
+                                         = 7.807e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  1.519e+07      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  5.322e-09       volts
+ **** total equivalent input noise =  3.092e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 1.873e+07      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.860e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.767e-04      
+      equivalent input noise at vgs                           
+                                         = 7.720e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  1.873e+07      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  5.908e-09       volts
+ **** total equivalent input noise =  3.420e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 2.310e+07      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.860e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.796e-04      
+      equivalent input noise at vgs                           
+                                         = 7.592e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  2.310e+07      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  6.559e-09       volts
+ **** total equivalent input noise =  3.775e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 2.848e+07      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.860e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.840e-04      
+      equivalent input noise at vgs                           
+                                         = 7.411e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  2.848e+07      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  7.282e-09       volts
+ **** total equivalent input noise =  4.157e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 3.511e+07      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.860e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.905e-04      
+      equivalent input noise at vgs                           
+                                         = 7.158e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  3.511e+07      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  8.085e-09       volts
+ **** total equivalent input noise =  4.561e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 4.328e+07      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.860e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 2.000e-04      
+      equivalent input noise at vgs                           
+                                         = 6.819e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  4.328e+07      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  8.976e-09       volts
+ **** total equivalent input noise =  4.979e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 5.336e+07      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.860e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 2.136e-04      
+      equivalent input noise at vgs                           
+                                         = 6.385e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  5.336e+07      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  9.965e-09       volts
+ **** total equivalent input noise =  5.403e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 6.579e+07      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.860e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 2.327e-04      
+      equivalent input noise at vgs                           
+                                         = 5.860e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  6.579e+07      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  1.106e-08       volts
+ **** total equivalent input noise =  5.819e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 8.111e+07      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.860e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 2.591e-04      
+      equivalent input noise at vgs                           
+                                         = 5.263e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  8.111e+07      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  1.228e-08       volts
+ **** total equivalent input noise =  6.214e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 1.000e+08      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.860e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 2.947e-04      
+      equivalent input noise at vgs                           
+                                         = 4.627e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  1.000e+08      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  1.364e-08       volts
+ **** total equivalent input noise =  6.577e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 1.232e+08      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.860e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 3.418e-04      
+      equivalent input noise at vgs                           
+                                         = 3.990e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  1.232e+08      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  1.514e-08       volts
+ **** total equivalent input noise =  6.899e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 1.519e+08      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.860e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 4.030e-04      
+      equivalent input noise at vgs                           
+                                         = 3.384e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  1.519e+08      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  1.681e-08       volts
+ **** total equivalent input noise =  7.178e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 1.873e+08      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.860e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 4.813e-04      
+      equivalent input noise at vgs                           
+                                         = 2.833e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  1.873e+08      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  1.867e-08       volts
+ **** total equivalent input noise =  7.414e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 2.310e+08      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.860e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 5.804e-04      
+      equivalent input noise at vgs                           
+                                         = 2.349e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  2.310e+08      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  2.073e-08       volts
+ **** total equivalent input noise =  7.611e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 2.848e+08      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.860e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 7.049e-04      
+      equivalent input noise at vgs                           
+                                         = 1.935e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  2.848e+08      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  2.301e-08       volts
+ **** total equivalent input noise =  7.773e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 3.511e+08      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.859e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 8.603e-04      
+      equivalent input noise at vgs                           
+                                         = 1.585e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  3.511e+08      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  2.555e-08       volts
+ **** total equivalent input noise =  7.905e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 4.328e+08      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.859e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.053e-03      
+      equivalent input noise at vgs                           
+                                         = 1.295e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  4.328e+08      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  2.837e-08       volts
+ **** total equivalent input noise =  8.013e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 5.336e+08      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.859e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.293e-03      
+      equivalent input noise at vgs                           
+                                         = 1.055e-09       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  5.336e+08      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  3.150e-08       volts
+ **** total equivalent input noise =  8.100e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 6.579e+08      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.859e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.589e-03      
+      equivalent input noise at vgs                           
+                                         = 8.581e-10       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  6.579e+08      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  3.498e-08       volts
+ **** total equivalent input noise =  8.171e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 8.111e+08      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.859e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.955e-03      
+      equivalent input noise at vgs                           
+                                         = 6.974e-10       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  8.111e+08      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  3.884e-08       volts
+ **** total equivalent input noise =  8.228e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 1.000e+09      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.859e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 2.407e-03      
+      equivalent input noise at vgs                           
+                                         = 5.664e-10       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  1.000e+09      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  4.312e-08       volts
+ **** total equivalent input noise =  8.274e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 1.232e+09      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.859e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 2.965e-03      
+      equivalent input noise at vgs                           
+                                         = 4.599e-10       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  1.232e+09      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  4.788e-08       volts
+ **** total equivalent input noise =  8.311e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 1.519e+09      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.859e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 3.654e-03      
+      equivalent input noise at vgs                           
+                                         = 3.732e-10       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  1.519e+09      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  5.316e-08       volts
+ **** total equivalent input noise =  8.342e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 1.873e+09      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.859e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 4.503e-03      
+      equivalent input noise at vgs                           
+                                         = 3.028e-10       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  1.873e+09      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  5.903e-08       volts
+ **** total equivalent input noise =  8.366e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 2.310e+09      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.859e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 5.550e-03      
+      equivalent input noise at vgs                           
+                                         = 2.457e-10       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  2.310e+09      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  6.554e-08       volts
+ **** total equivalent input noise =  8.386e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 2.848e+09      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.859e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 6.841e-03      
+      equivalent input noise at vgs                           
+                                         = 1.993e-10       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  2.848e+09      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  7.277e-08       volts
+ **** total equivalent input noise =  8.402e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 3.511e+09      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.859e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 8.433e-03      
+      equivalent input noise at vgs                           
+                                         = 1.617e-10       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  3.511e+09      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  8.080e-08       volts
+ **** total equivalent input noise =  8.415e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 4.328e+09      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.859e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.040e-02      
+      equivalent input noise at vgs                           
+                                         = 1.312e-10       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  4.328e+09      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  8.972e-08       volts
+ **** total equivalent input noise =  8.425e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 5.336e+09      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.859e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.282e-02      
+      equivalent input noise at vgs                           
+                                         = 1.064e-10       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  5.336e+09      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  9.962e-08       volts
+ **** total equivalent input noise =  8.434e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 6.579e+09      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.859e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.580e-02      
+      equivalent input noise at vgs                           
+                                         = 8.631e-11       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  6.579e+09      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  1.106e-07       volts
+ **** total equivalent input noise =  8.441e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 8.111e+09      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.859e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 1.948e-02      
+      equivalent input noise at vgs                           
+                                         = 7.001e-11       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  8.111e+09      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  1.228e-07       volts
+ **** total equivalent input noise =  8.446e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 1.000e+10      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.859e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 2.401e-02      
+      equivalent input noise at vgs                           
+                                         = 5.679e-11       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  1.000e+10      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  1.364e-07       volts
+ **** total equivalent input noise =  8.451e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 1.232e+10      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.859e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 2.960e-02      
+      equivalent input noise at vgs                           
+                                         = 4.606e-11       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  1.232e+10      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  1.514e-07       volts
+ **** total equivalent input noise =  8.455e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 1.519e+10      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.859e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 3.650e-02      
+      equivalent input noise at vgs                           
+                                         = 3.736e-11       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  1.519e+10      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  1.681e-07       volts
+ **** total equivalent input noise =  8.458e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 1.873e+10      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.859e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 4.500e-02      
+      equivalent input noise at vgs                           
+                                         = 3.031e-11       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  1.873e+10      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  1.867e-07       volts
+ **** total equivalent input noise =  8.460e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 2.310e+10      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.859e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 5.547e-02      
+      equivalent input noise at vgs                           
+                                         = 2.458e-11       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  2.310e+10      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  2.073e-07       volts
+ **** total equivalent input noise =  8.462e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 2.848e+10      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.859e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 6.839e-02      
+      equivalent input noise at vgs                           
+                                         = 1.994e-11       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  2.848e+10      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  2.301e-07       volts
+ **** total equivalent input noise =  8.464e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 3.511e+10      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.859e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     = 8.431e-02      
+      equivalent input noise at vgs                           
+                                         = 1.617e-11       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  3.511e+10      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  2.555e-07       volts
+ **** total equivalent input noise =  8.465e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 4.328e+10      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.859e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     =   0.1039       
+      equivalent input noise at vgs                           
+                                         = 1.312e-11       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  4.328e+10      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  2.837e-07       volts
+ **** total equivalent input noise =  8.466e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 5.336e+10      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.859e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     =   0.1281       
+      equivalent input noise at vgs                           
+                                         = 1.064e-11       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  5.336e+10      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  3.150e-07       volts
+ **** total equivalent input noise =  8.467e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 6.579e+10      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.859e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     =   0.1580       
+      equivalent input noise at vgs                           
+                                         = 8.631e-12       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  6.579e+10      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  3.498e-07       volts
+ **** total equivalent input noise =  8.467e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 8.111e+10      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.859e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     =   0.1948       
+      equivalent input noise at vgs                           
+                                         = 7.001e-12       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  8.111e+10      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  3.884e-07       volts
+ **** total equivalent input noise =  8.468e-05      
+
+
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  noise analysis tnom=  25.000 temp=  27.000 *****
+
+     frequency = 1.000e+11      hz
+
+
+
+
+ **** resistor squared noise voltages (sq v/hz)
+
+
+
+
+ element     0:rload
+       rs    0.         
+      1/f    0.         
+    total    0.         
+       rx    1.0000     
+
+
+
+
+ **** total output noise voltage         = 1.859e-24       sq v/hz
+                                         = 1.364e-12       v/rt hz
+      transfer function value:
+        v(drain)/vgs                     =   0.2401       
+      equivalent input noise at vgs                           
+                                         = 5.679e-12       /rt hz
+
+
+
+ **** the results of the sqrt of integral (v**2 / freq)
+      from fstart upto  1.000e+11      hz. using more freq points
+      results in more accurate total noise values.
+
+ **** total output noise voltage   =  4.312e-07       volts
+ **** total equivalent input noise =  8.468e-05      
+
+
+
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  ac analysis tnom=  25.000 temp=  27.000 *****
+x
+
+        freq    inoise       onoise     
+                    mag          mag    
+  1.0000e+03    1.723e-08    3.018e-12  
+  1.2328e+03    1.590e-08    2.762e-12  
+  1.5199e+03    1.474e-08    2.545e-12  
+  1.8738e+03    1.372e-08    2.360e-12  
+  2.3101e+03    1.283e-08    2.203e-12  
+  2.8480e+03    1.207e-08    2.068e-12  
+  3.5111e+03    1.141e-08    1.953e-12  
+  4.3287e+03    1.084e-08    1.855e-12  
+  5.3367e+03    1.036e-08    1.772e-12  
+  6.5793e+03    9.958e-09    1.702e-12  
+  8.1113e+03    9.616e-09    1.643e-12  
+  1.0000e+04    9.329e-09    1.594e-12  
+  1.2328e+04    9.090e-09    1.553e-12  
+  1.5199e+04    8.891e-09    1.519e-12  
+  1.8738e+04    8.727e-09    1.491e-12  
+  2.3101e+04    8.591e-09    1.468e-12  
+  2.8480e+04    8.479e-09    1.449e-12  
+  3.5111e+04    8.388e-09    1.433e-12  
+  4.3287e+04    8.313e-09    1.420e-12  
+  5.3367e+04    8.251e-09    1.410e-12  
+  6.5793e+04    8.201e-09    1.401e-12  
+  8.1113e+04    8.160e-09    1.394e-12  
+  1.0000e+05    8.127e-09    1.388e-12  
+  1.2328e+05    8.100e-09    1.384e-12  
+  1.5199e+05    8.078e-09    1.380e-12  
+  1.8738e+05    8.060e-09    1.377e-12  
+  2.3101e+05    8.045e-09    1.374e-12  
+  2.8480e+05    8.033e-09    1.372e-12  
+  3.5111e+05    8.023e-09    1.371e-12  
+  4.3287e+05    8.016e-09    1.369e-12  
+  5.3367e+05    8.009e-09    1.368e-12  
+  6.5793e+05    8.004e-09    1.367e-12  
+  8.1113e+05    8.000e-09    1.367e-12  
+  1.0000e+06    7.996e-09    1.366e-12  
+  1.2328e+06    7.993e-09    1.366e-12  
+  1.5199e+06    7.990e-09    1.365e-12  
+  1.8738e+06    7.987e-09    1.365e-12  
+  2.3101e+06    7.984e-09    1.365e-12  
+  2.8480e+06    7.981e-09    1.365e-12  
+  3.5111e+06    7.976e-09    1.364e-12  
+  4.3287e+06    7.971e-09    1.364e-12  
+  5.3367e+06    7.962e-09    1.364e-12  
+  6.5793e+06    7.950e-09    1.364e-12  
+  8.1113e+06    7.932e-09    1.364e-12  
+  1.0000e+07    7.906e-09    1.364e-12  
+  1.2328e+07    7.866e-09    1.364e-12  
+  1.5199e+07    7.807e-09    1.364e-12  
+  1.8738e+07    7.720e-09    1.364e-12  
+  2.3101e+07    7.592e-09    1.364e-12  
+  2.8480e+07    7.411e-09    1.364e-12  
+  3.5111e+07    7.158e-09    1.364e-12  
+  4.3287e+07    6.819e-09    1.364e-12  
+  5.3367e+07    6.385e-09    1.364e-12  
+  6.5793e+07    5.860e-09    1.364e-12  
+  8.1113e+07    5.263e-09    1.364e-12  
+  1.0000e+08    4.627e-09    1.364e-12  
+  1.2328e+08    3.990e-09    1.364e-12  
+  1.5199e+08    3.384e-09    1.364e-12  
+  1.8738e+08    2.833e-09    1.364e-12  
+  2.3101e+08    2.349e-09    1.364e-12  
+  2.8480e+08    1.935e-09    1.364e-12  
+  3.5111e+08    1.585e-09    1.364e-12  
+  4.3287e+08    1.295e-09    1.364e-12  
+  5.3367e+08    1.055e-09    1.364e-12  
+  6.5793e+08    8.581e-10    1.364e-12  
+  8.1113e+08    6.974e-10    1.364e-12  
+  1.0000e+09    5.664e-10    1.364e-12  
+  1.2328e+09    4.599e-10    1.364e-12  
+  1.5199e+09    3.732e-10    1.364e-12  
+  1.8738e+09    3.028e-10    1.364e-12  
+  2.3101e+09    2.457e-10    1.364e-12  
+  2.8480e+09    1.993e-10    1.364e-12  
+  3.5111e+09    1.617e-10    1.364e-12  
+  4.3287e+09    1.312e-10    1.364e-12  
+  5.3367e+09    1.064e-10    1.364e-12  
+  6.5793e+09    8.631e-11    1.364e-12  
+  8.1113e+09    7.001e-11    1.364e-12  
+  1.0000e+10    5.679e-11    1.364e-12  
+  1.2328e+10    4.606e-11    1.364e-12  
+  1.5199e+10    3.736e-11    1.364e-12  
+  1.8738e+10    3.031e-11    1.364e-12  
+  2.3101e+10    2.458e-11    1.364e-12  
+  2.8480e+10    1.994e-11    1.364e-12  
+  3.5111e+10    1.617e-11    1.364e-12  
+  4.3287e+10    1.312e-11    1.364e-12  
+  5.3367e+10    1.064e-11    1.364e-12  
+  6.5793e+10    8.631e-12    1.364e-12  
+  8.1113e+10    7.001e-12    1.364e-12  
+  1.0000e+11    5.679e-12    1.364e-12  
+y
+-----------------------------------------------
+
+          ***** job concluded
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *samle netlist for bsim6.0
+
+  ******  job statistics summary tnom=  25.000 temp=  27.000 *****
+  
+  
+ ******  Machine Information  ******
+ CPU:
+ model name	: AMD Opteron(tm) Processor 248
+ cpu MHz	: 2200.023
+  
+ OS:
+ Linux version 2.6.9-22.EL (bhcompile@crowe.devel.redhat.com) (gcc version 3.4.4 20050721 (Red Hat 3.4.4-2)) #1 Mon Sep 19 17:49:49 EDT 2005
+
+
+  ******  HSPICE Threads Information  ******
+
+  Command Line Threads Count :     1
+  Available CPU Count        :     1
+  Actual Threads Count       :     1
+
+
+  ******  Circuit Statistics  ******
+  # nodes       =      15 # elements   =       7
+  # resistors   =       1 # capacitors =       1 # inductors   =       1
+  # mutual_inds =       0 # vccs       =       0 # vcvs        =       0
+  # cccs        =       0 # ccvs       =       0 # volt_srcs   =       3
+  # curr_srcs   =       0 # diodes     =       0 # bjts        =       0
+  # jfets       =       0 # mosfets    =       0 # U elements  =       0
+  # T elements  =       0 # W elements =       0 # B elements  =       0
+  # S elements  =       0 # P elements =       0 # va device   =       1
+  # vector_srcs =       0 # N elements =       0
+
+
+  ******  Runtime Statistics (seconds)  ******
+
+  analysis           time    # points   tot. iter  conv.iter
+  op point           0.01           1           4
+  ac analysis        0.05          89          89
+  readin             2.65
+  errchk             0.03
+  setup              0.00
+  output             0.00
+
+
+           peak memory used        112.77 megabytes
+           total cpu time            2.75 seconds
+           total elapsed time       12.11 seconds
+           job started at     21:48:10 05/05/2013
+           job ended   at     21:48:22 05/05/2013
+
+
+ lic: Release hspice token(s) 
+ lic: total license checkout elapse time:        0.21(s)
+
+
+pVA concluded on Sun May  5 21:48:22 2013
+

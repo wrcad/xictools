@@ -1,0 +1,88 @@
+### SPICE Explorer log file, revision C2009.03-SP1 (build 0906) ###
+### created at 14:11:57 on Wed Nov  6 2013 (Linux AMD64) ###
+# (0) running in waveview only mode
+# (0) SW_SX_PERL_LIB defined
+# (0) SW_SX_TCL_LIB defined
+# (0) HOME defined
+# (0) HOME defined
+# (0) fsb dialog open
+# (0) fsb dialog close
+sx_open_sim_file_read "/users/navidp/BSIMSOI/BSIMSOIv4.5.0/BSIMSOI450_Benchmarking/test5.lis"
+# (0) fsb.@Xg lvdck
+sx_log "disp_sig 1 A P=null file=0 S='' W='vd'vd'vd'vd'vd'vd'vd'vd'vd'' "
+# (0) fsb dialog open
+# (0) fsb.path optmenu 3
+# (0) fsb. lvdck
+# (0) fsb dialog close
+sx_open_sim_file_read "/users/navidp/BSIMSOI/BB_BSIMSOIv4.4/test5.out"
+# (0) fsb.ok btn down
+sx_log "disp_sig 1 I P=0 file=1 S='' W='vd'vd'vd'vd'vd'vd'vd'vd'vd'' "
+sx_log "close_all_wdf"
+# (0) fsb dialog open
+# (0) fsb dialog close
+sx_open_sim_file_read "/users/navidp/BSIMSOI/BB_BSIMSOIv4.4/test8.sp"
+# (0) fsb.À_g lvdck
+# (0) fsb dialog open
+# (0) fsb dialog close
+sx_open_sim_file_read "/users/navidp/BSIMSOI/BB_BSIMSOIv4.4/test8.out"
+# (0) fsb. ^g lvdck
+sx_log "disp_sig 1 A P=null file=0 S='' W='vd'vd'vd'' "
+# (0) fsb dialog open
+# (0) fsb.path optmenu 3
+# (0) fsb.Ð[g lvdck
+# (0) fsb.Ð[g lvdck
+# (0) fsb dialog close
+sx_open_sim_file_read "/users/navidp/BSIMSOI/BSIMSOIv4.5.0/BSIMSOI450_Benchmarking/test8.lis"
+# (0) fsb.Ð[g lvdck
+sx_log "disp_sig 1 I P=0 file=1 S='' W='vd'vd'vd'' "
+# (0) fsb dialog open
+# (0) fsb dialog close
+sx_log "close_all_wdf"
+# (0) fsb dialog open
+# (0) fsb dialog close
+sx_open_sim_file_read "/users/navidp/BSIMSOI/BSIMSOIv4.5.0/BSIMSOI450_Benchmarking/ring_osc.lis"
+# (0) fsb.ok btn down
+sx_log "disp_sig 1 A P=null file=0 S='' W='out25'' "
+# (0) fsb dialog open
+# (0) fsb dialog close
+sx_open_sim_file_read "/users/navidp/BSIMSOI/BSIMSOIv4.5.0/BSIMSOI450_Benchmarking/ring_osc.lis"
+# (0) fsb.ok btn down
+sx_log "disp_sig 1 I P=0 file=0 S='' W='out50'' "
+# (0) fsb dialog open
+# (0) fsb.path optmenu 3
+# (0) fsb.€]g lvdck
+# (0) fsb dialog close
+sx_open_sim_file_read "/users/navidp/BSIMSOI/BB_BSIMSOIv4.4/ring_osc.out"
+# (0) fsb.ok btn down
+sx_log "disp_sig 1 I P=0 file=2 S='' W='out25'' "
+sx_log "disp_sig 1 I P=0 file=2 S='' W='out50'' "
+sx_log "close_all_wdf"
+# (0) fsb dialog open
+# (0) fsb dialog close
+sx_open_sim_file_read "/users/navidp/BSIMSOI/BB_BSIMSOIv4.4/ring_osc.out"
+# (0) fsb.pag lvdck
+# (0) fsb dialog open
+# (0) fsb.path optmenu 3
+# (0) fsb.àeg lvdck
+# (0) fsb.àeg lvdck
+# (0) fsb dialog close
+sx_open_sim_file_read "/users/navidp/BSIMSOI/BSIMSOIv4.5.0/BSIMSOI450_Benchmarking/ring_osc.lis"
+# (0) fsb.àeg lvdck
+sx_log "disp_sig 1 A P=null file=1 S='' W='out25'' "
+sx_log "disp_sig 1 I P=0 file=0 S='' W='out25'' "
+sx_log "disp_sig 1 I P=0 file=1 S='' W='out50'' "
+sx_log "disp_sig 1 I P=0 file=0 S='' W='out50'' "
+sx_log "close_all_wdf"
+# (0) fsb dialog open
+# (0) fsb dialog close
+sx_open_sim_file_read "/users/navidp/BSIMSOI/BSIMSOIv4.5.0/BSIMSOI450_Benchmarking/inverter_tr.lis"
+# (0) fsb.ok btn down
+# (0) fsb dialog open
+# (0) fsb.path optmenu 3
+# (0) fsb.@Xg lvdck
+# (0) fsb dialog close
+sx_open_sim_file_read "/users/navidp/BSIMSOI/BB_BSIMSOIv4.4/inv_tr.out"
+# (0) fsb.ok btn down
+sx_log "disp_sig 1 A P=null file=1 S='' W='gate'out'' "
+sx_log "disp_sig 1 I P=0 file=0 S='' W='gate'out'' "
+sx_log "close_all_wdf"

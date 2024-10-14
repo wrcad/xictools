@@ -1,0 +1,16 @@
+// Inductor
+
+`include "disciplines.vams"
+`include "constants.vams"
+
+module ind(p,n);
+inout p,n;
+electrical p,n;
+branch (p, n) bl;
+parameter real l=0 from [0:inf);
+
+analog begin
+    V(p,n) <+ ddt(l*I(bl));
+end
+
+endmodule

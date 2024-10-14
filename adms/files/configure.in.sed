@@ -33,11 +33,7 @@ elif test $MAINTAINER = yes; then
     echo "  Error: the \"flex\" program is required and not found."
     exit 1
 fi
-if test `uname` == "Darwin"; then
-    BISON=/usr/local/gtk2-bundle-x11/bin/bison
-else
-    AC_PATH_PROG(BISON, bison, "")
-fi
+AC_PATH_PROG(BISON, bison, "")
 if test -n "$BISON"; then
     YACC="$BISON -y"
 elif test $MAINTAINER = yes; then

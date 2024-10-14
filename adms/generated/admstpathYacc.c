@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 3.7.6.  */
+/* A Bison parser, made by GNU Bison 3.8.2.  */
 
 /* Bison implementation for Yacc-like parsers in C
 
@@ -46,10 +46,10 @@
    USER NAME SPACE" below.  */
 
 /* Identify Bison output, and Bison version.  */
-#define YYBISON 30706
+#define YYBISON 30802
 
 /* Bison version string.  */
-#define YYBISON_VERSION "3.7.6"
+#define YYBISON_VERSION "3.8.2"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -913,7 +913,7 @@ static void location030subexpression(p_ptraverse p,p_path mypath,p_admst dot)
     adms_message_error(("%s: 'subexpression' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location030hasVoltageDependentFunction(p_ptraverse p,p_path mypath,p_admst dot)
+static void location030usedininitial_step(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -925,17 +925,22 @@ static void location030hasVoltageDependentFunction(p_ptraverse p,p_path mypath,p
   }
   if(0) {}
   if(0) {}
-  else if(e==admse_expression)
+  else if(e==admse_variable)
   {
-    p_admst d=adms_admst_newbe(ai,ai,((p_expression)ai->_item.p)->_hasVoltageDependentFunction); d->_valueto=(void*)adms_expression_valueto_hasVoltageDependentFunction;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_usedininitial_step);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_usedininitial_step;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_usedininitial_step); d->_valueto=(void*)adms_variableprototype_valueto_usedininitial_step;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'hasVoltageDependentFunction' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'usedininitial_step' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location030arg1(p_ptraverse p,p_path mypath,p_admst dot)
+static void location030curfilename(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -947,22 +952,371 @@ static void location030arg1(p_ptraverse p,p_path mypath,p_admst dot)
   }
   if(0) {}
   if(0) {}
-  else if(e==admse_mapply_unary)
+  else if(e==admse_admsmain)
   {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_mapply_unary)(ai->_item.p))->_arg1); d->_valueto=(void*)adms_mapply_unary_valueto_arg1;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_mapply_binary)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_mapply_binary)(ai->_item.p))->_arg1); d->_valueto=(void*)adms_mapply_binary_valueto_arg1;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_mapply_ternary)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_mapply_ternary)(ai->_item.p))->_arg1); d->_valueto=(void*)adms_mapply_ternary_valueto_arg1;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newbs(ai,ai,((p_admsmain)ai->_item.p)->_curfilename); d->_valueto=(void*)adms_admsmain_valueto_curfilename;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'arg1' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'curfilename' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030lexval(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB0*/ p_admst d1=adms_admst_newpa(d0,ai,(p_adms)((p_variableprototype)d0->_item.p)->_lexval);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_lexval;
+  }
+  else if(e==admse_analogfunction)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_analogfunction)(ai->_item.p))->_lexval); d->_valueto=(void*)adms_analogfunction_valueto_lexval;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_variableprototype)(ai->_item.p))->_lexval); d->_valueto=(void*)adms_variableprototype_valueto_lexval;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_number)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_number)(ai->_item.p))->_lexval); d->_valueto=(void*)adms_number_valueto_lexval;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_function)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_function)(ai->_item.p))->_lexval); d->_valueto=(void*)adms_function_valueto_lexval;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_assignment)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_assignment)(ai->_item.p))->_lexval); d->_valueto=(void*)adms_assignment_valueto_lexval;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_contribution)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_contribution)(ai->_item.p))->_lexval); d->_valueto=(void*)adms_contribution_valueto_lexval;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_block)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_block)(ai->_item.p))->_lexval); d->_valueto=(void*)adms_block_valueto_lexval;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'lexval' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030units(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_nature)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_nature)ai->_item.p)->_units); d->_valueto=(void*)adms_nature_valueto_units;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'units' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030tmp1(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_simulator)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_tmp1); d->_valueto=(void*)adms_simulator_valueto_tmp1;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'tmp1' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030abstol(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_nature)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_nature)(ai->_item.p))->_abstol); d->_valueto=(void*)adms_nature_valueto_abstol;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'abstol' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030vcount(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB0*/ p_admst d1=adms_admst_newbi(d0,ai,((p_variableprototype)d0->_item.p)->_vcount);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_vcount;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbi(ai,ai,((p_variableprototype)ai->_item.p)->_vcount); d->_valueto=(void*)adms_variableprototype_valueto_vcount;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'vcount' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030instance(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_module)
+  {
+    p_slist lii=((p_module)ai->_item.p)->_instance;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_slist lii=((p_variableprototype)ai->_item.p)->_instance;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'instance' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030branch(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_module)
+  {
+    p_slist lii=((p_module)ai->_item.p)->_branch;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else if(e==admse_branchalias)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_branchalias)(ai->_item.p))->_branch); d->_valueto=(void*)adms_branchalias_valueto_branch;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_source)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_source)(ai->_item.p))->_branch); d->_valueto=(void*)adms_source_valueto_branch;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_probe)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_probe)(ai->_item.p))->_branch); d->_valueto=(void*)adms_probe_valueto_branch;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'branch' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030datatype(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_list)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_list)ai->_item.p)->_datatype); d->_valueto=(void*)adms_list_valueto_datatype;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'datatype' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030package_tarname(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_simulator)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_package_tarname); d->_valueto=(void*)adms_simulator_valueto_package_tarname;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'package_tarname' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030fullfilename(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_admsmain)ai->_item.p)->_fullfilename); d->_valueto=(void*)adms_admsmain_valueto_fullfilename;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'fullfilename' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030vlast(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB0*/ p_admst d1=adms_admst_newpa(d0,ai,(p_adms)((p_variableprototype)d0->_item.p)->_vlast);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_vlast;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_variableprototype)(ai->_item.p))->_vlast); d->_valueto=(void*)adms_variableprototype_valueto_vlast;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'vlast' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030forloop(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_module)
+  {
+    p_slist lii=((p_module)ai->_item.p)->_forloop;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'forloop' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030ddt_nature(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_nature)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_nature)(ai->_item.p))->_ddt_nature); d->_valueto=(void*)adms_nature_valueto_ddt_nature;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'ddt_nature' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
 static void location030rhs(p_ptraverse p,p_path mypath,p_admst dot)
@@ -989,94 +1343,6 @@ static void location030rhs(p_ptraverse p,p_path mypath,p_admst dot)
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
     adms_message_error(("%s: 'rhs' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030diagonal(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_jacobian)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_jacobian)ai->_item.p)->_diagonal); d->_valueto=(void*)adms_jacobian_valueto_diagonal;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'diagonal' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030access(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_nature)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_nature)ai->_item.p)->_access); d->_valueto=(void*)adms_nature_valueto_access;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'access' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030dbg_vla(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_dbg_vla); d->_valueto=(void*)adms_admsmain_valueto_dbg_vla;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'dbg_vla' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030br1(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_simulator)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_simulator)(ai->_item.p))->_br1); d->_valueto=(void*)adms_simulator_valueto_br1;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'br1' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
 static void location030setinnoise(p_ptraverse p,p_path mypath,p_admst dot)
@@ -1106,7 +1372,7 @@ static void location030setinnoise(p_ptraverse p,p_path mypath,p_admst dot)
     adms_message_error(("%s: 'setinnoise' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location030ddxprobe(p_ptraverse p,p_path mypath,p_admst dot)
+static void location030error(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -1118,30 +1384,17 @@ static void location030ddxprobe(p_ptraverse p,p_path mypath,p_admst dot)
   }
   if(0) {}
   if(0) {}
-  else if(e==admse_variable)
+  else if(e==admse_admsmain)
   {
-    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*AAAA0*/ p_slist l1=((p_variableprototype)d0->_item.p)->_ddxprobe;
-    for(;l1;l1=l1->next)
-    {
-      p_admst d1=adms_admst_newpa(d0,ai,l1->data);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;
-    }
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_slist lii=((p_variableprototype)ai->_item.p)->_ddxprobe;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
+    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_error); d->_valueto=(void*)adms_admsmain_valueto_error;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'ddxprobe' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'error' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location030scope(p_ptraverse p,p_path mypath,p_admst dot)
+static void location030nodefrominstantiator(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -1153,506 +1406,14 @@ static void location030scope(p_ptraverse p,p_path mypath,p_admst dot)
   }
   if(0) {}
   if(0) {}
-  else if(e==admse_variable)
+  else if(e==admse_instancenode)
   {
-    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_scope);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_scope;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_scope); d->_valueto=(void*)adms_variableprototype_valueto_scope;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_instancenode)(ai->_item.p))->_nodefrominstantiator); d->_valueto=(void*)adms_instancenode_valueto_nodefrominstantiator;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'scope' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030index(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_array)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_array)(ai->_item.p))->_index); d->_valueto=(void*)adms_array_valueto_index;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'index' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030scalingunit(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_number)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_number)ai->_item.p)->_scalingunit); d->_valueto=(void*)adms_number_valueto_scalingunit;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'scalingunit' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030base(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_nature)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_nature)(ai->_item.p))->_base); d->_valueto=(void*)adms_nature_valueto_base;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'base' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030infinity(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_expression)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_expression)ai->_item.p)->_infinity); d->_valueto=(void*)adms_expression_valueto_infinity;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'infinity' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030prototype(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_variable)(ai->_item.p))->_prototype); d->_valueto=(void*)adms_variable_valueto_prototype;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'prototype' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030arg3(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_mapply_ternary)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_mapply_ternary)(ai->_item.p))->_arg3); d->_valueto=(void*)adms_mapply_ternary_valueto_arg3;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'arg3' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030idt_name(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_nature)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_nature)ai->_item.p)->_idt_name); d->_valueto=(void*)adms_nature_valueto_idt_name;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'idt_name' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030tmp1(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_simulator)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_tmp1); d->_valueto=(void*)adms_simulator_valueto_tmp1;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'tmp1' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030ddt_nature(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_nature)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_nature)(ai->_item.p))->_ddt_nature); d->_valueto=(void*)adms_nature_valueto_ddt_nature;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'ddt_nature' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030tree(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_analogfunction)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_analogfunction)(ai->_item.p))->_tree); d->_valueto=(void*)adms_analogfunction_valueto_tree;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_expression)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_expression)(ai->_item.p))->_tree); d->_valueto=(void*)adms_expression_valueto_tree;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'tree' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030idt_nature(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_nature)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_nature)(ai->_item.p))->_idt_nature); d->_valueto=(void*)adms_nature_valueto_idt_nature;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'idt_nature' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030analogfunction(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_module)
-  {
-    p_slist lii=((p_module)ai->_item.p)->_analogfunction;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'analogfunction' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030probe(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*AAAA0*/ p_slist l1=((p_variableprototype)d0->_item.p)->_probe;
-    for(;l1;l1=l1->next)
-    {
-      p_admst d1=adms_admst_newpa(d0,ai,l1->data);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;
-    }
-  }
-  else if(e==admse_simulator)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_simulator)(ai->_item.p))->_probe); d->_valueto=(void*)adms_simulator_valueto_probe;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_module)
-  {
-    p_slist lii=((p_module)ai->_item.p)->_probe;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_slist lii=((p_variableprototype)ai->_item.p)->_probe;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else if(e==admse_source)
-  {
-    p_slist lii=((p_source)ai->_item.p)->_probe;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else if(e==admse_expression)
-  {
-    p_slist lii=((p_expression)ai->_item.p)->_probe;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else if(e==admse_block)
-  {
-    p_slist lii=((p_block)ai->_item.p)->_probe;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'probe' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030ddt_name(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_nature)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_nature)ai->_item.p)->_ddt_name); d->_valueto=(void*)adms_nature_valueto_ddt_name;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'ddt_name' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030developer(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_simulator)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_developer); d->_valueto=(void*)adms_simulator_valueto_developer;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'developer' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030arg2(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_mapply_binary)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_mapply_binary)(ai->_item.p))->_arg2); d->_valueto=(void*)adms_mapply_binary_valueto_arg2;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_mapply_ternary)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_mapply_ternary)(ai->_item.p))->_arg2); d->_valueto=(void*)adms_mapply_ternary_valueto_arg2;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'arg2' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030caseitem(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_case)
-  {
-    p_slist lii=((p_case)ai->_item.p)->_caseitem;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'caseitem' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030parameterset(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_instance)
-  {
-    p_slist lii=((p_instance)ai->_item.p)->_parameterset;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'parameterset' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030forblock(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_forloop)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_forloop)(ai->_item.p))->_forblock); d->_valueto=(void*)adms_forloop_valueto_forblock;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'forblock' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'nodefrominstantiator' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
 static void location030flow(p_ptraverse p,p_path mypath,p_admst dot)
@@ -1677,394 +1438,7 @@ static void location030flow(p_ptraverse p,p_path mypath,p_admst dot)
     adms_message_error(("%s: 'flow' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location030assignment(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*AAAA0*/ p_slist l1=((p_variableprototype)d0->_item.p)->_assignment;
-    for(;l1;l1=l1->next)
-    {
-      p_admst d1=adms_admst_newpa(d0,ai,l1->data);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;
-    }
-  }
-  else if(e==admse_module)
-  {
-    p_slist lii=((p_module)ai->_item.p)->_assignment;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_slist lii=((p_variableprototype)ai->_item.p)->_assignment;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'assignment' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030usedinnoise(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_usedinnoise);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_usedinnoise;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_usedinnoise); d->_valueto=(void*)adms_variableprototype_valueto_usedinnoise;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'usedinnoise' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030package_version(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_simulator)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_package_version); d->_valueto=(void*)adms_simulator_valueto_package_version;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'package_version' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030warning(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_warning); d->_valueto=(void*)adms_admsmain_valueto_warning;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'warning' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030nature(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_slist lii=((p_admsmain)ai->_item.p)->_nature;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else if(e==admse_source)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_source)(ai->_item.p))->_nature); d->_valueto=(void*)adms_source_valueto_nature;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_probe)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_probe)(ai->_item.p))->_nature); d->_valueto=(void*)adms_probe_valueto_nature;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'nature' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030update(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_forloop)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_forloop)(ai->_item.p))->_update); d->_valueto=(void*)adms_forloop_valueto_update;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'update' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030curfilename(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_admsmain)ai->_item.p)->_curfilename); d->_valueto=(void*)adms_admsmain_valueto_curfilename;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'curfilename' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030derivate(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_derivate);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_derivate;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_derivate); d->_valueto=(void*)adms_variableprototype_valueto_derivate;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'derivate' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030setininitial_step(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_setininitial_step);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_setininitial_step;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_setininitial_step); d->_valueto=(void*)adms_variableprototype_valueto_setininitial_step;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'setininitial_step' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030sr1(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_simulator)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_simulator)(ai->_item.p))->_sr1); d->_valueto=(void*)adms_simulator_valueto_sr1;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'sr1' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030string(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_lexval)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_lexval)ai->_item.p)->_string); d->_valueto=(void*)adms_lexval_valueto_string;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'string' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030maxsize(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB0*/ p_admst d1=adms_admst_newpa(d0,ai,(p_adms)((p_variableprototype)d0->_item.p)->_maxsize);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_maxsize;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_variableprototype)(ai->_item.p))->_maxsize); d->_valueto=(void*)adms_variableprototype_valueto_maxsize;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'maxsize' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030info(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_info); d->_valueto=(void*)adms_admsmain_valueto_info;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'info' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030nodealias(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_module)
-  {
-    p_slist lii=((p_module)ai->_item.p)->_nodealias;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'nodealias' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030then(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_conditional)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_conditional)(ai->_item.p))->_then); d->_valueto=(void*)adms_conditional_valueto_then;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'then' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030whileblock(p_ptraverse p,p_path mypath,p_admst dot)
+static void location030while(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -2078,15 +1452,15 @@ static void location030whileblock(p_ptraverse p,p_path mypath,p_admst dot)
   if(0) {}
   else if(e==admse_whileloop)
   {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_whileloop)(ai->_item.p))->_whileblock); d->_valueto=(void*)adms_whileloop_valueto_whileblock;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_whileloop)(ai->_item.p))->_while); d->_valueto=(void*)adms_whileloop_valueto_while;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'whileblock' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'while' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location030alias(p_ptraverse p,p_path mypath,p_admst dot)
+static void location030scalingunit(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -2098,381 +1472,14 @@ static void location030alias(p_ptraverse p,p_path mypath,p_admst dot)
   }
   if(0) {}
   if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*AAAA0*/ p_slist l1=((p_variableprototype)d0->_item.p)->_alias;
-    for(;l1;l1=l1->next)
-    {
-      p_admst d1=adms_admst_newpa(d0,ai,l1->data);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;
-    }
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_slist lii=((p_variableprototype)ai->_item.p)->_alias;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newbs(ai,ai,(char*)lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'alias' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030instantiator(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_module)
-  {
-    p_slist lii=((p_module)ai->_item.p)->_instantiator;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else if(e==admse_instance)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_instance)(ai->_item.p))->_instantiator); d->_valueto=(void*)adms_instance_valueto_instantiator;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'instantiator' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030parameter(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_instanceparameter)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_instanceparameter)(ai->_item.p))->_parameter); d->_valueto=(void*)adms_instanceparameter_valueto_parameter;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'parameter' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030expression(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_module)
-  {
-    p_slist lii=((p_module)ai->_item.p)->_expression;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else if(e==admse_subexpression)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_subexpression)(ai->_item.p))->_expression); d->_valueto=(void*)adms_subexpression_valueto_expression;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'expression' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030dependency(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  else if(e==admse_string)
-    e=admse_math;
-  else if(e==admse_subexpression)
-    e=admse_math;
-  else if(e==admse_mapply_unary)
-    e=admse_math;
-  else if(e==admse_mapply_binary)
-    e=admse_math;
-  else if(e==admse_mapply_ternary)
-    e=admse_math;
   else if(e==admse_number)
-    e=admse_math;
-  else if(e==admse_function)
-    e=admse_math;
-  else if(e==admse_variable)
-    e=admse_math;
-  else if(e==admse_array)
-    e=admse_math;
-  else if(e==admse_probe)
-    e=admse_math;
-  else if(e==admse_expression)
-    e=admse_math;
-  else if(e==admse_instance)
-    e=admse_math;
-  else if(e==admse_instanceparameter)
-    e=admse_math;
-  else if(e==admse_instancenode)
-    e=admse_math;
-  else if(e==admse_nilled)
-    e=admse_math;
-  else if(e==admse_assignment)
-    e=admse_math;
-  else if(e==admse_contribution)
-    e=admse_math;
-  else if(e==admse_conditional)
-    e=admse_math;
-  else if(e==admse_forloop)
-    e=admse_math;
-  else if(e==admse_whileloop)
-    e=admse_math;
-  else if(e==admse_case)
-    e=admse_math;
-  else if(e==admse_caseitem)
-    e=admse_math;
-  else if(e==admse_blockvariable)
-    e=admse_math;
-  else if(e==admse_block)
-    e=admse_math;
-  else if(e==admse_callfunction)
-    e=admse_math;
-  if(0) {}
-  else if(e==admse_variableprototype)
   {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_dependency); d->_valueto=(void*)adms_variableprototype_valueto_dependency;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_math)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_math)ai->_item.p)->_dependency); d->_valueto=(void*)adms_math_valueto_dependency;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newbe(ai,ai,((p_number)ai->_item.p)->_scalingunit); d->_valueto=(void*)adms_number_valueto_scalingunit;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'dependency' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030condition(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_forloop)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_forloop)(ai->_item.p))->_condition); d->_valueto=(void*)adms_forloop_valueto_condition;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_caseitem)
-  {
-    p_slist lii=((p_caseitem)ai->_item.p)->_condition;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'condition' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030static(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  else if(e==admse_expression)
-    e=admse_math;
-  else if(e==admse_nilled)
-    e=admse_math;
-  else if(e==admse_assignment)
-    e=admse_math;
-  else if(e==admse_contribution)
-    e=admse_math;
-  else if(e==admse_conditional)
-    e=admse_math;
-  else if(e==admse_forloop)
-    e=admse_math;
-  else if(e==admse_whileloop)
-    e=admse_math;
-  else if(e==admse_case)
-    e=admse_math;
-  else if(e==admse_blockvariable)
-    e=admse_math;
-  else if(e==admse_block)
-    e=admse_math;
-  else if(e==admse_callfunction)
-    e=admse_math;
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_static);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_static;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_static); d->_valueto=(void*)adms_variableprototype_valueto_static;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_source)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_source)ai->_item.p)->_static); d->_valueto=(void*)adms_source_valueto_static;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_jacobian)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_jacobian)ai->_item.p)->_static); d->_valueto=(void*)adms_jacobian_valueto_static;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_math)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_math)ai->_item.p)->_static); d->_valueto=(void*)adms_math_valueto_static;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'static' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030domain(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_discipline)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_discipline)ai->_item.p)->_domain); d->_valueto=(void*)adms_discipline_valueto_domain;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'domain' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030type(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_type);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_type;
-  }
-  else if(e==admse_analogfunction)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_analogfunction)ai->_item.p)->_type); d->_valueto=(void*)adms_analogfunction_valueto_type;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_type); d->_valueto=(void*)adms_variableprototype_valueto_type;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_source)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_source)ai->_item.p)->_type); d->_valueto=(void*)adms_source_valueto_type;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_range)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_range)ai->_item.p)->_type); d->_valueto=(void*)adms_range_valueto_type;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'type' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030fullfilename(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_admsmain)ai->_item.p)->_fullfilename); d->_valueto=(void*)adms_admsmain_valueto_fullfilename;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'fullfilename' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030evaluation(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_module)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_module)(ai->_item.p))->_evaluation); d->_valueto=(void*)adms_module_valueto_evaluation;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'evaluation' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'scalingunit' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
 static void location030node(p_ptraverse p,p_path mypath,p_admst dot)
@@ -2505,85 +1512,7 @@ static void location030node(p_ptraverse p,p_path mypath,p_admst dot)
     adms_message_error(("%s: 'node' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location030source(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_module)
-  {
-    p_slist lii=((p_module)ai->_item.p)->_source;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else if(e==admse_probe)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_probe)(ai->_item.p))->_source); d->_valueto=(void*)adms_probe_valueto_source;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'source' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030arraydefault(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variableprototype)
-  {
-    p_slist lii=((p_variableprototype)ai->_item.p)->_arraydefault;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'arraydefault' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030usage(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_usage); d->_valueto=(void*)adms_admsmain_valueto_usage;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'usage' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030setinfinal(p_ptraverse p,p_path mypath,p_admst dot)
+static void location030OPdependent(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -2598,19 +1527,19 @@ static void location030setinfinal(p_ptraverse p,p_path mypath,p_admst dot)
   else if(e==admse_variable)
   {
     /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_setinfinal);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_setinfinal;
+    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_OPdependent);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_OPdependent;
   }
   else if(e==admse_variableprototype)
   {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_setinfinal); d->_valueto=(void*)adms_variableprototype_valueto_setinfinal;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_OPdependent); d->_valueto=(void*)adms_variableprototype_valueto_OPdependent;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'setinfinal' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'OPdependent' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location030if(p_ptraverse p,p_path mypath,p_admst dot)
+static void location030seen(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -2622,14 +1551,85 @@ static void location030if(p_ptraverse p,p_path mypath,p_admst dot)
   }
   if(0) {}
   if(0) {}
-  else if(e==admse_conditional)
+  else if(e==admse_probe)
   {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_conditional)(ai->_item.p))->_if); d->_valueto=(void*)adms_conditional_valueto_if;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newbe(ai,ai,((p_probe)ai->_item.p)->_seen); d->_valueto=(void*)adms_probe_valueto_seen;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'if' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'seen' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030usedininstance(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_usedininstance);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_usedininstance;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_usedininstance); d->_valueto=(void*)adms_variableprototype_valueto_usedininstance;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'usedininstance' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030br2(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_simulator)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_simulator)(ai->_item.p))->_br2); d->_valueto=(void*)adms_simulator_valueto_br2;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'br2' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030fullname(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_simulator)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_fullname); d->_valueto=(void*)adms_simulator_valueto_fullname;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'fullname' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
 static void location030module(p_ptraverse p,p_path mypath,p_admst dot)
@@ -2747,7 +1747,7 @@ static void location030module(p_ptraverse p,p_path mypath,p_admst dot)
     adms_message_error(("%s: 'module' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location030curline(p_ptraverse p,p_path mypath,p_admst dot)
+static void location030filename(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -2761,15 +1761,171 @@ static void location030curline(p_ptraverse p,p_path mypath,p_admst dot)
   if(0) {}
   else if(e==admse_admsmain)
   {
-    p_admst d=adms_admst_newbi(ai,ai,((p_admsmain)ai->_item.p)->_curline); d->_valueto=(void*)adms_admsmain_valueto_curline;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newbs(ai,ai,((p_admsmain)ai->_item.p)->_filename); d->_valueto=(void*)adms_admsmain_valueto_filename;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'curline' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'filename' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location030usedininstance(p_ptraverse p,p_path mypath,p_admst dot)
+static void location030simulator(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_admsmain)(ai->_item.p))->_simulator); d->_valueto=(void*)adms_admsmain_valueto_simulator;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'simulator' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030flickernoise(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_source)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_source)ai->_item.p)->_flickernoise); d->_valueto=(void*)adms_source_valueto_flickernoise;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_contribution)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_contribution)ai->_item.p)->_flickernoise); d->_valueto=(void*)adms_contribution_valueto_flickernoise;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'flickernoise' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030forblock(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_forloop)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_forloop)(ai->_item.p))->_forblock); d->_valueto=(void*)adms_forloop_valueto_forblock;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'forblock' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030supboundtype(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_range)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_range)ai->_item.p)->_supboundtype); d->_valueto=(void*)adms_range_valueto_supboundtype;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'supboundtype' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030dbg_xml(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_dbg_xml); d->_valueto=(void*)adms_admsmain_valueto_dbg_xml;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'dbg_xml' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030discipline(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_slist lii=((p_admsmain)ai->_item.p)->_discipline;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else if(e==admse_node)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_node)(ai->_item.p))->_discipline); d->_valueto=(void*)adms_node_valueto_discipline;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_branch)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_branch)(ai->_item.p))->_discipline); d->_valueto=(void*)adms_branch_valueto_discipline;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_source)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_source)(ai->_item.p))->_discipline); d->_valueto=(void*)adms_source_valueto_discipline;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_probe)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_probe)(ai->_item.p))->_discipline); d->_valueto=(void*)adms_probe_valueto_discipline;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'discipline' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030usedinnoise(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -2784,16 +1940,1587 @@ static void location030usedininstance(p_ptraverse p,p_path mypath,p_admst dot)
   else if(e==admse_variable)
   {
     /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_usedininstance);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_usedininstance;
+    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_usedinnoise);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_usedinnoise;
   }
   else if(e==admse_variableprototype)
   {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_usedininstance); d->_valueto=(void*)adms_variableprototype_valueto_usedininstance;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_usedinnoise); d->_valueto=(void*)adms_variableprototype_valueto_usedinnoise;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'usedininstance' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'usedinnoise' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030terminal(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_instance)
+  {
+    p_slist lii=((p_instance)ai->_item.p)->_terminal;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'terminal' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030condition(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_forloop)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_forloop)(ai->_item.p))->_condition); d->_valueto=(void*)adms_forloop_valueto_condition;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_caseitem)
+  {
+    p_slist lii=((p_caseitem)ai->_item.p)->_condition;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'condition' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030expression(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_module)
+  {
+    p_slist lii=((p_module)ai->_item.p)->_expression;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else if(e==admse_subexpression)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_subexpression)(ai->_item.p))->_expression); d->_valueto=(void*)adms_subexpression_valueto_expression;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'expression' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030grounded(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_node)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_node)ai->_item.p)->_grounded); d->_valueto=(void*)adms_node_valueto_grounded;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_branch)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_branch)ai->_item.p)->_grounded); d->_valueto=(void*)adms_branch_valueto_grounded;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_source)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_source)ai->_item.p)->_grounded); d->_valueto=(void*)adms_source_valueto_grounded;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_probe)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_probe)ai->_item.p)->_grounded); d->_valueto=(void*)adms_probe_valueto_grounded;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'grounded' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030hint(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_hint); d->_valueto=(void*)adms_admsmain_valueto_hint;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'hint' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030switch(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_source)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_source)ai->_item.p)->_switch); d->_valueto=(void*)adms_source_valueto_switch;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'switch' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030cast(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_number)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_number)ai->_item.p)->_cast); d->_valueto=(void*)adms_number_valueto_cast;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'cast' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030range(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*AAAA0*/ p_slist l1=((p_variableprototype)d0->_item.p)->_range;
+    for(;l1;l1=l1->next)
+    {
+      p_admst d1=adms_admst_newpa(d0,ai,l1->data);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;
+    }
+  }
+  else if(e==admse_module)
+  {
+    p_slist lii=((p_module)ai->_item.p)->_range;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_slist lii=((p_variableprototype)ai->_item.p)->_range;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'range' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030package_bugreport(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_simulator)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_package_bugreport); d->_valueto=(void*)adms_simulator_valueto_package_bugreport;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'package_bugreport' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030dynamic(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  else if(e==admse_expression)
+    e=admse_math;
+  else if(e==admse_nilled)
+    e=admse_math;
+  else if(e==admse_assignment)
+    e=admse_math;
+  else if(e==admse_contribution)
+    e=admse_math;
+  else if(e==admse_conditional)
+    e=admse_math;
+  else if(e==admse_forloop)
+    e=admse_math;
+  else if(e==admse_whileloop)
+    e=admse_math;
+  else if(e==admse_case)
+    e=admse_math;
+  else if(e==admse_blockvariable)
+    e=admse_math;
+  else if(e==admse_block)
+    e=admse_math;
+  else if(e==admse_callfunction)
+    e=admse_math;
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_dynamic);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_dynamic;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_dynamic); d->_valueto=(void*)adms_variableprototype_valueto_dynamic;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_source)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_source)ai->_item.p)->_dynamic); d->_valueto=(void*)adms_source_valueto_dynamic;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_jacobian)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_jacobian)ai->_item.p)->_dynamic); d->_valueto=(void*)adms_jacobian_valueto_dynamic;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_math)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_math)ai->_item.p)->_dynamic); d->_valueto=(void*)adms_math_valueto_dynamic;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'dynamic' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030setinmodel(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_setinmodel);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_setinmodel;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_setinmodel); d->_valueto=(void*)adms_variableprototype_valueto_setinmodel;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'setinmodel' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030arraydefault(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variableprototype)
+  {
+    p_slist lii=((p_variableprototype)ai->_item.p)->_arraydefault;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'arraydefault' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030jacobian(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_module)
+  {
+    p_slist lii=((p_module)ai->_item.p)->_jacobian;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'jacobian' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030itransform(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_slist lii=((p_admsmain)ai->_item.p)->_itransform;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'itransform' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030case(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_module)
+  {
+    p_slist lii=((p_module)ai->_item.p)->_case;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else if(e==admse_case)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_case)(ai->_item.p))->_case); d->_valueto=(void*)adms_case_valueto_case;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'case' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030ddxprobe(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*AAAA0*/ p_slist l1=((p_variableprototype)d0->_item.p)->_ddxprobe;
+    for(;l1;l1=l1->next)
+    {
+      p_admst d1=adms_admst_newpa(d0,ai,l1->data);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;
+    }
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_slist lii=((p_variableprototype)ai->_item.p)->_ddxprobe;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'ddxprobe' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030obsolete(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_obsolete); d->_valueto=(void*)adms_admsmain_valueto_obsolete;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'obsolete' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030ddx(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_simulator)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_ddx); d->_valueto=(void*)adms_simulator_valueto_ddx;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'ddx' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030ddt_name(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_nature)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_nature)ai->_item.p)->_ddt_name); d->_valueto=(void*)adms_nature_valueto_ddt_name;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'ddt_name' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030arg3(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_mapply_ternary)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_mapply_ternary)(ai->_item.p))->_arg3); d->_valueto=(void*)adms_mapply_ternary_valueto_arg3;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'arg3' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030c(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_lexval)
+  {
+    p_admst d=adms_admst_newbi(ai,ai,((p_lexval)ai->_item.p)->_c); d->_valueto=(void*)adms_lexval_valueto_c;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'c' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030debug(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_debug); d->_valueto=(void*)adms_admsmain_valueto_debug;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'debug' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030arg2(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_mapply_binary)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_mapply_binary)(ai->_item.p))->_arg2); d->_valueto=(void*)adms_mapply_binary_valueto_arg2;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_mapply_ternary)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_mapply_ternary)(ai->_item.p))->_arg2); d->_valueto=(void*)adms_mapply_ternary_valueto_arg2;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'arg2' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030else(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_conditional)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_conditional)(ai->_item.p))->_else); d->_valueto=(void*)adms_conditional_valueto_else;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'else' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030parameterset(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_instance)
+  {
+    p_slist lii=((p_instance)ai->_item.p)->_parameterset;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'parameterset' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030index(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_array)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_array)(ai->_item.p))->_index); d->_valueto=(void*)adms_array_valueto_index;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'index' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030block(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB0*/ p_admst d1=adms_admst_newpa(d0,ai,(p_adms)((p_variableprototype)d0->_item.p)->_block);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_block;
+  }
+  else if(e==admse_module)
+  {
+    p_slist lii=((p_module)ai->_item.p)->_block;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_variableprototype)(ai->_item.p))->_block); d->_valueto=(void*)adms_variableprototype_valueto_block;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_blockvariable)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_blockvariable)(ai->_item.p))->_block); d->_valueto=(void*)adms_blockvariable_valueto_block;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_block)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_block)(ai->_item.p))->_block); d->_valueto=(void*)adms_block_valueto_block;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'block' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030derivate(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_derivate);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_derivate;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_derivate); d->_valueto=(void*)adms_variableprototype_valueto_derivate;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'derivate' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030function(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_expression)
+  {
+    p_slist lii=((p_expression)ai->_item.p)->_function;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else if(e==admse_callfunction)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_callfunction)(ai->_item.p))->_function); d->_valueto=(void*)adms_callfunction_valueto_function;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'function' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030nnode(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_branch)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_branch)(ai->_item.p))->_nnode); d->_valueto=(void*)adms_branch_valueto_nnode;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'nnode' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030supexpr(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_range)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_range)(ai->_item.p))->_supexpr); d->_valueto=(void*)adms_range_valueto_supexpr;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'supexpr' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030usedinevaluate(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_usedinevaluate);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_usedinevaluate;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_usedinevaluate); d->_valueto=(void*)adms_variableprototype_valueto_usedinevaluate;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'usedinevaluate' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030itransforminsideapplytemplate(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_slist lii=((p_admsmain)ai->_item.p)->_itransforminsideapplytemplate;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'itransforminsideapplytemplate' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030infinity(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_expression)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_expression)ai->_item.p)->_infinity); d->_valueto=(void*)adms_expression_valueto_infinity;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'infinity' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030infexpr(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_range)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_range)(ai->_item.p))->_infexpr); d->_valueto=(void*)adms_range_valueto_infexpr;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'infexpr' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030potential(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_discipline)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_discipline)(ai->_item.p))->_potential); d->_valueto=(void*)adms_discipline_valueto_potential;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'potential' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030defaultcase(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_caseitem)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_caseitem)ai->_item.p)->_defaultcase); d->_valueto=(void*)adms_caseitem_valueto_defaultcase;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'defaultcase' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030value(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_number)
+  {
+    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_number)ai->_item.p)->_lexval); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_number_valueto_lexval;
+    /*BBBB0*/ p_admst d1=adms_admst_newbs(d0,ai,((p_lexval)d0->_item.p)->_string);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_lexval_valueto_string;
+  }
+  else if(e==admse_math)
+  {
+    p_admst d=adms_admst_newbr(ai,ai,((p_math)ai->_item.p)->_value); d->_valueto=(void*)adms_math_valueto_value;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_string)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_string)ai->_item.p)->_value); d->_valueto=(void*)adms_string_valueto_value;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_expression)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_expression)ai->_item.p)->_value); d->_valueto=(void*)adms_expression_valueto_value;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_instanceparameter)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_instanceparameter)(ai->_item.p))->_value); d->_valueto=(void*)adms_instanceparameter_valueto_value;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_return)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_return)ai->_item.p)->_value); d->_valueto=(void*)adms_return_valueto_value;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_attribute)
+  {
+    p_admst d=adms_admst_newpc(ai,ai,(p_attribute)ai->_item.p);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'value' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030tree(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_analogfunction)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_analogfunction)(ai->_item.p))->_tree); d->_valueto=(void*)adms_analogfunction_valueto_tree;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_expression)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_expression)(ai->_item.p))->_tree); d->_valueto=(void*)adms_expression_valueto_tree;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'tree' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030instantiator(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_module)
+  {
+    p_slist lii=((p_module)ai->_item.p)->_instantiator;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else if(e==admse_instance)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_instance)(ai->_item.p))->_instantiator); d->_valueto=(void*)adms_instance_valueto_instantiator;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'instantiator' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030usage(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_usage); d->_valueto=(void*)adms_admsmain_valueto_usage;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'usage' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030update(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_forloop)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_forloop)(ai->_item.p))->_update); d->_valueto=(void*)adms_forloop_valueto_update;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'update' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030dependency(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  else if(e==admse_string)
+    e=admse_math;
+  else if(e==admse_subexpression)
+    e=admse_math;
+  else if(e==admse_mapply_unary)
+    e=admse_math;
+  else if(e==admse_mapply_binary)
+    e=admse_math;
+  else if(e==admse_mapply_ternary)
+    e=admse_math;
+  else if(e==admse_number)
+    e=admse_math;
+  else if(e==admse_function)
+    e=admse_math;
+  else if(e==admse_variable)
+    e=admse_math;
+  else if(e==admse_array)
+    e=admse_math;
+  else if(e==admse_probe)
+    e=admse_math;
+  else if(e==admse_expression)
+    e=admse_math;
+  else if(e==admse_instance)
+    e=admse_math;
+  else if(e==admse_instanceparameter)
+    e=admse_math;
+  else if(e==admse_instancenode)
+    e=admse_math;
+  else if(e==admse_nilled)
+    e=admse_math;
+  else if(e==admse_assignment)
+    e=admse_math;
+  else if(e==admse_contribution)
+    e=admse_math;
+  else if(e==admse_conditional)
+    e=admse_math;
+  else if(e==admse_forloop)
+    e=admse_math;
+  else if(e==admse_whileloop)
+    e=admse_math;
+  else if(e==admse_case)
+    e=admse_math;
+  else if(e==admse_caseitem)
+    e=admse_math;
+  else if(e==admse_blockvariable)
+    e=admse_math;
+  else if(e==admse_block)
+    e=admse_math;
+  else if(e==admse_callfunction)
+    e=admse_math;
+  if(0) {}
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_dependency); d->_valueto=(void*)adms_variableprototype_valueto_dependency;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_math)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_math)ai->_item.p)->_dependency); d->_valueto=(void*)adms_math_valueto_dependency;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'dependency' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030whileloop(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_module)
+  {
+    p_slist lii=((p_module)ai->_item.p)->_whileloop;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'whileloop' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030blockvariable(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_module)
+  {
+    p_slist lii=((p_module)ai->_item.p)->_blockvariable;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'blockvariable' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030then(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_conditional)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_conditional)(ai->_item.p))->_then); d->_valueto=(void*)adms_conditional_valueto_then;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'then' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030analog(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_module)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_module)(ai->_item.p))->_analog); d->_valueto=(void*)adms_module_valueto_analog;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'analog' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030nodefrommodule(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_instancenode)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_instancenode)(ai->_item.p))->_nodefrommodule); d->_valueto=(void*)adms_instancenode_valueto_nodefrommodule;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'nodefrommodule' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030whileblock(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_whileloop)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_whileloop)(ai->_item.p))->_whileblock); d->_valueto=(void*)adms_whileloop_valueto_whileblock;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'whileblock' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030usedinfinal(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_usedinfinal);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_usedinfinal;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_usedinfinal); d->_valueto=(void*)adms_variableprototype_valueto_usedinfinal;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'usedinfinal' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030default(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB0*/ p_admst d1=adms_admst_newpa(d0,ai,(p_adms)((p_variableprototype)d0->_item.p)->_default);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_default;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_variableprototype)(ai->_item.p))->_default); d->_valueto=(void*)adms_variableprototype_valueto_default;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'default' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030evaluation(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_module)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_module)(ai->_item.p))->_evaluation); d->_valueto=(void*)adms_module_valueto_evaluation;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'evaluation' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030sizetype(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_sizetype);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_sizetype;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_sizetype); d->_valueto=(void*)adms_variableprototype_valueto_sizetype;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'sizetype' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030unique_id(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_function)
+  {
+    p_admst d=adms_admst_newbi(ai,ai,((p_function)ai->_item.p)->_unique_id); d->_valueto=(void*)adms_function_valueto_unique_id;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'unique_id' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030setinfinal(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_setinfinal);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_setinfinal;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_setinfinal); d->_valueto=(void*)adms_variableprototype_valueto_setinfinal;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'setinfinal' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030dbg_vla(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_dbg_vla); d->_valueto=(void*)adms_admsmain_valueto_dbg_vla;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'dbg_vla' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030type(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_type);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_type;
+  }
+  else if(e==admse_analogfunction)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_analogfunction)ai->_item.p)->_type); d->_valueto=(void*)adms_analogfunction_valueto_type;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_type); d->_valueto=(void*)adms_variableprototype_valueto_type;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_source)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_source)ai->_item.p)->_type); d->_valueto=(void*)adms_source_valueto_type;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_range)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_range)ai->_item.p)->_type); d->_valueto=(void*)adms_range_valueto_type;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'type' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
 static void location030currentdate(p_ptraverse p,p_path mypath,p_admst dot)
@@ -2818,7 +3545,7 @@ static void location030currentdate(p_ptraverse p,p_path mypath,p_admst dot)
     adms_message_error(("%s: 'currentdate' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location030contribution(p_ptraverse p,p_path mypath,p_admst dot)
+static void location030if(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -2830,21 +3557,17 @@ static void location030contribution(p_ptraverse p,p_path mypath,p_admst dot)
   }
   if(0) {}
   if(0) {}
-  else if(e==admse_module)
+  else if(e==admse_conditional)
   {
-    p_slist lii=((p_module)ai->_item.p)->_contribution;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_conditional)(ai->_item.p))->_if); d->_valueto=(void*)adms_conditional_valueto_if;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'contribution' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'if' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location030conditional(p_ptraverse p,p_path mypath,p_admst dot)
+static void location030setininitial_step(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -2856,18 +3579,41 @@ static void location030conditional(p_ptraverse p,p_path mypath,p_admst dot)
   }
   if(0) {}
   if(0) {}
-  else if(e==admse_module)
+  else if(e==admse_variable)
   {
-    p_slist lii=((p_module)ai->_item.p)->_conditional;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
+    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_setininitial_step);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_setininitial_step;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_setininitial_step); d->_valueto=(void*)adms_variableprototype_valueto_setininitial_step;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'conditional' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'setininitial_step' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030parameter(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_instanceparameter)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_instanceparameter)(ai->_item.p))->_parameter); d->_valueto=(void*)adms_instanceparameter_valueto_parameter;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'parameter' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
 static void location030invtransform(p_ptraverse p,p_path mypath,p_admst dot)
@@ -2896,6 +3642,160 @@ static void location030invtransform(p_ptraverse p,p_path mypath,p_admst dot)
     adms_message_error(("%s: 'invtransform' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
+static void location030lhs(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_assignment)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_assignment)(ai->_item.p))->_lhs); d->_valueto=(void*)adms_assignment_valueto_lhs;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_contribution)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_contribution)(ai->_item.p))->_lhs); d->_valueto=(void*)adms_contribution_valueto_lhs;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'lhs' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030TemperatureDependent(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_TemperatureDependent);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_TemperatureDependent;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_TemperatureDependent); d->_valueto=(void*)adms_variableprototype_valueto_TemperatureDependent;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_expression)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_expression)ai->_item.p)->_TemperatureDependent); d->_valueto=(void*)adms_expression_valueto_TemperatureDependent;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'TemperatureDependent' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030scope(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_scope);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_scope;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_scope); d->_valueto=(void*)adms_variableprototype_valueto_scope;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'scope' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030column(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_jacobian)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_jacobian)(ai->_item.p))->_column); d->_valueto=(void*)adms_jacobian_valueto_column;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'column' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030warning(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_warning); d->_valueto=(void*)adms_admsmain_valueto_warning;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'warning' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030caseitem(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_case)
+  {
+    p_slist lii=((p_case)ai->_item.p)->_caseitem;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'caseitem' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
 static void location030valueof(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
@@ -2922,7 +3822,51 @@ static void location030valueof(p_ptraverse p,p_path mypath,p_admst dot)
     adms_message_error(("%s: 'valueof' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location030variable(p_ptraverse p,p_path mypath,p_admst dot)
+static void location030string(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_lexval)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_lexval)ai->_item.p)->_string); d->_valueto=(void*)adms_lexval_valueto_string;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'string' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030fpos(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_admst d=adms_admst_newbi(ai,ai,((p_admsmain)ai->_item.p)->_fpos); d->_valueto=(void*)adms_admsmain_valueto_fpos;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'fpos' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030setingetprev(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -2937,75 +3881,89 @@ static void location030variable(p_ptraverse p,p_path mypath,p_admst dot)
   else if(e==admse_variable)
   {
     /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*AAAA0*/ p_slist l1=((p_variableprototype)d0->_item.p)->_variable;
-    for(;l1;l1=l1->next)
-    {
-      p_admst d1=adms_admst_newpa(d0,ai,l1->data);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;
-    }
-  }
-  else if(e==admse_admsmain)
-  {
-    p_slist lii=((p_admsmain)ai->_item.p)->_variable;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else if(e==admse_module)
-  {
-    p_slist lii=((p_module)ai->_item.p)->_variable;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else if(e==admse_analogfunction)
-  {
-    p_slist lii=((p_analogfunction)ai->_item.p)->_variable;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
+    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_setingetprev);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_setingetprev;
   }
   else if(e==admse_variableprototype)
   {
-    p_slist lii=((p_variableprototype)ai->_item.p)->_variable;
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_setingetprev); d->_valueto=(void*)adms_variableprototype_valueto_setingetprev;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'setingetprev' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030nature(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_slist lii=((p_admsmain)ai->_item.p)->_nature;
     for(;lii;lii=lii->next)
     {
       p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
     }
   }
-  else if(e==admse_array)
+  else if(e==admse_source)
   {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_array)(ai->_item.p))->_variable); d->_valueto=(void*)adms_array_valueto_variable;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_source)(ai->_item.p))->_nature); d->_valueto=(void*)adms_source_valueto_nature;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
-  else if(e==admse_expression)
+  else if(e==admse_probe)
   {
-    p_slist lii=((p_expression)ai->_item.p)->_variable;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_probe)(ai->_item.p))->_nature); d->_valueto=(void*)adms_probe_valueto_nature;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
-  else if(e==admse_blockvariable)
+  else
   {
-    p_slist lii=((p_blockvariable)ai->_item.p)->_variable;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'nature' bad attribute\n",adms_transform_uid(p->_transform)))
   }
-  else if(e==admse_block)
+}
+static void location030verbose(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
   {
-    p_slist lii=((p_block)ai->_item.p)->_variable;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
   }
-  else if(e==admse_evaluation)
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
   {
-    p_slist lii=((p_evaluation)ai->_item.p)->_variable;
+    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_verbose); d->_valueto=(void*)adms_admsmain_valueto_verbose;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'verbose' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030callfunction(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_module)
+  {
+    p_slist lii=((p_module)ai->_item.p)->_callfunction;
     for(;lii;lii=lii->next)
     {
       p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
@@ -3014,7 +3972,82 @@ static void location030variable(p_ptraverse p,p_path mypath,p_admst dot)
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'variable' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'callfunction' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030conditional(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_module)
+  {
+    p_slist lii=((p_module)ai->_item.p)->_conditional;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'conditional' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030maxsize(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB0*/ p_admst d1=adms_admst_newpa(d0,ai,(p_adms)((p_variableprototype)d0->_item.p)->_maxsize);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_maxsize;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_variableprototype)(ai->_item.p))->_maxsize); d->_valueto=(void*)adms_variableprototype_valueto_maxsize;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'maxsize' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030argc(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_admst d=adms_admst_newbi(ai,ai,((p_admsmain)ai->_item.p)->_argc); d->_valueto=(void*)adms_admsmain_valueto_argc;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'argc' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
 static void location030setininstance(p_ptraverse p,p_path mypath,p_admst dot)
@@ -3044,7 +4077,77 @@ static void location030setininstance(p_ptraverse p,p_path mypath,p_admst dot)
     adms_message_error(("%s: 'setininstance' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location030output(p_ptraverse p,p_path mypath,p_admst dot)
+static void location030idt_nature(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_nature)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_nature)(ai->_item.p))->_idt_nature); d->_valueto=(void*)adms_nature_valueto_idt_nature;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'idt_nature' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030arguments(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_function)
+  {
+    p_slist lii=((p_function)ai->_item.p)->_arguments;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'arguments' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030definition(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_function)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_function)(ai->_item.p))->_definition); d->_valueto=(void*)adms_function_valueto_definition;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'definition' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030input(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -3059,19 +4162,235 @@ static void location030output(p_ptraverse p,p_path mypath,p_admst dot)
   else if(e==admse_variable)
   {
     /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_output);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_output;
+    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_input);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_input;
   }
   else if(e==admse_variableprototype)
   {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_output); d->_valueto=(void*)adms_variableprototype_valueto_output;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_input); d->_valueto=(void*)adms_variableprototype_valueto_input;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'output' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'input' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location030forloop(p_ptraverse p,p_path mypath,p_admst dot)
+static void location030probe(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*AAAA0*/ p_slist l1=((p_variableprototype)d0->_item.p)->_probe;
+    for(;l1;l1=l1->next)
+    {
+      p_admst d1=adms_admst_newpa(d0,ai,l1->data);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;
+    }
+  }
+  else if(e==admse_simulator)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_simulator)(ai->_item.p))->_probe); d->_valueto=(void*)adms_simulator_valueto_probe;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_module)
+  {
+    p_slist lii=((p_module)ai->_item.p)->_probe;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_slist lii=((p_variableprototype)ai->_item.p)->_probe;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else if(e==admse_source)
+  {
+    p_slist lii=((p_source)ai->_item.p)->_probe;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else if(e==admse_expression)
+  {
+    p_slist lii=((p_expression)ai->_item.p)->_probe;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else if(e==admse_block)
+  {
+    p_slist lii=((p_block)ai->_item.p)->_probe;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'probe' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030arg1(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_mapply_unary)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_mapply_unary)(ai->_item.p))->_arg1); d->_valueto=(void*)adms_mapply_unary_valueto_arg1;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_mapply_binary)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_mapply_binary)(ai->_item.p))->_arg1); d->_valueto=(void*)adms_mapply_binary_valueto_arg1;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_mapply_ternary)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_mapply_ternary)(ai->_item.p))->_arg1); d->_valueto=(void*)adms_mapply_ternary_valueto_arg1;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'arg1' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030idt_name(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_nature)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_nature)ai->_item.p)->_idt_name); d->_valueto=(void*)adms_nature_valueto_idt_name;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'idt_name' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030usedinmodel(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_usedinmodel);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_usedinmodel;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_usedinmodel); d->_valueto=(void*)adms_variableprototype_valueto_usedinmodel;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'usedinmodel' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030infboundtype(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_range)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_range)ai->_item.p)->_infboundtype); d->_valueto=(void*)adms_range_valueto_infboundtype;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'infboundtype' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030base(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_nature)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_nature)(ai->_item.p))->_base); d->_valueto=(void*)adms_nature_valueto_base;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'base' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030location(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_node)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_node)ai->_item.p)->_location); d->_valueto=(void*)adms_node_valueto_location;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'location' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030contribution(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -3085,7 +4404,7 @@ static void location030forloop(p_ptraverse p,p_path mypath,p_admst dot)
   if(0) {}
   else if(e==admse_module)
   {
-    p_slist lii=((p_module)ai->_item.p)->_forloop;
+    p_slist lii=((p_module)ai->_item.p)->_contribution;
     for(;lii;lii=lii->next)
     {
       p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
@@ -3094,7 +4413,682 @@ static void location030forloop(p_ptraverse p,p_path mypath,p_admst dot)
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'forloop' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'contribution' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030row(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_jacobian)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_jacobian)(ai->_item.p))->_row); d->_valueto=(void*)adms_jacobian_valueto_row;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'row' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030f(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_lexval)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_lexval)ai->_item.p)->_f); d->_valueto=(void*)adms_lexval_valueto_f;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'f' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030l(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_lexval)
+  {
+    p_admst d=adms_admst_newbi(ai,ai,((p_lexval)ai->_item.p)->_l); d->_valueto=(void*)adms_lexval_valueto_l;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'l' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030sr1(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_simulator)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_simulator)(ai->_item.p))->_sr1); d->_valueto=(void*)adms_simulator_valueto_sr1;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'sr1' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030package_string(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_simulator)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_package_string); d->_valueto=(void*)adms_simulator_valueto_package_string;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'package_string' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030package_name(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_simulator)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_package_name); d->_valueto=(void*)adms_simulator_valueto_package_name;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'package_name' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030static(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  else if(e==admse_expression)
+    e=admse_math;
+  else if(e==admse_nilled)
+    e=admse_math;
+  else if(e==admse_assignment)
+    e=admse_math;
+  else if(e==admse_contribution)
+    e=admse_math;
+  else if(e==admse_conditional)
+    e=admse_math;
+  else if(e==admse_forloop)
+    e=admse_math;
+  else if(e==admse_whileloop)
+    e=admse_math;
+  else if(e==admse_case)
+    e=admse_math;
+  else if(e==admse_blockvariable)
+    e=admse_math;
+  else if(e==admse_block)
+    e=admse_math;
+  else if(e==admse_callfunction)
+    e=admse_math;
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_static);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_static;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_static); d->_valueto=(void*)adms_variableprototype_valueto_static;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_source)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_source)ai->_item.p)->_static); d->_valueto=(void*)adms_source_valueto_static;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_jacobian)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_jacobian)ai->_item.p)->_static); d->_valueto=(void*)adms_jacobian_valueto_static;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_math)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_math)ai->_item.p)->_static); d->_valueto=(void*)adms_math_valueto_static;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'static' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030diagonal(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_jacobian)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_jacobian)ai->_item.p)->_diagonal); d->_valueto=(void*)adms_jacobian_valueto_diagonal;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'diagonal' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030pnode(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_branch)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_branch)(ai->_item.p))->_pnode); d->_valueto=(void*)adms_branch_valueto_pnode;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'pnode' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030alias(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*AAAA0*/ p_slist l1=((p_variableprototype)d0->_item.p)->_alias;
+    for(;l1;l1=l1->next)
+    {
+      p_admst d1=adms_admst_newpa(d0,ai,l1->data);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;
+    }
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_slist lii=((p_variableprototype)ai->_item.p)->_alias;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newbs(ai,ai,(char*)lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'alias' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030whitenoise(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_source)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_source)ai->_item.p)->_whitenoise); d->_valueto=(void*)adms_source_valueto_whitenoise;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_contribution)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_contribution)ai->_item.p)->_whitenoise); d->_valueto=(void*)adms_contribution_valueto_whitenoise;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'whitenoise' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030assignment(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*AAAA0*/ p_slist l1=((p_variableprototype)d0->_item.p)->_assignment;
+    for(;l1;l1=l1->next)
+    {
+      p_admst d1=adms_admst_newpa(d0,ai,l1->data);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;
+    }
+  }
+  else if(e==admse_module)
+  {
+    p_slist lii=((p_module)ai->_item.p)->_assignment;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_slist lii=((p_variableprototype)ai->_item.p)->_assignment;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'assignment' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030package_version(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_simulator)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_package_version); d->_valueto=(void*)adms_simulator_valueto_package_version;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'package_version' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030developer(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_simulator)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_developer); d->_valueto=(void*)adms_simulator_valueto_developer;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'developer' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030br1(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_simulator)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_simulator)(ai->_item.p))->_br1); d->_valueto=(void*)adms_simulator_valueto_br1;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'br1' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030hasspecialnumber(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_expression)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_expression)ai->_item.p)->_hasspecialnumber); d->_valueto=(void*)adms_expression_valueto_hasspecialnumber;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'hasspecialnumber' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030prototype(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_variable)(ai->_item.p))->_prototype); d->_valueto=(void*)adms_variable_valueto_prototype;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'prototype' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030class(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_function)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_function)ai->_item.p)->_class); d->_valueto=(void*)adms_function_valueto_class;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'class' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030analogfunction(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_module)
+  {
+    p_slist lii=((p_module)ai->_item.p)->_analogfunction;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'analogfunction' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030dbg_mem(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_dbg_mem); d->_valueto=(void*)adms_admsmain_valueto_dbg_mem;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'dbg_mem' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030minsize(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB0*/ p_admst d1=adms_admst_newpa(d0,ai,(p_adms)((p_variableprototype)d0->_item.p)->_minsize);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_minsize;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_variableprototype)(ai->_item.p))->_minsize); d->_valueto=(void*)adms_variableprototype_valueto_minsize;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'minsize' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030argv(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_slist lii=((p_admsmain)ai->_item.p)->_argv;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newbs(ai,ai,(char*)lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'argv' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030tmp(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_simulator)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_tmp); d->_valueto=(void*)adms_simulator_valueto_tmp;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'tmp' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030transform(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_slist lii=((p_admsmain)ai->_item.p)->_transform;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'transform' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030code(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_analog)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_analog)(ai->_item.p))->_code); d->_valueto=(void*)adms_analog_valueto_code;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_caseitem)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_caseitem)(ai->_item.p))->_code); d->_valueto=(void*)adms_caseitem_valueto_code;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'code' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030isstate(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_isstate);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_isstate;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_isstate); d->_valueto=(void*)adms_variableprototype_valueto_isstate;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'isstate' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
 static void location030attribute(p_ptraverse p,p_path mypath,p_admst dot)
@@ -3204,51 +5198,7 @@ static void location030attribute(p_ptraverse p,p_path mypath,p_admst dot)
     adms_message_error(("%s: 'attribute' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location030location(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_node)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_node)ai->_item.p)->_location); d->_valueto=(void*)adms_node_valueto_location;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'location' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030hasspecialnumber(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_expression)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_expression)ai->_item.p)->_hasspecialnumber); d->_valueto=(void*)adms_expression_valueto_hasspecialnumber;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'hasspecialnumber' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030usedinfinal(p_ptraverse p,p_path mypath,p_admst dot)
+static void location030output(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -3263,342 +5213,19 @@ static void location030usedinfinal(p_ptraverse p,p_path mypath,p_admst dot)
   else if(e==admse_variable)
   {
     /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_usedinfinal);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_usedinfinal;
+    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_output);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_output;
   }
   else if(e==admse_variableprototype)
   {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_usedinfinal); d->_valueto=(void*)adms_variableprototype_valueto_usedinfinal;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_output); d->_valueto=(void*)adms_variableprototype_valueto_output;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'usedinfinal' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'output' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location030setinmodel(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_setinmodel);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_setinmodel;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_setinmodel); d->_valueto=(void*)adms_variableprototype_valueto_setinmodel;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'setinmodel' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030else(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_conditional)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_conditional)(ai->_item.p))->_else); d->_valueto=(void*)adms_conditional_valueto_else;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'else' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030fullname(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_simulator)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_fullname); d->_valueto=(void*)adms_simulator_valueto_fullname;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'fullname' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030setinevaluate(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_setinevaluate);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_setinevaluate;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_setinevaluate); d->_valueto=(void*)adms_variableprototype_valueto_setinevaluate;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'setinevaluate' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030nodefrommodule(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_instancenode)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_instancenode)(ai->_item.p))->_nodefrommodule); d->_valueto=(void*)adms_instancenode_valueto_nodefrommodule;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'nodefrommodule' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030units(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_nature)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_nature)ai->_item.p)->_units); d->_valueto=(void*)adms_nature_valueto_units;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'units' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030initial(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_forloop)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_forloop)(ai->_item.p))->_initial); d->_valueto=(void*)adms_forloop_valueto_initial;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'initial' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030package_string(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_simulator)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_package_string); d->_valueto=(void*)adms_simulator_valueto_package_string;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'package_string' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030nodefrominstantiator(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_instancenode)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_instancenode)(ai->_item.p))->_nodefrominstantiator); d->_valueto=(void*)adms_instancenode_valueto_nodefrominstantiator;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'nodefrominstantiator' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030datatype(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_list)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_list)ai->_item.p)->_datatype); d->_valueto=(void*)adms_list_valueto_datatype;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'datatype' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030fatal(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_fatal); d->_valueto=(void*)adms_admsmain_valueto_fatal;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'fatal' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030cast(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_number)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_number)ai->_item.p)->_cast); d->_valueto=(void*)adms_number_valueto_cast;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'cast' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030usedinmodel(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_usedinmodel);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_usedinmodel;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_usedinmodel); d->_valueto=(void*)adms_variableprototype_valueto_usedinmodel;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'usedinmodel' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030verbose(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_verbose); d->_valueto=(void*)adms_admsmain_valueto_verbose;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'verbose' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030case(p_ptraverse p,p_path mypath,p_admst dot)
+static void location030source(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -3612,23 +5239,23 @@ static void location030case(p_ptraverse p,p_path mypath,p_admst dot)
   if(0) {}
   else if(e==admse_module)
   {
-    p_slist lii=((p_module)ai->_item.p)->_case;
+    p_slist lii=((p_module)ai->_item.p)->_source;
     for(;lii;lii=lii->next)
     {
       p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
     }
   }
-  else if(e==admse_case)
+  else if(e==admse_probe)
   {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_case)(ai->_item.p))->_case); d->_valueto=(void*)adms_case_valueto_case;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_probe)(ai->_item.p))->_source); d->_valueto=(void*)adms_probe_valueto_source;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'case' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'source' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location030abstol(p_ptraverse p,p_path mypath,p_admst dot)
+static void location030info(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -3640,36 +5267,14 @@ static void location030abstol(p_ptraverse p,p_path mypath,p_admst dot)
   }
   if(0) {}
   if(0) {}
-  else if(e==admse_nature)
+  else if(e==admse_admsmain)
   {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_nature)(ai->_item.p))->_abstol); d->_valueto=(void*)adms_nature_valueto_abstol;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_info); d->_valueto=(void*)adms_admsmain_valueto_info;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'abstol' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030supboundtype(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_range)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_range)ai->_item.p)->_supboundtype); d->_valueto=(void*)adms_range_valueto_supboundtype;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'supboundtype' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'info' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
 static void location030item(p_ptraverse p,p_path mypath,p_admst dot)
@@ -3706,7 +5311,7 @@ static void location030item(p_ptraverse p,p_path mypath,p_admst dot)
     adms_message_error(("%s: 'item' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location030block(p_ptraverse p,p_path mypath,p_admst dot)
+static void location030access(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -3718,38 +5323,17 @@ static void location030block(p_ptraverse p,p_path mypath,p_admst dot)
   }
   if(0) {}
   if(0) {}
-  else if(e==admse_variable)
+  else if(e==admse_nature)
   {
-    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB0*/ p_admst d1=adms_admst_newpa(d0,ai,(p_adms)((p_variableprototype)d0->_item.p)->_block);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_block;
-  }
-  else if(e==admse_module)
-  {
-    p_slist lii=((p_module)ai->_item.p)->_block;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_variableprototype)(ai->_item.p))->_block); d->_valueto=(void*)adms_variableprototype_valueto_block;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_blockvariable)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_blockvariable)(ai->_item.p))->_block); d->_valueto=(void*)adms_blockvariable_valueto_block;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_block)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_block)(ai->_item.p))->_block); d->_valueto=(void*)adms_block_valueto_block;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newbs(ai,ai,((p_nature)ai->_item.p)->_access); d->_valueto=(void*)adms_nature_valueto_access;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'block' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'access' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location030l(p_ptraverse p,p_path mypath,p_admst dot)
+static void location030direction(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -3761,17 +5345,17 @@ static void location030l(p_ptraverse p,p_path mypath,p_admst dot)
   }
   if(0) {}
   if(0) {}
-  else if(e==admse_lexval)
+  else if(e==admse_node)
   {
-    p_admst d=adms_admst_newbi(ai,ai,((p_lexval)ai->_item.p)->_l); d->_valueto=(void*)adms_lexval_valueto_l;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newbe(ai,ai,((p_node)ai->_item.p)->_direction); d->_valueto=(void*)adms_node_valueto_direction;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'l' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'direction' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location030simulator(p_ptraverse p,p_path mypath,p_admst dot)
+static void location030domain(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -3783,43 +5367,17 @@ static void location030simulator(p_ptraverse p,p_path mypath,p_admst dot)
   }
   if(0) {}
   if(0) {}
-  else if(e==admse_admsmain)
+  else if(e==admse_discipline)
   {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_admsmain)(ai->_item.p))->_simulator); d->_valueto=(void*)adms_admsmain_valueto_simulator;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newbe(ai,ai,((p_discipline)ai->_item.p)->_domain); d->_valueto=(void*)adms_discipline_valueto_domain;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'simulator' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'domain' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location030code(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_analog)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_analog)(ai->_item.p))->_code); d->_valueto=(void*)adms_analog_valueto_code;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_caseitem)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_caseitem)(ai->_item.p))->_code); d->_valueto=(void*)adms_caseitem_valueto_code;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'code' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030analog(p_ptraverse p,p_path mypath,p_admst dot)
+static void location030nodealias(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -3833,287 +5391,7 @@ static void location030analog(p_ptraverse p,p_path mypath,p_admst dot)
   if(0) {}
   else if(e==admse_module)
   {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_module)(ai->_item.p))->_analog); d->_valueto=(void*)adms_module_valueto_analog;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'analog' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030value(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_number)
-  {
-    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_number)ai->_item.p)->_lexval); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_number_valueto_lexval;
-    /*BBBB0*/ p_admst d1=adms_admst_newbs(d0,ai,((p_lexval)d0->_item.p)->_string);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_lexval_valueto_string;
-  }
-  else if(e==admse_math)
-  {
-    p_admst d=adms_admst_newbr(ai,ai,((p_math)ai->_item.p)->_value); d->_valueto=(void*)adms_math_valueto_value;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_string)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_string)ai->_item.p)->_value); d->_valueto=(void*)adms_string_valueto_value;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_expression)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_expression)ai->_item.p)->_value); d->_valueto=(void*)adms_expression_valueto_value;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_instanceparameter)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_instanceparameter)(ai->_item.p))->_value); d->_valueto=(void*)adms_instanceparameter_valueto_value;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_return)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_return)ai->_item.p)->_value); d->_valueto=(void*)adms_return_valueto_value;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_attribute)
-  {
-    p_admst d=adms_admst_newpc(ai,ai,(p_attribute)ai->_item.p);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'value' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030fpos(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newbi(ai,ai,((p_admsmain)ai->_item.p)->_fpos); d->_valueto=(void*)adms_admsmain_valueto_fpos;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'fpos' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030minsize(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB0*/ p_admst d1=adms_admst_newpa(d0,ai,(p_adms)((p_variableprototype)d0->_item.p)->_minsize);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_minsize;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_variableprototype)(ai->_item.p))->_minsize); d->_valueto=(void*)adms_variableprototype_valueto_minsize;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'minsize' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030seen(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_probe)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_probe)ai->_item.p)->_seen); d->_valueto=(void*)adms_probe_valueto_seen;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'seen' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030error(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_error); d->_valueto=(void*)adms_admsmain_valueto_error;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'error' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030filename(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_admsmain)ai->_item.p)->_filename); d->_valueto=(void*)adms_admsmain_valueto_filename;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'filename' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030flickernoise(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_source)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_source)ai->_item.p)->_flickernoise); d->_valueto=(void*)adms_source_valueto_flickernoise;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_contribution)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_contribution)ai->_item.p)->_flickernoise); d->_valueto=(void*)adms_contribution_valueto_flickernoise;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'flickernoise' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030nnode(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_branch)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_branch)(ai->_item.p))->_nnode); d->_valueto=(void*)adms_branch_valueto_nnode;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'nnode' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030whitenoise(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_source)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_source)ai->_item.p)->_whitenoise); d->_valueto=(void*)adms_source_valueto_whitenoise;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_contribution)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_contribution)ai->_item.p)->_whitenoise); d->_valueto=(void*)adms_contribution_valueto_whitenoise;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'whitenoise' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030br2(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_simulator)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_simulator)(ai->_item.p))->_br2); d->_valueto=(void*)adms_simulator_valueto_br2;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'br2' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030whileloop(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_module)
-  {
-    p_slist lii=((p_module)ai->_item.p)->_whileloop;
+    p_slist lii=((p_module)ai->_item.p)->_nodealias;
     for(;lii;lii=lii->next)
     {
       p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
@@ -4122,293 +5400,7 @@ static void location030whileloop(p_ptraverse p,p_path mypath,p_admst dot)
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'whileloop' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030branch(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_module)
-  {
-    p_slist lii=((p_module)ai->_item.p)->_branch;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else if(e==admse_branchalias)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_branchalias)(ai->_item.p))->_branch); d->_valueto=(void*)adms_branchalias_valueto_branch;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_source)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_source)(ai->_item.p))->_branch); d->_valueto=(void*)adms_source_valueto_branch;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_probe)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_probe)(ai->_item.p))->_branch); d->_valueto=(void*)adms_probe_valueto_branch;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'branch' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030arguments(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_function)
-  {
-    p_slist lii=((p_function)ai->_item.p)->_arguments;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'arguments' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030jacobian(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_module)
-  {
-    p_slist lii=((p_module)ai->_item.p)->_jacobian;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'jacobian' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030argv(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_slist lii=((p_admsmain)ai->_item.p)->_argv;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newbs(ai,ai,(char*)lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'argv' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030lexval(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB0*/ p_admst d1=adms_admst_newpa(d0,ai,(p_adms)((p_variableprototype)d0->_item.p)->_lexval);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_lexval;
-  }
-  else if(e==admse_analogfunction)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_analogfunction)(ai->_item.p))->_lexval); d->_valueto=(void*)adms_analogfunction_valueto_lexval;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_variableprototype)(ai->_item.p))->_lexval); d->_valueto=(void*)adms_variableprototype_valueto_lexval;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_number)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_number)(ai->_item.p))->_lexval); d->_valueto=(void*)adms_number_valueto_lexval;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_function)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_function)(ai->_item.p))->_lexval); d->_valueto=(void*)adms_function_valueto_lexval;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_assignment)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_assignment)(ai->_item.p))->_lexval); d->_valueto=(void*)adms_assignment_valueto_lexval;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_contribution)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_contribution)(ai->_item.p))->_lexval); d->_valueto=(void*)adms_contribution_valueto_lexval;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_block)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_block)(ai->_item.p))->_lexval); d->_valueto=(void*)adms_block_valueto_lexval;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'lexval' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030switch(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_source)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_source)ai->_item.p)->_switch); d->_valueto=(void*)adms_source_valueto_switch;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'switch' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030argc(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newbi(ai,ai,((p_admsmain)ai->_item.p)->_argc); d->_valueto=(void*)adms_admsmain_valueto_argc;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'argc' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030itransforminsideapplytemplate(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_slist lii=((p_admsmain)ai->_item.p)->_itransforminsideapplytemplate;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'itransforminsideapplytemplate' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030parametertype(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_parametertype);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_parametertype;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_parametertype); d->_valueto=(void*)adms_variableprototype_valueto_parametertype;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'parametertype' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030defaultcase(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_caseitem)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_caseitem)ai->_item.p)->_defaultcase); d->_valueto=(void*)adms_caseitem_valueto_defaultcase;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'defaultcase' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'nodealias' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
 static void location030insource(p_ptraverse p,p_path mypath,p_admst dot)
@@ -4438,204 +5430,7 @@ static void location030insource(p_ptraverse p,p_path mypath,p_admst dot)
     adms_message_error(("%s: 'insource' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location030discipline(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_slist lii=((p_admsmain)ai->_item.p)->_discipline;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else if(e==admse_node)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_node)(ai->_item.p))->_discipline); d->_valueto=(void*)adms_node_valueto_discipline;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_branch)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_branch)(ai->_item.p))->_discipline); d->_valueto=(void*)adms_branch_valueto_discipline;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_source)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_source)(ai->_item.p))->_discipline); d->_valueto=(void*)adms_source_valueto_discipline;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_probe)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_probe)(ai->_item.p))->_discipline); d->_valueto=(void*)adms_probe_valueto_discipline;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'discipline' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030TemperatureDependent(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_TemperatureDependent);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_TemperatureDependent;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_TemperatureDependent); d->_valueto=(void*)adms_variableprototype_valueto_TemperatureDependent;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_expression)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_expression)ai->_item.p)->_TemperatureDependent); d->_valueto=(void*)adms_expression_valueto_TemperatureDependent;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'TemperatureDependent' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030vcount(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB0*/ p_admst d1=adms_admst_newbi(d0,ai,((p_variableprototype)d0->_item.p)->_vcount);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_vcount;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newbi(ai,ai,((p_variableprototype)ai->_item.p)->_vcount); d->_valueto=(void*)adms_variableprototype_valueto_vcount;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'vcount' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030row(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_jacobian)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_jacobian)(ai->_item.p))->_row); d->_valueto=(void*)adms_jacobian_valueto_row;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'row' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030OPdependent(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_OPdependent);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_OPdependent;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_OPdependent); d->_valueto=(void*)adms_variableprototype_valueto_OPdependent;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'OPdependent' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030transform(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_slist lii=((p_admsmain)ai->_item.p)->_transform;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'transform' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030infexpr(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_range)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_range)(ai->_item.p))->_infexpr); d->_valueto=(void*)adms_range_valueto_infexpr;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'infexpr' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030function(p_ptraverse p,p_path mypath,p_admst dot)
+static void location030hasVoltageDependentFunction(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -4649,45 +5444,15 @@ static void location030function(p_ptraverse p,p_path mypath,p_admst dot)
   if(0) {}
   else if(e==admse_expression)
   {
-    p_slist lii=((p_expression)ai->_item.p)->_function;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else if(e==admse_callfunction)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_callfunction)(ai->_item.p))->_function); d->_valueto=(void*)adms_callfunction_valueto_function;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newbe(ai,ai,((p_expression)ai->_item.p)->_hasVoltageDependentFunction); d->_valueto=(void*)adms_expression_valueto_hasVoltageDependentFunction;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'function' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'hasVoltageDependentFunction' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location030definition(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_function)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_function)(ai->_item.p))->_definition); d->_valueto=(void*)adms_function_valueto_definition;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'definition' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030usedininitial_step(p_ptraverse p,p_path mypath,p_admst dot)
+static void location030setinevaluate(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -4702,145 +5467,19 @@ static void location030usedininitial_step(p_ptraverse p,p_path mypath,p_admst do
   else if(e==admse_variable)
   {
     /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_usedininitial_step);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_usedininitial_step;
+    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_setinevaluate);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_setinevaluate;
   }
   else if(e==admse_variableprototype)
   {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_usedininitial_step); d->_valueto=(void*)adms_variableprototype_valueto_usedininitial_step;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_setinevaluate); d->_valueto=(void*)adms_variableprototype_valueto_setinevaluate;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'usedininitial_step' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'setinevaluate' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location030pnode(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_branch)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_branch)(ai->_item.p))->_pnode); d->_valueto=(void*)adms_branch_valueto_pnode;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'pnode' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030grounded(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_node)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_node)ai->_item.p)->_grounded); d->_valueto=(void*)adms_node_valueto_grounded;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_branch)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_branch)ai->_item.p)->_grounded); d->_valueto=(void*)adms_branch_valueto_grounded;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_source)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_source)ai->_item.p)->_grounded); d->_valueto=(void*)adms_source_valueto_grounded;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_probe)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_probe)ai->_item.p)->_grounded); d->_valueto=(void*)adms_probe_valueto_grounded;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'grounded' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030while(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_whileloop)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_whileloop)(ai->_item.p))->_while); d->_valueto=(void*)adms_whileloop_valueto_while;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'while' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030blockvariable(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_module)
-  {
-    p_slist lii=((p_module)ai->_item.p)->_blockvariable;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'blockvariable' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030potential(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_discipline)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_discipline)(ai->_item.p))->_potential); d->_valueto=(void*)adms_discipline_valueto_potential;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'potential' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030input(p_ptraverse p,p_path mypath,p_admst dot)
+static void location030parametertype(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -4855,65 +5494,16 @@ static void location030input(p_ptraverse p,p_path mypath,p_admst dot)
   else if(e==admse_variable)
   {
     /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_input);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_input;
+    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_parametertype);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_parametertype;
   }
   else if(e==admse_variableprototype)
   {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_input); d->_valueto=(void*)adms_variableprototype_valueto_input;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_parametertype); d->_valueto=(void*)adms_variableprototype_valueto_parametertype;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'input' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030usedinevaluate(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_usedinevaluate);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_usedinevaluate;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_usedinevaluate); d->_valueto=(void*)adms_variableprototype_valueto_usedinevaluate;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'usedinevaluate' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030c(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_lexval)
-  {
-    p_admst d=adms_admst_newbi(ai,ai,((p_lexval)ai->_item.p)->_c); d->_valueto=(void*)adms_lexval_valueto_c;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'c' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'parametertype' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
 static void location030name(p_ptraverse p,p_path mypath,p_admst dot)
@@ -5052,56 +5642,7 @@ static void location030name(p_ptraverse p,p_path mypath,p_admst dot)
     adms_message_error(("%s: 'name' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location030class(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_function)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_function)ai->_item.p)->_class); d->_valueto=(void*)adms_function_valueto_class;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'class' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030default(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB0*/ p_admst d1=adms_admst_newpa(d0,ai,(p_adms)((p_variableprototype)d0->_item.p)->_default);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_default;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_variableprototype)(ai->_item.p))->_default); d->_valueto=(void*)adms_variableprototype_valueto_default;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'default' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030itransform(p_ptraverse p,p_path mypath,p_admst dot)
+static void location030curline(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -5115,41 +5656,15 @@ static void location030itransform(p_ptraverse p,p_path mypath,p_admst dot)
   if(0) {}
   else if(e==admse_admsmain)
   {
-    p_slist lii=((p_admsmain)ai->_item.p)->_itransform;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
+    p_admst d=adms_admst_newbi(ai,ai,((p_admsmain)ai->_item.p)->_curline); d->_valueto=(void*)adms_admsmain_valueto_curline;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'itransform' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'curline' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location030obsolete(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_obsolete); d->_valueto=(void*)adms_admsmain_valueto_obsolete;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'obsolete' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030setingetprev(p_ptraverse p,p_path mypath,p_admst dot)
+static void location030variable(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -5164,543 +5679,84 @@ static void location030setingetprev(p_ptraverse p,p_path mypath,p_admst dot)
   else if(e==admse_variable)
   {
     /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_setingetprev);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_setingetprev;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_setingetprev); d->_valueto=(void*)adms_variableprototype_valueto_setingetprev;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'setingetprev' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030vlast(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB0*/ p_admst d1=adms_admst_newpa(d0,ai,(p_adms)((p_variableprototype)d0->_item.p)->_vlast);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_vlast;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_variableprototype)(ai->_item.p))->_vlast); d->_valueto=(void*)adms_variableprototype_valueto_vlast;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'vlast' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030hint(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_hint); d->_valueto=(void*)adms_admsmain_valueto_hint;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'hint' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030tmp(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_simulator)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_tmp); d->_valueto=(void*)adms_simulator_valueto_tmp;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'tmp' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030terminal(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_instance)
-  {
-    p_slist lii=((p_instance)ai->_item.p)->_terminal;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'terminal' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030ddx(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_simulator)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_ddx); d->_valueto=(void*)adms_simulator_valueto_ddx;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'ddx' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030infboundtype(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_range)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_range)ai->_item.p)->_infboundtype); d->_valueto=(void*)adms_range_valueto_infboundtype;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'infboundtype' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030isstate(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_isstate);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_isstate;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_isstate); d->_valueto=(void*)adms_variableprototype_valueto_isstate;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'isstate' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030package_tarname(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_simulator)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_package_tarname); d->_valueto=(void*)adms_simulator_valueto_package_tarname;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'package_tarname' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030lhs(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_assignment)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_assignment)(ai->_item.p))->_lhs); d->_valueto=(void*)adms_assignment_valueto_lhs;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_contribution)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_contribution)(ai->_item.p))->_lhs); d->_valueto=(void*)adms_contribution_valueto_lhs;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'lhs' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030debug(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_debug); d->_valueto=(void*)adms_admsmain_valueto_debug;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'debug' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030package_bugreport(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_simulator)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_package_bugreport); d->_valueto=(void*)adms_simulator_valueto_package_bugreport;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'package_bugreport' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030direction(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_node)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_node)ai->_item.p)->_direction); d->_valueto=(void*)adms_node_valueto_direction;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'direction' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030range(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*AAAA0*/ p_slist l1=((p_variableprototype)d0->_item.p)->_range;
+    /*AAAA0*/ p_slist l1=((p_variableprototype)d0->_item.p)->_variable;
     for(;l1;l1=l1->next)
     {
       p_admst d1=adms_admst_newpa(d0,ai,l1->data);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;
     }
   }
-  else if(e==admse_module)
-  {
-    p_slist lii=((p_module)ai->_item.p)->_range;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_slist lii=((p_variableprototype)ai->_item.p)->_range;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'range' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030supexpr(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_range)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_range)(ai->_item.p))->_supexpr); d->_valueto=(void*)adms_range_valueto_supexpr;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'supexpr' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030callfunction(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_module)
-  {
-    p_slist lii=((p_module)ai->_item.p)->_callfunction;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'callfunction' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030dbg_xml(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
   else if(e==admse_admsmain)
   {
-    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_dbg_xml); d->_valueto=(void*)adms_admsmain_valueto_dbg_xml;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_slist lii=((p_admsmain)ai->_item.p)->_variable;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
   }
-  else
+  else if(e==admse_module)
   {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'dbg_xml' bad attribute\n",adms_transform_uid(p->_transform)))
+    p_slist lii=((p_module)ai->_item.p)->_variable;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
   }
-}
-static void location030dynamic(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
+  else if(e==admse_analogfunction)
   {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+    p_slist lii=((p_analogfunction)ai->_item.p)->_variable;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
   }
-  if(0) {}
+  else if(e==admse_variableprototype)
+  {
+    p_slist lii=((p_variableprototype)ai->_item.p)->_variable;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
+  else if(e==admse_array)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_array)(ai->_item.p))->_variable); d->_valueto=(void*)adms_array_valueto_variable;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
   else if(e==admse_expression)
-    e=admse_math;
-  else if(e==admse_nilled)
-    e=admse_math;
-  else if(e==admse_assignment)
-    e=admse_math;
-  else if(e==admse_contribution)
-    e=admse_math;
-  else if(e==admse_conditional)
-    e=admse_math;
-  else if(e==admse_forloop)
-    e=admse_math;
-  else if(e==admse_whileloop)
-    e=admse_math;
-  else if(e==admse_case)
-    e=admse_math;
+  {
+    p_slist lii=((p_expression)ai->_item.p)->_variable;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
   else if(e==admse_blockvariable)
-    e=admse_math;
+  {
+    p_slist lii=((p_blockvariable)ai->_item.p)->_variable;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
+  }
   else if(e==admse_block)
-    e=admse_math;
-  else if(e==admse_callfunction)
-    e=admse_math;
-  if(0) {}
-  else if(e==admse_variable)
   {
-    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_dynamic);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_dynamic;
+    p_slist lii=((p_block)ai->_item.p)->_variable;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
   }
-  else if(e==admse_variableprototype)
+  else if(e==admse_evaluation)
   {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_dynamic); d->_valueto=(void*)adms_variableprototype_valueto_dynamic;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_source)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_source)ai->_item.p)->_dynamic); d->_valueto=(void*)adms_source_valueto_dynamic;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_jacobian)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_jacobian)ai->_item.p)->_dynamic); d->_valueto=(void*)adms_jacobian_valueto_dynamic;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_math)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_math)ai->_item.p)->_dynamic); d->_valueto=(void*)adms_math_valueto_dynamic;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_slist lii=((p_evaluation)ai->_item.p)->_variable;
+    for(;lii;lii=lii->next)
+    {
+      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    }
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'dynamic' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030sizetype(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB0*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB0*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_sizetype);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_sizetype;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_sizetype); d->_valueto=(void*)adms_variableprototype_valueto_sizetype;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'sizetype' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030column(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_jacobian)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_jacobian)(ai->_item.p))->_column); d->_valueto=(void*)adms_jacobian_valueto_column;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'column' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030f(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_lexval)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_lexval)ai->_item.p)->_f); d->_valueto=(void*)adms_lexval_valueto_f;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'f' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'variable' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
 static void location030branchalias(p_ptraverse p,p_path mypath,p_admst dot)
@@ -5733,85 +5789,7 @@ static void location030branchalias(p_ptraverse p,p_path mypath,p_admst dot)
     adms_message_error(("%s: 'branchalias' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location030unique_id(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_function)
-  {
-    p_admst d=adms_admst_newbi(ai,ai,((p_function)ai->_item.p)->_unique_id); d->_valueto=(void*)adms_function_valueto_unique_id;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'unique_id' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030instance(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_module)
-  {
-    p_slist lii=((p_module)ai->_item.p)->_instance;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_slist lii=((p_variableprototype)ai->_item.p)->_instance;
-    for(;lii;lii=lii->next)
-    {
-      p_admst d=adms_admst_newpa(ai,ai,lii->data);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    }
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'instance' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030package_name(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_simulator)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_package_name); d->_valueto=(void*)adms_simulator_valueto_package_name;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'package_name' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location030dbg_mem(p_ptraverse p,p_path mypath,p_admst dot)
+static void location030fatal(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -5825,12 +5803,34 @@ static void location030dbg_mem(p_ptraverse p,p_path mypath,p_admst dot)
   if(0) {}
   else if(e==admse_admsmain)
   {
-    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_dbg_mem); d->_valueto=(void*)adms_admsmain_valueto_dbg_mem;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_fatal); d->_valueto=(void*)adms_admsmain_valueto_fatal;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'dbg_mem' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'fatal' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location030initial(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_forloop)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_forloop)(ai->_item.p))->_initial); d->_valueto=(void*)adms_forloop_valueto_initial;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'initial' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
 
@@ -6200,7 +6200,7 @@ static void location031subexpression(p_ptraverse p,p_path mypath,p_admst dot)
     adms_message_error(("%s: 'subexpression' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location031hasVoltageDependentFunction(p_ptraverse p,p_path mypath,p_admst dot)
+static void location031usedininitial_step(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -6212,17 +6212,22 @@ static void location031hasVoltageDependentFunction(p_ptraverse p,p_path mypath,p
   }
   if(0) {}
   if(0) {}
-  else if(e==admse_expression)
+  else if(e==admse_variable)
   {
-    p_admst d=adms_admst_newbe(ai,ai,((p_expression)ai->_item.p)->_hasVoltageDependentFunction); d->_valueto=(void*)adms_expression_valueto_hasVoltageDependentFunction;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_usedininitial_step);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_usedininitial_step;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_usedininitial_step); d->_valueto=(void*)adms_variableprototype_valueto_usedininitial_step;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'hasVoltageDependentFunction' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'usedininitial_step' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location031arg1(p_ptraverse p,p_path mypath,p_admst dot)
+static void location031curfilename(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -6234,22 +6239,355 @@ static void location031arg1(p_ptraverse p,p_path mypath,p_admst dot)
   }
   if(0) {}
   if(0) {}
-  else if(e==admse_mapply_unary)
+  else if(e==admse_admsmain)
   {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_mapply_unary)ai->_item.p)->_arg1); d->_valueto=(void*)adms_mapply_unary_valueto_arg1;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_mapply_binary)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_mapply_binary)ai->_item.p)->_arg1); d->_valueto=(void*)adms_mapply_binary_valueto_arg1;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_mapply_ternary)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_mapply_ternary)ai->_item.p)->_arg1); d->_valueto=(void*)adms_mapply_ternary_valueto_arg1;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newbs(ai,ai,((p_admsmain)ai->_item.p)->_curfilename); d->_valueto=(void*)adms_admsmain_valueto_curfilename;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'arg1' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'curfilename' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031lexval(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB1*/ p_admst d1=adms_admst_newpa(d0,ai,(p_adms)((p_variableprototype)d0->_item.p)->_lexval);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_lexval;
+  }
+  else if(e==admse_analogfunction)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_analogfunction)ai->_item.p)->_lexval); d->_valueto=(void*)adms_analogfunction_valueto_lexval;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_variableprototype)ai->_item.p)->_lexval); d->_valueto=(void*)adms_variableprototype_valueto_lexval;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_number)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_number)ai->_item.p)->_lexval); d->_valueto=(void*)adms_number_valueto_lexval;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_function)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_function)ai->_item.p)->_lexval); d->_valueto=(void*)adms_function_valueto_lexval;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_assignment)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_assignment)ai->_item.p)->_lexval); d->_valueto=(void*)adms_assignment_valueto_lexval;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_contribution)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_contribution)ai->_item.p)->_lexval); d->_valueto=(void*)adms_contribution_valueto_lexval;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_block)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_block)ai->_item.p)->_lexval); d->_valueto=(void*)adms_block_valueto_lexval;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'lexval' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031units(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_nature)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_nature)ai->_item.p)->_units); d->_valueto=(void*)adms_nature_valueto_units;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'units' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031tmp1(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_simulator)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_tmp1); d->_valueto=(void*)adms_simulator_valueto_tmp1;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'tmp1' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031abstol(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_nature)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_nature)ai->_item.p)->_abstol); d->_valueto=(void*)adms_nature_valueto_abstol;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'abstol' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031vcount(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB1*/ p_admst d1=adms_admst_newbi(d0,ai,((p_variableprototype)d0->_item.p)->_vcount);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_vcount;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbi(ai,ai,((p_variableprototype)ai->_item.p)->_vcount); d->_valueto=(void*)adms_variableprototype_valueto_vcount;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'vcount' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031instance(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_module)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_instance)); d->_valueto=(void*)adms_module_valueto_instance;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_variableprototype)ai->_item.p)->_instance)); d->_valueto=(void*)adms_variableprototype_valueto_instance;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'instance' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031branch(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_module)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_branch)); d->_valueto=(void*)adms_module_valueto_branch;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_branchalias)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_branchalias)ai->_item.p)->_branch); d->_valueto=(void*)adms_branchalias_valueto_branch;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_source)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_source)ai->_item.p)->_branch); d->_valueto=(void*)adms_source_valueto_branch;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_probe)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_probe)ai->_item.p)->_branch); d->_valueto=(void*)adms_probe_valueto_branch;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'branch' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031datatype(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_list)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_list)ai->_item.p)->_datatype); d->_valueto=(void*)adms_list_valueto_datatype;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'datatype' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031package_tarname(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_simulator)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_package_tarname); d->_valueto=(void*)adms_simulator_valueto_package_tarname;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'package_tarname' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031fullfilename(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_admsmain)ai->_item.p)->_fullfilename); d->_valueto=(void*)adms_admsmain_valueto_fullfilename;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'fullfilename' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031vlast(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB1*/ p_admst d1=adms_admst_newpa(d0,ai,(p_adms)((p_variableprototype)d0->_item.p)->_vlast);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_vlast;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_variableprototype)ai->_item.p)->_vlast); d->_valueto=(void*)adms_variableprototype_valueto_vlast;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'vlast' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031forloop(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_module)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_forloop)); d->_valueto=(void*)adms_module_valueto_forloop;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'forloop' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031ddt_nature(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_nature)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_nature)ai->_item.p)->_ddt_nature); d->_valueto=(void*)adms_nature_valueto_ddt_nature;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'ddt_nature' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
 static void location031rhs(p_ptraverse p,p_path mypath,p_admst dot)
@@ -6276,94 +6614,6 @@ static void location031rhs(p_ptraverse p,p_path mypath,p_admst dot)
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
     adms_message_error(("%s: 'rhs' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031diagonal(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_jacobian)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_jacobian)ai->_item.p)->_diagonal); d->_valueto=(void*)adms_jacobian_valueto_diagonal;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'diagonal' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031access(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_nature)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_nature)ai->_item.p)->_access); d->_valueto=(void*)adms_nature_valueto_access;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'access' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031dbg_vla(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_dbg_vla); d->_valueto=(void*)adms_admsmain_valueto_dbg_vla;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'dbg_vla' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031br1(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_simulator)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_simulator)ai->_item.p)->_br1); d->_valueto=(void*)adms_simulator_valueto_br1;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'br1' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
 static void location031setinnoise(p_ptraverse p,p_path mypath,p_admst dot)
@@ -6393,7 +6643,7 @@ static void location031setinnoise(p_ptraverse p,p_path mypath,p_admst dot)
     adms_message_error(("%s: 'setinnoise' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location031ddxprobe(p_ptraverse p,p_path mypath,p_admst dot)
+static void location031error(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -6405,22 +6655,17 @@ static void location031ddxprobe(p_ptraverse p,p_path mypath,p_admst dot)
   }
   if(0) {}
   if(0) {}
-  else if(e==admse_variable)
+  else if(e==admse_admsmain)
   {
-    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*AAAA1*/ p_admst d1=adms_admst_newla(d0,ai,((p_variableprototype)d0->_item.p)->_ddxprobe);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_ddxprobe;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_variableprototype)ai->_item.p)->_ddxprobe)); d->_valueto=(void*)adms_variableprototype_valueto_ddxprobe;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_error); d->_valueto=(void*)adms_admsmain_valueto_error;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'ddxprobe' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'error' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location031scope(p_ptraverse p,p_path mypath,p_admst dot)
+static void location031nodefrominstantiator(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -6432,470 +6677,14 @@ static void location031scope(p_ptraverse p,p_path mypath,p_admst dot)
   }
   if(0) {}
   if(0) {}
-  else if(e==admse_variable)
+  else if(e==admse_instancenode)
   {
-    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_scope);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_scope;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_scope); d->_valueto=(void*)adms_variableprototype_valueto_scope;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_instancenode)ai->_item.p)->_nodefrominstantiator); d->_valueto=(void*)adms_instancenode_valueto_nodefrominstantiator;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'scope' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031index(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_array)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_array)ai->_item.p)->_index); d->_valueto=(void*)adms_array_valueto_index;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'index' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031scalingunit(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_number)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_number)ai->_item.p)->_scalingunit); d->_valueto=(void*)adms_number_valueto_scalingunit;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'scalingunit' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031base(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_nature)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_nature)ai->_item.p)->_base); d->_valueto=(void*)adms_nature_valueto_base;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'base' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031infinity(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_expression)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_expression)ai->_item.p)->_infinity); d->_valueto=(void*)adms_expression_valueto_infinity;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'infinity' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031prototype(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); d->_valueto=(void*)adms_variable_valueto_prototype;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'prototype' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031arg3(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_mapply_ternary)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_mapply_ternary)ai->_item.p)->_arg3); d->_valueto=(void*)adms_mapply_ternary_valueto_arg3;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'arg3' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031idt_name(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_nature)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_nature)ai->_item.p)->_idt_name); d->_valueto=(void*)adms_nature_valueto_idt_name;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'idt_name' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031tmp1(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_simulator)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_tmp1); d->_valueto=(void*)adms_simulator_valueto_tmp1;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'tmp1' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031ddt_nature(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_nature)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_nature)ai->_item.p)->_ddt_nature); d->_valueto=(void*)adms_nature_valueto_ddt_nature;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'ddt_nature' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031tree(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_analogfunction)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_analogfunction)ai->_item.p)->_tree); d->_valueto=(void*)adms_analogfunction_valueto_tree;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_expression)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_expression)ai->_item.p)->_tree); d->_valueto=(void*)adms_expression_valueto_tree;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'tree' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031idt_nature(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_nature)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_nature)ai->_item.p)->_idt_nature); d->_valueto=(void*)adms_nature_valueto_idt_nature;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'idt_nature' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031analogfunction(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_module)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_analogfunction)); d->_valueto=(void*)adms_module_valueto_analogfunction;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'analogfunction' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031probe(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*AAAA1*/ p_admst d1=adms_admst_newla(d0,ai,((p_variableprototype)d0->_item.p)->_probe);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_probe;
-  }
-  else if(e==admse_simulator)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_simulator)ai->_item.p)->_probe); d->_valueto=(void*)adms_simulator_valueto_probe;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_module)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_probe)); d->_valueto=(void*)adms_module_valueto_probe;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_variableprototype)ai->_item.p)->_probe)); d->_valueto=(void*)adms_variableprototype_valueto_probe;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_source)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_source)ai->_item.p)->_probe)); d->_valueto=(void*)adms_source_valueto_probe;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_expression)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_expression)ai->_item.p)->_probe)); d->_valueto=(void*)adms_expression_valueto_probe;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_block)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_block)ai->_item.p)->_probe)); d->_valueto=(void*)adms_block_valueto_probe;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'probe' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031ddt_name(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_nature)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_nature)ai->_item.p)->_ddt_name); d->_valueto=(void*)adms_nature_valueto_ddt_name;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'ddt_name' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031developer(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_simulator)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_developer); d->_valueto=(void*)adms_simulator_valueto_developer;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'developer' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031arg2(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_mapply_binary)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_mapply_binary)ai->_item.p)->_arg2); d->_valueto=(void*)adms_mapply_binary_valueto_arg2;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_mapply_ternary)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_mapply_ternary)ai->_item.p)->_arg2); d->_valueto=(void*)adms_mapply_ternary_valueto_arg2;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'arg2' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031caseitem(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_case)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_case)ai->_item.p)->_caseitem)); d->_valueto=(void*)adms_case_valueto_caseitem;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'caseitem' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031parameterset(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_instance)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_instance)ai->_item.p)->_parameterset)); d->_valueto=(void*)adms_instance_valueto_parameterset;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'parameterset' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031forblock(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_forloop)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_forloop)ai->_item.p)->_forblock); d->_valueto=(void*)adms_forloop_valueto_forblock;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'forblock' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'nodefrominstantiator' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
 static void location031flow(p_ptraverse p,p_path mypath,p_admst dot)
@@ -6920,374 +6709,7 @@ static void location031flow(p_ptraverse p,p_path mypath,p_admst dot)
     adms_message_error(("%s: 'flow' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location031assignment(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*AAAA1*/ p_admst d1=adms_admst_newla(d0,ai,((p_variableprototype)d0->_item.p)->_assignment);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_assignment;
-  }
-  else if(e==admse_module)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_assignment)); d->_valueto=(void*)adms_module_valueto_assignment;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_variableprototype)ai->_item.p)->_assignment)); d->_valueto=(void*)adms_variableprototype_valueto_assignment;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'assignment' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031usedinnoise(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_usedinnoise);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_usedinnoise;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_usedinnoise); d->_valueto=(void*)adms_variableprototype_valueto_usedinnoise;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'usedinnoise' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031package_version(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_simulator)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_package_version); d->_valueto=(void*)adms_simulator_valueto_package_version;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'package_version' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031warning(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_warning); d->_valueto=(void*)adms_admsmain_valueto_warning;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'warning' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031nature(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_admsmain)ai->_item.p)->_nature)); d->_valueto=(void*)adms_admsmain_valueto_nature;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_source)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_source)ai->_item.p)->_nature); d->_valueto=(void*)adms_source_valueto_nature;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_probe)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_probe)ai->_item.p)->_nature); d->_valueto=(void*)adms_probe_valueto_nature;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'nature' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031update(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_forloop)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_forloop)ai->_item.p)->_update); d->_valueto=(void*)adms_forloop_valueto_update;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'update' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031curfilename(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_admsmain)ai->_item.p)->_curfilename); d->_valueto=(void*)adms_admsmain_valueto_curfilename;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'curfilename' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031derivate(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_derivate);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_derivate;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_derivate); d->_valueto=(void*)adms_variableprototype_valueto_derivate;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'derivate' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031setininitial_step(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_setininitial_step);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_setininitial_step;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_setininitial_step); d->_valueto=(void*)adms_variableprototype_valueto_setininitial_step;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'setininitial_step' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031sr1(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_simulator)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_simulator)ai->_item.p)->_sr1); d->_valueto=(void*)adms_simulator_valueto_sr1;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'sr1' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031string(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_lexval)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_lexval)ai->_item.p)->_string); d->_valueto=(void*)adms_lexval_valueto_string;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'string' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031maxsize(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB1*/ p_admst d1=adms_admst_newpa(d0,ai,(p_adms)((p_variableprototype)d0->_item.p)->_maxsize);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_maxsize;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_variableprototype)ai->_item.p)->_maxsize); d->_valueto=(void*)adms_variableprototype_valueto_maxsize;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'maxsize' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031info(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_info); d->_valueto=(void*)adms_admsmain_valueto_info;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'info' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031nodealias(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_module)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_nodealias)); d->_valueto=(void*)adms_module_valueto_nodealias;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'nodealias' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031then(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_conditional)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_conditional)ai->_item.p)->_then); d->_valueto=(void*)adms_conditional_valueto_then;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'then' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031whileblock(p_ptraverse p,p_path mypath,p_admst dot)
+static void location031while(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -7301,15 +6723,15 @@ static void location031whileblock(p_ptraverse p,p_path mypath,p_admst dot)
   if(0) {}
   else if(e==admse_whileloop)
   {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_whileloop)ai->_item.p)->_whileblock); d->_valueto=(void*)adms_whileloop_valueto_whileblock;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_whileloop)ai->_item.p)->_while); d->_valueto=(void*)adms_whileloop_valueto_while;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'whileblock' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'while' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location031alias(p_ptraverse p,p_path mypath,p_admst dot)
+static void location031scalingunit(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -7321,361 +6743,14 @@ static void location031alias(p_ptraverse p,p_path mypath,p_admst dot)
   }
   if(0) {}
   if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*AAAA1*/ p_admst d1=adms_admst_newla(d0,ai,((p_variableprototype)d0->_item.p)->_alias);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_alias;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_variableprototype)ai->_item.p)->_alias)); d->_valueto=(void*)adms_variableprototype_valueto_alias;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'alias' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031instantiator(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_module)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_instantiator)); d->_valueto=(void*)adms_module_valueto_instantiator;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_instance)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_instance)ai->_item.p)->_instantiator); d->_valueto=(void*)adms_instance_valueto_instantiator;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'instantiator' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031parameter(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_instanceparameter)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_instanceparameter)ai->_item.p)->_parameter); d->_valueto=(void*)adms_instanceparameter_valueto_parameter;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'parameter' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031expression(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_module)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_expression)); d->_valueto=(void*)adms_module_valueto_expression;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_subexpression)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_subexpression)ai->_item.p)->_expression); d->_valueto=(void*)adms_subexpression_valueto_expression;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'expression' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031dependency(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  else if(e==admse_string)
-    e=admse_math;
-  else if(e==admse_subexpression)
-    e=admse_math;
-  else if(e==admse_mapply_unary)
-    e=admse_math;
-  else if(e==admse_mapply_binary)
-    e=admse_math;
-  else if(e==admse_mapply_ternary)
-    e=admse_math;
   else if(e==admse_number)
-    e=admse_math;
-  else if(e==admse_function)
-    e=admse_math;
-  else if(e==admse_variable)
-    e=admse_math;
-  else if(e==admse_array)
-    e=admse_math;
-  else if(e==admse_probe)
-    e=admse_math;
-  else if(e==admse_expression)
-    e=admse_math;
-  else if(e==admse_instance)
-    e=admse_math;
-  else if(e==admse_instanceparameter)
-    e=admse_math;
-  else if(e==admse_instancenode)
-    e=admse_math;
-  else if(e==admse_nilled)
-    e=admse_math;
-  else if(e==admse_assignment)
-    e=admse_math;
-  else if(e==admse_contribution)
-    e=admse_math;
-  else if(e==admse_conditional)
-    e=admse_math;
-  else if(e==admse_forloop)
-    e=admse_math;
-  else if(e==admse_whileloop)
-    e=admse_math;
-  else if(e==admse_case)
-    e=admse_math;
-  else if(e==admse_caseitem)
-    e=admse_math;
-  else if(e==admse_blockvariable)
-    e=admse_math;
-  else if(e==admse_block)
-    e=admse_math;
-  else if(e==admse_callfunction)
-    e=admse_math;
-  if(0) {}
-  else if(e==admse_variableprototype)
   {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_dependency); d->_valueto=(void*)adms_variableprototype_valueto_dependency;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_math)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_math)ai->_item.p)->_dependency); d->_valueto=(void*)adms_math_valueto_dependency;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newbe(ai,ai,((p_number)ai->_item.p)->_scalingunit); d->_valueto=(void*)adms_number_valueto_scalingunit;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'dependency' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031condition(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_forloop)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_forloop)ai->_item.p)->_condition); d->_valueto=(void*)adms_forloop_valueto_condition;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_caseitem)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_caseitem)ai->_item.p)->_condition)); d->_valueto=(void*)adms_caseitem_valueto_condition;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'condition' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031static(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  else if(e==admse_expression)
-    e=admse_math;
-  else if(e==admse_nilled)
-    e=admse_math;
-  else if(e==admse_assignment)
-    e=admse_math;
-  else if(e==admse_contribution)
-    e=admse_math;
-  else if(e==admse_conditional)
-    e=admse_math;
-  else if(e==admse_forloop)
-    e=admse_math;
-  else if(e==admse_whileloop)
-    e=admse_math;
-  else if(e==admse_case)
-    e=admse_math;
-  else if(e==admse_blockvariable)
-    e=admse_math;
-  else if(e==admse_block)
-    e=admse_math;
-  else if(e==admse_callfunction)
-    e=admse_math;
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_static);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_static;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_static); d->_valueto=(void*)adms_variableprototype_valueto_static;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_source)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_source)ai->_item.p)->_static); d->_valueto=(void*)adms_source_valueto_static;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_jacobian)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_jacobian)ai->_item.p)->_static); d->_valueto=(void*)adms_jacobian_valueto_static;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_math)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_math)ai->_item.p)->_static); d->_valueto=(void*)adms_math_valueto_static;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'static' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031domain(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_discipline)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_discipline)ai->_item.p)->_domain); d->_valueto=(void*)adms_discipline_valueto_domain;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'domain' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031type(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_type);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_type;
-  }
-  else if(e==admse_analogfunction)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_analogfunction)ai->_item.p)->_type); d->_valueto=(void*)adms_analogfunction_valueto_type;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_type); d->_valueto=(void*)adms_variableprototype_valueto_type;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_source)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_source)ai->_item.p)->_type); d->_valueto=(void*)adms_source_valueto_type;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_range)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_range)ai->_item.p)->_type); d->_valueto=(void*)adms_range_valueto_type;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'type' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031fullfilename(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_admsmain)ai->_item.p)->_fullfilename); d->_valueto=(void*)adms_admsmain_valueto_fullfilename;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'fullfilename' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031evaluation(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_module)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_module)ai->_item.p)->_evaluation); d->_valueto=(void*)adms_module_valueto_evaluation;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'evaluation' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'scalingunit' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
 static void location031node(p_ptraverse p,p_path mypath,p_admst dot)
@@ -7704,77 +6779,7 @@ static void location031node(p_ptraverse p,p_path mypath,p_admst dot)
     adms_message_error(("%s: 'node' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location031source(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_module)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_source)); d->_valueto=(void*)adms_module_valueto_source;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_probe)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_probe)ai->_item.p)->_source); d->_valueto=(void*)adms_probe_valueto_source;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'source' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031arraydefault(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_variableprototype)ai->_item.p)->_arraydefault)); d->_valueto=(void*)adms_variableprototype_valueto_arraydefault;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'arraydefault' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031usage(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_usage); d->_valueto=(void*)adms_admsmain_valueto_usage;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'usage' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031setinfinal(p_ptraverse p,p_path mypath,p_admst dot)
+static void location031OPdependent(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -7789,19 +6794,19 @@ static void location031setinfinal(p_ptraverse p,p_path mypath,p_admst dot)
   else if(e==admse_variable)
   {
     /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_setinfinal);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_setinfinal;
+    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_OPdependent);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_OPdependent;
   }
   else if(e==admse_variableprototype)
   {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_setinfinal); d->_valueto=(void*)adms_variableprototype_valueto_setinfinal;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_OPdependent); d->_valueto=(void*)adms_variableprototype_valueto_OPdependent;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'setinfinal' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'OPdependent' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location031if(p_ptraverse p,p_path mypath,p_admst dot)
+static void location031seen(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -7813,14 +6818,85 @@ static void location031if(p_ptraverse p,p_path mypath,p_admst dot)
   }
   if(0) {}
   if(0) {}
-  else if(e==admse_conditional)
+  else if(e==admse_probe)
   {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_conditional)ai->_item.p)->_if); d->_valueto=(void*)adms_conditional_valueto_if;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newbe(ai,ai,((p_probe)ai->_item.p)->_seen); d->_valueto=(void*)adms_probe_valueto_seen;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'if' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'seen' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031usedininstance(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_usedininstance);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_usedininstance;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_usedininstance); d->_valueto=(void*)adms_variableprototype_valueto_usedininstance;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'usedininstance' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031br2(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_simulator)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_simulator)ai->_item.p)->_br2); d->_valueto=(void*)adms_simulator_valueto_br2;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'br2' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031fullname(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_simulator)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_fullname); d->_valueto=(void*)adms_simulator_valueto_fullname;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'fullname' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
 static void location031module(p_ptraverse p,p_path mypath,p_admst dot)
@@ -7934,7 +7010,7 @@ static void location031module(p_ptraverse p,p_path mypath,p_admst dot)
     adms_message_error(("%s: 'module' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location031curline(p_ptraverse p,p_path mypath,p_admst dot)
+static void location031filename(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -7948,15 +7024,167 @@ static void location031curline(p_ptraverse p,p_path mypath,p_admst dot)
   if(0) {}
   else if(e==admse_admsmain)
   {
-    p_admst d=adms_admst_newbi(ai,ai,((p_admsmain)ai->_item.p)->_curline); d->_valueto=(void*)adms_admsmain_valueto_curline;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newbs(ai,ai,((p_admsmain)ai->_item.p)->_filename); d->_valueto=(void*)adms_admsmain_valueto_filename;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'curline' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'filename' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location031usedininstance(p_ptraverse p,p_path mypath,p_admst dot)
+static void location031simulator(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_admsmain)ai->_item.p)->_simulator); d->_valueto=(void*)adms_admsmain_valueto_simulator;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'simulator' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031flickernoise(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_source)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_source)ai->_item.p)->_flickernoise); d->_valueto=(void*)adms_source_valueto_flickernoise;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_contribution)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_contribution)ai->_item.p)->_flickernoise); d->_valueto=(void*)adms_contribution_valueto_flickernoise;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'flickernoise' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031forblock(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_forloop)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_forloop)ai->_item.p)->_forblock); d->_valueto=(void*)adms_forloop_valueto_forblock;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'forblock' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031supboundtype(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_range)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_range)ai->_item.p)->_supboundtype); d->_valueto=(void*)adms_range_valueto_supboundtype;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'supboundtype' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031dbg_xml(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_dbg_xml); d->_valueto=(void*)adms_admsmain_valueto_dbg_xml;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'dbg_xml' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031discipline(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_admsmain)ai->_item.p)->_discipline)); d->_valueto=(void*)adms_admsmain_valueto_discipline;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_node)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_node)ai->_item.p)->_discipline); d->_valueto=(void*)adms_node_valueto_discipline;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_branch)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_branch)ai->_item.p)->_discipline); d->_valueto=(void*)adms_branch_valueto_discipline;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_source)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_source)ai->_item.p)->_discipline); d->_valueto=(void*)adms_source_valueto_discipline;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_probe)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_probe)ai->_item.p)->_discipline); d->_valueto=(void*)adms_probe_valueto_discipline;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'discipline' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031usedinnoise(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -7971,16 +7199,1511 @@ static void location031usedininstance(p_ptraverse p,p_path mypath,p_admst dot)
   else if(e==admse_variable)
   {
     /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_usedininstance);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_usedininstance;
+    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_usedinnoise);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_usedinnoise;
   }
   else if(e==admse_variableprototype)
   {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_usedininstance); d->_valueto=(void*)adms_variableprototype_valueto_usedininstance;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_usedinnoise); d->_valueto=(void*)adms_variableprototype_valueto_usedinnoise;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'usedininstance' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'usedinnoise' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031terminal(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_instance)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_instance)ai->_item.p)->_terminal)); d->_valueto=(void*)adms_instance_valueto_terminal;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'terminal' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031condition(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_forloop)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_forloop)ai->_item.p)->_condition); d->_valueto=(void*)adms_forloop_valueto_condition;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_caseitem)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_caseitem)ai->_item.p)->_condition)); d->_valueto=(void*)adms_caseitem_valueto_condition;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'condition' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031expression(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_module)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_expression)); d->_valueto=(void*)adms_module_valueto_expression;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_subexpression)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_subexpression)ai->_item.p)->_expression); d->_valueto=(void*)adms_subexpression_valueto_expression;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'expression' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031grounded(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_node)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_node)ai->_item.p)->_grounded); d->_valueto=(void*)adms_node_valueto_grounded;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_branch)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_branch)ai->_item.p)->_grounded); d->_valueto=(void*)adms_branch_valueto_grounded;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_source)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_source)ai->_item.p)->_grounded); d->_valueto=(void*)adms_source_valueto_grounded;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_probe)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_probe)ai->_item.p)->_grounded); d->_valueto=(void*)adms_probe_valueto_grounded;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'grounded' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031hint(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_hint); d->_valueto=(void*)adms_admsmain_valueto_hint;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'hint' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031switch(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_source)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_source)ai->_item.p)->_switch); d->_valueto=(void*)adms_source_valueto_switch;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'switch' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031cast(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_number)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_number)ai->_item.p)->_cast); d->_valueto=(void*)adms_number_valueto_cast;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'cast' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031range(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*AAAA1*/ p_admst d1=adms_admst_newla(d0,ai,((p_variableprototype)d0->_item.p)->_range);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_range;
+  }
+  else if(e==admse_module)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_range)); d->_valueto=(void*)adms_module_valueto_range;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_variableprototype)ai->_item.p)->_range)); d->_valueto=(void*)adms_variableprototype_valueto_range;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'range' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031package_bugreport(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_simulator)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_package_bugreport); d->_valueto=(void*)adms_simulator_valueto_package_bugreport;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'package_bugreport' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031dynamic(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  else if(e==admse_expression)
+    e=admse_math;
+  else if(e==admse_nilled)
+    e=admse_math;
+  else if(e==admse_assignment)
+    e=admse_math;
+  else if(e==admse_contribution)
+    e=admse_math;
+  else if(e==admse_conditional)
+    e=admse_math;
+  else if(e==admse_forloop)
+    e=admse_math;
+  else if(e==admse_whileloop)
+    e=admse_math;
+  else if(e==admse_case)
+    e=admse_math;
+  else if(e==admse_blockvariable)
+    e=admse_math;
+  else if(e==admse_block)
+    e=admse_math;
+  else if(e==admse_callfunction)
+    e=admse_math;
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_dynamic);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_dynamic;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_dynamic); d->_valueto=(void*)adms_variableprototype_valueto_dynamic;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_source)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_source)ai->_item.p)->_dynamic); d->_valueto=(void*)adms_source_valueto_dynamic;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_jacobian)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_jacobian)ai->_item.p)->_dynamic); d->_valueto=(void*)adms_jacobian_valueto_dynamic;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_math)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_math)ai->_item.p)->_dynamic); d->_valueto=(void*)adms_math_valueto_dynamic;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'dynamic' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031setinmodel(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_setinmodel);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_setinmodel;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_setinmodel); d->_valueto=(void*)adms_variableprototype_valueto_setinmodel;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'setinmodel' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031arraydefault(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_variableprototype)ai->_item.p)->_arraydefault)); d->_valueto=(void*)adms_variableprototype_valueto_arraydefault;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'arraydefault' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031jacobian(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_module)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_jacobian)); d->_valueto=(void*)adms_module_valueto_jacobian;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'jacobian' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031itransform(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_admsmain)ai->_item.p)->_itransform)); d->_valueto=(void*)adms_admsmain_valueto_itransform;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'itransform' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031case(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_module)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_case)); d->_valueto=(void*)adms_module_valueto_case;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_case)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_case)ai->_item.p)->_case); d->_valueto=(void*)adms_case_valueto_case;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'case' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031ddxprobe(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*AAAA1*/ p_admst d1=adms_admst_newla(d0,ai,((p_variableprototype)d0->_item.p)->_ddxprobe);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_ddxprobe;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_variableprototype)ai->_item.p)->_ddxprobe)); d->_valueto=(void*)adms_variableprototype_valueto_ddxprobe;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'ddxprobe' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031obsolete(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_obsolete); d->_valueto=(void*)adms_admsmain_valueto_obsolete;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'obsolete' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031ddx(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_simulator)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_ddx); d->_valueto=(void*)adms_simulator_valueto_ddx;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'ddx' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031ddt_name(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_nature)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_nature)ai->_item.p)->_ddt_name); d->_valueto=(void*)adms_nature_valueto_ddt_name;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'ddt_name' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031arg3(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_mapply_ternary)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_mapply_ternary)ai->_item.p)->_arg3); d->_valueto=(void*)adms_mapply_ternary_valueto_arg3;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'arg3' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031c(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_lexval)
+  {
+    p_admst d=adms_admst_newbi(ai,ai,((p_lexval)ai->_item.p)->_c); d->_valueto=(void*)adms_lexval_valueto_c;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'c' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031debug(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_debug); d->_valueto=(void*)adms_admsmain_valueto_debug;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'debug' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031arg2(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_mapply_binary)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_mapply_binary)ai->_item.p)->_arg2); d->_valueto=(void*)adms_mapply_binary_valueto_arg2;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_mapply_ternary)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_mapply_ternary)ai->_item.p)->_arg2); d->_valueto=(void*)adms_mapply_ternary_valueto_arg2;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'arg2' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031else(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_conditional)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_conditional)ai->_item.p)->_else); d->_valueto=(void*)adms_conditional_valueto_else;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'else' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031parameterset(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_instance)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_instance)ai->_item.p)->_parameterset)); d->_valueto=(void*)adms_instance_valueto_parameterset;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'parameterset' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031index(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_array)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_array)ai->_item.p)->_index); d->_valueto=(void*)adms_array_valueto_index;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'index' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031block(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB1*/ p_admst d1=adms_admst_newpa(d0,ai,(p_adms)((p_variableprototype)d0->_item.p)->_block);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_block;
+  }
+  else if(e==admse_module)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_block)); d->_valueto=(void*)adms_module_valueto_block;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_variableprototype)ai->_item.p)->_block); d->_valueto=(void*)adms_variableprototype_valueto_block;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_blockvariable)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_blockvariable)ai->_item.p)->_block); d->_valueto=(void*)adms_blockvariable_valueto_block;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_block)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_block)ai->_item.p)->_block); d->_valueto=(void*)adms_block_valueto_block;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'block' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031derivate(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_derivate);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_derivate;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_derivate); d->_valueto=(void*)adms_variableprototype_valueto_derivate;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'derivate' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031function(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_expression)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_expression)ai->_item.p)->_function)); d->_valueto=(void*)adms_expression_valueto_function;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_callfunction)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_callfunction)ai->_item.p)->_function); d->_valueto=(void*)adms_callfunction_valueto_function;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'function' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031nnode(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_branch)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_branch)ai->_item.p)->_nnode); d->_valueto=(void*)adms_branch_valueto_nnode;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'nnode' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031supexpr(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_range)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_range)ai->_item.p)->_supexpr); d->_valueto=(void*)adms_range_valueto_supexpr;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'supexpr' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031usedinevaluate(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_usedinevaluate);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_usedinevaluate;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_usedinevaluate); d->_valueto=(void*)adms_variableprototype_valueto_usedinevaluate;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'usedinevaluate' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031itransforminsideapplytemplate(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_admsmain)ai->_item.p)->_itransforminsideapplytemplate)); d->_valueto=(void*)adms_admsmain_valueto_itransforminsideapplytemplate;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'itransforminsideapplytemplate' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031infinity(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_expression)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_expression)ai->_item.p)->_infinity); d->_valueto=(void*)adms_expression_valueto_infinity;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'infinity' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031infexpr(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_range)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_range)ai->_item.p)->_infexpr); d->_valueto=(void*)adms_range_valueto_infexpr;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'infexpr' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031potential(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_discipline)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_discipline)ai->_item.p)->_potential); d->_valueto=(void*)adms_discipline_valueto_potential;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'potential' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031defaultcase(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_caseitem)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_caseitem)ai->_item.p)->_defaultcase); d->_valueto=(void*)adms_caseitem_valueto_defaultcase;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'defaultcase' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031value(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_number)
+  {
+    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_number)ai->_item.p)->_lexval); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_number_valueto_lexval;
+    /*BBBB1*/ p_admst d1=adms_admst_newbs(d0,ai,((p_lexval)d0->_item.p)->_string);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_lexval_valueto_string;
+  }
+  else if(e==admse_math)
+  {
+    p_admst d=adms_admst_newbr(ai,ai,((p_math)ai->_item.p)->_value); d->_valueto=(void*)adms_math_valueto_value;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_string)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_string)ai->_item.p)->_value); d->_valueto=(void*)adms_string_valueto_value;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_expression)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_expression)ai->_item.p)->_value); d->_valueto=(void*)adms_expression_valueto_value;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_instanceparameter)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_instanceparameter)ai->_item.p)->_value); d->_valueto=(void*)adms_instanceparameter_valueto_value;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_return)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_return)ai->_item.p)->_value); d->_valueto=(void*)adms_return_valueto_value;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_attribute)
+  {
+    p_admst d=adms_admst_newpc(ai,ai,(p_attribute)ai->_item.p);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'value' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031tree(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_analogfunction)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_analogfunction)ai->_item.p)->_tree); d->_valueto=(void*)adms_analogfunction_valueto_tree;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_expression)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_expression)ai->_item.p)->_tree); d->_valueto=(void*)adms_expression_valueto_tree;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'tree' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031instantiator(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_module)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_instantiator)); d->_valueto=(void*)adms_module_valueto_instantiator;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_instance)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_instance)ai->_item.p)->_instantiator); d->_valueto=(void*)adms_instance_valueto_instantiator;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'instantiator' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031usage(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_usage); d->_valueto=(void*)adms_admsmain_valueto_usage;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'usage' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031update(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_forloop)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_forloop)ai->_item.p)->_update); d->_valueto=(void*)adms_forloop_valueto_update;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'update' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031dependency(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  else if(e==admse_string)
+    e=admse_math;
+  else if(e==admse_subexpression)
+    e=admse_math;
+  else if(e==admse_mapply_unary)
+    e=admse_math;
+  else if(e==admse_mapply_binary)
+    e=admse_math;
+  else if(e==admse_mapply_ternary)
+    e=admse_math;
+  else if(e==admse_number)
+    e=admse_math;
+  else if(e==admse_function)
+    e=admse_math;
+  else if(e==admse_variable)
+    e=admse_math;
+  else if(e==admse_array)
+    e=admse_math;
+  else if(e==admse_probe)
+    e=admse_math;
+  else if(e==admse_expression)
+    e=admse_math;
+  else if(e==admse_instance)
+    e=admse_math;
+  else if(e==admse_instanceparameter)
+    e=admse_math;
+  else if(e==admse_instancenode)
+    e=admse_math;
+  else if(e==admse_nilled)
+    e=admse_math;
+  else if(e==admse_assignment)
+    e=admse_math;
+  else if(e==admse_contribution)
+    e=admse_math;
+  else if(e==admse_conditional)
+    e=admse_math;
+  else if(e==admse_forloop)
+    e=admse_math;
+  else if(e==admse_whileloop)
+    e=admse_math;
+  else if(e==admse_case)
+    e=admse_math;
+  else if(e==admse_caseitem)
+    e=admse_math;
+  else if(e==admse_blockvariable)
+    e=admse_math;
+  else if(e==admse_block)
+    e=admse_math;
+  else if(e==admse_callfunction)
+    e=admse_math;
+  if(0) {}
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_dependency); d->_valueto=(void*)adms_variableprototype_valueto_dependency;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_math)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_math)ai->_item.p)->_dependency); d->_valueto=(void*)adms_math_valueto_dependency;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'dependency' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031whileloop(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_module)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_whileloop)); d->_valueto=(void*)adms_module_valueto_whileloop;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'whileloop' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031blockvariable(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_module)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_blockvariable)); d->_valueto=(void*)adms_module_valueto_blockvariable;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'blockvariable' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031then(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_conditional)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_conditional)ai->_item.p)->_then); d->_valueto=(void*)adms_conditional_valueto_then;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'then' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031analog(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_module)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_module)ai->_item.p)->_analog); d->_valueto=(void*)adms_module_valueto_analog;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'analog' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031nodefrommodule(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_instancenode)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_instancenode)ai->_item.p)->_nodefrommodule); d->_valueto=(void*)adms_instancenode_valueto_nodefrommodule;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'nodefrommodule' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031whileblock(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_whileloop)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_whileloop)ai->_item.p)->_whileblock); d->_valueto=(void*)adms_whileloop_valueto_whileblock;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'whileblock' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031usedinfinal(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_usedinfinal);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_usedinfinal;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_usedinfinal); d->_valueto=(void*)adms_variableprototype_valueto_usedinfinal;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'usedinfinal' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031default(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB1*/ p_admst d1=adms_admst_newpa(d0,ai,(p_adms)((p_variableprototype)d0->_item.p)->_default);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_default;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_variableprototype)ai->_item.p)->_default); d->_valueto=(void*)adms_variableprototype_valueto_default;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'default' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031evaluation(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_module)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_module)ai->_item.p)->_evaluation); d->_valueto=(void*)adms_module_valueto_evaluation;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'evaluation' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031sizetype(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_sizetype);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_sizetype;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_sizetype); d->_valueto=(void*)adms_variableprototype_valueto_sizetype;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'sizetype' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031unique_id(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_function)
+  {
+    p_admst d=adms_admst_newbi(ai,ai,((p_function)ai->_item.p)->_unique_id); d->_valueto=(void*)adms_function_valueto_unique_id;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'unique_id' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031setinfinal(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_setinfinal);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_setinfinal;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_setinfinal); d->_valueto=(void*)adms_variableprototype_valueto_setinfinal;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'setinfinal' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031dbg_vla(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_dbg_vla); d->_valueto=(void*)adms_admsmain_valueto_dbg_vla;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'dbg_vla' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031type(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_type);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_type;
+  }
+  else if(e==admse_analogfunction)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_analogfunction)ai->_item.p)->_type); d->_valueto=(void*)adms_analogfunction_valueto_type;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_type); d->_valueto=(void*)adms_variableprototype_valueto_type;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_source)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_source)ai->_item.p)->_type); d->_valueto=(void*)adms_source_valueto_type;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_range)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_range)ai->_item.p)->_type); d->_valueto=(void*)adms_range_valueto_type;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'type' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
 static void location031currentdate(p_ptraverse p,p_path mypath,p_admst dot)
@@ -8005,7 +8728,7 @@ static void location031currentdate(p_ptraverse p,p_path mypath,p_admst dot)
     adms_message_error(("%s: 'currentdate' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location031contribution(p_ptraverse p,p_path mypath,p_admst dot)
+static void location031if(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -8017,17 +8740,17 @@ static void location031contribution(p_ptraverse p,p_path mypath,p_admst dot)
   }
   if(0) {}
   if(0) {}
-  else if(e==admse_module)
+  else if(e==admse_conditional)
   {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_contribution)); d->_valueto=(void*)adms_module_valueto_contribution;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_conditional)ai->_item.p)->_if); d->_valueto=(void*)adms_conditional_valueto_if;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'contribution' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'if' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location031conditional(p_ptraverse p,p_path mypath,p_admst dot)
+static void location031setininitial_step(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -8039,14 +8762,41 @@ static void location031conditional(p_ptraverse p,p_path mypath,p_admst dot)
   }
   if(0) {}
   if(0) {}
-  else if(e==admse_module)
+  else if(e==admse_variable)
   {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_conditional)); d->_valueto=(void*)adms_module_valueto_conditional;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_setininitial_step);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_setininitial_step;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_setininitial_step); d->_valueto=(void*)adms_variableprototype_valueto_setininitial_step;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'conditional' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'setininitial_step' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031parameter(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_instanceparameter)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_instanceparameter)ai->_item.p)->_parameter); d->_valueto=(void*)adms_instanceparameter_valueto_parameter;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'parameter' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
 static void location031invtransform(p_ptraverse p,p_path mypath,p_admst dot)
@@ -8071,6 +8821,156 @@ static void location031invtransform(p_ptraverse p,p_path mypath,p_admst dot)
     adms_message_error(("%s: 'invtransform' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
+static void location031lhs(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_assignment)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_assignment)ai->_item.p)->_lhs); d->_valueto=(void*)adms_assignment_valueto_lhs;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_contribution)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_contribution)ai->_item.p)->_lhs); d->_valueto=(void*)adms_contribution_valueto_lhs;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'lhs' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031TemperatureDependent(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_TemperatureDependent);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_TemperatureDependent;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_TemperatureDependent); d->_valueto=(void*)adms_variableprototype_valueto_TemperatureDependent;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_expression)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_expression)ai->_item.p)->_TemperatureDependent); d->_valueto=(void*)adms_expression_valueto_TemperatureDependent;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'TemperatureDependent' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031scope(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_scope);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_scope;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_scope); d->_valueto=(void*)adms_variableprototype_valueto_scope;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'scope' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031column(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_jacobian)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_jacobian)ai->_item.p)->_column); d->_valueto=(void*)adms_jacobian_valueto_column;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'column' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031warning(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_warning); d->_valueto=(void*)adms_admsmain_valueto_warning;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'warning' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031caseitem(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_case)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_case)ai->_item.p)->_caseitem)); d->_valueto=(void*)adms_case_valueto_caseitem;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'caseitem' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
 static void location031valueof(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
@@ -8093,7 +8993,51 @@ static void location031valueof(p_ptraverse p,p_path mypath,p_admst dot)
     adms_message_error(("%s: 'valueof' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location031variable(p_ptraverse p,p_path mypath,p_admst dot)
+static void location031string(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_lexval)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_lexval)ai->_item.p)->_string); d->_valueto=(void*)adms_lexval_valueto_string;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'string' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031fpos(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_admst d=adms_admst_newbi(ai,ai,((p_admsmain)ai->_item.p)->_fpos); d->_valueto=(void*)adms_admsmain_valueto_fpos;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'fpos' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031setingetprev(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -8108,48 +9052,161 @@ static void location031variable(p_ptraverse p,p_path mypath,p_admst dot)
   else if(e==admse_variable)
   {
     /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*AAAA1*/ p_admst d1=adms_admst_newla(d0,ai,((p_variableprototype)d0->_item.p)->_variable);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_variable;
-  }
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_admsmain)ai->_item.p)->_variable)); d->_valueto=(void*)adms_admsmain_valueto_variable;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_module)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_variable)); d->_valueto=(void*)adms_module_valueto_variable;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_analogfunction)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_analogfunction)ai->_item.p)->_variable)); d->_valueto=(void*)adms_analogfunction_valueto_variable;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_setingetprev);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_setingetprev;
   }
   else if(e==admse_variableprototype)
   {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_variableprototype)ai->_item.p)->_variable)); d->_valueto=(void*)adms_variableprototype_valueto_variable;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_array)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_array)ai->_item.p)->_variable); d->_valueto=(void*)adms_array_valueto_variable;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_expression)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_expression)ai->_item.p)->_variable)); d->_valueto=(void*)adms_expression_valueto_variable;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_blockvariable)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_blockvariable)ai->_item.p)->_variable)); d->_valueto=(void*)adms_blockvariable_valueto_variable;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_block)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_block)ai->_item.p)->_variable)); d->_valueto=(void*)adms_block_valueto_variable;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_evaluation)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_evaluation)ai->_item.p)->_variable)); d->_valueto=(void*)adms_evaluation_valueto_variable;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_setingetprev); d->_valueto=(void*)adms_variableprototype_valueto_setingetprev;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'variable' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'setingetprev' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031nature(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_admsmain)ai->_item.p)->_nature)); d->_valueto=(void*)adms_admsmain_valueto_nature;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_source)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_source)ai->_item.p)->_nature); d->_valueto=(void*)adms_source_valueto_nature;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_probe)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_probe)ai->_item.p)->_nature); d->_valueto=(void*)adms_probe_valueto_nature;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'nature' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031verbose(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_verbose); d->_valueto=(void*)adms_admsmain_valueto_verbose;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'verbose' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031callfunction(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_module)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_callfunction)); d->_valueto=(void*)adms_module_valueto_callfunction;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'callfunction' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031conditional(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_module)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_conditional)); d->_valueto=(void*)adms_module_valueto_conditional;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'conditional' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031maxsize(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB1*/ p_admst d1=adms_admst_newpa(d0,ai,(p_adms)((p_variableprototype)d0->_item.p)->_maxsize);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_maxsize;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_variableprototype)ai->_item.p)->_maxsize); d->_valueto=(void*)adms_variableprototype_valueto_maxsize;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'maxsize' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031argc(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_admst d=adms_admst_newbi(ai,ai,((p_admsmain)ai->_item.p)->_argc); d->_valueto=(void*)adms_admsmain_valueto_argc;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'argc' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
 static void location031setininstance(p_ptraverse p,p_path mypath,p_admst dot)
@@ -8179,7 +9236,73 @@ static void location031setininstance(p_ptraverse p,p_path mypath,p_admst dot)
     adms_message_error(("%s: 'setininstance' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location031output(p_ptraverse p,p_path mypath,p_admst dot)
+static void location031idt_nature(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_nature)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_nature)ai->_item.p)->_idt_nature); d->_valueto=(void*)adms_nature_valueto_idt_nature;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'idt_nature' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031arguments(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_function)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_function)ai->_item.p)->_arguments)); d->_valueto=(void*)adms_function_valueto_arguments;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'arguments' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031definition(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_function)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_function)ai->_item.p)->_definition); d->_valueto=(void*)adms_function_valueto_definition;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'definition' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031input(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -8194,19 +9317,211 @@ static void location031output(p_ptraverse p,p_path mypath,p_admst dot)
   else if(e==admse_variable)
   {
     /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_output);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_output;
+    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_input);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_input;
   }
   else if(e==admse_variableprototype)
   {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_output); d->_valueto=(void*)adms_variableprototype_valueto_output;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_input); d->_valueto=(void*)adms_variableprototype_valueto_input;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'output' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'input' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location031forloop(p_ptraverse p,p_path mypath,p_admst dot)
+static void location031probe(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*AAAA1*/ p_admst d1=adms_admst_newla(d0,ai,((p_variableprototype)d0->_item.p)->_probe);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_probe;
+  }
+  else if(e==admse_simulator)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_simulator)ai->_item.p)->_probe); d->_valueto=(void*)adms_simulator_valueto_probe;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_module)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_probe)); d->_valueto=(void*)adms_module_valueto_probe;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_variableprototype)ai->_item.p)->_probe)); d->_valueto=(void*)adms_variableprototype_valueto_probe;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_source)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_source)ai->_item.p)->_probe)); d->_valueto=(void*)adms_source_valueto_probe;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_expression)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_expression)ai->_item.p)->_probe)); d->_valueto=(void*)adms_expression_valueto_probe;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_block)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_block)ai->_item.p)->_probe)); d->_valueto=(void*)adms_block_valueto_probe;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'probe' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031arg1(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_mapply_unary)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_mapply_unary)ai->_item.p)->_arg1); d->_valueto=(void*)adms_mapply_unary_valueto_arg1;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_mapply_binary)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_mapply_binary)ai->_item.p)->_arg1); d->_valueto=(void*)adms_mapply_binary_valueto_arg1;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_mapply_ternary)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_mapply_ternary)ai->_item.p)->_arg1); d->_valueto=(void*)adms_mapply_ternary_valueto_arg1;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'arg1' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031idt_name(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_nature)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_nature)ai->_item.p)->_idt_name); d->_valueto=(void*)adms_nature_valueto_idt_name;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'idt_name' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031usedinmodel(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_usedinmodel);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_usedinmodel;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_usedinmodel); d->_valueto=(void*)adms_variableprototype_valueto_usedinmodel;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'usedinmodel' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031infboundtype(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_range)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_range)ai->_item.p)->_infboundtype); d->_valueto=(void*)adms_range_valueto_infboundtype;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'infboundtype' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031base(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_nature)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_nature)ai->_item.p)->_base); d->_valueto=(void*)adms_nature_valueto_base;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'base' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031location(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_node)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_node)ai->_item.p)->_location); d->_valueto=(void*)adms_node_valueto_location;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'location' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031contribution(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -8220,12 +9535,655 @@ static void location031forloop(p_ptraverse p,p_path mypath,p_admst dot)
   if(0) {}
   else if(e==admse_module)
   {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_forloop)); d->_valueto=(void*)adms_module_valueto_forloop;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_contribution)); d->_valueto=(void*)adms_module_valueto_contribution;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'forloop' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'contribution' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031row(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_jacobian)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_jacobian)ai->_item.p)->_row); d->_valueto=(void*)adms_jacobian_valueto_row;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'row' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031f(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_lexval)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_lexval)ai->_item.p)->_f); d->_valueto=(void*)adms_lexval_valueto_f;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'f' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031l(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_lexval)
+  {
+    p_admst d=adms_admst_newbi(ai,ai,((p_lexval)ai->_item.p)->_l); d->_valueto=(void*)adms_lexval_valueto_l;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'l' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031sr1(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_simulator)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_simulator)ai->_item.p)->_sr1); d->_valueto=(void*)adms_simulator_valueto_sr1;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'sr1' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031package_string(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_simulator)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_package_string); d->_valueto=(void*)adms_simulator_valueto_package_string;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'package_string' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031package_name(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_simulator)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_package_name); d->_valueto=(void*)adms_simulator_valueto_package_name;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'package_name' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031static(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  else if(e==admse_expression)
+    e=admse_math;
+  else if(e==admse_nilled)
+    e=admse_math;
+  else if(e==admse_assignment)
+    e=admse_math;
+  else if(e==admse_contribution)
+    e=admse_math;
+  else if(e==admse_conditional)
+    e=admse_math;
+  else if(e==admse_forloop)
+    e=admse_math;
+  else if(e==admse_whileloop)
+    e=admse_math;
+  else if(e==admse_case)
+    e=admse_math;
+  else if(e==admse_blockvariable)
+    e=admse_math;
+  else if(e==admse_block)
+    e=admse_math;
+  else if(e==admse_callfunction)
+    e=admse_math;
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_static);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_static;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_static); d->_valueto=(void*)adms_variableprototype_valueto_static;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_source)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_source)ai->_item.p)->_static); d->_valueto=(void*)adms_source_valueto_static;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_jacobian)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_jacobian)ai->_item.p)->_static); d->_valueto=(void*)adms_jacobian_valueto_static;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_math)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_math)ai->_item.p)->_static); d->_valueto=(void*)adms_math_valueto_static;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'static' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031diagonal(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_jacobian)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_jacobian)ai->_item.p)->_diagonal); d->_valueto=(void*)adms_jacobian_valueto_diagonal;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'diagonal' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031pnode(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_branch)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_branch)ai->_item.p)->_pnode); d->_valueto=(void*)adms_branch_valueto_pnode;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'pnode' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031alias(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*AAAA1*/ p_admst d1=adms_admst_newla(d0,ai,((p_variableprototype)d0->_item.p)->_alias);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_alias;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_variableprototype)ai->_item.p)->_alias)); d->_valueto=(void*)adms_variableprototype_valueto_alias;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'alias' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031whitenoise(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_source)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_source)ai->_item.p)->_whitenoise); d->_valueto=(void*)adms_source_valueto_whitenoise;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_contribution)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_contribution)ai->_item.p)->_whitenoise); d->_valueto=(void*)adms_contribution_valueto_whitenoise;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'whitenoise' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031assignment(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*AAAA1*/ p_admst d1=adms_admst_newla(d0,ai,((p_variableprototype)d0->_item.p)->_assignment);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_assignment;
+  }
+  else if(e==admse_module)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_assignment)); d->_valueto=(void*)adms_module_valueto_assignment;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_variableprototype)ai->_item.p)->_assignment)); d->_valueto=(void*)adms_variableprototype_valueto_assignment;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'assignment' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031package_version(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_simulator)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_package_version); d->_valueto=(void*)adms_simulator_valueto_package_version;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'package_version' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031developer(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_simulator)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_developer); d->_valueto=(void*)adms_simulator_valueto_developer;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'developer' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031br1(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_simulator)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_simulator)ai->_item.p)->_br1); d->_valueto=(void*)adms_simulator_valueto_br1;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'br1' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031hasspecialnumber(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_expression)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_expression)ai->_item.p)->_hasspecialnumber); d->_valueto=(void*)adms_expression_valueto_hasspecialnumber;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'hasspecialnumber' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031prototype(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); d->_valueto=(void*)adms_variable_valueto_prototype;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'prototype' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031class(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_function)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_function)ai->_item.p)->_class); d->_valueto=(void*)adms_function_valueto_class;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'class' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031analogfunction(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_module)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_analogfunction)); d->_valueto=(void*)adms_module_valueto_analogfunction;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'analogfunction' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031dbg_mem(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_dbg_mem); d->_valueto=(void*)adms_admsmain_valueto_dbg_mem;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'dbg_mem' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031minsize(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB1*/ p_admst d1=adms_admst_newpa(d0,ai,(p_adms)((p_variableprototype)d0->_item.p)->_minsize);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_minsize;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_variableprototype)ai->_item.p)->_minsize); d->_valueto=(void*)adms_variableprototype_valueto_minsize;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'minsize' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031argv(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_admsmain)ai->_item.p)->_argv)); d->_valueto=(void*)adms_admsmain_valueto_argv;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'argv' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031tmp(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_simulator)
+  {
+    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_tmp); d->_valueto=(void*)adms_simulator_valueto_tmp;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'tmp' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031transform(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_admsmain)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_admsmain)ai->_item.p)->_transform)); d->_valueto=(void*)adms_admsmain_valueto_transform;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'transform' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031code(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_analog)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_analog)ai->_item.p)->_code); d->_valueto=(void*)adms_analog_valueto_code;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_caseitem)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_caseitem)ai->_item.p)->_code); d->_valueto=(void*)adms_caseitem_valueto_code;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'code' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031isstate(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_isstate);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_isstate;
+  }
+  else if(e==admse_variableprototype)
+  {
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_isstate); d->_valueto=(void*)adms_variableprototype_valueto_isstate;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'isstate' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
 static void location031attribute(p_ptraverse p,p_path mypath,p_admst dot)
@@ -8291,51 +10249,7 @@ static void location031attribute(p_ptraverse p,p_path mypath,p_admst dot)
     adms_message_error(("%s: 'attribute' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location031location(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_node)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_node)ai->_item.p)->_location); d->_valueto=(void*)adms_node_valueto_location;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'location' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031hasspecialnumber(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_expression)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_expression)ai->_item.p)->_hasspecialnumber); d->_valueto=(void*)adms_expression_valueto_hasspecialnumber;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'hasspecialnumber' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031usedinfinal(p_ptraverse p,p_path mypath,p_admst dot)
+static void location031output(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -8350,342 +10264,19 @@ static void location031usedinfinal(p_ptraverse p,p_path mypath,p_admst dot)
   else if(e==admse_variable)
   {
     /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_usedinfinal);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_usedinfinal;
+    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_output);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_output;
   }
   else if(e==admse_variableprototype)
   {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_usedinfinal); d->_valueto=(void*)adms_variableprototype_valueto_usedinfinal;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_output); d->_valueto=(void*)adms_variableprototype_valueto_output;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'usedinfinal' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'output' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location031setinmodel(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_setinmodel);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_setinmodel;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_setinmodel); d->_valueto=(void*)adms_variableprototype_valueto_setinmodel;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'setinmodel' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031else(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_conditional)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_conditional)ai->_item.p)->_else); d->_valueto=(void*)adms_conditional_valueto_else;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'else' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031fullname(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_simulator)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_fullname); d->_valueto=(void*)adms_simulator_valueto_fullname;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'fullname' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031setinevaluate(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_setinevaluate);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_setinevaluate;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_setinevaluate); d->_valueto=(void*)adms_variableprototype_valueto_setinevaluate;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'setinevaluate' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031nodefrommodule(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_instancenode)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_instancenode)ai->_item.p)->_nodefrommodule); d->_valueto=(void*)adms_instancenode_valueto_nodefrommodule;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'nodefrommodule' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031units(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_nature)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_nature)ai->_item.p)->_units); d->_valueto=(void*)adms_nature_valueto_units;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'units' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031initial(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_forloop)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_forloop)ai->_item.p)->_initial); d->_valueto=(void*)adms_forloop_valueto_initial;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'initial' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031package_string(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_simulator)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_package_string); d->_valueto=(void*)adms_simulator_valueto_package_string;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'package_string' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031nodefrominstantiator(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_instancenode)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_instancenode)ai->_item.p)->_nodefrominstantiator); d->_valueto=(void*)adms_instancenode_valueto_nodefrominstantiator;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'nodefrominstantiator' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031datatype(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_list)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_list)ai->_item.p)->_datatype); d->_valueto=(void*)adms_list_valueto_datatype;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'datatype' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031fatal(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_fatal); d->_valueto=(void*)adms_admsmain_valueto_fatal;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'fatal' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031cast(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_number)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_number)ai->_item.p)->_cast); d->_valueto=(void*)adms_number_valueto_cast;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'cast' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031usedinmodel(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_usedinmodel);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_usedinmodel;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_usedinmodel); d->_valueto=(void*)adms_variableprototype_valueto_usedinmodel;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'usedinmodel' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031verbose(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_verbose); d->_valueto=(void*)adms_admsmain_valueto_verbose;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'verbose' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031case(p_ptraverse p,p_path mypath,p_admst dot)
+static void location031source(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -8699,19 +10290,19 @@ static void location031case(p_ptraverse p,p_path mypath,p_admst dot)
   if(0) {}
   else if(e==admse_module)
   {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_case)); d->_valueto=(void*)adms_module_valueto_case;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_source)); d->_valueto=(void*)adms_module_valueto_source;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
-  else if(e==admse_case)
+  else if(e==admse_probe)
   {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_case)ai->_item.p)->_case); d->_valueto=(void*)adms_case_valueto_case;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_probe)ai->_item.p)->_source); d->_valueto=(void*)adms_probe_valueto_source;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'case' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'source' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location031abstol(p_ptraverse p,p_path mypath,p_admst dot)
+static void location031info(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -8723,36 +10314,14 @@ static void location031abstol(p_ptraverse p,p_path mypath,p_admst dot)
   }
   if(0) {}
   if(0) {}
-  else if(e==admse_nature)
+  else if(e==admse_admsmain)
   {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_nature)ai->_item.p)->_abstol); d->_valueto=(void*)adms_nature_valueto_abstol;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_info); d->_valueto=(void*)adms_admsmain_valueto_info;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'abstol' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031supboundtype(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_range)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_range)ai->_item.p)->_supboundtype); d->_valueto=(void*)adms_range_valueto_supboundtype;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'supboundtype' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'info' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
 static void location031item(p_ptraverse p,p_path mypath,p_admst dot)
@@ -8781,7 +10350,7 @@ static void location031item(p_ptraverse p,p_path mypath,p_admst dot)
     adms_message_error(("%s: 'item' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location031block(p_ptraverse p,p_path mypath,p_admst dot)
+static void location031access(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -8793,34 +10362,17 @@ static void location031block(p_ptraverse p,p_path mypath,p_admst dot)
   }
   if(0) {}
   if(0) {}
-  else if(e==admse_variable)
+  else if(e==admse_nature)
   {
-    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB1*/ p_admst d1=adms_admst_newpa(d0,ai,(p_adms)((p_variableprototype)d0->_item.p)->_block);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_block;
-  }
-  else if(e==admse_module)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_block)); d->_valueto=(void*)adms_module_valueto_block;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_variableprototype)ai->_item.p)->_block); d->_valueto=(void*)adms_variableprototype_valueto_block;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_blockvariable)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_blockvariable)ai->_item.p)->_block); d->_valueto=(void*)adms_blockvariable_valueto_block;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_block)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_block)ai->_item.p)->_block); d->_valueto=(void*)adms_block_valueto_block;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newbs(ai,ai,((p_nature)ai->_item.p)->_access); d->_valueto=(void*)adms_nature_valueto_access;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'block' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'access' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location031l(p_ptraverse p,p_path mypath,p_admst dot)
+static void location031direction(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -8832,17 +10384,17 @@ static void location031l(p_ptraverse p,p_path mypath,p_admst dot)
   }
   if(0) {}
   if(0) {}
-  else if(e==admse_lexval)
+  else if(e==admse_node)
   {
-    p_admst d=adms_admst_newbi(ai,ai,((p_lexval)ai->_item.p)->_l); d->_valueto=(void*)adms_lexval_valueto_l;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newbe(ai,ai,((p_node)ai->_item.p)->_direction); d->_valueto=(void*)adms_node_valueto_direction;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'l' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'direction' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location031simulator(p_ptraverse p,p_path mypath,p_admst dot)
+static void location031domain(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -8854,43 +10406,17 @@ static void location031simulator(p_ptraverse p,p_path mypath,p_admst dot)
   }
   if(0) {}
   if(0) {}
-  else if(e==admse_admsmain)
+  else if(e==admse_discipline)
   {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_admsmain)ai->_item.p)->_simulator); d->_valueto=(void*)adms_admsmain_valueto_simulator;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newbe(ai,ai,((p_discipline)ai->_item.p)->_domain); d->_valueto=(void*)adms_discipline_valueto_domain;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'simulator' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'domain' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location031code(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_analog)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_analog)ai->_item.p)->_code); d->_valueto=(void*)adms_analog_valueto_code;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_caseitem)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_caseitem)ai->_item.p)->_code); d->_valueto=(void*)adms_caseitem_valueto_code;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'code' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031analog(p_ptraverse p,p_path mypath,p_admst dot)
+static void location031nodealias(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -8904,558 +10430,12 @@ static void location031analog(p_ptraverse p,p_path mypath,p_admst dot)
   if(0) {}
   else if(e==admse_module)
   {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_module)ai->_item.p)->_analog); d->_valueto=(void*)adms_module_valueto_analog;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_nodealias)); d->_valueto=(void*)adms_module_valueto_nodealias;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'analog' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031value(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_number)
-  {
-    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_number)ai->_item.p)->_lexval); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_number_valueto_lexval;
-    /*BBBB1*/ p_admst d1=adms_admst_newbs(d0,ai,((p_lexval)d0->_item.p)->_string);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_lexval_valueto_string;
-  }
-  else if(e==admse_math)
-  {
-    p_admst d=adms_admst_newbr(ai,ai,((p_math)ai->_item.p)->_value); d->_valueto=(void*)adms_math_valueto_value;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_string)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_string)ai->_item.p)->_value); d->_valueto=(void*)adms_string_valueto_value;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_expression)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_expression)ai->_item.p)->_value); d->_valueto=(void*)adms_expression_valueto_value;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_instanceparameter)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_instanceparameter)ai->_item.p)->_value); d->_valueto=(void*)adms_instanceparameter_valueto_value;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_return)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_return)ai->_item.p)->_value); d->_valueto=(void*)adms_return_valueto_value;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_attribute)
-  {
-    p_admst d=adms_admst_newpc(ai,ai,(p_attribute)ai->_item.p);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'value' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031fpos(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newbi(ai,ai,((p_admsmain)ai->_item.p)->_fpos); d->_valueto=(void*)adms_admsmain_valueto_fpos;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'fpos' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031minsize(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB1*/ p_admst d1=adms_admst_newpa(d0,ai,(p_adms)((p_variableprototype)d0->_item.p)->_minsize);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_minsize;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_variableprototype)ai->_item.p)->_minsize); d->_valueto=(void*)adms_variableprototype_valueto_minsize;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'minsize' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031seen(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_probe)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_probe)ai->_item.p)->_seen); d->_valueto=(void*)adms_probe_valueto_seen;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'seen' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031error(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_error); d->_valueto=(void*)adms_admsmain_valueto_error;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'error' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031filename(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_admsmain)ai->_item.p)->_filename); d->_valueto=(void*)adms_admsmain_valueto_filename;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'filename' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031flickernoise(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_source)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_source)ai->_item.p)->_flickernoise); d->_valueto=(void*)adms_source_valueto_flickernoise;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_contribution)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_contribution)ai->_item.p)->_flickernoise); d->_valueto=(void*)adms_contribution_valueto_flickernoise;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'flickernoise' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031nnode(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_branch)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_branch)ai->_item.p)->_nnode); d->_valueto=(void*)adms_branch_valueto_nnode;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'nnode' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031whitenoise(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_source)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_source)ai->_item.p)->_whitenoise); d->_valueto=(void*)adms_source_valueto_whitenoise;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_contribution)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_contribution)ai->_item.p)->_whitenoise); d->_valueto=(void*)adms_contribution_valueto_whitenoise;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'whitenoise' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031br2(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_simulator)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_simulator)ai->_item.p)->_br2); d->_valueto=(void*)adms_simulator_valueto_br2;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'br2' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031whileloop(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_module)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_whileloop)); d->_valueto=(void*)adms_module_valueto_whileloop;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'whileloop' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031branch(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_module)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_branch)); d->_valueto=(void*)adms_module_valueto_branch;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_branchalias)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_branchalias)ai->_item.p)->_branch); d->_valueto=(void*)adms_branchalias_valueto_branch;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_source)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_source)ai->_item.p)->_branch); d->_valueto=(void*)adms_source_valueto_branch;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_probe)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_probe)ai->_item.p)->_branch); d->_valueto=(void*)adms_probe_valueto_branch;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'branch' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031arguments(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_function)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_function)ai->_item.p)->_arguments)); d->_valueto=(void*)adms_function_valueto_arguments;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'arguments' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031jacobian(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_module)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_jacobian)); d->_valueto=(void*)adms_module_valueto_jacobian;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'jacobian' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031argv(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_admsmain)ai->_item.p)->_argv)); d->_valueto=(void*)adms_admsmain_valueto_argv;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'argv' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031lexval(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB1*/ p_admst d1=adms_admst_newpa(d0,ai,(p_adms)((p_variableprototype)d0->_item.p)->_lexval);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_lexval;
-  }
-  else if(e==admse_analogfunction)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_analogfunction)ai->_item.p)->_lexval); d->_valueto=(void*)adms_analogfunction_valueto_lexval;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_variableprototype)ai->_item.p)->_lexval); d->_valueto=(void*)adms_variableprototype_valueto_lexval;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_number)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_number)ai->_item.p)->_lexval); d->_valueto=(void*)adms_number_valueto_lexval;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_function)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_function)ai->_item.p)->_lexval); d->_valueto=(void*)adms_function_valueto_lexval;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_assignment)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_assignment)ai->_item.p)->_lexval); d->_valueto=(void*)adms_assignment_valueto_lexval;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_contribution)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_contribution)ai->_item.p)->_lexval); d->_valueto=(void*)adms_contribution_valueto_lexval;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_block)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_block)ai->_item.p)->_lexval); d->_valueto=(void*)adms_block_valueto_lexval;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'lexval' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031switch(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_source)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_source)ai->_item.p)->_switch); d->_valueto=(void*)adms_source_valueto_switch;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'switch' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031argc(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newbi(ai,ai,((p_admsmain)ai->_item.p)->_argc); d->_valueto=(void*)adms_admsmain_valueto_argc;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'argc' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031itransforminsideapplytemplate(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_admsmain)ai->_item.p)->_itransforminsideapplytemplate)); d->_valueto=(void*)adms_admsmain_valueto_itransforminsideapplytemplate;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'itransforminsideapplytemplate' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031parametertype(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_parametertype);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_parametertype;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_parametertype); d->_valueto=(void*)adms_variableprototype_valueto_parametertype;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'parametertype' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031defaultcase(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_caseitem)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_caseitem)ai->_item.p)->_defaultcase); d->_valueto=(void*)adms_caseitem_valueto_defaultcase;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'defaultcase' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'nodealias' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
 static void location031insource(p_ptraverse p,p_path mypath,p_admst dot)
@@ -9485,196 +10465,7 @@ static void location031insource(p_ptraverse p,p_path mypath,p_admst dot)
     adms_message_error(("%s: 'insource' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location031discipline(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_admsmain)ai->_item.p)->_discipline)); d->_valueto=(void*)adms_admsmain_valueto_discipline;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_node)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_node)ai->_item.p)->_discipline); d->_valueto=(void*)adms_node_valueto_discipline;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_branch)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_branch)ai->_item.p)->_discipline); d->_valueto=(void*)adms_branch_valueto_discipline;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_source)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_source)ai->_item.p)->_discipline); d->_valueto=(void*)adms_source_valueto_discipline;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_probe)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_probe)ai->_item.p)->_discipline); d->_valueto=(void*)adms_probe_valueto_discipline;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'discipline' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031TemperatureDependent(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_TemperatureDependent);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_TemperatureDependent;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_TemperatureDependent); d->_valueto=(void*)adms_variableprototype_valueto_TemperatureDependent;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_expression)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_expression)ai->_item.p)->_TemperatureDependent); d->_valueto=(void*)adms_expression_valueto_TemperatureDependent;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'TemperatureDependent' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031vcount(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB1*/ p_admst d1=adms_admst_newbi(d0,ai,((p_variableprototype)d0->_item.p)->_vcount);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_vcount;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newbi(ai,ai,((p_variableprototype)ai->_item.p)->_vcount); d->_valueto=(void*)adms_variableprototype_valueto_vcount;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'vcount' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031row(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_jacobian)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_jacobian)ai->_item.p)->_row); d->_valueto=(void*)adms_jacobian_valueto_row;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'row' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031OPdependent(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_OPdependent);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_OPdependent;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_OPdependent); d->_valueto=(void*)adms_variableprototype_valueto_OPdependent;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'OPdependent' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031transform(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_admsmain)ai->_item.p)->_transform)); d->_valueto=(void*)adms_admsmain_valueto_transform;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'transform' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031infexpr(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_range)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_range)ai->_item.p)->_infexpr); d->_valueto=(void*)adms_range_valueto_infexpr;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'infexpr' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031function(p_ptraverse p,p_path mypath,p_admst dot)
+static void location031hasVoltageDependentFunction(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -9688,41 +10479,15 @@ static void location031function(p_ptraverse p,p_path mypath,p_admst dot)
   if(0) {}
   else if(e==admse_expression)
   {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_expression)ai->_item.p)->_function)); d->_valueto=(void*)adms_expression_valueto_function;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_callfunction)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_callfunction)ai->_item.p)->_function); d->_valueto=(void*)adms_callfunction_valueto_function;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newbe(ai,ai,((p_expression)ai->_item.p)->_hasVoltageDependentFunction); d->_valueto=(void*)adms_expression_valueto_hasVoltageDependentFunction;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'function' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'hasVoltageDependentFunction' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location031definition(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_function)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_function)ai->_item.p)->_definition); d->_valueto=(void*)adms_function_valueto_definition;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'definition' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031usedininitial_step(p_ptraverse p,p_path mypath,p_admst dot)
+static void location031setinevaluate(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -9737,141 +10502,19 @@ static void location031usedininitial_step(p_ptraverse p,p_path mypath,p_admst do
   else if(e==admse_variable)
   {
     /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_usedininitial_step);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_usedininitial_step;
+    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_setinevaluate);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_setinevaluate;
   }
   else if(e==admse_variableprototype)
   {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_usedininitial_step); d->_valueto=(void*)adms_variableprototype_valueto_usedininitial_step;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_setinevaluate); d->_valueto=(void*)adms_variableprototype_valueto_setinevaluate;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'usedininitial_step' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'setinevaluate' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location031pnode(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_branch)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_branch)ai->_item.p)->_pnode); d->_valueto=(void*)adms_branch_valueto_pnode;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'pnode' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031grounded(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_node)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_node)ai->_item.p)->_grounded); d->_valueto=(void*)adms_node_valueto_grounded;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_branch)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_branch)ai->_item.p)->_grounded); d->_valueto=(void*)adms_branch_valueto_grounded;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_source)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_source)ai->_item.p)->_grounded); d->_valueto=(void*)adms_source_valueto_grounded;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_probe)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_probe)ai->_item.p)->_grounded); d->_valueto=(void*)adms_probe_valueto_grounded;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'grounded' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031while(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_whileloop)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_whileloop)ai->_item.p)->_while); d->_valueto=(void*)adms_whileloop_valueto_while;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'while' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031blockvariable(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_module)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_blockvariable)); d->_valueto=(void*)adms_module_valueto_blockvariable;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'blockvariable' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031potential(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_discipline)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_discipline)ai->_item.p)->_potential); d->_valueto=(void*)adms_discipline_valueto_potential;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'potential' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031input(p_ptraverse p,p_path mypath,p_admst dot)
+static void location031parametertype(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -9886,65 +10529,16 @@ static void location031input(p_ptraverse p,p_path mypath,p_admst dot)
   else if(e==admse_variable)
   {
     /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_input);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_input;
+    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_parametertype);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_parametertype;
   }
   else if(e==admse_variableprototype)
   {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_input); d->_valueto=(void*)adms_variableprototype_valueto_input;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_parametertype); d->_valueto=(void*)adms_variableprototype_valueto_parametertype;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'input' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031usedinevaluate(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_usedinevaluate);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_usedinevaluate;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_usedinevaluate); d->_valueto=(void*)adms_variableprototype_valueto_usedinevaluate;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'usedinevaluate' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031c(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_lexval)
-  {
-    p_admst d=adms_admst_newbi(ai,ai,((p_lexval)ai->_item.p)->_c); d->_valueto=(void*)adms_lexval_valueto_c;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'c' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'parametertype' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
 static void location031name(p_ptraverse p,p_path mypath,p_admst dot)
@@ -10083,56 +10677,7 @@ static void location031name(p_ptraverse p,p_path mypath,p_admst dot)
     adms_message_error(("%s: 'name' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location031class(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_function)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_function)ai->_item.p)->_class); d->_valueto=(void*)adms_function_valueto_class;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'class' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031default(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB1*/ p_admst d1=adms_admst_newpa(d0,ai,(p_adms)((p_variableprototype)d0->_item.p)->_default);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_default;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_variableprototype)ai->_item.p)->_default); d->_valueto=(void*)adms_variableprototype_valueto_default;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'default' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031itransform(p_ptraverse p,p_path mypath,p_admst dot)
+static void location031curline(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -10146,15 +10691,15 @@ static void location031itransform(p_ptraverse p,p_path mypath,p_admst dot)
   if(0) {}
   else if(e==admse_admsmain)
   {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_admsmain)ai->_item.p)->_itransform)); d->_valueto=(void*)adms_admsmain_valueto_itransform;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newbi(ai,ai,((p_admsmain)ai->_item.p)->_curline); d->_valueto=(void*)adms_admsmain_valueto_curline;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'itransform' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'curline' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location031obsolete(p_ptraverse p,p_path mypath,p_admst dot)
+static void location031variable(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -10166,548 +10711,51 @@ static void location031obsolete(p_ptraverse p,p_path mypath,p_admst dot)
   }
   if(0) {}
   if(0) {}
+  else if(e==admse_variable)
+  {
+    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
+    /*AAAA1*/ p_admst d1=adms_admst_newla(d0,ai,((p_variableprototype)d0->_item.p)->_variable);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_variable;
+  }
   else if(e==admse_admsmain)
   {
-    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_obsolete); d->_valueto=(void*)adms_admsmain_valueto_obsolete;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'obsolete' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031setingetprev(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_setingetprev);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_setingetprev;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_setingetprev); d->_valueto=(void*)adms_variableprototype_valueto_setingetprev;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'setingetprev' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031vlast(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB1*/ p_admst d1=adms_admst_newpa(d0,ai,(p_adms)((p_variableprototype)d0->_item.p)->_vlast);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_vlast;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_variableprototype)ai->_item.p)->_vlast); d->_valueto=(void*)adms_variableprototype_valueto_vlast;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'vlast' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031hint(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_hint); d->_valueto=(void*)adms_admsmain_valueto_hint;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'hint' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031tmp(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_simulator)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_tmp); d->_valueto=(void*)adms_simulator_valueto_tmp;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'tmp' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031terminal(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_instance)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_instance)ai->_item.p)->_terminal)); d->_valueto=(void*)adms_instance_valueto_terminal;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'terminal' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031ddx(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_simulator)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_ddx); d->_valueto=(void*)adms_simulator_valueto_ddx;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'ddx' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031infboundtype(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_range)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_range)ai->_item.p)->_infboundtype); d->_valueto=(void*)adms_range_valueto_infboundtype;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'infboundtype' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031isstate(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_isstate);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_isstate;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_isstate); d->_valueto=(void*)adms_variableprototype_valueto_isstate;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'isstate' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031package_tarname(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_simulator)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_package_tarname); d->_valueto=(void*)adms_simulator_valueto_package_tarname;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'package_tarname' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031lhs(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_assignment)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_assignment)ai->_item.p)->_lhs); d->_valueto=(void*)adms_assignment_valueto_lhs;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_contribution)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_contribution)ai->_item.p)->_lhs); d->_valueto=(void*)adms_contribution_valueto_lhs;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'lhs' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031debug(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_debug); d->_valueto=(void*)adms_admsmain_valueto_debug;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'debug' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031package_bugreport(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_simulator)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_package_bugreport); d->_valueto=(void*)adms_simulator_valueto_package_bugreport;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'package_bugreport' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031direction(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_node)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_node)ai->_item.p)->_direction); d->_valueto=(void*)adms_node_valueto_direction;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'direction' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031range(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*AAAA1*/ p_admst d1=adms_admst_newla(d0,ai,((p_variableprototype)d0->_item.p)->_range);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_range;
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_admsmain)ai->_item.p)->_variable)); d->_valueto=(void*)adms_admsmain_valueto_variable;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else if(e==admse_module)
   {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_range)); d->_valueto=(void*)adms_module_valueto_range;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_variable)); d->_valueto=(void*)adms_module_valueto_variable;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else if(e==admse_analogfunction)
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_analogfunction)ai->_item.p)->_variable)); d->_valueto=(void*)adms_analogfunction_valueto_variable;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else if(e==admse_variableprototype)
   {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_variableprototype)ai->_item.p)->_range)); d->_valueto=(void*)adms_variableprototype_valueto_range;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_variableprototype)ai->_item.p)->_variable)); d->_valueto=(void*)adms_variableprototype_valueto_variable;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
-  else
+  else if(e==admse_array)
   {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'range' bad attribute\n",adms_transform_uid(p->_transform)))
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_array)ai->_item.p)->_variable); d->_valueto=(void*)adms_array_valueto_variable;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
-}
-static void location031supexpr(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_range)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_range)ai->_item.p)->_supexpr); d->_valueto=(void*)adms_range_valueto_supexpr;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'supexpr' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031callfunction(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_module)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_callfunction)); d->_valueto=(void*)adms_module_valueto_callfunction;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'callfunction' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031dbg_xml(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_admsmain)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_dbg_xml); d->_valueto=(void*)adms_admsmain_valueto_dbg_xml;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'dbg_xml' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031dynamic(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
   else if(e==admse_expression)
-    e=admse_math;
-  else if(e==admse_nilled)
-    e=admse_math;
-  else if(e==admse_assignment)
-    e=admse_math;
-  else if(e==admse_contribution)
-    e=admse_math;
-  else if(e==admse_conditional)
-    e=admse_math;
-  else if(e==admse_forloop)
-    e=admse_math;
-  else if(e==admse_whileloop)
-    e=admse_math;
-  else if(e==admse_case)
-    e=admse_math;
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_expression)ai->_item.p)->_variable)); d->_valueto=(void*)adms_expression_valueto_variable;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
   else if(e==admse_blockvariable)
-    e=admse_math;
+  {
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_blockvariable)ai->_item.p)->_variable)); d->_valueto=(void*)adms_blockvariable_valueto_variable;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
   else if(e==admse_block)
-    e=admse_math;
-  else if(e==admse_callfunction)
-    e=admse_math;
-  if(0) {}
-  else if(e==admse_variable)
   {
-    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_dynamic);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_dynamic;
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_block)ai->_item.p)->_variable)); d->_valueto=(void*)adms_block_valueto_variable;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
-  else if(e==admse_variableprototype)
+  else if(e==admse_evaluation)
   {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_dynamic); d->_valueto=(void*)adms_variableprototype_valueto_dynamic;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_source)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_source)ai->_item.p)->_dynamic); d->_valueto=(void*)adms_source_valueto_dynamic;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_jacobian)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_jacobian)ai->_item.p)->_dynamic); d->_valueto=(void*)adms_jacobian_valueto_dynamic;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_math)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_math)ai->_item.p)->_dynamic); d->_valueto=(void*)adms_math_valueto_dynamic;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_evaluation)ai->_item.p)->_variable)); d->_valueto=(void*)adms_evaluation_valueto_variable;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'dynamic' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031sizetype(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_variable)
-  {
-    /*BBBB1*/ p_admst d0=adms_admst_newpa(ai,ai,(p_adms)((p_variable)ai->_item.p)->_prototype); adms_slist_push(&p->_aliasadmst,(p_adms)d0); d0->_valueto=(void*)adms_variable_valueto_prototype;
-    /*BBBB1*/ p_admst d1=adms_admst_newbe(d0,ai,((p_variableprototype)d0->_item.p)->_sizetype);if(d1->_preva) d1->_preva->_nexta=d1->_nexta,d1->_preva=NULL; if(d1->_nexta) d1->_nexta->_preva=d1->_preva,d1->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d1; else p->_an->_nexta=d1,d1->_preva=p->_an,p->_an=d1;d1->_position=++p->_position;d1->_valueto=(void*)adms_variableprototype_valueto_sizetype;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newbe(ai,ai,((p_variableprototype)ai->_item.p)->_sizetype); d->_valueto=(void*)adms_variableprototype_valueto_sizetype;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'sizetype' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031column(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_jacobian)
-  {
-    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_jacobian)ai->_item.p)->_column); d->_valueto=(void*)adms_jacobian_valueto_column;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'column' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031f(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_lexval)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_lexval)ai->_item.p)->_f); d->_valueto=(void*)adms_lexval_valueto_f;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'f' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'variable' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
 static void location031branchalias(p_ptraverse p,p_path mypath,p_admst dot)
@@ -10736,77 +10784,7 @@ static void location031branchalias(p_ptraverse p,p_path mypath,p_admst dot)
     adms_message_error(("%s: 'branchalias' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
-static void location031unique_id(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_function)
-  {
-    p_admst d=adms_admst_newbi(ai,ai,((p_function)ai->_item.p)->_unique_id); d->_valueto=(void*)adms_function_valueto_unique_id;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'unique_id' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031instance(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_module)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_module)ai->_item.p)->_instance)); d->_valueto=(void*)adms_module_valueto_instance;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else if(e==admse_variableprototype)
-  {
-    p_admst d=adms_admst_newla(ai,ai,(p_slist)(((p_variableprototype)ai->_item.p)->_instance)); d->_valueto=(void*)adms_variableprototype_valueto_instance;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'instance' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031package_name(p_ptraverse p,p_path mypath,p_admst dot)
-{
-  p_admst ai=aread(dot);
-  admse e;
-  if(ai)
-    e=ai->_pseudo;
-  else
-  {
-    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
-  }
-  if(0) {}
-  if(0) {}
-  else if(e==admse_simulator)
-  {
-    p_admst d=adms_admst_newbs(ai,ai,((p_simulator)ai->_item.p)->_package_name); d->_valueto=(void*)adms_simulator_valueto_package_name;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-  }
-  else
-  {
-    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'package_name' bad attribute\n",adms_transform_uid(p->_transform)))
-  }
-}
-static void location031dbg_mem(p_ptraverse p,p_path mypath,p_admst dot)
+static void location031fatal(p_ptraverse p,p_path mypath,p_admst dot)
 {
   p_admst ai=aread(dot);
   admse e;
@@ -10820,12 +10798,34 @@ static void location031dbg_mem(p_ptraverse p,p_path mypath,p_admst dot)
   if(0) {}
   else if(e==admse_admsmain)
   {
-    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_dbg_mem); d->_valueto=(void*)adms_admsmain_valueto_dbg_mem;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    p_admst d=adms_admst_newbe(ai,ai,((p_admsmain)ai->_item.p)->_fatal); d->_valueto=(void*)adms_admsmain_valueto_fatal;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
   }
   else
   {
     p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
-    adms_message_error(("%s: 'dbg_mem' bad attribute\n",adms_transform_uid(p->_transform)))
+    adms_message_error(("%s: 'fatal' bad attribute\n",adms_transform_uid(p->_transform)))
+  }
+}
+static void location031initial(p_ptraverse p,p_path mypath,p_admst dot)
+{
+  p_admst ai=aread(dot);
+  admse e;
+  if(ai)
+    e=ai->_pseudo;
+  else
+  {
+    p_admst d=adms_admst_newpa(ai,ai,NULL);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position; return;
+  }
+  if(0) {}
+  if(0) {}
+  else if(e==admse_forloop)
+  {
+    p_admst d=adms_admst_newpa(ai,ai,(p_adms)((p_forloop)ai->_item.p)->_initial); d->_valueto=(void*)adms_forloop_valueto_initial;if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+  }
+  else
+  {
+    p_admst d=adms_admst_newpn(ai,ai,ai);if(d->_preva) d->_preva->_nexta=d->_nexta,d->_preva=NULL; if(d->_nexta) d->_nexta->_preva=d->_preva,d->_nexta=NULL;if(p->_a1==NULL) p->_a1=p->_an=d; else p->_an->_nexta=d,d->_preva=p->_an,p->_an=d;d->_position=++p->_position;
+    adms_message_error(("%s: 'initial' bad attribute\n",adms_transform_uid(p->_transform)))
   }
 }
 
@@ -13878,7 +13878,9 @@ typedef union YYSTYPE YYSTYPE;
 
 extern YYSTYPE admstpathlval;
 
+
 int admstpathparse (p_pparse mypparse);
+
 
 
 /* Symbol kind.  */
@@ -14129,12 +14131,18 @@ typedef int yy_state_fast_t;
 # define YY_USE(E) /* empty */
 #endif
 
-#if defined __GNUC__ && ! defined __ICC && 407 <= __GNUC__ * 100 + __GNUC_MINOR__
 /* Suppress an incorrect diagnostic about yylval being uninitialized.  */
-# define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN                            \
+#if defined __GNUC__ && ! defined __ICC && 406 <= __GNUC__ * 100 + __GNUC_MINOR__
+# if __GNUC__ * 100 + __GNUC_MINOR__ < 407
+#  define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN                           \
+    _Pragma ("GCC diagnostic push")                                     \
+    _Pragma ("GCC diagnostic ignored \"-Wuninitialized\"")
+# else
+#  define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN                           \
     _Pragma ("GCC diagnostic push")                                     \
     _Pragma ("GCC diagnostic ignored \"-Wuninitialized\"")              \
     _Pragma ("GCC diagnostic ignored \"-Wmaybe-uninitialized\"")
+# endif
 # define YY_IGNORE_MAYBE_UNINITIALIZED_END      \
     _Pragma ("GCC diagnostic pop")
 #else
@@ -14354,7 +14362,7 @@ static const yytype_int8 yytranslate[] =
 };
 
 #if YYDEBUG
-  /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
+/* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
        0, 13710, 13710, 13713, 13721, 13725, 13731, 13741, 13746, 13753,
@@ -14411,21 +14419,6 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#ifdef YYPRINT
-/* YYTOKNUM[NUM] -- (External) token number corresponding to the
-   (internal) symbol number NUM (which must be that of a token).  */
-static const yytype_int16 yytoknum[] =
-{
-       0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
-     265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
-     275,   276,   277,   278,   279,   280,   281,   282,   283,   284,
-     285,   286,   287,   288,   289,   290,   291,   292,   293,   294,
-     295,   296,   297,   298,   299,   300,   301,   302,   303,   304,
-     305,   306,   307,   308,   309,   310,   311,   312,   313,   314,
-     315,   316,   317,   318
-};
-#endif
-
 #define YYPACT_NINF (-103)
 
 #define yypact_value_is_default(Yyn) \
@@ -14436,8 +14429,8 @@ static const yytype_int16 yytoknum[] =
 #define yytable_value_is_error(Yyn) \
   0
 
-  /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
-     STATE-NUM.  */
+/* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
+   STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
       20,  -103,   478,   240,   478,  -103,   478,  -103,   478,  -103,
@@ -14461,9 +14454,9 @@ static const yytype_int16 yypact[] =
     -103,  -103,  -103,   197,  -103
 };
 
-  /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
-     Performed when YYTABLE does not specify something else to do.  Zero
-     means the default is an error.  */
+/* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
+   Performed when YYTABLE does not specify something else to do.  Zero
+   means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
        0,    61,     0,     0,     0,    38,     0,    39,     0,    60,
@@ -14487,7 +14480,7 @@ static const yytype_int8 yydefact[] =
       89,    90,    88,     0,    56
 };
 
-  /* YYPGOTO[NTERM-NUM].  */
+/* YYPGOTO[NTERM-NUM].  */
 static const yytype_int16 yypgoto[] =
 {
     -103,  -103,  -103,     0,  -103,    44,   -34,   -29,    83,  -103,
@@ -14495,7 +14488,7 @@ static const yytype_int16 yypgoto[] =
       81,    84,   149
 };
 
-  /* YYDEFGOTO[NTERM-NUM].  */
+/* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
        0,    35,    36,   123,    38,    39,    40,    41,    42,    43,
@@ -14503,9 +14496,9 @@ static const yytype_int8 yydefgoto[] =
       80,    81,    82
 };
 
-  /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
-     positive, shift that token.  If negative, reduce the rule whose
-     number is the opposite.  If YYTABLE_NINF, syntax error.  */
+/* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
+   positive, shift that token.  If negative, reduce the rule whose
+   number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int16 yytable[] =
 {
       37,   139,   151,    60,   142,   155,    61,    98,    62,    83,
@@ -14614,8 +14607,8 @@ static const yytype_int16 yycheck[] =
       -1,    -1,    14,    15
 };
 
-  /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
-     symbol of state STATE-NUM.  */
+/* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
+   state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
        0,     8,    10,    12,    14,    15,    16,    17,    18,    19,
@@ -14639,7 +14632,7 @@ static const yytype_int8 yystos[] =
       13,    13,    13,    67,    13
 };
 
-  /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
+/* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
        0,    64,    65,    65,    66,    66,    67,    68,    68,    69,
@@ -14654,7 +14647,7 @@ static const yytype_int8 yyr1[] =
       86,    86,    86
 };
 
-  /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
+/* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
        0,     2,     1,     2,     1,     3,     1,     1,     3,     1,
@@ -14678,6 +14671,7 @@ enum { YYENOMEM = -2 };
 #define YYACCEPT        goto yyacceptlab
 #define YYABORT         goto yyabortlab
 #define YYERROR         goto yyerrorlab
+#define YYNOMEM         goto yyexhaustedlab
 
 
 #define YYRECOVERING()  (!!yyerrstatus)
@@ -14718,10 +14712,7 @@ do {                                            \
     YYFPRINTF Args;                             \
 } while (0)
 
-/* This macro is provided for backward compatibility. */
-# ifndef YY_LOCATION_PRINT
-#  define YY_LOCATION_PRINT(File, Loc) ((void) 0)
-# endif
+
 
 
 # define YY_SYMBOL_PRINT(Title, Kind, Value, Location)                    \
@@ -14749,10 +14740,6 @@ yy_symbol_value_print (FILE *yyo,
   YY_USE (mypparse);
   if (!yyvaluep)
     return;
-# ifdef YYPRINT
-  if (yykind < YYNTOKENS)
-    YYPRINT (yyo, yytoknum[yykind], *yyvaluep);
-# endif
   YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
   YY_USE (yykind);
   YY_IGNORE_MAYBE_UNINITIALIZED_END
@@ -14938,6 +14925,7 @@ yyparse (p_pparse mypparse)
   YYDPRINTF ((stderr, "Starting parse\n"));
 
   yychar = YYEMPTY; /* Cause a token to be read.  */
+
   goto yysetstate;
 
 
@@ -14963,7 +14951,7 @@ yysetstate:
 
   if (yyss + yystacksize - 1 <= yyssp)
 #if !defined yyoverflow && !defined YYSTACK_RELOCATE
-    goto yyexhaustedlab;
+    YYNOMEM;
 #else
     {
       /* Get the current used size of the three stacks, in elements.  */
@@ -14991,7 +14979,7 @@ yysetstate:
 # else /* defined YYSTACK_RELOCATE */
       /* Extend the stack our own way.  */
       if (YYMAXDEPTH <= yystacksize)
-        goto yyexhaustedlab;
+        YYNOMEM;
       yystacksize *= 2;
       if (YYMAXDEPTH < yystacksize)
         yystacksize = YYMAXDEPTH;
@@ -15002,7 +14990,7 @@ yysetstate:
           YY_CAST (union yyalloc *,
                    YYSTACK_ALLOC (YY_CAST (YYSIZE_T, YYSTACK_BYTES (yystacksize))));
         if (! yyptr)
-          goto yyexhaustedlab;
+          YYNOMEM;
         YYSTACK_RELOCATE (yyss_alloc, yyss);
         YYSTACK_RELOCATE (yyvs_alloc, yyvs);
 #  undef YYSTACK_RELOCATE
@@ -15023,6 +15011,7 @@ yysetstate:
         YYABORT;
     }
 #endif /* !defined yyoverflow && !defined YYSTACK_RELOCATE */
+
 
   if (yystate == YYFINAL)
     YYACCEPT;
@@ -15139,7 +15128,7 @@ yyreduce:
 #line 13711 "admstpathYacc.y"
  {/*0*/
  }
-#line 15143 "y.tab.c"
+#line 15132 "y.tab.c"
     break;
 
   case 3: /* root: tktk_goto_atext atext  */
@@ -15149,7 +15138,7 @@ yyreduce:
    mytext->_token=adms_slist_reverse((yyvsp[0]._slist));
    ((p_pparse)mypparse)->_text=mytext;
  }
-#line 15153 "y.tab.c"
+#line 15142 "y.tab.c"
     break;
 
   case 4: /* pathroot_l: pathroot  */
@@ -15157,7 +15146,7 @@ yyreduce:
  {/*0*/
    ((p_pparse)mypparse)->_path=(yyvsp[0]._path);
  }
-#line 15161 "y.tab.c"
+#line 15150 "y.tab.c"
     break;
 
   case 5: /* pathroot_l: pathroot_l tktk_comma pathroot  */
@@ -15165,7 +15154,7 @@ yyreduce:
  {/*1*/
    ((p_pparse)mypparse)->_path=(yyvsp[0]._path);
  }
-#line 15169 "y.tab.c"
+#line 15158 "y.tab.c"
     break;
 
   case 6: /* pathroot: pathbar  */
@@ -15177,7 +15166,7 @@ yyreduce:
    (yyval._path)->_callback=NULL;
    (yyval._path)->_callbackname="path";
  }
-#line 15181 "y.tab.c"
+#line 15170 "y.tab.c"
     break;
 
   case 7: /* pathbar: pathadd  */
@@ -15186,7 +15175,7 @@ yyreduce:
    (yyval._slist)=NULL;
    adms_slist_push(&(yyval._slist),(p_adms)(yyvsp[0]._slist));
  }
-#line 15190 "y.tab.c"
+#line 15179 "y.tab.c"
     break;
 
   case 8: /* pathbar: pathbar tktk_bar pathadd  */
@@ -15195,7 +15184,7 @@ yyreduce:
    (yyval._slist)=(yyvsp[-2]._slist);
    adms_slist_push(&(yyval._slist),(p_adms)(yyvsp[0]._slist));
  }
-#line 15199 "y.tab.c"
+#line 15188 "y.tab.c"
     break;
 
   case 9: /* pathadd: pathmult  */
@@ -15203,7 +15192,7 @@ yyreduce:
  {/*0*/
    (yyval._slist)=(yyvsp[0]._slist);
  }
-#line 15207 "y.tab.c"
+#line 15196 "y.tab.c"
     break;
 
   case 10: /* pathadd: pathadd tktk_addp pathmult  */
@@ -15217,7 +15206,7 @@ yyreduce:
    (yyval._slist)=NULL;
    adms_slist_push(&(yyval._slist),(p_adms)addp);
  }
-#line 15221 "y.tab.c"
+#line 15210 "y.tab.c"
     break;
 
   case 11: /* pathadd: pathadd tktk_addm pathmult  */
@@ -15231,7 +15220,7 @@ yyreduce:
    (yyval._slist)=NULL;
    adms_slist_push(&(yyval._slist),(p_adms)addm);
  }
-#line 15235 "y.tab.c"
+#line 15224 "y.tab.c"
     break;
 
   case 12: /* pathmult: pathunary  */
@@ -15239,7 +15228,7 @@ yyreduce:
  {/*0*/
    (yyval._slist)=(yyvsp[0]._slist);
  }
-#line 15243 "y.tab.c"
+#line 15232 "y.tab.c"
     break;
 
   case 13: /* pathmult: pathmult tktk_star pathunary  */
@@ -15253,7 +15242,7 @@ yyreduce:
    (yyval._slist)=NULL;
    adms_slist_push(&(yyval._slist),(p_adms)multp);
  }
-#line 15257 "y.tab.c"
+#line 15246 "y.tab.c"
     break;
 
   case 14: /* pathmult: pathmult tktk_column pathunary  */
@@ -15267,7 +15256,7 @@ yyreduce:
    (yyval._slist)=NULL;
    adms_slist_push(&(yyval._slist),(p_adms)multm);
  }
-#line 15271 "y.tab.c"
+#line 15260 "y.tab.c"
     break;
 
   case 15: /* pathunary: pathincr  */
@@ -15275,7 +15264,7 @@ yyreduce:
  {/*0*/
    (yyval._slist)=(yyvsp[0]._slist);
  }
-#line 15279 "y.tab.c"
+#line 15268 "y.tab.c"
     break;
 
   case 16: /* pathunary: tktk_addp pathincr  */
@@ -15288,7 +15277,7 @@ yyreduce:
    (yyval._slist)=NULL;
    adms_slist_push(&(yyval._slist),(p_adms)unaryp);
  }
-#line 15292 "y.tab.c"
+#line 15281 "y.tab.c"
     break;
 
   case 17: /* pathunary: tktk_addm pathincr  */
@@ -15301,7 +15290,7 @@ yyreduce:
    (yyval._slist)=NULL;
    adms_slist_push(&(yyval._slist),(p_adms)unarym);
  }
-#line 15305 "y.tab.c"
+#line 15294 "y.tab.c"
     break;
 
   case 18: /* pathincr: pathsep0  */
@@ -15309,7 +15298,7 @@ yyreduce:
  {/*0*/
    (yyval._slist)=(yyvsp[0]._slist);
  }
-#line 15313 "y.tab.c"
+#line 15302 "y.tab.c"
     break;
 
   case 19: /* pathincr: pathsep0 tktk_incrp  */
@@ -15324,7 +15313,7 @@ yyreduce:
    (yyval._slist)=NULL;
    adms_slist_push(&(yyval._slist),(p_adms)incrp);
  }
-#line 15328 "y.tab.c"
+#line 15317 "y.tab.c"
     break;
 
   case 20: /* pathincr: pathsep0 tktk_incrm  */
@@ -15339,7 +15328,7 @@ yyreduce:
    (yyval._slist)=NULL;
    adms_slist_push(&(yyval._slist),(p_adms)incrm);
  }
-#line 15343 "y.tab.c"
+#line 15332 "y.tab.c"
     break;
 
   case 21: /* pathsep0: pathsep  */
@@ -15348,7 +15337,7 @@ yyreduce:
    (yyval._slist)=(yyvsp[0]._slist);
    adms_slist_inreverse(&(yyval._slist));
  }
-#line 15352 "y.tab.c"
+#line 15341 "y.tab.c"
     break;
 
   case 22: /* pathsep0: pathsep tktk_slash  */
@@ -15357,7 +15346,7 @@ yyreduce:
    (yyval._slist)=(yyvsp[-1]._slist);
    adms_slist_inreverse(&(yyval._slist));
  }
-#line 15361 "y.tab.c"
+#line 15350 "y.tab.c"
     break;
 
   case 23: /* pathsep0: tktk_slash pathsep  */
@@ -15370,7 +15359,7 @@ yyreduce:
    adms_slist_inreverse(&(yyval._slist));
    adms_slist_push(&(yyval._slist),(p_adms)pathroot);
  }
-#line 15374 "y.tab.c"
+#line 15363 "y.tab.c"
     break;
 
   case 24: /* pathsep0: tktk_slash pathsep tktk_slash  */
@@ -15383,7 +15372,7 @@ yyreduce:
    adms_slist_inreverse(&(yyval._slist));
    adms_slist_push(&(yyval._slist),(p_adms)pathroot);
  }
-#line 15387 "y.tab.c"
+#line 15376 "y.tab.c"
     break;
 
   case 25: /* pathsep: locationcondition  */
@@ -15392,7 +15381,7 @@ yyreduce:
    (yyval._slist)=NULL;
    adms_slist_push(&(yyval._slist),(p_adms)(yyvsp[0]._path));
  }
-#line 15396 "y.tab.c"
+#line 15385 "y.tab.c"
     break;
 
   case 26: /* pathsep: pathsep tktk_slash locationcondition  */
@@ -15401,7 +15390,7 @@ yyreduce:
    (yyval._slist)=(yyvsp[-2]._slist);
    adms_slist_push(&(yyval._slist),(p_adms)(yyvsp[0]._path));
  }
-#line 15405 "y.tab.c"
+#line 15394 "y.tab.c"
     break;
 
   case 27: /* locationcondition: location condition  */
@@ -15410,7 +15399,7 @@ yyreduce:
    (yyval._path)=(yyvsp[-1]._path);
    if((yyvsp[0]._path)) adms_slist_push(&(yyval._path)->_c,(p_adms)(yyvsp[0]._path));
  }
-#line 15414 "y.tab.c"
+#line 15403 "y.tab.c"
     break;
 
   case 28: /* locationcondition: condition  */
@@ -15421,7 +15410,7 @@ yyreduce:
    (yyval._path)->_callbackname="location00";
    if((yyvsp[0]._path)) adms_slist_push(&(yyval._path)->_c,(p_adms)(yyvsp[0]._path));
  }
-#line 15425 "y.tab.c"
+#line 15414 "y.tab.c"
     break;
 
   case 29: /* locationcondition: location  */
@@ -15429,7 +15418,7 @@ yyreduce:
  {/*2*/
    (yyval._path)=(yyvsp[0]._path);
  }
-#line 15433 "y.tab.c"
+#line 15422 "y.tab.c"
     break;
 
   case 30: /* locationcondition: tktk_openE pathroot tktk_closeE  */
@@ -15439,7 +15428,7 @@ yyreduce:
    (yyval._path)->_callbackname="groupage";
    (yyval._path)->_callback=(void*)groupage;
  }
-#line 15443 "y.tab.c"
+#line 15432 "y.tab.c"
     break;
 
   case 31: /* identifier: tktk_ident  */
@@ -15447,7 +15436,7 @@ yyreduce:
  {/*0*/
    (yyval._path)=BASICSTRING((p_pparse)mypparse,adms_knclone(((p_pparse)mypparse)->_tkstart,((p_pparse)mypparse)->_tklen));
  }
-#line 15451 "y.tab.c"
+#line 15440 "y.tab.c"
     break;
 
   case 32: /* location: tktk_dot  */
@@ -15457,7 +15446,7 @@ yyreduce:
    (yyval._path)->_callback=(void*)location00;
    (yyval._path)->_callbackname="location00.dot";
  }
-#line 15461 "y.tab.c"
+#line 15450 "y.tab.c"
     break;
 
   case 33: /* location: tktk_dotdot  */
@@ -15467,7 +15456,7 @@ yyreduce:
    (yyval._path)->_callback=(void*)location01;
    (yyval._path)->_callbackname="location01.dotdot";
  }
-#line 15471 "y.tab.c"
+#line 15460 "y.tab.c"
     break;
 
   case 34: /* location: tktk_integer  */
@@ -15477,7 +15466,7 @@ yyreduce:
    (yyval._path)->_callback=(void*)location10;
    (yyval._path)->_callbackname="location10.intp";
  }
-#line 15481 "y.tab.c"
+#line 15470 "y.tab.c"
     break;
 
   case 35: /* location: tktk_real  */
@@ -15487,7 +15476,7 @@ yyreduce:
    (yyval._path)->_callback=(void*)location07;
    (yyval._path)->_callbackname="location07.realp";
  }
-#line 15491 "y.tab.c"
+#line 15480 "y.tab.c"
     break;
 
   case 36: /* location: tktk_ident  */
@@ -15505,7 +15494,7 @@ yyreduce:
      (yyval._path)->_callbackname="location03";
    }
  }
-#line 15509 "y.tab.c"
+#line 15498 "y.tab.c"
     break;
 
   case 37: /* location: tktk_index  */
@@ -15515,7 +15504,7 @@ yyreduce:
    (yyval._path)->_callback=(void*)location03;
    (yyval._path)->_callbackname="location03.ident.index";
  }
-#line 15519 "y.tab.c"
+#line 15508 "y.tab.c"
     break;
 
   case 38: /* location: tktk_kdollarvariable  */
@@ -15525,7 +15514,7 @@ yyreduce:
    (yyval._path)->_callback=(void*)location04;
    (yyval._path)->_callbackname="location04.kdollar";
  }
-#line 15529 "y.tab.c"
+#line 15518 "y.tab.c"
     break;
 
   case 39: /* location: tktk_karobavariable  */
@@ -15535,7 +15524,7 @@ yyreduce:
    (yyval._path)->_callback=(void*)location05;
    (yyval._path)->_callbackname="location05.karoba";
  }
-#line 15539 "y.tab.c"
+#line 15528 "y.tab.c"
     break;
 
   case 40: /* location: tktk_kcroixvariable  */
@@ -15545,7 +15534,7 @@ yyreduce:
    (yyval._path)->_callback=(void*)location13;
    (yyval._path)->_callbackname="location13.kcroix";
  }
-#line 15549 "y.tab.c"
+#line 15538 "y.tab.c"
     break;
 
   case 41: /* location: tktk_kcroixcroixvariable  */
@@ -15555,7 +15544,7 @@ yyreduce:
    (yyval._path)->_callback=(void*)location12;
    (yyval._path)->_callbackname="location12.kcroixcroix";
  }
-#line 15559 "y.tab.c"
+#line 15548 "y.tab.c"
     break;
 
   case 42: /* location: tktk_dollarvariable atext tktk_closeE  */
@@ -15567,7 +15556,7 @@ yyreduce:
    (yyval._path)->_callback=(void*)location04;
    (yyval._path)->_callbackname="location04.dollar";
  }
-#line 15571 "y.tab.c"
+#line 15560 "y.tab.c"
     break;
 
   case 43: /* location: tktk_arobavariable atext tktk_closeE  */
@@ -15579,7 +15568,7 @@ yyreduce:
    (yyval._path)->_callback=(void*)location05;
    (yyval._path)->_callbackname="location05.aroba";
  }
-#line 15583 "y.tab.c"
+#line 15572 "y.tab.c"
     break;
 
   case 44: /* location: tktk_croixvariable atext tktk_closeE  */
@@ -15591,7 +15580,7 @@ yyreduce:
    (yyval._path)->_callback=(void*)location13;
    (yyval._path)->_callbackname="location13.croix";
  }
-#line 15595 "y.tab.c"
+#line 15584 "y.tab.c"
     break;
 
   case 45: /* location: tktk_croixcroixvariable atext tktk_closeE  */
@@ -15603,7 +15592,7 @@ yyreduce:
    (yyval._path)->_callback=(void*)location12;
    (yyval._path)->_callbackname="location12.croixcroix";
  }
-#line 15607 "y.tab.c"
+#line 15596 "y.tab.c"
     break;
 
   case 46: /* location: quotedstring  */
@@ -15622,7 +15611,7 @@ yyreduce:
      (yyval._path)->_callbackname="location09.q";
    }
  }
-#line 15626 "y.tab.c"
+#line 15615 "y.tab.c"
     break;
 
   case 47: /* location: identifier tktk_openE pathroot tktk_closeE  */
@@ -15633,7 +15622,7 @@ yyreduce:
    (yyval._path)->_callback=(void*)location02;
    (yyval._path)->_callbackname="location02.function.ident";
  }
-#line 15637 "y.tab.c"
+#line 15626 "y.tab.c"
     break;
 
   case 48: /* location: tktk_uid tktk_openE pathroot tktk_closeE  */
@@ -15644,7 +15633,7 @@ yyreduce:
    (yyval._path)->_callback=(void*)location20;
    (yyval._path)->_callbackname="location20.function.uid";
  }
-#line 15648 "y.tab.c"
+#line 15637 "y.tab.c"
     break;
 
   case 49: /* location: tktk_id tktk_openE pathroot tktk_closeE  */
@@ -15655,7 +15644,7 @@ yyreduce:
    (yyval._path)->_callback=(void*)location21;
    (yyval._path)->_callbackname="location21.function.id";
  }
-#line 15659 "y.tab.c"
+#line 15648 "y.tab.c"
     break;
 
   case 50: /* location: tktk_sort tktk_openE pathroot tktk_closeE  */
@@ -15666,7 +15655,7 @@ yyreduce:
    (yyval._path)->_callback=(void*)location22;
    (yyval._path)->_callbackname="location22.function.sort";
  }
-#line 15670 "y.tab.c"
+#line 15659 "y.tab.c"
     break;
 
   case 51: /* location: tktk_reverse tktk_openE pathroot tktk_closeE  */
@@ -15677,7 +15666,7 @@ yyreduce:
    (yyval._path)->_callback=(void*)location23;
    (yyval._path)->_callbackname="location23.function.reverse";
  }
-#line 15681 "y.tab.c"
+#line 15670 "y.tab.c"
     break;
 
   case 52: /* location: tktk_upper_mcase tktk_openE pathroot tktk_closeE  */
@@ -15688,7 +15677,7 @@ yyreduce:
    (yyval._path)->_callback=(void*)location24;
    (yyval._path)->_callbackname="location24.function.uc";
  }
-#line 15692 "y.tab.c"
+#line 15681 "y.tab.c"
     break;
 
   case 53: /* location: tktk_lower_mcase tktk_openE pathroot tktk_closeE  */
@@ -15699,7 +15688,7 @@ yyreduce:
    (yyval._path)->_callback=(void*)location25;
    (yyval._path)->_callbackname="location25.function.lc";
  }
-#line 15703 "y.tab.c"
+#line 15692 "y.tab.c"
     break;
 
   case 54: /* location: tktk_count tktk_openE pathroot tktk_closeE  */
@@ -15710,7 +15699,7 @@ yyreduce:
    (yyval._path)->_callback=(void*)location27;
    (yyval._path)->_callbackname="location27.function.count";
  }
-#line 15714 "y.tab.c"
+#line 15703 "y.tab.c"
     break;
 
   case 55: /* location: tktk_admst tktk_openE tktk_dot tktk_closeE  */
@@ -15720,7 +15709,7 @@ yyreduce:
    (yyval._path)->_callback=(void*)location14;
    (yyval._path)->_callbackname="location14.function.admst";
  }
-#line 15724 "y.tab.c"
+#line 15713 "y.tab.c"
     break;
 
   case 56: /* location: tktk_index tktk_openE pathroot tktk_comma pathroot tktk_closeE  */
@@ -15732,7 +15721,7 @@ yyreduce:
    (yyval._path)->_callback=(void*)location19;
    (yyval._path)->_callbackname="location19.function.index";
  }
-#line 15736 "y.tab.c"
+#line 15725 "y.tab.c"
     break;
 
   case 57: /* location: tktk_text tktk_openE quotedstring tktk_closeE  */
@@ -15743,7 +15732,7 @@ yyreduce:
    (yyval._path)->_callback=(void*)location26;
    (yyval._path)->_callbackname="location26.function.text";
  }
-#line 15747 "y.tab.c"
+#line 15736 "y.tab.c"
     break;
 
   case 58: /* location: tktk_returned tktk_openE quotedstring tktk_closeE  */
@@ -15754,7 +15743,7 @@ yyreduce:
    (yyval._path)->_callback=(void*)location15;
    (yyval._path)->_callbackname="location15.function.returned";
  }
-#line 15758 "y.tab.c"
+#line 15747 "y.tab.c"
     break;
 
   case 59: /* location: tktk_position tktk_openE tktk_dot tktk_closeE  */
@@ -15764,7 +15753,7 @@ yyreduce:
    (yyval._path)->_callback=(void*)location18;
    (yyval._path)->_callbackname="location18.function.pos";
  }
-#line 15768 "y.tab.c"
+#line 15757 "y.tab.c"
     break;
 
   case 60: /* location: tktk_croixstar  */
@@ -15774,7 +15763,7 @@ yyreduce:
    (yyval._path)->_callback=(void*)location130;
    (yyval._path)->_callbackname="location130.croixstar";
  }
-#line 15778 "y.tab.c"
+#line 15767 "y.tab.c"
     break;
 
   case 61: /* location: tktk_ticptr  */
@@ -15788,7 +15777,7 @@ yyreduce:
    (yyval._path)->_callback=(void*)location200;
    (yyval._path)->_callbackname="location200.ticptr";
  }
-#line 15792 "y.tab.c"
+#line 15781 "y.tab.c"
     break;
 
   case 62: /* quotedstring: tktk_oquote atext tktk_cquote  */
@@ -15805,7 +15794,7 @@ yyreduce:
    }
    (yyval._text)=mytext;
  }
-#line 15809 "y.tab.c"
+#line 15798 "y.tab.c"
     break;
 
   case 63: /* quotedstring: tktk_oquote tktk_cquote  */
@@ -15815,7 +15804,7 @@ yyreduce:
    adms_slist_push(&(mytext->_token),(p_adms)adms_admst_newks(adms_kclone("")));
    (yyval._text)=mytext;
  }
-#line 15819 "y.tab.c"
+#line 15808 "y.tab.c"
     break;
 
   case 64: /* atext: atextitem  */
@@ -15824,7 +15813,7 @@ yyreduce:
    (yyval._slist)=NULL;
    adms_slist_push(&(yyval._slist),(p_adms)(yyvsp[0]._path));
  }
-#line 15828 "y.tab.c"
+#line 15817 "y.tab.c"
     break;
 
   case 65: /* atext: atext atextitem  */
@@ -15833,7 +15822,7 @@ yyreduce:
    (yyval._slist)=(yyvsp[-1]._slist);
    adms_slist_push(&(yyval._slist),(p_adms)(yyvsp[0]._path));
  }
-#line 15837 "y.tab.c"
+#line 15826 "y.tab.c"
     break;
 
   case 66: /* atextitem: tktk_cr  */
@@ -15841,7 +15830,7 @@ yyreduce:
  {/*0*/
    (yyval._path)=(p_path)adms_admst_newks(adms_kclone("\n"));
  }
-#line 15845 "y.tab.c"
+#line 15834 "y.tab.c"
     break;
 
   case 67: /* atextitem: tktk_lf  */
@@ -15849,7 +15838,7 @@ yyreduce:
  {/*1*/
    (yyval._path)=(p_path)adms_admst_newks(adms_kclone("\r"));
  }
-#line 15853 "y.tab.c"
+#line 15842 "y.tab.c"
     break;
 
   case 68: /* atextitem: tktk_tab  */
@@ -15857,7 +15846,7 @@ yyreduce:
  {/*2*/
    (yyval._path)=(p_path)adms_admst_newks(adms_kclone("\t"));
  }
-#line 15861 "y.tab.c"
+#line 15850 "y.tab.c"
     break;
 
   case 69: /* atextitem: tktk_anytext  */
@@ -15865,7 +15854,7 @@ yyreduce:
  {/*3*/
    (yyval._path)=(p_path)adms_admst_newks(adms_knclone(((p_pparse)mypparse)->_tkstart,((p_pparse)mypparse)->_tklen));
  }
-#line 15869 "y.tab.c"
+#line 15858 "y.tab.c"
     break;
 
   case 70: /* atextitem: tktk_percents  */
@@ -15874,7 +15863,7 @@ yyreduce:
    (yyval._path)=(p_path)adms_text_new(((p_pparse)mypparse)->_transform,"%s");
    ((p_text)(yyval._path))->_admse=admse__s;
  }
-#line 15878 "y.tab.c"
+#line 15867 "y.tab.c"
     break;
 
   case 71: /* atextitem: tktk_dollarvariable atext tktk_closeE  */
@@ -15883,7 +15872,7 @@ yyreduce:
    (yyval._path)=(p_path)adms_text_new(((p_pparse)mypparse)->_transform,"$");
    ((p_text)(yyval._path))->_token=adms_slist_reverse((yyvsp[-1]._slist));
  }
-#line 15887 "y.tab.c"
+#line 15876 "y.tab.c"
     break;
 
   case 72: /* atextitem: tktk_kdollarvariable  */
@@ -15893,7 +15882,7 @@ yyreduce:
    (yyval._path)=(p_path)adms_text_new(((p_pparse)mypparse)->_transform,"$");
    adms_slist_push(&(((p_text)(yyval._path))->_token),(p_adms)adms_admst_newks(mytvalue));
  }
-#line 15897 "y.tab.c"
+#line 15886 "y.tab.c"
     break;
 
   case 73: /* atextitem: tktk_percent pathroot tktk_closeE  */
@@ -15901,7 +15890,7 @@ yyreduce:
  {/*7*/
    (yyval._path)=(yyvsp[-1]._path);
  }
-#line 15905 "y.tab.c"
+#line 15894 "y.tab.c"
     break;
 
   case 74: /* condition: tktk_openCond expression tktk_closeCond  */
@@ -15909,7 +15898,7 @@ yyreduce:
  {/*0*/
    (yyval._path)=(yyvsp[-1]._path);
  }
-#line 15913 "y.tab.c"
+#line 15902 "y.tab.c"
     break;
 
   case 75: /* expression: binaryor  */
@@ -15917,7 +15906,7 @@ yyreduce:
  {/*0*/
    (yyval._path)=(yyvsp[0]._path);
  }
-#line 15921 "y.tab.c"
+#line 15910 "y.tab.c"
     break;
 
   case 76: /* expression: pathroot  */
@@ -15928,7 +15917,7 @@ yyreduce:
    (yyval._path)->_callbackname="expression01";
    adms_slist_push(&(yyval._path)->_u,(p_adms)(yyvsp[0]._path));
  }
-#line 15932 "y.tab.c"
+#line 15921 "y.tab.c"
     break;
 
   case 77: /* binaryor: binaryand  */
@@ -15936,7 +15925,7 @@ yyreduce:
  {/*0*/
    (yyval._path)=(yyvsp[0]._path);
  }
-#line 15940 "y.tab.c"
+#line 15929 "y.tab.c"
     break;
 
   case 78: /* binaryor: binaryor tktk_or binaryand  */
@@ -15948,7 +15937,7 @@ yyreduce:
    adms_slist_push(&(yyval._path)->_b,(p_adms)(yyvsp[0]._path));
    adms_slist_push(&(yyval._path)->_b,(p_adms)(yyvsp[-2]._path));
  }
-#line 15952 "y.tab.c"
+#line 15941 "y.tab.c"
     break;
 
   case 79: /* binaryand: unary  */
@@ -15956,7 +15945,7 @@ yyreduce:
  {/*0*/
    (yyval._path)=(yyvsp[0]._path);
  }
-#line 15960 "y.tab.c"
+#line 15949 "y.tab.c"
     break;
 
   case 80: /* binaryand: binaryand tktk_and unary  */
@@ -15968,7 +15957,7 @@ yyreduce:
    adms_slist_push(&(yyval._path)->_b,(p_adms)(yyvsp[0]._path));
    adms_slist_push(&(yyval._path)->_b,(p_adms)(yyvsp[-2]._path));
  }
-#line 15972 "y.tab.c"
+#line 15961 "y.tab.c"
     break;
 
   case 81: /* unary: atomic  */
@@ -15976,7 +15965,7 @@ yyreduce:
  {/*0*/
    (yyval._path)=(yyvsp[0]._path);
  }
-#line 15980 "y.tab.c"
+#line 15969 "y.tab.c"
     break;
 
   case 82: /* unary: tktk_not atomic  */
@@ -15987,7 +15976,7 @@ yyreduce:
    (yyval._path)->_callbackname="unary00";
    adms_slist_push(&(yyval._path)->_u,(p_adms)(yyvsp[0]._path));
  }
-#line 15991 "y.tab.c"
+#line 15980 "y.tab.c"
     break;
 
   case 83: /* atomic: tktk_openE binaryor tktk_closeE  */
@@ -15998,7 +15987,7 @@ yyreduce:
    (yyval._path)->_callbackname="atomicgroupage";
    adms_slist_push(&(yyval._path)->_u,(p_adms)(yyvsp[-1]._path));
  }
-#line 16002 "y.tab.c"
+#line 15991 "y.tab.c"
     break;
 
   case 84: /* atomic: pathroot tktk_equal pathroot  */
@@ -16010,7 +15999,7 @@ yyreduce:
    adms_slist_push(&(yyval._path)->_u,(p_adms)(yyvsp[0]._path));
    adms_slist_push(&(yyval._path)->_u,(p_adms)(yyvsp[-2]._path));
  }
-#line 16014 "y.tab.c"
+#line 16003 "y.tab.c"
     break;
 
   case 85: /* atomic: pathroot tktk_notequal pathroot  */
@@ -16022,7 +16011,7 @@ yyreduce:
    adms_slist_push(&(yyval._path)->_u,(p_adms)(yyvsp[0]._path));
    adms_slist_push(&(yyval._path)->_u,(p_adms)(yyvsp[-2]._path));
  }
-#line 16026 "y.tab.c"
+#line 16015 "y.tab.c"
     break;
 
   case 86: /* atomic: pathroot tktk_lt pathroot  */
@@ -16034,7 +16023,7 @@ yyreduce:
    adms_slist_push(&(yyval._path)->_u,(p_adms)(yyvsp[0]._path));
    adms_slist_push(&(yyval._path)->_u,(p_adms)(yyvsp[-2]._path));
  }
-#line 16038 "y.tab.c"
+#line 16027 "y.tab.c"
     break;
 
   case 87: /* atomic: pathroot tktk_gt pathroot  */
@@ -16046,7 +16035,7 @@ yyreduce:
    adms_slist_push(&(yyval._path)->_u,(p_adms)(yyvsp[0]._path));
    adms_slist_push(&(yyval._path)->_u,(p_adms)(yyvsp[-2]._path));
  }
-#line 16050 "y.tab.c"
+#line 16039 "y.tab.c"
     break;
 
   case 88: /* atomic: tktk_nilled tktk_openE pathroot tktk_closeE  */
@@ -16057,7 +16046,7 @@ yyreduce:
    (yyval._path)->_callbackname="atomicnilled";
    adms_slist_push(&(yyval._path)->_u,(p_adms)(yyvsp[-1]._path));
  }
-#line 16061 "y.tab.c"
+#line 16050 "y.tab.c"
     break;
 
   case 89: /* atomic: tktk_exists tktk_openE pathroot tktk_closeE  */
@@ -16068,7 +16057,7 @@ yyreduce:
    (yyval._path)->_callbackname="atomicexists";
    adms_slist_push(&(yyval._path)->_u,(p_adms)(yyvsp[-1]._path));
  }
-#line 16072 "y.tab.c"
+#line 16061 "y.tab.c"
     break;
 
   case 90: /* atomic: tktk_isdefault tktk_openE tktk_ident tktk_closeE  */
@@ -16078,7 +16067,7 @@ yyreduce:
    (yyval._path)->_callback=(void*)atomicisdefault;
    (yyval._path)->_callbackname="atomicisdefault";
  }
-#line 16082 "y.tab.c"
+#line 16071 "y.tab.c"
     break;
 
   case 91: /* atomic: tktk_true tktk_openE tktk_closeE  */
@@ -16088,7 +16077,7 @@ yyreduce:
    (yyval._path)->_callback=(void*)atomictrue;
    (yyval._path)->_callbackname="atomictrue";
  }
-#line 16092 "y.tab.c"
+#line 16081 "y.tab.c"
     break;
 
   case 92: /* atomic: tktk_false tktk_openE tktk_closeE  */
@@ -16098,11 +16087,11 @@ yyreduce:
    (yyval._path)->_callback=(void*)atomicfalse;
    (yyval._path)->_callbackname="atomicfalse";
  }
-#line 16102 "y.tab.c"
+#line 16091 "y.tab.c"
     break;
 
 
-#line 16106 "y.tab.c"
+#line 16095 "y.tab.c"
 
       default: break;
     }
@@ -16184,6 +16173,7 @@ yyerrorlab:
      label yyerrorlab therefore never appears in user code.  */
   if (0)
     YYERROR;
+  ++yynerrs;
 
   /* Do not reclaim the symbols of the rule whose action triggered
      this YYERROR.  */
@@ -16244,7 +16234,7 @@ yyerrlab1:
 `-------------------------------------*/
 yyacceptlab:
   yyresult = 0;
-  goto yyreturn;
+  goto yyreturnlab;
 
 
 /*-----------------------------------.
@@ -16252,24 +16242,22 @@ yyacceptlab:
 `-----------------------------------*/
 yyabortlab:
   yyresult = 1;
-  goto yyreturn;
+  goto yyreturnlab;
 
 
-#if !defined yyoverflow
-/*-------------------------------------------------.
-| yyexhaustedlab -- memory exhaustion comes here.  |
-`-------------------------------------------------*/
+/*-----------------------------------------------------------.
+| yyexhaustedlab -- YYNOMEM (memory exhaustion) comes here.  |
+`-----------------------------------------------------------*/
 yyexhaustedlab:
   yyerror (mypparse, YY_("memory exhausted"));
   yyresult = 2;
-  goto yyreturn;
-#endif
+  goto yyreturnlab;
 
 
-/*-------------------------------------------------------.
-| yyreturn -- parsing is finished, clean up and return.  |
-`-------------------------------------------------------*/
-yyreturn:
+/*----------------------------------------------------------.
+| yyreturnlab -- parsing is finished, clean up and return.  |
+`----------------------------------------------------------*/
+yyreturnlab:
   if (yychar != YYEMPTY)
     {
       /* Make sure we have latest lookahead translation.  See comments at

@@ -296,7 +296,6 @@
   argument is not a simple variable, in $eddx_find_list.
 -->
 <admst:template match="eddx_find">
-  <admst:variable name="eddx_find_list" datatype="list"/>
   <admst:choose>
     <admst:when test="[datatypename='expression']">
       <admst:apply-templates select="tree" match="eddx_find"/>
@@ -425,7 +424,7 @@
 
 <!--
   The main template to process input allowing "eddx" calls (calls to
-  ddx where the first argument is an expression, not a varaible).
+  ddx where the first argument is an expression, not a variable).
   Call this on the module ahead of normal adms processing.
 -->
 <admst:template match="eddx_fix">
@@ -562,6 +561,7 @@
 
     <admst:when test="adms[datatypename='assignment']">
       <admst:variable name="fix_list" datatype="list"/>
+      <admst:variable name="eddx_find_list" datatype="list"/>
       <admst:apply-templates select="rhs" match="eddx_find"/>
       <admst:if test="[count($eddx_find_list)!=0]">
         <admst:variable name="a" path="."/>
@@ -1549,7 +1549,17 @@
           </admst:otherwise>
         </admst:choose>
         <admst:value-to test="$mycontribution[dynamic='yes']" select="$jacobian/dynamic" string="yes"/>
+        <!-- XXX Original logic, however this leaves out terms in psp104.
+            Omitting the dynamic=no test gives precisely the correct
+            result is that case.  This seems to be related to the
+            unique internal I(noi) branch, I don't see this issue
+            anywhere else.
         <admst:value-to test="$mycontribution[dynamic='no']" select="$jacobian/static" string="yes"/>
+        -->
+        <admst:value-to select="$jacobian/static" string="yes"/>
+        <!-- XXX debug
+        <admst:warning format="$mycontribution %($mycontribution/dynamic)  %($jacobian/static) %($jacobian/dynamic)\n"/>
+        -->
       </admst:for-each>
       <admst:value-to select="/@jacobian"/>
     </admst:for-each>

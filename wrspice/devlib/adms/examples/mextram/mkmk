@@ -3,21 +3,21 @@
 # Create the Makefile by copying the template and substituting text.
 
 # mextram
-SOURCE=bjt504.va
-#SOURCE=bjt504t.va
-#SOURCE=bjt504.va
-#SOURCE=bjtd504t.va
-#SOURCE=bjtd504.va
-MODELNAME=bjt504va
-#MODELNAME=bjt504tva
-#MODELNAME=bjt504va
-#MODELNAME=bjtd504tva
-#MODELNAME=bjtd504va
-MODULE=bjt504
-#MODULE=bjt504t
-#MODULE=bjt504
-#MODULE=bjtd504t
-#MODULE=bjtd504
+SOURCE=bjt505.va
+#SOURCE=bjt505t.va
+#SOURCE=bjt505.va
+#SOURCE=bjtd505t.va
+#SOURCE=bjtd505.va
+MODELNAME=bjt505va
+#MODELNAME=bjt505tva
+#MODELNAME=bjt505va
+#MODELNAME=bjtd505tva
+#MODELNAME=bjtd505va
+MODULE=bjt505
+#MODULE=bjt505t
+#MODULE=bjt505
+#MODULE=bjtd505t
+#MODULE=bjtd505
 KEY=q
 LEVEL=6
 # Give other devices a different level.

@@ -1,0 +1,42 @@
+$Id: README,v 1.3 2014/04/22 19:34:09 stevew Exp $
+
+ADMS Compilation Examples
+-------------------------
+
+This directory contains a few "popular" Verilog-A devices as examples
+for building loadable object modules for WRspice.
+
+Pre-built modules can be found in the "module_dist" subdirectories.
+
+If you want the latest versions of these models, the README file or
+google will yield the original distribution sites, where a newer
+revision may be available.  The Josephson junction model is a Whiteley
+Research original, and the latest version is provided here.
+
+You should copy this directory tree to your personal directory, as you
+will need write permission to build the modules.  From the directory
+above this one, give (for example)
+
+  cp -r examples ~
+
+to copy to your home directory.
+
+You should be able to build the loadable modules by following the
+instructions in the README files in the subdirectories.  The model
+levels specified in the Makefiles were chosen to match CMC QA scripts,
+or to match another simulator such as Hspice, spice3, or ngspice, or
+were just made up.  These can be set to other values if desired, but
+don't forget to also change the level parameters in the test files.
+
+After building, or using the pre-built modules, you can start WRspice,
+load the module, and run the test files.  The modules can be copied to
+the wrspice/startup/devices directory in the installation area to be
+loaded whenever WRspice starts.
+
+Device modules are NOT COMPATIBLE with releases of WRspice other than
+the one under which they were built.  If you have custom modules, they
+must be rebuilt after a WRspice update.
+
+A complete CMC QA script set for most of these models is available
+from Whiteley Research as a separate download.
+

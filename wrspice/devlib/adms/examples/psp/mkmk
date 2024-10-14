@@ -1,0 +1,34 @@
+#! /bin/sh
+
+# Create the Makefile by copying the template and substituting text.
+
+# psp
+SOURCE=psp104.va
+#SOURCE=psp104_nqs.va
+#SOURCE=psp104t.va
+#SOURCE=juncap200.va
+MODELNAME=PSP104VA
+#MODELNAME=PSP104TVA
+MODULE=psp104
+#MODULE=psp104_nqs
+#MODULE=psp104t
+#MODULE=juncap200
+KEY=m
+LEVEL=45
+ADD_M=yes
+PREDICTOR=yes
+LIMITING=yes
+FLAGS=DV_NODIST
+
+cat ../../Makefile | sed \
+  -e "s%^SOURCE = .*%SOURCE = $SOURCE%" \
+  -e "s%^MODELNAME = .*%MODELNAME = $MODELNAME%" \
+  -e "s%^MODULE = .*%MODULE = $MODULE%" \
+  -e "s%^KEY = .*%KEY = $KEY%" \
+  -e "s%^LEVEL = .*%LEVEL = $LEVEL%" \
+  -e "s%^ADD_M = .*%ADD_M = $ADD_M%" \
+  -e "s%^PREDICTOR = .*%PREDICTOR = $PREDICTOR%" \
+  -e "s%^LIMITING = .*%LIMITING = $LIMITING%" \
+  -e "s%^FLAGS = .*%FLAGS = $FLAGS%" \
+  > Makefile
+

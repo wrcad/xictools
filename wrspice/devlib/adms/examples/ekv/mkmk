@@ -3,7 +3,7 @@
 # Create the Makefile by copying the template and substituting text.
 
 # ekv
-SOURCE=ekv.va
+SOURCE=ekv26_SDext_Verilog-A.va
 MODELNAME=ekv26
 MODULE=ekv26
 KEY=m

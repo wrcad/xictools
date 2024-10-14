@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 3.7.6.  */
+/* A Bison parser, made by GNU Bison 3.8.2.  */
 
 /* Bison implementation for Yacc-like parsers in C
 
@@ -46,10 +46,10 @@
    USER NAME SPACE" below.  */
 
 /* Identify Bison output, and Bison version.  */
-#define YYBISON 30706
+#define YYBISON 30802
 
 /* Bison version string.  */
-#define YYBISON_VERSION "3.7.6"
+#define YYBISON_VERSION "3.8.2"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -363,7 +363,9 @@ typedef union YYSTYPE YYSTYPE;
 
 extern YYSTYPE verilogalval;
 
+
 int verilogaparse (void);
+
 
 #endif /* !YY_VERILOGA_Y_TAB_H_INCLUDED  */
 /* Symbol kind.  */
@@ -728,12 +730,18 @@ typedef int yy_state_fast_t;
 # define YY_USE(E) /* empty */
 #endif
 
-#if defined __GNUC__ && ! defined __ICC && 407 <= __GNUC__ * 100 + __GNUC_MINOR__
 /* Suppress an incorrect diagnostic about yylval being uninitialized.  */
-# define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN                            \
+#if defined __GNUC__ && ! defined __ICC && 406 <= __GNUC__ * 100 + __GNUC_MINOR__
+# if __GNUC__ * 100 + __GNUC_MINOR__ < 407
+#  define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN                           \
+    _Pragma ("GCC diagnostic push")                                     \
+    _Pragma ("GCC diagnostic ignored \"-Wuninitialized\"")
+# else
+#  define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN                           \
     _Pragma ("GCC diagnostic push")                                     \
     _Pragma ("GCC diagnostic ignored \"-Wuninitialized\"")              \
     _Pragma ("GCC diagnostic ignored \"-Wmaybe-uninitialized\"")
+# endif
 # define YY_IGNORE_MAYBE_UNINITIALIZED_END      \
     _Pragma ("GCC diagnostic pop")
 #else
@@ -952,7 +960,7 @@ static const yytype_int8 yytranslate[] =
 };
 
 #if YYDEBUG
-  /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
+/* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
        0,   295,   295,   300,   303,   308,   311,   314,   319,   326,
@@ -1058,22 +1066,6 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#ifdef YYPRINT
-/* YYTOKNUM[NUM] -- (External) token number corresponding to the
-   (internal) symbol number NUM (which must be that of a token).  */
-static const yytype_int16 yytoknum[] =
-{
-       0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
-     265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
-     275,   276,   277,   278,   279,   280,   281,   282,   283,   284,
-     285,   286,   287,   288,   289,   290,   291,   292,   293,   294,
-     295,   296,   297,   298,   299,   300,   301,   302,   303,   304,
-     305,   306,   307,    59,    61,    40,    41,    44,   123,   125,
-      91,    58,    93,    45,    43,    64,    60,    35,    46,    63,
-     126,    94,   124,    38,    33,    62,    42,    47,    37
-};
-#endif
-
 #define YYPACT_NINF (-344)
 
 #define yypact_value_is_default(Yyn) \
@@ -1084,8 +1076,8 @@ static const yytype_int16 yytoknum[] =
 #define yytable_value_is_error(Yyn) \
   0
 
-  /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
-     STATE-NUM.  */
+/* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
+   STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
       17,    29,    45,    60,   113,    98,  -344,  -344,  -344,    80,
@@ -1142,9 +1134,9 @@ static const yytype_int16 yypact[] =
     -344,  -344,  -344,  -344
 };
 
-  /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
-     Performed when YYTABLE does not specify something else to do.  Zero
-     means the default is an error.  */
+/* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
+   Performed when YYTABLE does not specify something else to do.  Zero
+   means the default is an error.  */
 static const yytype_int16 yydefact[] =
 {
       23,     0,     0,     0,     0,     2,     3,     6,     7,     0,
@@ -1201,7 +1193,7 @@ static const yytype_int16 yydefact[] =
      135,   136,   137,   138
 };
 
-  /* YYPGOTO[NTERM-NUM].  */
+/* YYPGOTO[NTERM-NUM].  */
 static const yytype_int16 yypgoto[] =
 {
     -344,  -344,  -344,   582,  -344,  -344,  -344,   561,   563,  -344,
@@ -1219,7 +1211,7 @@ static const yytype_int16 yypgoto[] =
      -32,  -255
 };
 
-  /* YYDEFGOTO[NTERM-NUM].  */
+/* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int16 yydefgoto[] =
 {
        0,     4,     5,     6,     7,    18,    29,    30,    38,     8,
@@ -1237,9 +1229,9 @@ static const yytype_int16 yydefgoto[] =
      288,   289
 };
 
-  /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
-     positive, shift that token.  If negative, reduce the rule whose
-     number is the opposite.  If YYTABLE_NINF, syntax error.  */
+/* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
+   positive, shift that token.  If negative, reduce the rule whose
+   number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int16 yytable[] =
 {
       81,   148,   274,     9,   295,   411,   296,   167,     9,   299,
@@ -1376,8 +1368,8 @@ static const yytype_int16 yycheck[] =
       -1,   125,   407,   353,   352
 };
 
-  /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
-     symbol of state STATE-NUM.  */
+/* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
+   state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
        0,    11,    18,    42,    80,    81,    82,    83,    88,    91,
@@ -1434,7 +1426,7 @@ static const yytype_uint8 yystos[] =
       56,    62,    56,    62
 };
 
-  /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
+/* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_uint8 yyr1[] =
 {
        0,    79,    80,    81,    81,    82,    82,    82,    83,    84,
@@ -1466,7 +1458,7 @@ static const yytype_uint8 yyr1[] =
      200,   200,   200,   200
 };
 
-  /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
+/* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
        0,     2,     1,     1,     2,     1,     1,     1,     4,     1,
@@ -1507,6 +1499,7 @@ enum { YYENOMEM = -2 };
 #define YYACCEPT        goto yyacceptlab
 #define YYABORT         goto yyabortlab
 #define YYERROR         goto yyerrorlab
+#define YYNOMEM         goto yyexhaustedlab
 
 
 #define YYRECOVERING()  (!!yyerrstatus)
@@ -1547,10 +1540,7 @@ do {                                            \
     YYFPRINTF Args;                             \
 } while (0)
 
-/* This macro is provided for backward compatibility. */
-# ifndef YY_LOCATION_PRINT
-#  define YY_LOCATION_PRINT(File, Loc) ((void) 0)
-# endif
+
 
 
 # define YY_SYMBOL_PRINT(Title, Kind, Value, Location)                    \
@@ -1577,10 +1567,6 @@ yy_symbol_value_print (FILE *yyo,
   YY_USE (yyoutput);
   if (!yyvaluep)
     return;
-# ifdef YYPRINT
-  if (yykind < YYNTOKENS)
-    YYPRINT (yyo, yytoknum[yykind], *yyvaluep);
-# endif
   YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
   YY_USE (yykind);
   YY_IGNORE_MAYBE_UNINITIALIZED_END
@@ -1765,6 +1751,7 @@ yyparse (void)
   YYDPRINTF ((stderr, "Starting parse\n"));
 
   yychar = YYEMPTY; /* Cause a token to be read.  */
+
   goto yysetstate;
 
 
@@ -1790,7 +1777,7 @@ yysetstate:
 
   if (yyss + yystacksize - 1 <= yyssp)
 #if !defined yyoverflow && !defined YYSTACK_RELOCATE
-    goto yyexhaustedlab;
+    YYNOMEM;
 #else
     {
       /* Get the current used size of the three stacks, in elements.  */
@@ -1818,7 +1805,7 @@ yysetstate:
 # else /* defined YYSTACK_RELOCATE */
       /* Extend the stack our own way.  */
       if (YYMAXDEPTH <= yystacksize)
-        goto yyexhaustedlab;
+        YYNOMEM;
       yystacksize *= 2;
       if (YYMAXDEPTH < yystacksize)
         yystacksize = YYMAXDEPTH;
@@ -1829,7 +1816,7 @@ yysetstate:
           YY_CAST (union yyalloc *,
                    YYSTACK_ALLOC (YY_CAST (YYSIZE_T, YYSTACK_BYTES (yystacksize))));
         if (! yyptr)
-          goto yyexhaustedlab;
+          YYNOMEM;
         YYSTACK_RELOCATE (yyss_alloc, yyss);
         YYSTACK_RELOCATE (yyvs_alloc, yyvs);
 #  undef YYSTACK_RELOCATE
@@ -1850,6 +1837,7 @@ yysetstate:
         YYABORT;
     }
 #endif /* !defined yyoverflow && !defined YYSTACK_RELOCATE */
+
 
   if (yystate == YYFINAL)
     YYACCEPT;
@@ -1966,42 +1954,42 @@ yyreduce:
 #line 296 "verilogaYacc.y"
           {
           }
-#line 1970 "y.tab.c"
+#line 1958 "y.tab.c"
     break;
 
   case 3: /* R_l.admsParse: R_s.admsParse  */
 #line 301 "verilogaYacc.y"
           {
           }
-#line 1977 "y.tab.c"
+#line 1965 "y.tab.c"
     break;
 
   case 4: /* R_l.admsParse: R_l.admsParse R_s.admsParse  */
 #line 304 "verilogaYacc.y"
           {
           }
-#line 1984 "y.tab.c"
+#line 1972 "y.tab.c"
     break;
 
   case 5: /* R_s.admsParse: R_d.module  */
 #line 309 "verilogaYacc.y"
           {
           }
-#line 1991 "y.tab.c"
+#line 1979 "y.tab.c"
     break;
 
   case 6: /* R_s.admsParse: R_discipline_member  */
 #line 312 "verilogaYacc.y"
           {
           }
-#line 1998 "y.tab.c"
+#line 1986 "y.tab.c"
     break;
 
   case 7: /* R_s.admsParse: R_nature_member  */
 #line 315 "verilogaYacc.y"
           {
           }
-#line 2005 "y.tab.c"
+#line 1993 "y.tab.c"
     break;
 
   case 8: /* R_discipline_member: tk_discipline R_discipline_name R_l.discipline_assignment tk_enddiscipline  */
@@ -2010,7 +1998,7 @@ yyreduce:
             adms_admsmain_list_discipline_prepend_once_or_abort(root(),gDiscipline);
             gDiscipline=NULL;
           }
-#line 2014 "y.tab.c"
+#line 2002 "y.tab.c"
     break;
 
   case 9: /* R_discipline_name: tk_ident  */
@@ -2019,21 +2007,21 @@ yyreduce:
             char* mylexval1=((p_lexval)(yyvsp[0]._lexval))->_string;
             gDiscipline=adms_discipline_new(mylexval1);
           }
-#line 2023 "y.tab.c"
+#line 2011 "y.tab.c"
     break;
 
   case 10: /* R_l.discipline_assignment: R_s.discipline_assignment  */
 #line 334 "verilogaYacc.y"
           {
           }
-#line 2030 "y.tab.c"
+#line 2018 "y.tab.c"
     break;
 
   case 11: /* R_l.discipline_assignment: R_l.discipline_assignment R_s.discipline_assignment  */
 #line 337 "verilogaYacc.y"
           {
           }
-#line 2037 "y.tab.c"
+#line 2025 "y.tab.c"
     break;
 
   case 12: /* R_s.discipline_assignment: tk_potential R_discipline.naturename ';'  */
@@ -2041,7 +2029,7 @@ yyreduce:
           {
             gDiscipline->_potential=(p_nature)YY((yyvsp[-1]._yaccval));
           }
-#line 2045 "y.tab.c"
+#line 2033 "y.tab.c"
     break;
 
   case 13: /* R_s.discipline_assignment: tk_flow R_discipline.naturename ';'  */
@@ -2049,7 +2037,7 @@ yyreduce:
           {
             gDiscipline->_flow=(p_nature)YY((yyvsp[-1]._yaccval));
           }
-#line 2053 "y.tab.c"
+#line 2041 "y.tab.c"
     break;
 
   case 14: /* R_s.discipline_assignment: tk_domain tk_ident ';'  */
@@ -2063,7 +2051,7 @@ yyreduce:
             else
              adms_veriloga_message_fatal("domain: bad value given - should be either 'discrete' or 'continuous'\n",(yyvsp[-1]._lexval));
           }
-#line 2067 "y.tab.c"
+#line 2055 "y.tab.c"
     break;
 
   case 15: /* R_discipline.naturename: tk_ident  */
@@ -2076,7 +2064,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)mynature);
           }
-#line 2080 "y.tab.c"
+#line 2068 "y.tab.c"
     break;
 
   case 16: /* R_nature_member: tk_nature tk_ident R_l.nature_assignment tk_endnature  */
@@ -2103,21 +2091,21 @@ yyreduce:
             gNatureidt=NULL;
             gNatureddt=NULL;
           }
-#line 2107 "y.tab.c"
+#line 2095 "y.tab.c"
     break;
 
   case 17: /* R_l.nature_assignment: R_s.nature_assignment  */
 #line 398 "verilogaYacc.y"
           {
           }
-#line 2114 "y.tab.c"
+#line 2102 "y.tab.c"
     break;
 
   case 18: /* R_l.nature_assignment: R_l.nature_assignment R_s.nature_assignment  */
 #line 401 "verilogaYacc.y"
           {
           }
-#line 2121 "y.tab.c"
+#line 2109 "y.tab.c"
     break;
 
   case 19: /* R_s.nature_assignment: tk_ident '=' tk_number ';'  */
@@ -2132,7 +2120,7 @@ yyreduce:
             else
              adms_veriloga_message_fatal("unknown nature attribute\n",(yyvsp[-3]._lexval));
           }
-#line 2136 "y.tab.c"
+#line 2124 "y.tab.c"
     break;
 
   case 20: /* R_s.nature_assignment: tk_ident '=' tk_number tk_ident ';'  */
@@ -2171,7 +2159,7 @@ yyreduce:
               adms_veriloga_message_fatal("can not convert symbol to valid unit\n",(yyvsp[-1]._lexval));
             gNatureAbsTol->_scalingunit=myunit;
           }
-#line 2175 "y.tab.c"
+#line 2163 "y.tab.c"
     break;
 
   case 21: /* R_s.nature_assignment: tk_ident '=' tk_anystring ';'  */
@@ -2187,7 +2175,7 @@ yyreduce:
             else
              adms_veriloga_message_fatal("unknown nature attribute\n",(yyvsp[-3]._lexval));
           }
-#line 2191 "y.tab.c"
+#line 2179 "y.tab.c"
     break;
 
   case 22: /* R_s.nature_assignment: tk_ident '=' tk_ident ';'  */
@@ -2215,28 +2203,28 @@ yyreduce:
             else
              adms_veriloga_message_fatal("unknown nature attribute\n",(yyvsp[-3]._lexval));
           }
-#line 2219 "y.tab.c"
+#line 2207 "y.tab.c"
     break;
 
   case 23: /* R_d.attribute.0: %empty  */
 #line 490 "verilogaYacc.y"
           {
           }
-#line 2226 "y.tab.c"
+#line 2214 "y.tab.c"
     break;
 
   case 24: /* R_d.attribute.0: R_d.attribute  */
 #line 493 "verilogaYacc.y"
           {
           }
-#line 2233 "y.tab.c"
+#line 2221 "y.tab.c"
     break;
 
   case 25: /* R_d.attribute: tk_beginattribute R_l.attribute tk_endattribute  */
 #line 498 "verilogaYacc.y"
           {
           }
-#line 2240 "y.tab.c"
+#line 2228 "y.tab.c"
     break;
 
   case 26: /* R_d.attribute: tk_beginattribute tk_anytext  */
@@ -2248,28 +2236,28 @@ yyreduce:
             myattribute->_value=(p_adms)myconstant;
             adms_slist_push(&gAttributeList,(p_adms)myattribute);
           }
-#line 2252 "y.tab.c"
+#line 2240 "y.tab.c"
     break;
 
   case 27: /* R_d.attribute: tk_beginattribute tk_endattribute  */
 #line 509 "verilogaYacc.y"
           {
           }
-#line 2259 "y.tab.c"
+#line 2247 "y.tab.c"
     break;
 
   case 28: /* R_l.attribute: R_s.attribute  */
 #line 514 "verilogaYacc.y"
           {
           }
-#line 2266 "y.tab.c"
+#line 2254 "y.tab.c"
     break;
 
   case 29: /* R_l.attribute: R_l.attribute R_s.attribute  */
 #line 517 "verilogaYacc.y"
           {
           }
-#line 2273 "y.tab.c"
+#line 2261 "y.tab.c"
     break;
 
   case 30: /* R_s.attribute: tk_ident '=' tk_anystring  */
@@ -2282,7 +2270,7 @@ yyreduce:
             myattribute->_value=(p_adms)myconstant;
             adms_slist_push(&gAttributeList,(p_adms)myattribute);
           }
-#line 2286 "y.tab.c"
+#line 2274 "y.tab.c"
     break;
 
   case 31: /* $@1: %empty  */
@@ -2301,7 +2289,7 @@ yyreduce:
               adms_slist_push(&gModule->_attribute,l->data);
             adms_slist_free(gAttributeList); gAttributeList=NULL;
           }
-#line 2305 "y.tab.c"
+#line 2293 "y.tab.c"
     break;
 
   case 32: /* $@2: %empty  */
@@ -2309,7 +2297,7 @@ yyreduce:
           {
             set_context(ctx_moduletop);
           }
-#line 2313 "y.tab.c"
+#line 2301 "y.tab.c"
     break;
 
   case 33: /* R_d.module: R_d.attribute.0 tk_module tk_ident $@1 R_d.terminal $@2 R_modulebody tk_endmodule  */
@@ -2318,84 +2306,84 @@ yyreduce:
             adms_slist_pull(&gBlockList);
             adms_slist_inreverse(&gModule->_assignment);
           }
-#line 2322 "y.tab.c"
+#line 2310 "y.tab.c"
     break;
 
   case 34: /* R_modulebody: %empty  */
 #line 559 "verilogaYacc.y"
           {
           }
-#line 2329 "y.tab.c"
+#line 2317 "y.tab.c"
     break;
 
   case 35: /* R_modulebody: R_l.declaration  */
 #line 562 "verilogaYacc.y"
           {
           }
-#line 2336 "y.tab.c"
+#line 2324 "y.tab.c"
     break;
 
   case 36: /* R_modulebody: R_netlist  */
 #line 565 "verilogaYacc.y"
           {
           }
-#line 2343 "y.tab.c"
+#line 2331 "y.tab.c"
     break;
 
   case 37: /* R_modulebody: R_l.declaration R_netlist  */
 #line 568 "verilogaYacc.y"
           {
           }
-#line 2350 "y.tab.c"
+#line 2338 "y.tab.c"
     break;
 
   case 38: /* R_netlist: R_analog  */
 #line 573 "verilogaYacc.y"
           {
           }
-#line 2357 "y.tab.c"
+#line 2345 "y.tab.c"
     break;
 
   case 39: /* R_netlist: R_l.instance  */
 #line 576 "verilogaYacc.y"
           {
           }
-#line 2364 "y.tab.c"
+#line 2352 "y.tab.c"
     break;
 
   case 40: /* R_netlist: R_l.instance R_analog  */
 #line 579 "verilogaYacc.y"
           {
           }
-#line 2371 "y.tab.c"
+#line 2359 "y.tab.c"
     break;
 
   case 41: /* R_netlist: R_analog R_l.instance  */
 #line 582 "verilogaYacc.y"
           {
           }
-#line 2378 "y.tab.c"
+#line 2366 "y.tab.c"
     break;
 
   case 42: /* R_netlist: R_l.instance R_analog R_l.instance  */
 #line 585 "verilogaYacc.y"
           {
           }
-#line 2385 "y.tab.c"
+#line 2373 "y.tab.c"
     break;
 
   case 43: /* R_l.instance: R_s.instance  */
 #line 590 "verilogaYacc.y"
           {
           }
-#line 2392 "y.tab.c"
+#line 2380 "y.tab.c"
     break;
 
   case 44: /* R_l.instance: R_l.instance R_s.instance  */
 #line 593 "verilogaYacc.y"
           {
           }
-#line 2399 "y.tab.c"
+#line 2387 "y.tab.c"
     break;
 
   case 45: /* R_d.terminal: '(' R_l.terminal.0 ')' R_d.attribute.0 ';'  */
@@ -2406,35 +2394,35 @@ yyreduce:
               adms_slist_push(&gModule->_attribute,l->data);
             adms_slist_free(gAttributeList); gAttributeList=NULL;
           }
-#line 2410 "y.tab.c"
+#line 2398 "y.tab.c"
     break;
 
   case 46: /* R_l.terminal.0: %empty  */
 #line 607 "verilogaYacc.y"
           {
           }
-#line 2417 "y.tab.c"
+#line 2405 "y.tab.c"
     break;
 
   case 47: /* R_l.terminal.0: R_l.terminal  */
 #line 610 "verilogaYacc.y"
           {
           }
-#line 2424 "y.tab.c"
+#line 2412 "y.tab.c"
     break;
 
   case 48: /* R_l.terminal: R_s.terminal  */
 #line 615 "verilogaYacc.y"
           {
           }
-#line 2431 "y.tab.c"
+#line 2419 "y.tab.c"
     break;
 
   case 49: /* R_l.terminal: R_l.terminal ',' R_s.terminal  */
 #line 618 "verilogaYacc.y"
           {
           }
-#line 2438 "y.tab.c"
+#line 2426 "y.tab.c"
     break;
 
   case 50: /* R_s.terminal: tk_ident  */
@@ -2446,21 +2434,21 @@ yyreduce:
             mynodealias->_node=mynode;
             mynode->_location=admse_external;
           }
-#line 2450 "y.tab.c"
+#line 2438 "y.tab.c"
     break;
 
   case 51: /* R_l.declaration: R_s.declaration.withattribute  */
 #line 633 "verilogaYacc.y"
           {
           }
-#line 2457 "y.tab.c"
+#line 2445 "y.tab.c"
     break;
 
   case 52: /* R_l.declaration: R_l.declaration R_s.declaration.withattribute  */
 #line 636 "verilogaYacc.y"
           {
           }
-#line 2464 "y.tab.c"
+#line 2452 "y.tab.c"
     break;
 
   case 53: /* R_s.declaration.withattribute: R_s.declaration  */
@@ -2468,7 +2456,7 @@ yyreduce:
           {
             set_context(ctx_moduletop);
           }
-#line 2472 "y.tab.c"
+#line 2460 "y.tab.c"
     break;
 
   case 54: /* R_s.declaration.withattribute: R_d.attribute.global R_s.declaration  */
@@ -2477,7 +2465,7 @@ yyreduce:
             adms_slist_free(gGlobalAttributeList); gGlobalAttributeList=NULL;
             set_context(ctx_moduletop);
           }
-#line 2481 "y.tab.c"
+#line 2469 "y.tab.c"
     break;
 
   case 55: /* R_d.attribute.global: R_d.attribute  */
@@ -2486,21 +2474,21 @@ yyreduce:
             gGlobalAttributeList=gAttributeList;
             gAttributeList=NULL;
           }
-#line 2490 "y.tab.c"
+#line 2478 "y.tab.c"
     break;
 
   case 56: /* R_s.declaration: R_d.node  */
 #line 659 "verilogaYacc.y"
           {
           }
-#line 2497 "y.tab.c"
+#line 2485 "y.tab.c"
     break;
 
   case 57: /* R_s.declaration: R_d.branch  */
 #line 662 "verilogaYacc.y"
           {
           }
-#line 2504 "y.tab.c"
+#line 2492 "y.tab.c"
     break;
 
   case 58: /* $@3: %empty  */
@@ -2508,14 +2496,14 @@ yyreduce:
           {
             set_context(ctx_any);
           }
-#line 2512 "y.tab.c"
+#line 2500 "y.tab.c"
     break;
 
   case 59: /* R_s.declaration: tk_parameter $@3 R_variable.type R_l.parameter R_d.variable.end  */
 #line 669 "verilogaYacc.y"
           {
           }
-#line 2519 "y.tab.c"
+#line 2507 "y.tab.c"
     break;
 
   case 60: /* $@4: %empty  */
@@ -2523,14 +2511,14 @@ yyreduce:
           {
             set_context(ctx_any);
           }
-#line 2527 "y.tab.c"
+#line 2515 "y.tab.c"
     break;
 
   case 61: /* R_s.declaration: tk_parameter $@4 R_l.parameter R_d.variable.end  */
 #line 676 "verilogaYacc.y"
           {
           }
-#line 2534 "y.tab.c"
+#line 2522 "y.tab.c"
     break;
 
   case 62: /* $@5: %empty  */
@@ -2538,35 +2526,35 @@ yyreduce:
           {
             set_context(ctx_any);
           }
-#line 2542 "y.tab.c"
+#line 2530 "y.tab.c"
     break;
 
   case 63: /* R_s.declaration: R_variable.type $@5 R_l.variable R_d.variable.end  */
 #line 683 "verilogaYacc.y"
           {
           }
-#line 2549 "y.tab.c"
+#line 2537 "y.tab.c"
     break;
 
   case 64: /* R_s.declaration: R_d.aliasparameter  */
 #line 686 "verilogaYacc.y"
           {
           }
-#line 2556 "y.tab.c"
+#line 2544 "y.tab.c"
     break;
 
   case 65: /* R_s.declaration: R_d.analogfunction  */
 #line 689 "verilogaYacc.y"
           {
           }
-#line 2563 "y.tab.c"
+#line 2551 "y.tab.c"
     break;
 
   case 66: /* R_s.declaration: ';'  */
 #line 692 "verilogaYacc.y"
           {
           }
-#line 2570 "y.tab.c"
+#line 2558 "y.tab.c"
     break;
 
   case 67: /* $@6: %empty  */
@@ -2574,7 +2562,7 @@ yyreduce:
           {
             set_context(ctx_any);
           }
-#line 2578 "y.tab.c"
+#line 2566 "y.tab.c"
     break;
 
   case 68: /* R_d.node: R_node.type $@6 R_l.terminalnode ';'  */
@@ -2585,7 +2573,7 @@ yyreduce:
               ((p_node)l->data)->_direction=gNodeDirection;
             adms_slist_free(gTerminalList); gTerminalList=NULL;
           }
-#line 2589 "y.tab.c"
+#line 2577 "y.tab.c"
     break;
 
   case 69: /* $@7: %empty  */
@@ -2593,7 +2581,7 @@ yyreduce:
           {
             set_context(ctx_any);
           }
-#line 2597 "y.tab.c"
+#line 2585 "y.tab.c"
     break;
 
   case 70: /* R_d.node: tk_ground $@7 R_l.node ';'  */
@@ -2604,7 +2592,7 @@ yyreduce:
               ((p_node)l->data)->_location=admse_ground;
             adms_slist_free(gNodeList); gNodeList=NULL;
           }
-#line 2608 "y.tab.c"
+#line 2596 "y.tab.c"
     break;
 
   case 71: /* $@8: %empty  */
@@ -2614,7 +2602,7 @@ yyreduce:
             set_context(ctx_any);
             gDisc=mylexval1;
           }
-#line 2618 "y.tab.c"
+#line 2606 "y.tab.c"
     break;
 
   case 72: /* R_d.node: tk_disc_id $@8 R_l.node ';'  */
@@ -2627,7 +2615,7 @@ yyreduce:
               ((p_node)l->data)->_discipline=mydiscipline;
             adms_slist_free(gNodeList); gNodeList=NULL;
           }
-#line 2631 "y.tab.c"
+#line 2619 "y.tab.c"
     break;
 
   case 73: /* R_node.type: tk_input  */
@@ -2635,7 +2623,7 @@ yyreduce:
           {
             gNodeDirection=admse_input;
           }
-#line 2639 "y.tab.c"
+#line 2627 "y.tab.c"
     break;
 
   case 74: /* R_node.type: tk_output  */
@@ -2643,7 +2631,7 @@ yyreduce:
           {
             gNodeDirection=admse_output;
           }
-#line 2647 "y.tab.c"
+#line 2635 "y.tab.c"
     break;
 
   case 75: /* R_node.type: tk_inout  */
@@ -2651,35 +2639,35 @@ yyreduce:
           {
             gNodeDirection=admse_inout;
           }
-#line 2655 "y.tab.c"
+#line 2643 "y.tab.c"
     break;
 
   case 76: /* R_l.terminalnode: R_s.terminalnode  */
 #line 750 "verilogaYacc.y"
           {
           }
-#line 2662 "y.tab.c"
+#line 2650 "y.tab.c"
     break;
 
   case 77: /* R_l.terminalnode: R_l.terminalnode ',' R_s.terminalnode  */
 #line 753 "verilogaYacc.y"
           {
           }
-#line 2669 "y.tab.c"
+#line 2657 "y.tab.c"
     break;
 
   case 78: /* R_l.node: R_s.node  */
 #line 758 "verilogaYacc.y"
           {
           }
-#line 2676 "y.tab.c"
+#line 2664 "y.tab.c"
     break;
 
   case 79: /* R_l.node: R_l.node ',' R_s.node  */
 #line 761 "verilogaYacc.y"
           {
           }
-#line 2683 "y.tab.c"
+#line 2671 "y.tab.c"
     break;
 
   case 80: /* R_s.terminalnode: tk_ident R_d.attribute.0  */
@@ -2699,7 +2687,7 @@ yyreduce:
             for(l=gGlobalAttributeList;l;l=l->next)
               adms_slist_push(&mynode->_attribute,l->data);
           }
-#line 2703 "y.tab.c"
+#line 2691 "y.tab.c"
     break;
 
   case 81: /* R_s.node: tk_ident R_d.attribute.0  */
@@ -2715,28 +2703,28 @@ yyreduce:
             for(l=gGlobalAttributeList;l;l=l->next)
               adms_slist_push(&mynode->_attribute,l->data);
           }
-#line 2719 "y.tab.c"
+#line 2707 "y.tab.c"
     break;
 
   case 82: /* R_d.branch: tk_branch R_s.branch ';'  */
 #line 798 "verilogaYacc.y"
           {
           }
-#line 2726 "y.tab.c"
+#line 2714 "y.tab.c"
     break;
 
   case 83: /* R_l.branchalias: R_s.branchalias  */
 #line 803 "verilogaYacc.y"
           {
           }
-#line 2733 "y.tab.c"
+#line 2721 "y.tab.c"
     break;
 
   case 84: /* R_l.branchalias: R_l.branchalias ',' R_s.branchalias  */
 #line 806 "verilogaYacc.y"
           {
           }
-#line 2740 "y.tab.c"
+#line 2728 "y.tab.c"
     break;
 
   case 85: /* R_s.branchalias: tk_ident  */
@@ -2745,7 +2733,7 @@ yyreduce:
             char* mylexval1=((p_lexval)(yyvsp[0]._lexval))->_string;
             adms_slist_push(&gBranchAliasList,(p_adms)mylexval1);
           }
-#line 2749 "y.tab.c"
+#line 2737 "y.tab.c"
     break;
 
   case 86: /* R_s.branch: '(' tk_ident ',' tk_ident ')' R_l.branchalias  */
@@ -2774,7 +2762,7 @@ yyreduce:
             for(l=gGlobalAttributeList;l;l=l->next)
               adms_slist_push(&mybranch->_attribute,l->data);
           }
-#line 2778 "y.tab.c"
+#line 2766 "y.tab.c"
     break;
 
   case 87: /* R_s.branch: '(' tk_ident ')' R_l.branchalias  */
@@ -2799,7 +2787,7 @@ yyreduce:
             for(l=gGlobalAttributeList;l;l=l->next)
               adms_slist_push(&mybranch->_attribute,l->data);
           }
-#line 2803 "y.tab.c"
+#line 2791 "y.tab.c"
     break;
 
   case 88: /* R_d.analogfunction: R_d.analogfunction.proto R_l.analogfunction.declaration R_analogcode.block tk_endfunction  */
@@ -2809,7 +2797,7 @@ yyreduce:
             gAnalogfunction->_tree=YY((yyvsp[-1]._yaccval));
             gAnalogfunction=NULL;
           }
-#line 2813 "y.tab.c"
+#line 2801 "y.tab.c"
     break;
 
   case 89: /* R_d.analogfunction.proto: tk_analog tk_function R_d.analogfunction.name ';'  */
@@ -2819,7 +2807,7 @@ yyreduce:
             adms_analogfunction_list_variable_prepend_once_or_abort(gAnalogfunction,myvariableprototype); 
             myvariableprototype->_output=admse_yes;
           }
-#line 2823 "y.tab.c"
+#line 2811 "y.tab.c"
     break;
 
   case 90: /* R_d.analogfunction.proto: tk_analog tk_function tk_integer R_d.analogfunction.name ';'  */
@@ -2831,7 +2819,7 @@ yyreduce:
             myvariableprototype->_type=admse_integer;
             gAnalogfunction->_type=admse_integer; 
           }
-#line 2835 "y.tab.c"
+#line 2823 "y.tab.c"
     break;
 
   case 91: /* R_d.analogfunction.proto: tk_analog tk_function tk_real R_d.analogfunction.name ';'  */
@@ -2841,7 +2829,7 @@ yyreduce:
             adms_analogfunction_list_variable_prepend_once_or_abort(gAnalogfunction,myvariableprototype); 
             myvariableprototype->_output=admse_yes;
           }
-#line 2845 "y.tab.c"
+#line 2833 "y.tab.c"
     break;
 
   case 92: /* R_d.analogfunction.name: tk_ident  */
@@ -2854,56 +2842,56 @@ yyreduce:
             for(l=gGlobalAttributeList;l;l=l->next)
               adms_slist_push(&gAnalogfunction->_attribute,l->data);
           }
-#line 2858 "y.tab.c"
+#line 2846 "y.tab.c"
     break;
 
   case 93: /* R_l.analogfunction.declaration: R_s.analogfunction.declaration  */
 #line 907 "verilogaYacc.y"
           {
           }
-#line 2865 "y.tab.c"
+#line 2853 "y.tab.c"
     break;
 
   case 94: /* R_l.analogfunction.declaration: R_l.analogfunction.declaration R_s.analogfunction.declaration  */
 #line 910 "verilogaYacc.y"
           {
           }
-#line 2872 "y.tab.c"
+#line 2860 "y.tab.c"
     break;
 
   case 95: /* R_s.analogfunction.declaration: tk_input R_l.analogfunction.input.variable ';'  */
 #line 915 "verilogaYacc.y"
           {
           }
-#line 2879 "y.tab.c"
+#line 2867 "y.tab.c"
     break;
 
   case 96: /* R_s.analogfunction.declaration: tk_output R_l.analogfunction.output.variable ';'  */
 #line 918 "verilogaYacc.y"
           {
           }
-#line 2886 "y.tab.c"
+#line 2874 "y.tab.c"
     break;
 
   case 97: /* R_s.analogfunction.declaration: tk_inout R_l.analogfunction.inout.variable ';'  */
 #line 921 "verilogaYacc.y"
           {
           }
-#line 2893 "y.tab.c"
+#line 2881 "y.tab.c"
     break;
 
   case 98: /* R_s.analogfunction.declaration: tk_integer R_l.analogfunction.integer.variable ';'  */
 #line 924 "verilogaYacc.y"
           {
           }
-#line 2900 "y.tab.c"
+#line 2888 "y.tab.c"
     break;
 
   case 99: /* R_s.analogfunction.declaration: tk_real R_l.analogfunction.real.variable ';'  */
 #line 927 "verilogaYacc.y"
           {
           }
-#line 2907 "y.tab.c"
+#line 2895 "y.tab.c"
     break;
 
   case 100: /* R_l.analogfunction.input.variable: tk_ident  */
@@ -2914,7 +2902,7 @@ yyreduce:
             myvariableprototype->_input=admse_yes;
             myvariableprototype->_parametertype=admse_analogfunction;
           }
-#line 2918 "y.tab.c"
+#line 2906 "y.tab.c"
     break;
 
   case 101: /* R_l.analogfunction.input.variable: R_l.analogfunction.input.variable ',' tk_ident  */
@@ -2925,7 +2913,7 @@ yyreduce:
             myvariableprototype->_input=admse_yes;
             myvariableprototype->_parametertype=admse_analogfunction;
           }
-#line 2929 "y.tab.c"
+#line 2917 "y.tab.c"
     break;
 
   case 102: /* R_l.analogfunction.output.variable: tk_ident  */
@@ -2936,7 +2924,7 @@ yyreduce:
             myvariableprototype->_output=admse_yes;
             myvariableprototype->_parametertype=admse_analogfunction;
           }
-#line 2940 "y.tab.c"
+#line 2928 "y.tab.c"
     break;
 
   case 103: /* R_l.analogfunction.output.variable: R_l.analogfunction.output.variable ',' tk_ident  */
@@ -2947,7 +2935,7 @@ yyreduce:
             myvariableprototype->_output=admse_yes;
             myvariableprototype->_parametertype=admse_analogfunction;
           }
-#line 2951 "y.tab.c"
+#line 2939 "y.tab.c"
     break;
 
   case 104: /* R_l.analogfunction.inout.variable: tk_ident  */
@@ -2959,7 +2947,7 @@ yyreduce:
             myvariableprototype->_output=admse_yes;
             myvariableprototype->_parametertype=admse_analogfunction;
           }
-#line 2963 "y.tab.c"
+#line 2951 "y.tab.c"
     break;
 
   case 105: /* R_l.analogfunction.inout.variable: R_l.analogfunction.inout.variable ',' tk_ident  */
@@ -2971,7 +2959,7 @@ yyreduce:
             myvariableprototype->_output=admse_yes;
             myvariableprototype->_parametertype=admse_analogfunction;
           }
-#line 2975 "y.tab.c"
+#line 2963 "y.tab.c"
     break;
 
   case 106: /* R_l.analogfunction.integer.variable: tk_ident  */
@@ -2987,7 +2975,7 @@ yyreduce:
               myvariableprototype->_type=admse_integer;
             }
           }
-#line 2991 "y.tab.c"
+#line 2979 "y.tab.c"
     break;
 
   case 107: /* R_l.analogfunction.integer.variable: R_l.analogfunction.integer.variable ',' tk_ident  */
@@ -3003,7 +2991,7 @@ yyreduce:
               myvariableprototype->_type=admse_integer;
             }
           }
-#line 3007 "y.tab.c"
+#line 2995 "y.tab.c"
     break;
 
   case 108: /* R_l.analogfunction.real.variable: tk_ident  */
@@ -3019,7 +3007,7 @@ yyreduce:
               myvariableprototype->_type=admse_real;
             }
           }
-#line 3023 "y.tab.c"
+#line 3011 "y.tab.c"
     break;
 
   case 109: /* R_l.analogfunction.real.variable: R_l.analogfunction.real.variable ',' tk_ident  */
@@ -3035,7 +3023,7 @@ yyreduce:
               myvariableprototype->_type=admse_real;
             }
           }
-#line 3039 "y.tab.c"
+#line 3027 "y.tab.c"
     break;
 
   case 110: /* R_variable.type.set: tk_integer  */
@@ -3043,7 +3031,7 @@ yyreduce:
           {
             gVariableType=admse_integer;
           }
-#line 3047 "y.tab.c"
+#line 3035 "y.tab.c"
     break;
 
   case 111: /* R_variable.type.set: tk_real  */
@@ -3051,7 +3039,7 @@ yyreduce:
           {
             gVariableType=admse_real;
           }
-#line 3055 "y.tab.c"
+#line 3043 "y.tab.c"
     break;
 
   case 112: /* R_variable.type.set: tk_string  */
@@ -3059,7 +3047,7 @@ yyreduce:
           {
             gVariableType=admse_string;
           }
-#line 3063 "y.tab.c"
+#line 3051 "y.tab.c"
     break;
 
   case 113: /* $@9: %empty  */
@@ -3067,7 +3055,7 @@ yyreduce:
           {
             set_context(ctx_any);
           }
-#line 3071 "y.tab.c"
+#line 3059 "y.tab.c"
     break;
 
   case 114: /* R_variable.type: R_variable.type.set $@9 R_d.attribute.0  */
@@ -3076,7 +3064,7 @@ yyreduce:
             adms_slist_concat(&gGlobalAttributeList,gAttributeList);
             gAttributeList=NULL;
           }
-#line 3080 "y.tab.c"
+#line 3068 "y.tab.c"
     break;
 
   case 115: /* R_d.variable.end: ';'  */
@@ -3087,35 +3075,35 @@ yyreduce:
               ((p_variableprototype)l->data)->_type=gVariableType;
             adms_slist_free(gVariableDeclarationList); gVariableDeclarationList=NULL;
           }
-#line 3091 "y.tab.c"
+#line 3079 "y.tab.c"
     break;
 
   case 116: /* R_l.parameter: R_s.parameter  */
 #line 1068 "verilogaYacc.y"
           {
           }
-#line 3098 "y.tab.c"
+#line 3086 "y.tab.c"
     break;
 
   case 117: /* R_l.parameter: R_l.parameter ',' R_s.parameter  */
 #line 1071 "verilogaYacc.y"
           {
           }
-#line 3105 "y.tab.c"
+#line 3093 "y.tab.c"
     break;
 
   case 118: /* R_l.variable: R_s.variable  */
 #line 1076 "verilogaYacc.y"
           {
           }
-#line 3112 "y.tab.c"
+#line 3100 "y.tab.c"
     break;
 
   case 119: /* R_l.variable: R_l.variable ',' R_s.variable  */
 #line 1079 "verilogaYacc.y"
           {
           }
-#line 3119 "y.tab.c"
+#line 3107 "y.tab.c"
     break;
 
   case 120: /* R_d.aliasparameter: R_d.aliasparameter.token tk_ident '=' tk_ident R_d.attribute.0 ';'  */
@@ -3133,21 +3121,21 @@ yyreduce:
             for(l=gGlobalAttributeList;l;l=l->next)
               adms_slist_push(&myvariableprototype->_attribute,l->data);
           }
-#line 3137 "y.tab.c"
+#line 3125 "y.tab.c"
     break;
 
   case 121: /* R_d.aliasparameter.token: tk_aliasparameter  */
 #line 1100 "verilogaYacc.y"
           {
           }
-#line 3144 "y.tab.c"
+#line 3132 "y.tab.c"
     break;
 
   case 122: /* R_d.aliasparameter.token: tk_aliasparam  */
 #line 1103 "verilogaYacc.y"
           {
           }
-#line 3151 "y.tab.c"
+#line 3139 "y.tab.c"
     break;
 
   case 123: /* R_s.parameter: R_s.parameter.name R_d.attribute.0  */
@@ -3160,7 +3148,7 @@ yyreduce:
             for(l=gGlobalAttributeList;l;l=l->next)
               adms_slist_push(&((p_variableprototype)gVariableDeclarationList->data)->_attribute,l->data);
           }
-#line 3164 "y.tab.c"
+#line 3152 "y.tab.c"
     break;
 
   case 124: /* R_s.variable: R_s.variable.name R_d.attribute.0  */
@@ -3173,7 +3161,7 @@ yyreduce:
             for(l=gGlobalAttributeList;l;l=l->next)
               adms_slist_push(&((p_variableprototype)gVariableDeclarationList->data)->_attribute,l->data);
           }
-#line 3177 "y.tab.c"
+#line 3165 "y.tab.c"
     break;
 
   case 125: /* R_s.parameter.name: R_s.variable.name '=' R_s.expression R_s.parameter.range  */
@@ -3184,7 +3172,7 @@ yyreduce:
             ((p_variableprototype)gVariableDeclarationList->data)->_range=adms_slist_reverse(gRangeList);
             gRangeList=NULL;
           }
-#line 3188 "y.tab.c"
+#line 3176 "y.tab.c"
     break;
 
   case 126: /* R_s.parameter.name: R_s.variable.name '=' '{' R_l.expression '}' R_s.parameter.range  */
@@ -3198,7 +3186,7 @@ yyreduce:
             ((p_variableprototype)gVariableDeclarationList->data)->_range=adms_slist_reverse(gRangeList);
             gRangeList=NULL;
           }
-#line 3202 "y.tab.c"
+#line 3190 "y.tab.c"
     break;
 
   case 127: /* R_s.variable.name: tk_ident  */
@@ -3211,7 +3199,7 @@ yyreduce:
             adms_module_list_variable_prepend_once_or_abort(gModule,myvariableprototype); 
             adms_slist_push(&gVariableDeclarationList,(p_adms)myvariableprototype);
           }
-#line 3215 "y.tab.c"
+#line 3203 "y.tab.c"
     break;
 
   case 128: /* R_s.variable.name: tk_ident '[' tk_integer ':' tk_integer ']'  */
@@ -3227,35 +3215,35 @@ yyreduce:
             myvariableprototype->_minsize=adms_number_new((yyvsp[-3]._lexval));
             myvariableprototype->_maxsize=adms_number_new((yyvsp[-1]._lexval));
           }
-#line 3231 "y.tab.c"
+#line 3219 "y.tab.c"
     break;
 
   case 129: /* R_s.parameter.range: %empty  */
 #line 1172 "verilogaYacc.y"
           {
           }
-#line 3238 "y.tab.c"
+#line 3226 "y.tab.c"
     break;
 
   case 130: /* R_s.parameter.range: R_l.interval  */
 #line 1175 "verilogaYacc.y"
           {
           }
-#line 3245 "y.tab.c"
+#line 3233 "y.tab.c"
     break;
 
   case 131: /* R_l.interval: R_s.interval  */
 #line 1180 "verilogaYacc.y"
           {
           }
-#line 3252 "y.tab.c"
+#line 3240 "y.tab.c"
     break;
 
   case 132: /* R_l.interval: R_l.interval R_s.interval  */
 #line 1183 "verilogaYacc.y"
           {
           }
-#line 3259 "y.tab.c"
+#line 3247 "y.tab.c"
     break;
 
   case 133: /* R_s.interval: tk_from R_d.interval  */
@@ -3267,7 +3255,7 @@ yyreduce:
               ((p_range)YY((yyvsp[0]._yaccval)))->_type=admse_include;
             adms_slist_push(&gRangeList,YY((yyvsp[0]._yaccval)));
           }
-#line 3271 "y.tab.c"
+#line 3259 "y.tab.c"
     break;
 
   case 134: /* R_s.interval: tk_exclude R_d.interval  */
@@ -3279,7 +3267,7 @@ yyreduce:
               ((p_range)YY((yyvsp[0]._yaccval)))->_type=admse_exclude;
             adms_slist_push(&gRangeList,YY((yyvsp[0]._yaccval)));
           }
-#line 3283 "y.tab.c"
+#line 3271 "y.tab.c"
     break;
 
   case 135: /* R_d.interval: '(' R_interval.inf ':' R_interval.sup ')'  */
@@ -3291,7 +3279,7 @@ yyreduce:
             myrange->_supboundtype=admse_range_bound_exclude;
             Y((yyval._yaccval),(p_adms)myrange);
           }
-#line 3295 "y.tab.c"
+#line 3283 "y.tab.c"
     break;
 
   case 136: /* R_d.interval: '(' R_interval.inf ':' R_interval.sup ']'  */
@@ -3303,7 +3291,7 @@ yyreduce:
             myrange->_supboundtype=admse_range_bound_include;
             Y((yyval._yaccval),(p_adms)myrange);
           }
-#line 3307 "y.tab.c"
+#line 3295 "y.tab.c"
     break;
 
   case 137: /* R_d.interval: '[' R_interval.inf ':' R_interval.sup ')'  */
@@ -3315,7 +3303,7 @@ yyreduce:
             myrange->_supboundtype=admse_range_bound_exclude;
             Y((yyval._yaccval),(p_adms)myrange);
           }
-#line 3319 "y.tab.c"
+#line 3307 "y.tab.c"
     break;
 
   case 138: /* R_d.interval: '[' R_interval.inf ':' R_interval.sup ']'  */
@@ -3327,7 +3315,7 @@ yyreduce:
             myrange->_supboundtype=admse_range_bound_include;
             Y((yyval._yaccval),(p_adms)myrange);
           }
-#line 3331 "y.tab.c"
+#line 3319 "y.tab.c"
     break;
 
   case 139: /* R_d.interval: R_s.expression  */
@@ -3339,7 +3327,7 @@ yyreduce:
             myrange->_supboundtype=admse_range_bound_value;
             Y((yyval._yaccval),(p_adms)myrange);
           }
-#line 3343 "y.tab.c"
+#line 3331 "y.tab.c"
     break;
 
   case 140: /* R_interval.inf: R_s.expression  */
@@ -3347,7 +3335,7 @@ yyreduce:
           {
             (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
-#line 3351 "y.tab.c"
+#line 3339 "y.tab.c"
     break;
 
   case 141: /* R_interval.inf: '-' tk_inf  */
@@ -3362,7 +3350,7 @@ yyreduce:
             myexpression->_hasspecialnumber=adms_kclone("YES");
             Y((yyval._yaccval),(p_adms)myexpression);
           }
-#line 3366 "y.tab.c"
+#line 3354 "y.tab.c"
     break;
 
   case 142: /* R_interval.sup: R_s.expression  */
@@ -3370,7 +3358,7 @@ yyreduce:
           {
             (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
-#line 3374 "y.tab.c"
+#line 3362 "y.tab.c"
     break;
 
   case 143: /* R_interval.sup: tk_inf  */
@@ -3385,7 +3373,7 @@ yyreduce:
             myexpression->_hasspecialnumber=adms_kclone("YES");
             Y((yyval._yaccval),(p_adms)myexpression);
           }
-#line 3389 "y.tab.c"
+#line 3377 "y.tab.c"
     break;
 
   case 144: /* R_interval.sup: '+' tk_inf  */
@@ -3400,7 +3388,7 @@ yyreduce:
             myexpression->_hasspecialnumber=adms_kclone("YES");
             Y((yyval._yaccval),(p_adms)myexpression);
           }
-#line 3404 "y.tab.c"
+#line 3392 "y.tab.c"
     break;
 
   case 145: /* $@10: %empty  */
@@ -3409,7 +3397,7 @@ yyreduce:
             set_context(ctx_any); // from here, don't recognize node declarations.
                                   // they are not permitted anyway.
           }
-#line 3413 "y.tab.c"
+#line 3401 "y.tab.c"
     break;
 
   case 146: /* R_analog: tk_analog $@10 R_analogcode  */
@@ -3417,7 +3405,7 @@ yyreduce:
           {
             gModule->_analog=adms_analog_new(YY((yyvsp[0]._yaccval)));
           }
-#line 3421 "y.tab.c"
+#line 3409 "y.tab.c"
     break;
 
   case 147: /* R_analogcode: R_analogcode.atomic  */
@@ -3425,7 +3413,7 @@ yyreduce:
           {
             (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
-#line 3429 "y.tab.c"
+#line 3417 "y.tab.c"
     break;
 
   case 148: /* R_analogcode: R_analogcode.block  */
@@ -3433,7 +3421,7 @@ yyreduce:
           {
             (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
-#line 3437 "y.tab.c"
+#line 3425 "y.tab.c"
     break;
 
   case 149: /* R_l.expression: R_s.expression  */
@@ -3444,7 +3432,7 @@ yyreduce:
             adms_slist_push(&myArgs,YY((yyvsp[0]._yaccval)));
             Y((yyval._yaccval),(p_adms)myArgs);
           }
-#line 3448 "y.tab.c"
+#line 3436 "y.tab.c"
     break;
 
   case 150: /* R_l.expression: R_l.expression ',' R_s.expression  */
@@ -3455,7 +3443,7 @@ yyreduce:
             adms_slist_push(&myArgs,YY((yyvsp[0]._yaccval)));
             Y((yyval._yaccval),(p_adms)myArgs);
           }
-#line 3459 "y.tab.c"
+#line 3447 "y.tab.c"
     break;
 
   case 151: /* R_analogcode.atomic: R_d.attribute.0 R_d.blockvariable  */
@@ -3469,7 +3457,7 @@ yyreduce:
             adms_slist_free(gAttributeList); gAttributeList=NULL;
             (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
-#line 3473 "y.tab.c"
+#line 3461 "y.tab.c"
     break;
 
   case 152: /* R_analogcode.atomic: R_d.contribution  */
@@ -3477,7 +3465,7 @@ yyreduce:
           {
             (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
-#line 3481 "y.tab.c"
+#line 3469 "y.tab.c"
     break;
 
   case 153: /* R_analogcode.atomic: R_s.assignment ';'  */
@@ -3485,7 +3473,7 @@ yyreduce:
           {
             (yyval._yaccval)=(yyvsp[-1]._yaccval);
           }
-#line 3489 "y.tab.c"
+#line 3477 "y.tab.c"
     break;
 
   case 154: /* R_analogcode.atomic: R_d.conditional  */
@@ -3493,7 +3481,7 @@ yyreduce:
           {
             (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
-#line 3497 "y.tab.c"
+#line 3485 "y.tab.c"
     break;
 
   case 155: /* R_analogcode.atomic: R_d.while  */
@@ -3501,7 +3489,7 @@ yyreduce:
           {
             (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
-#line 3505 "y.tab.c"
+#line 3493 "y.tab.c"
     break;
 
   case 156: /* R_analogcode.atomic: R_d.case  */
@@ -3509,7 +3497,7 @@ yyreduce:
           {
             (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
-#line 3513 "y.tab.c"
+#line 3501 "y.tab.c"
     break;
 
   case 157: /* R_analogcode.atomic: R_d.for  */
@@ -3517,7 +3505,7 @@ yyreduce:
           {
             (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
-#line 3521 "y.tab.c"
+#line 3509 "y.tab.c"
     break;
 
   case 158: /* R_analogcode.atomic: tk_dollar_ident '(' R_l.expression ')' ';'  */
@@ -3532,7 +3520,7 @@ yyreduce:
             myfunction->_arguments=myArgs;
             Y((yyval._yaccval),(p_adms)mycallfunction);
           }
-#line 3536 "y.tab.c"
+#line 3524 "y.tab.c"
     break;
 
   case 159: /* R_analogcode.atomic: tk_dollar_ident '(' ')' ';'  */
@@ -3544,7 +3532,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)mycallfunction);
           }
-#line 3548 "y.tab.c"
+#line 3536 "y.tab.c"
     break;
 
   case 160: /* R_analogcode.atomic: tk_dollar_ident ';'  */
@@ -3556,7 +3544,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)mycallfunction);
           }
-#line 3560 "y.tab.c"
+#line 3548 "y.tab.c"
     break;
 
   case 161: /* R_analogcode.atomic: ';'  */
@@ -3565,7 +3553,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)adms_nilled_new(gModule));
           }
-#line 3569 "y.tab.c"
+#line 3557 "y.tab.c"
     break;
 
   case 162: /* R_analogcode.block: R_d.block  */
@@ -3573,7 +3561,7 @@ yyreduce:
           {
             (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
-#line 3577 "y.tab.c"
+#line 3565 "y.tab.c"
     break;
 
   case 163: /* R_analogcode.block: R_analogcode.block.atevent R_d.block  */
@@ -3583,7 +3571,7 @@ yyreduce:
             adms_lexval_free(((p_block)YY((yyval._yaccval)))->_lexval);
             ((p_block)YY((yyval._yaccval)))->_lexval=(p_lexval)YY((yyvsp[-1]._yaccval));
           }
-#line 3587 "y.tab.c"
+#line 3575 "y.tab.c"
     break;
 
   case 164: /* R_analogcode.block.atevent: '@' '(' tk_ident '(' R_l.analysis ')' ')'  */
@@ -3591,7 +3579,7 @@ yyreduce:
           {
             adms_veriloga_message_fatal("@ control not supported\n",(yyvsp[-4]._lexval));
           }
-#line 3595 "y.tab.c"
+#line 3583 "y.tab.c"
     break;
 
   case 165: /* R_analogcode.block.atevent: '@' tk_ident  */
@@ -3608,7 +3596,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)(yyvsp[0]._lexval));
           }
-#line 3612 "y.tab.c"
+#line 3600 "y.tab.c"
     break;
 
   case 166: /* R_analogcode.block.atevent: '@' '(' tk_ident ')'  */
@@ -3625,28 +3613,28 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)(yyvsp[-1]._lexval));
           }
-#line 3629 "y.tab.c"
+#line 3617 "y.tab.c"
     break;
 
   case 167: /* R_l.analysis: R_s.analysis  */
 #line 1442 "verilogaYacc.y"
           {
           }
-#line 3636 "y.tab.c"
+#line 3624 "y.tab.c"
     break;
 
   case 168: /* R_l.analysis: R_l.analysis ',' R_s.analysis  */
 #line 1445 "verilogaYacc.y"
           {
           }
-#line 3643 "y.tab.c"
+#line 3631 "y.tab.c"
     break;
 
   case 169: /* R_s.analysis: tk_anystring  */
 #line 1450 "verilogaYacc.y"
           {
           }
-#line 3650 "y.tab.c"
+#line 3638 "y.tab.c"
     break;
 
   case 170: /* R_d.block: R_d.block.begin tk_end  */
@@ -3656,7 +3644,7 @@ yyreduce:
             Y((yyval._yaccval),gBlockList->data);
             adms_slist_pull(&gBlockList);
           }
-#line 3660 "y.tab.c"
+#line 3648 "y.tab.c"
     break;
 
   case 171: /* R_d.block: R_d.block.begin ':' tk_ident tk_end  */
@@ -3667,7 +3655,7 @@ yyreduce:
             adms_slist_pull(&gBlockList);
             ((p_block)YY((yyval._yaccval)))->_lexval->_string=(yyvsp[-1]._lexval)->_string;
           }
-#line 3671 "y.tab.c"
+#line 3659 "y.tab.c"
     break;
 
   case 172: /* R_d.block: R_d.block.begin R_l.blockitem tk_end  */
@@ -3677,7 +3665,7 @@ yyreduce:
             Y((yyval._yaccval),gBlockList->data);
             adms_slist_pull(&gBlockList);
           }
-#line 3681 "y.tab.c"
+#line 3669 "y.tab.c"
     break;
 
   case 173: /* R_d.block: R_d.block.begin ':' tk_ident R_l.blockitem tk_end  */
@@ -3688,7 +3676,7 @@ yyreduce:
             adms_slist_pull(&gBlockList);
             ((p_block)YY((yyval._yaccval)))->_lexval->_string=(yyvsp[-2]._lexval)->_string;
           }
-#line 3692 "y.tab.c"
+#line 3680 "y.tab.c"
     break;
 
   case 174: /* R_d.block.begin: R_d.attribute.0 tk_begin  */
@@ -3704,7 +3692,7 @@ yyreduce:
             adms_slist_free(gAttributeList); gAttributeList=NULL;
             adms_slist_push(&gModule->_block,gBlockList->data);
           }
-#line 3708 "y.tab.c"
+#line 3696 "y.tab.c"
     break;
 
   case 175: /* R_l.blockitem: R_analogcode  */
@@ -3712,7 +3700,7 @@ yyreduce:
           {
             adms_slist_push(&((p_block)gBlockList->data)->_item,YY((yyvsp[0]._yaccval)));
           }
-#line 3716 "y.tab.c"
+#line 3704 "y.tab.c"
     break;
 
   case 176: /* R_l.blockitem: R_l.blockitem R_analogcode  */
@@ -3720,7 +3708,7 @@ yyreduce:
           {
             adms_slist_push(&((p_block)gBlockList->data)->_item,YY((yyvsp[0]._yaccval)));
           }
-#line 3724 "y.tab.c"
+#line 3712 "y.tab.c"
     break;
 
   case 177: /* R_d.blockvariable: tk_integer R_l.blockvariable ';'  */
@@ -3737,7 +3725,7 @@ yyreduce:
             gBlockVariableList=NULL;
             Y((yyval._yaccval),(p_adms)myblockvariable);
           }
-#line 3741 "y.tab.c"
+#line 3729 "y.tab.c"
     break;
 
   case 178: /* R_d.blockvariable: tk_real R_l.blockvariable ';'  */
@@ -3754,7 +3742,7 @@ yyreduce:
             gBlockVariableList=NULL;
             Y((yyval._yaccval),(p_adms)myblockvariable);
           }
-#line 3758 "y.tab.c"
+#line 3746 "y.tab.c"
     break;
 
   case 179: /* R_d.blockvariable: tk_string R_l.blockvariable ';'  */
@@ -3771,21 +3759,21 @@ yyreduce:
             gBlockVariableList=NULL;
             Y((yyval._yaccval),(p_adms)myblockvariable);
           }
-#line 3775 "y.tab.c"
+#line 3763 "y.tab.c"
     break;
 
   case 180: /* R_l.blockvariable: R_s.blockvariable  */
 #line 1548 "verilogaYacc.y"
           {
           }
-#line 3782 "y.tab.c"
+#line 3770 "y.tab.c"
     break;
 
   case 181: /* R_l.blockvariable: R_l.blockvariable ',' R_s.blockvariable  */
 #line 1551 "verilogaYacc.y"
           {
           }
-#line 3789 "y.tab.c"
+#line 3777 "y.tab.c"
     break;
 
   case 182: /* R_s.blockvariable: tk_ident  */
@@ -3795,7 +3783,7 @@ yyreduce:
             adms_block_list_variable_prepend_once_or_abort(((p_block)gBlockList->data),myvariableprototype); 
             adms_slist_push(&gBlockVariableList,(p_adms)myvariableprototype);
           }
-#line 3799 "y.tab.c"
+#line 3787 "y.tab.c"
     break;
 
   case 183: /* R_s.blockvariable: tk_ident '[' tk_integer ':' tk_integer ']'  */
@@ -3808,7 +3796,7 @@ yyreduce:
             myvariableprototype->_minsize=adms_number_new((yyvsp[-3]._lexval));
             myvariableprototype->_maxsize=adms_number_new((yyvsp[-1]._lexval));
           }
-#line 3812 "y.tab.c"
+#line 3800 "y.tab.c"
     break;
 
   case 184: /* R_d.contribution: R_contribution R_d.attribute.0 ';'  */
@@ -3820,7 +3808,7 @@ yyreduce:
             adms_slist_free(gAttributeList); gAttributeList=NULL;
             gContribution=NULL;
           }
-#line 3824 "y.tab.c"
+#line 3812 "y.tab.c"
     break;
 
   case 185: /* R_contribution: R_source '<' '+' R_s.expression  */
@@ -3834,7 +3822,7 @@ yyreduce:
             gContribution->_branchalias=gBranchAlias;
             gBranchAlias=NULL;
           }
-#line 3838 "y.tab.c"
+#line 3826 "y.tab.c"
     break;
 
   case 186: /* R_source: tk_ident '(' tk_ident ',' tk_ident ')'  */
@@ -3855,7 +3843,7 @@ yyreduce:
             gLexval=(yyvsp[-5]._lexval);
             Y((yyval._yaccval),(p_adms)gSource);
           }
-#line 3859 "y.tab.c"
+#line 3847 "y.tab.c"
     break;
 
   case 187: /* R_source: tk_ident '(' tk_ident ')'  */
@@ -3882,7 +3870,7 @@ yyreduce:
             gBranchAlias=branchalias;
             Y((yyval._yaccval),(p_adms)gSource);
           }
-#line 3886 "y.tab.c"
+#line 3874 "y.tab.c"
     break;
 
   case 188: /* R_d.while: tk_while '(' R_s.expression ')' R_analogcode  */
@@ -3893,7 +3881,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)mywhileloop);
           }
-#line 3897 "y.tab.c"
+#line 3885 "y.tab.c"
     break;
 
   case 189: /* R_d.for: tk_for '(' R_s.assignment ';' R_s.expression ';' R_s.assignment ')' R_analogcode  */
@@ -3904,7 +3892,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myforloop);
           }
-#line 3908 "y.tab.c"
+#line 3896 "y.tab.c"
     break;
 
   case 190: /* R_d.case: tk_case '(' R_s.expression ')' R_l.case.item tk_endcase  */
@@ -3916,7 +3904,7 @@ yyreduce:
             mycase->_caseitem=adms_slist_reverse((p_slist)YY((yyvsp[-1]._yaccval)));
             Y((yyval._yaccval),(p_adms)mycase);
           }
-#line 3920 "y.tab.c"
+#line 3908 "y.tab.c"
     break;
 
   case 191: /* R_l.case.item: R_s.case.item  */
@@ -3927,7 +3915,7 @@ yyreduce:
             adms_slist_push(&myArgs,YY((yyvsp[0]._yaccval)));
             Y((yyval._yaccval),(p_adms)myArgs);
           }
-#line 3931 "y.tab.c"
+#line 3919 "y.tab.c"
     break;
 
   case 192: /* R_l.case.item: R_l.case.item R_s.case.item  */
@@ -3938,7 +3926,7 @@ yyreduce:
             adms_slist_push(&myArgs,YY((yyvsp[0]._yaccval)));
             Y((yyval._yaccval),(p_adms)myArgs);
           }
-#line 3942 "y.tab.c"
+#line 3930 "y.tab.c"
     break;
 
   case 193: /* R_s.case.item: R_l.enode ':' R_analogcode  */
@@ -3950,7 +3938,7 @@ yyreduce:
             mycaseitem->_condition=adms_slist_reverse(myArgs);
             Y((yyval._yaccval),(p_adms)mycaseitem);
           }
-#line 3954 "y.tab.c"
+#line 3942 "y.tab.c"
     break;
 
   case 194: /* R_s.case.item: tk_default ':' R_analogcode  */
@@ -3961,7 +3949,7 @@ yyreduce:
             mycaseitem->_defaultcase=admse_yes;
             Y((yyval._yaccval),(p_adms)mycaseitem);
           }
-#line 3965 "y.tab.c"
+#line 3953 "y.tab.c"
     break;
 
   case 195: /* R_s.case.item: tk_default R_analogcode  */
@@ -3972,21 +3960,21 @@ yyreduce:
             mycaseitem->_defaultcase=admse_yes;
             Y((yyval._yaccval),(p_adms)mycaseitem);
           }
-#line 3976 "y.tab.c"
+#line 3964 "y.tab.c"
     break;
 
   case 196: /* R_s.paramlist.0: %empty  */
 #line 1705 "verilogaYacc.y"
           {
           }
-#line 3983 "y.tab.c"
+#line 3971 "y.tab.c"
     break;
 
   case 197: /* R_s.paramlist.0: '#' '(' R_l.instance.parameter ')'  */
 #line 1708 "verilogaYacc.y"
           {
           }
-#line 3990 "y.tab.c"
+#line 3978 "y.tab.c"
     break;
 
   case 198: /* R_s.instance: R_instance.module.name R_s.paramlist.0 tk_ident '(' R_l.node ')' ';'  */
@@ -4011,7 +3999,7 @@ yyreduce:
             adms_slist_free(gNodeList);gNodeList=NULL;
             adms_slist_free(gInstanceVariableList);gInstanceVariableList=NULL;
           }
-#line 4015 "y.tab.c"
+#line 4003 "y.tab.c"
     break;
 
   case 199: /* R_instance.module.name: tk_ident  */
@@ -4024,21 +4012,21 @@ yyreduce:
             if(!gInstanceModule)
               adms_message_fatal(("module '%s' not found\n",mylexval1));
           }
-#line 4028 "y.tab.c"
+#line 4016 "y.tab.c"
     break;
 
   case 200: /* R_l.instance.parameter: R_s.instance.parameter  */
 #line 1747 "verilogaYacc.y"
           {
           }
-#line 4035 "y.tab.c"
+#line 4023 "y.tab.c"
     break;
 
   case 201: /* R_l.instance.parameter: R_l.instance.parameter ',' R_s.instance.parameter  */
 #line 1750 "verilogaYacc.y"
           {
           }
-#line 4042 "y.tab.c"
+#line 4030 "y.tab.c"
     break;
 
   case 202: /* R_s.instance.parameter: '.' tk_ident '(' R_s.expression ')'  */
@@ -4060,7 +4048,7 @@ yyreduce:
                 adms_module_uid(gModule),adms_module_uid(gInstanceModule),mylexval2))
             }
           }
-#line 4064 "y.tab.c"
+#line 4052 "y.tab.c"
     break;
 
   case 203: /* R_s.assignment: tk_ident '=' R_s.expression  */
@@ -4079,7 +4067,7 @@ yyreduce:
             myvariableprototype->_vcount++;
             myvariableprototype->_vlast=myassignment;
           }
-#line 4083 "y.tab.c"
+#line 4071 "y.tab.c"
     break;
 
   case 204: /* R_s.assignment: R_d.attribute tk_ident '=' R_s.expression  */
@@ -4104,7 +4092,7 @@ yyreduce:
             myvariableprototype->_vcount++;
             myvariableprototype->_vlast=myassignment;
           }
-#line 4108 "y.tab.c"
+#line 4096 "y.tab.c"
     break;
 
   case 205: /* R_s.assignment: tk_ident '[' R_expression ']' '=' R_s.expression  */
@@ -4125,7 +4113,7 @@ yyreduce:
             myvariableprototype->_vcount++;
             myvariableprototype->_vlast=myassignment;
           }
-#line 4129 "y.tab.c"
+#line 4117 "y.tab.c"
     break;
 
   case 206: /* R_s.assignment: R_d.attribute tk_ident '[' R_expression ']' '=' R_s.expression  */
@@ -4152,7 +4140,7 @@ yyreduce:
             myvariableprototype->_vcount++;
             myvariableprototype->_vlast=myassignment;
           }
-#line 4156 "y.tab.c"
+#line 4144 "y.tab.c"
     break;
 
   case 207: /* R_d.conditional: tk_if '(' R_s.expression ')' R_analogcode  */
@@ -4164,7 +4152,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myconditional);
           }
-#line 4168 "y.tab.c"
+#line 4156 "y.tab.c"
     break;
 
   case 208: /* R_d.conditional: tk_if '(' R_s.expression ')' R_analogcode tk_else R_analogcode  */
@@ -4177,7 +4165,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myconditional);
           }
-#line 4181 "y.tab.c"
+#line 4169 "y.tab.c"
     break;
 
   case 209: /* R_s.expression: R_expression  */
@@ -4188,7 +4176,7 @@ yyreduce:
             (yyval._yaccval)=(yyvsp[0]._yaccval);
             Y((yyval._yaccval),(p_adms)myexpression);
           }
-#line 4192 "y.tab.c"
+#line 4180 "y.tab.c"
     break;
 
   case 210: /* R_l.enode: R_s.function_expression  */
@@ -4199,7 +4187,7 @@ yyreduce:
             adms_slist_push(&myArgs,YY((yyvsp[0]._yaccval)));
             Y((yyval._yaccval),(p_adms)myArgs);
           }
-#line 4203 "y.tab.c"
+#line 4191 "y.tab.c"
     break;
 
   case 211: /* R_l.enode: R_l.enode ',' R_s.function_expression  */
@@ -4210,7 +4198,7 @@ yyreduce:
             adms_slist_push(&myArgs,YY((yyvsp[0]._yaccval)));
             Y((yyval._yaccval),(p_adms)myArgs);
           }
-#line 4214 "y.tab.c"
+#line 4202 "y.tab.c"
     break;
 
   case 212: /* R_s.function_expression: R_expression  */
@@ -4218,7 +4206,7 @@ yyreduce:
           {
             (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
-#line 4222 "y.tab.c"
+#line 4210 "y.tab.c"
     break;
 
   case 213: /* R_expression: R_e.conditional  */
@@ -4226,7 +4214,7 @@ yyreduce:
           {
             (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
-#line 4230 "y.tab.c"
+#line 4218 "y.tab.c"
     break;
 
   case 214: /* R_e.conditional: R_e.bitwise_equ  */
@@ -4234,7 +4222,7 @@ yyreduce:
           {
             (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
-#line 4238 "y.tab.c"
+#line 4226 "y.tab.c"
     break;
 
   case 215: /* R_e.conditional: R_e.bitwise_equ '?' R_e.conditional ':' R_e.conditional  */
@@ -4247,7 +4235,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
-#line 4251 "y.tab.c"
+#line 4239 "y.tab.c"
     break;
 
   case 216: /* R_e.bitwise_equ: R_e.bitwise_xor  */
@@ -4255,7 +4243,7 @@ yyreduce:
           {
             (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
-#line 4259 "y.tab.c"
+#line 4247 "y.tab.c"
     break;
 
   case 217: /* R_e.bitwise_equ: R_e.bitwise_equ tk_bitwise_equr R_e.bitwise_xor  */
@@ -4267,7 +4255,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
-#line 4271 "y.tab.c"
+#line 4259 "y.tab.c"
     break;
 
   case 218: /* R_e.bitwise_equ: R_e.bitwise_equ '~' '^' R_e.bitwise_xor  */
@@ -4279,7 +4267,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
-#line 4283 "y.tab.c"
+#line 4271 "y.tab.c"
     break;
 
   case 219: /* R_e.bitwise_xor: R_e.bitwise_or  */
@@ -4287,7 +4275,7 @@ yyreduce:
           {
             (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
-#line 4291 "y.tab.c"
+#line 4279 "y.tab.c"
     break;
 
   case 220: /* R_e.bitwise_xor: R_e.bitwise_xor '^' R_e.bitwise_or  */
@@ -4299,7 +4287,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
-#line 4303 "y.tab.c"
+#line 4291 "y.tab.c"
     break;
 
   case 221: /* R_e.bitwise_or: R_e.bitwise_and  */
@@ -4307,7 +4295,7 @@ yyreduce:
           {
             (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
-#line 4311 "y.tab.c"
+#line 4299 "y.tab.c"
     break;
 
   case 222: /* R_e.bitwise_or: R_e.bitwise_or '|' R_e.bitwise_and  */
@@ -4319,7 +4307,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
-#line 4323 "y.tab.c"
+#line 4311 "y.tab.c"
     break;
 
   case 223: /* R_e.bitwise_and: R_e.logical_or  */
@@ -4327,7 +4315,7 @@ yyreduce:
           {
             (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
-#line 4331 "y.tab.c"
+#line 4319 "y.tab.c"
     break;
 
   case 224: /* R_e.bitwise_and: R_e.bitwise_and '&' R_e.logical_or  */
@@ -4339,7 +4327,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
-#line 4343 "y.tab.c"
+#line 4331 "y.tab.c"
     break;
 
   case 225: /* R_e.logical_or: R_e.logical_and  */
@@ -4347,7 +4335,7 @@ yyreduce:
           {
             (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
-#line 4351 "y.tab.c"
+#line 4339 "y.tab.c"
     break;
 
   case 226: /* R_e.logical_or: R_e.logical_or tk_or R_e.logical_and  */
@@ -4359,7 +4347,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
-#line 4363 "y.tab.c"
+#line 4351 "y.tab.c"
     break;
 
   case 227: /* R_e.logical_and: R_e.comp_equ  */
@@ -4367,7 +4355,7 @@ yyreduce:
           {
             (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
-#line 4371 "y.tab.c"
+#line 4359 "y.tab.c"
     break;
 
   case 228: /* R_e.logical_and: R_e.logical_and tk_and R_e.comp_equ  */
@@ -4379,7 +4367,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
-#line 4383 "y.tab.c"
+#line 4371 "y.tab.c"
     break;
 
   case 229: /* R_e.comp_equ: R_e.comp  */
@@ -4387,7 +4375,7 @@ yyreduce:
           {
             (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
-#line 4391 "y.tab.c"
+#line 4379 "y.tab.c"
     break;
 
   case 230: /* R_e.comp_equ: R_e.comp_equ '=' '=' R_e.comp  */
@@ -4399,7 +4387,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
-#line 4403 "y.tab.c"
+#line 4391 "y.tab.c"
     break;
 
   case 231: /* R_e.comp_equ: R_e.comp_equ '!' '=' R_e.comp  */
@@ -4411,7 +4399,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
-#line 4415 "y.tab.c"
+#line 4403 "y.tab.c"
     break;
 
   case 232: /* R_e.comp: R_e.bitwise_shift  */
@@ -4419,7 +4407,7 @@ yyreduce:
           {
             (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
-#line 4423 "y.tab.c"
+#line 4411 "y.tab.c"
     break;
 
   case 233: /* R_e.comp: R_e.comp '<' R_e.bitwise_shift  */
@@ -4431,7 +4419,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
-#line 4435 "y.tab.c"
+#line 4423 "y.tab.c"
     break;
 
   case 234: /* R_e.comp: R_e.comp '<' '=' R_e.bitwise_shift  */
@@ -4443,7 +4431,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
-#line 4447 "y.tab.c"
+#line 4435 "y.tab.c"
     break;
 
   case 235: /* R_e.comp: R_e.comp '>' R_e.bitwise_shift  */
@@ -4455,7 +4443,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
-#line 4459 "y.tab.c"
+#line 4447 "y.tab.c"
     break;
 
   case 236: /* R_e.comp: R_e.comp '>' '=' R_e.bitwise_shift  */
@@ -4467,7 +4455,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
-#line 4471 "y.tab.c"
+#line 4459 "y.tab.c"
     break;
 
   case 237: /* R_e.bitwise_shift: R_e.arithm_add  */
@@ -4475,7 +4463,7 @@ yyreduce:
           {
             (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
-#line 4479 "y.tab.c"
+#line 4467 "y.tab.c"
     break;
 
   case 238: /* R_e.bitwise_shift: R_e.bitwise_shift tk_op_shr R_e.arithm_add  */
@@ -4487,7 +4475,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
-#line 4491 "y.tab.c"
+#line 4479 "y.tab.c"
     break;
 
   case 239: /* R_e.bitwise_shift: R_e.bitwise_shift tk_op_shl R_e.arithm_add  */
@@ -4499,7 +4487,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
-#line 4503 "y.tab.c"
+#line 4491 "y.tab.c"
     break;
 
   case 240: /* R_e.arithm_add: R_e.arithm_mult  */
@@ -4507,7 +4495,7 @@ yyreduce:
           {
             (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
-#line 4511 "y.tab.c"
+#line 4499 "y.tab.c"
     break;
 
   case 241: /* R_e.arithm_add: R_e.arithm_add '+' R_e.arithm_mult  */
@@ -4519,7 +4507,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
-#line 4523 "y.tab.c"
+#line 4511 "y.tab.c"
     break;
 
   case 242: /* R_e.arithm_add: R_e.arithm_add '-' R_e.arithm_mult  */
@@ -4531,7 +4519,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
-#line 4535 "y.tab.c"
+#line 4523 "y.tab.c"
     break;
 
   case 243: /* R_e.arithm_mult: R_e.unary  */
@@ -4539,7 +4527,7 @@ yyreduce:
           {
             (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
-#line 4543 "y.tab.c"
+#line 4531 "y.tab.c"
     break;
 
   case 244: /* R_e.arithm_mult: R_e.arithm_mult '*' R_e.unary  */
@@ -4551,7 +4539,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
-#line 4555 "y.tab.c"
+#line 4543 "y.tab.c"
     break;
 
   case 245: /* R_e.arithm_mult: R_e.arithm_mult '/' R_e.unary  */
@@ -4563,7 +4551,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
-#line 4567 "y.tab.c"
+#line 4555 "y.tab.c"
     break;
 
   case 246: /* R_e.arithm_mult: R_e.arithm_mult '%' R_e.unary  */
@@ -4575,7 +4563,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
-#line 4579 "y.tab.c"
+#line 4567 "y.tab.c"
     break;
 
   case 247: /* R_e.unary: R_e.atomic  */
@@ -4583,7 +4571,7 @@ yyreduce:
           {
             (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
-#line 4587 "y.tab.c"
+#line 4575 "y.tab.c"
     break;
 
   case 248: /* R_e.unary: '+' R_e.atomic  */
@@ -4594,7 +4582,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)mymathapply);
           }
-#line 4598 "y.tab.c"
+#line 4586 "y.tab.c"
     break;
 
   case 249: /* R_e.unary: '-' R_e.atomic  */
@@ -4605,7 +4593,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)mymathapply);
           }
-#line 4609 "y.tab.c"
+#line 4597 "y.tab.c"
     break;
 
   case 250: /* R_e.unary: '!' R_e.atomic  */
@@ -4616,7 +4604,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)mymathapply);
           }
-#line 4620 "y.tab.c"
+#line 4608 "y.tab.c"
     break;
 
   case 251: /* R_e.unary: '~' R_e.atomic  */
@@ -4627,7 +4615,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)mymathapply);
           }
-#line 4631 "y.tab.c"
+#line 4619 "y.tab.c"
     break;
 
   case 252: /* R_e.atomic: tk_integer  */
@@ -4638,7 +4626,7 @@ yyreduce:
             mynumber->_cast=admse_i;
             Y((yyval._yaccval),(p_adms)mynumber);
           }
-#line 4642 "y.tab.c"
+#line 4630 "y.tab.c"
     break;
 
   case 253: /* R_e.atomic: tk_integer tk_ident  */
@@ -4673,7 +4661,7 @@ yyreduce:
             mynumber->_cast=admse_i;
             Y((yyval._yaccval),(p_adms)mynumber);
           }
-#line 4677 "y.tab.c"
+#line 4665 "y.tab.c"
     break;
 
   case 254: /* R_e.atomic: tk_number  */
@@ -4682,7 +4670,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)adms_number_new((yyvsp[0]._lexval)));
           }
-#line 4686 "y.tab.c"
+#line 4674 "y.tab.c"
     break;
 
   case 255: /* R_e.atomic: tk_number tk_ident  */
@@ -4716,7 +4704,7 @@ yyreduce:
             mynumber->_scalingunit=myunit;
             Y((yyval._yaccval),(p_adms)mynumber);
           }
-#line 4720 "y.tab.c"
+#line 4708 "y.tab.c"
     break;
 
   case 256: /* R_e.atomic: tk_char  */
@@ -4724,7 +4712,7 @@ yyreduce:
           {
             adms_veriloga_message_fatal("%s: character are not handled\n",(yyvsp[0]._lexval));
           }
-#line 4728 "y.tab.c"
+#line 4716 "y.tab.c"
     break;
 
   case 257: /* R_e.atomic: tk_anystring  */
@@ -4734,7 +4722,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)adms_string_new(mylexval1));
           }
-#line 4738 "y.tab.c"
+#line 4726 "y.tab.c"
     break;
 
   case 258: /* R_e.atomic: tk_ident  */
@@ -4756,7 +4744,7 @@ yyreduce:
             if(!YY((yyval._yaccval)))
               adms_veriloga_message_fatal("identifier never declared\n",(yyvsp[0]._lexval));
           }
-#line 4760 "y.tab.c"
+#line 4748 "y.tab.c"
     break;
 
   case 259: /* R_e.atomic: tk_dollar_ident  */
@@ -4766,7 +4754,7 @@ yyreduce:
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myfunction);
           }
-#line 4770 "y.tab.c"
+#line 4758 "y.tab.c"
     break;
 
   case 260: /* R_e.atomic: tk_ident '[' R_expression ']'  */
@@ -4778,7 +4766,7 @@ yyreduce:
                adms_veriloga_message_fatal("undefined array variable\n",(yyvsp[-3]._lexval));
             Y((yyval._yaccval),(p_adms)adms_array_new(myvariable,YY((yyvsp[-1]._yaccval))));
           }
-#line 4782 "y.tab.c"
+#line 4770 "y.tab.c"
     break;
 
   case 261: /* R_e.atomic: tk_dollar_ident '(' R_l.enode ')'  */
@@ -4791,7 +4779,7 @@ yyreduce:
             myfunction->_arguments=myArgs;
             Y((yyval._yaccval),(p_adms)myfunction);
           }
-#line 4795 "y.tab.c"
+#line 4783 "y.tab.c"
     break;
 
   case 262: /* R_e.atomic: tk_ident '(' R_l.enode ')'  */
@@ -4847,7 +4835,7 @@ yyreduce:
               Y((yyval._yaccval),(p_adms)myfunction);
             }
           }
-#line 4851 "y.tab.c"
+#line 4839 "y.tab.c"
     break;
 
   case 263: /* R_e.atomic: '(' R_expression ')'  */
@@ -4855,11 +4843,11 @@ yyreduce:
           {
             (yyval._yaccval)=(yyvsp[-1]._yaccval);
           }
-#line 4859 "y.tab.c"
+#line 4847 "y.tab.c"
     break;
 
 
-#line 4863 "y.tab.c"
+#line 4851 "y.tab.c"
 
       default: break;
     }
@@ -4941,6 +4929,7 @@ yyerrorlab:
      label yyerrorlab therefore never appears in user code.  */
   if (0)
     YYERROR;
+  ++yynerrs;
 
   /* Do not reclaim the symbols of the rule whose action triggered
      this YYERROR.  */
@@ -5001,7 +4990,7 @@ yyerrlab1:
 `-------------------------------------*/
 yyacceptlab:
   yyresult = 0;
-  goto yyreturn;
+  goto yyreturnlab;
 
 
 /*-----------------------------------.
@@ -5009,24 +4998,22 @@ yyacceptlab:
 `-----------------------------------*/
 yyabortlab:
   yyresult = 1;
-  goto yyreturn;
+  goto yyreturnlab;
 
 
-#if !defined yyoverflow
-/*-------------------------------------------------.
-| yyexhaustedlab -- memory exhaustion comes here.  |
-`-------------------------------------------------*/
+/*-----------------------------------------------------------.
+| yyexhaustedlab -- YYNOMEM (memory exhaustion) comes here.  |
+`-----------------------------------------------------------*/
 yyexhaustedlab:
   yyerror (YY_("memory exhausted"));
   yyresult = 2;
-  goto yyreturn;
-#endif
+  goto yyreturnlab;
 
 
-/*-------------------------------------------------------.
-| yyreturn -- parsing is finished, clean up and return.  |
-`-------------------------------------------------------*/
-yyreturn:
+/*----------------------------------------------------------.
+| yyreturnlab -- parsing is finished, clean up and return.  |
+`----------------------------------------------------------*/
+yyreturnlab:
   if (yychar != YYEMPTY)
     {
       /* Make sure we have latest lookahead translation.  See comments at

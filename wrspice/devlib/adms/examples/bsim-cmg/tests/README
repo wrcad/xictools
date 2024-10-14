@@ -1,0 +1,23 @@
+
+The .sp files are for HSPICE only, the .wrs files are the WRspice
+equivalents, created by Whiteley Research Inc.
+
+The Hspice (.sp) files don't work in WRspice, mostly due to the use of
+'x' as the device key letter.
+
+It is worth studying the .control lines in the .wrs files.  Use is
+made of new featrues introduced in wrspice-4.1.7 that facilitate
+loading of data from the Hspice results (.lis files) for direct
+comparison.  The Hspice results are included in all generated output
+from the .wrs files.  One can see that WRspice and Hspice results
+match very well, except for computed derivatives where Hspice does a
+surprisingly poor job.
+
+Instructions:
+
+Start WRspice in interactive mode.
+
+Use the devload command (or similar) to load the bsimcmg module.
+
+Run the .wrs files - they run automatically when sourced.
+

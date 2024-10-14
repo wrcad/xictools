@@ -139,7 +139,7 @@ again, these are harmless, but may represent declarations in the
 Verilog-A source that could be omitted.
 
 6.  If all goes well, a loadable module will be created.  This is a
-file with a ".so" extension (".dylib" under OS X, or ".dll" in
+file with a ".so" extension (".dylib" under macOS, or ".dll" in
 Windows) with the base name the same as the module name that you
 supplied in the Makefile.  You should be able to load this module into
 WRspice, and access the device description in simulation files.

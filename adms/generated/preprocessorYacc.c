@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 3.7.6.  */
+/* A Bison parser, made by GNU Bison 3.8.2.  */
 
 /* Bison implementation for Yacc-like parsers in C
 
@@ -46,10 +46,10 @@
    USER NAME SPACE" below.  */
 
 /* Identify Bison output, and Bison version.  */
-#define YYBISON 30706
+#define YYBISON 30802
 
 /* Bison version string.  */
-#define YYBISON_VERSION "3.7.6"
+#define YYBISON_VERSION "3.8.2"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -221,7 +221,9 @@ typedef union YYSTYPE YYSTYPE;
 
 extern YYSTYPE preprocessorlval;
 
+
 int preprocessorparse (void);
+
 
 #endif /* !YY_PREPROCESSOR_Y_TAB_H_INCLUDED  */
 /* Symbol kind.  */
@@ -449,12 +451,18 @@ typedef int yy_state_fast_t;
 # define YY_USE(E) /* empty */
 #endif
 
-#if defined __GNUC__ && ! defined __ICC && 407 <= __GNUC__ * 100 + __GNUC_MINOR__
 /* Suppress an incorrect diagnostic about yylval being uninitialized.  */
-# define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN                            \
+#if defined __GNUC__ && ! defined __ICC && 406 <= __GNUC__ * 100 + __GNUC_MINOR__
+# if __GNUC__ * 100 + __GNUC_MINOR__ < 407
+#  define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN                           \
+    _Pragma ("GCC diagnostic push")                                     \
+    _Pragma ("GCC diagnostic ignored \"-Wuninitialized\"")
+# else
+#  define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN                           \
     _Pragma ("GCC diagnostic push")                                     \
     _Pragma ("GCC diagnostic ignored \"-Wuninitialized\"")              \
     _Pragma ("GCC diagnostic ignored \"-Wmaybe-uninitialized\"")
+# endif
 # define YY_IGNORE_MAYBE_UNINITIALIZED_END      \
     _Pragma ("GCC diagnostic pop")
 #else
@@ -671,7 +679,7 @@ static const yytype_int8 yytranslate[] =
 };
 
 #if YYDEBUG
-  /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
+/* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
        0,   122,   122,   129,   133,   141,   156,   168,   183,   195,
@@ -725,18 +733,6 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#ifdef YYPRINT
-/* YYTOKNUM[NUM] -- (External) token number corresponding to the
-   (internal) symbol number NUM (which must be that of a token).  */
-static const yytype_int16 yytoknum[] =
-{
-       0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
-     265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
-     275,   276,   277,   278,   279,   280,   281,   282,   283,   284,
-     285,   286,    40,    41,    44
-};
-#endif
-
 #define YYPACT_NINF (-77)
 
 #define yypact_value_is_default(Yyn) \
@@ -747,8 +743,8 @@ static const yytype_int16 yytoknum[] =
 #define yytable_value_is_error(Yyn) \
   0
 
-  /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
-     STATE-NUM.  */
+/* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
+   STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
      133,   -77,   -77,   -77,   -77,   -14,   -77,     2,   -77,   -77,
@@ -765,9 +761,9 @@ static const yytype_int16 yypact[] =
      -77,   -77,   400
 };
 
-  /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
-     Performed when YYTABLE does not specify something else to do.  Zero
-     means the default is an error.  */
+/* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
+   Performed when YYTABLE does not specify something else to do.  Zero
+   means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
        0,    67,    69,    68,    36,    44,    37,    46,    40,    27,
@@ -784,7 +780,7 @@ static const yytype_int8 yydefact[] =
        5,     7,    53
 };
 
-  /* YYPGOTO[NTERM-NUM].  */
+/* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
      -77,   -77,   -44,   -27,   -77,   -77,   -77,   -77,   -17,   -53,
@@ -792,7 +788,7 @@ static const yytype_int8 yypgoto[] =
        1,   -65,   -77,   -76,   -40,   -77,   -77,   -77,   -47
 };
 
-  /* YYDEFGOTO[NTERM-NUM].  */
+/* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
        0,    26,    27,    28,    29,    30,    49,    51,    92,    93,
@@ -800,9 +796,9 @@ static const yytype_int8 yydefgoto[] =
       79,    80,    98,    81,    39,    40,    41,    65,    66
 };
 
-  /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
-     positive, shift that token.  If negative, reduce the rule whose
-     number is the opposite.  If YYTABLE_NINF, syntax error.  */
+/* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
+   positive, shift that token.  If negative, reduce the rule whose
+   number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
       47,    64,    89,    63,   101,    67,    42,    68,    99,   100,
@@ -899,8 +895,8 @@ static const yytype_int8 yycheck[] =
       -1,    -1,    32
 };
 
-  /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
-     symbol of state STATE-NUM.  */
+/* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
+   state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
        0,     4,     5,     6,     9,    10,    11,    12,    13,    15,
@@ -917,7 +913,7 @@ static const yytype_int8 yystos[] =
       44,    44,    56
 };
 
-  /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
+/* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
        0,    35,    36,    37,    37,    38,    38,    38,    38,    38,
@@ -931,7 +927,7 @@ static const yytype_int8 yyr1[] =
       62,    62,    63,    63
 };
 
-  /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
+/* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
        0,     2,     1,     1,     2,     6,     4,     6,     4,     1,
@@ -954,6 +950,7 @@ enum { YYENOMEM = -2 };
 #define YYACCEPT        goto yyacceptlab
 #define YYABORT         goto yyabortlab
 #define YYERROR         goto yyerrorlab
+#define YYNOMEM         goto yyexhaustedlab
 
 
 #define YYRECOVERING()  (!!yyerrstatus)
@@ -994,10 +991,7 @@ do {                                            \
     YYFPRINTF Args;                             \
 } while (0)
 
-/* This macro is provided for backward compatibility. */
-# ifndef YY_LOCATION_PRINT
-#  define YY_LOCATION_PRINT(File, Loc) ((void) 0)
-# endif
+
 
 
 # define YY_SYMBOL_PRINT(Title, Kind, Value, Location)                    \
@@ -1024,10 +1018,6 @@ yy_symbol_value_print (FILE *yyo,
   YY_USE (yyoutput);
   if (!yyvaluep)
     return;
-# ifdef YYPRINT
-  if (yykind < YYNTOKENS)
-    YYPRINT (yyo, yytoknum[yykind], *yyvaluep);
-# endif
   YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
   YY_USE (yykind);
   YY_IGNORE_MAYBE_UNINITIALIZED_END
@@ -1212,6 +1202,7 @@ yyparse (void)
   YYDPRINTF ((stderr, "Starting parse\n"));
 
   yychar = YYEMPTY; /* Cause a token to be read.  */
+
   goto yysetstate;
 
 
@@ -1237,7 +1228,7 @@ yysetstate:
 
   if (yyss + yystacksize - 1 <= yyssp)
 #if !defined yyoverflow && !defined YYSTACK_RELOCATE
-    goto yyexhaustedlab;
+    YYNOMEM;
 #else
     {
       /* Get the current used size of the three stacks, in elements.  */
@@ -1265,7 +1256,7 @@ yysetstate:
 # else /* defined YYSTACK_RELOCATE */
       /* Extend the stack our own way.  */
       if (YYMAXDEPTH <= yystacksize)
-        goto yyexhaustedlab;
+        YYNOMEM;
       yystacksize *= 2;
       if (YYMAXDEPTH < yystacksize)
         yystacksize = YYMAXDEPTH;
@@ -1276,7 +1267,7 @@ yysetstate:
           YY_CAST (union yyalloc *,
                    YYSTACK_ALLOC (YY_CAST (YYSIZE_T, YYSTACK_BYTES (yystacksize))));
         if (! yyptr)
-          goto yyexhaustedlab;
+          YYNOMEM;
         YYSTACK_RELOCATE (yyss_alloc, yyss);
         YYSTACK_RELOCATE (yyvs_alloc, yyvs);
 #  undef YYSTACK_RELOCATE
@@ -1297,6 +1288,7 @@ yysetstate:
         YYABORT;
     }
 #endif /* !defined yyoverflow && !defined YYSTACK_RELOCATE */
+
 
   if (yystate == YYFINAL)
     YYACCEPT;
@@ -1414,7 +1406,7 @@ yyreduce:
           {
             pproot()->Text=(yyvsp[0].slist);
           }
-#line 1418 "y.tab.c"
+#line 1410 "y.tab.c"
     break;
 
   case 3: /* R_list_of_conditional: R_conditional  */
@@ -1422,7 +1414,7 @@ yyreduce:
           {
             (yyval.slist)=(yyvsp[0].slist);
           }
-#line 1426 "y.tab.c"
+#line 1418 "y.tab.c"
     break;
 
   case 4: /* R_list_of_conditional: R_list_of_conditional R_conditional  */
@@ -1431,7 +1423,7 @@ yyreduce:
             (yyval.slist)=(yyvsp[0].slist);
             adms_slist_concat(&((yyval.slist)),(yyvsp[-1].slist));
           }
-#line 1435 "y.tab.c"
+#line 1427 "y.tab.c"
     break;
 
   case 5: /* R_conditional: R_if R_ifdef R_list_of_conditional R_else R_list_of_conditional R_endif  */
@@ -1450,7 +1442,7 @@ yyreduce:
             adms_slist_pull(&pproot()->skipp_text);
             adms_slist_pull(&condistrue);
           }
-#line 1454 "y.tab.c"
+#line 1446 "y.tab.c"
     break;
 
   case 6: /* R_conditional: R_if R_ifdef R_list_of_conditional R_endif  */
@@ -1466,7 +1458,7 @@ yyreduce:
             adms_slist_pull(&pproot()->skipp_text);
             adms_slist_pull(&condistrue);
           }
-#line 1470 "y.tab.c"
+#line 1462 "y.tab.c"
     break;
 
   case 7: /* R_conditional: R_ifn R_ifndef R_list_of_conditional R_else R_list_of_conditional R_endif  */
@@ -1485,7 +1477,7 @@ yyreduce:
             adms_slist_pull(&pproot()->skipp_text);
             adms_slist_pull(&condistrue);
           }
-#line 1489 "y.tab.c"
+#line 1481 "y.tab.c"
     break;
 
   case 8: /* R_conditional: R_ifn R_ifndef R_list_of_conditional R_endif  */
@@ -1501,7 +1493,7 @@ yyreduce:
             adms_slist_pull(&pproot()->skipp_text);
             adms_slist_pull(&condistrue);
           }
-#line 1505 "y.tab.c"
+#line 1497 "y.tab.c"
     break;
 
   case 9: /* R_conditional: R_alternative  */
@@ -1509,7 +1501,7 @@ yyreduce:
           {
             (yyval.slist)=(yyvsp[0].slist);
           }
-#line 1513 "y.tab.c"
+#line 1505 "y.tab.c"
     break;
 
   case 10: /* R_if: TK_IFDEF  */
@@ -1518,7 +1510,7 @@ yyreduce:
             p_preprocessor_text newtext=adms_preprocessor_new_text_as_string((yyvsp[0].mystr));
             (yyval.slist)=adms_slist_new((p_adms)newtext);
           }
-#line 1522 "y.tab.c"
+#line 1514 "y.tab.c"
     break;
 
   case 11: /* R_ifn: TK_IFNDEF  */
@@ -1527,7 +1519,7 @@ yyreduce:
             p_preprocessor_text newtext=adms_preprocessor_new_text_as_string((yyvsp[0].mystr));
             (yyval.slist)=adms_slist_new((p_adms)newtext);
           }
-#line 1531 "y.tab.c"
+#line 1523 "y.tab.c"
     break;
 
   case 12: /* R_ifdef: TK_PRAGMA_NAME  */
@@ -1550,7 +1542,7 @@ yyreduce:
               adms_slist_push(&pproot()->skipp_text,INT2ADMS(1));
             }
           }
-#line 1554 "y.tab.c"
+#line 1546 "y.tab.c"
     break;
 
   case 13: /* R_ifndef: TK_PRAGMA_NAME  */
@@ -1573,7 +1565,7 @@ yyreduce:
               adms_slist_push(&pproot()->skipp_text,INT2ADMS(1));
             }
           }
-#line 1577 "y.tab.c"
+#line 1569 "y.tab.c"
     break;
 
   case 14: /* R_else: TK_ELSE  */
@@ -1588,7 +1580,7 @@ yyreduce:
             else
               pproot()->skipp_text->data=INT2ADMS(1);
           }
-#line 1592 "y.tab.c"
+#line 1584 "y.tab.c"
     break;
 
   case 15: /* R_endif: TK_ENDIF  */
@@ -1597,7 +1589,7 @@ yyreduce:
             p_preprocessor_text newtext=adms_preprocessor_new_text_as_string((yyvsp[0].mystr));
             (yyval.slist)=adms_slist_new((p_adms)newtext);
           }
-#line 1601 "y.tab.c"
+#line 1593 "y.tab.c"
     break;
 
   case 16: /* R_include: TK_INCLUDE  */
@@ -1607,7 +1599,7 @@ yyreduce:
             newtext=adms_preprocessor_new_text_as_string((yyvsp[0].mystr));
             (yyval.slist)=adms_slist_new((p_adms)newtext);
           }
-#line 1611 "y.tab.c"
+#line 1603 "y.tab.c"
     break;
 
   case 17: /* R_undef: TK_UNDEF TK_PRAGMA_NAME  */
@@ -1615,7 +1607,7 @@ yyreduce:
           {
             (yyval.mystr)=(yyvsp[0].mystr);
           }
-#line 1619 "y.tab.c"
+#line 1611 "y.tab.c"
     break;
 
   case 18: /* R_alternative: R_pragma  */
@@ -1623,7 +1615,7 @@ yyreduce:
           {
             (yyval.slist)=(yyvsp[0].slist);
           }
-#line 1627 "y.tab.c"
+#line 1619 "y.tab.c"
     break;
 
   case 19: /* R_alternative: R_notpragma  */
@@ -1631,7 +1623,7 @@ yyreduce:
           {
             (yyval.slist)=(yyvsp[0].slist);
           }
-#line 1635 "y.tab.c"
+#line 1627 "y.tab.c"
     break;
 
   case 20: /* R_pragma: R_include  */
@@ -1639,7 +1631,7 @@ yyreduce:
           {
             (yyval.slist)=(yyvsp[0].slist);
           }
-#line 1643 "y.tab.c"
+#line 1635 "y.tab.c"
     break;
 
   case 21: /* R_pragma: R_define_alternative  */
@@ -1647,7 +1639,7 @@ yyreduce:
           {
             (yyval.slist)=(yyvsp[0].slist);
           }
-#line 1651 "y.tab.c"
+#line 1643 "y.tab.c"
     break;
 
   case 22: /* R_pragma: R_undef  */
@@ -1656,7 +1648,7 @@ yyreduce:
             (yyval.slist)=NULL;
             if(DONT_SKIPP) adms_preprocessor_identifer_set_undef((yyvsp[0].mystr));
           }
-#line 1660 "y.tab.c"
+#line 1652 "y.tab.c"
     break;
 
   case 23: /* R_pragma: TK_ERROR_UNEXPECTED_CHAR  */
@@ -1664,7 +1656,7 @@ yyreduce:
           {
             (yyval.slist)=NULL;
           }
-#line 1668 "y.tab.c"
+#line 1660 "y.tab.c"
     break;
 
   case 24: /* R_pragma: TK_ERROR_FILE_OPEN  */
@@ -1677,7 +1669,7 @@ yyreduce:
             free(pproot()->cr_scanner->cur_message);
             pproot()->cr_scanner->cur_message=NULL;
           }
-#line 1681 "y.tab.c"
+#line 1673 "y.tab.c"
     break;
 
   case 25: /* R_pragma: TK_ERROR_PRAGMA_DEFINITION  */
@@ -1691,7 +1683,7 @@ yyreduce:
             free(pproot()->cr_scanner->cur_message);
             pproot()->cr_scanner->cur_message=NULL;
           }
-#line 1695 "y.tab.c"
+#line 1687 "y.tab.c"
     break;
 
   case 26: /* R_notpragma: R_substitutor  */
@@ -1699,7 +1691,7 @@ yyreduce:
           {
             (yyval.slist)=(yyvsp[0].slist);
           }
-#line 1703 "y.tab.c"
+#line 1695 "y.tab.c"
     break;
 
   case 27: /* R_notpragma: TK_NOPRAGMA_CONTINUATOR  */
@@ -1709,7 +1701,7 @@ yyreduce:
             adms_slist_push(&continuatorList,(p_adms)newtext);
             (yyval.slist)=NULL;
           }
-#line 1713 "y.tab.c"
+#line 1705 "y.tab.c"
     break;
 
   case 28: /* R_notpragma: TK_EOL  */
@@ -1723,7 +1715,7 @@ yyreduce:
             pproot()->cr_scanner->cur_char_position=1;
             pproot()->cr_scanner->cur_continuator_position=NULL;
           }
-#line 1727 "y.tab.c"
+#line 1719 "y.tab.c"
     break;
 
   case 29: /* R_notpragma: R_other  */
@@ -1731,7 +1723,7 @@ yyreduce:
           {
             (yyval.slist)=(yyvsp[0].slist);
           }
-#line 1735 "y.tab.c"
+#line 1727 "y.tab.c"
     break;
 
   case 30: /* R_notpragma: TK_ERROR_PRAGMA_NOT_FOUND  */
@@ -1745,7 +1737,7 @@ yyreduce:
             free(pproot()->cr_scanner->cur_message);
             pproot()->cr_scanner->cur_message=NULL;
           }
-#line 1749 "y.tab.c"
+#line 1741 "y.tab.c"
     break;
 
   case 31: /* R_define_notpragma: R_substitutor  */
@@ -1753,7 +1745,7 @@ yyreduce:
           {
             (yyval.slist)=(yyvsp[0].slist);
           }
-#line 1757 "y.tab.c"
+#line 1749 "y.tab.c"
     break;
 
   case 32: /* R_define_notpragma: TK_CONTINUATOR  */
@@ -1764,7 +1756,7 @@ yyreduce:
             adms_slist_push(&continuatorList,(p_adms)newtext1);
             (yyval.slist)=adms_slist_new((p_adms)newtext2);
           }
-#line 1768 "y.tab.c"
+#line 1760 "y.tab.c"
     break;
 
   case 33: /* R_define_notpragma: TK_EOL  */
@@ -1778,7 +1770,7 @@ yyreduce:
             pproot()->cr_scanner->cur_char_position=1;
             pproot()->cr_scanner->cur_continuator_position=NULL;
           }
-#line 1782 "y.tab.c"
+#line 1774 "y.tab.c"
     break;
 
   case 34: /* R_define_notpragma: R_other  */
@@ -1786,7 +1778,7 @@ yyreduce:
           {
             (yyval.slist)=(yyvsp[0].slist);
           }
-#line 1790 "y.tab.c"
+#line 1782 "y.tab.c"
     break;
 
   case 35: /* R_define_notpragma: TK_ERROR_PRAGMA_NOT_FOUND  */
@@ -1800,7 +1792,7 @@ yyreduce:
             free(pproot()->cr_scanner->cur_message);
             pproot()->cr_scanner->cur_message=NULL;
           }
-#line 1804 "y.tab.c"
+#line 1796 "y.tab.c"
     break;
 
   case 36: /* R_substitutor: TK_SUBSTITUTOR_NOARG  */
@@ -1809,7 +1801,7 @@ yyreduce:
             p_preprocessor_pragma_define Define=adms_preprocessor_pragma_define_exists((yyvsp[0].mystr));
             (yyval.slist)=adms_preprocessor_new_text_as_substitutor(Define,NULL);
           }
-#line 1813 "y.tab.c"
+#line 1805 "y.tab.c"
     break;
 
   case 37: /* R_substitutor: TK_SUBSTITUTOR_NULLARG_ALONE  */
@@ -1818,7 +1810,7 @@ yyreduce:
             p_preprocessor_pragma_define Define=adms_preprocessor_pragma_define_exists((yyvsp[0].mystr));
             (yyval.slist)=adms_preprocessor_new_text_as_substitutor(Define,NULL);
           }
-#line 1822 "y.tab.c"
+#line 1814 "y.tab.c"
     break;
 
   case 38: /* R_substitutor: R_substitutor_nullarg R_arg_null  */
@@ -1827,7 +1819,7 @@ yyreduce:
             p_preprocessor_pragma_define Define=adms_preprocessor_pragma_define_exists((yyvsp[-1].mystr));
             (yyval.slist)=adms_preprocessor_new_text_as_substitutor(Define,NULL);
           }
-#line 1831 "y.tab.c"
+#line 1823 "y.tab.c"
     break;
 
   case 39: /* R_substitutor: R_substitutor_nullarg '(' R_substitutor_list_of_arg ')'  */
@@ -1840,7 +1832,7 @@ yyreduce:
             adms_preprocessor_add_message(message);
             pproot()->error += 1;
           }
-#line 1844 "y.tab.c"
+#line 1836 "y.tab.c"
     break;
 
   case 40: /* R_substitutor: TK_SUBSTITUTOR_WITHARG_ALONE  */
@@ -1854,7 +1846,7 @@ yyreduce:
             pproot()->error += 1;
             adms_slist_push(&((yyval.slist)),(p_adms)(yyvsp[0].mystr));
           }
-#line 1858 "y.tab.c"
+#line 1850 "y.tab.c"
     break;
 
   case 41: /* R_substitutor: R_substitutor_witharg R_arg_null  */
@@ -1867,7 +1859,7 @@ yyreduce:
             adms_preprocessor_add_message(message);
             pproot()->error += 1;
           }
-#line 1871 "y.tab.c"
+#line 1863 "y.tab.c"
     break;
 
   case 42: /* R_substitutor: R_substitutor_witharg '(' R_substitutor_list_of_arg ')'  */
@@ -1913,7 +1905,7 @@ yyreduce:
             }
             (yyval.slist)=adms_preprocessor_new_text_as_substitutor(Define, (yyvsp[-1].slist));
           }
-#line 1917 "y.tab.c"
+#line 1909 "y.tab.c"
     break;
 
   case 43: /* R_substitutor_nullarg: TK_SUBSTITUTOR_NULLARG TK_SPACE  */
@@ -1921,7 +1913,7 @@ yyreduce:
           {
             (yyval.mystr)=(yyvsp[-1].mystr);
           }
-#line 1925 "y.tab.c"
+#line 1917 "y.tab.c"
     break;
 
   case 44: /* R_substitutor_nullarg: TK_SUBSTITUTOR_NULLARG  */
@@ -1929,7 +1921,7 @@ yyreduce:
           {
             (yyval.mystr)=(yyvsp[0].mystr);
           }
-#line 1933 "y.tab.c"
+#line 1925 "y.tab.c"
     break;
 
   case 45: /* R_substitutor_witharg: TK_SUBSTITUTOR_WITHARG TK_SPACE  */
@@ -1937,7 +1929,7 @@ yyreduce:
           {
             (yyval.mystr)=(yyvsp[-1].mystr);
           }
-#line 1941 "y.tab.c"
+#line 1933 "y.tab.c"
     break;
 
   case 46: /* R_substitutor_witharg: TK_SUBSTITUTOR_WITHARG  */
@@ -1945,14 +1937,14 @@ yyreduce:
           {
             (yyval.mystr)=(yyvsp[0].mystr);
           }
-#line 1949 "y.tab.c"
+#line 1941 "y.tab.c"
     break;
 
   case 47: /* R_arg_null: '(' ')'  */
 #line 533 "preprocessorYacc.y"
           {
           }
-#line 1956 "y.tab.c"
+#line 1948 "y.tab.c"
     break;
 
   case 48: /* R_substitutor_list_of_arg: R_list_of_arg  */
@@ -1960,7 +1952,7 @@ yyreduce:
           {
             (yyval.slist)=adms_slist_new((p_adms)(yyvsp[0].slist));
           }
-#line 1964 "y.tab.c"
+#line 1956 "y.tab.c"
     break;
 
   case 49: /* R_substitutor_list_of_arg: R_substitutor_list_of_arg ',' R_list_of_arg  */
@@ -1969,7 +1961,7 @@ yyreduce:
             adms_slist_push(&((yyvsp[-2].slist)),(p_adms)(yyvsp[0].slist));
             (yyval.slist)=(yyvsp[-2].slist);
           }
-#line 1973 "y.tab.c"
+#line 1965 "y.tab.c"
     break;
 
   case 50: /* R_list_of_arg: R_arg  */
@@ -1977,7 +1969,7 @@ yyreduce:
           {
             (yyval.slist)=(yyvsp[0].slist);
           }
-#line 1981 "y.tab.c"
+#line 1973 "y.tab.c"
     break;
 
   case 51: /* R_list_of_arg: R_list_of_arg R_arg  */
@@ -1986,7 +1978,7 @@ yyreduce:
             (yyval.slist)=(yyvsp[0].slist);
             adms_slist_concat(&((yyval.slist)),(yyvsp[-1].slist));
           }
-#line 1990 "y.tab.c"
+#line 1982 "y.tab.c"
     break;
 
   case 52: /* R_list_of_arg_with_comma: R_list_of_arg  */
@@ -1994,7 +1986,7 @@ yyreduce:
           {
             (yyval.slist)=(yyvsp[0].slist);
           }
-#line 1998 "y.tab.c"
+#line 1990 "y.tab.c"
     break;
 
   case 53: /* R_list_of_arg_with_comma: R_list_of_arg_with_comma ',' R_list_of_arg  */
@@ -2005,7 +1997,7 @@ yyreduce:
             (yyval.slist)=(yyvsp[0].slist);
             adms_slist_concat(&((yyval.slist)),(yyvsp[-2].slist));
           }
-#line 2009 "y.tab.c"
+#line 2001 "y.tab.c"
     break;
 
   case 54: /* R_arg: TK_SPACE  */
@@ -2014,18 +2006,18 @@ yyreduce:
             p_preprocessor_text newtext=adms_preprocessor_new_text_as_string((yyvsp[0].mystr));
             (yyval.slist)=adms_slist_new((p_adms)newtext);
           }
-#line 2018 "y.tab.c"
+#line 2010 "y.tab.c"
     break;
 
   case 55: /* R_arg: TK_CONTINUATOR  */
 #line 581 "preprocessorYacc.y"
           {
-            /* SRW - fix bsim6.va parse problem, string macro arg broken by
+            /* SRW -- fix parse problem, string macro arg broken by
              * continuator caused 'unexpected end of line' error.
              */
             (yyval.slist)=0;
           }
-#line 2029 "y.tab.c"
+#line 2021 "y.tab.c"
     break;
 
   case 56: /* R_arg: TK_COMMENT  */
@@ -2034,7 +2026,7 @@ yyreduce:
             p_preprocessor_text newtext=adms_preprocessor_new_text_as_string((yyvsp[0].mystr));
             (yyval.slist)=adms_slist_new((p_adms)newtext);
           }
-#line 2038 "y.tab.c"
+#line 2030 "y.tab.c"
     break;
 
   case 57: /* R_arg: TK_EOL  */
@@ -2046,7 +2038,7 @@ yyreduce:
             pproot()->cr_scanner->cur_continuator_position=NULL;
             (yyval.slist)=adms_slist_new((p_adms)newtext);
           }
-#line 2050 "y.tab.c"
+#line 2042 "y.tab.c"
     break;
 
   case 58: /* R_arg: '(' R_list_of_arg_with_comma ')'  */
@@ -2058,7 +2050,7 @@ yyreduce:
             adms_slist_concat(&((yyval.slist)),adms_slist_new((p_adms)lparen));
             adms_slist_push(&((yyval.slist)),(p_adms)rparen);
           }
-#line 2062 "y.tab.c"
+#line 2054 "y.tab.c"
     break;
 
   case 59: /* R_arg: '(' ')'  */
@@ -2069,7 +2061,7 @@ yyreduce:
             (yyval.slist)=adms_slist_new((p_adms)lparen);
             adms_slist_push(&((yyval.slist)),(p_adms)rparen);
           }
-#line 2073 "y.tab.c"
+#line 2065 "y.tab.c"
     break;
 
   case 60: /* R_arg: TK_IDENT  */
@@ -2078,7 +2070,7 @@ yyreduce:
             p_preprocessor_text newtext=adms_preprocessor_new_text_as_string((yyvsp[0].mystr));
             (yyval.slist)=adms_slist_new((p_adms)newtext);
           }
-#line 2082 "y.tab.c"
+#line 2074 "y.tab.c"
     break;
 
   case 61: /* R_arg: TK_STRING  */
@@ -2087,7 +2079,7 @@ yyreduce:
             p_preprocessor_text newtext=adms_preprocessor_new_text_as_string((yyvsp[0].mystr));
             (yyval.slist)=adms_slist_new((p_adms)newtext);
           }
-#line 2091 "y.tab.c"
+#line 2083 "y.tab.c"
     break;
 
   case 62: /* R_arg: TK_NOT_IDENT  */
@@ -2096,7 +2088,7 @@ yyreduce:
             p_preprocessor_text newtext=adms_preprocessor_new_text_as_string((yyvsp[0].mystr));
             (yyval.slist)=adms_slist_new((p_adms)newtext);
           }
-#line 2100 "y.tab.c"
+#line 2092 "y.tab.c"
     break;
 
   case 63: /* R_arg: R_substitutor  */
@@ -2104,7 +2096,7 @@ yyreduce:
           {
             (yyval.slist)=(yyvsp[0].slist);
           }
-#line 2108 "y.tab.c"
+#line 2100 "y.tab.c"
     break;
 
   case 64: /* R_other: '('  */
@@ -2113,7 +2105,7 @@ yyreduce:
             p_preprocessor_text newtext=adms_preprocessor_new_text_as_string("(");
             (yyval.slist)=adms_slist_new((p_adms)newtext);
           }
-#line 2117 "y.tab.c"
+#line 2109 "y.tab.c"
     break;
 
   case 65: /* R_other: ')'  */
@@ -2122,7 +2114,7 @@ yyreduce:
             p_preprocessor_text newtext=adms_preprocessor_new_text_as_string(")");
             (yyval.slist)=adms_slist_new((p_adms)newtext);
           }
-#line 2126 "y.tab.c"
+#line 2118 "y.tab.c"
     break;
 
   case 66: /* R_other: ','  */
@@ -2131,7 +2123,7 @@ yyreduce:
             p_preprocessor_text newtext=adms_preprocessor_new_text_as_string(",");
             (yyval.slist)=adms_slist_new((p_adms)newtext);
           }
-#line 2135 "y.tab.c"
+#line 2127 "y.tab.c"
     break;
 
   case 67: /* R_other: TK_IDENT  */
@@ -2140,7 +2132,7 @@ yyreduce:
             p_preprocessor_text newtext=adms_preprocessor_new_text_as_string((yyvsp[0].mystr));
             (yyval.slist)=adms_slist_new((p_adms)newtext);
           }
-#line 2144 "y.tab.c"
+#line 2136 "y.tab.c"
     break;
 
   case 68: /* R_other: TK_NOT_IDENT  */
@@ -2149,7 +2141,7 @@ yyreduce:
             p_preprocessor_text newtext=adms_preprocessor_new_text_as_string((yyvsp[0].mystr));
             (yyval.slist)=adms_slist_new((p_adms)newtext);
           }
-#line 2153 "y.tab.c"
+#line 2145 "y.tab.c"
     break;
 
   case 69: /* R_other: TK_STRING  */
@@ -2158,7 +2150,7 @@ yyreduce:
             p_preprocessor_text newtext=adms_preprocessor_new_text_as_string((yyvsp[0].mystr));
             (yyval.slist)=adms_slist_new((p_adms)newtext);
           }
-#line 2162 "y.tab.c"
+#line 2154 "y.tab.c"
     break;
 
   case 70: /* R_other: TK_SPACE  */
@@ -2167,7 +2159,7 @@ yyreduce:
             p_preprocessor_text newtext=adms_preprocessor_new_text_as_string((yyvsp[0].mystr));
             (yyval.slist)=adms_slist_new((p_adms)newtext);
           }
-#line 2171 "y.tab.c"
+#line 2163 "y.tab.c"
     break;
 
   case 71: /* R_other: TK_COMMENT  */
@@ -2176,7 +2168,7 @@ yyreduce:
             p_preprocessor_text newtext=adms_preprocessor_new_text_as_string((yyvsp[0].mystr));
             (yyval.slist)=adms_slist_new((p_adms)newtext);
           }
-#line 2180 "y.tab.c"
+#line 2172 "y.tab.c"
     break;
 
   case 72: /* R_other: TK_EOF  */
@@ -2185,7 +2177,7 @@ yyreduce:
             p_preprocessor_text newtext=adms_preprocessor_new_text_as_string((yyvsp[0].mystr));
             (yyval.slist)=adms_slist_new((p_adms)newtext);
           }
-#line 2189 "y.tab.c"
+#line 2181 "y.tab.c"
     break;
 
   case 73: /* R_define_alternative: R_define TK_DEFINE_END  */
@@ -2195,7 +2187,7 @@ yyreduce:
             if(DONT_SKIPP) Define=adms_preprocessor_define_add((yyvsp[-1].mystr));
             (yyval.slist)=NULL;
           }
-#line 2199 "y.tab.c"
+#line 2191 "y.tab.c"
     break;
 
   case 74: /* R_define_alternative: R_define R_define_text TK_DEFINE_END  */
@@ -2205,7 +2197,7 @@ yyreduce:
             if(DONT_SKIPP) Define=adms_preprocessor_define_add_with_text((yyvsp[-2].mystr), (yyvsp[-1].slist));
             (yyval.slist)=NULL;
           }
-#line 2209 "y.tab.c"
+#line 2201 "y.tab.c"
     break;
 
   case 75: /* R_define_alternative: R_define TK_ARG_NULL TK_DEFINE_END  */
@@ -2215,7 +2207,7 @@ yyreduce:
             if(DONT_SKIPP) Define=adms_preprocessor_define_add_with_arg((yyvsp[-2].mystr), NULL);
             (yyval.slist)=NULL;
           }
-#line 2219 "y.tab.c"
+#line 2211 "y.tab.c"
     break;
 
   case 76: /* R_define_alternative: R_define TK_ARG_NULL R_define_text TK_DEFINE_END  */
@@ -2225,7 +2217,7 @@ yyreduce:
             if(DONT_SKIPP) Define=adms_preprocessor_define_add_with_arg_and_text((yyvsp[-3].mystr), NULL, (yyvsp[-1].slist));
             (yyval.slist)=NULL;
           }
-#line 2229 "y.tab.c"
+#line 2221 "y.tab.c"
     break;
 
   case 77: /* R_define_alternative: R_define R_define_list_of_arg TK_DEFINE_END  */
@@ -2235,7 +2227,7 @@ yyreduce:
             if(DONT_SKIPP) Define=adms_preprocessor_define_add_with_arg((yyvsp[-2].mystr), (yyvsp[-1].slist));
             (yyval.slist)=NULL;
           }
-#line 2239 "y.tab.c"
+#line 2231 "y.tab.c"
     break;
 
   case 78: /* R_define_alternative: R_define R_define_list_of_arg R_define_text TK_DEFINE_END  */
@@ -2245,7 +2237,7 @@ yyreduce:
             if(DONT_SKIPP) Define=adms_preprocessor_define_add_with_arg_and_text((yyvsp[-3].mystr), (yyvsp[-2].slist), (yyvsp[-1].slist));
             (yyval.slist)=NULL;
           }
-#line 2249 "y.tab.c"
+#line 2241 "y.tab.c"
     break;
 
   case 79: /* R_define: TK_DEFINE TK_PRAGMA_NAME  */
@@ -2253,7 +2245,7 @@ yyreduce:
           {
             (yyval.mystr)=(yyvsp[0].mystr);
           }
-#line 2257 "y.tab.c"
+#line 2249 "y.tab.c"
     break;
 
   case 80: /* R_define_list_of_arg: TK_ARG  */
@@ -2261,7 +2253,7 @@ yyreduce:
           {
             (yyval.slist)=adms_slist_new((p_adms)(yyvsp[0].mystr));
           }
-#line 2265 "y.tab.c"
+#line 2257 "y.tab.c"
     break;
 
   case 81: /* R_define_list_of_arg: R_define_list_of_arg TK_ARG  */
@@ -2270,7 +2262,7 @@ yyreduce:
             adms_slist_push(&((yyvsp[-1].slist)),(p_adms)(yyvsp[0].mystr));
             (yyval.slist)=(yyvsp[-1].slist);
           }
-#line 2274 "y.tab.c"
+#line 2266 "y.tab.c"
     break;
 
   case 82: /* R_define_text: R_define_notpragma  */
@@ -2278,7 +2270,7 @@ yyreduce:
           {
             (yyval.slist)=(yyvsp[0].slist);
           }
-#line 2282 "y.tab.c"
+#line 2274 "y.tab.c"
     break;
 
   case 83: /* R_define_text: R_define_text R_define_notpragma  */
@@ -2287,11 +2279,11 @@ yyreduce:
             (yyval.slist)=(yyvsp[0].slist);
             adms_slist_concat(&((yyval.slist)),(yyvsp[-1].slist));
           }
-#line 2291 "y.tab.c"
+#line 2283 "y.tab.c"
     break;
 
 
-#line 2295 "y.tab.c"
+#line 2287 "y.tab.c"
 
       default: break;
     }
@@ -2373,6 +2365,7 @@ yyerrorlab:
      label yyerrorlab therefore never appears in user code.  */
   if (0)
     YYERROR;
+  ++yynerrs;
 
   /* Do not reclaim the symbols of the rule whose action triggered
      this YYERROR.  */
@@ -2433,7 +2426,7 @@ yyerrlab1:
 `-------------------------------------*/
 yyacceptlab:
   yyresult = 0;
-  goto yyreturn;
+  goto yyreturnlab;
 
 
 /*-----------------------------------.
@@ -2441,24 +2434,22 @@ yyacceptlab:
 `-----------------------------------*/
 yyabortlab:
   yyresult = 1;
-  goto yyreturn;
+  goto yyreturnlab;
 
 
-#if !defined yyoverflow
-/*-------------------------------------------------.
-| yyexhaustedlab -- memory exhaustion comes here.  |
-`-------------------------------------------------*/
+/*-----------------------------------------------------------.
+| yyexhaustedlab -- YYNOMEM (memory exhaustion) comes here.  |
+`-----------------------------------------------------------*/
 yyexhaustedlab:
   yyerror (YY_("memory exhausted"));
   yyresult = 2;
-  goto yyreturn;
-#endif
+  goto yyreturnlab;
 
 
-/*-------------------------------------------------------.
-| yyreturn -- parsing is finished, clean up and return.  |
-`-------------------------------------------------------*/
-yyreturn:
+/*----------------------------------------------------------.
+| yyreturnlab -- parsing is finished, clean up and return.  |
+`----------------------------------------------------------*/
+yyreturnlab:
   if (yychar != YYEMPTY)
     {
       /* Make sure we have latest lookahead translation.  See comments at

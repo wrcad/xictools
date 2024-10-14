@@ -2002,11 +2002,15 @@
         <admst:when test="[branch/nnode/grounded='yes']">
           <!--
             We get here for I(ext), so this needs to be interpreted
-            as I(ext,ext) but only if ext is an external node.
+            as I(ext,ext).
           -->
+          <!-- Below is no longer true, all such forms are now pushed
+            into the analog/code, which seems to do the right things, e.g.,
+            define associated jacobian entries.
           <admst:fatal
             format="Can't handle I(node) with node not external, exiting.\n"
             test="[branch/pnode/location!='external']"/>
+          -->
           <admst:variable name="e"
             select="BR(%(branch/pnode/name),%(branch/pnode/name))"/>
         </admst:when>
@@ -2658,10 +2662,11 @@
           </admst:for-each>
         </admst:when>
         <admst:otherwise>
+          <!-- There is code to fix these forms in adms.implicit.xml,
+            which must not be working correctly if we get here. -->
           <admst:fatal
-  format="The first argument of ddx is not a simple variable and this was\n"/>
-          <admst:fatal
-  format="not fixed during processing for some reason.  Exiting.\n"/>
+  format="The first argument of ddx is not a simple variable and this was\
+ not fixed during processing for some reason.  Exiting.\n"/>
         </admst:otherwise>
       </admst:choose>
       <admst:apply-templates select="." match="math:emparen"/>
@@ -4202,10 +4207,7 @@
         <!--  ddx needs the following!  -->
         <admst:for-each select="rhs/probe">
           <admst:variable name="pprobe" path="."/>
-<!-- XXX
-error here?  below generates "bad attribute" erors
           <admst:apply-templates select="../rhs/tree" match="ddx"/>
--->
           <admst:apply-templates select="../tree" match="ddx"/>
           <admst:choose>
             <admst:when test="../[dynamic='yes']">
@@ -4882,9 +4884,13 @@ error here?  below generates "bad attribute" erors
           nnode==Gnd, which we treat in the same way.
         -->
         <admst:if test="[$pname=$nname or branch/nnode/grounded='yes']">
+          <!-- Apply to internal branches, too, for psp104.
           <admst:if test="branch/pnode[location='external']">
-            <admst:push into="$curprobes" select="." onduplicate="ignore"/>
+          -->
+          <admst:push into="$curprobes" select="." onduplicate="ignore"/>
+          <!--
           </admst:if>
+          -->
         </admst:if>
       </admst:if>
     </admst:when>
@@ -5070,26 +5076,33 @@ error here?  below generates "bad attribute" erors
 <!--
   Callback for the findfunc template used when checking that
   contribution operators are not used outside of contributions.
+    SRW 10/08/2024 Making these non-fatal.
 -->
 <admst:template match="ff_atest">
   <admst:choose>
     <admst:when test="[name='ddt']">
       <admst:warning
         format="A ddt operator was found not in a contribution line.\n"/>
+      <!--
       <admst:warning format="This is not supported at present.\n"/>
       <admst:fatal format="Buh bye!\n"/>
+      -->
     </admst:when>
     <admst:when test="[name='white_noise']">
       <admst:warning
-        format="A white_noise operator was found not in a contribution line.\n"/>
+      format="A white_noise operator was found not in a contribution line.\n"/>
+      <!--
       <admst:warning format="This is not supported.\n"/>
       <admst:fatal format="Buh bye!\n"/>
+      -->
     </admst:when>
     <admst:when test="[name='flicker_noise']">
       <admst:warning
-        format="A flicker_noise operator was found not in a contribution line.\n"/>
+    format="A flicker_noise operator was found not in a contribution line.\n"/>
+      <!--
       <admst:warning format="This is not supported.\n"/>
       <admst:fatal format="Buh bye!\n"/>
+      -->
     </admst:when>
   </admst:choose>
 </admst:template>

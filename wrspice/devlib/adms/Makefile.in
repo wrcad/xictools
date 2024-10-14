@@ -246,12 +246,14 @@ COBJS = $(CCFILES:.cc=.o) $(CFILES:.c=.o)
 INCLUDE = -I. -I$(ADMST:admst=include)
 DEFS = -D__WRMODULE__=$(MODULE) -D__WRVERSION__=$(DEVLIB_VERSION)
 
-module:
+module: fetch
 	@echo
 	@echo \
  "====> Building $(TARGET) for WRspice-$(DEVLIB_VERSION) $(OSNAME) $(ARCH)"
 	@echo
 	$(MAKE) $(TARGET)
+
+include link.mk
 
 $(TARGET): device.xml $(HFILES) $(COBJS)
 	$(LINKCC) -o $(TARGET) $(LSHFLAG) $(COBJS) $(DEVWINDLL)
@@ -265,7 +267,7 @@ $(MODULE).o: $(MODULE).cc
 .c.o:
 	$(CC) $(CFLAGS) $(PIC_OPT) $(INCLUDE) -c $*.c
 
-device.xml: Makefile
+device.xml: link.mk Makefile
 	@vers=$(DEVLIB_VERSION); IFS=.; set -- $$vers; \
 	sed -e s/@MODULE@/$(MODULE)/ -e s/@MODELNAME@/$(MODELNAME)/ \
   -e s/@LEVEL@/$(LEVEL)/ -e s/@KEY@/$(KEY)/ -e s/@VERSION@/$(DEVLIB_VERSION)/ \
@@ -298,9 +300,9 @@ depend:
 	fi
 
 clean:
-	-@rm -f $(COBJS) *.$(SOEXT)
+	-@rm -f $(COBJS) *.so *.dll *.dylib
 
-realclean: clean
+realclean: clean clean_fetch
 	-@rm -f device.xml $(HFILES) $(CCFILES) constant* discipline* \
   .adms.implicit.xml .interface.xml .*.adms
 

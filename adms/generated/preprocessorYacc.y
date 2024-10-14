@@ -579,7 +579,7 @@ R_arg
           }
         | TK_CONTINUATOR
           {
-            /* SRW - fix bsim6.va parse problem, string macro arg broken by
+            /* SRW -- fix parse problem, string macro arg broken by
              * continuator caused 'unexpected end of line' error.
              */
             $$=0;

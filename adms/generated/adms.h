@@ -4,7 +4,7 @@
 #ifndef adms_h
 #define adms_h
 
-#define GIT "db1007ff" /* git release version */
+#define GIT "402a5ad7" /* git release version */
 
 /*headers -- depend on compiler, OS, ...*/
 #  if defined(_MSC_VER)

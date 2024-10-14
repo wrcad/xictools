@@ -6,9 +6,7 @@ ADMS Compilation Examples
 This directory contains a few "popular" Verilog-A devices as examples
 for building loadable object modules for WRspice.
 
-Pre-built modules can be found in the "module_dist" subdirectories.
-
-If you want the latest versions of these models, the README file or
+If you want the latest versions of these models, the link.mk file or
 google will yield the original distribution sites, where a newer
 revision may be available.  The Josephson junction model is a Whiteley
 Research original, and the latest version is provided here.

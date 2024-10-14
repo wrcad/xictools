@@ -1,0 +1,56 @@
+*Sample netlist for BSIM-MG 
+*Id-Vd Characteristics for PMOS (T = 27 C)
+
+*.option abstol=1e-6 reltol=1e-6 post ingold
+.temp 27
+
+*.hdl "bsimcmg.va"
+.include "modelcard.pmos"
+
+* --- Voltage Sources ---
+vds drain  0 dc=0
+vgs gate  0 dc=-1
+vbs bulk  0 dc=0
+
+* --- Transistor ---
+*X1 drain gate 0 bulk pmos1 TFIN=15n L=40n NFIN=10 NRS=1 NRD=1
+m1 drain gate 0 bulk pmos1 TFIN=15n L=40n NFIN=10 NRS=1 NRD=1
+
+* --- DC Analysis ---
+.dc vds 0 -1 -0.01 vgs 0 -1.0 -0.1
+*.probe dc ids=par`i(vds)`
+*.probe dc gds=deriv(ids)
+*.print dc par'ids' par'-gds'
+
+*.alter
+*.temp -55
+
+*.alter
+*.temp 100
+
+.control
+load -c3 idvdpmos.lis
+# We have data for all three temperatures, will have to sort this out
+# below using indices.
+run
+let curplot.ids = i(vds)
+let curplot.gds = deriv(ids)
+plot ysep ids prev.column_1[0,10]
+# Crappy Hspice differentiator leaves a big glitch that is filtered
+# out with xlimit below.
+plot ysep xlimit="-1.0 -0.05" (-gds) prev.column_2[0,10]
+set temp = -55
+run
+let curplot.ids = i(vds)
+let curplot.gds = deriv(ids)
+plot ysep ids prev2.column_1[11,21]
+plot ysep xlimit="-1.0 -0.05" (-gds) prev2.column_2[11,21]
+set temp = 100
+run
+let curplot.ids = i(vds)
+let curplot.gds = deriv(ids)
+plot ysep ids prev3.column_1[22,32]
+plot ysep xlimit="-1.0 -0.05" (-gds) prev3.column_2[22,32]
+unset temp
+.endc
+.end

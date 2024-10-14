@@ -259,7 +259,7 @@ if (ckt->CKTchargeCompNeeded) {\\
     -->
     <admst:text format="\n"/>
 namespace {
-    inline double limit(sCKT *ckt, double newv, double oldv)
+    inline double wrspice_limit(sCKT *ckt, double newv, double oldv)
     {
     <admst:if test="[$package_limiting='yes']">
         if (!(ckt->CKTmode & MODEDC)) {
@@ -370,7 +370,7 @@ namespace {
     <admst:apply-templates select="." match="push_indent"/>
     <admst:for-each select="node[grounded='no']">
       <admst:text format="$(indent)inst->LIMPRED_%(name) ="/>
-      <admst:text format=" limit(ckt, ckt->CKTrhsOld[inst->%(name)_Node],\n"/>
+      <admst:text format=" wrspice_limit(ckt, ckt->CKTrhsOld[inst->%(name)_Node],\n"/>
       <admst:apply-templates select="." match="push_indent"/>
       <admst:text format="$(indent)*(ckt->CKTstate1 + inst->STATE_%(name)));\n"/>
       <admst:apply-templates select="." match="pop_indent"/>

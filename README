@@ -417,14 +417,22 @@ packages, and to add any packages needed later.
 
     Once the basic installation is done, run, the following commands:
 
+    Warning: For a few weeks after a major OS release, these commands
+    build from source and can take *hours* to run.  Also, there might
+    be failures, requiring some googling to find fixes.  At some point,
+    packages become available at which point the commands run fairly
+    quickly and failures are very unlikely.
+
     sudo port -v selfupdate
     sudo port install autoconf
     sudo port install python27
-    sudo port install python2_select
     sudo port install gsl
     sudo port install gtk2  (for GTK)
-    sudo port install pkgconfig  (for GTK)
     sudo port install qt6  (for Qt)
+
+    (This is for adms maintenance mode, you won't need it unless you
+    work on adms.)
+    sudo port install perl5.34-xml-libxml
 
 6.  Set your shell search path to include /usr/local/xictools/bin.
 

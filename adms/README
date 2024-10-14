@@ -4,6 +4,11 @@ Previiously, a special ADMS distribution was available from Whiteley
 Research for use with WRspice.  Several cnanges were made, as well as
 general clean-up.  These changes are listed below.
 
+ADMS-release-2.3.7 and ADMS-release-2.3.8 are available from WR as
+stand-alone and integrated into XicTools. These have a few tweaks
+and bug fixes, and are a more bare-bones set of files than the
+Qucs 2.3.7 distribution.
+
 More recently, these changes have been folded into the original ADMS
 development branch, which is now being maintained and developed by the
 Qucs simulator people.  The package builds and works nicely, and has

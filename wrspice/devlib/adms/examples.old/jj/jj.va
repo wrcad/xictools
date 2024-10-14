@@ -1,0 +1,896 @@
+
+/*========================================================================*
+ *                                                                        *
+ *  Whiteley Research Inc, Sunnyvale, CA USA 2016, http://wrcad.com       *
+ *                                                                        *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,      *
+ *   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES      *
+ *   OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-        *
+ *   INFRINGEMENT.  IN NO EVENT SHALL STEPHEN R. WHITELEY OR WHITELEY     *
+ *   RESEARCH INC. BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,   *
+ *   WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,   *
+ *   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER        *
+ *   DEALINGS IN THE SOFTWARE.                                            *
+ *                                                                        *
+ *   Licensed under the Apache License, Version 2.0 (the "License");      *
+ *   you may not use this file except in compliance with the License.     *
+ *   You may obtain a copy of the License at                              *
+ *                                                                        *
+ *        http://www.apache.org/licenses/LICENSE-2.0                      *
+ *                                                                        *
+ *   Unless required by applicable law or agreed to in writing, software  *
+ *   distributed under the License is distributed on an "AS IS" BASIS,    *
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or      *
+ *   implied. See the License for the specific language governing         *
+ *   permissions and limitations under the License.                       *
+ *                                                                        *
+ *========================================================================*
+ $Id:$
+ *========================================================================*/
+
+// SuperTools Notice ------------------------------------------------------
+//
+//   GOVERNMENT PURPOSE RIGHTS
+// 
+//   Contract No. W911NF-17-9-0001
+// 
+//   Contractor Name: Synopsys Inc.
+// 
+//   Contractor Address: 690 E Middlefield Rd, Mountain View, CA 94043-4010
+// 
+//   Expiration Date: perpetual-no-expiration
+// 
+//   The Government's rights to use, modify, reproduce, release,
+//   perform, display, or disclose this software are restricted by
+//   paragraph (b)(2) of the Rights in Technical Data-Noncommercial
+//   Items clause contained in the above identified contract.  No
+//   restrictions apply after the expiration date shown above.  Any
+//   reproduction of technical data or portions thereof marked with this
+//   legend must also reproduce the markings.
+//-------------------------------------------------------------------------
+
+// Whiteley Research/Synopsys PWL-RCSJ Josephson Junction Model
+//
+// Version 1.41, March 2, 2024 updated constants PHI0_2PI, BOLTZ.
+// Version 1.40, January 10, 2023 increased range of vm, rsub,
+//   icrn, rn.
+// Version 1.39, January 18, 2022 added block name "tempblk" to
+//   avoid compiler fatal error with some compilers (eg. pVA) due to
+//   the presence of locally named parameters.
+// Version 1.38, July 30, 2021 added a term to temperature
+//   correction of critical current.
+// Version 1.37, July 26, 2020 the NOIDT is now on by default,
+//   as it seems to lower iteration count with WRspice and reduce
+//   simulation time.
+// Version 1.36, May 18, 2020 instance parameter temp renamed temp_k
+//   to avoid conflict with reserved word in some simulators.
+// Version 1.35, April 10, 2020 added NOIDT symbol to allow avoidance
+//   of the idt call, which was reported be inaccurate in some
+//   implementations.  Removed the "fakeDC" compile option, as this is
+//   just not good.
+// Version 1.34, December 18, 2019 instance param ics range widened,
+//   added NORLMT compile-time option.
+// Version 1.33, July 14, 2019 instance read-only parameters gshunt
+//   and lshval have ADMS spec for accessibility in WRspice.
+// Version 1.32, June 26, 2019 added temperature effects:  model
+//   parameters tc, tnom, deftemp, tcfct, instance parameters temp and
+//   (read only) tcf.  The correction factor multiplies icrit and vgap.
+//   Added ADMS spec to most internal variables making them accessible
+//   in WRspice.
+// Version 1.31, May 24, 2019 block name "nparblk" added for HSPICE.
+// Version 1.30, May 23, 2019 fixed typos from last check-in, added
+//   ADMS magic so phase and vdpbak are treated as read-only params.
+//   Added 'n' SFQ pulse emission count read-only instance param.
+// Version 1.29, May 22, 2019 the tsfactor param is now relative to 2pi
+//   instead of pi.  If you set this to X previously, you should now set
+//   it to X/2 for the same results.  New tsaccel parameter for time
+//   step control, allows longer time steps when circuit is quiescent. 
+//   Default is 1.0 (no acceleration), try 2.5 for RSFQ.
+// Version 1.28, May 15, 2019 fixed exponent of PHI0_2PI, typo!
+// Version 1.27, May 9, 2019
+//   Updated the value of PHI0_2PI to NIST latest (05/20/2019).
+// Version 1.26, March 19, 2019
+//   The vshunt support is now conditional on NEWVSHUNT, which is on by
+//   default.  One can now turn off NEWVSHUNT, NEWLSH and NEWLSER and
+//   have only the core model, which can be augmented in a .subckt,
+//   which might be more efficient than the Verilog-A implementation.
+// Version 1.25, March 14, 2019
+//   Changed limits of icrn from 1.5 : 1.9mV to 0.5mV : (icfct*vgap).
+//   Changed upper limit of vshunt from 2mV to (vgap-delv).
+// Version 1.24, February 5, 2019
+//   Added CPIC model parameter, provides the default capacitance per
+//   critical current.  Now the default when CAP is not given, so
+//   changing icrit will now change the assumed junction capacitance
+//   when CAP is not given.
+// Version 1.23, October 2, 2018
+//   References added for model parameters.
+//   default IcR 1.6 -> 1.65mV, default Vm 16.0 -> 16.5 mV
+// Version 1.22, August 24, 2018
+//   Parameter and range changes, allow wider Vgap range for non-
+//   standard materials.
+//     vgap,min,max 2.8mV,2.0mV,6.0mV   ->  2.6mV,0.1mV,10.0mV
+//     delv,min,max 0.08mV,0.01mV,0.2mV -> 0.08mV,0.001*vgap,0.2*vgap
+//   Add conditionals around loading functions, avoid node creation
+//   and calculations when inductor elements are not used.  Use only
+//   parameters in conditionals containing analog operators.
+// Version 1.21, August 20, 2018
+//   Added support for series inductance in added (vshunt != 0) shunt
+//   resistance.  New model params lsh0 and lsh1, inductance = lsh0 +
+//   resistance*lsh1.  New instance parameter lsh overrides.  Phase
+//   nodes are now flagged, ADMS will detect and set flags in WRspice,
+//   requires WRspice-4.3.7.
+// Version 1.20, July 31, 2018
+//   Fixed expressions involving gshunt, (br -> n1,n2).  Fixed missing
+//   `else under "fake" DCOP.
+// Version 1.19, July 25, 2018
+//   Added WRspice predefine, used instead of "insideADMS" to differentiate
+//   WRspice features.  REQUIRES build from WRspice-4.3.7 or later for this
+//   to be predefined.  A few HSPICE tweaks.  This model is now certified/
+//   guaranteed to compile and run under HSPICE.
+// Version 1.18, July 23, 2018
+//   Added lser instance parameter to model parasitic series inductance.
+//   The default value is 0.0, typical value might be 0.25pH.
+// Version 1.17, June 21, 2018
+//   Pi factor missing plus bug in bound_step argument.  Time steps are
+//   now a factor of pi more aggressive, same as WRspice internal JJ
+//   model.
+// Version 1.16, May 5, 2018
+//   x*ddt(y) -> ddt(x*y) for HSPICE efficiency.
+//   Changed phi variable to phase to avoid clash with aliasparam.
+//   Added the "fakeDC" option.
+// Version 1.15, April 25, 2018
+//   Added alias phi for ic_phase.
+// Version 1.14, April 20, 2018
+//   Wider range for vgap 2.0mV - 6.0mV, for materials other than Nb.
+// Version 1.13, April 14, 2018
+//   Wider range of icrit 1e-9 - 1e-1 ought to cover anything.  Vm lower
+//   now 8mv, was 10mV.
+// Version 1.12, April 6, 2018
+//   Now uses $simparam("smallsig") to get small-signal loading state, used
+//   to pass this via $analysis("smsig") which is less likely to be adopted
+//   by other simulators.
+//   Added parameter aliases vg, r0, rn, icfact.
+// Version 1.11, April 4, 2018
+//   Fixed bug:  the AREA parameter could not be used.
+//   The vm and icrn parameters are now given in V rather than mV.
+//   Fixes for Verilog compiler picayunity: block names and read-only params.
+// Version 1.10, March 28, 2018
+//   Lots of new stuff in this release, so bumped to 1.1.
+//   Support added for phase-mode dc analysis and ac analysis.
+//   Added ADMS partitioning info.
+//   Added MIT-LL JJ parameters, these are now the default.
+//   Changed "mfactor" param name to "mfct" to avoid Verilog reserved word.
+//   Range of vshunt now 0-2m, active if >= 1uV,
+//   New param ics, if given equivalent to area=ics/icrit.
+//   Got rid if mfct, area is deprecated, use ics instead.
+//   New param cmu [0:1.0] edge effect capacitance scaling parameter.
+//   New param gmu [0:1.0] edge effect conductance scaling parameter.
+//   New param vm  [10.0:100.0] mV.
+//   New param icrn [1.5:1.9] mV.
+//   The phase node is now optional.
+//   Other misc. small changes.
+//
+// Version 1.04, Feb 25, 2018
+//   Made quasiparticle expressions prettier (no logic change).
+// Version 1.03, Feb 23, 2018
+//   Changed quasiparticle equations to match WRspice internal model.
+//   Specifically Ic/ifact is now the step height rather than the absolute
+//   height at the gap top.  Also changed default icfct from 0.7 to pi/4
+//   to match WRspice internal model.
+// Version 1.02, Oct 21, 2016
+//   Fix syntax in parameter tsfactor line.
+// Version 1.01, Oct 20, 2016
+//   Lower limit of vshunt changed from 0 to 1uV.
+// Version 1.0, Oct 15, 2016
+//   Added pijj parameter, support for "pi" junctions.
+//   Added tsfactor timestep control parameter.
+// Version 0.9, July 22, 2016
+//   Added rtype and cct parameters.
+//   Added area parameter, equivalent to mfactor.
+//   Added vshunt parameter.
+//   Added phony dc anslysis.
+//   Fixed bug in bound_step expression.
+// Version 0.5, February 14, 2012 (original release)
+//
+// Stephen R. Whiteley          stevew@wrcad.com, whiteley@synopsys.com
+// Whiteley Research Inc.       http://wrcad.com
+//
+// MODULE: jj (node_plus, node_minus, node_phase)
+//
+// The optional phase node provides the junction phase (in radians)
+// but should have no other connections.
+//
+// To use the model:
+// 1.  Before compiling, adjust electrical parameters to your target
+//     process.  This is the MIT-LL SFQ5EE process by default.
+// 2.  Load the model into your simulator before use.
+// 3.  Use the "ics" instance parameter to set the desired critical
+//     current.  Changing ics (or area) scales capacitance and
+//     conductances as well as critical current.  Giving ics is equivalent
+//     to area=ics/icrit (use of area is deprecated).
+// 4.  Use vshunt most conveniently for SFQ circuits, avoids the need
+//     for an external shunt resistor.
+// 5.  You may have to use a small timestep limit (e.g., .01pS) for accuracy,
+//     if bound_step() is not supported by your simulator.
+
+`include "disciplines.vams"
+`include "constants.vams"
+
+`ifdef insideADMS
+    `define P(txt) (*txt*)
+`else
+    `define P(txt)
+`endif
+
+// This enables series inductance modeling with the LSER parameter.
+`define NEWLSER
+
+// Enable addition of external shunt conductance.
+`define NEWVSHUNT
+
+// Enable series inductance modeling of external shunt resistance.
+`ifdef NEWVSHUNT
+`define NEWLSH
+`endif
+
+// Enable the 'n' SFQ emission count parameter.  Can comment this if
+// you don't do SFQ logic.
+`define NEWNPAR
+
+// Suppress limit check of subgap and normal resistances.  Not
+// recomended unless needed for Monte Carlo or weird devices.
+//`define NORLMT
+
+// Avoid calling the idt (integration) function, seems it may be
+// inaccurate in some implementations.  This seems to reduce
+// iterations and run time in WRspice too, so now defaulting to on.
+`define NOIDT
+
+// MIT-LL SFQ5EE process, parameters from:
+// Tolpygo et al., IEEE Trans. Appl. Supercond., vol. 26, 1100110, (2016)
+// Tolpygo et al., IEEE Trans. Appl. Supercond., vol. 27, 1100815, (2017)
+`define C_PER_A_10000  70.0     // ff/um2
+`define I_PER_A_10000 100.0     // uA/um2
+`define IcR_LL          1.65    // mV, critical current * normal resistance
+`define Vm_LL          16.5     // mV, critical current * subgap resistance
+
+// Hard-wire defaults for MIT-LL process for SuperTools.
+`define C_PER_A `C_PER_A_10000
+`define I_PER_A `I_PER_A_10000
+`define IcR     `IcR_LL
+`define Vm      `Vm_LL
+
+// Various Hypres foundry processes.
+//`define C_PER_A_4500   59.0     // ff/um2
+//`define I_PER_A_4500   45.0     // uA/um2
+//`define C_PER_A_1000   50.0     // ff/um2
+//`define I_PER_A_1000   10.0     // uA/um2
+//`define C_PER_A_30     37.0     // ff/um2
+//`define I_PER_A_30      0.3     // uA/um2
+//`define IcR_HYP         1.7     // mV, critical current * normal resistance
+//`define Vm_HYP         30.0     // mV, critical current * subgap resistance
+
+// Hard-wire defaults for Hypres 4500A/cm2 process
+//`define C_PER_A `C_PER_A_4500
+//`define I_PER_A `I_PER_A_4500
+//`define IcR     `IcR_HYP
+//`define Vm      `Vm_HYP
+
+// Phi0/2pi = hbar over 2 e.
+`define PHI0_2PI    3.291059785-16
+`define BOLTZ       1.380649-23
+`define ECHG        1.602176634e-19
+
+module jj (n1, n2, ph);
+
+// The third node is optional, and if used will return the junction phase
+// in radians.
+inout n1, n2, ph;
+// Add flags to indicate a "phase node" for WRspice phase-mode DC analysis.
+electrical n1           `P(phase="true");
+electrical n2           `P(phase="true");
+electrical ph;
+`ifdef NEWLSER
+electrical nint         `P(phase="true");
+branch(nint, n2) bj, bc, br;
+branch(n1, nint) blser;
+`else
+branch(n1, n2) bj, bc, br;
+`endif
+`ifdef NEWLSH
+electrical nshint       `P(phase="true");
+`endif
+`ifdef NOIDT
+electrical nph;
+`endif
+
+//
+// Model Parameters
+//
+
+// PI junction, or not.
+// If the pijj flag is set, the JJ is a "pi" junction, meaning it has
+// an internal ground-state phase of pi rather than 0.  Such junctions
+// have been made using ferromagnetic barrier materials. 
+parameter integer pijj  = 0 from [0:1]
+    `P(type="model" info="Pi junction if set");
+
+// Turn on/off quasiparticle branch and critical current.
+parameter integer rtype = 1 from [0:1]
+    `P(type="model" info="Quasiparticle conductance model type");
+parameter integer cct   = 1 from [0:1]
+    `P(type="model" info="Critical current model type");
+
+// Temperature correction
+parameter real tc       = 9.26 from [0.1:280]
+    `P(type="model" info="Superconducting transition temperature Kelvin");
+parameter real tnom     = 4.2 from [0.0:tc]
+    `P(type="model" info="Parameter measurement temperature Kelvin");
+parameter real deftemp  = tnom from [0.0:tc]
+    `P(type="model" info="Defauilt operating temperature Kelvin");
+parameter real tcfct    = 1.74 from [1.5:2.5]
+    `P(type="model" info="Temperature correction parameter");
+
+// Factor used in timestep control.  This is similar to the WRspice
+// dphimax parameter, dphimax/(2*pi) = tsfactor.  Smaller values might
+// improve accuracy, but at the expense of longer run time.  If not
+// set explicitly, actual value will be obtained from WRspice.
+`define TSDEFAULT 0.1
+parameter real tsfactor = `TSDEFAULT from [0.001:1]
+    `P(type="model" info="Phase change max per time step per 2pi");
+
+// Use longer time steps when JJ voltage is smaller, a value of about
+// 2.5 seems to work best for RSFQ.
+parameter real tsaccel = 1.0 from [1.0:20.0]
+    `P(type="model" info="Ratio max time step to that at dropback voltage");
+
+// Critical current for area=1.
+`define DEF_IC 1.0m
+parameter real icrit    = `DEF_IC from [1e-9:1e-1]
+    `P(type="model" info="Reference critical current" units="A");
+
+// Capacitance per critical current, F/A.
+parameter real cpic     = 1e-9*`C_PER_A/`I_PER_A from [0.0:1e-6]
+    `P(type="model" info="Reference capacitance per critical current"
+    units="F/A");
+
+// Capacitance for area=1.
+parameter real cap      = icrit*cpic from [0.0:1e-6*icrit]
+    `P(type="model" info="Reference capacitance" units="F");
+
+// Capacitance scaling parameter.
+// caps = cap*(area*(1-cmu) + sqrt(area)*cmu)
+parameter real cmu      = 0.0 from [0.0:1.0]
+    `P(type="model" info="Capacitance scaling factor");
+
+// The gap voltage and width.
+parameter real vgap     = 2.6m from [0.1m:10.0m]
+    `P(type="model" info="Gap voltage" units="V");
+aliasparam vg           = vgap;
+parameter real delv     = 0.08m from [0.001*vgap:0.2*vgap]
+    `P(type="model" info="Gap width" units="V");
+
+// Ratio of critical current to quasiparticle step height.
+parameter real icfct    = `M_PI_4 from [0.5:`M_PI_4]
+    `P(type="model" info="Ic to Istep ratio");
+aliasparam icfact       = icfct;
+
+`ifdef NORLMT
+parameter real vm       = `Vm*1e-3 from (0:inf]
+    `P(type="model" info="Ic * subgap resistance" units="V");
+parameter real rsub     = vm/icrit from (0:inf]
+    `P(type="model" info="Subgap resistance" units="O");
+parameter real icrn     = `IcR*1e-3 from (0:inf]
+    `P(type="model" info="Ic * normal resistance" units="V");
+parameter real rnorm    = icrn/icrit from (0:inf]
+    `P(type="model" info="Normal resistance" units="O");
+`else
+parameter real vm       = `Vm*1e-3 from [8m:1]
+    `P(type="model" info="Ic * subgap resistance" units="V");
+parameter real rsub     = vm/icrit from [8e-3/icrit:1/icrit]
+    `P(type="model" info="Subgap resistance" units="O");
+parameter real icrn     = `IcR*1e-3 from [0.5m:1.5*vgap*icfct]
+    `P(type="model" info="Ic * normal resistance" units="V");
+parameter real rnorm    = icrn/icrit from [0.5e-3/icrit:(1.5*vgap*icfct)/icrit]
+    `P(type="model" info="Normal resistance" units="O");
+`endif
+aliasparam r0           = rsub;
+aliasparam rn           = rnorm;
+`ifdef NEWVSHUNT
+// The subgap and normal resistances.  If vshunt is given, a fixed
+// shunt is added so that Ic*Reff = vshunt.
+parameter real vshunt   = 0 from [0:vgap-delv]
+    `P(type="model" info="Ic * shunt resistance voltage" units="V");
+`endif
+`ifdef NEWLSH
+parameter real lsh0   = 0 from [0:2p]
+    `P(type="model" info="Shunt inductance constant part" units="H");
+parameter real lsh1   = 0 from [0:10p]
+    `P(type="model" info="Shunt inductance prop. to resistance" units="H/Ohm");
+`endif
+
+// Conductance scaling parameter.
+// gxs = gx*(area*(1-gmu) + sqrt(area)*gmu)
+// Applies ro rsub, rnorm.
+parameter real gmu      = 0.0 from [0.0:1.0]
+    `P(type="model" info="Conductance scaling factor");
+
+//
+// Instance Parameters
+//
+
+// Initial conditions.
+parameter real ic_phase = 0 from (-`M_PI:`M_PI)
+    `P(type="instance" info="Initial condition phase");
+aliasparam phi          = ic_phase;
+
+// Operating temperature.
+parameter real temp_k   = deftemp from [0.0:tc]
+    `P(type="instance" info="Operating temperature Kelvin");
+
+// Scaling critical current.
+parameter real ics      = icrit from [icrit/50:icrit*50]
+    `P(type="instance" info="Scaled critical current" units="A");
+
+`ifdef NEWLSER
+// Series inductance.
+parameter real lser     = 0.0 from [0.0:10.0p]
+    `P(type="instance" info="Series parasitic inductance" units="H");
+`endif
+
+`ifdef NEWLSH
+parameter real lsh      = 0.0 from [0.0:100.0p]
+    `P(type="instance" info="Series inductance of shunt resistance" units="H");
+`endif
+
+// Scaling factor, not a physical area.  This is for backward
+// compatibility.
+// *** Deprecated, do not use in new work ***
+// Use ics instead, as the instance critical current won't change if
+// the reference critical current does change.
+parameter real area     = 1.0 from [0.05:20.0]
+    `P(type="instance" info="Ic scale factor");
+
+// Internal variables.  Those with `P() given are accessible in WRspice
+// as read-only parameters (ADMS feature).
+real vdpbak `P(type="model" info="Dropback voltage");
+real tcf `P(type="instance" info="Temperature correction factor");
+real vgap_t `P(type="instance" info="Temperature-corrected vgap");
+real vless `P(type="instance" info="Lower gap inflection");
+real vmore `P(type="instance" info="Upper gap inflection");
+real phase `P(type="instance" info="Junction phase");
+`ifdef NEWNPAR
+integer n `P(type="instance" info="SFQ emission count");
+`endif
+real caps `P(type="instance" info="Device capacitance");
+real scale `P(type="instance" info="Area ratio");
+real ic_scaled `P(type="instance" info="Scaled and temp. compensated Ic");;
+real rsubs `P(type="instance" info="Device sub-gap resistance");
+real rnorms `P(type="instance" info="Device normal resistance");
+real i1, i2, vth, start_phase, tsf;
+`ifdef NEWVSHUNT
+real gshunt `P(type="instance" info="External VSHUNT shunt conductance");
+`ifdef NEWLSH
+real lshval `P(type="instance" info="Shunt resistor parasitic inductance");
+`endif
+`endif
+`ifdef WRspice
+real SmallSigL;
+integer pmode;
+`endif
+
+analog begin
+
+// Differentiate between model and instance initialization blocks when
+// using ADMS.  This allows model and instance parameters to apply to
+// models and instances, respectively, for space efficiency.  Other
+// compilers may use a unified model where all parameters can apply to
+// instances or models, which is sometimes convenient but very memory
+// intensive.
+
+`ifdef insideADMS
+    begin : initial_model
+        real halfvg;
+`else
+    @(initial_step)
+        begin : initialization
+        real halfvg;
+        real halfdv;
+`endif
+
+        // Dropback voltage.
+        halfvg = 0.5*vgap;
+        if (cap > 0.0)
+            begin
+            vdpbak = sqrt(`PHI0_2PI*icrit/cap);
+            if (vdpbak > halfvg)
+                vdpbak = halfvg;
+            end
+        else
+            vdpbak = halfvg;
+        vth = vdpbak/tsaccel;
+
+        // dphiMax
+        //   If simulator returns nonzero, the dphimax .option is
+        //   supported and the value returned.  This is the maximum
+        //   phase change per internal time step.  The local default
+        //   is used if not supported by the simulator.
+        //   Requires WRspice-4.3.3.
+        //
+        tsf = $simparam("dphiMax", 0.0)/(2*`M_PI);
+        if (tsf < 1e-3 || tsfactor != `TSDEFAULT)
+            tsf = tsfactor;
+`ifdef insideADMS
+    end
+
+    begin : initial_instance
+        real halfdv;
+`endif
+
+        // Temperature correction
+        if (temp_k != tnom)
+            begin : tempblk
+            real tmp, tmp2;
+            tcf = tanh(tcfct*sqrt(tc/(temp_k + 1e-4) - 1))/
+                tanh(tcfct*sqrt(tc/(tnom + 1e-4) - 1));
+            vgap_t = vgap*tcf;
+            tmp = `ECHG*vgap_t/(4.0*`BOLTZ*(temp_k + 1e-4));
+            tmp2 = `ECHG*vgap/(4.0*`BOLTZ*(tnom + 1e-4));
+            tcf = tcf*(tanh(tmp)/tanh(tmp2));
+            end
+        else
+            begin
+            tcf = 1.0;
+            vgap_t = vgap;
+            end
+
+        phase = 0.0;
+        if (ics != icrit)
+            begin
+            scale = ics/icrit;
+            ic_scaled = tcf*ics;
+            end
+        else
+            begin
+            scale = area;
+            ic_scaled = tcf*scale*icrit;
+            end
+
+        caps = cap*(scale*(1-cmu) + sqrt(scale)*cmu);
+        rsubs = rsub/(scale*(1-gmu) + sqrt(scale)*gmu);
+        rnorms = rnorm/(scale*(1-gmu) + sqrt(scale)*gmu);
+        halfdv = delv/2.0;
+        vless = vgap_t - halfdv;
+        vmore = vgap_t + halfdv;
+        i1 = vless/rsubs;
+        i2 = ic_scaled/icfct;
+        start_phase = ic_phase;
+`ifdef WRspice
+        SmallSigL = 0.0;
+`endif
+`ifdef NEWVSHUNT
+        gshunt=0.0;
+`ifdef NEWLSH
+        lshval=0.0;
+`endif
+        if (vshunt >= 1u)
+            begin
+            gshunt = ic_scaled/vshunt;
+            if (rtype == 1)
+                gshunt = gshunt - 1/rsubs;
+            if (gshunt < 0.0)
+                gshunt = 0.0;
+`ifdef NEWLSH
+            if (gshunt > 0)
+                if (lsh != 0.0)
+                    lshval = lsh;
+                else if (lsh0 != 0.0 || lsh1 != 0.0)
+                    lshval = lsh0 + lsh1/gshunt;
+`endif
+            end
+`endif  // NEWVSHUNT
+
+        // Interface parameter passed to model from simulator using
+        // the Verilog $simparam system function.  At present, only
+        // WRspice supports this.
+        //
+        // dcPhaseMode
+        //   If simulator returns nonzero, it supports phase-mode DC
+        //   analysis.  Requires WRspice-4.3.3.
+        //
+`ifdef WRspice
+        pmode = (cct > 0 && $simparam("dcPhaseMode", 0.0) > 0);
+`endif
+    end
+
+
+`ifdef WRspice
+    // Only WRspice can do DC analysis at present.
+
+    if (analysis("static") != 0)
+        begin
+
+        // smallSig
+        //   If the simulator returns nonzero, we're about to load the
+        //   small-signal values for AC and similar analysis.
+        //   Requires WRspice-4.3.4.
+        //
+        if ($simparam("smallSig", 0.0) != 0.0)
+            begin : smallSig
+
+            // We're through with phase mode, call the regular load
+            // functions.
+
+            if (cct > 0)
+                begin
+                if (pijj != 0)
+                    I(bj) <+ -ic_scaled*sin(phase);
+                else
+                    I(bj) <+ ic_scaled*sin(phase);
+                end
+
+            // Geometric capacitance current.
+            I(bc) <+ ddt(caps*V(bc));
+`ifdef NEWLSER
+            if (lser > 0.0)
+                V(blser) <+ ddt(lser*I(blser));
+            else
+                V(blser) <+ 0.0;
+`endif
+
+            // Small-signal inductance of Josephson current.  This is
+            // a hack for ADMS - an instance variable of this name is
+            // treated specially in the AC load function.  ADMS does
+            // not recognize the small signal inductance from the
+            // expressions above, so we have to do this explicitly. 
+            // Perhaps other parsers will handle this correctly?
+            // 
+            SmallSigL = `PHI0_2PI/(ic_scaled*cos(phase));
+
+            // Quasiparticle current, piecewise-linear model.
+            if (rtype == 1)
+                I(br) <+ V(br)/rsubs;
+
+`ifdef NEWVSHUNT
+            if (vshunt > 1u)
+                begin
+`ifdef NEWLSH
+                if (lsh > 0.0 || lsh0 > 0.0 || lsh1 > 0.0)
+                    V(n1,nshint) <+ ddt(lshval*I(n1,nshint));
+                else
+                    V(n1,nshint) <+ 0.0;
+                I(nshint,n2) <+ gshunt*V(nshint,n2);
+`else
+`ifdef NEWLSER
+                I(n1,n2) <+ gshunt*V(n1,n2);
+`else
+                I(br) <+ gshunt*V(br);
+`endif
+`endif  // NEWLSH
+                end
+`endif  // NEWVSHUNT
+
+`ifdef NOIDT
+            if ($port_connected(ph))
+                V(nph,ph) <+ 0;
+            I(nph) <+ phase;
+            I(nph) <+ -V(nph);
+`else
+            if ($port_connected(ph))
+                begin
+                I(ph) <+ phase;
+                I(ph) <+ -V(ph);
+                end
+`endif
+            end
+        else if (pmode != 0)
+            begin
+            // DC analysis, the simulator supports phase mode DC
+            // analysis.  In this mode, the nodes connected to JJs and
+            // inductors are "phase nodes", and the "voltage" at these
+            // nodes is actually the phase with respect to ground. 
+            // Resistors are treated specially, they are the bridge
+            // between phase nodes and voltage nodes.  When loading
+            // the circuit matrix for a resistor, if both nodes are
+            // voltage-type or ground, the resistance is loaded
+            // normally.  If both nodes are phase-type or ground, the
+            // resistor is not loaded at all.  If the resistor
+            // connects between a phase node and a voltage node, the
+            // resistor is loaded on the voltage node as if connected
+            // to ground.  A term that looks like a voltage-controlled
+            // current source injects current into the phase node,
+            // with value of the voltage node voltage over the
+            // resistance.  Then, a standard SPICE DCOP or DC sweep
+            // can be run, yielding all DC circuit values.
+            //
+            // Note that there is at present a topological constraint
+            // that all phase nodes must be at ground potential, so
+            // networks of inductors/JJs must have a ground connection
+            // somewhere.  Also, one may need to introduce resistors
+            // in some cases:  consider a JJ circuit driving a CMOS
+            // comparator.  If the comparator gate is connected
+            // directly to a JJ, during the DC analysis the comparator
+            // will see the phase voltage.  If instead, the comparator
+            // is connected through a resistor of any value, the
+            // comparator input will be set to zero during DC
+            // analysis, which is correct.
+            //
+            // Below, we can ignore the conductance terms (phase nodes
+            // on both ends), and of course capacitors are ignored in
+            // DC analysis.
+
+            phase = V(bj);
+            if (cct == 1)
+                begin
+                if (pijj != 0)
+                    I(bj) <+ -ic_scaled*sin(phase);
+                else
+                    I(bj) <+ ic_scaled*sin(phase);
+                end
+            start_phase = phase;
+`ifdef NOIDT
+            if ($port_connected(ph))
+                V(nph,ph) <+ 0;
+            I(nph) <+ phase;
+            I(nph) <+ -V(nph);
+`else
+            if ($port_connected(ph))
+                begin
+                I(ph) <+ phase;
+                I(ph) <+ -V(ph);
+                end
+`endif
+`ifdef NEWLSER
+            if (lser > 0.0)
+                V(blser) <+ lser*I(blser)/`PHI0_2PI;
+            else
+                V(blser) <+ 0.0;
+`endif
+`ifdef NEWLSH
+            if (lsh > 0.0 || lsh0 > 0.0 || lsh1 > 0.0)
+                V(n1,nshint) <+ lshval*I(n1,nshint)/`PHI0_2PI;
+            else
+                V(n1,nshint) <+ 0.0;
+`endif
+            end
+        else
+            begin
+            $error(
+ "JJ.va model:  DC analysis is unsupported, use \"uic\" to avoid DCOP.");
+            $finish(0);
+            end
+        end
+
+    else if (analysis("tran") != 0)
+`else  // not WRspice
+    if (analysis("tran") != 0)
+`endif  // WRspice
+
+        begin : tranan
+        real avj, vtmp;
+
+        // Supercurrent.
+        if (cct == 1)
+            begin
+`ifdef NOIDT
+            // Integrate using the charge on a virtual capacitor. 
+            // This assumes that ddt is not broken as is idt.
+
+            if ($port_connected(ph))
+                V(nph,ph) <+ 0;
+            phase = V(nph);
+            I(nph) <+ -V(bj);
+            I(nph) <+ ddt(V(nph)*`PHI0_2PI);
+            // Keep a dc return path or matrix might be singular.
+            I(nph) <+ 1e-12;
+            // I(nph) <+ $simparam("gmin", 1e-12);  // may be slow
+`else
+            phase = idt(V(bj)/`PHI0_2PI, start_phase);
+            if ($port_connected(ph))
+                begin
+                // The following will make the output phase node look like
+                // a voltage source.  However, some Verilog-A translation
+                // systems can't handle this construct (WRspice handles it
+                // properly).  It also adds a "branch" node to the circuit
+                // matrix, which increases memory use for no good reason.
+                //
+                // V(ph) <+ phase;
+                //
+                // The following is basically equivalent.  This gives our
+                // "voltage source" a 1 ohm internal resistance, and does
+                // not increase the circuit matrix size.
+                //
+                I(ph) <+ phase;
+                I(ph) <+ -V(ph);
+                end
+`endif
+            if (pijj != 0)
+                I(bj) <+ -ic_scaled*sin(phase);
+            else
+                I(bj) <+ ic_scaled*sin(phase);
+            end
+
+        // Geometric capacitance current.
+        I(bc) <+ ddt(caps*V(bc));
+
+        // Quasiparticle current, piecewise-linear model.
+        avj = abs(V(br));
+        if (rtype == 1)
+            begin
+            if (avj <= vless)
+                I(br) <+ V(br)/rsubs;
+            else if (avj < vmore)
+                I(br) <+ (V(br)/avj)*(i1 + i2*(avj - vless)/delv);
+            else
+                I(br) <+ (V(br)/avj)*(i1 + i2 + (avj - vmore)/rnorms);
+            end
+
+`ifdef NEWVSHUNT
+        if (vshunt > 1u)
+            begin
+`ifdef NEWLSH
+            if (lsh > 0.0 || lsh0 > 0.0 || lsh1 > 0.0)
+                V(n1,nshint) <+ ddt(lshval*I(n1,nshint));
+            else
+                V(n1,nshint) <+ 0.0;
+            I(nshint,n2) <+ gshunt*V(nshint,n2);
+`else
+`ifdef NEWLSER
+            I(n1,n2) <+ gshunt*V(n1,n2);
+`else
+            I(br) <+ gshunt*V(br);
+`endif
+`endif  // NEWLSH
+            end
+`endif  // NEWVSHUNT
+
+`ifdef NEWLSER
+        if (lser > 0.0)
+            V(blser) <+ ddt(lser*I(blser));
+        else
+            V(blser) <+ 0.0;
+`endif
+
+        // Limit time step.  This is important, as the simulator may have
+        // no other way to recognize the supercurrent and plasma
+        // oscillation and limit the time step accordingly.
+        //
+        vtmp = avj;
+        if (vtmp < vth)
+            vtmp = vth;
+        $bound_step(2*`M_PI*tsf*`PHI0_2PI/vtmp);
+
+`ifdef NEWNPAR
+        // Compute the SFQ emission count, used for pass/fail testing
+        // of SFQ circuits.
+        begin : nparblk
+        real pp, twopi;
+        integer pint;
+        twopi = `M_PI + `M_PI;
+        if (phase >= 0.0)
+            begin
+            pint = phase/twopi;
+            pp = phase - pint*twopi;
+            if (pp > `M_PI + `M_PI_4)
+                pint = pint + 1;
+            end
+        else
+            begin
+            pint = phase/twopi;
+            pp = phase - pint*twopi + twopi;
+            if (pp < `M_PI - `M_PI_4)
+                pint = pint - 1;
+            end
+        n = abs(pint);
+        end
+`endif
+        end
+
+    else
+        begin
+        $error("JJ.va model:  unknown or unsupported analysis.");
+        $finish(0);
+        end
+end
+endmodule
+

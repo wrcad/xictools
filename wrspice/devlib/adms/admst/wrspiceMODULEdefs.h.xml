@@ -742,6 +742,9 @@ inline double _d1_pow(double x,double y)   { return x==0.0?0.0:log(x)*pow(x,y); 
   <admst:for-each select="jacobian">
     <admst:variable name="row" value="%(row/name)"/>
     <admst:variable name="col" value="%(column/name)"/>
+    <!-- Debug
+    <admst:warning format="%(.) %(static) %(dynamic)\n"/>
+    -->
     <admst:if test="[static='yes']">
       <admst:text format="$(indent)double JSVAL_$(row)_$(col);\n"/>
     </admst:if>

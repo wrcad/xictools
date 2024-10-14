@@ -1,0 +1,267 @@
+Using: /cad/synopsys/Hspice/G-2012.06/hspice/linux/hspice inv_dc.sp
+ ****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+  Copyright (C) 2012 Synopsys, Inc. All Rights Reserved.                        
+  Unpublished-rights reserved under US copyright laws.
+  This program is protected by law and is subject to the
+  terms and conditions of the license agreement from Synopsys.
+  Use of this program is your acceptance to be bound by the
+  license agreement. HSPICE is the trademark of Synopsys, Inc.
+  Input File: inv_dc.sp                                                         
+  Command line options: inv_dc.sp
+ lic: No 'setenv LM_LICENSE_FILE' in current environment' 
+ lic:  
+ lic: FLEXlm: v10.8 
+ lic: USER:   agarwalh             HOSTNAME: xcel1.vlsi.iitk.ac.in 
+ lic: HOSTID: 0008a1953eea         PID:      1521 
+ lic: Using FLEXlm license file: 
+ lic: 27000@xcel0 
+ lic: Checkout 1 hspice 
+ lic: License/Maintenance for hspice will expire on 15-jun-2013/2011.09 
+ lic: 1(in_use)/5(total) FLOATING license(s) on SERVER xcel0 
+ lic:   
+ Init: read install configuration file: /cad/synopsys/Hspice/G-2012.06/hspice/meta.cfg
+
+
+ --------------------------------------------------------
+|                                                        |
+|          Synopsys Unified Verilog-A (pVA v2.0)         |
+|                                                        |
+|           Machine Name: xcel1.vlsi.iitk.ac.in          |
+| Copyright (c) 2011 Synopsys Inc., All Rights Reserved. |
+|                                                        |
+ --------------------------------------------------------
+
+libepva built by pvamgr synmake_pva_build  on Tue May  1 20:03:16 PDT 2012
+HSP_HOME:   /cad/synopsys/Hspice/G-2012.06/hspice
+HSP_ARCH:   linux
+HSP_GCC :   /cad/synopsys/Hspice/G-2012.06/hspice/GNU/amd64/gcc-4.5.2-static/bin/gcc -m32 
+HSP_GCC_VER:   4.5.2
+Working-Dir: /users/phd/agarwalh/synopsys_designs/BSIM6/QA/BSIM6 Release/Release_5_May
+Args:        -p hsp -t spi -f inv_dc.pvadir/pvaHDL.lis -o inv_dc.pvadir 
+
+
+Begin of pVA compiling on Sun May  5 21:47:03 2013
+
+Parsing './bsim6.va'
+Parsing include file '/cad/synopsys/Hspice/G-2012.06/hspice/include/constants.vams'
+Parsing include file '/cad/synopsys/Hspice/G-2012.06/hspice/include/disciplines.vams'
+
+End of pVA compiling on Sun May  5 21:47:03 2013
+
+
+End of build pVA DB on Sun May  5 21:47:03 2013
+
+*pvaI* Module (bsim6): 4 unexpanded port, 0 init, 2191 behav, 65 contrib, 43/2272 expr(s)
+*pvaI* Resizing DB size for v count = 1
+*pvaI*        Has DIS (SB), 3 afCount
+*pvaI*        0 const-G and 0 const-C, Has switch branch.
+*pvaI* Module (bsim6): generated 7 flow node(s) during compilation.
+
+End of pVA genC on Sun May  5 21:47:06 2013
+
+*pvaI* #### Total 316 line-size(s), 43 expr(s), 65 contr(s), 0 init(s), 2191 behav(s), 4 port(s)
+
+Generating inv_dc.pvadir/pvaRTL_linux.so
+
+
+End of submitting pVA inv_dc.pvadir/pvaRTL.mak on Sun May  5 21:47:15 2013
+
+
+End of pVA elaboration on Sun May  5 21:47:15 2013
+
+  **warning** (inv_dc.sp:13) Global net name, "gnd", in subckt pin list. The pin will be connected to the local net. Recommend to not use global net names in subckt pin lists.
+ Loading pVA library inv_dc.pvadir/pvaRTL_linux.so...
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *sample netlist for bsim6.0
+
+  ******  circuit name directory
+ circuit number to circuit name directory
+   number circuitname                     definition         multiplier
+        0 main circuit
+        1 xinv1.                          inverter           1.00 
+        2 xinv1.xp1.                      bsim6(va)          1.00 
+        3 xinv1.xn1.                      bsim6(va)          1.00 
+*pvaI* Creating Verilog-A module 'bsim6' for XINV1.XN1
+*pvaI* Creating Verilog-A module 'bsim6' for XINV1.XP1
+  
+      
+ *****************************************************************
+ ******  option summary
+ ******
+ runlvl  = 3         bypass  = 2         
+  Opening plot unit= 15
+ file=inv_dc.pa0                                                               
+
+ ******  
+ *sample netlist for bsim6.0
+
+  ******  dc transfer curves tnom=  25.000 temp=  25.000 *****
+x
+
+        volt    voltage      voltage    
+                    vi           vo     
+    0.            0.           0.9999   
+  1.0000e-02    1.000e-02      0.9998   
+  2.0000e-02    2.000e-02      0.9998   
+  3.0000e-02    3.000e-02      0.9997   
+  4.0000e-02    4.000e-02      0.9996   
+  5.0000e-02    5.000e-02      0.9995   
+  6.0000e-02    6.000e-02      0.9994   
+  7.0000e-02    7.000e-02      0.9992   
+  8.0000e-02    8.000e-02      0.9989   
+  9.0000e-02    9.000e-02      0.9986   
+    0.10000       0.1000       0.9981   
+    0.11000       0.1100       0.9976   
+    0.12000       0.1200       0.9969   
+    0.13000       0.1300       0.9960   
+    0.14000       0.1400       0.9949   
+    0.15000       0.1500       0.9937   
+    0.16000       0.1600       0.9922   
+    0.17000       0.1700       0.9904   
+    0.18000       0.1800       0.9884   
+    0.19000       0.1900       0.9860   
+    0.20000       0.2000       0.9834   
+    0.21000       0.2100       0.9804   
+    0.22000       0.2200       0.9770   
+    0.23000       0.2300       0.9733   
+    0.24000       0.2400       0.9692   
+    0.25000       0.2500       0.9646   
+    0.26000       0.2600       0.9596   
+    0.27000       0.2700       0.9542   
+    0.28000       0.2800       0.9482   
+    0.29000       0.2900       0.9417   
+    0.30000       0.3000       0.9346   
+    0.31000       0.3100       0.9268   
+    0.32000       0.3200       0.9184   
+    0.33000       0.3300       0.9093   
+    0.34000       0.3400       0.8993   
+    0.35000       0.3500       0.8884   
+    0.36000       0.3600       0.8765   
+    0.37000       0.3700       0.8634   
+    0.38000       0.3800       0.8490   
+    0.39000       0.3900       0.8329   
+    0.40000       0.4000       0.8148   
+    0.41000       0.4100       0.7942   
+    0.42000       0.4200       0.7702   
+    0.43000       0.4300       0.7414   
+    0.44000       0.4400       0.7047   
+    0.45000       0.4500       0.6515   
+    0.46000       0.4600       0.5151   
+    0.47000       0.4700       0.2621   
+    0.48000       0.4800       0.2149   
+    0.49000       0.4900       0.1883   
+    0.50000       0.5000       0.1692   
+    0.51000       0.5100       0.1541   
+    0.52000       0.5200       0.1416   
+    0.53000       0.5300       0.1309   
+    0.54000       0.5400       0.1216   
+    0.55000       0.5500       0.1134   
+    0.56000       0.5600       0.1060   
+    0.57000       0.5700     9.929e-02  
+    0.58000       0.5800     9.319e-02  
+    0.59000       0.5900     8.761e-02  
+    0.60000       0.6000     8.246e-02  
+    0.61000       0.6100     7.770e-02  
+    0.62000       0.6200     7.327e-02  
+    0.63000       0.6300     6.915e-02  
+    0.64000       0.6400     6.529e-02  
+    0.65000       0.6500     6.168e-02  
+    0.66000       0.6600     5.828e-02  
+    0.67000       0.6700     5.509e-02  
+    0.68000       0.6800     5.208e-02  
+    0.69000       0.6900     4.924e-02  
+    0.70000       0.7000     4.656e-02  
+    0.71000       0.7100     4.403e-02  
+    0.72000       0.7200     4.163e-02  
+    0.73000       0.7300     3.936e-02  
+    0.74000       0.7400     3.720e-02  
+    0.75000       0.7500     3.516e-02  
+    0.76000       0.7600     3.322e-02  
+    0.77000       0.7700     3.138e-02  
+    0.78000       0.7800     2.964e-02  
+    0.79000       0.7900     2.798e-02  
+    0.80000       0.8000     2.641e-02  
+    0.81000       0.8100     2.492e-02  
+    0.82000       0.8200     2.351e-02  
+    0.83000       0.8300     2.217e-02  
+    0.84000       0.8400     2.089e-02  
+    0.85000       0.8500     1.969e-02  
+    0.86000       0.8600     1.854e-02  
+    0.87000       0.8700     1.746e-02  
+    0.88000       0.8800     1.643e-02  
+    0.89000       0.8900     1.545e-02  
+    0.90000       0.9000     1.452e-02  
+    0.91000       0.9100     1.364e-02  
+    0.92000       0.9200     1.281e-02  
+    0.93000       0.9300     1.202e-02  
+    0.94000       0.9400     1.127e-02  
+    0.95000       0.9500     1.057e-02  
+    0.96000       0.9600     9.898e-03  
+    0.97000       0.9700     9.269e-03  
+    0.98000       0.9800     8.678e-03  
+    0.99000       0.9900     8.121e-03  
+    1.00000       1.0000     7.597e-03  
+y
+-----------------------------------------------
+
+          ***** job concluded
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *sample netlist for bsim6.0
+
+  ******  job statistics summary tnom=  25.000 temp=  25.000 *****
+  
+  
+ ******  Machine Information  ******
+ CPU:
+ model name	: AMD Opteron(tm) Processor 248
+ cpu MHz	: 2200.023
+  
+ OS:
+ Linux version 2.6.9-22.EL (bhcompile@crowe.devel.redhat.com) (gcc version 3.4.4 20050721 (Red Hat 3.4.4-2)) #1 Mon Sep 19 17:49:49 EDT 2005
+
+
+  ******  HSPICE Threads Information  ******
+
+  Command Line Threads Count :     1
+  Available CPU Count        :     1
+  Actual Threads Count       :     1
+
+
+  ******  Circuit Statistics  ******
+  # nodes       =      22 # elements   =       4
+  # resistors   =       0 # capacitors =       0 # inductors   =       0
+  # mutual_inds =       0 # vccs       =       0 # vcvs        =       0
+  # cccs        =       0 # ccvs       =       0 # volt_srcs   =       2
+  # curr_srcs   =       0 # diodes     =       0 # bjts        =       0
+  # jfets       =       0 # mosfets    =       0 # U elements  =       0
+  # T elements  =       0 # W elements =       0 # B elements  =       0
+  # S elements  =       0 # P elements =       0 # va device   =       2
+  # vector_srcs =       0 # N elements =       0
+
+
+  ******  Runtime Statistics (seconds)  ******
+
+  analysis           time    # points   tot. iter  conv.iter
+  op point           0.00           1           0
+  dc sweep           0.05         101         284
+  readin             2.65
+  errchk             0.06
+  setup              0.00
+  output             0.00
+
+
+           peak memory used        112.91 megabytes
+           total cpu time            2.76 seconds
+           total elapsed time       12.13 seconds
+           job started at     21:47:03 05/05/2013
+           job ended   at     21:47:15 05/05/2013
+
+
+ lic: Release hspice token(s) 
+ lic: total license checkout elapse time:        0.20(s)
+
+
+pVA concluded on Sun May  5 21:47:15 2013
+
