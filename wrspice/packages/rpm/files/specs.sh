@@ -149,11 +149,11 @@ if [ $with_devkit = yes ]; then
   for a in $dkexdirs; do
       echo "%dir /usr/local/xictools/$top/devkit/examples/$a"
       echo "%dir /usr/local/xictools/$top/devkit/examples/$a/tests"
-      echo "%dir /usr/local/xictools/$top/devkit/examples/$a/module_dist"
+#      echo "%dir /usr/local/xictools/$top/devkit/examples/$a/module_dist"
   done
   for a in $dkexdirs; do
       mfile=`$files modname $a`.`$files soext Linux`
-      echo "%attr(0755, root, root) /usr/local/xictools/$top/devkit/examples/$a/module_dist/$mfile"
+#      echo "%attr(0755, root, root) /usr/local/xictools/$top/devkit/examples/$a/module_dist/$mfile"
   done
   efiles=`cat $adms_examples`
   for a in $efiles; do
