@@ -235,20 +235,17 @@ noisdefs.h"
 vlmods=""
 
 dkexdirs="\
-bsim6 \
-bsim6.1 \
-bsimcmg \
-bsoi44 \
-bsoi45 \
+bsim-bulk \
+bsim-cmg \
+bsim-img \
+bsim-soi \
 cap \
 ekv \
-hicum0 \
-hicum2 \
+hicum \
 ind \
 jj \
 mextram \
-psp102 \
-psp103"
+psp"
 
 case $1 in
 admst)
@@ -300,34 +297,28 @@ soext)
     esac;;
 modname)
     case x$2 in
-    xbsim6)
-        echo bsim6;;
-    xbsim6.1)
-        echo bsim6;;
-    xbsimcmg)
+    xbsim-bulk)
+        echo bsimbulk;;
+    xbsim-cmg)
         echo bsimcmg;;
-    xbsoi44)
-        echo bsoi44;;
-    xbsoi45)
-        echo bsoi45;;
+    xbsim-img)
+        echo bsimimg;;
+    xbsim-soi)
+        echo bsimsoi;;
     xcap)
         echo cap;;
     xekv)
         echo ekv26;;
-    xhicum0)
-        echo hicum0;;
-    xhicum2)
+    xhicum)
         echo hicum2;;
     xind)
         echo ind;;
     xjj)
         echo jj;;
     xmextram)
-        echo bjt504;;
-    xpsp102)
-        echo psp102;;
-    xpsp103)
-        echo psp103;;
+        echo bjt505;;
+    xpsp)
+        echo psp104;;
     esac;;
 esac
 
