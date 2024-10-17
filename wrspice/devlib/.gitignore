@@ -11,6 +11,7 @@ adms/include/input.h
 adms/include/noisdefs.h
 adms/include/stab.h
 adms/admst/device.xml
+!adms/examples/Makefile
 toc.cc
 include/acdefs.h
 include/circuit.h
