@@ -495,7 +495,7 @@ $(destn)/help::
 	@$(BASE)/util/mkdirpth $@ $@/screenshots
 	help=`packages/util/wrspice_files help`; \
 	for a in $$help; do \
-	    if [ $$a == mmjco.txt ]; then \
+	    if [ $$a = mmjco.txt ]; then \
 	        cp -f mmjco/README $@/mmjco.txt; \
 	    else \
 	        $(INSTALL_LIB) help/$$a $@; \
