@@ -588,11 +588,7 @@ $(destn)/devkit::
 	    if [ -f $@/`dirname $$a`/mkmk ]; then \
 	        chmod 755 $@/`dirname $$a`/mkmk; \
 	    fi \
-        done; \
-	#for a in $$edirs; do \
-	#    mkdir $@/examples/$$a/module_dist; \
-	#    cp devlib/adms/examples/$$a/*.$(SOEXT) $@/examples/$$a/module_dist; \
-	#done;
+        done;
 
 $(destn)/cadence-oasis::
 	if [ -d cadence-oasis ]; then \

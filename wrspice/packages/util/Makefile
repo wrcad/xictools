@@ -2,7 +2,10 @@
 # This creates the adms_examples used by the packagers.  This must be
 # kept in sync with the examples tree.
 #
-# Do make distclean in devlib/adms/examples first!
+# Do this first: 
+#   cd devlib/adms/examples
+#   make distclean
+#   make make
 #
 # Be sure to edit the list in case any crap files sneak in.
 

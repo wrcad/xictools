@@ -62,5 +62,5 @@ SOURCE/$(SRCFILE):
 clean_fetch::
 	-@rm -f *.include *.va *.txt *.pdf
 	-@rm -rf SOURCE
-pndif
+endif
 

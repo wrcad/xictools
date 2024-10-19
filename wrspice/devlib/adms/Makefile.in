@@ -300,10 +300,10 @@ depend:
 	fi
 
 clean:
-	-@rm -f $(COBJS) *.so *.dll *.dylib
+	-@rm -f *.o *.so *.dll *.dylib
 
 realclean: clean clean_fetch
-	-@rm -f device.xml $(HFILES) $(CCFILES) constant* discipline* \
+	-@rm -f device.xml *.h *.cc constant* discipline* \
   .adms.implicit.xml .interface.xml .*.adms
 
 # This file is exported, don't blow away the user's Makefile!

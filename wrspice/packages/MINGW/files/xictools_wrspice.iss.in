@@ -53,49 +53,41 @@ Source: "..\root\usr\local\TOOLROOT\wrspice.current\scripts\*"; DestDir: "{app}\
 Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit"
 Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\admst\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\admst"
 Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples"
-Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\bsim6\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\bsim6"
-Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\bsim6\tests\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\bsim6\tests"
-Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\bsim6\module_dist\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\bsim6\module_dist"
-Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\bsim6.1\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\bsim6.1"
-Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\bsim6.1\tests\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\bsim6.1\tests"
-Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\bsim6.1\module_dist\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\bsim6.1\module_dist"
-Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\bsimcmg\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\bsimcmg"
-Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\bsimcmg\tests\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\bsimcmg\tests"
-Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\bsimcmg\module_dist\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\bsimcmg\module_dist"
-Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\bsoi44\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\bsoi44"
-Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\bsoi44\tests\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\bsoi44\tests"
-Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\bsoi44\module_dist\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\bsoi44\module_dist"
-Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\bsoi45\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\bsoi45"
-Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\bsoi45\tests\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\bsoi45\tests"
-Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\bsoi45\module_dist\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\bsoi45\module_dist"
+
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\bsim-bulk\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\bsim-bulk"
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\bsim-bulk\tests\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\bsim-bulk\tests"
+
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\bsim-cmg\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\bsim-cmg"
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\bsim-cmg\tests\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\bsim-cmg\tests"
+
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\bsim-img\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\bsim-img"
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\bsim-img\tests\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\bsim-img\tests"
+
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\bsim-soi\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\bsim-soi"
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\bsim-soi\tests\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\bsim-soi\tests"
+
 Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\cap\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\cap"
 Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\cap\tests\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\cap\tests"
-Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\cap\module_dist\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\cap\module_dist"
+
 Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\ekv\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\ekv"
 Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\ekv\tests\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\ekv\tests"
-Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\ekv\module_dist\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\ekv\module_dist"
-Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\hicum0\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\hicum0"
-Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\hicum0\tests\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\hicum0\tests"
-Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\hicum0\module_dist\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\hicum0\module_dist"
-Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\hicum2\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\hicum2"
-Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\hicum2\tests\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\hicum2\tests"
-Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\hicum2\module_dist\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\hicum2\module_dist"
+
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\hicum\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\hicum"
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\hicum\tests\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\hicum\tests"
+
 Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\ind\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\ind"
 Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\ind\tests\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\ind\tests"
-Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\ind\module_dist\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\ind\module_dist"
+
 Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\jj\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\jj"
 Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\jj\tests\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\jj\tests"
-Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\jj\module_dist\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\jj\module_dist"
+
 Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\mextram\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\mextram"
 Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\mextram\tests\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\mextram\tests"
-Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\mextram\module_dist\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\mextram\module_dist"
-Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\psp102\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\psp102"
-Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\psp102\tests\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\psp102\tests"
-Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\psp102\module_dist\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\psp102\module_dist"
-Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\psp103\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\psp103"
-Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\psp103\module_dist\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\psp103\module_dist"
-Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\include\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\include"
 
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\psp\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\psp"
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\examples\psp\tests\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\examples\psp\tests"
+
+Source: "..\root\usr\local\TOOLROOT\wrspice.current\devkit\include\*"; DestDir: "{app}\TOOLROOT\wrspice.current\devkit\include"
 Source: "..\root\usr\local\TOOLROOT\wrspice.current\docs\wrs*"; DestDir: "{app}\TOOLROOT\wrspice.current\docs";
 Source: "..\root\usr\local\TOOLROOT\wrspice.current\docs\README"; DestDir: "{app}\TOOLROOT\wrspice.current\docs"
 Source: "..\root\usr\local\TOOLROOT\wrspice.current\docs\MSWINFO.TXT"; DestDir: "{app}\TOOLROOT\wrspice.current\docs"
