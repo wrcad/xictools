@@ -63,6 +63,7 @@ public:
     ~QTsimRunDlg();
 
     static void control(SpType);
+    static int timeout(void*);
 
     void set_transient_for(QWidget *prnt)
         {

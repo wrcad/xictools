@@ -151,8 +151,7 @@ QTsimRunDlg::control(SpType status)
         if (instPtr) {
             instPtr->sp_label->setText(msg);
             instPtr->show();
-            sleep(2);
-            instPtr->hide();
+            QTpkg::self()->RegisterTimeoutProc(2000, timeout, 0);
             return;
         }
         break;
@@ -162,8 +161,7 @@ QTsimRunDlg::control(SpType status)
         if (instPtr) {
             instPtr->sp_label->setText(msg);
             instPtr->show();
-            sleep(2);
-            instPtr->hide();
+            QTpkg::self()->RegisterTimeoutProc(2000, timeout, 0);
             return;
         }
         break;
@@ -178,6 +176,15 @@ QTsimRunDlg::control(SpType status)
         break;
     }
     new QTsimRunDlg(msg);
+}
+
+
+int
+QTsimRunDlg::timeout(void*)
+{
+    if (instPtr)
+        instPtr->hide();
+    return (0);
 }
 
 
