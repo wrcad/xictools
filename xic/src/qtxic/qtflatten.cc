@@ -171,35 +171,41 @@ QTflattenDlg::QTflattenDlg(
     connect(entry, &QComboBox::currentTextChanged,
         this, &QTflattenDlg::depth_menu_slot);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     // check boxes
     //
     fl_novias = new QCheckBox(tr(
         "Don't flatten standard vias, move to top"));
     vbox->addWidget(fl_novias);
-    connect(fl_novias, &QCheckBox::stateChanged,
+    connect(fl_novias, CHECK_BOX_STATE_CHANGED,
         this, &QTflattenDlg::novias_btn_slot);
 
     fl_nopcells = new QCheckBox(tr(
         "Don't flatten param. cells, move to top"));
     vbox->addWidget(fl_nopcells);
-    connect(fl_nopcells, &QCheckBox::stateChanged,
+    connect(fl_nopcells, CHECK_BOX_STATE_CHANGED,
         this, &QTflattenDlg::nopcells_btn_slot);
 
     fl_nolabels = new QCheckBox(tr("Ignore labels in subcells"));
     vbox->addWidget(fl_nolabels);
-    connect(fl_nolabels, &QCheckBox::stateChanged,
+    connect(fl_nolabels, CHECK_BOX_STATE_CHANGED,
         this, &QTflattenDlg::nolabels_btn_slot);
 
     QCheckBox *cbox = new QCheckBox(tr("Use fast mode, NOT UNDOABLE"));
     vbox->addWidget(cbox);
     QTdev::SetStatus(cbox, fmode);
-    connect(cbox, &QCheckBox::stateChanged,
+    connect(cbox, CHECK_BOX_STATE_CHANGED,
         this, &QTflattenDlg::fastmode_btn_slot);
 
     fl_merge = new QCheckBox(tr("Use object merging when flattening"));
     vbox->addWidget(fl_merge);
     QTdev::SetStatus(fl_merge, merge);
-    connect(fl_merge, &QCheckBox::stateChanged,
+    connect(fl_merge, CHECK_BOX_STATE_CHANGED,
         this, &QTflattenDlg::merge_btn_slot);
 
     // flatten and dismiss buttons

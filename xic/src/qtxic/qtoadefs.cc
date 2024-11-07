@@ -199,9 +199,15 @@ QToaDefsDlg::QToaDefsDlg(GRobject c)
     connect(od_prop, &QLineEdit::textChanged,
         this, &QToaDefsDlg::prop_text_changed);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     od_cdf = new QCheckBox(tr("Dump CDF files when reading"));
     vbox->addWidget(od_cdf);
-    connect(od_cdf, &QCheckBox::stateChanged,
+    connect(od_cdf, CHECK_BOX_STATE_CHANGED,
         this, &QToaDefsDlg::cdf_btn_slot);
 
     // Dismiss button

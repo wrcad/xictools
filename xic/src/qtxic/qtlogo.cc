@@ -350,10 +350,16 @@ QTlogoDlg::QTlogoDlg(GRobject c) : QTbag(this)
     connect(tbtn, &QAbstractButton::clicked,
         this, &QTlogoDlg::help_btn_slot);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     // second row
     lgo_setpix = new QCheckBox(tr("Define \"pixel\" size"));
     grid->addWidget(lgo_setpix, 1, 0);
-    connect(lgo_setpix, &QCheckBox::stateChanged,
+    connect(lgo_setpix, CHECK_BOX_STATE_CHANGED,
         this, &QTlogoDlg::pixel_btn_slot);
 
     lgo_sb_pix = new QTdoubleSpinBox();
@@ -390,7 +396,7 @@ QTlogoDlg::QTlogoDlg(GRobject c) : QTbag(this)
     // fifth row
     lgo_create = new QCheckBox(tr("Create cell for text"));
     grid->addWidget(lgo_create, 4, 0);
-    connect(lgo_create, &QCheckBox::stateChanged,
+    connect(lgo_create, CHECK_BOX_STATE_CHANGED,
         this, &QTlogoDlg::create_btn_slot);
 
     // bottom row

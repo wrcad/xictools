@@ -203,16 +203,22 @@ QTconvertOutDlg::QTconvertOutDlg(GRobject c, CvoCallback callback, void *arg)
 
     phbox->addStretch(1);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     cvo_invis_p = new QCheckBox(tr("Physical"));
     phbox->addWidget(cvo_invis_p);
-    connect(cvo_invis_p, &QCheckBox::stateChanged,
+    connect(cvo_invis_p, CHECK_BOX_STATE_CHANGED,
         this, &QTconvertOutDlg::invis_p_btn_slot);
 
     phbox->addSpacing(24);
 
     cvo_invis_e = new QCheckBox(tr("Electrical"));
     phbox->addWidget(cvo_invis_e);
-    connect(cvo_invis_e, &QCheckBox::stateChanged,
+    connect(cvo_invis_e, CHECK_BOX_STATE_CHANGED,
         this, &QTconvertOutDlg::invis_e_btn_slot);
 
     const char *s = CDvdb()->getVariable(VA_SkipInvisible);
@@ -236,53 +242,53 @@ QTconvertOutDlg::QTconvertOutDlg(GRobject c, CvoCallback callback, void *arg)
     cvo_strip = new QCheckBox(tr(
         "Strip For Export - (convert physical data only)"));
     pvbox->addWidget(cvo_strip);
-    connect(cvo_strip, &QCheckBox::stateChanged,
+    connect(cvo_strip, CHECK_BOX_STATE_CHANGED,
         this, &QTconvertOutDlg::strip_btn_slot);
 
     cvo_libsub = new QCheckBox(tr("Include library cell masters"));
     pvbox->addWidget(cvo_libsub);
-    connect(cvo_libsub, &QCheckBox::stateChanged,
+    connect(cvo_libsub, CHECK_BOX_STATE_CHANGED,
         this, &QTconvertOutDlg::libsub_btn_slot);
 
     cvo_pcsub = new QCheckBox(tr(
         "Include parameterized cell sub-masters"));
     pvbox->addWidget(cvo_pcsub);
-    connect(cvo_pcsub, &QCheckBox::stateChanged,
+    connect(cvo_pcsub, CHECK_BOX_STATE_CHANGED,
         this, &QTconvertOutDlg::pcsub_btn_slot);
 
     cvo_viasub = new QCheckBox(tr(
         "Include standard via cell sub-masters"));
     pvbox->addWidget(cvo_viasub);
-    connect(cvo_viasub, &QCheckBox::stateChanged,
+    connect(cvo_viasub, CHECK_BOX_STATE_CHANGED,
         this, &QTconvertOutDlg::viasub_btn_slot);
 
     cvo_allcells = new QCheckBox(tr(
         "Consider ALL cells in current symbol table for output"));
     pvbox->addWidget(cvo_allcells);
-    connect(cvo_allcells, &QCheckBox::stateChanged,
+    connect(cvo_allcells, CHECK_BOX_STATE_CHANGED,
         this, &QTconvertOutDlg::allcells_btn_slot);
 
     cvo_noflvias = new QCheckBox(tr(
         "Don't flatten standard vias, keep as instance at top level"));
     pvbox->addWidget(cvo_noflvias);
-    connect(cvo_noflvias, &QCheckBox::stateChanged,
+    connect(cvo_noflvias, CHECK_BOX_STATE_CHANGED,
         this, &QTconvertOutDlg::noflvias_btn_slot);
 
     cvo_noflpcs = new QCheckBox(tr(
         "Don't flatten pcells, keep as instance at top level"));
     pvbox->addWidget(cvo_noflpcs);
-    connect(cvo_noflpcs, &QCheckBox::stateChanged,
+    connect(cvo_noflpcs, CHECK_BOX_STATE_CHANGED,
         this, &QTconvertOutDlg::noflpcs_btn_slot);
 
     cvo_nofllbs = new QCheckBox(tr(
         "Ignore labels in subcells when flattening"));
     pvbox->addWidget(cvo_nofllbs);
-    connect(cvo_nofllbs, &QCheckBox::stateChanged,
+    connect(cvo_nofllbs, CHECK_BOX_STATE_CHANGED,
         this, &QTconvertOutDlg::nofllbs_btn_slot);
 
     cvo_keepbad = new QCheckBox(tr("Keep bad output (for debugging)"));
     pvbox->addWidget(cvo_keepbad);
-    connect(cvo_keepbad, &QCheckBox::stateChanged,
+    connect(cvo_keepbad, CHECK_BOX_STATE_CHANGED,
         this, &QTconvertOutDlg::keepbad_btn_slot);
 
     // The Read File page

@@ -200,10 +200,16 @@ QTlayerAliasDlg::QTlayerAliasDlg(GRobject c) : QTbag(this)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     // Decimal _Form, <control>F, la_action_proc, DecCode, <CheckItem>
     la_decimal = new QCheckBox(tr("Decimal Form"));
     hbox->addWidget(la_decimal);
-    connect(la_decimal, &QCheckBox::stateChanged,
+    connect(la_decimal, CHECK_BOX_STATE_CHANGED,
         this, &QTlayerAliasDlg::decimal_btn_slot);
 
     QPushButton *btn = new QPushButton(tr("Dismiss"));

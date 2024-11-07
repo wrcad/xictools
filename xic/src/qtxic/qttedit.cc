@@ -214,9 +214,15 @@ QTelecTermEditDlg::QTelecTermEditDlg(GRobject caller, TermEditInfo *tinfo,
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     te_phys = new QCheckBox(tr("Has physical terminal"));
     hbox->addWidget(te_phys);
-    connect(te_phys, &QCheckBox::stateChanged,
+    connect(te_phys, CHECK_BOX_STATE_CHANGED,
         this, &QTelecTermEditDlg::has_phys_term_slot);
 
     tbtn = new QToolButton();

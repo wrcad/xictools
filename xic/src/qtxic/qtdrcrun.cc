@@ -279,14 +279,20 @@ QTdrcRunDlg::QTdrcRunDlg(GRobject c)
     grid->setSpacing(2);
     vb->addLayout(grid);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     dc_wind = new QCheckBox(tr("Use window"));
     grid->addWidget(dc_wind, 0, 0, 1, 2);
-    connect(dc_wind, &QCheckBox::stateChanged,
+    connect(dc_wind, CHECK_BOX_STATE_CHANGED,
         this, &QTdrcRunDlg::win_btn_slot);
 
     dc_flat = new QCheckBox(tr("Flatten"));
     grid->addWidget(dc_flat, 0, 2);
-    connect(dc_flat, &QCheckBox::stateChanged,
+    connect(dc_flat, CHECK_BOX_STATE_CHANGED,
         this, &QTdrcRunDlg::flat_btn_slot);
 
     hb = new QHBoxLayout();

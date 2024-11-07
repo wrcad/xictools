@@ -238,113 +238,119 @@ QTcfiltDlg::QTcfiltDlg(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*),
     col3->setSpacing(2);
     hb->addLayout(col3b);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     // Immutable
     cf_nimm = new QCheckBox(tr("not"));
     col1->addWidget(cf_nimm);
-    connect(cf_nimm, &QCheckBox::stateChanged,
+    connect(cf_nimm, CHECK_BOX_STATE_CHANGED,
         this, &QTcfiltDlg::nimm_btn_slot);
     cf_imm = new QCheckBox(tr("Immutable"));
     col2->addWidget(cf_imm);
-    connect(cf_imm, &QCheckBox::stateChanged,
+    connect(cf_imm, CHECK_BOX_STATE_CHANGED,
         this, &QTcfiltDlg::imm_btn_slot);
 
     // Via sub-master
     cf_nvsm = new QCheckBox(tr("not"));
     col3a->addWidget(cf_nvsm);
-    connect(cf_nvsm, &QCheckBox::stateChanged,
+    connect(cf_nvsm, CHECK_BOX_STATE_CHANGED,
         this, &QTcfiltDlg::nvsm_btn_slot);
     cf_vsm = new QCheckBox(tr("Via sub-master"));
     col3b->addWidget(cf_vsm);
-    connect(cf_vsm, &QCheckBox::stateChanged,
+    connect(cf_vsm, CHECK_BOX_STATE_CHANGED,
         this, &QTcfiltDlg::vsm_btn_slot);
 
     // Library
     cf_nlib = new QCheckBox(tr("not"));
     col1->addWidget(cf_nlib);
-    connect(cf_nlib, &QCheckBox::stateChanged,
+    connect(cf_nlib, CHECK_BOX_STATE_CHANGED,
         this, &QTcfiltDlg::nlib_btn_slot);
     cf_lib = new QCheckBox(tr("Library"));
     col2->addWidget(cf_lib);
-    connect(cf_lib, &QCheckBox::stateChanged,
+    connect(cf_lib, CHECK_BOX_STATE_CHANGED,
         this, &QTcfiltDlg::lib_btn_slot);
 
     // PCell sub-master
     cf_npsm = new QCheckBox(tr("not"));
     col3a->addWidget(cf_npsm);
-    connect(cf_npsm, &QCheckBox::stateChanged,
+    connect(cf_npsm, CHECK_BOX_STATE_CHANGED,
         this, &QTcfiltDlg::npsm_btn_slot);
     cf_psm = new QCheckBox(tr("PCell sub-master"));
     col3b->addWidget(cf_psm);
-    connect(cf_psm, &QCheckBox::stateChanged,
+    connect(cf_psm, CHECK_BOX_STATE_CHANGED,
         this, &QTcfiltDlg::psm_btn_slot);
 
     // Device
     cf_ndev = new QCheckBox(tr("not"));
     col1->addWidget(cf_ndev);
-    connect(cf_ndev, &QCheckBox::stateChanged,
+    connect(cf_ndev, CHECK_BOX_STATE_CHANGED,
         this, &QTcfiltDlg::ndev_btn_slot);
     cf_dev = new QCheckBox(tr("Device"));
     col2->addWidget(cf_dev);
-    connect(cf_dev, &QCheckBox::stateChanged,
+    connect(cf_dev, CHECK_BOX_STATE_CHANGED,
         this, &QTcfiltDlg::dev_btn_slot);
 
     // PCell super-master
     cf_nspr = new QCheckBox(tr("not"));
     col3a->addWidget(cf_nspr);
-    connect(cf_nspr, &QCheckBox::stateChanged,
+    connect(cf_nspr, CHECK_BOX_STATE_CHANGED,
         this, &QTcfiltDlg::nspr_btn_slot);
     cf_spr = new QCheckBox(tr("PCell super"));
     col3b->addWidget(cf_spr);
-    connect(cf_spr, &QCheckBox::stateChanged,
+    connect(cf_spr, CHECK_BOX_STATE_CHANGED,
         this, &QTcfiltDlg::spr_btn_slot);
 
     // Top level
     cf_ntop = new QCheckBox(tr("not"));
     col1->addWidget(cf_ntop);
-    connect(cf_ntop, &QCheckBox::stateChanged,
+    connect(cf_ntop, CHECK_BOX_STATE_CHANGED,
         this, &QTcfiltDlg::ntop_btn_slot);
     cf_top = new QCheckBox(tr("Top level"));
     col2->addWidget(cf_top);
-    connect(cf_top, &QCheckBox::stateChanged,
+    connect(cf_top, CHECK_BOX_STATE_CHANGED,
         this, &QTcfiltDlg::top_btn_slot);
 
     // Modified
     cf_nmod = new QCheckBox(tr("not"));
     col3a->addWidget(cf_nmod);
-    connect(cf_nmod, &QCheckBox::stateChanged,
+    connect(cf_nmod, CHECK_BOX_STATE_CHANGED,
         this, &QTcfiltDlg::nmod_btn_slot);
     cf_mod = new QCheckBox(tr("Modified"));
     col3b->addWidget(cf_mod);
-    connect(cf_mod, &QCheckBox::stateChanged,
+    connect(cf_mod, CHECK_BOX_STATE_CHANGED,
         this, &QTcfiltDlg::mod_btn_slot);
 
     // With alt
     cf_nalt = new QCheckBox(tr("not"));
     col1->addWidget(cf_nalt);
-    connect(cf_nalt, &QCheckBox::stateChanged,
+    connect(cf_nalt, CHECK_BOX_STATE_CHANGED,
         this, &QTcfiltDlg::nalt_btn_slot);
     cf_alt = new QCheckBox(tr("With alt"));
     col2->addWidget(cf_alt);
-    connect(cf_alt, &QCheckBox::stateChanged,
+    connect(cf_alt, CHECK_BOX_STATE_CHANGED,
         this, &QTcfiltDlg::alt_btn_slot);
 
     cf_nref = new QCheckBox(tr("not"));
     col3a->addWidget(cf_nref);
-    connect(cf_nref, &QCheckBox::stateChanged,
+    connect(cf_nref, CHECK_BOX_STATE_CHANGED,
         this, &QTcfiltDlg::nref_btn_slot);
     cf_ref = new QCheckBox(tr("Reference"));
     col3b->addWidget(cf_ref);
-    connect(cf_ref, &QCheckBox::stateChanged,
+    connect(cf_ref, CHECK_BOX_STATE_CHANGED,
         this, &QTcfiltDlg::ref_btn_slot);
 
     // Parent cells
     cf_npcl = new QCheckBox(tr("not"));
     col1->addWidget(cf_npcl);
-    connect(cf_npcl, &QCheckBox::stateChanged,
+    connect(cf_npcl, CHECK_BOX_STATE_CHANGED,
         this, &QTcfiltDlg::npcl_btn_slot);
     cf_pcl = new QCheckBox(tr("Parent cells"));
     col2->addWidget(cf_pcl);
-    connect(cf_pcl, &QCheckBox::stateChanged,
+    connect(cf_pcl, CHECK_BOX_STATE_CHANGED,
         this, &QTcfiltDlg::pcl_btn_slot);
 
     cf_pclent = new QLineEdit();
@@ -353,11 +359,11 @@ QTcfiltDlg::QTcfiltDlg(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*),
     // Subcell cells
     cf_nscl = new QCheckBox(tr("not"));
     col1->addWidget(cf_nscl);
-    connect(cf_nscl, &QCheckBox::stateChanged,
+    connect(cf_nscl, CHECK_BOX_STATE_CHANGED,
         this, &QTcfiltDlg::nscl_btn_slot);
     cf_scl = new QCheckBox(tr("Subcell cells"));
     col2->addWidget(cf_scl);
-    connect(cf_scl, &QCheckBox::stateChanged,
+    connect(cf_scl, CHECK_BOX_STATE_CHANGED,
         this, &QTcfiltDlg::scl_btn_slot);
 
     cf_sclent = new QLineEdit();
@@ -366,11 +372,11 @@ QTcfiltDlg::QTcfiltDlg(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*),
     // With layers
     cf_nlyr = new QCheckBox(tr("not"));
     col1->addWidget(cf_nlyr);
-    connect(cf_nlyr, &QCheckBox::stateChanged,
+    connect(cf_nlyr, CHECK_BOX_STATE_CHANGED,
         this, &QTcfiltDlg::nlyr_btn_slot);
     cf_lyr = new QCheckBox(tr("With layers"));
     col2->addWidget(cf_lyr);
-    connect(cf_lyr, &QCheckBox::stateChanged,
+    connect(cf_lyr, CHECK_BOX_STATE_CHANGED,
         this, &QTcfiltDlg::lyr_btn_slot);
 
     cf_lyrent = new QLineEdit();
@@ -379,11 +385,11 @@ QTcfiltDlg::QTcfiltDlg(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*),
     // With flags
     cf_nflg = new QCheckBox(tr("not"));
     col1->addWidget(cf_nflg);
-    connect(cf_nflg, &QCheckBox::stateChanged,
+    connect(cf_nflg, CHECK_BOX_STATE_CHANGED,
         this, &QTcfiltDlg::nflg_btn_slot);
     cf_flg = new QCheckBox(tr("With flags"));
     col2->addWidget(cf_flg);
-    connect(cf_flg, &QCheckBox::stateChanged,
+    connect(cf_flg, CHECK_BOX_STATE_CHANGED,
         this, &QTcfiltDlg::flg_btn_slot);
 
     cf_flgent = new QLineEdit();
@@ -392,11 +398,11 @@ QTcfiltDlg::QTcfiltDlg(GRobject c, DisplayMode dm, void(*cb)(cfilter_t*, void*),
     // From filetypes
     cf_nftp = new QCheckBox(tr("not"));
     col1->addWidget(cf_nftp);
-    connect(cf_nftp, &QCheckBox::stateChanged,
+    connect(cf_nftp, CHECK_BOX_STATE_CHANGED,
         this, &QTcfiltDlg::nftp_btn_slot);
     cf_ftp = new QCheckBox(tr("From filetypes"));
     col2->addWidget(cf_ftp);
-    connect(cf_ftp, &QCheckBox::stateChanged,
+    connect(cf_ftp, CHECK_BOX_STATE_CHANGED,
         this, &QTcfiltDlg::ftp_btn_slot);
 
     cf_ftpent = new QLineEdit();

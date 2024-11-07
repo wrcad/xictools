@@ -240,12 +240,18 @@ QTchdListDlg::QTchdListDlg(GRobject c) : QTbag(this)
     connect(QTfont::self(), &QTfont::fontChanged,
         this, &QTchdListDlg::font_changed_slot, Qt::QueuedConnection);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     // lower buttons
     //
     chl_rename = new QCheckBox(tr(
         "Use auto-rename when writing CHD reference cells"));
     vbox->addWidget(chl_rename);
-    connect(chl_rename, &QCheckBox::stateChanged,
+    connect(chl_rename, CHECK_BOX_STATE_CHANGED,
         this, &QTchdListDlg::rename_btn_slot);
 
     hbox = new QHBoxLayout(0);
@@ -265,17 +271,17 @@ QTchdListDlg::QTchdListDlg(GRobject c) : QTbag(this)
 
     chl_loadtop = new QCheckBox(tr("Load top cell only"));
     col1->addWidget(chl_loadtop);
-    connect(chl_loadtop, &QCheckBox::stateChanged,
+    connect(chl_loadtop, CHECK_BOX_STATE_CHANGED,
         this, &QTchdListDlg::loadtop_btn_slot);
 
     chl_failres = new QCheckBox(tr("Fail on unresolved"));
     col2->addWidget(chl_failres);
-    connect(chl_failres, &QCheckBox::stateChanged,
+    connect(chl_failres, CHECK_BOX_STATE_CHANGED,
         this, &QTchdListDlg::failres_btn_slot);
 
     chl_usetab = new QCheckBox(tr("Use cell table"));
     col1->addWidget(chl_usetab);
-    connect(chl_usetab, &QCheckBox::stateChanged,
+    connect(chl_usetab, CHECK_BOX_STATE_CHANGED,
         this, &QTchdListDlg::usetab_btn_slot);
 
     chl_showtab = new QToolButton();

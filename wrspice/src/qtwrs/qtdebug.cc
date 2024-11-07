@@ -140,11 +140,17 @@ QTdebugParamDlg::QTdebugParamDlg(int xx, int yy)
         entry->qtent()->active()->setEnabled(false);
     }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     entry = KWGET(kw_debug);
     if (entry) {
         entry->ent = new QTkwent(KW_NO_CB, QTkwent::ke_bool_func, entry, 0);
         grid->addWidget(entry->qtent(), 1, 0, 1, 2);
-        connect(entry->qtent()->active(), &QCheckBox::stateChanged,
+        connect(entry->qtent()->active(), CHECK_BOX_STATE_CHANGED,
             this, &QTdebugParamDlg::set_btn_slot);
     }
     db_dbent = entry;
@@ -153,7 +159,7 @@ QTdebugParamDlg::QTdebugParamDlg(int xx, int yy)
     if (entry) {
         entry->ent = new QTkwent(KW_NO_CB, QTkwent::ke_bool_func, entry, 0);
         grid->addWidget(entry->qtent(), 1, 2);
-        connect(entry->qtent()->active(), &QCheckBox::stateChanged,
+        connect(entry->qtent()->active(), CHECK_BOX_STATE_CHANGED,
             this, &QTdebugParamDlg::set_btn_slot);
     }
 
@@ -161,7 +167,7 @@ QTdebugParamDlg::QTdebugParamDlg(int xx, int yy)
     if (entry) {
         entry->ent = new QTkwent(KW_NO_CB, QTkwent::ke_bool_func, entry, 0);
         grid->addWidget(entry->qtent(), 1, 3);
-        connect(entry->qtent()->active(), &QCheckBox::stateChanged,
+        connect(entry->qtent()->active(), CHECK_BOX_STATE_CHANGED,
             this, &QTdebugParamDlg::set_btn_slot);
     }
 
@@ -169,7 +175,7 @@ QTdebugParamDlg::QTdebugParamDlg(int xx, int yy)
     if (entry) {
         entry->ent = new QTkwent(KW_NO_CB, QTkwent::ke_bool_func, entry, 0);
         grid->addWidget(entry->qtent(), 2, 0);
-        connect(entry->qtent()->active(), &QCheckBox::stateChanged,
+        connect(entry->qtent()->active(), CHECK_BOX_STATE_CHANGED,
             this, &QTdebugParamDlg::set_btn_slot);
     }
 
@@ -177,7 +183,7 @@ QTdebugParamDlg::QTdebugParamDlg(int xx, int yy)
     if (entry) {
         entry->ent = new QTkwent(KW_NO_CB, QTkwent::ke_bool_func, entry, 0);
         grid->addWidget(entry->qtent(), 2, 1);
-        connect(entry->qtent()->active(), &QCheckBox::stateChanged,
+        connect(entry->qtent()->active(), CHECK_BOX_STATE_CHANGED,
             this, &QTdebugParamDlg::set_btn_slot);
     }
 
@@ -185,7 +191,7 @@ QTdebugParamDlg::QTdebugParamDlg(int xx, int yy)
     if (entry) {
         entry->ent = new QTkwent(KW_NO_CB, QTkwent::ke_bool_func, entry, 0);
         grid->addWidget(entry->qtent(), 2, 2);
-        connect(entry->qtent()->active(), &QCheckBox::stateChanged,
+        connect(entry->qtent()->active(), CHECK_BOX_STATE_CHANGED,
             this, &QTdebugParamDlg::set_btn_slot);
     }
 
@@ -193,7 +199,7 @@ QTdebugParamDlg::QTdebugParamDlg(int xx, int yy)
     if (entry) {
         entry->ent = new QTkwent(KW_NO_CB, QTkwent::ke_bool_func, entry, 0);
         grid->addWidget(entry->qtent(), 2, 3);
-        connect(entry->qtent()->active(), &QCheckBox::stateChanged,
+        connect(entry->qtent()->active(), CHECK_BOX_STATE_CHANGED,
             this, &QTdebugParamDlg::set_btn_slot);
     }
 
@@ -201,7 +207,7 @@ QTdebugParamDlg::QTdebugParamDlg(int xx, int yy)
     if (entry) {
         entry->ent = new QTkwent(KW_NO_CB, QTkwent::ke_bool_func, entry, 0);
         grid->addWidget(entry->qtent(), 3, 0);
-        connect(entry->qtent()->active(), &QCheckBox::stateChanged,
+        connect(entry->qtent()->active(), CHECK_BOX_STATE_CHANGED,
             this, &QTdebugParamDlg::set_btn_slot);
     }
 
@@ -209,7 +215,7 @@ QTdebugParamDlg::QTdebugParamDlg(int xx, int yy)
     if (entry) {
         entry->ent = new QTkwent(KW_NO_CB, QTkwent::ke_bool_func, entry, 0);
         grid->addWidget(entry->qtent(), 3, 1);
-        connect(entry->qtent()->active(), &QCheckBox::stateChanged,
+        connect(entry->qtent()->active(), CHECK_BOX_STATE_CHANGED,
             this, &QTdebugParamDlg::set_btn_slot);
     }
 
@@ -217,7 +223,7 @@ QTdebugParamDlg::QTdebugParamDlg(int xx, int yy)
     if (entry) {
         entry->ent = new QTkwent(KW_NO_CB, QTkwent::ke_bool_func, entry, 0);
         grid->addWidget(entry->qtent(), 3, 2);
-        connect(entry->qtent()->active(), &QCheckBox::stateChanged,
+        connect(entry->qtent()->active(), CHECK_BOX_STATE_CHANGED,
             this, &QTdebugParamDlg::set_btn_slot);
     }
 
@@ -225,7 +231,7 @@ QTdebugParamDlg::QTdebugParamDlg(int xx, int yy)
     if (entry) {
         entry->ent = new QTkwent(KW_NO_CB, QTkwent::ke_bool_func, entry, 0);
         grid->addWidget(entry->qtent(), 3, 3);
-        connect(entry->qtent()->active(), &QCheckBox::stateChanged,
+        connect(entry->qtent()->active(), CHECK_BOX_STATE_CHANGED,
             this, &QTdebugParamDlg::set_btn_slot);
     }
 

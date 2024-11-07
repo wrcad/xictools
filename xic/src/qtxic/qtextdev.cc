@@ -216,16 +216,22 @@ QTextDevDlg::QTextDevDlg(GRobject caller)
     connect(ed_select, &QAbstractButton::toggled,
         this, &QTextDevDlg::enablesel_btn_slot);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     ed_compute = new QCheckBox(tr(
         "Show computed parameters of selected device"));
     gr->addWidget(ed_compute, 0, 1);
-    connect(ed_compute, &QCheckBox::stateChanged,
+    connect(ed_compute, CHECK_BOX_STATE_CHANGED,
         this, &QTextDevDlg::compute_btn_slot);
 
     ed_compare = new QCheckBox(tr(
         "Show elec/phys comparison of selected device"));
     gr->addWidget(ed_compare, 1, 1);
-    connect(ed_compare, &QCheckBox::stateChanged,
+    connect(ed_compare, CHECK_BOX_STATE_CHANGED,
         this, &QTextDevDlg::compare_btn_slot);
 
     // Frame and measure box group.

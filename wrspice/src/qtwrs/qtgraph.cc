@@ -181,7 +181,7 @@ cGraph::gr_refresh(int left, int bottom, int right, int top, bool notxt)
     area().set_height(wb->Viewport()->height());
     if (!notxt) {
         wb->Viewport()->set_clipping(left, top, right-left + 1, bottom-top + 1);
-        gr_redraw_keyed();
+        gr_redraw_keyed(left, top, right-left + 1, bottom-top + 1);
         wb->Viewport()->set_clipping(0, 0, 0, 0);
     }
     wb->Update(left, top, right-left + 1, bottom-top + 1);

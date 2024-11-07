@@ -262,14 +262,20 @@ QTextNetSelDlg::QTextNetSelDlg(GRobject caller) : QTbag(this)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     es_vias = new QCheckBox(tr("Path file contains vias"));
     hbox->addWidget(es_vias);
-    connect(es_vias, &QCheckBox::stateChanged,
+    connect(es_vias, CHECK_BOX_STATE_CHANGED,
         this, &QTextNetSelDlg::pathvias_btn_slot);
 
     es_vtree = new QCheckBox(tr("Path file contains via check layers"));
     hbox->addWidget(es_vtree);
-    connect(es_vtree, &QCheckBox::stateChanged,
+    connect(es_vtree, CHECK_BOX_STATE_CHANGED,
         this, &QTextNetSelDlg::vcheck_btn_slot);
 
     // resistance measurememt

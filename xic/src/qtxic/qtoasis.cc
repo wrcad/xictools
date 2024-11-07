@@ -158,9 +158,15 @@ QToasisDlg::QToasisDlg(GRobject c)
     hbox->setSpacing(2);
     vbox->addLayout(hbox);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     oas_notrap = new QCheckBox(tr("Don't write trapezoid records"));
     hbox->addWidget(oas_notrap);
-    connect(oas_notrap, &QCheckBox::stateChanged,
+    connect(oas_notrap, CHECK_BOX_STATE_CHANGED,
         this, &QToasisDlg::nozoid_btn_slot);
 
     hbox->addSpacing(60);
@@ -173,23 +179,23 @@ QToasisDlg::QToasisDlg(GRobject c)
     oas_wtob = new QCheckBox(tr(
         "Convert Wire to Box records when possible"));
     vbox->addWidget(oas_wtob);
-    connect(oas_wtob, &QCheckBox::stateChanged,
+    connect(oas_wtob, CHECK_BOX_STATE_CHANGED,
         this, &QToasisDlg::wtob_btn_slot);
 
     oas_rwtop = new QCheckBox(tr(
         "Convert rounded-end Wire records to Poly records"));
     vbox->addWidget(oas_rwtop);
-    connect(oas_rwtop, &QCheckBox::stateChanged,
+    connect(oas_rwtop, CHECK_BOX_STATE_CHANGED,
         this, &QToasisDlg::rwtop_btn_slot);
 
     oas_nogcd = new QCheckBox(tr("Skip GCD check"));
     vbox->addWidget(oas_nogcd);
-    connect(oas_nogcd, &QCheckBox::stateChanged,
+    connect(oas_nogcd, CHECK_BOX_STATE_CHANGED,
         this, &QToasisDlg::nogcd_btn_slot);
 
     oas_oldsort = new QCheckBox(tr("Use alternate modal sort algorithm"));
     vbox->addWidget(oas_oldsort);
-    connect(oas_oldsort, &QCheckBox::stateChanged,
+    connect(oas_oldsort, CHECK_BOX_STATE_CHANGED,
         this, &QToasisDlg::oldsort_btn_slot);
 
     hbox = new QHBoxLayout(0);
@@ -243,27 +249,27 @@ QToasisDlg::QToasisDlg(GRobject c)
 
     oas_objc = new QCheckBox(tr("Cells"));
     vb->addWidget(oas_objc);
-    connect(oas_objc, &QCheckBox::stateChanged,
+    connect(oas_objc, CHECK_BOX_STATE_CHANGED,
         this, &QToasisDlg::cells_btn_slot);
 
     oas_objb = new QCheckBox(tr("Boxes"));;
     vb->addWidget(oas_objb);
-    connect(oas_objb, &QCheckBox::stateChanged,
+    connect(oas_objb, CHECK_BOX_STATE_CHANGED,
         this, &QToasisDlg::boxes_btn_slot);
 
     oas_objp = new QCheckBox(tr("Polys"));;
     vb->addWidget(oas_objp);
-    connect(oas_objp, &QCheckBox::stateChanged,
+    connect(oas_objp, CHECK_BOX_STATE_CHANGED,
         this, &QToasisDlg::polys_btn_slot);
 
     oas_objw = new QCheckBox(tr("Wires"));
     vb->addWidget(oas_objw);
-    connect(oas_objw, &QCheckBox::stateChanged,
+    connect(oas_objw, CHECK_BOX_STATE_CHANGED,
         this, &QToasisDlg::wires_btn_slot);
 
     oas_objl = new QCheckBox(tr("Labels"));
     vb->addWidget(oas_objl);
-    connect(oas_objl, &QCheckBox::stateChanged,
+    connect(oas_objl, CHECK_BOX_STATE_CHANGED,
         this, &QToasisDlg::labels_btn_slot);
 
     // Entry areas

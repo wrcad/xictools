@@ -1446,9 +1446,32 @@ sDevOut::cleanup()
 
 
 int
-sDevOut::fopen(const char *fname)
+sDevOut::fopen(const char *fname, const char *mode)
 {
-    int fd = open(fname, (O_CREAT|O_TRUNC|O_WRONLY), 0644);
+    int flags = 0;
+    if (mode == 0) {
+        // We don't have multi-channel descriptors, default to write.
+        flags |= O_WRONLY | O_CREAT | O_TRUNC;
+    }
+    else if (mode[0] == 'r') {
+        if (mode[1] == '+' || mode[2] == '+')
+            flags |= O_RDWR;
+        else
+            flags |= O_RDONLY;
+    }
+    else if (mode[0] == 'w') {
+        if (mode[1] == '+' || mode[2] == '+')
+            flags |= O_RDWR | O_CREAT | O_TRUNC;
+        else
+            flags |= O_WRONLY | O_CREAT | O_TRUNC;
+    }
+    else if (mode[0] == 'a') {
+        if (mode[1] == '+' || mode[2] == '+')
+            flags |= O_APPEND | O_RDWR | O_CREAT;
+        else
+            flags |= O_APPEND | O_WRONLY | O_CREAT;
+    }
+    int fd = open(fname, flags, 0644);
     if (fd > 0) {
         for (int i = 0; i < OUT_MAX_FDS; i++) {
             if (dvo_fds[i] == 0) {
@@ -1460,7 +1483,7 @@ sDevOut::fopen(const char *fname)
         return (fd);
     }
     textOut(OUT_WARNING, "failed to open *s.\n", fname);
-    return (fd);
+    return (0);
 }
 
 
@@ -1476,6 +1499,29 @@ sDevOut::fclose(int fd)
             }
         }
     }
+}
+
+
+// XXX Fix Me!
+int
+sDevOut::fscanf(int, const char*, ...)
+{
+//    va_list args;
+    return (0);
+}
+
+
+int
+sDevOut::fseek(int fd, int offset, int whence)
+{
+    return (lseek(fd, offset, whence));
+}
+
+
+int
+sDevOut::ftell(int fd)
+{
+    return (lseek(fd, 0, SEEK_CUR));
 }
 
 
@@ -1732,6 +1778,42 @@ sDevOut::error(sGENmodel *model, sGENinstance *inst, const char *fmt, ...)
 {
     va_list args;
     char *nfmt = fix_format(model, inst, fmt);
+    const char *pfx = "Error: ";
+    sLstr lstr;
+    if (!check_prefix(pfx, fmt))
+        lstr.add(pfx);
+    va_start(args, fmt);
+#ifdef HAVE_VASPRINTF
+    char *str = 0;
+    if (vasprintf(&str, nfmt, args) >= 0) {
+        lstr.add(str);
+        delete [] str;
+    }
+#else
+    char buf[1024];
+    vsnprintf(buf, 1024, nfmt, args);
+    lstr.add(buf);
+#endif
+    va_end(args);
+    delete [] nfmt;
+    GRpkg::self()->ErrPrintf(ET_MSG, lstr.string());
+}
+
+
+// Support for the Verilog-A $fatal function.  Print message according
+// to argument.  The analysis should be terminated immediately after this
+// call.
+// 
+//  n <= 0 prints message only
+//  n == 1 prints simulation time and location (default) plus message
+//  n >= 2 prints additional stats
+//
+void
+sDevOut::fatal(sGENmodel *model, sGENinstance *inst, double time,
+    int n, const char *fmt, ...)
+{
+    va_list args;
+    char *nfmt = fix_format(model, inst, fmt);
     const char *pfx = "Fatal: ";
     sLstr lstr;
     if (!check_prefix(pfx, fmt))
@@ -1751,6 +1833,7 @@ sDevOut::error(sGENmodel *model, sGENinstance *inst, const char *fmt, ...)
     va_end(args);
     delete [] nfmt;
     GRpkg::self()->ErrPrintf(ET_MSG, lstr.string());
+    finish(model, inst, time, n);
 }
 
 

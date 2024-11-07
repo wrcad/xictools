@@ -232,14 +232,20 @@ QTfastCapDlg::QTfastCapDlg(GRobject c) : QTbag(this)
     hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     fc_foreg = new QCheckBox(tr("Run in foreground"));
     hb->addWidget(fc_foreg);
-    connect(fc_foreg, &QCheckBox::stateChanged,
+    connect(fc_foreg, CHECK_BOX_STATE_CHANGED,
         this, &QTfastCapDlg::foreg_btn_slot);
 
     fc_out = new QCheckBox(tr("Out to console"));
     hb->addWidget(fc_out);
-    connect(fc_out, &QCheckBox::stateChanged,
+    connect(fc_out, CHECK_BOX_STATE_CHANGED,
         this, &QTfastCapDlg::console_btn_slot);
 
     hb = new QHBoxLayout();
@@ -249,7 +255,7 @@ QTfastCapDlg::QTfastCapDlg(GRobject c) : QTbag(this)
 
     fc_shownum = new QCheckBox(tr("Show Numbers"));
     hb->addWidget(fc_shownum);
-    connect(fc_shownum, &QCheckBox::stateChanged,
+    connect(fc_shownum, CHECK_BOX_STATE_CHANGED,
         this, &QTfastCapDlg::shownum_btn_slot);
 
     vb->addStretch(1);
@@ -385,7 +391,7 @@ QTfastCapDlg::QTfastCapDlg(GRobject c) : QTbag(this)
 
     fc_enab = new QCheckBox(tr("Enable"));
     grid->addWidget(fc_enab, 3, 0);
-    connect(fc_enab, &QCheckBox::stateChanged,
+    connect(fc_enab, CHECK_BOX_STATE_CHANGED,
         this, &QTfastCapDlg::enable_btn_slot);
 
     gb = new QGroupBox("FcPanelTarget");
@@ -423,77 +429,77 @@ QTfastCapDlg::QTfastCapDlg(GRobject c) : QTbag(this)
 
     fc_dbg_zoids = new QCheckBox("Zoids");
     grid->addWidget(fc_dbg_zoids, 0, 0);
-    connect(fc_dbg_zoids, &QCheckBox::stateChanged,
+    connect(fc_dbg_zoids, CHECK_BOX_STATE_CHANGED,
         this, &QTfastCapDlg::zoid_dbg_btn_slot);
 
     fc_dbg_vrbo = new QCheckBox(tr("Verbose Out"));
     grid->addWidget(fc_dbg_vrbo, 0, 1);
-    connect(fc_dbg_vrbo, &QCheckBox::stateChanged,
+    connect(fc_dbg_vrbo, CHECK_BOX_STATE_CHANGED,
         this, &QTfastCapDlg::vrbo_dbg_btn_slot);
 
     fc_dbg_nm = new QCheckBox(tr("No Merge"));
     grid->addWidget(fc_dbg_nm, 1, 0);
-    connect(fc_dbg_nm, &QCheckBox::stateChanged,
+    connect(fc_dbg_nm, CHECK_BOX_STATE_CHANGED,
         this, &QTfastCapDlg::nm_dbg_btn_slot);
 
     fc_dbg_czbot = new QCheckBox("C zbot");
     grid->addWidget(fc_dbg_czbot, 2, 0);
-    connect(fc_dbg_czbot, &QCheckBox::stateChanged,
+    connect(fc_dbg_czbot, CHECK_BOX_STATE_CHANGED,
         this, &QTfastCapDlg::czbot_dbg_btn_slot);
 
     fc_dbg_dzbot = new QCheckBox("D zbot");
     grid->addWidget(fc_dbg_dzbot, 2, 1);
-    connect(fc_dbg_dzbot, &QCheckBox::stateChanged,
+    connect(fc_dbg_dzbot, CHECK_BOX_STATE_CHANGED,
         this, &QTfastCapDlg::dzbot_dbg_btn_slot);
 
     fc_dbg_cztop = new QCheckBox("C ztop");
     grid->addWidget(fc_dbg_cztop, 3, 0);
-    connect(fc_dbg_cztop, &QCheckBox::stateChanged,
+    connect(fc_dbg_cztop, CHECK_BOX_STATE_CHANGED,
         this, &QTfastCapDlg::cztop_dbg_btn_slot);
 
     fc_dbg_dztop = new QCheckBox("D ztop");
     grid->addWidget(fc_dbg_dztop, 3, 1);
-    connect(fc_dbg_dztop, &QCheckBox::stateChanged,
+    connect(fc_dbg_dztop, CHECK_BOX_STATE_CHANGED,
         this, &QTfastCapDlg::dztop_dbg_btn_slot);
 
     fc_dbg_cyl = new QCheckBox("C yl");
     grid->addWidget(fc_dbg_cyl, 4, 0);
-    connect(fc_dbg_cyl, &QCheckBox::stateChanged,
+    connect(fc_dbg_cyl, CHECK_BOX_STATE_CHANGED,
         this, &QTfastCapDlg::cyl_dbg_btn_slot);
 
     fc_dbg_dyl = new QCheckBox("D yl");
     grid->addWidget(fc_dbg_dyl, 4, 1);
-    connect(fc_dbg_dyl, &QCheckBox::stateChanged,
+    connect(fc_dbg_dyl, CHECK_BOX_STATE_CHANGED,
         this, &QTfastCapDlg::dyl_dbg_btn_slot);
 
     fc_dbg_cyu = new QCheckBox("C yu");
     grid->addWidget(fc_dbg_cyu, 5, 0);
-    connect(fc_dbg_cyu, &QCheckBox::stateChanged,
+    connect(fc_dbg_cyu, CHECK_BOX_STATE_CHANGED,
         this, &QTfastCapDlg::cyu_dbg_btn_slot);
 
     fc_dbg_dyu = new QCheckBox("D yu");
     grid->addWidget(fc_dbg_dyu, 5, 1);
-    connect(fc_dbg_dyu, &QCheckBox::stateChanged,
+    connect(fc_dbg_dyu, CHECK_BOX_STATE_CHANGED,
         this, &QTfastCapDlg::dyu_dbg_btn_slot);
 
     fc_dbg_cleft = new QCheckBox("C left");
     grid->addWidget(fc_dbg_cleft, 6, 0);
-    connect(fc_dbg_cleft, &QCheckBox::stateChanged,
+    connect(fc_dbg_cleft, CHECK_BOX_STATE_CHANGED,
         this, &QTfastCapDlg::cleft_dbg_btn_slot);
 
     fc_dbg_dleft = new QCheckBox("D left");
     grid->addWidget(fc_dbg_dleft, 6, 1);
-    connect(fc_dbg_dleft, &QCheckBox::stateChanged,
+    connect(fc_dbg_dleft, CHECK_BOX_STATE_CHANGED,
         this, &QTfastCapDlg::dleft_dbg_btn_slot);
 
     fc_dbg_cright = new QCheckBox("C right");
     grid->addWidget(fc_dbg_cright, 7, 0);
-    connect(fc_dbg_cright, &QCheckBox::stateChanged,
+    connect(fc_dbg_cright, CHECK_BOX_STATE_CHANGED,
         this, &QTfastCapDlg::cright_dbg_btn_slot);
 
     fc_dbg_dright = new QCheckBox("D right");
     grid->addWidget(fc_dbg_dright, 7, 1);
-    connect(fc_dbg_dright, &QCheckBox::stateChanged,
+    connect(fc_dbg_dright, CHECK_BOX_STATE_CHANGED,
         this, &QTfastCapDlg::dright_dbg_btn_slot);
 
     // Jobs page

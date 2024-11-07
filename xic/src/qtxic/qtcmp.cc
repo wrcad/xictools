@@ -362,14 +362,20 @@ QTcompareDlg::QTcompareDlg(GRobject c)
     vbox->addWidget(gb);
     grid = new QGridLayout(gb);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     cmp_layer_use = new QCheckBox(tr("Layers Only"));
     grid->addWidget(cmp_layer_use, 0, 0);
-    connect(cmp_layer_use, &QCheckBox::stateChanged,
+    connect(cmp_layer_use, CHECK_BOX_STATE_CHANGED,
         this, &QTcompareDlg::luse_btn_slot);
 
     cmp_layer_skip = new QCheckBox(tr("Skip Layers"));
     grid->addWidget(cmp_layer_skip, 0, 1);
-    connect(cmp_layer_skip, &QCheckBox::stateChanged,
+    connect(cmp_layer_skip, CHECK_BOX_STATE_CHANGED,
         this, &QTcompareDlg::lskip_btn_slot);
 
     cmp_layer_list = new QLineEdit();
@@ -604,27 +610,27 @@ QTcompareDlg::per_cell_obj_page()
 
     cmp_p1_boxes = new QCheckBox(tr("Boxes"));
     vb->addWidget(cmp_p1_boxes);
-    connect(cmp_p1_boxes, &QCheckBox::stateChanged,
+    connect(cmp_p1_boxes, CHECK_BOX_STATE_CHANGED,
         this, &QTcompareDlg::p1_sens_set_slot);
 
     cmp_p1_polys = new QCheckBox(tr("Polygons"));
     vb->addWidget(cmp_p1_polys);
-    connect(cmp_p1_polys, &QCheckBox::stateChanged,
+    connect(cmp_p1_polys, CHECK_BOX_STATE_CHANGED,
         this, &QTcompareDlg::p1_sens_set_slot);
 
     cmp_p1_wires = new QCheckBox(tr("Wires"));
     vb->addWidget(cmp_p1_wires);
-    connect(cmp_p1_wires, &QCheckBox::stateChanged,
+    connect(cmp_p1_wires, CHECK_BOX_STATE_CHANGED,
         this, &QTcompareDlg::p1_sens_set_slot);
 
     cmp_p1_labels = new QCheckBox(tr("Labels"));
     vb->addWidget(cmp_p1_labels);
-    connect(cmp_p1_labels, &QCheckBox::stateChanged,
+    connect(cmp_p1_labels, CHECK_BOX_STATE_CHANGED,
         this, &QTcompareDlg::p1_sens_set_slot);
 
     cmp_p1_insts = new QCheckBox(tr("Cell Instances"));
     vb->addWidget(cmp_p1_insts);
-    connect(cmp_p1_insts, &QCheckBox::stateChanged,
+    connect(cmp_p1_insts, CHECK_BOX_STATE_CHANGED,
         this, &QTcompareDlg::p1_sens_set_slot);
 
     // Properties group
@@ -731,7 +737,7 @@ QTcompareDlg::flat_geom_page()
 
     cmp_p3_aoi_use = new QCheckBox(tr("Use Window"));
     grid->addWidget(cmp_p3_aoi_use, 0, 0, 1, 3);
-    connect(cmp_p3_aoi_use, &QCheckBox::stateChanged,
+    connect(cmp_p3_aoi_use, CHECK_BOX_STATE_CHANGED,
         this, &QTcompareDlg::p3_usewin_btn_slot);
 
     cmp_p3_s_btn = new QToolButton();

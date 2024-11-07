@@ -282,10 +282,16 @@ QTnodeMapDlg::QTnodeMapDlg(GRobject caller, int node) : QTbag(this)
         this, &QTnodeMapDlg::deselect_btn_slot);
 
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     hbox->addSpacing(40);
     nm_usex_btn = new QCheckBox(tr("Use Extract"));
     hbox->addWidget(nm_usex_btn);
-    connect(nm_usex_btn, &QCheckBox::stateChanged,
+    connect(nm_usex_btn, CHECK_BOX_STATE_CHANGED,
         this, &QTnodeMapDlg::usex_btn_slot);
     if (ExtIf()->hasExtract())
         nm_usex_btn->show();

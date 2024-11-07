@@ -88,19 +88,25 @@ QTwindowCfg::QTwindowCfg(WndSensMode(sens_test)(), WndFuncMode fmode)
     hbox->setContentsMargins(qm);
     hbox->setSpacing(16);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     wnd_use_win = new QCheckBox(tr("Use Window"));
     hbox->addWidget(wnd_use_win);
-    connect(wnd_use_win, &QCheckBox::stateChanged,
+    connect(wnd_use_win, CHECK_BOX_STATE_CHANGED,
         this, &QTwindowCfg::usewin_btn_slot);
 
     wnd_clip = new QCheckBox(tr("Clip to Window"));
     hbox->addWidget(wnd_clip);
-    connect(wnd_clip, &QCheckBox::stateChanged,
+    connect(wnd_clip, CHECK_BOX_STATE_CHANGED,
         this, &QTwindowCfg::clip_btn_slot);
 
     wnd_flatten = new QCheckBox(tr("Flatten Hierarchy"));
     hbox->addWidget(wnd_flatten);
-    connect(wnd_flatten, &QCheckBox::stateChanged,
+    connect(wnd_flatten, CHECK_BOX_STATE_CHANGED,
         this, &QTwindowCfg::flatten_btn_slot);
 
     wnd_ecf_label = new QLabel(tr("Empty Cell Filter"));
@@ -250,14 +256,14 @@ QTwindowCfg::QTwindowCfg(WndSensMode(sens_test)(), WndFuncMode fmode)
 
     wnd_ecf_pre = new QCheckBox(tr("pre-filter"));
     col->addWidget(wnd_ecf_pre);
-    connect(wnd_ecf_pre, &QCheckBox::stateChanged,
+    connect(wnd_ecf_pre, CHECK_BOX_STATE_CHANGED,
         this, &QTwindowCfg::ecf_pre_btn_slot);
     if (wnd_func_mode == WndFuncOut || wnd_func_mode == WndFuncIn)
         wnd_ecf_pre->hide();
 
     wnd_ecf_post = new QCheckBox(tr("post-filter"));
     col->addWidget(wnd_ecf_post);
-    connect(wnd_ecf_post, &QCheckBox::stateChanged,
+    connect(wnd_ecf_post, CHECK_BOX_STATE_CHANGED,
         this, &QTwindowCfg::ecf_post_btn_slot);
     if (wnd_func_mode == WndFuncOut || wnd_func_mode == WndFuncIn)
         wnd_ecf_post->hide();

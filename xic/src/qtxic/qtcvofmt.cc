@@ -204,11 +204,17 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
     label->setAlignment(Qt::AlignCenter);
     hbox->addWidget(label);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     // next row
     fmt_gdsmap = new QCheckBox(tr(
         "Skip layers without Xic to GDSII layer mapping"));
     vbox->addWidget(fmt_gdsmap);
-    connect(fmt_gdsmap, &QCheckBox::stateChanged,
+    connect(fmt_gdsmap, CHECK_BOX_STATE_CHANGED,
         this, &QTconvOutFmt::gdsmap_btn_slot);
 
     // next row
@@ -219,7 +225,7 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
 
     fmt_gdscut = new QCheckBox(tr("Accept but truncate too-long strings"));
     hbox->addWidget(fmt_gdscut);
-    connect(fmt_gdscut, &QCheckBox::stateChanged,
+    connect(fmt_gdscut, CHECK_BOX_STATE_CHANGED,
         this, &QTconvOutFmt::gdscut_btn_slot);
     QTdev::SetStatus(fmt_gdscut,
         CDvdb()->getVariable(VA_GdsTruncateLongStrings));
@@ -279,7 +285,7 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
         "Skip layers without Xic to GDSII layer mapping"));
     vbox->addWidget(fmt_oasmap);
     QTdev::SetStatus(fmt_oasmap, CDvdb()->getVariable(VA_NoGdsMapOk));
-    connect(fmt_oasmap, &QCheckBox::stateChanged,
+    connect(fmt_oasmap, CHECK_BOX_STATE_CHANGED,
         this, &QTconvOutFmt::oasmap_btn_slot);
 
     // next two rows, in columns
@@ -300,25 +306,25 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
 
     fmt_oascmp = new QCheckBox(tr("Use compression"));
     col1->addWidget(fmt_oascmp);
-    connect(fmt_oascmp, &QCheckBox::stateChanged,
+    connect(fmt_oascmp, CHECK_BOX_STATE_CHANGED,
         this, &QTconvOutFmt::oascmp_btn_slot);
     QTdev::SetStatus(fmt_oascmp, CDvdb()->getVariable(VA_OasWriteCompressed));
 
     fmt_oasrep = new QCheckBox(tr("Find repetitions"));
     col2->addWidget(fmt_oasrep);
-    connect(fmt_oasrep, &QCheckBox::stateChanged,
+    connect(fmt_oasrep, CHECK_BOX_STATE_CHANGED,
         this, &QTconvOutFmt::oasrep_btn_slot);
     QTdev::SetStatus(fmt_oasrep, CDvdb()->getVariable(VA_OasWriteRep));
 
     fmt_oastab = new QCheckBox(tr("Use string tables"));
     col1->addWidget(fmt_oastab);
-    connect(fmt_oastab, &QCheckBox::stateChanged,
+    connect(fmt_oastab, CHECK_BOX_STATE_CHANGED,
         this, &QTconvOutFmt::oastab_btn_slot);
     QTdev::SetStatus(fmt_oastab, CDvdb()->getVariable(VA_OasWriteNameTab));
 
     fmt_oassum = new QCheckBox(tr("Write CRC checksum"));
     col2->addWidget(fmt_oassum);
-    connect(fmt_oassum, &QCheckBox::stateChanged,
+    connect(fmt_oassum, CHECK_BOX_STATE_CHANGED,
         this, &QTconvOutFmt::oassum_btn_slot);
     QTdev::SetStatus(fmt_oassum, CDvdb()->getVariable(VA_OasWriteChecksum));
 
@@ -459,7 +465,7 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
 
     fmt_cgxcut = new QCheckBox(tr("Accept but truncate too-long strings"));
     vbox->addWidget(fmt_cgxcut);
-    connect(fmt_cgxcut, &QCheckBox::stateChanged,
+    connect(fmt_cgxcut, CHECK_BOX_STATE_CHANGED,
         this, &QTconvOutFmt::cgxcut_btn_slot);
     QTdev::SetStatus(fmt_cgxcut,
         CDvdb()->getVariable(VA_GdsTruncateLongStrings));
@@ -497,13 +503,13 @@ QTconvOutFmt::QTconvOutFmt(void(*cb)(int), int init_format, cvofmt_mode fmtmode)
 
     fmt_oasoff = new QCheckBox(tr("OASIS text: print offsets"));
     hbox->addWidget(fmt_oasoff);
-    connect(fmt_oasoff, &QCheckBox::stateChanged,
+    connect(fmt_oasoff, CHECK_BOX_STATE_CHANGED,
         this, &QTconvOutFmt::oasoff_btn_slot);
     QTdev::SetStatus(fmt_oasoff, CDvdb()->getVariable(VA_OasPrintOffset));
 
     fmt_oasnwp = new QCheckBox(tr("OASIS text: no line wrap"));
     hbox->addWidget(fmt_oasnwp);
-    connect(fmt_oasnwp, &QCheckBox::stateChanged,
+    connect(fmt_oasnwp, CHECK_BOX_STATE_CHANGED,
         this, &QTconvOutFmt::oasnwp_btn_slot);
     QTdev::SetStatus(fmt_oasnwp, CDvdb()->getVariable(VA_OasPrintNoWrap));
 

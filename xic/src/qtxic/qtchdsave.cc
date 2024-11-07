@@ -206,9 +206,15 @@ QTchdSaveDlg::QTchdSaveDlg(GRobject caller,
     cs_text->setReadOnly(false);
     cs_text->setAcceptDrops(true);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     cs_geom = new QCheckBox(tr("Include geometry records in file"));
     vbox->addWidget(cs_geom);
-    connect(cs_geom, &QCheckBox::stateChanged,
+    connect(cs_geom, CHECK_BOX_STATE_CHANGED,
         this, &QTchdSaveDlg::geom_btn_slot);
 
     // Layer list

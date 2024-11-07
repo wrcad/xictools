@@ -204,58 +204,64 @@ QTconvertFmtDlg::QTconvertFmtDlg(GRobject c, int inp_type,
     vb->setContentsMargins(qmtop);
     vb->setSpacing(2);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     // Strip for Export button
     //
     cv_strip = new QCheckBox(tr(
         "Strip For Export - (convert physical data only)"));
     vb->addWidget(cv_strip);
-    connect(cv_strip, &QCheckBox::stateChanged,
+    connect(cv_strip, CHECK_BOX_STATE_CHANGED,
         this, &QTconvertFmtDlg::strip_btn_slot);
     QTdev::SetStatus(cv_strip, CDvdb()->getVariable(VA_StripForExport));
 
     cv_libsub = new QCheckBox(tr("Include library cell masters"));
     vb->addWidget(cv_libsub);
-    connect(cv_libsub, &QCheckBox::stateChanged,
+    connect(cv_libsub, CHECK_BOX_STATE_CHANGED,
         this, &QTconvertFmtDlg::libsub_btn_slot);
     QTdev::SetStatus(cv_libsub, CDvdb()->getVariable(VA_KeepLibMasters));
 
     cv_pcsub = new QCheckBox(tr("Include parameterized cell sub-masters"));
     vb->addWidget(cv_pcsub);
-    connect(cv_pcsub, &QCheckBox::stateChanged,
+    connect(cv_pcsub, CHECK_BOX_STATE_CHANGED,
         this, &QTconvertFmtDlg::pcsub_btn_slot);
 
     cv_viasub = new QCheckBox(tr("Include standard via cell sub-masters"));
     vb->addWidget(cv_viasub);
-    connect(cv_viasub, &QCheckBox::stateChanged,
+    connect(cv_viasub, CHECK_BOX_STATE_CHANGED,
         this, &QTconvertFmtDlg::viasub_btn_slot);
 
     cv_noflvias = new QCheckBox(tr(
         "Don't flatten standard vias, keep as instance at top level"));
     vb->addWidget(cv_noflvias);
-    connect(cv_noflvias, &QCheckBox::stateChanged,
+    connect(cv_noflvias, CHECK_BOX_STATE_CHANGED,
         this, &QTconvertFmtDlg::noflvias_btn_slot);
 
     cv_noflpcs = new QCheckBox(tr(
         "Don't flatten pcells, keep as instance at top level"));
     vb->addWidget(cv_noflpcs);
-    connect(cv_noflpcs, &QCheckBox::stateChanged,
+    connect(cv_noflpcs, CHECK_BOX_STATE_CHANGED,
         this, &QTconvertFmtDlg::noflpcs_btn_slot);
 
     cv_nofllbs = new QCheckBox(tr(
         "Ignore labels in subcells when flattening"));
     vb->addWidget(cv_nofllbs);
-    connect(cv_nofllbs, &QCheckBox::stateChanged,
+    connect(cv_nofllbs, CHECK_BOX_STATE_CHANGED,
         this, &QTconvertFmtDlg::nofllbs_btn_slot);
 
     cv_nolabels = new QCheckBox(tr(
         "Skip reading text labels from physical archives"));
     vb->addWidget(cv_nolabels);
-    connect(cv_nolabels, &QCheckBox::stateChanged,
+    connect(cv_nolabels, CHECK_BOX_STATE_CHANGED,
         this, &QTconvertFmtDlg::nolabels_btn_slot);
 
     cv_keepbad = new QCheckBox(tr("Keep bad output (for debugging)"));
     vb->addWidget(cv_keepbad);
-    connect(cv_keepbad, &QCheckBox::stateChanged,
+    connect(cv_keepbad, CHECK_BOX_STATE_CHANGED,
         this, &QTconvertFmtDlg::keepbad_btn_slot);
 
     // The Convert File page.

@@ -149,14 +149,20 @@ QTdrcSetupDlg::QTdrcSetupDlg(GRobject c)
     label = new QLabel(tr("Layer list"));
     grid->addWidget(label, 0, 0);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     dl_luse = new QCheckBox(tr("Check listed layers only  "));
     grid->addWidget(dl_luse, 0, 1);
-    connect(dl_luse, &QCheckBox::stateChanged,
+    connect(dl_luse, CHECK_BOX_STATE_CHANGED,
         this, &QTdrcSetupDlg::luse_btn_slot);
 
     dl_lskip = new QCheckBox(tr("Skip listed layers"));
     grid->addWidget(dl_lskip, 0, 2);
-    connect(dl_lskip, &QCheckBox::stateChanged,
+    connect(dl_lskip, CHECK_BOX_STATE_CHANGED,
         this, &QTdrcSetupDlg::lskip_btn_slot);
 
     dl_llist = new QTlayerEdit();
@@ -169,11 +175,11 @@ QTdrcSetupDlg::QTdrcSetupDlg(GRobject c)
 
     dl_ruse = new QCheckBox(tr("Check listed rules only"));
     grid->addWidget(dl_ruse, 2, 1);
-    connect(dl_ruse, &QCheckBox::stateChanged,
+    connect(dl_ruse, CHECK_BOX_STATE_CHANGED,
         this, &QTdrcSetupDlg::ruse_btn_slot);
     dl_rskip = new QCheckBox(tr("Skip listed rules"));;
     grid->addWidget(dl_rskip, 2, 2);
-    connect(dl_rskip, &QCheckBox::stateChanged,
+    connect(dl_rskip, CHECK_BOX_STATE_CHANGED,
         this, &QTdrcSetupDlg::rskip_btn_slot);
 
     dl_rlist = new QLineEdit();
@@ -242,7 +248,7 @@ QTdrcSetupDlg::QTdrcSetupDlg(GRobject c)
     dl_skip = new QCheckBox(tr(
         "Skip interactive test of moved/copied/placed cells"));
     grid->addWidget(dl_skip, 4, 0, 1, 2);
-    connect(dl_skip, &QCheckBox::stateChanged,
+    connect(dl_skip, CHECK_BOX_STATE_CHANGED,
         this, &QTdrcSetupDlg::skip_btn_slot);
 
     // DRC error level

@@ -354,9 +354,15 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     connect(at_cursor, QOverload<int>::of(&QComboBox::currentIndexChanged),
         this, &QTattributesDlg::cursor_menu_changed_slot);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     at_fullscr = new QCheckBox(tr("Use full-window cursor"));
     hb->addWidget(at_fullscr);
-    connect(at_fullscr, &QCheckBox::stateChanged,
+    connect(at_fullscr, CHECK_BOX_STATE_CHANGED,
         this, &QTattributesDlg::usefwc_btn_slot);
 
     QGridLayout *grid = new QGridLayout();
@@ -403,13 +409,13 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     at_minst = new QCheckBox(tr(
         "Show origin of selected physical instances"));
     vb->addWidget(at_minst);
-    connect(at_minst, &QCheckBox::stateChanged,
+    connect(at_minst, CHECK_BOX_STATE_CHANGED,
         this, &QTattributesDlg::markinst_btn_slot);
 
     at_mcntr = new QCheckBox(tr(
         "Show centroids of selected physical objects"));
     vb->addWidget(at_mcntr);
-    connect(at_mcntr, &QCheckBox::stateChanged,
+    connect(at_mcntr, CHECK_BOX_STATE_CHANGED,
         this, &QTattributesDlg::markcntr_btn_slot);
 
     // Phys Props page
@@ -421,7 +427,7 @@ QTattributesDlg::QTattributesDlg(GRobject c)
     at_abprop = new QCheckBox(tr(
         "Erase behind physical properties text"));
     grid->addWidget(at_abprop, 0, 0);
-    connect(at_abprop, &QCheckBox::stateChanged,
+    connect(at_abprop, CHECK_BOX_STATE_CHANGED,
         this, &QTattributesDlg::abprop_btn_slot);
 
     label = new QLabel(tr("Physical property text size (pixels)"));

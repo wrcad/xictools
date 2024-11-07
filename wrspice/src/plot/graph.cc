@@ -353,18 +353,39 @@ cGraph::gr_redraw_direct()
 }
 
 
+namespace {
+    bool isect(int bx, int by, int bw, int bh, int xl, int yb, int xr, int yt)
+    {
+        if (xr < bx || xl > bx + bw -1)
+            return (false);
+        if (yt < by || yb > by + bh -1)
+            return (false);
+        return (true);
+    }
+}
+
+
 // Draw the relocatable text and transient marks.
 //
 void
-cGraph::gr_redraw_keyed()
+cGraph::gr_redraw_keyed(int bbx, int bby, int bbw, int bbh)
 {
+    bool nobb = (bbw <= 0 && bbh <= 0);
     if (gr_apptype == GR_MPLT) {
         for (sKeyed *k = gr_keyed; k; k = k->next) {
-            int x, y;
-            gr_dev->SetColor(gr_colors[k->colorindex].pixel);
-            gr_get_keyed_posn(k, &x, &y);
-            y = yinv(y);
-            gr_dev->Text(k->text, x, y, k->xform);
+            bool doit = nobb;
+            if (!doit) {
+                int xl, yb, xr, yt;
+                gr_get_keyed_bb(k, &xl, &yb, &xr, &yt);
+                doit = isect(bbx, bby, bbw, bbh, xl, yinv(yt), xr, yinv(yb));
+            }
+            if (doit) {
+                int x, y;
+                gr_dev->SetColor(gr_colors[k->colorindex].pixel);
+                gr_get_keyed_posn(k, &x, &y);
+                y = yinv(y);
+                gr_dev->Text(k->text, x, y, k->xform);
+            }
         }
         return;
     }
@@ -415,11 +436,19 @@ cGraph::gr_redraw_keyed()
     for (sKeyed *k = gr_keyed; k; k = k->next) {
         if (k == kdate && nodate)
             continue;
-        int x, y;
-        gr_dev->SetColor(gr_colors[k->colorindex].pixel);
-        gr_get_keyed_posn(k, &x, &y);
-        y = yinv(y);
-        gr_dev->Text(k->text, x, y, k->xform);
+        bool doit = nobb;
+        if (!doit) {
+            int xl, yb, xr, yt;
+            gr_get_keyed_bb(k, &xl, &yb, &xr, &yt);
+            doit = isect(bbx, bby, bbw, bbh, xl, yinv(yt), xr, yinv(yb));
+        }
+        if (doit) {
+            int x, y;
+            gr_dev->SetColor(gr_colors[k->colorindex].pixel);
+            gr_get_keyed_posn(k, &x, &y);
+            y = yinv(y);
+            gr_dev->Text(k->text, x, y, k->xform);
+        }
     }
 
     // Important for Windows, text update delayed otherwise, screws
@@ -430,7 +459,7 @@ cGraph::gr_redraw_keyed()
 #endif
 #endif
 
-    if (gr_reference.mark)
+    if (nobb && gr_reference.mark)
         gr_mark();
 }
 
@@ -720,6 +749,10 @@ cGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
                 gr_show_sel_text(false);
                 k->inspos--;
 #if defined (WITH_QT5) || defined (WITH_QT6)
+                int xl, yb, xr, yt;
+                if (gr_get_keyed_bb(k, &xl, &yb, &xr, &yt)) {
+                    gr_refresh(xl, yinv(yb)+1, xr, yinv(yt), true);
+                }
                 int x, y;
                 gr_get_keyed_posn(k, &x, &y);
                 y = yinv(y);
@@ -770,6 +803,10 @@ cGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
                 gr_show_sel_text(false);
                 k->inspos++;
 #if defined (WITH_QT5) || defined (WITH_QT6)
+                int xl, yb, xr, yt;
+                if (gr_get_keyed_bb(k, &xl, &yb, &xr, &yt)) {
+                    gr_refresh(xl, yinv(yb)+1, xr, yinv(yt), true);
+                }
                 int x, y;
                 gr_get_keyed_posn(k, &x, &y);
                 y = yinv(y);
@@ -851,7 +888,7 @@ cGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
             if (gr_get_keyed_bb(k, &xl, &yb, &xr, &yt)) {
                 delete [] k->text;
                 k->text = cptx;
-                gr_refresh(xl, yinv(yb)+1, xr, yinv(yt));
+                gr_refresh(xl, yinv(yb)+1, xr, yinv(yt), true);
             }
             if (!cptx[0]) {
                 k->ignore = true;
@@ -881,7 +918,7 @@ cGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
             int xl, yb, xr, yt;
             if (gr_get_keyed_bb(k, &xl, &yb, &xr, &yt)) {
                 k->text[0] = 0;
-                gr_refresh(xl, yinv(yb)+1, xr, yinv(yt));
+                gr_refresh(xl, yinv(yb)+1, xr, yinv(yt), true);
             }
             k->inspos = 0;
             k->ignore = true;
@@ -898,7 +935,7 @@ cGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
             if (gr_get_keyed_bb(k, &xl, &yb, &xr, &yt)) {
                 delete [] k->text;
                 k->text = cptx;
-                gr_refresh(xl, yinv(yb)+1, xr, yinv(yt));
+                gr_refresh(xl, yinv(yb)+1, xr, yinv(yt), true);
             }
             if (!cptx[0]) {
                 k->ignore = true;
@@ -955,7 +992,7 @@ cGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
 
                     delete [] k->text;
                     k->text = tmp;
-                    gr_refresh(xl, yinv(yb)+1, xr, yinv(yt));
+                    gr_refresh(xl, yinv(yb)+1, xr, yinv(yt), true);
                 }
             }
             // write it
@@ -1252,7 +1289,7 @@ cGraph::gr_bup_hdlr(int button, int x, int y, const char *new_keyed)
 #if defined (WITH_QT5) || defined (WITH_QT6)
                         gr_dev->SetOverlayMode(true);
 #endif
-                        gr_refresh(xx-w, yy+1, xx+2*w, yy-h, true);
+                        gr_refresh(xx-w, yy+2, xx+2*w, yy-h, true);
 #if defined (WITH_QT5) || defined (WITH_QT6)
                         gr_dev->SetOverlayMode(false);
 #endif
@@ -1262,7 +1299,8 @@ cGraph::gr_bup_hdlr(int button, int x, int y, const char *new_keyed)
                             x -= w;
                         else if (k->xform & TXTF_HJC)
                             x -= w/2;
-                        gr_refresh(x, y+1, x+w, y-h);
+                        gr_dev->SetColor(gr_colors[k->colorindex].pixel);
+                        gr_dev->Text(k->text, x, y, k->xform);
                     }
                     gr_seltext = true;
                     gr_show_sel_text(true);
@@ -2460,7 +2498,6 @@ cGraph::gr_show_sel_text(bool show)
     gr_show_ghost(false);
     int xl, yb, xr, yt;
     if (gr_get_keyed_bb(k, &xl, &yb, &xr, &yt)) {
-        gr_dev->SetOverlayMode(true);
         if (show) {
             gr_dev->SetColor(gr_colors[1].pixel);
             gr_dev->Box(xl-4, yinv(yb), xl-3, yinv(yt));
@@ -2492,13 +2529,12 @@ cGraph::gr_show_sel_text(bool show)
 #endif
         }
         else {
-            gr_refresh(xl-5, yinv(yb)+1, xl-2, yinv(yt));
-            gr_refresh(xr+2, yinv(yb)+3, xr+3, yinv(yt));
+            gr_refresh(xl-5, yinv(yb)+1, xl-2, yinv(yt), true);
+            gr_refresh(xr+2, yinv(yb)+3, xr+3, yinv(yt), true);
             int xx = xl-1 + k->inspos*gr_fontwid;
-            gr_refresh(xx, yinv(yb)+1, xx+1, yinv(yt));
-            gr_refresh(xl-1, yinv(yb)+2, xr+1, yinv(yb)+1);
+            gr_refresh(xx, yinv(yb)+1, xx+1, yinv(yt), true);
+            gr_refresh(xl-1, yinv(yb)+2, xr+1, yinv(yb)+1, true);
         }
-        gr_dev->SetOverlayMode(false);
     }
     gr_show_ghost(true);
 }
@@ -4699,14 +4735,16 @@ cGraph::dv_erase_factors()
     }
     int fw = VALBOX_WIDTH*gr_fontwid;
     if (gr_grtype == GRID_POLAR || gr_grtype == GRID_SMITH ||
-            gr_grtype == GRID_SMITHGRID)
+            gr_grtype == GRID_SMITHGRID) {
         gr_dev->Box(gr_vport.right() - fw, 
             yinv(gr_vport.bottom() - 3*gr_fonthei), 
             gr_vport.right(), yinv(gr_vport.bottom() - 2*gr_fonthei));
-    else
+    }
+    else {
         gr_dev->Box(gr_vport.left(), 
             yinv(gr_vport.bottom() - 3*gr_fonthei), 
             gr_vport.left() + fw, yinv(gr_vport.bottom() - 2*gr_fonthei));
+    }
 }
 
 

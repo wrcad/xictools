@@ -146,11 +146,17 @@ QTjoinDlg::QTjoinDlg(GRobject c)
     connect(tbtn, &QAbstractButton::clicked,
         this, &QTjoinDlg::help_btn_slot);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     // no limit check box
     //
     jn_nolimit = new QCheckBox(tr("No limits in join operation"));
     vbox->addWidget(jn_nolimit);
-    connect(jn_nolimit, &QCheckBox::stateChanged,
+    connect(jn_nolimit, CHECK_BOX_STATE_CHANGED,
         this, &QTjoinDlg::nolimit_btn_slot);
 
     // Max Verts spin button
@@ -214,14 +220,14 @@ QTjoinDlg::QTjoinDlg(GRobject c)
     //
     jn_clean = new QCheckBox(tr("Clean break in join operation limiting"));
     vbox->addWidget(jn_clean);
-    connect(jn_clean, &QCheckBox::stateChanged,
+    connect(jn_clean, CHECK_BOX_STATE_CHANGED,
         this, &QTjoinDlg::clean_btn_slot);
 
     // include wires check box
     //
     jn_wires = new QCheckBox(tr("Include wires (as polygons) in join/split"));
     vbox->addWidget(jn_wires);
-    connect(jn_wires, &QCheckBox::stateChanged,
+    connect(jn_wires, CHECK_BOX_STATE_CHANGED,
         this, &QTjoinDlg::wires_btn_slot);
 
     // Command buttons

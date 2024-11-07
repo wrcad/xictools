@@ -366,13 +366,19 @@ QTpcellParamsDlg::setup_entry(PCellParam *p, sLstr &errlstr, char **ltext)
     QString qsname(p->name());
     pcp_hash[qsname] = p;
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     // Booleans are always a check box, any constraint string is
     // ignored.
     if (p->type() == PCPbool) {
         QCheckBox *w = new QCheckBox();
         w->setObjectName(qsname);
         QTdev::SetStatus(w, p->boolVal());
-        connect(w, &QCheckBox::stateChanged,
+        connect(w, CHECK_BOX_STATE_CHANGED,
             this, &QTpcellParamsDlg::bool_type_slot);
         return (w);
     }

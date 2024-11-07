@@ -72,14 +72,20 @@ QTcnameMap::QTcnameMap(bool outp)
     cn_prefix = new QLineEdit();
     grid->addWidget(cn_prefix, 0, 1);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     cn_to_lower = new QCheckBox(tr("To Lower"));
     grid->addWidget(cn_to_lower, 0, 2);
-    connect(cn_to_lower, &QCheckBox::stateChanged,
+    connect(cn_to_lower, CHECK_BOX_STATE_CHANGED,
         this, &QTcnameMap::to_lower_slot);
 
     cn_rd_alias = new QCheckBox(tr("Read Alias"));
     grid->addWidget(cn_rd_alias, 0, 3);
-    connect(cn_rd_alias, &QCheckBox::stateChanged,
+    connect(cn_rd_alias, CHECK_BOX_STATE_CHANGED,
         this, &QTcnameMap::rd_alias_slot);
 
     label = new QLabel(tr("Suffix"));
@@ -90,12 +96,12 @@ QTcnameMap::QTcnameMap(bool outp)
 
     cn_to_upper = new QCheckBox(tr("To Upper"));
     grid->addWidget(cn_to_upper, 1, 2);
-    connect(cn_to_upper, &QCheckBox::stateChanged,
+    connect(cn_to_upper, CHECK_BOX_STATE_CHANGED,
         this, &QTcnameMap::to_upper_slot);
 
     cn_wr_alias = new QCheckBox(tr("Write Alias"));
     grid->addWidget(cn_wr_alias, 1, 3);
-    connect(cn_wr_alias, &QCheckBox::stateChanged,
+    connect(cn_wr_alias, CHECK_BOX_STATE_CHANGED,
         this, &QTcnameMap::wr_alias_slot);
 
     update();

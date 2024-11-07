@@ -299,10 +299,13 @@ struct sDevOut
         // has model/instance pointers) calls checkMsg when the
         // function returns.
 
-    // The following implement Verilog-A output functions.
+    // The following implement Verilog-A input/output functions.
     void cleanup();
-    int fopen(const char*);
+    int fopen(const char*, const char* = 0);
     void fclose(int);
+    int fscanf(int, const char*, ...);
+    int fseek(int, int, int);
+    int ftell(int);
     void display(sGENmodel*, sGENinstance*, const char*, ...);
     void fdisplay(sGENmodel*, sGENinstance*, int, const char*, ...);
     void write(sGENmodel*, sGENinstance*, const char*, ...);
@@ -314,6 +317,7 @@ struct sDevOut
     void dumpStrobe();
     void warning(sGENmodel*, sGENinstance*, const char*, ...);
     void error(sGENmodel*, sGENinstance*, const char*, ...);
+    void fatal(sGENmodel*, sGENinstance*, double, int, const char*, ...);
     int finish(sGENmodel*, sGENinstance*, double, int);
     int stop(sGENmodel*, sGENinstance*, double, int);
 

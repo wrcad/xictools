@@ -225,9 +225,15 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTbag(this),
     connect(gd_snap, QOverload<int>::of(&QSpinBox::valueChanged),
         this, &QTgridDlg::snap_changed_slot);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     gd_snapbtn = new QCheckBox(tr("GridPerSnap"));
     vb->addWidget(gd_snapbtn);
-    connect(gd_snapbtn, &QCheckBox::stateChanged,
+    connect(gd_snapbtn, CHECK_BOX_STATE_CHANGED,
         this, &QTgridDlg::gridpersnap_btn_slot);
 
     // Edge Snapping group
@@ -248,22 +254,22 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTbag(this),
 
     gd_off_grid = new QCheckBox(tr("Allow off-grid edge snapping"));
     vb->addWidget(gd_off_grid);
-    connect(gd_off_grid, &QCheckBox::stateChanged,
+    connect(gd_off_grid, CHECK_BOX_STATE_CHANGED,
         this, &QTgridDlg::off_grid_btn_slot);
 
     gd_use_nm_edge = new QCheckBox(tr("Include non-Manhattan edges"));
     vb->addWidget(gd_use_nm_edge);
-    connect(gd_use_nm_edge, &QCheckBox::stateChanged,
+    connect(gd_use_nm_edge, CHECK_BOX_STATE_CHANGED,
         this, &QTgridDlg::use_nm_btn_slot);
 
     gd_wire_edge = new QCheckBox(tr("Include wire edges"));
     vb->addWidget(gd_wire_edge);
-    connect(gd_wire_edge, &QCheckBox::stateChanged,
+    connect(gd_wire_edge, CHECK_BOX_STATE_CHANGED,
         this, &QTgridDlg::wire_edge_btn_slot);
 
     gd_wire_path = new QCheckBox(tr("Include wire path"));
     vb->addWidget(gd_wire_path);
-    connect(gd_wire_path, &QCheckBox::stateChanged,
+    connect(gd_wire_path, CHECK_BOX_STATE_CHANGED,
         this, &QTgridDlg::wire_path_btn_slot);
 
     // Style page
@@ -470,7 +476,7 @@ QTgridDlg::QTgridDlg(QTbag *owner, WindowDesc *wd) : QTbag(this),
 
     gd_nocoarse = new QCheckBox(tr("No coarse when fine invisible"));
     vb->addWidget(gd_nocoarse);
-    connect(gd_nocoarse, &QCheckBox::stateChanged,
+    connect(gd_nocoarse, CHECK_BOX_STATE_CHANGED,
         this, &QTgridDlg::nocoarse_btn_slot);
 
     hb = new QHBoxLayout();

@@ -222,22 +222,28 @@ QTconvertInDlg::QTconvertInDlg(GRobject c,
     QLabel *label = new QLabel(tr(" PCell evaluation:"));
     phbox->addWidget(label);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     cvi_nonpc = new QCheckBox(tr("Don't eval native"));
     phbox->addWidget(cvi_nonpc);
-    connect(cvi_nonpc, &QCheckBox::stateChanged,
+    connect(cvi_nonpc, CHECK_BOX_STATE_CHANGED,
         this, &QTconvertInDlg::nonpc_btn_slot);
 
     if (OAif()->hasOA()) {
         cvi_yesoapc = new QCheckBox(tr("Eval OpenAccess"));
         pvbox->addWidget(cvi_yesoapc);
-        connect(cvi_yesoapc, &QCheckBox::stateChanged,
+        connect(cvi_yesoapc, CHECK_BOX_STATE_CHANGED,
             this, &QTconvertInDlg::yesoapc_btn_slot);
     }
 
     cvi_nolyr = new QCheckBox(tr(
         "Don't create new layers when reading, abort instead"));
     pvbox->addWidget(cvi_nolyr);
-    connect(cvi_nolyr, &QCheckBox::stateChanged,
+    connect(cvi_nolyr, CHECK_BOX_STATE_CHANGED,
         this, &QTconvertInDlg::nolyr_btn_slot);
 
     phbox = new QHBoxLayout();
@@ -259,18 +265,18 @@ QTconvertInDlg::QTconvertInDlg(GRobject c,
     cvi_replace = new QCheckBox(tr(
         "Don't prompt for overwrite instructions"));
     pvbox->addWidget(cvi_replace);
-    connect(cvi_replace, &QCheckBox::stateChanged,
+    connect(cvi_replace, CHECK_BOX_STATE_CHANGED,
         this, &QTconvertInDlg::replace_btn_slot);
 
     cvi_merge = new QCheckBox(tr(
         "Clip and merge overlapping boxes"));
     pvbox->addWidget(cvi_merge);
-    connect(cvi_merge, &QCheckBox::stateChanged,
+    connect(cvi_merge, CHECK_BOX_STATE_CHANGED,
         this, &QTconvertInDlg::merge_btn_slot);
 
     cvi_polys = new QCheckBox(tr(
         "Skip testing for badly formed polygons"));
-    connect(cvi_polys, &QCheckBox::stateChanged,
+    connect(cvi_polys, CHECK_BOX_STATE_CHANGED,
         this, &QTconvertInDlg::polys_btn_slot);
 
     phbox = new QHBoxLayout();
@@ -292,13 +298,13 @@ QTconvertInDlg::QTconvertInDlg(GRobject c,
     cvi_empties = new QCheckBox(tr(
         "Skip testing for empty cells"));
     pvbox->addWidget(cvi_empties);
-    connect(cvi_empties, &QCheckBox::stateChanged,
+    connect(cvi_empties, CHECK_BOX_STATE_CHANGED,
         this, &QTconvertInDlg::empties_btn_slot);
 
     cvi_dtypes = new QCheckBox(tr(
         "Map all unmapped GDSII datatypes to same Xic layer"));
     pvbox->addWidget(cvi_dtypes);
-    connect(cvi_dtypes, &QCheckBox::stateChanged,
+    connect(cvi_dtypes, CHECK_BOX_STATE_CHANGED,
         this, &QTconvertInDlg::dtypes_btn_slot);
 
     phbox = new QHBoxLayout();
@@ -320,25 +326,25 @@ QTconvertInDlg::QTconvertInDlg(GRobject c,
     cvi_noflvias = new QCheckBox(tr(
         "Don't flatten standard vias, keep as instance at top level"));
     pvbox->addWidget(cvi_noflvias);
-    connect(cvi_noflvias, &QCheckBox::stateChanged,
+    connect(cvi_noflvias, CHECK_BOX_STATE_CHANGED,
         this, &QTconvertInDlg::noflvias_btn_slot);
 
     cvi_noflpcs = new QCheckBox(tr(
         "Don't flatten pcells, keep as instance at top level"));
     pvbox->addWidget(cvi_noflpcs);
-    connect(cvi_noflpcs, &QCheckBox::stateChanged,
+    connect(cvi_noflpcs, CHECK_BOX_STATE_CHANGED,
         this, &QTconvertInDlg::noflpcs_btn_slot);
 
     cvi_nofllbs = new QCheckBox(tr(
         "Ignore labels in subcells when flattening"));
     pvbox->addWidget(cvi_nofllbs);
-    connect(cvi_nofllbs, &QCheckBox::stateChanged,
+    connect(cvi_nofllbs, CHECK_BOX_STATE_CHANGED,
         this, &QTconvertInDlg::nofllbs_btn_slot);
 
     cvi_nolabels = new QCheckBox(tr(
         "Skip reading text labels from physical archives"));
     pvbox->addWidget(cvi_nolabels);
-    connect(cvi_nolabels, &QCheckBox::stateChanged,
+    connect(cvi_nolabels, CHECK_BOX_STATE_CHANGED,
         this, &QTconvertInDlg::nolabels_btn_slot);
 
     // The Read File page

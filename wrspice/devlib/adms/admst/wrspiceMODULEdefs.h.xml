@@ -946,8 +946,10 @@ inline double _d1_pow(double x,double y)   { return x==0.0?0.0:log(x)*pow(x,y); 
           </admst:if>
         </admst:otherwise>
       </admst:choose>
-
     </admst:for-each>
+
+      <!-- XXX -->
+<admst:text format="\n$(indent)// foo\n"/>
     <admst:if test="$model_vars">
       <admst:for-each select="$model_vars">
         <admst:if test="[minsize=maxsize]">

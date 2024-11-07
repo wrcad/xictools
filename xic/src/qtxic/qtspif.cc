@@ -151,24 +151,30 @@ QTspiceIfDlg::QTspiceIfDlg(GRobject c)
     QGridLayout *grid = new QGridLayout();
     vbox->addLayout(grid);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     sc_listall = new QCheckBox(tr("List all devices and subcircuits."));
     grid->addWidget(sc_listall, 0, 0, 1, 2);
-    connect(sc_listall, &QCheckBox::stateChanged,
+    connect(sc_listall, CHECK_BOX_STATE_CHANGED,
         this, &QTspiceIfDlg::listall_btn_slot);
 
     sc_checksol = new QCheckBox(tr("Check and report solitary connections."));
     grid->addWidget(sc_checksol, 1, 0, 1, 2);
-    connect(sc_checksol, &QCheckBox::stateChanged,
+    connect(sc_checksol, CHECK_BOX_STATE_CHANGED,
         this, &QTspiceIfDlg::checksol_btn_slot);
 
     sc_notools = new QCheckBox(tr("Don't show WRspice Tool Control panel."));
     grid->addWidget(sc_notools, 2, 0, 1, 2);
-    connect(sc_checksol, &QCheckBox::stateChanged,
+    connect(sc_checksol, CHECK_BOX_STATE_CHANGED,
         this, &QTspiceIfDlg::notools_btn_slot);
 
     sc_alias_b = new QCheckBox(tr("Spice device prefix aliases"));
     grid->addWidget(sc_alias_b, 3, 0);
-    connect(sc_alias_b, &QCheckBox::stateChanged,
+    connect(sc_alias_b, CHECK_BOX_STATE_CHANGED,
         this, &QTspiceIfDlg::alias_btn_slot);
 
     sc_alias = new QLineEdit();
@@ -176,7 +182,7 @@ QTspiceIfDlg::QTspiceIfDlg(GRobject c)
 
     sc_hostname_b = new QCheckBox(tr("Remote WRspice server host\nname"));
     grid->addWidget(sc_hostname_b, 4, 0);
-    connect(sc_hostname_b, &QCheckBox::stateChanged,
+    connect(sc_hostname_b, CHECK_BOX_STATE_CHANGED,
         this, &QTspiceIfDlg::hostname_btn_slot);
 
     sc_hostname = new QLineEdit();
@@ -185,7 +191,7 @@ QTspiceIfDlg::QTspiceIfDlg(GRobject c)
     sc_dispname_b = new QCheckBox(tr(
         "Remote WRspice server host\ndisplay name"));
     grid->addWidget(sc_dispname_b, 5, 0);
-    connect(sc_dispname_b, &QCheckBox::stateChanged,
+    connect(sc_dispname_b, CHECK_BOX_STATE_CHANGED,
         this, &QTspiceIfDlg::dispname_btn_slot);
 
     sc_dispname = new QLineEdit();
@@ -193,7 +199,7 @@ QTspiceIfDlg::QTspiceIfDlg(GRobject c)
 
     sc_progname_b = new QCheckBox(tr("Path to local WRspice\nexecutable"));
     grid->addWidget(sc_progname_b, 6, 0);
-    connect(sc_progname_b, &QCheckBox::stateChanged,
+    connect(sc_progname_b, CHECK_BOX_STATE_CHANGED,
         this, &QTspiceIfDlg::progname_btn_slot);
 
     sc_progname = new QLineEdit();
@@ -202,7 +208,7 @@ QTspiceIfDlg::QTspiceIfDlg(GRobject c)
     sc_execdir_b = new QCheckBox(tr(
         "Path to local directory\ncontaining WRspice executable"));
     grid->addWidget(sc_execdir_b, 7, 0);
-    connect(sc_execdir_b, &QCheckBox::stateChanged,
+    connect(sc_execdir_b, CHECK_BOX_STATE_CHANGED,
         this, &QTspiceIfDlg::execdir_btn_slot);
 
     sc_execdir = new QLineEdit();
@@ -211,7 +217,7 @@ QTspiceIfDlg::QTspiceIfDlg(GRobject c)
     sc_execname_b = new QCheckBox(tr(
         "Assumed WRspice program\nexecutable name"));
     grid->addWidget(sc_execname_b, 8, 0);
-    connect(sc_execname_b, &QCheckBox::stateChanged,
+    connect(sc_execname_b, CHECK_BOX_STATE_CHANGED,
         this, &QTspiceIfDlg::execname_btn_slot);
 
     sc_execname = new QLineEdit();
@@ -220,7 +226,7 @@ QTspiceIfDlg::QTspiceIfDlg(GRobject c)
     sc_catchar_b = new QCheckBox(tr(
         "Assumed WRspice subcircuit\nconcatenation character"));
     grid->addWidget(sc_catchar_b, 9, 0);
-    connect(sc_catchar_b, &QCheckBox::stateChanged,
+    connect(sc_catchar_b, CHECK_BOX_STATE_CHANGED,
         this, &QTspiceIfDlg::catchar_btn_slot);
 
     sc_catchar = new QLineEdit();
@@ -229,7 +235,7 @@ QTspiceIfDlg::QTspiceIfDlg(GRobject c)
     sc_catmode_b = new QCheckBox(tr(
         "Assumed WRspice subcircuit\nexpansion mode"));
     grid->addWidget(sc_catmode_b, 10, 0);
-    connect(sc_catmode_b, &QCheckBox::stateChanged,
+    connect(sc_catmode_b, CHECK_BOX_STATE_CHANGED,
         this, &QTspiceIfDlg::catmode_btn_slot);
 
     sc_catmode = new QComboBox();

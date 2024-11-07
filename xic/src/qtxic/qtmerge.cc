@@ -196,10 +196,16 @@ QTmergeDlg::QTmergeDlg(mitem_t *mi)
     vbox->addLayout(hbox);
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
-    
+ 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     QCheckBox *cb = new QCheckBox(tr("Overwrite Physical"));
     hbox->addWidget(cb);
-    connect(cb, &QCheckBox::stateChanged,
+    connect(cb, CHECK_BOX_STATE_CHANGED,
         this, &QTmergeDlg::phys_check_box_slot);
     cb->setChecked(mc_do_elec);
 
@@ -210,7 +216,7 @@ QTmergeDlg::QTmergeDlg(mitem_t *mi)
 
     cb = new QCheckBox(tr("Overwrite Electrical"));
     hbox->addWidget(cb);
-    connect(cb, &QCheckBox::stateChanged,
+    connect(cb, CHECK_BOX_STATE_CHANGED,
         this, &QTmergeDlg::elec_check_box_slot);
     cb->setChecked(mc_do_elec);
 

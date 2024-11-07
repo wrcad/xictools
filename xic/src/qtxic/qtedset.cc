@@ -151,39 +151,45 @@ QTeditSetupDlg::QTeditSetupDlg(GRobject c)
     connect(tbtn, &QAbstractButton::clicked,
         this, &QTeditSetupDlg::help_btn_slot);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     // check boxes
     //
     ed_cons45 = new QCheckBox(tr("Constrain angles to 45 degree multiples"));
     vbox->addWidget(ed_cons45);
-    connect(ed_cons45, &QCheckBox::stateChanged,
+    connect(ed_cons45, CHECK_BOX_STATE_CHANGED,
         this, &QTeditSetupDlg::cons45_btn_slot);
 
     ed_merge = new QCheckBox(tr(
         "Merge new boxes and polys with existing boxes/polys"));
     vbox->addWidget(ed_merge);
-    connect(ed_merge, &QCheckBox::stateChanged,
+    connect(ed_merge, CHECK_BOX_STATE_CHANGED,
         this, &QTeditSetupDlg::merge_btn_slot);
 
     ed_noply = new QCheckBox(tr("Clip and merge new boxes only, not polys"));
     vbox->addWidget(ed_noply);
-    connect(ed_noply, &QCheckBox::stateChanged,
+    connect(ed_noply, CHECK_BOX_STATE_CHANGED,
         this, &QTeditSetupDlg::noply_btn_slot);
 
     ed_prompt = new QCheckBox(tr("Prompt to save modified native cells"));
     vbox->addWidget(ed_prompt);
-    connect(ed_prompt, &QCheckBox::stateChanged,
+    connect(ed_prompt, CHECK_BOX_STATE_CHANGED,
         this, &QTeditSetupDlg::prompt_btn_slot);
 
     ed_noww = new QCheckBox(tr("No wire width change in magnification"));
     vbox->addWidget(ed_noww);
-    connect(ed_noww, &QCheckBox::stateChanged,
+    connect(ed_noww, CHECK_BOX_STATE_CHANGED,
         this, &QTeditSetupDlg::noww_btn_slot);
 
     ed_crcovr = new QCheckBox(tr(
         "Allow Create Cell to overwrite existing cell"));
     vbox->addWidget(ed_crcovr);
     vbox->addSpacing(10);
-    connect(ed_crcovr, &QCheckBox::stateChanged,
+    connect(ed_crcovr, CHECK_BOX_STATE_CHANGED,
         this, &QTeditSetupDlg::crcovr_btn_slot);
 
     // integer parameters

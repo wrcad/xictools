@@ -373,6 +373,10 @@
   format="$(indent)$io(&quot;%(name)&quot;, $(moduc)$(qual)%(name), IF_INTVEC"/>
         </admst:if>
       </admst:when>
+      <admst:when test="[type='string']">
+          <admst:text
+  format="$(indent)$io(&quot;%(name)&quot;, $(moduc)$(qual)%(name), IF_STRING"/>
+      </admst:when>
       <admst:otherwise>
         <admst:fatal
       format="module_cc: unsupported parameter type 'string'.\n"/>

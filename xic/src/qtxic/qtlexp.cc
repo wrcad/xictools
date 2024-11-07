@@ -185,9 +185,15 @@ QTlayerExpDlg::QTlayerExpDlg(GRobject c)
     connect(lx_depth, QOverload<int>::of(&QComboBox::currentIndexChanged),
         this, &QTlayerExpDlg::depth_changed_slot);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     lx_recurse = new QCheckBox(tr("Recursively create in subcells"));
     hbox->addWidget(lx_recurse);
-    connect(lx_recurse, &QCheckBox::stateChanged,
+    connect(lx_recurse, CHECK_BOX_STATE_CHANGED,
         this, &QTlayerExpDlg::recurse_btn_slot);
 
     // target layer entry
@@ -321,19 +327,19 @@ QTlayerExpDlg::QTlayerExpDlg(GRobject c)
     //
     lx_noclear = new QCheckBox(tr("Don't clear layer before evaluation"));
     vbox->addWidget(lx_noclear);
-    connect(lx_noclear, &QCheckBox::stateChanged,
+    connect(lx_noclear, CHECK_BOX_STATE_CHANGED,
         this, &QTlayerExpDlg::noclear_btn_slot);
 
     // merge and fast mode check boxes
     //
     lx_merge = new QCheckBox(tr("Use object merging while processing"));
     vbox->addWidget(lx_merge);
-    connect(lx_merge, &QCheckBox::stateChanged,
+    connect(lx_merge, CHECK_BOX_STATE_CHANGED,
         this, &QTlayerExpDlg::merge_btn_slot);
 
     lx_fast = new QCheckBox(tr("Fast mode, NOT UNDOABLE"));
     vbox->addWidget(lx_fast);
-    connect(lx_merge, &QCheckBox::stateChanged,
+    connect(lx_merge, CHECK_BOX_STATE_CHANGED,
         this, &QTlayerExpDlg::fast_btn_slot);
 
     // evaluate and dismiss buttons

@@ -271,9 +271,15 @@ QTkwent::QTkwent(EntryMode m, EntryCallback cb, xKWent *kwstr,
 #endif
     }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     if (ke_mode != KW_NO_CB) {
         set_state(v ? true : false);
-        connect(ke_active, &QCheckBox::stateChanged,
+        connect(ke_active, CHECK_BOX_STATE_CHANGED,
             this, &QTkwent::set_btn_slot);
     }
 }

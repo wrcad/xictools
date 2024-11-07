@@ -288,9 +288,15 @@ QTchdCfgDlg::QTchdCfgDlg(GRobject caller, const char *chdname) : QTbag(this)
     label = new QLabel(tr("Setup Linked Cell Geometry Digest"));
     ghbox->addWidget(label);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     cf_newcgd = new QCheckBox(tr("Open new CGD"));
     gvbox->addWidget(cf_newcgd);
-    connect(cf_newcgd, &QCheckBox::stateChanged,
+    connect(cf_newcgd, CHECK_BOX_STATE_CHANGED,
         this, &QTchdCfgDlg::new_cgd_btn_slot);
 
     ghbox = new QHBoxLayout();

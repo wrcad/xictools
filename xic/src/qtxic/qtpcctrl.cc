@@ -156,9 +156,15 @@ QTpcellCtrlDlg::QTpcellCtrlDlg(GRobject c)
     connect(pcc_abut, QOverload<int>::of(&QComboBox::currentIndexChanged),
         this, &QTpcellCtrlDlg::abut_mode_slot);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     pcc_hidestr = new QCheckBox(tr("Hide and disable stretch handles"));
     vbox->addWidget(pcc_hidestr);
-    connect(pcc_hidestr, &QCheckBox::stateChanged,
+    connect(pcc_hidestr, CHECK_BOX_STATE_CHANGED,
         this, &QTpcellCtrlDlg::hidestr_btn_slot);
 
     hbox = new QHBoxLayout(0);
@@ -179,12 +185,12 @@ QTpcellCtrlDlg::QTpcellCtrlDlg(GRobject c)
 
     pcc_listsm = new QCheckBox(tr("List sub-masters as modified cells"));
     vbox->addWidget(pcc_listsm);
-    connect(pcc_listsm, &QCheckBox::stateChanged,
+    connect(pcc_listsm, CHECK_BOX_STATE_CHANGED,
         this, &QTpcellCtrlDlg::listsm_btn_slot);
 
     pcc_allwarn = new QCheckBox(tr("Show all evaluation warnings"));
     vbox->addWidget(pcc_allwarn);
-    connect(pcc_allwarn, &QCheckBox::stateChanged,
+    connect(pcc_allwarn, CHECK_BOX_STATE_CHANGED,
         this, &QTpcellCtrlDlg::allwarn_btn_slot);
 
     // Dismiss button

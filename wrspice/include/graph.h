@@ -403,7 +403,7 @@ public:
     void gr_update_keyed(cGraph*, bool);
     void gr_abort();
     bool gr_redraw_direct();
-    void gr_redraw_keyed();
+    void gr_redraw_keyed(int = 0, int = 0, int = 0, int = 0);
     void gr_init_data();
     void *gr_copy_data();
     void gr_destroy_data();

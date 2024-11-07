@@ -196,14 +196,20 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c) : QTbag(this)
     hb->setContentsMargins(qm);
     hb->setSpacing(2);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     fh_foreg = new QCheckBox(tr("Run in foreground"));
     hb->addWidget(fh_foreg);
-    connect(fh_foreg, &QCheckBox::stateChanged,
+    connect(fh_foreg, CHECK_BOX_STATE_CHANGED,
         this, &QTfastHenryDlg::foreg_btn_slot);
 
     fh_out = new QCheckBox(tr("Out to console"));
     hb->addWidget(fh_out);
-    connect(fh_out, &QCheckBox::stateChanged,
+    connect(fh_out, CHECK_BOX_STATE_CHANGED,
         this, &QTfastHenryDlg::console_btn_slot);
 
     vb->addStretch(1);
@@ -373,12 +379,12 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c) : QTbag(this)
 
     fh_nhinc_ovr = new QCheckBox(tr("Override Layer NHINC, RH"));
     vb->addWidget(fh_nhinc_ovr);
-    connect(fh_nhinc_ovr, &QCheckBox::stateChanged,
+    connect(fh_nhinc_ovr, CHECK_BOX_STATE_CHANGED,
         this, &QTfastHenryDlg::override_btn_slot);
 
     fh_nhinc_fh = new QCheckBox(tr("Use FastHenry Internal NHINC, RH"));
     vb->addWidget(fh_nhinc_fh);
-    connect(fh_nhinc_fh, &QCheckBox::stateChanged,
+    connect(fh_nhinc_fh, CHECK_BOX_STATE_CHANGED,
         this, &QTfastHenryDlg::internal_btn_slot);
 
     gb = new QGroupBox();
@@ -398,7 +404,7 @@ QTfastHenryDlg::QTfastHenryDlg(GRobject c) : QTbag(this)
 
     fh_enab = new QCheckBox(tr("Enable"));
     hb->addWidget(fh_enab);
-    connect(fh_enab, &QCheckBox::stateChanged,
+    connect(fh_enab, CHECK_BOX_STATE_CHANGED,
         this, &QTfastHenryDlg::enable_btn_slot);
 
     gb = new QGroupBox("FhVolElMin");

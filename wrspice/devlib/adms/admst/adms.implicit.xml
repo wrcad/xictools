@@ -739,7 +739,8 @@
         <!--other functions-->
         <admst:when
           test="[name='analysis' or name='simparam' or name='\$limexp'
-            or name='limexp']">
+            or name='limexp' or name='\$fopen' or name='\$fscanf'
+            or name='\$ftell' or name='\$fseek']">
           <admst:push into="$globalexpression/function" select="."/>
           <admst:value-to select="class" string="builtin"/>
         </admst:when>
@@ -1168,9 +1169,11 @@
         <admst:when test="[$globalpartitionning='final_step']">
           <admst:value-to select="$lhs/setinfinal" string="yes"/>
         </admst:when>
+            <!-- XXX
         <admst:otherwise>
           <admst:value-to select="$lhs/setinevaluate" string="yes"/>
         </admst:otherwise>
+            -->
       </admst:choose>
       <admst:apply-templates select="rhs" match="e:dependency"/>
       <admst:value-to test="rhs/variable[TemperatureDependent='yes']" select="$lhs/TemperatureDependent" string="yes"/>

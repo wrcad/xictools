@@ -255,6 +255,12 @@ QTextCmdDlg::QTextCmdDlg(GRobject c, sExtCmd *cmd,
     grid->setContentsMargins(qm);
     grid->setSpacing(2);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     // setup check buttons
     for (int i = 0; i < cmd_excmd->num_buttons(); i++) {
         if (!cmd_excmd->button(i)->name())
@@ -266,7 +272,7 @@ QTextCmdDlg::QTextCmdDlg(GRobject c, sExtCmd *cmd,
         grid->addWidget(cmd_bx[i], row, col);
         if (cmd_excmd->button(i)->is_active())
             QTdev::SetStatus(cmd_bx[i], true);
-        connect(cmd_bx[i], &QCheckBox::stateChanged,
+        connect(cmd_bx[i], CHECK_BOX_STATE_CHANGED,
             this, &QTextCmdDlg::check_state_changed_slot);
     }
 

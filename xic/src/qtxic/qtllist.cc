@@ -120,14 +120,20 @@ QTlayerList::QTlayerList()
     QLabel *label = new QLabel(tr("Layer List (physical)  "));
     hbox->addWidget(label);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     ll_luse = new QCheckBox(tr("Layers only"));
     hbox->addWidget(ll_luse);
-    connect(ll_luse, &QCheckBox::stateChanged,
+    connect(ll_luse, CHECK_BOX_STATE_CHANGED,
         this, &QTlayerList::luse_btn_slot);
 
     ll_lskip = new QCheckBox(tr("Skip layers"));
     hbox->addWidget(ll_lskip);
-    connect(ll_lskip, &QCheckBox::stateChanged,
+    connect(ll_lskip, CHECK_BOX_STATE_CHANGED,
         this, &QTlayerList::lskip_btn_slot);
 
     ll_laylist = new QTlayerEdit();
@@ -141,7 +147,7 @@ QTlayerList::QTlayerList()
 
     ll_aluse = new QCheckBox(tr("Use Layer Aliases"));
     hbox->addWidget(ll_aluse);
-    connect(ll_aluse, &QCheckBox::stateChanged,
+    connect(ll_aluse, CHECK_BOX_STATE_CHANGED,
         this, &QTlayerList::aluse_btn_slot);
 
     ll_aledit = new QToolButton();

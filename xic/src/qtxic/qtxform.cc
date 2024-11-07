@@ -167,15 +167,21 @@ QTxformDlg::QTxformDlg(GRobject c,
     connect(tf_ang, QOverload<int>::of(&QComboBox::currentIndexChanged),
         this, &QTxformDlg::angle_change_slot);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     tf_rflx = new QCheckBox(tr("Reflect X"));
     hbox->addWidget(tf_rflx);
-    connect(tf_rflx, &QCheckBox::stateChanged,
+    connect(tf_rflx, CHECK_BOX_STATE_CHANGED,
         this, &QTxformDlg::reflect_x_slot);
 
     hbox->addSpacing(12);
     tf_rfly = new QCheckBox(tr("Reflect Y"));
     hbox->addWidget(tf_rfly);
-    connect(tf_rfly, &QCheckBox::stateChanged,
+    connect(tf_rfly, CHECK_BOX_STATE_CHANGED,
         this, &QTxformDlg::reflect_y_slot);
 
 

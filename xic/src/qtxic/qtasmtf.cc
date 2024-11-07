@@ -170,9 +170,15 @@ QTasmTf::QTasmTf(QTasmPage *src)
     hbox->setContentsMargins(qm);
     hbox->setSpacing(2);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     tf_use_win = new QCheckBox(tr("Use Window"));
     hbox->addWidget(tf_use_win);
-    connect(tf_use_win, &QCheckBox::stateChanged,
+    connect(tf_use_win, CHECK_BOX_STATE_CHANGED,
         this, &QTasmTf::usew_btn_slot);
 
     tf_do_clip = new QCheckBox(tr("Clip"));

@@ -203,6 +203,12 @@ QTselectDlg::QTselectDlg(GRobject c) : QTbag(this)
     connect(btn, &QAbstractButton::clicked,
         this, &QTselectDlg::dismiss_btn_slot);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,8,0)
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::checkStateChanged
+#else
+#define CHECK_BOX_STATE_CHANGED &QCheckBox::stateChanged
+#endif
+
     // objects group
     //
     QGroupBox *ogb = new QGroupBox(tr("Objects"));
@@ -212,23 +218,23 @@ QTselectDlg::QTselectDlg(GRobject c) : QTbag(this)
     vb->setSpacing(2);
     sl_cell = new QCheckBox(tr("Cells"));
     vb->addWidget(sl_cell);
-    connect(sl_cell, &QCheckBox::stateChanged,
+    connect(sl_cell, CHECK_BOX_STATE_CHANGED,
         this, &QTselectDlg::ob_cell_slot);
     sl_box = new QCheckBox(tr("Boxes"));
     vb->addWidget(sl_box);
-    connect(sl_box, &QCheckBox::stateChanged,
+    connect(sl_box, CHECK_BOX_STATE_CHANGED,
         this, &QTselectDlg::ob_box_slot);
     sl_poly = new QCheckBox(tr("Polys"));
     vb->addWidget(sl_poly);
-    connect(sl_poly, &QCheckBox::stateChanged,
+    connect(sl_poly, CHECK_BOX_STATE_CHANGED,
         this, &QTselectDlg::ob_poly_slot);
     sl_wire = new QCheckBox(tr("Wires"));
     vb->addWidget(sl_wire);
-    connect(sl_wire, &QCheckBox::stateChanged,
+    connect(sl_wire, CHECK_BOX_STATE_CHANGED,
         this, &QTselectDlg::ob_wire_slot);
     sl_label = new QCheckBox(tr("Labels"));
     vb->addWidget(sl_label);
-    connect(sl_label, &QCheckBox::stateChanged,
+    connect(sl_label, CHECK_BOX_STATE_CHANGED,
         this, &QTselectDlg::ob_label_slot);
 
     update();
