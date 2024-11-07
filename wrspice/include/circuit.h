@@ -114,7 +114,7 @@ struct sDCTprms;
 // Valuse from NIST updated 03/02/2024
 #define wrsCHARGE           1.602176634e-19
 #define wrsCONSTCtoK        273.15
-#define wrsCONSTboltz       1.380649-23
+#define wrsCONSTboltz       1.380649e-23
 #define wrsCONSTvt0         (wrsCONSTboltz*wrsREFTEMP/wrsCHARGE)
 #define wrsCONSTKoverQ      (wrsCONSTboltz/wrsCHARGE)
 #define wrsCONSTroot2       M_SQRT2
