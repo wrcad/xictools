@@ -16,7 +16,8 @@ SUBDIRS = \
   ind \
   jj \
   mextram \
-  psp
+  psp \
+  tjm
 
 dummy: $(SUBDIRS)
 

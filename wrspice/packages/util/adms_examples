@@ -1,3 +1,4 @@
+examples/.gitignore
 examples/Makefile
 examples/README
 examples/bsim-bulk/Makefile
@@ -163,7 +164,6 @@ examples/jj/tests/jjac.cir
 examples/jj/tests/jjdc.cir
 examples/jj/tests/jjiv.cir
 examples/jj/tests/jjnoise.cir
-examples/jj/tjm.va
 examples/mextram/Makefile
 examples/mextram/link.mk
 examples/mextram/mkmk
@@ -177,3 +177,10 @@ examples/psp/Makefile
 examples/psp/link.mk
 examples/psp/mkmk
 examples/psp/tests/2_Martinie_ESSERC_2024_PSP.pdf
+examples/tjm/Makefile
+examples/tjm/link.mk
+examples/tjm/mkmk
+examples/tjm/tests/jjac.cir
+examples/tjm/tests/jjdc.cir
+examples/tjm/tests/jjiv.cir
+examples/tjm/tjm.va

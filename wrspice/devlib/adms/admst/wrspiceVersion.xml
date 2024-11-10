@@ -1863,9 +1863,6 @@
     <admst:when test="$model_vars[name=$vv]">
       <admst:variable name="e" select="model->%(name)"/>
     </admst:when>
-    <admst:when test="$model_local_vars[name=$vv]">
-      <admst:variable name="e" select="model->%(name)"/>
-    </admst:when>
     <admst:when test="$instance_vars[name=$vv]">
       <admst:choose>
         <admst:when test="[$inst_to_model='yes']">
@@ -5014,7 +5011,7 @@
   <!-- 
     Not sure what "insource" is, but some of the local variables in
     bsimsoi.va need it for ddx and don't have it set to 'yes' initially.
-    the value is reset in the folowing blocks.
+    the value is reset in the following blocks.
   -->
 
   <!-- These are locals, declared in the model loop. -->

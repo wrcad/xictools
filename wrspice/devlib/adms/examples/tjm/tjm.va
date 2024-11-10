@@ -46,6 +46,8 @@
 // Version 1.1, Aug. 21, 2022
 //   Support for sub-gap resistance parameter from mmjco.  Changes
 //   for conformity with WRspice internal tunnel junction model.
+// Version 1.2, Nov. 10, 2024
+//   Minor tweaks for ADMS build in WRspice.
 //
 // Stephen R. Whiteley          stevew@wrcad.com, whiteley@synopsys.com
 // Whiteley Research Inc.       http://wrcad.com
@@ -330,12 +332,12 @@ real gshunt `P(type="instance" info="External VSHUNT shunt conductance");
 real lshval `P(type="instance" info="Shunt resistor parasitic inductance");
 `endif
 `endif
+real tjm_gcrit `P(type="instance" info="Sub-gap conductivity");
 
 // Per-instance variables.
 real lasttime;
 real tjm_sinphi_2_old;
 real tjm_cosphi_2_old;
-real tjm_gcrit;
 real tjm_Fc_r[0:`TJM_MAXFIX];
 real tjm_Fc_i[0:`TJM_MAXFIX];
 real tjm_Fs_r[0:`TJM_MAXFIX];
@@ -351,8 +353,7 @@ real tjm_alpha1_i[0:`TJM_MAXFIX];
 real tjm_exp_z_r[0:`TJM_MAXFIX];
 real tjm_exp_z_i[0:`TJM_MAXFIX];
 
-real i1, i2, vth, start_phase, tsf, ip8;
-real SmallSigL;
+real vth, tsf, start_phase, SmallSigL;
 integer pmode;
 
 analog begin
@@ -366,7 +367,6 @@ analog begin
 
 `ifdef insideADMS
     begin : initial_model
-        real halfvg;
 `else
     @(initial_step)
         begin : initialization
@@ -375,6 +375,7 @@ analog begin
         integer code, fd, nrec;
         string ftype;
         real dnrec, tstrt, tdel;
+        real i1, i2, ip8;
 `endif
 
         // dphiMax
@@ -387,14 +388,21 @@ analog begin
         tsf = $simparam("dphiMax", 0.0)/(2*`M_PI);
         if (tsf < 1e-3 || $param_given(tsfactor))
             tsf = tsfactor;
+        tjm_narray = 0;
+        tjm_nxpts = 0;
+        tjm_sm = 0.0;
+        tjm_thr = 0.0;
 `ifdef insideADMS
     end
 
     begin : initial_instance
+        real halfvg;
         real halfdv;
         integer code, fd, nrec;
         string ftype;
         real dnrec, tstrt, tdel;
+        real i1, i2, ip8;
+
 `endif
         ip8 = 0.0;
 
@@ -405,6 +413,7 @@ analog begin
         fd = $fopen(mmjco_input, "r");
         if (fd == 0)
             $fatal(0, "TJM.va model:  could not open input file.");
+
         code = $fscanf(fd, "%s %f %f %f %f %d %d %f %f\n", ftype, dnrec,
             tstrt, tdel, tjm_sm, tjm_nxpts, tjm_narray, tjm_thr, ip8);
         if (code < 8)
@@ -527,12 +536,20 @@ analog begin
                         pr, pi, ar, ai, br, bi);
                     if (code != 6)
                         $fatal(0, "TJM.va model:  read error in block.");
+                        /*
                     P_r[i] += f2*pr;
                     P_i[i] += f2*pi;
                     A_r[i] += f2*ar;
                     A_i[i] += f2*ai;
                     B_r[i] += f2*br;
                     B_i[i] += f2*bi;
+                    */
+                    P_r[i] = P_r[i] + f2*pr;
+                    P_i[i] = P_i[i] + f2*pi;
+                    A_r[i] = A_r[i] + f2*ar;
+                    A_i[i] = A_i[i] + f2*ai;
+                    B_r[i] = B_r[i] + f2*br;
+                    B_i[i] = B_i[i] + f2*bi;
                     end
                 end
             $fclose(fd);
