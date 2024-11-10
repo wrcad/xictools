@@ -1048,7 +1048,13 @@ cGraph::gr_bdown_hdlr(int button, int x, int y)
     bool was_seltext = gr_seltext;
     if (button == 1) {
         gr_seltext = false;
+#if defined (WITH_QT5) || defined (WITH_QT6)
+        gr_dev->SetOverlayMode(true);
+#endif
         gr_show_sel_text(false);
+#if defined (WITH_QT5) || defined (WITH_QT6)
+        gr_dev->SetOverlayMode(false);
+#endif
     }
 
     if (!gr_present) {

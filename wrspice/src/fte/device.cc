@@ -1502,12 +1502,270 @@ sDevOut::fclose(int fd)
 }
 
 
+namespace {
+    const char *kntoks = "cdefgrs";
+
+    bool knowntok(const char *s)
+    {
+        if (*s == '*')
+            s++;
+        if (strchr(kntoks, *s))
+            return (true);
+        return (false);
+    }
+
+    char *scantok(const char **p)
+    {
+        if (!p)
+            return (0);
+        const char *s = *p;
+        if (!s || !*s)
+            return (0);
+        char *tok = 0;
+        if (*s == '%' && knowntok(s+1)) {
+            int i = 0;
+            tok = new char[4];
+            tok[i++] = *s++;
+            tok[i++] = *s++;
+            if (tok[1] == '*')
+                tok[i++] = *s++;
+            tok[i] = 0;
+        }
+        else if (isspace(*s)) {
+            int i = 0;
+            tok = new char[4];
+            tok[i++] = *s++;
+            tok[i] = 0;
+            while (isspace(s[1]))
+                s++;
+        }
+        else {
+            const char *t = s++;
+            while (*s && !isspace(*s) && !(*s == '%' && knowntok(s+1)))
+                s++;
+            tok = new char[s-t + 1];
+            int i = 0;
+            while (t < s)
+                tok[i++] = *t++;
+            tok[i] = 0;
+        }
+        *p = s;
+        return (tok);
+    }
+
+    bool get_double(int fd, double *dp)
+    {
+        char bf[64];
+        int i = 0;
+        const char *rchars = "-+.0123456789eE";
+        const char *mchars = "afpnumkgte";
+        char c;
+        for (;;) {
+            int r = read(fd, &c, 1);
+            if (!r)
+                return (false);
+            if (isspace(c))
+                continue;
+            break;
+        }
+        while (c && strchr(rchars, c)) {
+            bf[i++] = c;
+            int r = read(fd, &c, 1);
+            if (!r) {
+                c = 0;
+                break;
+            }
+        }
+        if (!i)
+            return (false);
+        if (c && strchr(mchars, c))
+            bf[i++] = c;
+        else
+            lseek(fd, -1, SEEK_CUR);
+        bf[i] = 0;
+        
+        if (dp) {
+            const char *cp = bf;
+            double *d = SPnum.parse(&cp, false);
+            if (!d)
+                return (false);
+            *dp = *d;
+        }
+        return (true);
+    }
+
+    bool get_int(int fd, int *ip)
+    {
+        char bf[64];
+        int i = 0;
+        char c;
+        for (;;) {
+            int r = read(fd, &c, 1);
+            if (!r)
+                return (false);
+            if (isspace(c))
+                continue;
+            break;
+        }
+        while (isdigit(c) || (i == 0 && (c == '-' || c == '+'))) {
+            bf[i++] = c;
+            int r = read(fd, &c, 1);
+            if (!r) {
+                c = 0;
+                break;
+            }
+
+        }
+        if (!i)
+            return (false);
+        bf[i] = 0;
+        if (c)
+            lseek(fd, -1, SEEK_CUR);
+        if (ip)
+            *ip = atoi(bf);
+        return (true);
+    }
+
+    bool get_string(int fd, char **cp)
+    {
+        int i = 0;
+        char bf[256];
+        char c;
+        for (;;) {
+            int r = read(fd, &c, 1);
+            if (!r)
+                return (false);
+            if (isspace(c))
+                continue;
+            break;
+        }
+        while (c && !isspace(c)) {
+            bf[i++] = c;
+            int r = read(fd, &c, 1);
+            if (!r) {
+                c = 0;
+                break;
+            }
+        }
+        if (c)
+            lseek(fd, -1, SEEK_CUR);
+        if (cp)
+            *cp = lstring::copy(bf);;
+        return (true);
+    }
+
+    bool get_achr(int fd, int *ip)
+    {
+        char c;
+        int r = read(fd, &c, 1);
+        if (!r)
+            return (false);
+        if (ip)
+            *ip = c;
+        return (true);
+    }
+}
+
+
 // XXX Fix Me!
 int
-sDevOut::fscanf(int, const char*, ...)
+sDevOut::fscanf(int fd, const char *fmt, ...)
 {
-//    va_list args;
-    return (0);
+    if (!fmt)
+        return (0);
+    va_list args;
+    va_start(args, fmt);
+    char *tok;
+    const char *psn = fmt;
+    int cnt = 0;
+    while ((tok = scantok(&psn)) != 0) {
+        if (*tok == '%') {
+            bool sk = false;
+            char c = tok[1];
+            if (c == '*') {
+                c = tok[2];
+                sk = true;
+            }
+            delete [] tok;
+            if (c == 'e' || c == 'f' || c == 'g' || c == 'r') {
+                if (get_double(fd, sk ? va_arg(args, double*) : 0)) {
+                    if (!sk)
+                        cnt++;
+                }
+                else
+                    return (cnt);
+            }
+            else if (c == 'd') {
+                if (get_int(fd, sk ? va_arg(args, int*) : 0)) {
+                    if (!sk)
+                        cnt++;
+                }
+                else
+                    return (cnt);
+            }
+            else if (c == 's') {
+                if (get_string(fd, sk ? va_arg(args, char **) : 0)) {
+                    if (!sk)
+                        cnt++;
+                }
+                else
+                    return (cnt);
+            }
+            else if (c == 'c') {
+                if (get_achr(fd, sk ? va_arg(args, int*) : 0)) {
+                    if (!sk)
+                        cnt++;
+                }
+                else
+                    return (cnt);
+            }
+        }
+        else if (isspace(*tok)) {
+            delete [] tok;
+            for (;;) {
+                char c;
+                int r = read(fd, &c, 1);
+                if (!r)
+                    break;
+                if (c && !isspace(c)) {
+                    lseek(fd, -1, SEEK_CUR);
+                    break;
+                }
+            }
+        }
+        else {
+            int l = strlen(tok);
+            for (;;) {
+                char c;
+                int r = read(fd, &c, 1);
+                if (!r)
+                    break;
+                if (isspace(c))
+                    continue;
+                if (c != *tok) {
+                    lseek(fd, -1, SEEK_CUR);
+                    delete [] tok;
+                    return (cnt);
+                }
+                char *bf = new char[l+1];
+                bf[0] = *tok;
+                r = read(fd, bf+1, l-1);
+                bf[l] = 0;
+                if (r < l-1) {
+                    delete [] tok;
+                    return (cnt);
+                }
+                if (strcmp(tok, bf)) {
+                    lseek(fd, -l, SEEK_CUR);
+                    delete [] tok;
+                    return (cnt);
+                }
+                break;
+            }
+            delete [] tok;
+        }
+    }
+    return (cnt);
 }
 
 

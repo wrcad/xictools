@@ -1763,13 +1763,13 @@
 <!-- ---------------------------------------------------------------------- -->
 <!--
   Outputs the type of a variable.  The type is either int, double, or
-  char *.
+  const char *.
 -->
 <admst:template match="vtype">
   <admst:choose>
     <admst:when test="[type='integer']">int</admst:when>
     <admst:when test="[type='real']">double</admst:when>
-    <admst:when test="[type='string']">char*</admst:when>
+    <admst:when test="[type='string']">const char*</admst:when>
     <admst:otherwise>
       <admst:fatal format="vtype: unexpected variable type %(type).\n"/>
     </admst:otherwise>
@@ -2703,9 +2703,9 @@
       <admst:assert test="[count(arguments)=1 or count(arguments)=2]"
         format="%(name): should have one or two arguments"/>
       <admst:if test="[count(arguments)=2]">
-        <admst:variable name="arg1" select="%(arguments[1])"/>
+        <admst:apply-templates select="arguments[1]" match="ddx"/>
         <admst:variable name="arg2" select="%(arguments[2])"/>
-        <admst:variable name="e" select="DVO.fopen($arg1,$arg2)"/>
+        <admst:variable name="e" select="DVO.fopen($e,$arg2)"/>
       </admst:if>
       <admst:if test="[count(arguments)=1]">
         <admst:variable name="arg1" select="%(arguments[1])"/>
@@ -2720,20 +2720,16 @@
         <admst:if test="[$args!='']">
           <admst:variable name="args" select="$args,"/>
         </admst:if>
-<!-- XXX -->
-        <!--
-        <admst:if test="[adms/datatypename='variable']">
-          <admst:variable name="vv" value="%(name)"/>
-          <admst:text format="/* $vv %(input) %(scope) %(parametertype)
- %(adms/datatypename) */\n"/>
-          <admst:if test="[input='no' and (scope='global_model' or
- (parametertype='model' and not(nilled(attribute))))]">
-            <admst:text format="YES\n"/>
-          </admst:if>
-        </admst:if>
-        -->
-        <admst:apply-templates select="." match="ddx"/>
-        <admst:variable name="args" select="$args$e"/>
+        <admst:choose>
+          <admst:when test="[index(../arguments,.)>1]">
+            <admst:apply-templates select="." match="ddx"/>
+            <admst:variable name="args" select="$args&$e"/>
+          </admst:when>
+          <admst:otherwise>
+            <admst:apply-templates select="." match="ddx"/>
+            <admst:variable name="args" select="$args$e"/>
+          </admst:otherwise>
+        </admst:choose>
       </admst:for-each>
       <admst:variable name="e" select="DVO.fscanf($args)"/>
     </admst:when>
@@ -5106,7 +5102,6 @@
   </admst:for-each>
 
 <!-- DEBUG
--->
   <admst:text format="/* DEBUG\n"/>
   <admst:for-each select="$model_vars">
     <admst:text format="model: %(name) %(input) %(scope) %(parametertype) %(insource)
@@ -5125,6 +5120,7 @@
  %(setinmodel) %(setininstance) %(setininitial_step) %(setinnoise) %(setinfinal) %(setinevaluate)\n"/>
   </admst:for-each>
   <admst:text format="*/\n"/>
+-->
 
 </admst:template>
 
