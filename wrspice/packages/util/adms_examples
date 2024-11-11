@@ -1,4 +1,3 @@
-examples/.gitignore
 examples/Makefile
 examples/README
 examples/bsim-bulk/Makefile

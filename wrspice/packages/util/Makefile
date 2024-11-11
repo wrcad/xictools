@@ -14,6 +14,6 @@ adms_examples::
 	    mv adms_examples adms_examples.bak; \
 	fi
 	-@aex=`pwd`/adms_examples; \
-	cd ../../devlib/adms; find examples -type f | \
+	cd ../../devlib/adms; find examples -type f \! -name ".gitignore"| \
   sed -e s/Makefile\\.in/Makefile/ | sort > $$aex
 
