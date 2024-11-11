@@ -30,7 +30,7 @@ else
 fetch: SOURCE/$(SRCFILE)
 
 SOURCE/$(SRCFILE):
-	curl -L -O --output-dir ./SOURCE $(SRCPATH); \
+	cd SOURCE; curl -L -O $(SRCPATH); cd ..; \
 	if [ "$$?" == "0" ]; then \
 	    tar xzf $@ -C SOURCE; \
 	else \
