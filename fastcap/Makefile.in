@@ -21,40 +21,44 @@ INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 
 FASTCAP = fastcap-2.0wr-010524.tar.gz
 
-FASTCAP_DIR = fastcap-2.0wr
-SRCDIR = $(FASTCAP_DIR)/src
+FASTCAP_SUB = fastcap-2.0wr
+SRCDIR = $(FASTCAP_SUB)/src
 
 IDSTR := \"`./release.sh` `$(BASE)/info.sh osname` `$(BASE)/info.sh arch`\"
 VERS := \"`./release.sh` (xictools)\"
 
 all: unpack
-	$(MAKE) -C $(FASTCAP_DIR) CC="$(CC)" all
-	$(MAKE) -C fc_accs all
+	@$(MAKE) -C $(FASTCAP_SUB) CC="$(CC)" all
+	@$(MAKE) -C fc_accs all
 
-unpack:
-	@if [ ! -d $(FASTCAP_DIR) ]; then \
-	    tar xzf $(FASTCAP); \
-	    if [ -n "$(EXESUFFIX)" ]; then \
-	        (cd $(FASTCAP_DIR); ./config mingw); \
-	    fi; \
-	    mv -f $(SRCDIR)/release.h $(SRCDIR)/release.h.orig; \
-	    sed -e "s/FCVERSION .*$$/FCVERSION $(VERS)/" \
-	      -e "s/ID_STRING .*$$/ID_STRING $(IDSTR)/" \
-	      < $(SRCDIR)/release.h.orig > $(SRCDIR)/release.h; \
+unpack: $(FASTCAP_SUB)
+
+$(FASTCAP_SUB): $(FASTCAP)
+	if [ -d $(FASTCAP_SUB) ]; then \
+	    rm -rf $(FASTCAP_SUB); \
 	fi
+	tar xzf $(FASTCAP)
+	touch $(FASTCAP_SUB)
+	if [ -n "$(EXESUFFIX)" ]; then \
+	    (cd $(FASTCAP_SUB); ./config mingw); \
+	fi
+	mv -f $(SRCDIR)/release.h $(SRCDIR)/release.h.orig
+	sed -e "s/FCVERSION .*$$/FCVERSION $(VERS)/" \
+	  -e "s/ID_STRING .*$$/ID_STRING $(IDSTR)/" \
+	  < $(SRCDIR)/release.h.orig > $(SRCDIR)/release.h
 
 clean:
-	-@if [ -d $(FASTCAP_DIR) ]; then \
-	    $(MAKE) -C $(FASTCAP_DIR) $@; \
+	-@if [ -d $(FASTCAP_SUB) ]; then \
+	    $(MAKE) -C $(FASTCAP_SUB) $@; \
 	fi
 	-@$(MAKE) -C fc_accs $@
 
 distclean:
-	-@rm -rf $(FASTCAP_DIR) Makefile
+	-@rm -rf $(FASTCAP_SUB) Makefile
 	-@$(MAKE) -C fc_accs $@
 	-@$(MAKE) -C packages $@
 
-depend:
+depend: unpack
 	@$(MAKE) -C fc_accs $@
 
 #######################################################################
@@ -89,42 +93,42 @@ $(dst_bin)::
 	done
 	@execs=`packages/util/fc_files bin`; \
 	for aa in $$execs; do \
-	    $(INSTALL_BIN) $(FASTCAP_DIR)/bin/$$aa$(EXESUFFIX) $@; \
+	    $(INSTALL_BIN) $(FASTCAP_SUB)/bin/$$aa$(EXESUFFIX) $@; \
 	done
 
 $(dst_lib)::
 	@$(BASE)/util/mkdirpth $@
-	@$(INSTALL_LIB) $(FASTCAP_DIR)/README $@
-	@$(INSTALL_LIB) $(FASTCAP_DIR)/README.mit $@
+	@$(INSTALL_LIB) $(FASTCAP_SUB)/README $@
+	@$(INSTALL_LIB) $(FASTCAP_SUB)/README.mit $@
 
 $(dst_lib)/doc::
 	@$(BASE)/util/mkdirpth $@
 	@docs=`packages/util/fc_files doc`; \
 	for aa in $$docs; do \
-	    $(INSTALL_LIB) $(FASTCAP_DIR)/doc/$$aa $@; \
+	    $(INSTALL_LIB) $(FASTCAP_SUB)/doc/$$aa $@; \
 	done
 
 $(dst_lib)/examples::
 	@$(BASE)/util/mkdirpth $@
 	@files=`packages/util/fc_files examples`; \
 	for aa in $$files; do \
-	    $(INSTALL_LIB) $(FASTCAP_DIR)/examples/$$aa $@; \
+	    $(INSTALL_LIB) $(FASTCAP_SUB)/examples/$$aa $@; \
 	done
 	@scripts=`packages/util/fc_files examples_scripts`; \
 	for aa in $$scripts; do \
-	    $(INSTALL_SCRIPT) $(FASTCAP_DIR)/examples/$$aa $@; \
+	    $(INSTALL_SCRIPT) $(FASTCAP_SUB)/examples/$$aa $@; \
 	done
 
 $(dst_lib)/examples/work::
 	@$(BASE)/util/mkdirpth $@
-	@$(INSTALL_LIB) $(FASTCAP_DIR)/examples/work/Makefile $@
-	@$(INSTALL_SCRIPT) $(FASTCAP_DIR)/examples/work/run $@
+	@$(INSTALL_LIB) $(FASTCAP_SUB)/examples/work/Makefile $@
+	@$(INSTALL_SCRIPT) $(FASTCAP_SUB)/examples/work/run $@
 
 $(dst_lib)/examples/work/results::
 	@$(BASE)/util/mkdirpth $@
 	@files=`packages/util/fc_files results`; \
 	for aa in $$files; do \
-	    $(INSTALL_LIB) $(FASTCAP_DIR)/examples/work/results/$$aa $@; \
+	    $(INSTALL_LIB) $(FASTCAP_SUB)/examples/work/results/$$aa $@; \
         done
 
 uninstall: uninstall_test uninstall_clean

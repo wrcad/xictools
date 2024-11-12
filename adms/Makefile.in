@@ -20,8 +20,8 @@ INSTALL_LIB    = $(INSTALL) -c -m 0644
 INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 
 ADMS = ADMS-release-2.3.8.tar.gz
-
 ADMS_DIR = ADMS-release-2.3.8
+ADMS_SUB = adms_wr
 
 GIT := \"`git log --pretty=format:'%h' -n 1u`\"
 IDSTR := "`./release.sh` `$(BASE)/info.sh osname` `$(BASE)/info.sh arch`"
@@ -29,47 +29,50 @@ IDSTR := "`./release.sh` `$(BASE)/info.sh osname` `$(BASE)/info.sh arch`"
 REGEN = no
 
 all: unpack
-	@if [ -f adms_wr/admsXml/Makefile ]; then \
-	    $(MAKE) -C adms_wr/admsXml ; \
+	@if [ -f $(ADMS_SUB)/admsXml/Makefile ]; then \
+	    $(MAKE) -C $(ADMS_SUB)/admsXml ; \
 	else \
 	    echo "ADMS configuration failed. cleaning..."; \
-	    rm -rf adms_wr; \
+	    rm -rf $(ADMS_SUB); \
 	fi
 
-unpack:
-	@if [ ! -d  adms_wr ]; then \
-	    tar xzf $(ADMS); \
-	    mv -f $(ADMS_DIR) adms_wr; \
-	    sed -e s/VERSION/$$(./release.sh)/ < files/configure.in.sed \
-	      > adms_wr/configure.in; \
-            sed -e s/GIT/$(GIT)/ -e s/XT_IDSTRING/$(IDSTR)/ \
-	      < files/admsXml.c.sed > adms_wr/admsXml/admsXml.c; \
-	    mv -f adms_wr/configure.ac adms_wr/configure.ac.notused; \
-	    cp -f files/install-sh adms_wr/auxconf; \
-	    cp -f files/Makefile.in adms_wr/admsXml; \
-	    cp -f files/config.h.in adms_wr/admsXml; \
-	    cp -f files/constants.vams adms_wr/admsXml; \
-	    cp -f files/disciplines.vams adms_wr/admsXml; \
-	    cp -f files/admsPreprocessor.h adms_wr/admsXml; \
-	    cp -f files/mkelements.pl adms_wr/admsXml; \
-	    cp -f files/admsPreprocessor.h adms_wr/admsXml; \
-	    cp -f files/admsVeriloga.h adms_wr/admsXml; \
-	    cp -f files/verilogaYacc.y.in adms_wr/admsXml; \
-	    if [ $(REGEN) = yes ]; then \
-	        cd adms_wr; $(ACONF); ./configure --enable-maint=yes; \
-	    else \
-	        cp -f generated/*.c generated/*.h adms_wr/admsXml; \
-	        cd adms_wr; $(ACONF); ./configure --enable-maint=no; \
-	    fi; \
+unpack: $(ADMS_SUB)
+
+$(ADMS_SUB): $(ADMS)
+	if [ -d $(ADMS_SUB) ]; then \
+	    rm -rf $(ADMS_SUB); \
+	fi
+	tar xzf $(ADMS);
+	mv -f $(ADMS_DIR) $(ADMS_SUB)
+	sed -e s/VERSION/$$(./release.sh)/ < files/configure.in.sed \
+	  > $(ADMS_SUB)/configure.in
+        sed -e s/GIT/$(GIT)/ -e s/XT_IDSTRING/$(IDSTR)/ \
+	  < files/admsXml.c.sed > $(ADMS_SUB)/admsXml/admsXml.c
+	mv -f $(ADMS_SUB)/configure.ac $(ADMS_SUB)/configure.ac.notused
+	cp -f files/install-sh $(ADMS_SUB)/auxconf
+	cp -f files/Makefile.in $(ADMS_SUB)/admsXml
+	cp -f files/config.h.in $(ADMS_SUB)/admsXml
+	cp -f files/constants.vams $(ADMS_SUB)/admsXml
+	cp -f files/disciplines.vams $(ADMS_SUB)/admsXml
+	cp -f files/admsPreprocessor.h $(ADMS_SUB)/admsXml
+	cp -f files/mkelements.pl $(ADMS_SUB)/admsXml
+	cp -f files/admsPreprocessor.h $(ADMS_SUB)/admsXml
+	cp -f files/admsVeriloga.h $(ADMS_SUB)/admsXml
+	cp -f files/verilogaYacc.y.in $(ADMS_SUB)/admsXml
+	if [ $(REGEN) = yes ]; then \
+	    cd $(ADMS_SUB); $(ACONF); ./configure --enable-maint=yes; \
+	else \
+	    cp -f generated/*.c generated/*.h $(ADMS_SUB)/admsXml; \
+	    cd $(ADMS_SUB); $(ACONF); ./configure --enable-maint=no; \
 	fi
 
 clean:
-	-@if [ -d adms_wr ]; then \
-	    $(MAKE) -C adms_wr/admsXml $@; \
+	-@if [ -d $(ADMS_SUB) ]; then \
+	    $(MAKE) -C $(ADMS_SUB)/admsXml $@; \
 	fi
 
 distclean:
-	-@rm -rf adms_wr Makefile
+	-@rm -rf $(ADMS_SUB) Makefile
 	-@$(MAKE) -C packages $@
 
 depend: unpack
@@ -80,7 +83,7 @@ depend: unpack
 INSTALL_PREFIX ?= $(prefix)
 dst_lib = $(INSTALL_PREFIX)/$(TOOLROOT)/adms
 dst_bin = $(INSTALL_PREFIX)/$(TOOLROOT)/bin
-src = adms_wr/admsXml
+src = $(ADMS_SUB)/admsXml
 
 install: install_test install_force
 
@@ -113,7 +116,7 @@ $(dst_lib)/doc::
 	@$(BASE)/util/mkdirpth $@/xml
 	@files=`packages/util/adms_files xml`; \
 	for a in $$files; do \
-	    $(INSTALL_LIB) adms_wr/$$a $@/xml; \
+	    $(INSTALL_LIB) $(ADMS_SUB)/$$a $@/xml; \
 	done
 	@$(BASE)/util/mkdirpth $@/html
 	@files=`packages/util/adms_files html`; \
@@ -157,12 +160,12 @@ $(dst_lib)/examples::
 	@$(BASE)/util/mkdirpth $@/scripts
 	@files=`packages/util/adms_files scripts`; \
 	for a in $$files; do \
-	    $(INSTALL_LIB) adms_wr/scripts/$$a $@/scripts; \
+	    $(INSTALL_LIB) $(ADMS_SUB)/scripts/$$a $@/scripts; \
 	done
 	@$(BASE)/util/mkdirpth $@/testcases
 	@files=`packages/util/adms_files testcases`; \
 	for a in $$files; do \
-	    $(INSTALL_LIB) adms_wr/testcases/$$a $@/testcases; \
+	    $(INSTALL_LIB) $(ADMS_SUB)/testcases/$$a $@/testcases; \
 	done
 
 uninstall: uninstall_test uninstall_clean

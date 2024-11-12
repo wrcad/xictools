@@ -22,46 +22,50 @@ INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 
 FASTHENRY = fasthenry-3.0wr-031424.tar.gz
 
-FASTHENRY_DIR = fasthenry-3.0wr
-SRCDIR = $(FASTHENRY_DIR)/src/fasthenry
+FASTHENRY_SUB = fasthenry-3.0wr
+SRCDIR = $(FASTHENRY_SUB)/src/fasthenry
 
 IDSTR := \"`./release.sh` `$(BASE)/info.sh osname` `$(BASE)/info.sh arch`\"
 VERS := \"`./release.sh`\"
 
 all: unpack
 	# Make the KLU version since it is faster.
-	if [ ! -f ../KLU/KLU/Lib/libklu.a ]; then \
+	@if [ ! -f ../KLU/KLU/Lib/libklu.a ]; then \
 	    $(MAKE) -C ../KLU ; \
         fi
-	$(MAKE) -C $(FASTHENRY_DIR) SOLVER=KLU_SOLVER CC="$(CC)" all
+	@$(MAKE) -C $(FASTHENRY_SUB) SOLVER=KLU_SOLVER CC="$(CC)" all
 
-unpack:
-	@if [ ! -d $(FASTHENRY_DIR) ]; then \
-	    tar xzf $(FASTHENRY); \
-	    if [ -n "$(EXESUFFIX)" ]; then \
-	        (cd $(FASTHENRY_DIR); ./config mingw); \
-	    fi; \
-	    mv -f $(SRCDIR)/release.h $(SRCDIR)/release.h.orig; \
-	    sed -e "s/FHVERSION .*$$/FHVERSION $(VERS)/" \
-	      -e "s/FHDATE .*$$/FHDATE \"xictools\"/" \
-              -e "s/ID_STRING .*$$/ID_STRING $(IDSTR)/" \
-	      < $(SRCDIR)/release.h.orig > $(SRCDIR)/release.h; \
-	    mv -f $(SRCDIR)/mk_klu.inc $(SRCDIR)/mk_klu.inc.orig; \
-	    sed -e "s^KLU_HOME .*$$^KLU_HOME = ../../../../KLU^" \
-	      -e "s^#RTLIB .*$$^RTLIB = $(LIBRT)^" \
-	      < $(SRCDIR)/mk_klu.inc.orig > $(SRCDIR)/mk_klu.inc; \
+unpack: $(FASTHENRY_SUB)
+
+$(FASTHENRY_SUB): $(FASTHENRY)
+	if [ -d $(FASTHENRY_SUB) ]; then \
+	    rm -rf $(FASTHENRY_SUB); \
 	fi
+	tar xzf $(FASTHENRY)
+	touch $(FASHENRY_SUB)
+	if [ -n "$(EXESUFFIX)" ]; then \
+	    (cd $(FASTHENRY_SUB); ./config mingw); \
+	fi
+	mv -f $(SRCDIR)/release.h $(SRCDIR)/release.h.orig
+	sed -e "s/FHVERSION .*$$/FHVERSION $(VERS)/" \
+	  -e "s/FHDATE .*$$/FHDATE \"xictools\"/" \
+          -e "s/ID_STRING .*$$/ID_STRING $(IDSTR)/" \
+	  < $(SRCDIR)/release.h.orig > $(SRCDIR)/release.h
+	mv -f $(SRCDIR)/mk_klu.inc $(SRCDIR)/mk_klu.inc.orig
+	sed -e "s^KLU_HOME .*$$^KLU_HOME = ../../../../KLU^" \
+	  -e "s^#RTLIB .*$$^RTLIB = $(LIBRT)^" \
+	  < $(SRCDIR)/mk_klu.inc.orig > $(SRCDIR)/mk_klu.inc
 
 clean:
-	-@if [ -d $(FASTHENRY_DIR) ]; then \
-	    $(MAKE) -C $(FASTHENRY_DIR) $@; \
+	-@if [ -d $(FASTHENRY_SUB) ]; then \
+	    $(MAKE) -C $(FASTHENRY_SUB) $@; \
 	fi
 
 distclean:
-	-@rm -rf $(FASTHENRY_DIR) Makefile
+	-@rm -rf $(FASTHENRY_SUB) Makefile
 	-@$(MAKE) -C packages $@
 
-depend:
+depend: unpack
 
 #######################################################################
 ####### Installation ##################################################
@@ -90,51 +94,51 @@ $(dst_bin)::
 	@$(BASE)/util/mkdirpth $@
 	@execs=`packages/util/fh_files bin`; \
 	for aa in $$execs; do \
-	    $(INSTALL_BIN) $(FASTHENRY_DIR)/bin/$$aa$(EXESUFFIX) $@; \
+	    $(INSTALL_BIN) $(FASTHENRY_SUB)/bin/$$aa$(EXESUFFIX) $@; \
 	done
 
 $(dst_lib)::
 	@$(BASE)/util/mkdirpth $@
-	@$(INSTALL_LIB) $(FASTHENRY_DIR)/README $@
-	@$(INSTALL_LIB) $(FASTHENRY_DIR)/README.mit $@
+	@$(INSTALL_LIB) $(FASTHENRY_SUB)/README $@
+	@$(INSTALL_LIB) $(FASTHENRY_SUB)/README.mit $@
 
 $(dst_lib)/doc::
 	@$(BASE)/util/mkdirpth $@
 	@docs=`packages/util/fh_files doc`; \
 	for aa in $$docs; do \
-	    $(INSTALL_LIB) $(FASTHENRY_DIR)/doc/$$aa $@; \
+	    $(INSTALL_LIB) $(FASTHENRY_SUB)/doc/$$aa $@; \
 	done
 
 # 090919 framework
 $(dst_lib)/examples::
 	@$(BASE)/util/mkdirpth $@
-	@$(INSTALL_SCRIPT) $(FASTHENRY_DIR)/examples/cf $@
-	@$(INSTALL_SCRIPT) $(FASTHENRY_DIR)/examples/run $@
-	@$(INSTALL_LIB) $(FASTHENRY_DIR)/examples/README $@
+	@$(INSTALL_SCRIPT) $(FASTHENRY_SUB)/examples/cf $@
+	@$(INSTALL_SCRIPT) $(FASTHENRY_SUB)/examples/run $@
+	@$(INSTALL_LIB) $(FASTHENRY_SUB)/examples/README $@
 	@$(BASE)/util/mkdirpth $@/input
 	@files=`packages/util/fh_files examples_input`; \
 	for aa in $$files; do \
-	    $(INSTALL_LIB) $(FASTHENRY_DIR)/examples/input/$$aa $@/input; \
+	    $(INSTALL_LIB) $(FASTHENRY_SUB)/examples/input/$$aa $@/input; \
 	done
 	@$(BASE)/util/mkdirpth $@/results
 	@$(BASE)/util/mkdirpth $@/results/linux_dss
 	@files=`packages/util/fh_files examples_results`; \
 	for aa in $$files; do \
-	    $(INSTALL_LIB) $(FASTHENRY_DIR)/examples/results/linux_dss/$$aa $@/results/linux_dss; \
+	    $(INSTALL_LIB) $(FASTHENRY_SUB)/examples/results/linux_dss/$$aa $@/results/linux_dss; \
         done
 	@$(BASE)/util/mkdirpth $@/results/linux_klu
 	@files=`packages/util/fh_files examples_results`; \
 	for aa in $$files; do \
-	    $(INSTALL_LIB) $(FASTHENRY_DIR)/examples/results/linux_klu/$$aa $@/results/linux_klu; \
+	    $(INSTALL_LIB) $(FASTHENRY_SUB)/examples/results/linux_klu/$$aa $@/results/linux_klu; \
         done
 	@$(BASE)/util/mkdirpth $@/results/linux_sparse
 	@files=`packages/util/fh_files examples_results`; \
 	for aa in $$files; do \
-	    $(INSTALL_LIB) $(FASTHENRY_DIR)/examples/results/linux_sparse/$$aa $@/results/linux_sparse; \
+	    $(INSTALL_LIB) $(FASTHENRY_SUB)/examples/results/linux_sparse/$$aa $@/results/linux_sparse; \
         done
 	@$(BASE)/util/mkdirpth $@/torture
-	@$(INSTALL_LIB) $(FASTHENRY_DIR)/examples/torture/README $@/torture
-	@$(INSTALL_LIB) $(FASTHENRY_DIR)/examples/torture/bfh.inp $@/torture
+	@$(INSTALL_LIB) $(FASTHENRY_SUB)/examples/torture/README $@/torture
+	@$(INSTALL_LIB) $(FASTHENRY_SUB)/examples/torture/bfh.inp $@/torture
 
 uninstall: uninstall_test uninstall_clean
 

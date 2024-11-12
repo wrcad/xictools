@@ -151,7 +151,7 @@ namespace {
         strcpy(buf, filename);
         SIfile *sfp = SIfile::create(buf, 0, 0);
         if (!sfp) {
-            char *home = pathlist::get_home("XIC_START_DIR");
+            char *home = pathlist::get_home();
             if (home) {
                 char *t = pathlist::mk_path(home, buf);
                 sfp = SIfile::create(t, 0, 0);
