@@ -532,8 +532,8 @@ QTpkg::SubwinDestroy(int wnum)
     WindowDesc *wdesc = DSP()->Window(wnum);
     if (!wdesc)
         return;
-    // Old QT5 will crash unless delete delayed.
-    dynamic_cast<QTsubwin*>(wdesc->Wbag())->deleteLater();
+    QTsubwin *sw = dynamic_cast<QTsubwin*>(wdesc->Wbag());
+    delete sw;
 }
 
 
@@ -1468,7 +1468,8 @@ QTsubwin::QTsubwin(int wnum, QWidget *prnt) : QDialog(prnt), QTbag(this),
     }
     else {
         QSize msz = QTmainwin::self()->size();
-        move(mposn.x() + msz.width() - sizeHint().width(), mposn.y() + wnum*40 + 60);
+        move(mposn.x() + msz.width() - sizeHint().width(),
+            mposn.y() + wnum*40 + 60);
     }
 
     SetWindowBackground(0);
@@ -1499,11 +1500,13 @@ QTsubwin::~QTsubwin()
         GhostDrawCommon.gd_windows[sw_win_number] = 0;
     if (sw_win_number > 0) {
         WindowDesc *wdesc = DSP()->Window(sw_win_number);
-        if (!wdesc)
-            return;
-        wdesc->SetWbag(0);
-        wdesc->SetWdraw(0);
-        delete wdesc;
+        if (wdesc) {
+            wdesc->SetWbag(0);
+            wdesc->SetWdraw(0);
+            // Don't delete if we are already in the WindowDesc destructor!
+            if (!wdesc->Deleting())
+                delete wdesc;
+        }
 
         MainMenu()->DestroySubwinMenu(sw_win_number);
 

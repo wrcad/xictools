@@ -683,6 +683,8 @@ struct WindowDesc
 
     void SetAccumMode(WDaccumMode m) { w_accum_mode = m; }
 
+    bool Deleting()           const { return (w_deleting); }
+
 private:
     // dsp_box.cc
     void cache_box(int, int, int, int);
@@ -765,6 +767,8 @@ private:
     bool w_using_pixmap;        // using backing store
     bool w_using_image;         // using in-core image
     bool w_old_image;           // using old image composition logic
+
+    bool w_deleting;            // this is being deleted
 
     w_win_str w_win;            // window view alternate mode store
     uintptr_t w_windowid;       // window identifier

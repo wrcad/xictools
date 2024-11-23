@@ -151,6 +151,8 @@ WindowDesc::WindowDesc()
     w_using_image       = false;
     w_old_image         = false;
 
+    w_deleting          = false;
+
     w_windowid          = 0;
     w_accum_mode        = WDaccumDone;
 }
@@ -158,6 +160,10 @@ WindowDesc::WindowDesc()
 
 WindowDesc::~WindowDesc()
 {
+    // Calling this will also delete the associated graphics subwindow.
+    // The flag here prevents calling this destructor more than once.
+    w_deleting = true;
+
     int wnum = -1;
     for (int i = 0; i < DSP_NUMWINS; i++) {
         if (DSP()->Window(i) == this) {
