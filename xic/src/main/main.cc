@@ -82,6 +82,8 @@ cMain::cMain()
     }
     instancePtr = this;
 
+    xm_symb_cell                        = 0;
+
     xm_product                          = 0;
     xm_description                      = 0;
     xm_program                          = 0;
@@ -140,6 +142,7 @@ cMain::cMain()
     xm_mem_error                        = false;
     xm_saving_dev                       = false;
     xm_tree_captive                     = false;
+    xm_symb_mode                        = false;
 
     // instatiate core functionality
     new ErrRec;             // error handler

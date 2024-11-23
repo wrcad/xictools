@@ -659,39 +659,41 @@ private:
     // memory.cc
     void setupMemoryBangCmds();
 
+    CDs *xm_symb_cell;                  // Last opened Electrical cell.
+
     // Misc. name strings
-    const char *xm_product;           // The product name, e.g., "Xic"
-    const char *xm_description;       // Short description of this app
-    const char *xm_program;           // Program name, may include path
+    const char *xm_product;             // The product name, e.g., "Xic"
+    const char *xm_description;         // Short description of this app
+    const char *xm_program;             // Program name, may include path
 
-    const char *xm_program_root;      // Installation location
-    const char *xm_prefix;            // Installation location prefix
-    const char *xm_tools_root;        // Installation location common
-    const char *xm_app_root;          // Installation location dir
-    const char *xm_homedir;           // Home directory
+    const char *xm_program_root;        // Installation location
+    const char *xm_prefix;              // Installation location prefix
+    const char *xm_tools_root;          // Installation location common
+    const char *xm_app_root;            // Installation location dir
+    const char *xm_homedir;             // Home directory
 
-    const char *xm_version_string;    // The program version number
-    const char *xm_build_date;        // Program build date string
-    const char *xm_tag_string;        // The CVS tag string
-    const char *xm_about_file;        // About message file name
-    const char *xm_os_name;           // Operating sysyem name
-    const char *xm_arch;              // CPU architecture name
-    const char *xm_dist_suffix;       // Distrib file suffix
-    const char *xm_geometry;          // X-style geometry string
-    const char *xm_tech_file_base;    // Base name of tech file to read.
-    const char *xm_default_edit_name; // Default edit cell ("noname")
-    const char *xm_device_lib_name;   // Device lib file (def. "device.lib")
-    const char *xm_model_lib_name;    // Model lib file (def. "model.lib")
+    const char *xm_version_string;      // The program version number
+    const char *xm_build_date;          // Program build date string
+    const char *xm_tag_string;          // The CVS tag string
+    const char *xm_about_file;          // About message file name
+    const char *xm_os_name;             // Operating sysyem name
+    const char *xm_arch;                // CPU architecture name
+    const char *xm_dist_suffix;         // Distrib file suffix
+    const char *xm_geometry;            // X-style geometry string
+    const char *xm_tech_file_base;      // Base name of tech file to read.
+    const char *xm_default_edit_name;   // Default edit cell ("noname")
+    const char *xm_device_lib_name;     // Device lib file (def. "device.lib")
+    const char *xm_model_lib_name;      // Model lib file (def. "model.lib")
     const char *xm_ignore_name;       // Ignore models dir (def. ".xic_ignore")
     const char *xm_model_subdir_name; // Subdir name for models (def. "models")
-    const char *xm_init_script;       // Name of init script (".xicinit")
-    const char *xm_startup_script;    // Name of startup script (".xicstart")
-    const char *xm_macro_file_name;   // Name of macro file (".xicmacros")
-    const char *xm_exec_directory;    // Dir containing executables
-    const char *xm_spice_exec_name;   // WRspice name ("wrspice")
-    const char *xm_font_file_name;    // Name of font file ("xic_font")
+    const char *xm_init_script;         // Name of init script (".xicinit")
+    const char *xm_startup_script;      // Name of startup script (".xicstart")
+    const char *xm_macro_file_name;     // Name of macro file (".xicmacros")
+    const char *xm_exec_directory;      // Dir containing executables
+    const char *xm_spice_exec_name;     // WRspice name ("wrspice")
+    const char *xm_font_file_name;      // Name of font file ("xic_font")
     const char *xm_logo_font_file_name; // Logo font file ("xic_logofont")
-    const char *xm_log_name;          // Name of log file ("xic_run.log")
+    const char *xm_log_name;            // Name of log file ("xic_run.log")
 
     sAuthChk *xm_auth;          // Authentication class.
     ModeType xm_run_mode;       // Normal/Batch/Server mode.
@@ -699,9 +701,9 @@ private:
     int xm_build_year;          // Year of build date.
 
     table_t<main_txtcmds::bcel_t> *xm_bang_cmd_tab;
-                                 // Table of 'bang' commands.
-    CDvarTab *xm_var_bak;        // Initial variables.
-    DisplayMode xm_initial_mode; // Startup display mode.
+                                // Table of 'bang' commands.
+    CDvarTab *xm_var_bak;       // Initial variables.
+    DisplayMode xm_initial_mode;// Startup display mode.
 
     sModeSave xm_mode_save;     // Context save for mode switch.
 
@@ -716,7 +718,7 @@ private:
     const char *xm_panic_dir;   // Panic subdirectory (save location)
 
     // Misc flags
-    unsigned int xm_debug_flags; // Enable misc. debugging features
+    unsigned int xm_debug_flags;// Enable misc. debugging features
     bool xm_doing_help;         // Help is active.
     bool xm_no_confirm_abort;   // Suppress abort dialog after interrupt.
     bool xm_full_win_cursor;    // True to use full screen cursor.
@@ -727,6 +729,7 @@ private:
     bool xm_mem_error;          // Memory error occurred.
     bool xm_saving_dev;         // True when saving a device to a file.
     bool xm_tree_captive;       // Tree is showing cell from Cells List.
+    bool xm_symb_mode;          // Last opened Electrical cell was Symbolic.
 
     static cMain *instancePtr;
 };

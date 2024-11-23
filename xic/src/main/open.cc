@@ -79,10 +79,6 @@
 
 namespace {
     namespace OpenHlpr { bool upd_callback(const char*, void*, XEtype); };
-
-    // Prompt to revert if user undoes symbolic mode.
-    CDs *symb_cell;
-    bool symb_mode;
 }
 
 
@@ -144,7 +140,7 @@ cMain::EditCell(const char *file_or_cell_name, bool noask,
         filetype = Fnative;
 
     if (!noask && XM()->RunMode() == ModeNormal && DSP()->CurCellName()) {
-        if (symb_cell && symb_mode) {
+        if (xm_symb_cell && xm_symb_mode) {
             // If the user has undone symbolic mode, ask to revert. 
             // It is too easy to change mode to look at something,
             // then edit a new cell but find that the instance
@@ -152,7 +148,7 @@ cMain::EditCell(const char *file_or_cell_name, bool noask,
 
             bool reverted = false;
             CDs *esd = CDcdb()->findCell(DSP()->CurCellName(), Electrical);
-            if (esd == symb_cell && !esd->symbolicRep(0)) {
+            if (esd == xm_symb_cell && !esd->symbolicRep(0)) {
                 char *in = PL()->EditPrompt(
                     "You've changed this cell to non-symbolic.  "
                     "Do you want to revert back? ", "y");
@@ -623,8 +619,8 @@ cMain::Load(WindowDesc *wdesc, const char *file_or_cell_name,
     }
 
     // Save electrical symbolic state.
-    symb_cell = cbin.elec();
-    symb_mode = symb_cell ? symb_cell->symbolicRep(0) != 0 : false;
+    xm_symb_cell = cbin.elec();
+    xm_symb_mode = xm_symb_cell ? xm_symb_cell->symbolicRep(0) != 0 : false;
 
 #ifdef TIMEDBG
     double T4 = Tvals::millisec();
@@ -685,8 +681,8 @@ cMain::TouchCell(const char *cname, bool tocur)
     wdesc->ShowTitle();
 
     // Save electrical symbolic state.
-    symb_cell = cbin.elec();
-    symb_mode = symb_cell ? symb_cell->symbolicRep(0) != 0 : false;
+    xm_symb_cell = cbin.elec();
+    xm_symb_mode = xm_symb_cell ? xm_symb_cell->symbolicRep(0) != 0 : false;
     return (newcell ? OInew : OIok);
 }
 

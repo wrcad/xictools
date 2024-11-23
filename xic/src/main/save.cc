@@ -337,6 +337,48 @@ cMain::SaveCellAs(const char *name, bool silent_errors)
     if (filetype == Fnone)
         filetype = Fnative;
 
+    if (!silent_errors && XM()->RunMode() == ModeNormal &&
+            DSP()->CurCellName()) {
+        if (xm_symb_cell && xm_symb_mode) {
+            // If the user has undone symbolic mode, ask to revert. 
+            // It is too easy to change mode to fix something, then
+            // save the cell without going back to symbolic mode;
+
+            bool reverted = false;
+            CDs *esd = CDcdb()->findCell(DSP()->CurCellName(), Electrical);
+            if (esd == xm_symb_cell && !esd->symbolicRep(0)) {
+                char *in = PL()->EditPrompt(
+                    "You've changed this cell to non-symbolic.  "
+                    "Do you want to revert back? ", "y");
+                in = lstring::strip_space(in);
+                if (in == 0) {
+                    PL()->ErasePrompt();
+                    return (false);
+                }
+                if (*in == 'y' || *in == 'Y') {
+                    CDp_sym *ps = (CDp_sym*)esd->prpty(P_SYMBLC);
+                    if (ps) {
+                        ps->set_active(true);
+                        ScedIf()->assertSymbolic(true);
+                        DSP()->RedisplayAll(Electrical);
+                        reverted = true;
+                    }
+                }
+            }
+            if (!reverted) {
+                // If we just change symbolic mode, we don't increment
+                // the modified count or undo association.  We do that
+                // here, if the user decides to keep the change.  This
+                // may be redundant if other changes were made.
+
+                esd->incModified();
+                CDs *psd = CDcdb()->findCell(DSP()->CurCellName(), Physical);
+                if (psd)
+                    psd->setAssociated(false);
+            }
+        }
+    }
+
     ScedIf()->connectAll(false);
     Selections.deselectTypes(CurCell(), 0);
 

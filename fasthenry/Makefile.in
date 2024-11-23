@@ -42,7 +42,7 @@ $(FASTHENRY_SUB): $(FASTHENRY)
 	    rm -rf $(FASTHENRY_SUB); \
 	fi
 	tar xzf $(FASTHENRY)
-	touch $(FASHENRY_SUB)
+	touch $(FASTHENRY_SUB)
 	if [ -n "$(EXESUFFIX)" ]; then \
 	    (cd $(FASTHENRY_SUB); ./config mingw); \
 	fi
