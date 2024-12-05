@@ -195,7 +195,7 @@ QTexpandDlg::~QTexpandDlg()
 {
     if (p_usrptr)
         *p_usrptr = 0;
-    if (p_caller && p_no_desel) {
+    if (p_caller && !p_no_desel) {
         QObject *o = (QObject*)p_caller;
         if (o->isWidgetType()) {
             QPushButton *btn = dynamic_cast<QPushButton*>(o);

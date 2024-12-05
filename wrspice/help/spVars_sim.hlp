@@ -2049,7 +2049,7 @@ unused_vars
 !!REDIRECT opts         batch_vars#opts
 !!REDIRECT post         batch_vars#post
 
-!! variables.tex 102011
+!! variables.tex 120424
 !!KEYWORD
 batch_vars
 !!TITLE
@@ -2130,7 +2130,7 @@ Batch Mode Option Variables
     following literal keywords.
 
     <dl>
-    <dt><tt>post=csdf</tt><dd>
+    <dt><tt>post=csdf</tt> (warning:  obsolete)<dd>
     In batch mode, if no rawfile (<a href="-r"><tt>-r</tt> option</a>)
     was specified on the <i>WRspice</i> command line, a <a
     href="load">CSDF file</a> will be produced for the batch run.  The

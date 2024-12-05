@@ -32,7 +32,7 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * printtoraw -- Utility to convert print files to rawfiles.              *
+ * csvtoraw -- Utility to convert CSV files to rawfiles.                  *
  *                                                                        *
  *========================================================================*
  $Id:$

@@ -67,7 +67,6 @@ cEdit::PopUpLayerChangeMode(ShowMode mode)
     if (!QTdev::exists() || !QTmainwin::exists())
         return;
     if (mode == MODE_OFF) {
-        MainMenu()->MenuButtonSet(MMmain, MenuMCLCG, false);
         delete QTmclChangeDlg::self();
         return;
     }
@@ -159,6 +158,7 @@ QTmclChangeDlg::QTmclChangeDlg()
 QTmclChangeDlg::~QTmclChangeDlg()
 {
     instPtr = 0;
+    MainMenu()->MenuButtonSet(MMmain, MenuMCLCG, false);
 }
 
 

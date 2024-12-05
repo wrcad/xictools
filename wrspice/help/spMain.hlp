@@ -1769,7 +1769,7 @@ Introduction to Interactive Simulation
 spice
 
 
-!! useriface.tex 080812
+!! useriface.tex 120424
 !!KEYWORD
 batchmode
 !!TITLE
@@ -1949,10 +1949,10 @@ Batch Mode
     .endc<br>
     .control<br>
     run<br>
-    write out1n.csdf<br>
+    write out1n.raw<br>
     set cval="2n"<br>
     run<br>
-    write out2n.csdf<br>
+    write out2n.raw<br>
     .endc
     </tt></blockquote>
 

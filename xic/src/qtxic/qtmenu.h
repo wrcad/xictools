@@ -112,7 +112,7 @@ signals:
     void button_pressed(MenuEnt*);
 
 private slots:
-    void pressed_slot() { emit button_pressed(entry); }
+    void pressed_slot(bool) { emit button_pressed(entry); }
 
 private:
     MenuEnt *entry;

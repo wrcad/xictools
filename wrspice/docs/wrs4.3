@@ -182,12 +182,19 @@ CHANGES AND NEW FEATURES
 
 * Added adms/examples/tjm.  Tweaked tjm.va to compile with ADMS that
   had some script changes undone since they broke other builds.  The
-  tjm.va model support coded, model builds, needs testing.
+  tjm.va model support is coded, the model builds but needs testing.
+  Note that this duplicates the built-in level=3 model so is only of
+  interest for debugging the ADMS support.
+
+* The CSDF file format is obsolete.  It was originally included for
+  compatibility with HSPICE and the WaveView plotting tool, presently
+  neither of these support CSDF.  WaveView now supports rawfiles so
+  the original motivation to support CSDF no longer applies.
 
 BUGS FIXED
 ---- -----
 * Fix syntax in downloading code for ADMS examples to be compatible with
-  older operating systems (change curl call in link.mk, don't use of the
+  older operating systems (change curl call in link.mk, avoid use of the
   --output_dir option).
 
 * Fix typo in definition of boltzmann constant, "boltz" was garbage.

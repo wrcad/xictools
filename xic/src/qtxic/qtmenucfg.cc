@@ -150,13 +150,6 @@ namespace {
 void
 QTmenuConfig::instantiateMainMenus()
 {
-/* XXX
-#ifdef Q_OS_MACOS
-//    QString bundlePath = QString::fromNSString(NSBundle.mainBundle.bundlePath);
-    QString bundlePath = QString::fromNSString([[[NSBundle mainBundle] infoDictionary] objectForKey:@"custom_key"]);
-    qDebug() << "Bundle path is " << bundlePath;
-#endif
-*/
     QTmainwin *main_win = QTmainwin::self();
     if (!main_win)
         return;

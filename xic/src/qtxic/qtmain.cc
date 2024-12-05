@@ -891,10 +891,6 @@ bool
 QTeventMonitor::eventFilter(QObject *obj, QEvent *ev)
 {
     // Handle events here, return true to indicate handled.
-//XXX
-//    if (ev->type() == QEvent::MouseMove) { 
-//    printf("%p %x\n", qApp->widgetAt(QCursor::pos()), ev->type());
-//    }
 
     if (em_event_handler)
         return (em_event_handler(obj, ev, em_event_handler_arg));
@@ -2349,8 +2345,6 @@ QTsubwin::enter_slot(QEnterEvent *ev)
         return;
     }
     ev->accept();
-
-//XXX    gd_viewport->setFocus();
 
     if (grabstate.widget(Qt::LeftButton) == gd_viewport) {
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
