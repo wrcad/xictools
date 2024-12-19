@@ -419,6 +419,12 @@ sRunDesc::dumpSegment()
                 cCSDFout csdf(rd_runPlot);
                 csdf.file_write(buf, false);
             }
+            /* XXX fixme
+            if (use_csdf) {
+                cCSVout csv(rd_runPlot);
+                csv.file_write(buf, false);
+            }
+            */
             else {
                 cRawOut raw(rd_runPlot);
                 raw.file_write(buf, false);

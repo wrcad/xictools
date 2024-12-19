@@ -608,7 +608,7 @@ namespace {
 // The fnameptr points to a list of file names and directives, and is
 // updated upon return.  Only one file is read per call.
 // The recognized tokens are:
-//   1. The name of a rawfile or CSDF file.
+//   1. The name of a rawfile, CSDF or CSV file.
 //   2. -p printfile, where printfile was generated with the print command
 //      in column format.
 //   3. -cN[[+]M] datafile, where datafile contains columns of numbers.
@@ -644,6 +644,7 @@ IFoutput::loadFile(const char **fnameptr, bool written)
     }
     GCarray<char*> gc_file(file);
 
+//XXX Add CSV support
     bool is_csdf = false;
     if (!printfmt && !ncols) {
         FILE *fp = Sp.PathOpen(file, "rb");
@@ -695,6 +696,7 @@ IFoutput::loadFile(const char **fnameptr, bool written)
             return;
         }
     }
+//XXX Add CSV support
     else if (is_csdf) {
         TTY.printf("Loading CSDF data file (\"%s\") . . . ", file);
         cCSDFin csdf;

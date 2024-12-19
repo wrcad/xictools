@@ -54,6 +54,7 @@ Authors: 1985 Wayne A. Christopher
 #include "kwords_analysis.h"
 #include "simulator.h"
 #include "parser.h"
+#include "csvfile.h"
 #include "csdffile.h"
 #include "psffile.h"
 #include "graph.h"
@@ -445,6 +446,8 @@ IFsimulator::Simulate(SIMtype what, wordlist *wl)
                         OP.getOutDesc()->set_outFtype(OutFpsf);
                     else if (cCSDFout::is_csdf_ext(ofile))
                         OP.getOutDesc()->set_outFtype(OutFcsdf);
+                    else if (cCSVout::is_csv_ext(ofile))
+                        OP.getOutDesc()->set_outFtype(OutFcsv);
                     if (OP.getOutDesc()->outFtype() == OutFnone)
                         OP.getOutDesc()->set_outFtype(OutFraw);
 

@@ -54,6 +54,7 @@ Authors: 1988 Wayne A. Christopher
 #include "graph.h"
 #include "simulator.h"
 #include "rawfile.h"
+#include "csvfile.h"
 #include "csdffile.h"
 #include "psffile.h"
 #include "runop.h"
@@ -567,6 +568,11 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
         }
         else if (OP.getOutDesc()->outFtype() == OutFcsdf) {
             run->set_rd(new cCSDFout(run->runPlot()));
+            run->rd()->file_open(0, "w", false);
+            run->rd()->file_set_fp(OP.getOutDesc()->outFp());
+        }
+        else if (OP.getOutDesc()->outFtype() == OutFcsv) {
+            run->set_rd(new cCSVout(run->runPlot()));
             run->rd()->file_open(0, "w", false);
             run->rd()->file_set_fp(OP.getOutDesc()->outFp());
         }

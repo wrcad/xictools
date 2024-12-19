@@ -90,6 +90,7 @@ cCSDFout::file_write(const char *filename, bool app)
 }
 
 
+// Static function.
 // Return true if the file extension is a known CSDF extension.
 //
 bool

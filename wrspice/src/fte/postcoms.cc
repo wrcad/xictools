@@ -48,6 +48,7 @@ Authors: 1985 Wayne A. Christopher
 #include "simulator.h"
 #include "parser.h"
 #include "rawfile.h"
+#include "csvfile.h"
 #include "csdffile.h"
 #include "output.h"
 #include "psffile.h"
@@ -1008,6 +1009,10 @@ namespace {
         else if (cCSDFout::is_csdf_ext(file)) {
             cCSDFout csdf(p);
             csdf.file_write(file, appendwrite);
+        }
+        else if (cCSVout::is_csv_ext(file)) {
+            cCSVout csv(p);
+            csv.file_write(file, appendwrite);
         }
         else {
             cRawOut raw(p);

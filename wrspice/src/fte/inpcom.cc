@@ -303,9 +303,13 @@ IFsimulator::Edit(const char *filename,
 
 namespace {
     // Break up long lines using SPICE '+' continuation.
+    // Break comment lines as well, but just make overflow lines normal
+    // comments, no continuation char but add a space.
     //
     wordlist *break_long_line(const char *line)
     {
+        if (!line)
+            return (0);
         int width = TTY.getwidth();
         if (width < 40)
             width = DEF_WIDTH;
@@ -313,9 +317,12 @@ namespace {
 
         wordlist *w0 = 0, *we = 0;
         const char *start = line;
+        char first_ns = 0;  // First non-space char.
         for (;;) {
             int cnt = 0;
             for (const char *s = start; ; s++) {
+                if (!first_ns && !isspace(*s))
+                    first_ns = *s;
                 cnt++;
                 if (cnt == width) {
                     for (int i = 0; i < 16; i++) {
@@ -330,6 +337,15 @@ namespace {
                         memcpy(t, start, cnt);
                         t[cnt] = 0;
                         w0 = we = new wordlist(t, 0);
+                    }
+                    else if (first_ns == '*') {
+                        char *t = new char[cnt+3];
+                        t[0] = '*';
+                        t[1] = ' ';
+                        memcpy(t+2, start, cnt);
+                        t[cnt+2] = 0;
+                        we->wl_next = new wordlist(t, 0);
+                        we = we->wl_next;
                     }
                     else {
                         char *t = new char[cnt+2];
@@ -346,11 +362,21 @@ namespace {
                     // Return null if line does not need breaking.
                     if (!w0)
                         return (0);
-                    char *t = new char[cnt+2];
-                    t[0] = '+';
-                    strcpy(t+1, start);
-                    we->wl_next = new wordlist(t, 0);
-                    we = we->wl_next;
+                    else if (first_ns == '*') {
+                        char *t = new char[cnt+3];
+                        t[0] = '*';
+                        t[1] = ' ';
+                        strcpy(t+2, start);
+                        we->wl_next = new wordlist(t, 0);
+                        we = we->wl_next;
+                    }
+                    else {
+                        char *t = new char[cnt+2];
+                        t[0] = '+';
+                        strcpy(t+1, start);
+                        we->wl_next = new wordlist(t, 0);
+                        we = we->wl_next;
+                    }
                     return (w0);
                 }
             }
@@ -371,7 +397,9 @@ IFsimulator::Listing(FILE *file, sLine *deck, sLine *extras, int flags)
         return;
     LStype type = LS_TYPE(flags);
     bool expand = (flags & LS_EXPAND);
-    bool no_cont = (flags & LS_NOCONT);
+    // Don't trim line length when dollarcmt is set, syntax is complex
+    // and could be error prone to attempt to trim.
+    bool no_cont = (flags & LS_NOCONT) || Sp.GetVar(kw_dollarcmt, VTYP_BOOL, 0);
 
     bool useout = !file;
     if (useout)

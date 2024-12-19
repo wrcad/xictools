@@ -428,9 +428,10 @@ private:
     sHtab *sl_tab;
 };
 
-// Output plot file format: native rawfile, Synopsys CDF, Cadence PSF.
+// Output plot file format: native rawfile, Synopsys CDF, Cadence PSF,
+// comma-separated varibles (CSV).
 //
-enum OutFtype { OutFnone, OutFraw, OutFcsdf, OutFpsf };
+enum OutFtype { OutFnone, OutFraw, OutFcsdf, OutFpsf, OutFcsv };
 
 // This describes the output file for plot results from batch mode.
 //
