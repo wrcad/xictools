@@ -53,6 +53,7 @@ Authors: 1985 Wayne A. Christopher
 #include "datavec.h"
 #include "rawfile.h"
 #include "csdffile.h"
+#include "csvfile.h"
 #include "prntfile.h"
 #include "spnumber/hash.h"
 #include "kwords_fte.h"
@@ -644,9 +645,15 @@ IFoutput::loadFile(const char **fnameptr, bool written)
     }
     GCarray<char*> gc_file(file);
 
-//XXX Add CSV support
     bool is_csdf = false;
+    bool is_csv = false;
     if (!printfmt && !ncols) {
+        // Check CSV by name, this is bad.
+        const char *extn = strrchr(file, '.');
+        if (extn) {
+            if (!strcasecmp(extn+1, "csv"))
+                is_csv = true;
+        }
         FILE *fp = Sp.PathOpen(file, "rb");
         if (!fp) {
             GRpkg::self()->Perror(file);
@@ -654,21 +661,23 @@ IFoutput::loadFile(const char **fnameptr, bool written)
             return;
         }
 
-        // Check the file opening chars for a CSDF header record
-        // prefix.
-        //
-        char buf[32];
-        if (fread(buf, 1, 32, fp) != 32) {
-            fclose(fp);
-            TTY.printf("Warning: bad format, no data read.\n");
-            return;
-        }
-        for (int i = 0; i < 31; i++) {
-            if (isspace(buf[i]))
-                continue;
-            if (buf[i] == '#' && buf[i+1] == 'H')
-                is_csdf = true;
-            break;
+        if (!is_csv) {
+            // Check the file opening chars for a CSDF header record
+            // prefix.
+            //
+            char buf[32];
+            if (fread(buf, 1, 32, fp) != 32) {
+                fclose(fp);
+                TTY.printf("Warning: bad format, no data read.\n");
+                return;
+            }
+            for (int i = 0; i < 31; i++) {
+                if (isspace(buf[i]))
+                    continue;
+                if (buf[i] == '#' && buf[i+1] == 'H')
+                    is_csdf = true;
+                break;
+            }
         }
         fclose(fp);
     }
@@ -696,11 +705,21 @@ IFoutput::loadFile(const char **fnameptr, bool written)
             return;
         }
     }
-//XXX Add CSV support
     else if (is_csdf) {
         TTY.printf("Loading CSDF data file (\"%s\") . . . ", file);
         cCSDFin csdf;
         pl = csdf.csdf_read(file);
+        if (pl)
+            TTY.printf("done.\n");
+        else {
+            TTY.printf("Warning: no data read.\n");
+            return;
+        }
+    }
+    else if (is_csv) {
+        TTY.printf("Loading CSV data file (\"%s\") . . . ", file);
+        cCSVin csv;
+        pl = csv.csv_read(file);
         if (pl)
             TTY.printf("done.\n");
         else {

@@ -764,6 +764,9 @@ struct sDataVec
     void minmax(double*, bool) const;
     void SmithMinmax(double*, bool) const;
     sDataVec *SmithCopy() const;
+    void add_point(double*, double*, int);
+    void fixdims(const char*);
+    static int atodims(const char*, int*, int*);
 
     // math functions
 

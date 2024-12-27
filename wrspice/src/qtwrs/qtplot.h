@@ -137,6 +137,9 @@ public:
 
     bool event_deferred()               { return (pb_event_deferred); }
 
+signals:
+    void action_call(const char*, void*);
+
 private slots:
     void font_changed_slot(int);
     void resize_slot(QResizeEvent*);
@@ -159,13 +162,12 @@ private slots:
     void group_btn_slot(bool);
     void drag_enter_slot(QDragEnterEvent*);
     void drop_slot(QDropEvent*);
+    void do_save_plot_slot(const char*, void*);
+    void do_save_print_slot(const char*, void*);
 
 private:
-    static void sens_set(QTbag*, bool, int);
     static int redraw_timeout(void*);
     static int motion_idle(void*);
-    static void do_save_plot(const char*, void*);
-    static void do_save_print(const char*, void*);
     static void set_hccb(HCcb*);
     static bool get_dim(const char*, double*);
 

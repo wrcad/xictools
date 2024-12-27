@@ -70,8 +70,7 @@ cRawOut::cRawOut(sPlot *pl)
     ro_prec = 0;
     ro_numdims = 0;
     ro_length = 0;
-    for (int i = 0; i < MAXDIMS; i++)
-        ro_dims[i] = 0;
+    memset(ro_dims, 0, MAXDIMS*sizeof(int));
     ro_dlist = 0;
     ro_realflag = false;
     ro_binary = false;
@@ -427,7 +426,16 @@ cRawOut::file_close()
 
 cRawIn::cRawIn()
 {
-    ri_fp = 0;
+    ri_fp       = 0;
+    ri_title    = 0;
+    ri_date     = 0;
+    ri_plots    = 0;
+    ri_flags    = 0;
+    ri_nvars    = 0;
+    ri_npoints  = 0;
+    ri_numdims  = 0;
+    memset(ri_dims, 0, MAXDIMS*sizeof(int));
+    ri_padded   = true;
 }
 
 
@@ -435,6 +443,8 @@ cRawIn::~cRawIn()
 {
     if (ri_fp && ri_fp != stdin)
         fclose(ri_fp);
+    delete [] ri_title;
+    delete [] ri_date;
 }
 
 
@@ -480,12 +490,7 @@ cRawIn::raw_read(const char *name)
     TTY.ioPush();
     CP.PushControl();
 
-    const char *title = "default title";
-    char *date = 0;
-    sPlot *plots = 0, *curpl = 0;
-    int flags = 0, nvars = 0, npoints = 0;
-    int numdims = 0, dims[MAXDIMS];
-    bool raw_padded = true;
+    sPlot *curpl = 0;
     char buf[BSIZE_SP];
     while (fgets(buf, BSIZE_SP, ri_fp)) {
         char buf2[BSIZE_SP];
@@ -494,13 +499,15 @@ cRawIn::raw_read(const char *name)
             char *s = buf;
             skip(&s);
             nonl(s);
-            title = lstring::copy(s);
+            delete [] ri_title;
+            ri_title = lstring::copy(s);
         }
         else if (lstring::ciprefix("date:", buf)) {
             char *s = buf;
             skip(&s);
             nonl(s);
-            date = lstring::copy(s);
+            delete [] ri_date;
+            ri_date = lstring::copy(s);
         }
         else if (lstring::ciprefix("plotname:", buf)) {
             char *s = buf;
@@ -515,18 +522,23 @@ cRawIn::raw_read(const char *name)
                     curpl->set_commands(wl);
                 }
             }
+
+            // Start a new plot.
             curpl = new sPlot(0);
-            curpl->set_next_plot(plots);
-            plots = curpl;
+            curpl->set_next_plot(ri_plots);
+            ri_plots = curpl;
             curpl->set_name(s);
-            if (!date)
-                date = lstring::copy(datestring());
-            curpl->set_date(date);
-            delete [] date;
-            curpl->set_title(title);
-            delete [] title;
-            flags = 0;
-            nvars = npoints = 0;
+            if (!ri_date)
+                ri_date = lstring::copy(datestring());
+            curpl->set_date(ri_date);
+            if (!ri_title)
+                ri_title = lstring::copy("default title");
+            curpl->set_title(ri_title);
+            ri_flags = 0;
+            ri_nvars = ri_npoints = 0;
+            ri_numdims = 0;
+            memset(ri_dims, 0, MAXDIMS*sizeof(int));
+            ri_padded = true;
         }
         else if (lstring::ciprefix("flags:", buf)) {
             char *s = buf;
@@ -535,54 +547,54 @@ cRawIn::raw_read(const char *name)
                 if (lstring::cieq(buf2, "real"))
                     ;
                 else if (lstring::cieq(buf2, "complex"))
-                    flags |= VF_COMPLEX;
+                    ri_flags |= VF_COMPLEX;
                 else if (lstring::cieq(buf2, "unpadded"))
-                    raw_padded = false;
+                    ri_padded = false;
                 else if (lstring::cieq(buf2, "padded"))
-                    raw_padded = true;
+                    ri_padded = true;
                 else {
                     GRpkg::self()->ErrPrintf(ET_WARN,
                         "unknown flag %s.\n", buf2);
                 }
             }
-            (void)raw_padded;  // unused
         }
         else if (lstring::ciprefix("no. variables:", buf)) {
             char *s = buf;
             skip(&s);
             skip(&s);
-            nvars = lstring::scannum(s);
+            ri_nvars = lstring::scannum(s);
         }
         else if (lstring::ciprefix("no. points:", buf)) {
             char *s = buf;
             skip(&s);
             skip(&s);
-            npoints = lstring::scannum(s);
+            ri_npoints = lstring::scannum(s);
         }
         else if (lstring::ciprefix("dimensions:", buf)) {
             char *s = buf;
             skip(&s);
-            if (atodims(s, dims, &numdims)) { // Something's wrong
+            if (sDataVec::atodims(s, ri_dims, &ri_numdims)) {
+                // Something's wrong
                 GRpkg::self()->ErrPrintf(ET_WARN,
                     "syntax error in dimensions, ignored.\n");
-                numdims = 0;
+                ri_numdims = 0;
                 continue;
             }
-            if (numdims > MAXDIMS) {
-                numdims = 0;
+            if (ri_numdims > MAXDIMS) {
+                ri_numdims = 0;
                 continue;
             }
             // Let's just make sure that the no. of points
             // and the dimensions are consistent.
             //
             int i, j;
-            for (j = 0, i = 1; j < numdims; j++)
-                i *= dims[j];
+            for (j = 0, i = 1; j < ri_numdims; j++)
+                i *= ri_dims[j];
 
-            if (npoints && i != npoints) {
+            if (ri_npoints && i != ri_npoints) {
                 GRpkg::self()->ErrPrintf(ET_WARN,
                 "dimensions inconsistent with number of points, ignored.\n");
-                numdims = 0;
+                ri_numdims = 0;
             }
         }
         else if (lstring::ciprefix("command:", buf)) {
@@ -629,7 +641,7 @@ cRawIn::raw_read(const char *name)
             // We reverse the dvec list eventually...
             if (!curpl) {
                 GRpkg::self()->ErrPrintf(ET_ERROR, "no plot name given.\n");
-                plots = 0;
+                ri_plots = 0;
                 break;
             }
             char *s = buf;
@@ -638,18 +650,18 @@ cRawIn::raw_read(const char *name)
                 fgets(buf, BSIZE_SP, ri_fp);
                 s = buf;
             }
-            if (numdims == 0) {
-                numdims = 1;
-                dims[0] = npoints;
+            if (ri_numdims == 0) {
+                ri_numdims = 1;
+                ri_dims[0] = ri_npoints;
             }
             // Now read all the variable lines in
-            for (int i = 0; i < nvars; i++) {
+            for (int i = 0; i < ri_nvars; i++) {
                 sDataVec *v = new sDataVec;
                 v->set_next(curpl->tempvecs());
                 curpl->set_tempvecs(v);
                 if (!curpl->scale())
                     curpl->set_scale(v);
-                v->set_flags(flags);
+                v->set_flags(ri_flags);
                 v->set_plot(curpl);
 
                 v->set_length(0);
@@ -725,7 +737,7 @@ cRawIn::raw_read(const char *name)
                         v->set_plottype((PlotType) lstring::scannum(buf2 + 5));
                     }
                     else if (lstring::ciprefix("dims=", buf2)) {
-                        fixdims(v, buf2 + 5);
+                        v->fixdims(buf2 + 5);
                     }
                     else {
                         GRpkg::self()->ErrPrintf(ET_WARN,
@@ -735,20 +747,20 @@ cRawIn::raw_read(const char *name)
 
                 // Now we default any missing dimensions
                 if (!v->numdims()) {
-                    v->set_numdims(numdims);
-                    for (int j = 0; j < numdims; j++)
-                        v->set_dims(j, dims[j]);
+                    v->set_numdims(ri_numdims);
+                    for (int j = 0; j < ri_numdims; j++)
+                        v->set_dims(j, ri_dims[j]);
                 }
                 // And allocate the data array. We would use
                 // the desired vector length, but this would
                 // be dangerous if the file is invalid.
 
-                if (npoints) {
+                if (ri_npoints) {
                     if (v->isreal())
-                        v->set_realvec(new double[npoints]);
+                        v->set_realvec(new double[ri_npoints]);
                     else
-                        v->set_compvec(new complex[npoints]);
-                    v->set_allocated(npoints);
+                        v->set_compvec(new complex[ri_npoints]);
+                    v->set_allocated(ri_npoints);
                 }
                 else {
                     if (v->isreal())
@@ -763,7 +775,7 @@ cRawIn::raw_read(const char *name)
                 lstring::ciprefix("binary:", buf)) {
             if (!curpl) {
                 GRpkg::self()->ErrPrintf(ET_ERROR, "no plot name given.\n");
-                plots = 0;
+                ri_plots = 0;
                 break;
             }
             // We'd better reverse the dvec list now...
@@ -799,10 +811,10 @@ cRawIn::raw_read(const char *name)
             if (*s) {
                 GRpkg::self()->ErrPrintf(ET_ERROR,
                     "strange line in rawfile -- load aborted.\n");
-                while (plots) {
-                    curpl = plots->next_plot();
-                    delete plots;
-                    plots = curpl;
+                while (ri_plots) {
+                    curpl = ri_plots->next_plot();
+                    delete ri_plots;
+                    ri_plots = curpl;
                 }
                 CP.PopControl();
                 TTY.ioPop();
@@ -831,17 +843,17 @@ cRawIn::raw_read(const char *name)
     ri_fp = 0;
 
     // Reverse the plots list, so will be in file order.
-    curpl = plots;
-    plots = 0;
+    curpl = ri_plots;
+    ri_plots = 0;
     while (curpl) {
         sPlot *pl = curpl;
         curpl = curpl->next_plot();
-        pl->set_next_plot(plots);
-        plots = pl;
+        pl->set_next_plot(ri_plots);
+        ri_plots = pl;
     }
 
     // make the vectors permanent, and fix dimension
-    for (curpl = plots; curpl; curpl = curpl->next_plot()) {
+    for (curpl = ri_plots; curpl; curpl = curpl->next_plot()) {
         sDataVec *v, *nv;
         for (v = curpl->tempvecs(); v; v = nv) {
             nv = v->next();
@@ -852,7 +864,7 @@ cRawIn::raw_read(const char *name)
         }
         curpl->set_tempvecs(0);
     }
-    return (plots);
+    return (ri_plots);
 }
 
 
@@ -882,7 +894,7 @@ cRawIn::read_data(bool isbin, sPlot *curpl)
                         return;
                     }
                 }
-                add_point(v, &val1, &val2);
+                v->add_point(&val1, &val2, SIZE_INCR);
             }
         }
     }
@@ -906,150 +918,10 @@ cRawIn::read_data(bool isbin, sPlot *curpl)
                         return;
                     }
                 }
-                add_point(v, &val1, &val2);
+                v->add_point(&val1, &val2, SIZE_INCR);
             }
         }
     }
-}
-
-
-void
-cRawIn::add_point(sDataVec *v, double *val1, double *val2)
-{
-    if (v->length() >= v->allocated())
-        v->resize(v->length() + SIZE_INCR);
-    if (v->isreal())
-        v->set_realval(v->length(), *val1);
-    else {
-        v->set_realval(v->length(), *val1);
-        v->set_imagval(v->length(), *val2);
-    }
-    v->set_length(v->length() + 1);
-}
-
-
-// s is a string of the form d1,d2,d3...
-//
-void
-cRawIn::fixdims(sDataVec *v, const char *s)
-{
-    int dims[MAXDIMS];
-    memset(dims, 0, MAXDIMS*sizeof(int));
-    int ndims = 0;
-    if (atodims(s, dims, &ndims)) {
-        // Something's wrong
-        GRpkg::self()->ErrPrintf(ET_WARN,
-            "syntax error in dimensions, ignored.\n");
-        return;
-    }
-    for (int i = 0; i < MAXDIMS; i++)
-        v->set_dims(i, dims[i]);
-    v->set_numdims(ndims);
-}
-
-
-// Read a string of one of the following forms into a dimensions array:
-//  [12][1][10]
-//  [12,1,10]
-//  12,1,10
-//  12, 1, 10
-//  12 , 1 , 10
-// Basically, we require that all brackets be matched, that all
-// numbers be separated by commas or by "][", that all whitespace
-// is ignored, and the beginning [ and end ] are ignored if they
-// exist.  The only valid characters in the string are brackets,
-// commas, spaces, and digits.  If any dimension is blank, its
-// entry in the array is set to 0.
-//  
-//  Return 0 on success, 1 on failure.
-//
-int
-cRawIn::atodims(const char *p, int *data, int *outlength)
-{
-    if (!data || !outlength)
-        return (1);
-
-    if (!p) {
-        *outlength = 0;
-        return (0);
-    }
-
-    while (*p && isspace(*p))
-        p++;
-
-    int needbracket = 0;
-    if (*p == '[') {
-        p++;
-        while (*p && isspace(*p))
-            p++;
-        needbracket = 1;
-    }
-
-    int length = 0;
-    int state = 0;
-    int err = 0;
-    char sep = '\0';
-
-    while (*p && state != 3) {
-        switch (state) {
-        case 0: // p just at or before a number
-            if (length >= MAXDIMS) {
-                if (length == MAXDIMS)
-                    GRpkg::self()->ErrPrintf(ET_ERROR,
-                        "maximum of %d dimensions allowed.\n", MAXDIMS);
-                length += 1;
-            }
-            else if (!isdigit(*p))
-                data[length++] = 0;    // This position was empty
-            else {
-                data[length++] = atoi(p);
-                while (isdigit(*p))
-                    p++;
-            }
-            state = 1;
-            break;
-
-        case 1: // p after a number, looking for ',' or ']'
-            if (sep == '\0')
-                sep = *p;
-            if (*p == ']' && *p == sep) {
-                p++;
-                state = 2;
-            }
-            else if (*p == ',' && *p == sep) {
-                p++;
-                state = 0;
-            }
-            else  // Funny character following a #
-                break;
-            break;
-
-        case 2: // p after a ']', either at the end or looking for '['
-            if (*p == '[') {
-                p++;
-                state = 0;
-            }
-            else
-                state = 3;
-            break;
-        }
-
-        while (*p && isspace(*p))
-            p++;
-    }
-
-    *outlength = length;
-    if (length > MAXDIMS)
-        return (1);
-    if (state == 3)   // We finished with a closing bracket
-        err = !needbracket;
-    else if (*p)      // We finished by hitting a bad character after a #
-        err = 1;
-    else              // We finished by exhausting the string
-        err = needbracket;
-    if (err)
-        *outlength = 0;
-    return (err);
 }
 // End of cRawIn functions.
 

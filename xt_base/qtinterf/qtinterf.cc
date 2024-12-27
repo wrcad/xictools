@@ -1247,13 +1247,32 @@ QTbag::PopUpFontSel(GRobject caller, GRloc loc, ShowMode mode,
 }
 
 
+namespace {
+    bool is_checked(QObject *o)
+    {
+        if (!o)
+            return (true);
+        if (o->isWidgetType()) {
+            QAbstractButton *btn = dynamic_cast<QAbstractButton*>(o);
+            if (btn && btn->isCheckable())
+                return (btn->isChecked());
+        }
+        else {
+            QAction *a = dynamic_cast<QAction*>(o);
+            if (a && a->isCheckable())
+                return (a->isChecked());
+        }
+        // Return true if not a toggle.
+        return (true);
+    }
+}
+
+
 // Printing support.  Caller is the initiating button, if any.
 //
 void
 QTbag::PopUpPrint(GRobject caller, HCcb *cb, HCmode mode, GRdraw*)
 {
-    QAction *a = static_cast<QAction*>(caller);
-    bool bstate = !a || a->isChecked();
     if (wb_hc) {
         bool active = !wb_hc->is_active();
         wb_hc->set_active(active);
@@ -1263,13 +1282,11 @@ QTbag::PopUpPrint(GRobject caller, HCcb *cb, HCmode mode, GRdraw*)
         }
         return;
     }
-
-    if (bstate) {
+    if (is_checked(static_cast<QObject*>(caller))) {
         // This will set this->wb_hc if successful.
         QTprintDlg *pd = new QTprintDlg(caller, cb, mode, this);
         if (wb_shell)
            pd->set_transient_for(wb_shell);
-
         if (!wb_hc)
             delete pd;
         else

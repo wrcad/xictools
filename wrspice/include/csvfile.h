@@ -51,6 +51,7 @@
 class cCSVout : public cFileOut
 {
 public:
+    enum CMTLEV { CMTLEV_none, CMTLEV_names, CMTLEV_all };
     cCSVout(sPlot*);
     ~cCSVout();
 
@@ -61,8 +62,8 @@ public:
     bool file_open(const char*, const char*, bool);
     void file_set_fp(FILE *fp)
         {
-            csv_fp = fp;
-            csv_no_close = true;
+            co_fp = fp;
+            co_no_close = true;
         }
     bool file_head();
     bool file_vars();
@@ -71,17 +72,20 @@ public:
     bool file_close();
 
 private:
-    sPlot *csv_plot;
-    FILE *csv_fp;
-    long csv_pointPosn;
-    int csv_prec;
-    int csv_numdims;
-    int csv_length;
-    int csv_dims[MAXDIMS];
-    sDvList *csv_dlist;
-    bool csv_realflag;
-    bool csv_pad;
-    bool csv_no_close;
+    sPlot *co_plot;
+    FILE *co_fp;
+    long co_pointPosn;
+    int co_prec;
+    int co_numdims;
+    int co_length;
+    int co_dims[MAXDIMS];
+    sDvList *co_dlist;
+    bool co_realflag;
+    bool co_pad;
+    bool co_no_close;
+    bool co_nmsmpl;
+    char co_cmtchar;
+    char co_cmtlev;
 };
 
 class cCSVin
@@ -93,13 +97,16 @@ public:
     sPlot *csv_read(const char*);
 
 private:
-    void read_data(bool, sPlot*);
-
-    static void add_point(sDataVec*, double*, double*);
-    static void fixdims(sDataVec*, const char*);
-    static int atodims(const char*, int*, int*);
-
-    FILE *csv_fp;
+    FILE *ci_fp;
+    char *ci_title;
+    char *ci_date;
+    sPlot *ci_plots;
+    int ci_flags;
+    int ci_nvars;
+    int ci_npoints;
+    int ci_numdims;
+    int ci_dims[MAXDIMS];
+    bool ci_padded;
 };
 
 #endif

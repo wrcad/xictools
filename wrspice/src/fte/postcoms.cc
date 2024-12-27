@@ -1022,24 +1022,55 @@ namespace {
 }
 
 
-// Write out some data. write filename expr ... Some cleverness here is
-// required.  If the user mentions a few vectors from various plots,
-// probably he means for them to be written out seperate plots.  In any
-// case, we have to be sure to write out the scales for everything we
-// write...
+// write [-a][-w][-f [filename]][expr ...]
+// Write out some data.
+//   -a             Append to file if it exists.
+//   -w             Overwrite file if in append mode.
+//   -f filename    Use filename for output.
+// These must come before vectors/expressions, if no vectors/expressions
+// then write everything in the current plot.  If no -f filename is
+// given, the first unrecognized token is taken as the filename.
+//
+// Some cleverness here is required.  If the user mentions a few vectors
+// from various plots, probably he means for them to be written out
+// seperate plots.  In any case, we have to be sure to write out the
+// scales for everything we write...
 //
 void
 CommandTab::com_write(wordlist *wl)
 {
     bool appendwrite = Sp.GetVar(kw_appendwrite, VTYP_BOOL, 0);
-
-    const char *file;
-    if (wl) {
-        file = wl->wl_word;
-        wl = wl->wl_next;
+    const char *file = 0;
+    while (wl) {
+        if (!strcmp(wl->wl_word, "-a")) {
+            appendwrite = true;
+            wl = wl->wl_next;
+            continue;
+        }
+        if (!strcmp(wl->wl_word, "-w")) {
+            appendwrite = false;
+            wl = wl->wl_next;
+            continue;
+        }
+        if (!strcmp(wl->wl_word, "-f")) {
+            wl = wl->wl_next;
+            if (wl) {
+                file = wl->wl_word;
+                wl = wl->wl_next;
+            }
+            continue;
+        }
+        break;
     }
-    else
-        file = OP.getOutDesc()->outFile();
+    if (!file) {
+        if (wl) {
+            file = wl->wl_word;
+            wl = wl->wl_next;
+        }
+        else
+            file = OP.getOutDesc()->outFile();
+    }
+
     if (!wl) {
         // just dump the current plot
         if (OP.curPlot()->num_perm_vecs() == 0) {

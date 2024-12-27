@@ -59,20 +59,24 @@
 
 #define DEFPREC 15
 
+#define CSV_CMTCHAR '#'
+
 cCSVout::cCSVout(sPlot *pl)
 {
-    csv_plot = pl;
-    csv_fp = 0;
-    csv_pointPosn = 0;
-    csv_prec = 0;
-    csv_numdims = 0;
-    csv_length = 0;
-    for (int i = 0; i < MAXDIMS; i++)
-        csv_dims[i] = 0;
-    csv_dlist = 0;
-    csv_realflag = false;
-    csv_pad = false;
-    csv_no_close = false;
+    co_plot = pl;
+    co_fp = 0;
+    co_pointPosn = 0;
+    co_prec = 0;
+    co_numdims = 0;
+    co_length = 0;
+    memset(co_dims, 0, MAXDIMS*sizeof(int));
+    co_dlist = 0;
+    co_realflag = false;
+    co_pad = false;
+    co_no_close = false;
+    co_nmsmpl = false;
+    co_cmtchar = CSV_CMTCHAR; 
+    co_cmtlev = CMTLEV_all;
 }
 
 
@@ -105,6 +109,8 @@ cCSVout::is_csv_ext(const char *fname)
 bool
 cCSVout::file_write(const char *filename, bool app)
 {
+    //XXX
+printf("x0 %d\n", app);
     if (!file_open(filename, app ? "a" : "w", false))
         return (false);
     if (!file_head())
@@ -132,18 +138,20 @@ cCSVout::file_open(const char *filename, const char *mode, bool)
             return (false);
         }
     }
-    csv_fp = fp;
-    csv_pointPosn = 0;
+    //XXX
+printf("x1 %s\n", mode);
+    co_fp = fp;
+    co_pointPosn = 0;
     if (OP.getOutDesc()->outNdgts() > 0)
-        csv_prec = OP.getOutDesc()->outNdgts();
+        co_prec = OP.getOutDesc()->outNdgts();
     else
-        csv_prec = DEFPREC;
-    csv_numdims = 0;
-    csv_length = 0;
-    csv_realflag = true;
+        co_prec = DEFPREC;
+    co_numdims = 0;
+    co_length = 0;
+    co_realflag = true;
 
     bool nopadding = Sp.GetVar(kw_nopadding, VTYP_BOOL, 0);
-    csv_pad = !nopadding;
+    co_pad = !nopadding;
     return (true);
 }
 
@@ -155,44 +163,46 @@ cCSVout::file_open(const char *filename, const char *mode, bool)
 bool
 cCSVout::file_head()
 {
-    if (!csv_plot)
+    if (!co_plot)
         return (false);
-    fprintf(csv_fp, "#Title: %s\n", csv_plot->title());
-    fprintf(csv_fp, "#Date: %s\n", csv_plot->date());
-    fprintf(csv_fp, "#Plotname: %s\n", csv_plot->name());
+    if (co_cmtchar && co_cmtlev == CMTLEV_all) {
+        fprintf(co_fp, "%cTitle: %s\n", co_cmtchar, co_plot->title());
+        fprintf(co_fp, "%cDate: %s\n", co_cmtchar, co_plot->date());
+        fprintf(co_fp, "%cPlotname: %s\n", co_cmtchar, co_plot->name());
+    }
 
-    sDataVec *v = csv_plot->find_vec("all");
+    sDataVec *v = co_plot->find_vec("all");
     v->sort();
-    csv_dlist = v->link();
+    co_dlist = v->link();
     v->set_link(0); // so list isn't freed in VecGc()
 
     // Make sure that the scale is the first in the list.
     //
     bool found_scale = false;
     sDvList *tl, *dl;
-    for (tl = 0, dl = csv_dlist; dl; tl = dl, dl = dl->dl_next) {
-        if (dl->dl_dvec == csv_plot->scale()) {
+    for (tl = 0, dl = co_dlist; dl; tl = dl, dl = dl->dl_next) {
+        if (dl->dl_dvec == co_plot->scale()) {
             if (tl) {
                 tl->dl_next = dl->dl_next;
-                dl->dl_next = csv_dlist;
-                csv_dlist = dl;
+                dl->dl_next = co_dlist;
+                co_dlist = dl;
             }
             found_scale = true;
             break;
         }
     }
-    if (!found_scale && csv_plot->scale()) {
+    if (!found_scale && co_plot->scale()) {
         dl = new sDvList;
-        dl->dl_next = csv_dlist;
-        dl->dl_dvec = csv_plot->scale();
-        csv_dlist = dl;
+        dl->dl_next = co_dlist;
+        dl->dl_dvec = co_plot->scale();
+        co_dlist = dl;
     }
 
-    int nvars = 0;
-    for (nvars = 0, dl = csv_dlist; dl; dl = dl->dl_next) {
+    int nvars;
+    for (nvars = 0, dl = co_dlist; dl; dl = dl->dl_next) {
         v = dl->dl_dvec;
         if (v->iscomplex())
-            csv_realflag = false;
+            co_realflag = false;
         nvars++;
         // Find the length and dimensions of the longest vector
         // in the plot.
@@ -203,51 +213,58 @@ cCSVout::file_head()
             v->set_numdims(1);
             v->set_dims(0, v->length());
         }
-        if (v->length() > csv_length) {
-            csv_length = v->length();
-            csv_numdims = v->numdims();
-            for (int j = 0; j < csv_numdims; j++)
-                csv_dims[j] = v->dims(j);
+        if (v->length() > co_length) {
+            co_length = v->length();
+            co_numdims = v->numdims();
+            for (int j = 0; j < co_numdims; j++)
+                co_dims[j] = v->dims(j);
         }
     }
 
-    fprintf(csv_fp, "#Flags: %s%s\n",
-        csv_realflag ? "real" : "complex", csv_pad ? "" : " unpadded" );
-    fprintf(csv_fp, "#No. Variables: %d\n", nvars);
-    fprintf(csv_fp, "#No. Points: ");
-    fflush(csv_fp);
-    csv_pointPosn = ftell(csv_fp);
-    fprintf(csv_fp, "%-8d\n", csv_length);  // save space
+    if (co_cmtchar && co_cmtlev == CMTLEV_all) {
+        fprintf(co_fp, "%cFlags: %s%s\n", co_cmtchar,
+            co_realflag ? "real" : "complex", co_pad ? "" : " unpadded" );
+        fprintf(co_fp, "%cNo. Variables: %d\n", co_cmtchar, nvars);
+        fprintf(co_fp, "%cNo. Points: ", co_cmtchar);
+        fflush(co_fp);
+        co_pointPosn = ftell(co_fp);
+        fprintf(co_fp, "%-8d\n", co_length);  // save space
 
-    if (csv_numdims > 1) {
-        fprintf(csv_fp, "#Dimensions: ");
-        for (int i = 0; i < csv_numdims; i++) {
-            fprintf(csv_fp, "%d%s",  csv_dims[i],
-                (i < csv_numdims - 1) ? "," : "");
+        if (co_numdims > 1) {
+            fprintf(co_fp, "%cDimensions: ", co_cmtchar);
+            for (int i = 0; i < co_numdims; i++) {
+                fprintf(co_fp, "%d%s",  co_dims[i],
+                    (i < co_numdims - 1) ? "," : "");
+            }
+            fprintf(co_fp, "\n");
         }
-        fprintf(csv_fp, "\n");
     }
 
     wordlist *wl;
-    if (csv_plot->commands())
-        for (wl = csv_plot->commands(); wl; wl = wl->wl_next)
-            fprintf(csv_fp, "#Command: %s\n", wl->wl_word);
-    else
-        fprintf(csv_fp, "#Command: version %s\n", Sp.Version());
-
-    for (variable *vv = csv_plot->environment(); vv; vv = vv->next()) {
-        if (vv->type() == VTYP_BOOL)
-            fprintf(csv_fp, "#Option: %s\n", vv->name());
+    if (co_cmtchar && co_cmtlev == CMTLEV_all) {
+        if (co_plot->commands()) {
+            for (wl = co_plot->commands(); wl; wl = wl->wl_next)
+                fprintf(co_fp, "%cCommand: %s\n", co_cmtchar, wl->wl_word);
+        }
         else {
-            fprintf(csv_fp, "#Option: %s = ", vv->name());
-            if (vv->type() == VTYP_LIST)
-                fprintf(csv_fp, "( ");
-            wl = vv->varwl();
-            wordlist::print(wl, csv_fp);
-            wordlist::destroy(wl);
-            if (vv->type() == VTYP_LIST)
-                fprintf(csv_fp, " )");
-            putc('\n', csv_fp);
+            fprintf(co_fp, "%cCommand: version %s\n", co_cmtchar,
+                Sp.Version());
+        }
+
+        for (variable *vv = co_plot->environment(); vv; vv = vv->next()) {
+            if (vv->type() == VTYP_BOOL)
+                fprintf(co_fp, "%cOption: %s\n", co_cmtchar, vv->name());
+            else {
+                fprintf(co_fp, "%cOption: %s = ", co_cmtchar, vv->name());
+                if (vv->type() == VTYP_LIST)
+                    fprintf(co_fp, "( ");
+                wl = vv->varwl();
+                wordlist::print(wl, co_fp);
+                wordlist::destroy(wl);
+                if (vv->type() == VTYP_LIST)
+                    fprintf(co_fp, " )");
+                putc('\n', co_fp);
+            }
         }
     }
     return (true);
@@ -259,43 +276,83 @@ cCSVout::file_head()
 bool
 cCSVout::file_vars()
 {
-    fprintf(csv_fp, "#Variables:\n");
-    int i;
-    sDvList *dl;
-    for (i = 0, dl = csv_dlist; dl; dl = dl->dl_next) {
-        sDataVec *v = dl->dl_dvec;
-        char *t = v->units()->unitstr();
-        fprintf(csv_fp, " %d %s %s", i++, v->name(), t);
-        delete [] t;
-        if (v->flags() & VF_MINGIVEN)
-            fprintf(csv_fp, " min=%e", v->minsignal());
-        if (v->flags() & VF_MAXGIVEN)
-            fprintf(csv_fp, " max=%e", v->maxsignal());
-        if (v->defcolor())
-            fprintf(csv_fp, " color=%s", v->defcolor());
-        if (v->gridtype())
-            fprintf(csv_fp, " grid=%d", v->gridtype());
-        if (v->plottype())
-            fprintf(csv_fp, " plot=%d", v->plottype());
-
-        // Only write dims if they are different from default
-        int j = 0;
-        if (v->numdims() == csv_numdims) {
-            for ( ; j < csv_numdims; j++) {
-                if (csv_dims[j] != v->dims(j))
-                    break;
-            }
-        }
-        if (j < csv_numdims) {
-            fprintf(csv_fp, " dims=");
-            for (int k = 0; k < v->numdims(); k++) {
-                fprintf(csv_fp, "%d%s",  v->dims(k),
-                    (k < v->numdims() - 1) ? "," : "");
-            }
-        }
-        putc('\n', csv_fp);
+    if (co_cmtchar && co_cmtlev == CMTLEV_all) {
+        fprintf(co_fp, "%cVariables:\n", co_cmtchar);
     }
-    fprintf(csv_fp, "Values:\n");
+    if (co_cmtchar &&
+            (co_cmtlev == CMTLEV_names || co_cmtlev == CMTLEV_all)) {
+        int i;
+        sDvList *dl;
+        for (i = 0, dl = co_dlist; dl; dl = dl->dl_next) {
+            sDataVec *v = dl->dl_dvec;
+            i++;
+            if (co_nmsmpl) {
+                if (i == 1)
+                    fprintf(co_fp, "%s", v->name());
+                else
+                    fprintf(co_fp, ",%s", v->name());
+            }
+            else {
+                char tbf[256];
+                sLstr lstr;
+                lstr.add_c('\"');
+                lstr.add(v->name());
+                char *t = v->units()->unitstr();
+                if (t && *t && !isspace(*t)) {
+                    snprintf(tbf, 256, " units=%s", t);
+                    lstr.add(tbf);
+                }
+                delete [] t;
+
+                if (v->flags() & VF_MINGIVEN) {
+                    snprintf(tbf, 256, " min=%e", v->minsignal());
+                    lstr.add(tbf);
+                }
+                if (v->flags() & VF_MAXGIVEN) {
+                    snprintf(tbf, 256, " max=%e", v->maxsignal());
+                    lstr.add(tbf);
+                }
+                if (v->defcolor()) {
+                    snprintf(tbf, 256, " color=%s", v->defcolor());
+                    lstr.add(tbf);
+                }
+                if (v->gridtype()) {
+                    snprintf(tbf, 256, " grid=%d", v->gridtype());
+                    lstr.add(tbf);
+                }
+                if (v->plottype()) {
+                    snprintf(tbf, 256, " plot=%d", v->plottype());
+                    lstr.add(tbf);
+                }
+
+                // Only write dims if they are different from default
+                int j = 0;
+                if (v->numdims() == co_numdims) {
+                    for ( ; j < co_numdims; j++) {
+                        if (co_dims[j] != v->dims(j))
+                            break;
+                    }
+                }
+                if (j < co_numdims) {
+                    lstr.add(" dims=");
+                    for (int k = 0; k < v->numdims(); k++) {
+                        snprintf(tbf, 256, "%d%s",  v->dims(k),
+                            (k < v->numdims() - 1) ? "," : "");
+                        lstr.add(tbf);
+                    }
+                }
+                lstr.add_c('\"');
+                if (i == 1)
+                    fprintf(co_fp, "%s", lstr.string());
+                else
+                    fprintf(co_fp, ",%s", lstr.string());
+            }
+        }
+        putc('\n', co_fp);
+    }
+    if (co_cmtchar && co_cmtlev == CMTLEV_all) {
+        fprintf(co_fp, "%cValues:\n", co_cmtchar);
+    }
     return (true);
 }
 
@@ -306,35 +363,40 @@ cCSVout::file_vars()
 bool
 cCSVout::file_points(int indx)
 {
-    if (csv_length == 0)
+    (void)indx;
+    if (co_length == 0)
         // true when called from output routine the first time
-        csv_length = 1;
-    for (int i = 0; i < csv_length; i++) {
-        fprintf(csv_fp, " %d", indx >= 0 ? indx : i);
-        for (sDvList *dl = csv_dlist; dl; dl = dl->dl_next) {
+        co_length = 1;
+    for (int i = 0; i < co_length; i++) {
+        for (sDvList *dl = co_dlist; dl; dl = dl->dl_next) {
             sDataVec *v = dl->dl_dvec;
             if (v) {
                 if (i < v->length()) {
-                    if (csv_realflag)
-                        fprintf(csv_fp,
-                            "\t%.*e\n", csv_prec, v->realval(i));
+                    if (dl != co_dlist)
+                        putc(',', co_fp);
+                    if (co_realflag)
+                        fprintf(co_fp, "%.*e", co_prec, v->realval(i));
                     else if (v->isreal())
-                        fprintf(csv_fp, "\t%.*e,0.0\n",
-                            csv_prec, v->realval(i));
-                    else
-                        fprintf(csv_fp, "\t%.*e,%.*e\n",
-                            csv_prec, v->realval(i),
-                            csv_prec, v->imagval(i));
+                        fprintf(co_fp, "%.*e,0.0", co_prec, v->realval(i));
+                    else {
+                        fprintf(co_fp, "%.*e,%.*e",
+                            co_prec, v->realval(i),
+                            co_prec, v->imagval(i));
+                    }
                 }
-                else if (csv_pad) {
-                    if (csv_realflag)
-                        fprintf(csv_fp, "\t%.*e\n", csv_prec, 0.0);
-                    else
-                        fprintf(csv_fp, "\t%.*e,%.*e\n",
-                            csv_prec, 0.0, csv_prec, 0.0);
+                else if (co_pad) {
+                    if (dl != co_dlist)
+                        putc(',', co_fp);
+                    if (co_realflag)
+                        fprintf(co_fp, "%.*e", co_prec, 0.0);
+                    else {
+                        fprintf(co_fp, "%.*e,%.*e",
+                            co_prec, 0.0, co_prec, 0.0);
+                    }
                 }
             }
         }
+        putc('\n', co_fp);
     }
     return (true);
 }
@@ -345,14 +407,14 @@ cCSVout::file_points(int indx)
 bool
 cCSVout::file_update_pcnt(int pointCount)
 {
-    if (!csv_fp || csv_fp == stdout)
+    if (!co_fp || co_fp == stdout)
         return (true);
-    fflush(csv_fp);
-    long place = ftell(csv_fp);
-    fseek(csv_fp, csv_pointPosn, SEEK_SET);
-    fprintf(csv_fp, "%d", pointCount);
-    fseek(csv_fp, place, SEEK_SET);
-    fflush(csv_fp);
+    fflush(co_fp);
+    long place = ftell(co_fp);
+    fseek(co_fp, co_pointPosn, SEEK_SET);
+    fprintf(co_fp, "%d", pointCount);
+    fseek(co_fp, place, SEEK_SET);
+    fflush(co_fp);
     return (true);
 }
 
@@ -362,42 +424,54 @@ cCSVout::file_update_pcnt(int pointCount)
 bool
 cCSVout::file_close()
 {
-    sDvList::destroy(csv_dlist);
-    csv_dlist = 0;
-    if (csv_fp && csv_fp != stdout && !csv_no_close)
-        fclose(csv_fp);
-    csv_fp = 0;
+    sDvList::destroy(co_dlist);
+    co_dlist = 0;
+    if (co_fp && co_fp != stdout && !co_no_close)
+        fclose(co_fp);
+    co_fp = 0;
     return (true);
 }
 // End of cRawOut functions.
 
 
-// Read a raw file.  Returns a list of plot structures.  This function
+// Read a CSV file.  Returns a list of plot structures.  This function
 // should be very flexible about what it expects to see in the
-// rawfile.  Really all we require is that there be one variables and
+// csvfile.  Really all we require is that there be one variables and
 // one values section per plot and that the variables precede the
 // values.
 
 
 cCSVin::cCSVin()
 {
-    csv_fp = 0;
+    ci_fp           = 0;
+    ci_title        = 0;
+    ci_date         = 0;
+    ci_plots        = 0;
+    ci_flags        = 0;
+    ci_nvars        = 0;
+    ci_npoints      = 0;
+    ci_numdims      = 0;
+    memset(ci_dims, 0, MAXDIMS*sizeof(int));
+    ci_padded       = true;
 }
 
 
 cCSVin::~cCSVin()
 {
-    if (csv_fp && csv_fp != stdin)
-        fclose(csv_fp);
+    if (ci_fp && ci_fp != stdin)
+        fclose(ci_fp);
+    delete [] ci_title;
+    delete [] ci_date;
+
 }
 
 
 namespace {
 
     inline void
-    skip(char **s)
+    skip(const char **s)
     {
-        char *t = *s;
+        const char *t = *s;
         while (*t && !isspace(*t))
             t++;
         while (isspace(*t))
@@ -424,8 +498,8 @@ namespace {
 sPlot *
 cCSVin::csv_read(const char *name)
 {
-    csv_fp = Sp.PathOpen(name, "rb");
-    if (!csv_fp) {
+    ci_fp = Sp.PathOpen(name, "rb");
+    if (!ci_fp) {
         GRpkg::self()->Perror(name);
         return (0);
     }
@@ -434,176 +508,193 @@ cCSVin::csv_read(const char *name)
     TTY.ioPush();
     CP.PushControl();
 
-    const char *title = "default title";
-    char *date = 0;
-    sPlot *plots = 0, *curpl = 0;
-    int flags = 0, nvars = 0, npoints = 0;
-    int numdims = 0, dims[MAXDIMS];
-    bool raw_padded = true;
+    sPlot *curpl = 0;
     char buf[BSIZE_SP];
-    while (fgets(buf, BSIZE_SP, csv_fp)) {
+    int rawline = 0;
+    const char cmtchar = CSV_CMTCHAR;
+    while (fgets(buf, BSIZE_SP, ci_fp)) {
+        const char *s = buf;
+        bool cmt_line = false;
+        while (*s == cmtchar || isspace(*s)) {
+            if (*s == cmtchar)
+                cmt_line = true;
+            s++;
+        }
         char buf2[BSIZE_SP];
-        // Figure out what this line is...
-        if (lstring::ciprefix("title:", buf)) {
-            char *s = buf;
-            skip(&s);
-            nonl(s);
-            title = lstring::copy(s);
-        }
-        else if (lstring::ciprefix("date:", buf)) {
-            char *s = buf;
-            skip(&s);
-            nonl(s);
-            date = lstring::copy(s);
-        }
-        else if (lstring::ciprefix("plotname:", buf)) {
-            char *s = buf;
-            skip(&s);
-            nonl(s);
-            if (curpl) {    // reverse commands list
-                wordlist *nwl, *wl = curpl->commands();
-                curpl->set_commands(0);
-                for ( ; wl && wl->wl_next; wl = nwl) {
-                    nwl = wl->wl_next;
+        if (cmt_line) {
+            // A comment line, look for saved info.
+            if (lstring::ciprefix("title:", s)) {
+                skip(&s);
+                nonl(buf);
+                delete [] ci_title;
+                ci_title = lstring::copy(s);
+            }
+            else if (lstring::ciprefix("date:", s)) {
+                skip(&s);
+                nonl(buf);
+                delete [] ci_date;
+                ci_date = lstring::copy(s);
+            }
+            else if (lstring::ciprefix("plotname:", s)) {
+                skip(&s);
+                nonl(buf);
+                if (curpl) {    // reverse commands list
+                    wordlist *nwl, *wl = curpl->commands();
+                    curpl->set_commands(0);
+                    for ( ; wl && wl->wl_next; wl = nwl) {
+                        nwl = wl->wl_next;
+                        wl->wl_next = curpl->commands();
+                        curpl->set_commands(wl);
+                    }
+                }
+
+                // Start a new plot.
+                rawline = 0;
+                curpl = new sPlot(0);
+                curpl->set_next_plot(ci_plots);
+                ci_plots = curpl;
+                curpl->set_name(s);
+                if (!ci_date)
+                    ci_date = lstring::copy(datestring());
+                curpl->set_date(ci_date);
+                if (!ci_title)
+                    ci_title = lstring::copy("default title");
+                curpl->set_title(ci_title);
+                ci_flags = 0;
+                ci_nvars = ci_npoints = 0;
+                ci_numdims = 0;
+                memset(ci_dims, 0, MAXDIMS*sizeof(int));
+                ci_padded = true;
+            }
+            else if (lstring::ciprefix("flags:", s)) {
+                skip(&s);
+                while (lstring::copytok(buf2, &s)) {
+                    if (lstring::cieq(buf2, "real"))
+                        ;
+                    else if (lstring::cieq(buf2, "complex"))
+                        ci_flags |= VF_COMPLEX;
+                    else if (lstring::cieq(buf2, "unpadded"))
+                        ci_padded = false;
+                    else if (lstring::cieq(buf2, "padded"))
+                        ci_padded = true;
+                    else {
+                        GRpkg::self()->ErrPrintf(ET_WARN,
+                            "unknown flag %s.\n", buf2);
+                    }
+                }
+            }
+            else if (lstring::ciprefix("no. variables:", s)) {
+                skip(&s);
+                skip(&s);
+                ci_nvars = lstring::scannum(s);
+            }
+            else if (lstring::ciprefix("no. points:", s)) {
+                skip(&s);
+                skip(&s);
+                ci_npoints = lstring::scannum(s);
+            }
+            else if (lstring::ciprefix("dimensions:", s)) {
+                skip(&s);
+                if (sDataVec::atodims(s, ci_dims, &ci_numdims)) {
+                    // Something's wrong
+                    GRpkg::self()->ErrPrintf(ET_WARN,
+                        "syntax error in dimensions, ignored.\n");
+                    ci_numdims = 0;
+                    continue;
+                }
+                if (ci_numdims > MAXDIMS) {
+                    ci_numdims = 0;
+                    continue;
+                }
+                // Let's just make sure that the no. of points
+                // and the dimensions are consistent.
+                //
+                int i, j;
+                for (j = 0, i = 1; j < ci_numdims; j++)
+                    i *= ci_dims[j];
+
+                if (ci_npoints && i != ci_npoints) {
+                    GRpkg::self()->ErrPrintf(ET_WARN,
+                "dimensions inconsistent with number of points, ignored.\n");
+                    ci_numdims = 0;
+                }
+            }
+            else if (lstring::ciprefix("command:", s)) {
+                // Note that we reverse these commands eventually...
+                skip(&s);
+                nonl(buf);
+                if (curpl) {
+                    wordlist *wl = new wordlist;
+                    wl->wl_word = lstring::copy(s);
                     wl->wl_next = curpl->commands();
+                    if (curpl->commands())
+                        curpl->commands()->wl_prev = wl;
                     curpl->set_commands(wl);
                 }
-            }
-            curpl = new sPlot(0);
-            curpl->set_next_plot(plots);
-            plots = curpl;
-            curpl->set_name(s);
-            if (!date)
-                date = lstring::copy(datestring());
-            curpl->set_date(date);
-            delete [] date;
-            curpl->set_title(title);
-            delete [] title;
-            flags = 0;
-            nvars = npoints = 0;
-        }
-        else if (lstring::ciprefix("flags:", buf)) {
-            char *s = buf;
-            skip(&s);
-            while (lstring::copytok(buf2, &s)) {
-                if (lstring::cieq(buf2, "real"))
-                    ;
-                else if (lstring::cieq(buf2, "complex"))
-                    flags |= VF_COMPLEX;
-                else if (lstring::cieq(buf2, "unpadded"))
-                    raw_padded = false;
-                else if (lstring::cieq(buf2, "padded"))
-                    raw_padded = true;
                 else {
-                    GRpkg::self()->ErrPrintf(ET_WARN,
-                        "unknown flag %s.\n", buf2);
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
+                        "misplaced Command: line.\n");
+                }
+                // Now execute the command if we can
+                CP.EvLoop(s);
+            }
+            else if (lstring::ciprefix("option:", s)) {
+                skip(&s);
+                nonl(buf);
+                if (curpl) {
+                    wordlist *wl = CP.LexString(s);
+                    variable *vv;
+                    for (vv = curpl->environment(); vv && vv->next();
+                            vv = vv->next()) ;
+                    if (vv)
+                        vv->set_next(CP.ParseSet(wl));
+                    else
+                        curpl->set_environment(CP.ParseSet(wl));
+                    wordlist::destroy(wl);
+                }
+                else {
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
+                        "misplaced Command: line.\n");
                 }
             }
-            (void)raw_padded;  // unused
+            continue;
         }
-        else if (lstring::ciprefix("no. variables:", buf)) {
-            char *s = buf;
-            skip(&s);
-            skip(&s);
-            nvars = lstring::scannum(s);
-        }
-        else if (lstring::ciprefix("no. points:", buf)) {
-            char *s = buf;
-            skip(&s);
-            skip(&s);
-            npoints = lstring::scannum(s);
-        }
-        else if (lstring::ciprefix("dimensions:", buf)) {
-            char *s = buf;
-            skip(&s);
-            if (atodims(s, dims, &numdims)) { // Something's wrong
-                GRpkg::self()->ErrPrintf(ET_WARN,
-                    "syntax error in dimensions, ignored.\n");
-                numdims = 0;
-                continue;
-            }
-            if (numdims > MAXDIMS) {
-                numdims = 0;
-                continue;
-            }
-            // Let's just make sure that the no. of points
-            // and the dimensions are consistent.
-            //
-            int i, j;
-            for (j = 0, i = 1; j < numdims; j++)
-                i *= dims[j];
+        if (!*s)
+            continue;
+        if (rawline == 0) {
+            rawline++;
+            // Process the vector name list.
 
-            if (npoints && i != npoints) {
-                GRpkg::self()->ErrPrintf(ET_WARN,
-                "dimensions inconsistent with number of points, ignored.\n");
-                numdims = 0;
-            }
-        }
-        else if (lstring::ciprefix("command:", buf)) {
-            // Note that we reverse these commands eventually...
-            char *s = buf;
-            skip(&s);
-            nonl(s);
-            if (curpl) {
-                wordlist *wl = new wordlist;
-                wl->wl_word = lstring::copy(s);
-                wl->wl_next = curpl->commands();
-                if (curpl->commands())
-                    curpl->commands()->wl_prev = wl;
-                curpl->set_commands(wl);
-            }
-            else {
-                GRpkg::self()->ErrPrintf(ET_ERROR,
-                    "misplaced Command: line.\n");
-            }
-            // Now execute the command if we can
-            CP.EvLoop(s);
-        }
-        else if (lstring::ciprefix("option:", buf)) {
-            char *s = buf;
-            skip(&s);
-            nonl(s);
-            if (curpl) {
-                wordlist *wl = CP.LexString(s);
-                variable *vv;
-                for (vv = curpl->environment(); vv && vv->next();
-                        vv = vv->next()) ;
-                if (vv)
-                    vv->set_next(CP.ParseSet(wl));
-                else
-                    curpl->set_environment(CP.ParseSet(wl));
-                wordlist::destroy(wl);
-            }
-            else {
-                GRpkg::self()->ErrPrintf(ET_ERROR,
-                    "misplaced Command: line.\n");
-            }
-        }
-        else if (lstring::ciprefix("variables:", buf)) {
             // We reverse the dvec list eventually...
             if (!curpl) {
                 GRpkg::self()->ErrPrintf(ET_ERROR, "no plot name given.\n");
-                plots = 0;
+                ci_plots = 0;
                 break;
             }
-            char *s = buf;
-            skip(&s);
-            if (!*s) {
-                fgets(buf, BSIZE_SP, csv_fp);
-                s = buf;
+            if (ci_numdims == 0) {
+                ci_numdims = 1;
+                ci_dims[0] = ci_npoints;
             }
-            if (numdims == 0) {
-                numdims = 1;
-                dims[0] = npoints;
-            }
-            // Now read all the variable lines in
-            for (int i = 0; i < nvars; i++) {
+            // Now read all the variables in
+            int i = 0;
+            while (char *tok = lstring::gettok(&s, ",")) {
+                const char *nmxtra = tok;
+                if (*nmxtra == '"') {
+                    nmxtra++;
+                    char *e = tok + strlen(tok) - 1;
+                    if (*e == '"')
+                        *e = 0;
+                }
+
+                char *nm = lstring::gettok(&nmxtra);
                 sDataVec *v = new sDataVec;
+                v->set_name(nm);
+                delete [] nm;
                 v->set_next(curpl->tempvecs());
                 curpl->set_tempvecs(v);
                 if (!curpl->scale())
                     curpl->set_scale(v);
-                v->set_flags(flags);
+                v->set_flags(ci_flags);
                 v->set_plot(curpl);
 
                 v->set_length(0);
@@ -612,97 +703,87 @@ cCSVin::csv_read(const char *name)
 
                 if (!i)
                     curpl->set_scale(v);
-                else {
-                    fgets(buf, BSIZE_SP, csv_fp);
-                    s = buf;
-                }
-                lstring::advtok(&s);  // The index field
-                char *t;
-                if ((t = lstring::gettok(&s)) != 0) {
-                    v->set_name(t);
-                    delete [] t;
-                }
-                else {
-                    GRpkg::self()->ErrPrintf(ET_ERROR,
-                        "bad variable line %s.\n", buf);
-                }
-                char *olds = s;
-                t = lstring::gettok(&s); // The units
-                if (t) {
-                    if (!strchr(t, '='))
-                        v->ncunits()->set(t);
-                    else
-                        s = olds;
-                    delete [] t;
-                }
-                
+                i++;
+
                 // Fix the name...
                 if (isdigit(*v->name())) {
                     snprintf(buf2, sizeof(buf2), "v(%s)", v->name());
                     v->set_name(buf2);
                 }
                 // Now come the strange options...
-                while (lstring::copytok(buf2,&s)) {
-                    if (lstring::ciprefix("min=", buf2)) {
-                        double ms;
-                        if (sscanf(buf2 + 4, "%lf", &ms) != 1) {
-                            GRpkg::self()->ErrPrintf(ET_ERROR, "bad arg %s.\n",
-                                buf2);
+                if (nmxtra && *nmxtra) {
+                    while (lstring::copytok(buf2, &nmxtra)) {
+                        if (lstring::ciprefix("units=", buf2)) {
+                            const char *tt = buf2 + 6;
+                            char *un = lstring::gettok(&tt);
+                            if (un && *un)
+                                v->ncunits()->set(un);
+                            delete [] un;
+                        }
+                        else if (lstring::ciprefix("min=", buf2)) {
+                            double ms;
+                            if (sscanf(buf2 + 4, "%lf", &ms) != 1) {
+                                GRpkg::self()->ErrPrintf(ET_ERROR,
+                                    "bad arg %s.\n", buf2);
+                            }
+                            else {
+                                v->set_minsignal(ms);
+                                v->set_flags(v->flags() | VF_MINGIVEN);
+                            }
+                        }
+                        else if (lstring::ciprefix("max=", buf2)) {
+                            double ms;
+                            if (sscanf(buf2 + 4, "%lf", &ms) != 1) {
+                                GRpkg::self()->ErrPrintf(ET_ERROR,
+                                    "bad arg %s.\n", buf2);
+                            }
+                            else {
+                                v->set_maxsignal(ms);
+                                v->set_flags(v->flags() | VF_MAXGIVEN);
+                            }
+                        }
+                        else if (lstring::ciprefix("color=", buf2)) {
+                            v->set_defcolor(buf2 + 6);
+                        }
+                        else if (lstring::ciprefix("scale=", buf2)) {
+                            // This is bad, but...
+                            v->set_scale((sDataVec*)lstring::copy(buf2 + 6));
+                        }
+                        else if (lstring::ciprefix("grid=", buf2)) {
+                            v->set_gridtype((GridType) lstring::scannum(
+                                buf2 + 5));
+                        }
+                        else if (lstring::ciprefix("plot=", buf2)) {
+                            v->set_plottype((PlotType) lstring::scannum(
+                                buf2 + 5));
+                        }
+                        else if (lstring::ciprefix("dims=", buf2)) {
+                            v->fixdims(buf2 + 5);
                         }
                         else {
-                            v->set_minsignal(ms);
-                            v->set_flags(v->flags() | VF_MINGIVEN);
+                            GRpkg::self()->ErrPrintf(ET_WARN,
+                                "bad var param %s.\n", buf2);
                         }
-                    }
-                    else if (lstring::ciprefix("max=", buf2)) {
-                        double ms;
-                        if (sscanf(buf2 + 4, "%lf", &ms) != 1) {
-                            GRpkg::self()->ErrPrintf(ET_ERROR, "bad arg %s.\n",
-                                buf2);
-                        }
-                        else {
-                            v->set_maxsignal(ms);
-                            v->set_flags(v->flags() | VF_MAXGIVEN);
-                        }
-                    }
-                    else if (lstring::ciprefix("color=", buf2)) {
-                        v->set_defcolor(buf2 + 6);
-                    }
-                    else if (lstring::ciprefix("scale=", buf2)) {
-                        // This is bad, but...
-                        v->set_scale((sDataVec*)lstring::copy(buf2 + 6));
-                    }
-                    else if (lstring::ciprefix("grid=", buf2)) {
-                        v->set_gridtype((GridType) lstring::scannum(buf2 + 5));
-                    }
-                    else if (lstring::ciprefix("plot=", buf2)) {
-                        v->set_plottype((PlotType) lstring::scannum(buf2 + 5));
-                    }
-                    else if (lstring::ciprefix("dims=", buf2)) {
-                        fixdims(v, buf2 + 5);
-                    }
-                    else {
-                        GRpkg::self()->ErrPrintf(ET_WARN,
-                            "bad var param %s.\n", buf2);
                     }
                 }
+                delete [] tok;
 
                 // Now we default any missing dimensions
                 if (!v->numdims()) {
-                    v->set_numdims(numdims);
-                    for (int j = 0; j < numdims; j++)
-                        v->set_dims(j, dims[j]);
+                    v->set_numdims(ci_numdims);
+                    for (int j = 0; j < ci_numdims; j++)
+                        v->set_dims(j, ci_dims[j]);
                 }
                 // And allocate the data array. We would use
                 // the desired vector length, but this would
                 // be dangerous if the file is invalid.
 
-                if (npoints) {
+                if (ci_npoints) {
                     if (v->isreal())
-                        v->set_realvec(new double[npoints]);
+                        v->set_realvec(new double[ci_npoints]);
                     else
-                        v->set_compvec(new complex[npoints]);
-                    v->set_allocated(npoints);
+                        v->set_compvec(new complex[ci_npoints]);
+                    v->set_allocated(ci_npoints);
                 }
                 else {
                     if (v->isreal())
@@ -712,14 +793,7 @@ cCSVin::csv_read(const char *name)
                     v->set_allocated(SIZE_INCR);
                 }
             }
-        }
-        else if (lstring::ciprefix("values:", buf) || 
-                lstring::ciprefix("binary:", buf)) {
-            if (!curpl) {
-                GRpkg::self()->ErrPrintf(ET_ERROR, "no plot name given.\n");
-                plots = 0;
-                break;
-            }
+
             // We'd better reverse the dvec list now...
             sDataVec *v = curpl->tempvecs(), *nv;
             curpl->set_tempvecs(0);
@@ -745,25 +819,28 @@ cCSVin::csv_read(const char *name)
                     }
                 }
             }
-            read_data((*buf == 'v' || *buf == 'V') ? false : true, curpl);
         }
         else {
-            char *s = buf;
-            skip(&s);
-            if (*s) {
-                GRpkg::self()->ErrPrintf(ET_ERROR,
-                    "strange line in rawfile -- load aborted.\n");
-                while (plots) {
-                    curpl = plots->next_plot();
-                    delete plots;
-                    plots = curpl;
+            const char *errbr = "bad file, missing data.\n";
+            for (sDataVec *v = curpl->tempvecs(); v; v = v->next()) {
+                char *tok = lstring::gettok(&s, ",");
+                double val1, val2 = 0.0;
+                if (sscanf(tok, "%lf", &val1) != 1) {
+                    GRpkg::self()->ErrPrintf(ET_ERROR, errbr);
+                    delete [] tok;
+                    break;
                 }
-                CP.PopControl();
-                TTY.ioPop();
-                OP.popPlot();
-                fclose(csv_fp);
-                csv_fp = 0;
-                return (0);
+                delete [] tok;
+                if (!v->isreal()) {
+                    tok = lstring::gettok(&s, ",");
+                    if (sscanf(tok, "%lf", &val2) != 1) {
+                        GRpkg::self()->ErrPrintf(ET_ERROR, errbr);
+                        delete [] tok;
+                        break;
+                    }
+                    delete [] tok;
+                }
+                v->add_point(&val1, &val2, SIZE_INCR);
             }
         }
     }
@@ -781,21 +858,21 @@ cCSVin::csv_read(const char *name)
     CP.PopControl();
     TTY.ioPop();
     OP.popPlot();
-    fclose(csv_fp);
-    csv_fp = 0;
+    fclose(ci_fp);
+    ci_fp = 0;
 
     // Reverse the plots list, so will be in file order.
-    curpl = plots;
-    plots = 0;
+    curpl = ci_plots;
+    ci_plots = 0;
     while (curpl) {
         sPlot *pl = curpl;
         curpl = curpl->next_plot();
-        pl->set_next_plot(plots);
-        plots = pl;
+        pl->set_next_plot(ci_plots);
+        ci_plots = pl;
     }
 
     // make the vectors permanent, and fix dimension
-    for (curpl = plots; curpl; curpl = curpl->next_plot()) {
+    for (curpl = ci_plots; curpl; curpl = curpl->next_plot()) {
         sDataVec *v, *nv;
         for (v = curpl->tempvecs(); v; v = nv) {
             nv = v->next();
@@ -806,204 +883,7 @@ cCSVin::csv_read(const char *name)
         }
         curpl->set_tempvecs(0);
     }
-    return (plots);
-}
-
-
-void
-cCSVin::read_data(bool isbin, sPlot *curpl)
-{
-    const char *errbr = "bad rawfile, missing data.\n";
-    if (isbin) {
-        // Binary file
-        for (;;) {
-            for (sDataVec *v = curpl->tempvecs(); v; v = v->next()) {
-                double val1, val2 = 0.0;
-                if (v->isreal()) {
-                    if (fread((char*)&val1, sizeof(double), 1, csv_fp) != 1) {
-                        if (v != curpl->tempvecs())
-                            GRpkg::self()->ErrPrintf(ET_ERROR, errbr);
-                        return;
-                    }
-                }
-                else {
-                    if (fread((char*)&val1, sizeof (double), 1, csv_fp) != 1) {
-                        GRpkg::self()->ErrPrintf(ET_ERROR, errbr);
-                        return;
-                    }
-                    if (fread((char*)&val2, sizeof (double), 1, csv_fp) != 1) {
-                        GRpkg::self()->ErrPrintf(ET_ERROR, errbr);
-                        return;
-                    }
-                }
-                add_point(v, &val1, &val2);
-            }
-        }
-    }
-    else {
-        // It's an ASCII file
-        for (;;) {
-            int j;
-            if (fscanf(csv_fp, " %d", &j) != 1)
-                return;;
-            for (sDataVec *v = curpl->tempvecs(); v; v = v->next()) {
-                double val1, val2 = 0.0;
-                if (v->isreal()) {
-                    if (fscanf(csv_fp, " %lf", &val1) != 1) {
-                        GRpkg::self()->ErrPrintf(ET_ERROR, errbr);
-                        return;
-                    }
-                }
-                else {
-                    if (fscanf(csv_fp, " %lf, %lf", &val1, &val2) != 2) {
-                        GRpkg::self()->ErrPrintf(ET_ERROR, errbr);
-                        return;
-                    }
-                }
-                add_point(v, &val1, &val2);
-            }
-        }
-    }
-}
-
-
-void
-cCSVin::add_point(sDataVec *v, double *val1, double *val2)
-{
-    if (v->length() >= v->allocated())
-        v->resize(v->length() + SIZE_INCR);
-    if (v->isreal())
-        v->set_realval(v->length(), *val1);
-    else {
-        v->set_realval(v->length(), *val1);
-        v->set_imagval(v->length(), *val2);
-    }
-    v->set_length(v->length() + 1);
-}
-
-
-// s is a string of the form d1,d2,d3...
-//
-void
-cCSVin::fixdims(sDataVec *v, const char *s)
-{
-    int dims[MAXDIMS];
-    memset(dims, 0, MAXDIMS*sizeof(int));
-    int ndims = 0;
-    if (atodims(s, dims, &ndims)) {
-        // Something's wrong
-        GRpkg::self()->ErrPrintf(ET_WARN,
-            "syntax error in dimensions, ignored.\n");
-        return;
-    }
-    for (int i = 0; i < MAXDIMS; i++)
-        v->set_dims(i, dims[i]);
-    v->set_numdims(ndims);
-}
-
-
-// Read a string of one of the following forms into a dimensions array:
-//  [12][1][10]
-//  [12,1,10]
-//  12,1,10
-//  12, 1, 10
-//  12 , 1 , 10
-// Basically, we require that all brackets be matched, that all
-// numbers be separated by commas or by "][", that all whitespace
-// is ignored, and the beginning [ and end ] are ignored if they
-// exist.  The only valid characters in the string are brackets,
-// commas, spaces, and digits.  If any dimension is blank, its
-// entry in the array is set to 0.
-//  
-//  Return 0 on success, 1 on failure.
-//
-int
-cCSVin::atodims(const char *p, int *data, int *outlength)
-{
-    if (!data || !outlength)
-        return (1);
-
-    if (!p) {
-        *outlength = 0;
-        return (0);
-    }
-
-    while (*p && isspace(*p))
-        p++;
-
-    int needbracket = 0;
-    if (*p == '[') {
-        p++;
-        while (*p && isspace(*p))
-            p++;
-        needbracket = 1;
-    }
-
-    int length = 0;
-    int state = 0;
-    int err = 0;
-    char sep = '\0';
-
-    while (*p && state != 3) {
-        switch (state) {
-        case 0: // p just at or before a number
-            if (length >= MAXDIMS) {
-                if (length == MAXDIMS)
-                    GRpkg::self()->ErrPrintf(ET_ERROR,
-                        "maximum of %d dimensions allowed.\n", MAXDIMS);
-                length += 1;
-            }
-            else if (!isdigit(*p))
-                data[length++] = 0;    // This position was empty
-            else {
-                data[length++] = atoi(p);
-                while (isdigit(*p))
-                    p++;
-            }
-            state = 1;
-            break;
-
-        case 1: // p after a number, looking for ',' or ']'
-            if (sep == '\0')
-                sep = *p;
-            if (*p == ']' && *p == sep) {
-                p++;
-                state = 2;
-            }
-            else if (*p == ',' && *p == sep) {
-                p++;
-                state = 0;
-            }
-            else  // Funny character following a #
-                break;
-            break;
-
-        case 2: // p after a ']', either at the end or looking for '['
-            if (*p == '[') {
-                p++;
-                state = 0;
-            }
-            else
-                state = 3;
-            break;
-        }
-
-        while (*p && isspace(*p))
-            p++;
-    }
-
-    *outlength = length;
-    if (length > MAXDIMS)
-        return (1);
-    if (state == 3)   // We finished with a closing bracket
-        err = !needbracket;
-    else if (*p)      // We finished by hitting a bad character after a #
-        err = 1;
-    else              // We finished by exhausting the string
-        err = needbracket;
-    if (err)
-        *outlength = 0;
-    return (err);
+    return (ci_plots);
 }
 // End of cCSVin functions.
 

@@ -146,7 +146,6 @@ QTplotDlg::sizeHint() const
 bool
 QTplotDlg::init(cGraph *gr)
 {
-    wb_sens_set = sens_set;
     pb_graph = gr;
 
     QIcon icon;
@@ -501,20 +500,6 @@ QTplotDlg::eventFilter(QObject *obj, QEvent *ev)
 
 
 // Static function.
-// Callback for PopUpInput() sensitivity set.
-//
-void
-QTplotDlg::sens_set(QTbag *w, bool set, int)
-{
-    if (w->ActiveInput()) {
-        QTledDlg *qw = static_cast<QTledDlg*>(w->ActiveInput());
-        if (qw)
-            qw->setEnabled(set);
-    }
-}
-
-
-// Static function.
 // The redraw is in a timeout so that plots with a lot of data and
 // take time to render can be resized more easily.
 int
@@ -544,62 +529,6 @@ QTplotDlg::motion_idle(void *arg)
         GP.PopGraphContext();
     }
     return (0);
-}
-
-
-// Static function.
-void
-QTplotDlg::do_save_plot(const char *fnamein, void *arg)
-{
-    QTplotDlg *w = static_cast<QTplotDlg*>(arg);
-    char *fname = pathlist::expand_path(fnamein, false, true);
-    if (!fname)
-        return;
-    if (filestat::check_file(fname, W_OK) == NOGO) {
-        w->PopUpMessage(filestat::error_msg(), true);
-        delete [] fname;
-        return;
-    }
-    wordlist wl;
-    wl.wl_word = fname;
-    wl.wl_next = w->pb_graph->command();
-    w->pb_graph->command()->wl_prev = &wl;
-    CommandTab::com_write(&wl);
-    w->pb_graph->command()->wl_prev = 0;
-
-    if (w->wb_input)
-        w->wb_input->popdown();
-    w->PopUpMessage("Operation completed.", false);
-    delete [] fname;
-}
-
-
-// Static function.
-void
-QTplotDlg::do_save_print(const char *fnamein, void *arg)
-{
-    QTplotDlg *w = static_cast<QTplotDlg*>(arg);
-    char *fname = pathlist::expand_path(fnamein, false, true);
-    if (!fname)
-        return;
-    if (filestat::check_file(fname, W_OK) == NOGO) {
-        w->PopUpMessage(filestat::error_msg(), true);
-        delete [] fname;
-        return;
-    }
-    FILE *fp = fopen(fname, "w");
-    if (fp) {
-        TTY.ioRedirect(0, fp, 0);
-        CommandTab::com_print(w->pb_graph->command());
-        TTY.ioReset();
-    }
-    else
-        w->PopUpErr(MODE_ON, "Can't open file.");
-    if (w->wb_input)
-        w->wb_input->popdown();
-    if (fp)
-        w->PopUpMessage("Plot saved to file as print data.", false);
-    delete [] fname;
 }
 
 
@@ -905,16 +834,18 @@ QTplotDlg::print_btn_slot(bool)
 void
 QTplotDlg::saveplt_btn_slot()
 {
-    PopUpInput("Enter name for data file", 0, "Save Plot File",
-        do_save_plot, this);
+    PopUpInput("Enter name for data file", 0, "Save Plot File", 0, 0);
+    connect(wb_input, &QTledDlg::action_call,
+        this, &QTplotDlg::do_save_plot_slot);
 }
 
 
 void
 QTplotDlg::savepr_btn_slot()
 {
-    PopUpInput("Enter name for print file", 0, "Save Print File",
-        do_save_print, this);
+    PopUpInput("Enter name for print file", 0, "Save Print File", 0, 0);
+    connect(wb_input, &QTledDlg::action_call,
+        this, &QTplotDlg::do_save_print_slot);
 }
 
 
@@ -1159,5 +1090,59 @@ QTplotDlg::drop_slot(QDropEvent *ev)
         return;
     }
     ev->ignore();
+}
+
+
+void
+QTplotDlg::do_save_plot_slot(const char *fnamein, void*)
+{
+    char *fname = pathlist::expand_path(fnamein, false, true);
+    if (!fname)
+        return;
+    if (filestat::check_file(fname, W_OK) == NOGO) {
+        PopUpMessage(filestat::error_msg(), true);
+        delete [] fname;
+        return;
+    }
+    wordlist wl;
+    wl.wl_word = fname;
+    wl.wl_next = pb_graph->command();
+    pb_graph->command()->wl_prev = &wl;
+    CommandTab::com_write(&wl);
+    pb_graph->command()->wl_prev = 0;
+
+    PopUpMessage("Operation completed.", false);
+    delete [] fname;
+
+    wb_input->deleteLater();
+    wb_input = 0;
+}
+
+
+void
+QTplotDlg::do_save_print_slot(const char *fnamein, void*)
+{
+    char *fname = pathlist::expand_path(fnamein, false, true);
+    if (!fname)
+        return;
+    if (filestat::check_file(fname, W_OK) == NOGO) {
+        PopUpMessage(filestat::error_msg(), true);
+        delete [] fname;
+        return;
+    }
+    FILE *fp = fopen(fname, "w");
+    if (fp) {
+        TTY.ioRedirect(0, fp, 0);
+        CommandTab::com_print(pb_graph->command());
+        TTY.ioReset();
+    }
+    else
+        PopUpErr(MODE_ON, "Can't open file.");
+    if (fp)
+        PopUpMessage("Plot saved to file as print data.", false);
+    delete [] fname;
+
+    wb_input->deleteLater();
+    wb_input = 0;
 }
 

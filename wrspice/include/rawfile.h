@@ -95,11 +95,16 @@ public:
 private:
     void read_data(bool, sPlot*);
 
-    static void add_point(sDataVec*, double*, double*);
-    static void fixdims(sDataVec*, const char*);
-    static int atodims(const char*, int*, int*);
-
     FILE *ri_fp;
+    char *ri_title;
+    char *ri_date;
+    sPlot *ri_plots;
+    int ri_flags;
+    int ri_nvars;
+    int ri_npoints;
+    int ri_numdims;
+    int ri_dims[MAXDIMS];
+    bool ri_padded;
 };
 
 #endif

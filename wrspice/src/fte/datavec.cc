@@ -49,6 +49,7 @@ Authors: 1985 Wayne A. Christopher
 #include "datavec.h"
 #include "output.h"
 #include "cshell.h"
+#include "ginterf/graphics.h"
 
 
 //
@@ -797,3 +798,143 @@ sDataVec::SmithCopy() const
     return (d);
 }
 
+
+void
+sDataVec::add_point(double *val1, double *val2, int size_incr)
+{
+    if (length() >= allocated())
+        resize(length() + size_incr);
+    if (isreal())
+        set_realval(length(), *val1);
+    else {
+        set_realval(length(), *val1);
+        set_imagval(length(), *val2);
+    }
+    set_length(length() + 1);
+}
+
+
+// s is a string of the form d1,d2,d3...
+//
+void
+sDataVec::fixdims(const char *s)
+{
+    int dims[MAXDIMS];
+    memset(dims, 0, MAXDIMS*sizeof(int));
+    int ndims = 0;
+    if (atodims(s, dims, &ndims)) {
+        // Something's wrong
+        GRpkg::self()->ErrPrintf(ET_WARN,
+            "syntax error in dimensions, ignored.\n");
+        return;
+    }
+    for (int i = 0; i < MAXDIMS; i++)
+        set_dims(i, dims[i]);
+    set_numdims(ndims);
+}
+
+
+// Static function.
+// Read a string of one of the following forms into a dimensions array:
+//  [12][1][10]
+//  [12,1,10]
+//  12,1,10
+//  12, 1, 10
+//  12 , 1 , 10
+// Basically, we require that all brackets be matched, that all
+// numbers be separated by commas or by "][", that all whitespace
+// is ignored, and the beginning [ and end ] are ignored if they
+// exist.  The only valid characters in the string are brackets,
+// commas, spaces, and digits.  If any dimension is blank, its
+// entry in the array is set to 0.
+//  
+//  Return 0 on success, 1 on failure.
+//
+int
+sDataVec::atodims(const char *p, int *data, int *outlength)
+{
+    if (!data || !outlength)
+        return (1);
+
+    if (!p) {
+        *outlength = 0;
+        return (0);
+    }
+
+    while (*p && isspace(*p))
+        p++;
+
+    int needbracket = 0;
+    if (*p == '[') {
+        p++;
+        while (*p && isspace(*p))
+            p++;
+        needbracket = 1;
+    }
+
+    int length = 0;
+    int state = 0;
+    int err = 0;
+    char sep = '\0';
+
+    while (*p && state != 3) {
+        switch (state) {
+        case 0: // p just at or before a number
+            if (length >= MAXDIMS) {
+                if (length == MAXDIMS)
+                    GRpkg::self()->ErrPrintf(ET_ERROR,
+                        "maximum of %d dimensions allowed.\n", MAXDIMS);
+                length += 1;
+            }
+            else if (!isdigit(*p))
+                data[length++] = 0;    // This position was empty
+            else {
+                data[length++] = atoi(p);
+                while (isdigit(*p))
+                    p++;
+            }
+            state = 1;
+            break;
+
+        case 1: // p after a number, looking for ',' or ']'
+            if (sep == '\0')
+                sep = *p;
+            if (*p == ']' && *p == sep) {
+                p++;
+                state = 2;
+            }
+            else if (*p == ',' && *p == sep) {
+                p++;
+                state = 0;
+            }
+            else  // Funny character following a #
+                break;
+            break;
+
+        case 2: // p after a ']', either at the end or looking for '['
+            if (*p == '[') {
+                p++;
+                state = 0;
+            }
+            else
+                state = 3;
+            break;
+        }
+
+        while (*p && isspace(*p))
+            p++;
+    }
+
+    *outlength = length;
+    if (length > MAXDIMS)
+        return (1);
+    if (state == 3)   // We finished with a closing bracket
+        err = !needbracket;
+    else if (*p)      // We finished by hitting a bad character after a #
+        err = 1;
+    else              // We finished by exhausting the string
+        err = needbracket;
+    if (err)
+        *outlength = 0;
+    return (err);
+}
