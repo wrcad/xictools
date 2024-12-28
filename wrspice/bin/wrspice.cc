@@ -516,8 +516,8 @@ wrs_if::ApplyHelpInput(const char *fname)
         CommandTab::com_source(&wl);
         return (true);
     }
-    if (lstring::cieq(t+1, "raw")) {
-        // If the URL has a ".raw" extension, load it.
+    if (lstring::cieq(t+1, "raw") || lstring::cieq(t+1, "csv")) {
+        // If the URL has a ".raw" or ".csv" extension, load it.
         wordlist wl;
         wl.wl_word = (char*)fname;
         CommandTab::com_load(&wl);

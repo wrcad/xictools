@@ -109,8 +109,6 @@ cCSVout::is_csv_ext(const char *fname)
 bool
 cCSVout::file_write(const char *filename, bool app)
 {
-    //XXX
-printf("x0 %d\n", app);
     if (!file_open(filename, app ? "a" : "w", false))
         return (false);
     if (!file_head())
@@ -138,8 +136,6 @@ cCSVout::file_open(const char *filename, const char *mode, bool)
             return (false);
         }
     }
-    //XXX
-printf("x1 %s\n", mode);
     co_fp = fp;
     co_pointPosn = 0;
     if (OP.getOutDesc()->outNdgts() > 0)

@@ -386,8 +386,8 @@ QTcanvas::set_clipping(int xx, int yy, int w, int h)
         da_painter->setClipping(true);
     }
     else {
-        da_painter->setClipping(false);
         da_painter->setClipRect(QRectF(0, 0, 0, 0));
+        da_painter->setClipping(false);
     }
 }
 
