@@ -56,6 +56,9 @@
 #define HLP_TITLE     "!!TITLE"
 #define HLP_TEXT      "!!TEXT"
 #define HLP_HTML      "!!HTML"
+#define HLP_LATEX     "!!LATEX"
+#define HLP_PROTECT   "!!PROTECT"
+#define HLP_UNPROTECT "!!UNPROTECT"
 #define HLP_SEEALSO   "!!SEEALSO"
 #define HLP_SUBTOPICS "!!SUBTOPICS"
 #define HLP_INCLUDE   "!!INCLUDE"
@@ -73,6 +76,10 @@
 #define Y_INCR      50
 #define START_XPOS  100
 #define START_YPOS  100
+
+// Max !!IFDEF nesting depth
+#define SCOPEDEPTH 20
+
 
 // look ahead
 class HLPcontext;
@@ -132,6 +139,8 @@ public:
 
     FILE *open(const char*, HLPent**);
     HLPent *get_entry(const char*);
+    FILE *open_latex(const char*, HLPent**);
+    HLPent *get_latex_entry(const char*);
 
     // in viewer code
     void set_font_family(const char*);
@@ -316,6 +325,7 @@ struct HLPdirList
             next = 0;
             hd_dir = lstring::copy(d);
             hd_base = 0;
+            hd_latex = 0;
             hd_rdbase = 0;
             hd_files = 0;
             hd_tags = 0;
@@ -341,6 +351,7 @@ struct HLPdirList
     HLPdirList *next;
     char *hd_dir;              // directory path of this subdirectory
     HLPent **hd_base;          // keyword hash table
+    HLPent **hd_latex;         // latex keyword hash table
     HLPrdir **hd_rdbase;       // redirection hash table
     stringlist *hd_files;      // list of .hlp files in directory (full path)
     stringlist *hd_tags;       // list of tags found in .hlp files

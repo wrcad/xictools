@@ -3,7 +3,8 @@
 bin="\
 httpget \
 hlp2html \
-hlpsrv"
+hlpsrv \
+hlp2latex"
 
 startup="\
 README"

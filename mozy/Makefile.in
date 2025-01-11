@@ -60,7 +60,7 @@ SUBDIRS = src/$(GRPREF)mozy src/help src/htm src/httpget src/imsave
 #######################################################################
 ####### Executable and related targets ################################
 
-TARGETS = $(GRPKG)/mozy $(GRPKG)/xeditor hlpsrv hlp2html httpget
+TARGETS = $(GRPKG)/mozy $(GRPKG)/xeditor hlp2latex hlpsrv hlp2html httpget
 
 all:  $(TARGETS)
 
@@ -79,6 +79,12 @@ $(BINDIR)/xeditor: bin/xeditor.o $(LOCAL_LIBS) $(XEDRES)
 	@echo $@: dynamic link
 	@$(LINKCC) -o $(BINDIR)/xeditor $(LFLAGS) bin/xeditor.o $(LOCAL_LIBS) \
   $(LIBS) $(XEDRES) $(STDCLIB)
+
+bin/hlp2latex: bin/hlp2latex.o lib/help.a $(BASE)/lib/ginterf.a \
+  $(BASE)/lib/miscutil.a
+	@$(LINKCC) -o bin/hlp2latex $(LFLAGS) bin/hlp2latex.o \
+  src/help/help_read.o $(BASE)/ginterf/graphics.o \
+  $(BASE)/lib/miscutil.a $(REGEX) $(MSLIBS) $(STDCLIB) $(WINPTHREADFIX)
 
 bin/hlpsrv: bin/hlpsrv.o lib/help.a $(BASE)/lib/ginterf.a \
   $(BASE)/lib/miscutil.a
@@ -149,8 +155,8 @@ foo $(MOZYRES) $(XEDRES):
 #######################################################################
 ####### Dependencies in this directory ################################
 
-CCFILES = bin/mozy.cc bin/xeditor.cc bin/hlpsrv.cc bin/hlp2html.cc \
-  bin/httpget.cc
+CCFILES = bin/mozy.cc bin/xeditor.cc bin/hlp2latex.cc bin/hlpsrv.cc \
+  bin/hlp2html.cc bin/httpget.cc
 
 depend::
 	@echo depending in $(LOCATION)
@@ -218,6 +224,8 @@ install_test::
 
 install_links::
 	@if [ -n "$(EXESUFFIX)" ]; then \
+	    $(BASE)/util/make_link $(toolbin)/hlp2latex$(EXESUFFIX) \
+ $(dst_bin)/hlp2latex$(EXESUFFIX); \
 	    $(BASE)/util/make_link $(toolbin)/hlpsrv$(EXESUFFIX) \
  $(dst_bin)/hlpsrv$(EXESUFFIX); \
 	    $(BASE)/util/make_link $(toolbin)/hlp2html$(EXESUFFIX) \
@@ -227,6 +235,7 @@ install_links::
 	    cp -f $(dst_bin)/mozy.bat $(toolbin); \
 	    cp -f $(dst_bin)/xeditor.bat $(toolbin); \
 	else \
+	    ln -s $(dst_bin)/hlp2latex $(toolbin)/hlp2latex; \
 	    ln -s $(dst_bin)/hlpsrv $(toolbin)/hlpsrv; \
 	    ln -s $(dst_bin)/hlp2html $(toolbin)/hlp2html; \
 	    ln -s $(dst_bin)/httpget $(toolbin)/httpget; \
@@ -237,6 +246,7 @@ install_links::
 	chmod 755 $(toolbin)/xeditor
 
 clean_links::
+	-@rm -f $(toolbin)/hlp2latex$(EXESUFFIX)
 	-@rm -f $(toolbin)/hlpsrv$(EXESUFFIX)
 	-@rm -f $(toolbin)/hlp2html$(EXESUFFIX)
 	-@rm -f $(toolbin)/httpget$(EXESUFFIX)
@@ -249,6 +259,7 @@ clean_links::
 
 $(dst_bin)::
 	@$(BASE)/util/mkdirpth $@
+	$(INSTALL_BIN) bin/hlp2latex$(EXESUFFIX) $@
 	$(INSTALL_BIN) bin/hlpsrv$(EXESUFFIX) $@
 	$(INSTALL_BIN) bin/hlp2html$(EXESUFFIX) $@
 	$(INSTALL_BIN) bin/httpget$(EXESUFFIX) $@

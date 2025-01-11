@@ -34,7 +34,7 @@
 \setlongtables
 
 %
-% Unfortunately, lates2html doesn't handle conditionals, so these are
+% Unfortunately, latex2html doesn't handle conditionals, so these are
 % hard coded and explicitly commented, for now.
 %
 % Whether or not to include license server references.

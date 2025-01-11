@@ -1,0 +1,354 @@
+% WRspice Manual file: elements.tex
+
+%S-----------------------------------------------------------------------------
+\section{Circuit Elements}
+
+<<elements element.tex>>
+
+%S-----------------------------------------------------------------------------
+\section{Device Models}
+\label{dotmodel}
+
+<<.model spModels.hlp>>
+
+%SU-------------------------------------
+\subsection{Default Models}
+\index {.defmod}
+\index{default models}
+
+<<.defmod spModels.hlp>>
+
+%SU-------------------------------------
+\subsection{Analysis at Different Temperatures}
+
+<<temperature elements.tex>>
+
+%S-----------------------------------------------------------------------------
+\section{Passive Element Lines}
+
+%SU-------------------------------------
+\subsection{Capacitors}
+\index{capacitor}
+\index{poly keyword}
+
+<<cap spElements.hlp>>
+
+%SU-------------------------------------
+\subsection{Capacitor Model}
+\index{capacitor model}
+\label{capmodel}
+
+<<capmodel spModels.hlp>>
+
+%SU-------------------------------------
+\subsection{Inductors}
+\index{inductor}
+\index{poly keyword}
+
+<<ind spElements.hlp>>
+
+%SU-------------------------------------
+\subsection{Inductor Model}
+\index{inductor model}
+\label{indmodel}
+
+<<indmodel spModles.hlp>>
+
+%SU-------------------------------------
+\subsection{Coupled (Mutual) Inductors}
+\index{mutual inductor}
+
+<<mut spElements.hlp>>
+
+%SU-------------------------------------
+\subsection{Resistors}
+\index{resistor}
+\index{poly keyword}
+
+<<res spElements.hlp>>
+
+%SU-------------------------------------
+\subsection{Resistor Model}
+\index{resistor model}
+\label{resmodel}
+
+<<resmodel spModels.hlp>>
+
+%SU-------------------------------------
+\subsection{Switches}
+\index{switch}
+
+<<sw spElements.hlp>>
+
+%SU-------------------------------------
+\subsection{Switch Model}
+\index{switch model}
+\label{swmodel}
+
+{\cb Type Names:} {\vt csw}, {\vt sw}
+
+<<swmodel spModels.hlp>>
+
+%SU-------------------------------------
+\subsection{Transmission Lines (General)}
+\label{tline}
+\index{transmission line}
+
+<<tra spElements.hlp>>
+
+%SU-------------------------------------
+\subsection{Transmission Line Model}
+\index{LTRA model}
+\index{TRA model}
+\label{ltramodel}
+
+<<tramodel spModels.hlp>>
+
+%SU-------------------------------------
+\subsection{Uniform RC Line}
+\index{transmission line, lumped}
+\index{urc}
+
+<<urc spElements.hlp>>
+
+%SU-------------------------------------
+\subsection{Uniform Distributed RC Model}
+\index{URC model}
+\label{urcmodel}
+
+<<urcmodel spModels.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{Voltage and Current Sources}
+\index{independent source}
+\index{source}
+\index{voltage source}
+\index{current source}
+\label{indepsrc}
+
+<<src spSources.hlp>>
+
+%SU-------------------------------------
+\subsection{Device Expressions}
+\index{source expressions}
+\index{device expressions}
+\label{devexpr}
+
+<<devexpr spSourceshlp>>
+
+%SU-------------------------------------
+\subsection{POLY Expressions}
+\index{poly specification}
+\label{polyspec}
+
+<<polyexpr spSources.hlp>>
+
+%SU-------------------------------------
+\subsection{Tran Functions}
+\label{tranfuncs}
+\index{tran functions}
+
+<<tranfuncs spSources.hlp>>
+
+\subsubsection{Exponential}
+\index{exponential specification}
+\index{exp tran function}
+
+<<text spSources.hlp>>
+
+\subsubsection{Gaussian Random}
+\index{Gaussian random specification}
+\index{gauss tran function}
+\index{tgauss tran function}
+\label{tgauss}
+
+<<tgauss spSourceshlp>>
+
+\subsubsection{Interpolation}
+\index{interpolation specification}
+\index{interp tran function}
+
+<<interp spSources.hlp>>
+
+\subsubsection{Pulse}
+\index{pulse specification}
+\index{pulse tran function}
+ 
+<<pulse spSources.hlp>>
+
+\subsubsection{Gaussian Pulse}
+\index{gaussian pulse specification}
+\index{gpulse tran function}
+
+<<gpulse spSources.hlp>>
+
+\subsubsection{Piecewise Linear}
+\index{PWL specification}
+\index{pwl tran function}
+
+<<pwl spSources.hlp>>
+
+\subsubsection{Single-Frequency FM}
+\index{single frequency FM specification}
+\index{sffm tran function}
+
+<<sffm spSources.hlp>>
+
+\subsubsection{Amplitude Modulation}
+\index{am specification}
+\index{am tran function}
+
+<<am elements.tex>>
+
+\subsubsection{Sinusoidal}
+\index{sine specification}
+\index{sin tran function}
+
+<<tsin spSources.hlp>>
+
+\subsubsection{Sinusoidal Pulse}
+\index{sine pulse specification}
+\index{spulse tran function}
+
+<<spulse spSources.hlp>>
+
+\subsubsection{Table Reference}
+\index{table reference specification}
+\index{table tran function}
+
+<<table spSources.hlp>>
+
+%SU-------------------------------------
+\subsection{Dependent Sources}
+\index{dependent source}
+\label{depsrc}
+
+<<depsource spSources.hlp>>
+
+\subsubsection{Voltage-Controlled Current Sources}
+\index{VCCS}
+
+<<vccs spSources.hlp>>
+
+\subsubsection{Voltage-Controlled Voltage Sources}
+\index{VCVS}
+
+<<vcvs spSources.hlp>>
+
+\subsubsection{Current-Controlled Current Sources}
+\index{CCCS}
+
+<<cccs spSources.hlp>>
+
+\subsubsection{Current-Controlled Voltage Sources}
+\index{CCVS}
+
+<<ccvs spSources.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{Semiconductor Devices}
+
+<<semicond spSemicond.hlp>>
+
+%SU-------------------------------------
+\subsection{Junction Diodes}
+\index{diode instance}
+
+<<dio spSemicond.hlp>>
+
+%SU-------------------------------------
+\subsection{Diode Model}
+\index{diode model}
+\label{diomodel}
+
+<<diomodel spModels.hlp>>
+
+%SU-------------------------------------
+\subsection{Bipolar Junction Transistors (BJTs)}
+\index{bipolar transistor instance}
+
+<<bjt spSemicond.hlp>>
+
+%SU-------------------------------------
+\subsection{BJT Models (both NPN and PNP)}
+\index{bipolar transistor model}
+\label{bjtmodel}
+
+<<bjtmodel spModels.hlp>>
+
+%SU-------------------------------------
+\subsection{Junction Field-Effect Transistors (JFETs)}
+\index{JFET instance}
+
+<<jfet spSemicond.hlp>>
+
+%SU-------------------------------------
+\subsection{JFET Models (both N and P Channel)}
+\index{JFET model}
+\label{jfetmodel}
+
+{\cb Type Names:} {\vt njf}, {\vt pjf}
+
+<<jfetmodel spModels.hlp>>
+
+%SU-------------------------------------
+\subsection{MESFETs}
+\index{MESFET instance}
+
+<<mes spSemicond.hlp>>
+
+%SU-------------------------------------
+\subsection{MESFET Models (both N and P Channel)}
+\index{MESFET model}
+\label{mesmodel}
+
+<<mesmodel spModels.hlp>>
+
+%SU-------------------------------------
+\subsection{MOSFETs}
+\index{MOSFET instance}
+
+<<mos spSemicondhlp>>
+
+%SU-------------------------------------
+\subsection{MOSFET Models (both N and P channel)}
+\index{MOSFET model}
+\label{mosmodel}
+
+<<mosmodel spModels.hlp>>
+
+\subsubsection{Imported MOS Models}
+\index{MOSFET levels}
+
+<<moslevel spModels.hlp>>
+
+\newpage
+%S-----------------------------------------------------------------------------
+\section{Superconductor Devices}
+
+%SU-------------------------------------
+\subsection{Josephson Junctions}
+\index{Josephson junction instance}
+
+<<jj spElement.hlp>>
+
+\subsubsection{Josephson Junction (Tunnel Junction Model)}
+\label{tjm}
+
+<<tjm spElement.hlp>>
+
+\newpage
+%SU-------------------------------------
+\subsection{Josephson Junction Model}
+\index{Josephson junction model}
+\label{jjmodel}
+
+<<jjmodel spModels.hlp>>
+
+\subsubsection{Josephson Tunnel Junction Model}
+\index{TJM}
+\index{Werthamer model}
+\label{tjmodel}
+
+<<tjmodel spModles.hlp>>
+

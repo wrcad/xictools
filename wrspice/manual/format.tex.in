@@ -1,0 +1,143 @@
+% WRspice Manual file: format.tex
+
+\chapter{{\WRspice} Input Format}
+
+%------------------------------------------------------------------------------
+\section{Input Format}
+\index{input format}
+\label{inputformat}
+
+<<spinput spInput.hlp>>
+
+%------------------------------------------------------------------------------
+\section{Title, Comments, Job Separation, and Inclusions}
+
+<<titleinc spInput.hlp>>
+
+%------------------------------------------------------------------------------
+\section{Initialization}
+
+<<initialize spInput.hlp>>
+
+%------------------------------------------------------------------------------
+\section{Parameters and Expressions}
+
+<<param spInput.hlp>>
+
+%------------------------------------------------------------------------------
+\section{Subcircuits}
+\index{subcircuits}
+
+<<subckt spInput.hlp>>
+
+%------------------------------------------------------------------------------
+\section{Analysis Specification}
+
+<<analyses spAnalysis.hlp>>
+
+%----------------------------------------------------
+\subsection{Chained Sweep Analysis}
+\index{chained analysis}
+\index{sweep analysis}
+
+<<multidc spAnalysis.hlp>>
+
+%----------------------------------------------------
+\subsection{{\vt .ac} Line}
+\index{.ac line}
+\index{ac analysis}
+\index{analysis!ac}
+\label{acline}
+
+<<.ac spAnalysis.hlp>>
+
+%----------------------------------------------------
+\subsection{{\vt .dc} Line}
+\index{.dc line}
+\index{dc analysis}
+\index{analysis!dc}
+\label{dcline}
+
+<<.dc spAnalysis>>
+
+%----------------------------------------------------
+\subsection{{\vt .disto} Line}
+\index{.disto line}
+\index{distortion analysis}
+\index{analysis!distortion}
+\label{distoline}
+
+<<.disto apAnalysis.hlp>>
+
+%----------------------------------------------------
+\subsection{{\vt .noise} Line}
+\index{.noise line}
+\index{noise analysis}
+\index{analysis!noise}
+\label{noiseline}
+
+<<.noise spAnalysis>>
+
+%----------------------------------------------------
+\subsection{{\vt .op} Line}
+\index{.op line}
+\label{opline}
+
+<<.op spAnalysis>>
+
+%----------------------------------------------------
+\subsection{{\vt .pz} Line}
+\index{.pz line}
+\index{pole-zero analysis}
+\index{analysis!pole-zero}
+\label{pzline}
+
+<<.pz spAnalysis.hlp>>
+
+%----------------------------------------------------
+\subsection{{\vt .sens} Line}
+\index{.sens line}
+\index{sensitivity analysis}
+\index{analysis!sensitivity}
+\label{sensline}
+
+<<.sens spAnalysis.hlp>>
+
+%----------------------------------------------------
+\subsection{{\vt .tf} Line}
+\index{.tf line}
+\index{transfer function analysis}
+\index{analysis!transfer function}
+\label{tfline}
+
+<<.tf spAnalysis.hlp>>
+
+%----------------------------------------------------
+\subsection{{\vt .tran} Line}
+\index{.tran line}
+\index{transient analysis}
+\index{analysis!transient}
+\label{tranline}
+
+<<.tran spAnalysis.hlp>>
+
+%------------------------------------------------------------------------------
+\section{Output Generation}
+
+<<output spInput.hlp>>
+
+%------------------------------------------------------------------------------
+\section{Parameter Measurement and Testing}
+
+<<tests spInput.hlp>>
+
+%------------------------------------------------------------------------------
+\section{Control Script Execution}
+
+<<execblock spInput.hlp>>
+
+%------------------------------------------------------------------------------
+\section{Verilog Interface}
+
+<<verilog spInput.hlp>>
+

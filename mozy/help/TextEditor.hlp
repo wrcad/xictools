@@ -29,6 +29,12 @@ Text Entry
     windows for use in the graphical interface.  These entry areas use
     a common set of key bindings and respond to and use the system
     clipboard and other selection mechanisms in the same way.
+!!LATEX textentry useriface.tex
+The GTK interface provides single and multi-line text entry windows
+for use in the graphical interface.  These entry areas use a common
+set of key bindings (see \ref{textkeybind}) and respond to and use the
+system clipboard (see \ref{clipboard}) and other selection mechanisms
+in the same way.
 
 !!SUBTOPICS
 onelineentry
@@ -55,6 +61,18 @@ Single-Line Text Entry
     1.  The dragged text will be inserted into the text in the entry
     area, either at the cursor or at the drop location, depending on
     the implementation.
+!!LATEX onelineentry useriface.tex
+In many operations, text is entered by the user into single-line
+text-entry areas that appear in pop-up windows.  These entry areas
+provide a number of editing and interprocess communication features
+which will be described in subsequent sections.
+
+In both Unix/Linux and Windows, the single-line entry is typically
+also a receiver of drop events, meaning that text can be dragged form
+a drag source, such as the {\cb File Manager}, and dropped in the
+entry area by releasing button 1.  The dragged text will be inserted
+into the text in the entry area, either at the cursor or at the drop
+location, depending on the implementation.
 
 !!SUBTOPICS
 clipboards
@@ -269,6 +287,163 @@ Text Editor
     href="textkeybind">key bindings</a> which also apply to
     single-line text entry windows.  These are actually programmable,
     and the advanced user may wish to augment the default set locally.
+!!LATEX xeditor useriface.tex
+The graphical interface provides a general-purpose text editor window. 
+It is used for editing text files or blocks, and may be invoked in
+read-only mode for use as a file viewer.  In that mode, commands which
+modify the text are not available.
+
+This is not the world's greatest text editor, but it
+works fine for quick changes and as a file viewer.  For
+industrial-strength editing, a favorite stand-alone text editor is
+probably a better choice. 
+
+The following commands are found in the {\cb File} menu of the
+editor.  Not all of these commands may be available, for example the
+{\cb Open} button is absent when editing text blocks.
+
+\begin{description}
+\item{\cb Open}\\
+Bring up the {\cb File Selection} panel.  This may be used to select a
+file to load into the editor.
+!!IFDEF Xic
+This is the same file manager available from the {\cb File Select}
+button in the {\Xic} {\cb File Menu}.
+!!ENDIF
+!!IFDEF WRspice
+This is the same file manager available from the {\cb Open} button in
+the {\cb File} menu of the {\cb Tool Control Window}.
+!!ENDIF
+
+\item{\cb Load}\\
+Bring up a dialog which solicits the name of a file to edit.  If the
+current document is modified and not saved, a warning will be issued,
+and the file will not be loaded.  Pressing {\cb Load} a second time
+will load the new file, discarding the current document.
+
+\item{\cb Read}\\
+Bring up a dialog which solicits the name of a file whose text is to
+be inserted into the document at the cursor position.
+
+\item{\cb Save}\\
+Save the document to disk, or back to the application if editing a
+text block under the control of some command.
+
+\item{\cb Save As}\\
+Pop up a dialog which solicits a new file name to save the current
+document under.  If there is selected text, the selected text will be
+saved, not the entire document.
+
+\item{\cb Print}\\
+Bring up a pop-up which enables the document to be printed to a
+printer, or saved to a file.
+
+\item{\cb Write CRLF}\\
+This menu item appears only in the Windows version.  It controls the
+line termination format used in files written by the text editor.  The
+default is to use the archaic Windows two-byte (DOS) termination.  If
+this button is unset, the more modern and efficient Unix-style
+termination is used.  Older Windows programs such as Notepad require
+two-byte termination.  Most newer objects and programs can use either
+format, as can the {\XicTools} programs.
+
+\item{\cb Quit}\\
+Exit the editor.  If the document is modified and not saved, a warning
+is issued, and the editor is not exited.  Pressing {\cb Quit} again
+will exit the editor without saving.
+
+The editor can also be dismissed with the window manager ``dismiss
+window'' function, which may be an `{\cb X}' button in the title bar. 
+This has the same effect as the {\cb Quit} button.
+\end{description}
+
+The editor is sensitive as a drop receiver.  If a file is dragged into
+the editor and dropped, and neither of the {\cb Load} or {\cb Read}
+dialogs is visible, the {\cb Load} dialog will appear with the name of
+the dropped file preloaded into the dialog text area.  If the drop
+occurs with the {\cb Load} dialog visible, the dropped file name will
+be entered into the {\cb Load} dialog.  Otherwise, if the {\cb Read}
+dialog is visible, the text will be inserted into that dialog.
+
+If the {\kb Ctrl} key is held during the drop, and the text is not
+read-only, the text will instead be inserted into the document at the
+insertion point.
+
+The following commands are found in the {\cb Edit} menu of the
+text editor.
+
+\begin{description}
+\item{\cb Undo}
+This will undo the last modification, progressively.  The number of
+operations that can be undone is unlimited.
+
+\item{\cb Redo}
+This will redo previously undone operations, progressively.
+\end{description}
+
+The remaining entries allow copying of selected text to and from other
+windows.  These work with the clipboard provided by the operating
+system, which is a means of transferring a data item between windows
+on the desktop (see \ref{clipboard}).
+
+\begin{description}
+\item{\cb Cut to Clipboard}\\
+Delete selected text to the clipboard.  The accelerator {\kb Ctrl-x}
+also performs this operation.  This function is not available if the
+text is read-only.
+
+\item{\cb Copy to Clipboard}\\
+Copy selected text to the clipboard.  The accelerator {\kb Ctrl-c}
+also performs this operation.  This function is available whether or
+not the text is read-only.
+
+\item{\cb Paste from Clipboard}\\
+Paste the contents of the clipboard into the document at the cursor
+location.  The accelerator {\kb Ctrl-v} also performs this operation. 
+This function is not available if the text is read-only.
+
+\item{\cb Paste Primary} (Unix/Linux only)\\
+Paste the contents of the primary selection register into the document
+at the cursor location.  The accelerator {\kb Alt-p} also performs
+this operation.  This function is not available if the text is
+read-only.
+\end{description}
+
+The following commands are found in the {\cb Options} menu of the
+editor.
+
+\begin{description}
+\item{\cb Search}\\
+Pop up a dialog which solicits a regular expression to search for in
+the document.  The up and down arrow buttons will perform the search,
+in the direction of the arrows.  If the {\cb No Case} button is
+active, case will be ignored in the search.  The next matching text in
+the document will be highlighted.  If there is no match, ``not found''
+will be displayed in the message area of the pop-up.
+
+The search starts at the current text insertion point (the location of
+the I-beam cursor).  This may not be visible if the text is read-only,
+but the location can be set by clicking with button 1.  The search
+does not wrap.
+
+!!IFDEF WRspice
+\item{\cb Source}\\
+Read the content of the editor into {\WRspice} as through the {\cb
+source} command.  One can also save the file to disk, and use the {\cb
+source} command directly.
+!!ENDIF
+
+\item{\cb Font}\\
+This brings up a tool for selecting the font to use in the text
+window.  Selecting a font will change the present font, and will set
+the default font for new text editor class windows.  This includes the
+file browser and mail client pop-ups.
+\end{description}
+
+The GTK interface provides a number of default key bindings (see
+\ref{textkeybind}) which also apply to single-line text entry windows. 
+These are actually programmable, and the advanced user may wish to
+augment the default set locally.
 
 !!SEEALSO
 textentry
@@ -335,6 +510,55 @@ Selections and Clipboards
     Windows, the primary selection applies only to the program
     containing the selection.  In Unix/Linux, the primary selection
     applies to the entire desktop,
+!!LATEX clipboard useriface.tex
+Under Unix/Linux, there are two similar data transfer registers:  the
+``primary selection'', and the ``clipboard''.  both correspond to
+system-wide registers, which can accommodate one data item (usually a
+text string) each.  When text is selected in any window, usually by
+dragging over the text with button 1 held down, that text is
+automatically copied into the primary selection register.  The primary
+selection can be ``pasted'' into other windows that are accepting text
+entry.
+
+The clipboard, on the other hand, is generally set and used only by
+the GTK text-entry widgets.  This includes the single-line entry used
+in many places, and the multi-line text window used in the text editor
+(see \ref{textedit}), file browser, and some other places including
+error reporting and info windows.  From these windows, there are key
+bindings that cut (erase) or copy selected text to the clipboard, or
+paste clipboard text into the window.  The cut/paste functions are
+only available if text in the window is editable, copy is always
+available.
+
+Under Windows there is a single ``Windows clipboard'' which is a
+system-wide data-transfer register that can accommodate a single data
+item (usually a string).  This can be used to pass data between
+windows.  In use, the Windows clipboard is somewhat like the
+Unix/Linux clipboard.
+ 
+Text in most text display windows can be selected by dragging with
+button 1 held down, however the selected text is not automatically
+added to the Windows clipboard.  On must initiate a {\cb cut} or {\cb
+copy} operation in the window to actually save the selected text to
+the Windows clipboard.  The ``copy to clipboard'' accelerator
+{\kb Ctrl-c} is available from most windows that present highlighted
+or selected text.  Note that there is no indication when text is
+copied to the clipboard, the selected text in all windows is
+unaffected, i.e., it won't change color or disappear.  The user must
+remember which text was most recently copied to the Windows clipboard.
+
+Clicking with button 2 will paste the primary selection into the line
+at the click location, if the window text is editable.
+
+Clicking with button 3 will will bring up a context menu.  From the
+menu, the user can select editing operations.
+
+The GTK interface hides the details of the underlying selection
+mechanisms, creating a consistent interface under Windows or
+Uniix/Linux.  There is one important difference, however:  in Windows,
+the primary selection applies only to the program containing the
+selection.  In Unix/Linux, the primary selection applies to the entire
+desktop.
 
 !!SEEALSO
 textentry
@@ -427,6 +651,50 @@ GTK Text Input Key Bindings
     code for &pi; (pi) is <tt>03c0</tt>.  Note that special characters
     can also be selected and copied, or in some cases dragged and
     dropped, from another window.
+!!LATEX keybind useriface.tex
+The following table provides the key bindings for editable text entry
+areas in GTK-2.  However, be advised that these bindings are
+programmable, and may be augmented or changed by installation of a
+local theme.
+
+\begin{longtable}{lp{4in}}\\
+\multicolumn{2}{l}{\bf GTK Single-Line Bindings}\vspace{1.5ex}\\
+\kb Ctrl-a & Select all text\\
+\kb Ctrl-c & Copy selected text to clipboard\\
+\kb Ctrl-v & Paste clipboard at cursor\\
+\kb Ctrl-x & Cut selection to clipboard\\
+\kb Home & Move cursor to beginning of line\\
+\kb End & Move cursor to end of line\\
+\kb Left & Move cursor left one character\\
+\kb Ctrl-Left & Move cursor left one word\\
+\kb Right & Move cursor right one character\\
+\kb Ctrl-Right & Move cursor right one word\\
+\kb Backspace & Delete previous character\\
+\kb Ctrl-Backspace & Delete previous word\\
+\kb Clear & Delete current line\\
+\kb Shift-Insert & Paste clipboard at cursor\\
+\kb Ctrl-Insert & Copy selected text to clipboard\\
+\kb Delete & Delete next character\\
+\kb Shift-Delete & Cut selected text to clipboard\\
+\kb Ctrl-Delete & Delete next word\\
+\end{longtable}
+
+Clicking with button 1 will move the cursor to that location.  Double
+clicking will select the clicked-on word.  Triple clicking will select
+the entire line.  Button 1 is also used to select text by dragging the
+pointer over the text to select.
+
+Clicking with button 2 will paste the primary selection into the line
+at the click location, if the window text is editable.
+
+Clicking with button 3 will will bring up a context menu.  From the
+menu, the user can select editing operations.
+
+These operations are basically the same in Windows and Unix/Linux,
+with one important difference:  in Windows, the primary selection
+applies only to the program containing the selection.  In Unix/Linux,
+the primary selection applies to the entire desktop, like the
+clipboard.
 
 !!SEEALSO
 clipboard
@@ -489,6 +757,48 @@ Mail Client
     eventually worked.  This application supports MAPI, apparently the
     default Windows 8 Mail application does not.  The default Windows
     8 Mail application also does not work with POP3 servers.
+!!LATEX mailclient useriface.tex
+The mail client can be used to send mail to arbitrary mail addresses,
+though when the panel appears, it is pre-loaded with the address of
+Whiteley Research technical support.  The text field containing the
+address, as well as the subject, can be changed.
+    
+The main text window is a text editor with operations similar to the
+text editor used elsewhere in {\Xic} and {\WRspice}.  The {\cb File}
+menu contains commands to read another text file into the editor at
+the location of the cursor ({\cb Read}), save the text to a file ({\cb
+Save As}) and send the text to a printer ({\cb Print}).  When done,
+the {\cb Send Mail} command in the {\cb File} menu is invoked to
+actually send the message.  Alternatively, one can quit the mail
+client without sending mail by pressing {\cb Quit}.
+
+The {\cb Edit} menu contains commands to cut, copy, and paste text.
+
+The {\cb Options} menu contains a {\cb Search} command to find a text
+string in the text.  The {\cb Attach} command is used to add a mime
+attachment to the message.  Pressing this button will cause prompting
+for the name of a file to attach.  While the prompt pop-up is visible,
+dragging a file into the mail client will load that file name into the
+pop-up.  This is also true of the {\cb Read} command.  Attachments are
+shown as icons arrayed along the tool bar of the mail client. 
+Pressing the mouse button over an attachment icon will allow the
+attachment to be removed.
+
+\index{MAPI}
+In the Windows version, since Windows does not provide a reliable
+interface for internet mail, the mail client and crash-dump report may
+not work.  Mail is sent by passing the message to a Windows interface
+called ``MAPI'', which in turn relies on another installed program to
+actually send the mail.  In the past, the mail system was known to
+work if Outlook Express was installed and configured as the "Simple
+MAPI mail client".  It is unknown whether this is still an option with
+recent Windows releases.
+
+To get mail working in Windows 8, it was necessary to download and
+install something called ``{\vt live mail}'' from Microsoft, which
+eventually worked.  This application supports MAPI, apparently the
+default Windows 8 Mail application does not.  The default Windows 8
+Mail application also does not work with POP3 servers.
 
 !!SEEALSO
 textentry

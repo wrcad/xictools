@@ -178,8 +178,12 @@ Print Control Panel
     a drop-down menu.  Printer resolutions are selectable in the
     adjacent resolution menu.  Not all drivers support multiple
     resolutions.  Higher resolutions generate larger files which take
-    more time to process, and may cause fill patterns to become less
-    differentiable.
+    more time to
+!!IFDEF Xic
+    process, and may cause fill patterns to become less differentiable.
+!!ELSE
+    process.
+!!ENDIF
 
     <p>
     When a PostScript line-draw driver is selected, a <b>Line
@@ -207,6 +211,162 @@ Print Control Panel
 !!ELSE
     The <b>Dismiss</b> button retires the <b>Print Control Panel</b>.
 !!ENDIF
+!!LATEX hcopypanel useriface.tex
+The {\cb Print Control Panel} is a highly configurable multi-purpose
+printer interface used in many parts of {\Xic} and {\WRspice}.  This
+section describes all of the available features, however many of these
+features may not be available, depending upon the context when the
+panel was invoked.  For example, a modified version of this panel is
+used for printing text files.  In that case, only the {\cb Dismiss},
+{\cb To File}, and {\cb Print} buttons are included.
+!!IFDEF Xic
+Most of the choices provided by the interface have defaults which can
+be set in the technology file.  The driver default parameters and
+limits are modifiable in the technology file.  The {\cb Print Control
+Panel} is made visible, and hardcopy mode is made active, by the {\cb
+Print} button in the {\cb File Menu}.
+!!ENDIF
+
+Under Windows, the {\cb Printer} field contains a drop-down menu
+listing the names of available printers.  The initial selection is the 
+system default printer.
+!!IFDEF Xic
+This default can be set with the {\et DefaultPrintCmd} variable.
+!!ENDIF
+
+Under Unix/Linux, the operating system command used to generate the
+plot is entered into the {\cb Print Command} text area of the Print
+Control panel.  In this string, the characters ``{\vt \%s}'' will be
+replaced with the name of the (temporary) file being printed.  If
+there is no ``{\vt \%s}'', the file name will be added to the end of
+the string, separated by a space character.  The string is sent to
+the operating system to generate the plot.
+
+The temporary file used to hold plot data before it is sent to the
+printer is {\it not\/} deleted, so it is recommended that the print
+command include the option to delete the file when plotting is
+finished.
+!!IFDEF Xic
+In {\Xic} the {\et RmTmpFileMinutes} variable can be set to enable
+automatic deletion of the temporary file, if necessary.
+!!ENDIF
+!!IFDEF WRspice
+In {\WRspice}, the {\et hcopyrmdelay} variable can be set to an
+integer to enable automatic delayed deletion of the temporary file.
+!!ENDIF
+
+\index{plot to file}
+If the {\cb To File} button is active, then this same field contains
+the name of the file to receive the plot data, and nothing is sent to
+the printer.  The user must enter a name or path to the file, which
+will be created.
+
+{\Xic} normally supplies a legend on the hardcopy output, which can be
+suppressed by un-checking the {\cb Legend} check box.  The legend is
+an informational area added to the bottom of a plot.  In contexts
+where there is no legend, this button will be absent.  In {\Xic}, a
+legend containing a list of the layers is available.  In {\WRspice},
+there is no legend.
+
+The size and location of the plot on the page can be specified with
+the {\cb Width}, {\cb Height}, {\cb Left}, and {\cb Top}/{\cb Bottom}
+text areas.  The dimensions are in inches, unless the {\cb Metric}
+button is set, in which case the dimensions are in millimeters.  The
+{\cb Width}, {\cb Height}, and offsets are always relative to the page
+in portrait orientation (even in landscape mode).  The vertical offset
+is relative to either the top of the page, or the bottom of the page,
+depending on the details of the coordinate system used by the driver. 
+The label is changed from {\cb Top} to {\cb Bottom} in the latter
+case.  Thus, different sized pages are supported, without the driver
+having to know the exact page size.
+
+The labels for the image height and width in the {\cb Print Control
+Panel} are actually buttons.  When pressed, the entry area for
+height/width is grayed, and the auto-height or auto-width feature is
+activated.  Only one of these modes can be active.  In auto-height,
+the printed height is determined by the given width, and the aspect
+ratio of the cell, frame box, or window to be printed.  Similarly, in
+auto-width, the width is determined by the given height and the aspect
+ratio of the area to print.  In auto-height mode, the height will be
+the minimum corresponding to the given width.  This is particularly
+useful for printers with roll paper.
+
+The full-page values for many standard paper sizes are selectable in
+the drop-down {\cb Media} menu below the text areas.  Selecting a
+paper size will load the appropriate values into the text areas to
+produce a full page image.  Under Windows, the ``Windows Native''
+driver requires that the actual paper type be selected.  Otherwise,
+this merely specifies the default size of the image.
+
+Portrait or landscape orientation is selectable by the drop-down menu. 
+In portrait mode, the plot is in the same orientation as seen
+on-screen, and in landscape mode, the image is rotated 90 degrees. 
+However, if the {\cb Best Fit} check box is checked, the image can
+have either orientation, but the legend will appear as described.  If
+using auto-height, the legend will always be in portrait orientation.
+
+\index{hardcopy panel!Best Fit}
+When the {\cb Best Fit} button is active, the driver is allowed to
+rotate the image 90 degrees if this improves the fit to the aspect
+ratio of the plotting area.  This supersedes the Portrait/Landscape
+setting for the image, but not for the legend, if displayed.
+
+The landscape mode is available on all print drivers.  The behavior
+differs somewhat between drivers.  The PostScript and PCL drivers
+handle the full landscape presentation, i.e., rotating the legend as
+well as the image by 90 degrees.  The other drivers will rotate the
+image, however, the legend will always be on the bottom.  In this
+case, the image may have been rotated anyway if the {\cb Best Fit}
+button is active, and rotating provides a larger image.  The landscape
+mode forces the rotation.
+
+!!IFDEF Xic
+{\Xic} provides a {\cb Frame} button which allows a portion of the
+graphical display to be selected for plotting.  This sets the view
+produced in the print, which otherwise defaults to the full object
+shown on-screen (the full cell in {\Xic}).  To set the frame, one uses
+the mouse to define the diagonal endpoints of the region to be
+plotted.  This region will appear on-screen as a dotted outline box.
+Deselect the {\cb Frame} button to turn this feature off, and plot the
+full object.  In {\Xic}, if the display contains transient objects
+such as rulers, DRC error indications, or terminals, it may be
+necessary to use the {\cb Frame} command if these objects are not
+included in the cell bounding box.  If the objects extend outside of
+the cell boundary, they may be clipped in the plot, unless the frame
+is used.
+!!ENDIF
+
+The available output formats are listed in a drop-down menu.  Printer
+resolutions are selectable in the adjacent resolution menu.  Not all
+drivers support multiple resolutions.  Higher resolutions generate
+larger files which take more time to
+!!IFDEF Xic
+process, and may cause fill patterns to become less differentiable.
+!!ELSE
+process.
+!!ENDIF
+
+When a PostScript line-draw driver is selected, a {\cb Line Width}
+numeric entry area appears, which can be used to set the width of the
+lines used for drawing.  The value given is in points, a point being
+1/72 of an inch.  Different printers may respond to the specified 
+width in different ways, depending on physical characteristics.  The
+default, when the line width is set to 0, is to use the narrowest line
+provided by the printer.  At times, using fatter lines improves
+visibility for presentation graphics and similar.
+
+Pressing the {\cb Print} button actually generates the plot or creates
+the output file.  This should be pressed once the appropriate
+parameters have been set.  A pop-up message appears indicating success
+or failure of the operation.
+
+!!IFDEF Xic
+Pressing the {\cb Dismiss} button removes the panel and takes {\Xic}
+out of hardcopy mode.  The same effect is achieved by
+pressing the {\cb Print} button in the {\cb File Menu} a second time.
+!!ELSE
+The {\cb Dismiss} button retires the {\cb Print Control Panel}.
+!!ENDIF
 
 !!SEEALSO
 hcopyfmt
@@ -228,8 +388,9 @@ Format Menu
 !!IFDEF Xic
     In <i>Xic</i>, only drivers that have been enabled in the <a
     href="hcopytech">technology file</a> are listed (all drivers are
-    enabled by default).  The format selections are described below.
+    enabled by default).
 !!ENDIF
+    The format selections are described below.
 
     <p>
     Except for the <b>Windows Native</b> driver all formatting is done
@@ -384,16 +545,16 @@ Format Menu
     There is no file generated in this case.
 
     <p>
-    On Unix/Linux systems, if you have the <b>ImageMagick</b> or
-    <b>netpbm</b> packages installed (available as freeware on the
-    internet) then many more formats are available, including GIF and
-    PDF.  These programs are standard on most Linux distributions. 
-    The <tt>imsave</tt> system, which is used to implement this driver
-    and otherwise generate image files, employs a special search path
-    to find helper functions (<tt>convert</tt> from ImageMagick, the
-    netpbm functions, <tt>cjpeg</tt> and <tt>djpeg</tt>).  The search
-    path (a colon-delimited list of directories) can be provided in
-    the <a href="xic:env">environment variable</a> <b>IMSAVE_PATH</b>. 
+    On Unix/Linux systems, if you have the open source <b>ImageMagick</b>
+    or <b>netpbm</b> packages installed then many more formats are
+    available, including GIF and PDF.  These programs are standard on
+    most Linux distributions.  The <tt>imsave</tt> system, which is
+    used to implement this driver and otherwise generate image files,
+    employs a special search path to find helper functions
+    (<tt>convert</tt> from ImageMagick, the netpbm functions,
+    <tt>cjpeg</tt> and <tt>djpeg</tt>).  The search path (a
+    colon-delimited list of directories) can be provided in the <a
+    href="xic:env">environment variable</a> <b>IMSAVE_PATH</b>. 
     If not set, the internal path is
     "<tt>/usr/bin:/usr/local/bin:/usr/X11R6/bin</tt>".  The helper
     function capability is not available under Microsoft Windows.
@@ -419,6 +580,171 @@ Format Menu
     The necessary preamble for Encapsulated PostScript (EPSF-3.0) is
     included in all PostScript files, so that they may be included
     in other documents without modification.
+!!LATEX hcopyfmt useriface.tex
+The printing system for {\Xic} and {\WRspice} provides a number of
+built-in drivers for producing output in various file formats.  In
+Windows, an additional ``Windows Native'' driver uses the operating
+system to provide formatting, thus providing support for any graphical
+printer known to Windows.  The data formats are selected from a
+drop-down menu available in the {\cb Print Control Panel}.  The name
+of the currently selected format is displayed on the panel.
+!!IFDEF Xic
+In {\Xic} only drivers that have been enabled in the technology file
+are listed (all drivers are enabled by default).
+!!ENDIF
+The format selections are described below.
+
+Except for the ``Windows Native'' driver all formatting is done in the
+{\Xic}/{\WRspice} printer drivers, and the result is sent to the
+printer as "raw" data.  This means that the selected printer {\it
+must} understand the format.  In practice, this means that the printer
+selected must be a PostScript printer, and one of the PostScript
+formats used, or the printer can be an HP Laserjet, and the PCL format
+used, etc.  The available formats are listed below.
+
+\begin{description}
+\item{\et PostScript bitmap}\\
+The output is a two-color PostScript bitmap of the plotted area.
+
+\item{\et PostScript bitmap, encoded}\\
+This also produces a two color PostScript bitmap, but uses compression
+to reduce file size.  Some elderly printers may not support the
+compression feature.
+
+\item{\et PostScript bitmap color}\\
+This produces a PostScript RGB bitmap of the plotted area.  These
+files can grow quite large, as three bytes per pixel must be stored.
+
+\item{\et PostScript bitmap color, encoded}\\
+This generates a compressed PostScript RGB bitmap of the plotted area. 
+Due to the file size, this format should be used in preference to the
+non-compressing format, unless the local printer does not support
+PostScript run length decoding.
+
+\item{\et Postscript line draw, mono}\\
+This driver produces a two color PostScript graphics list representing
+the plotted area.
+
+\item{\et PostScript line draw, color}\\
+This produces an RGB color PostScript graphics list representing the
+plotted area.
+
+\item{\et HP laser PCL}\\
+This driver roduces monochrome output suitable for HP and compatible
+printers.  This typically processes more quickly than PostScript on
+these printers.
+
+\item{\et HPGL line draw, color}\\
+This driver produces output in Hewlett-Packard Graphics Language,
+suitable for a variety of printers and plotters.
+!!IFDEF Xic
+In {\Xic}, the fill patterns are defined in the technology file with
+the {\vt HPGLfilled} keyword.  Other fill pattern definitions are
+ignored.  See the description of the {\et HPGLfilled} keyword in the
+technology file (section \ref{techlayers}) for more information.
+!!ENDIF
+
+\item{\et Windows Native} (Microsoft Windows versions only)\\
+This selection bypasses the drivers in {\Xic} or {\WRspice} and uses
+the driver supplied by Windows.  Thus, any graphics printer supported
+by Windows should work with this driver.
+
+The {\et Windows Native} driver should be used when there is no other
+choice.  If the printer has an oddball or proprietary interface, then
+the {\et Windows Native} driver is the one to use.  However, for a
+PostScript printer, better results will probably be obtained with one
+of the built-in drivers.  The same is true if the printer understands
+PCL, as do most laser printers.  This may vary between printers, so
+one should experiment and use whatever works best.
+
+In the Unix/Linux versions, selecting a page size from the {\cb Media}
+menu will load that size into the entry areas that control printed
+image size.  This is the only effect, and there is no communication of
+actual page size to the printer.  This is true as well under Windows,
+except in the Windows Native driver.  Microsoft's driver will clip the
+image to the page size before sending it to the printer, and will send
+a message to the printer giving the selected paper size.  The printer
+may not print if the given paper size is not what is in the machine.
+Thus, when using this driver, it is necessary to select the actual
+paper size in use.
+
+\item{\et Xfig line draw, color}\\
+Xfig is a free (and very nice) drafting program available over the
+internet.  Through the {\vt transfig} program, which should be
+available from the same place, output can be further converted to a
+dozen or so different formats.
+!!IFDEF Xic
+In {\Xic}, the fill patterns are defined in the technology file with
+the {\vt XfigFilled} keyword.  Other fill pattern definitions are
+ignored.  See the description of the {\et XfigFilled} keyword in the
+technology file (section \ref{techlayers}) for more information.
+!!ENDIF
+
+\item{\et Image: jpeg, tiff, png, etc}\\
+This driver converts into a multitude of bitmap file formats.  This
+supports file generation only.  The type of file is determined by
+the extension of the file name provided (the file name should have
+one!).  The driver can convert to several formats internally, and
+can convert to many more by making use of ``helper'' programs that
+may be on your system.
+
+Internal formats:
+
+\begin{tabular}{|l|l|}\hline
+\bf    Extension       & \bf Format\\ \hline \hline
+\vt    ppm, pnm, pgm   & Portable Bitmap (netpbm)\\ \hline
+\vt    ps              & PostScript\\ \hline
+\vt    jpg, jpeg       & JPEG\\ \hline
+\vt    png             & PNG\\ \hline
+\vt    tif, tiff       & TIFF\\ \hline
+\end{tabular}
+
+For the bitmap image formats, the driver resolution choice really
+doesn't change image resolution, but changes the size of the image
+bitmap in pixels.  The image ``resolution'' is the number of pixels
+per inch in the image size entries.  Thus, selecting a 4x4 inch image
+with resolution 100 would create a 400x400 pixel image.  Note that
+selecting resolution 200 and size 4x4 would produce the same bitmap
+size as 100 and 8x8.
+
+Under Microsoft Windows, an additional feature is available.  If the
+word ``{\vt clipboard}'' is entered in the {\cb File Name} text box,
+the image will be composed in the Windows clipboard, from where it can
+be pasted into other Windows applications.  There is no file generated
+in this case.
+
+\index{IMSAVE\_PATH environment variable}
+On Unix/Linux systems, if you have the open-source {\vt ImageMagick}
+or {\vt netpbm} packages installed then many more formats are
+available, including GIF and PDF.  These programs are standard on most
+Linux distributions.  The {\et imsave} system, which is used to
+implement this driver and otherwise generate image files, employs a
+special search path to find helper functions ({\vt convert} from
+ImageMagick, the netpbm functions, {\vt cjpeg} and {\vt djpeg}).  The
+search path (a colon-delimited list of directories) can be provided in
+the environment variable {\et IMSAVE\_PATH}.  If not set, the internal
+path is ``{\vt /usr/bin:/usr/local/bin:/usr/X11R6/bin}''.  The helper
+function capability is not available under Microsoft Windows.
+\end{description}
+
+If the {\cb Legend} button is active, the image will contain the
+legend.  If {\cb Landscape} is selected, the image will be rotated 90
+degrees.
+
+\end{description}
+
+The choice between PostScript line draw and bitmap formats is somewhat
+arbitrary.  Although the data format is radically different, the plots
+should look substantially the same.  A bitmap format typically takes
+about the same amount of time to process, independent of the data
+shown, whereas a line draw format takes longer with more objects to
+render.  For very simple layouts and all schematics and {\WRspice}
+plots, the line draw formats are the better choice, but for most
+layouts the bitmap format will be more efficient.
+
+The necessary preamble for Encapsulated Postscript (EPSF-3.0) is
+included in all PostScript files, so that they may be included in
+other documents without modification.
 
 !!SEEALSO
 hcopypanel

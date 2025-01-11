@@ -423,4 +423,302 @@ Command Line Arguments
     If this argument is given, <i>WRspice</i> will print the build date
     to the standard output, and exit.
     </dl>
+!!LATEX arguments useriface.tex
+The {\WRspice} simulator is invoked by typing
+\begin{quote}
+{\vt wrspice} {\it options} ... {\it input\_files} ...
+\end{quote}
+All arguments are optional.  There are several options which are
+recognized specifically by {\WRspice}.  These options are case
+insensitive --- the option letters can be given in upper or lower
+case.  In addition, there are a few additional options recognized by
+the graphics system.
+
+\index{option character}
+\index{SPICE\_OPTCHAR environment variable}
+The command line options are flagged with the `{\vt -}' character, but
+this can be changed by setting the {\et SPICE\_OPTCHAR} environment variable. 
+Below, the use of the `{\vt -}' character is assumed for simplicity. 
+
+\index{DISPLAY environment variable}
+Graphical {\WRspice} requires an X server under UNIX.  When using X,
+the {\et DISPLAY} environment variable should already be set, but if
+one wants to display graphics on a different machine than the one
+running {\WRspice}, {\et DISPLAY} should be of the form {\it
+machine\/}:0.  For example, if one wants the display to go to the
+workstation named ``{\vt crab}'', for the C-shell one would enter
+``{\vt setenv DISPLAY crab:0}'' at the shell prompt, or equivalently
+for the Bourne shell one would enter ``{\vt DISPLAY=crab; export
+DISPLAY}'' or the more compact form ``{\vt export DISPLAY=crab}'' if
+supported.  Note that this can also be supplied using the {\vt -d}
+option.
+
+Further arguments are taken to be {\WRspice} input files, which are
+read and saved in memory.  If batch mode is requested ({\vt -b}
+option) then they are run immediately.  {\WRspice} will accept SPICE2
+input files, and output ASCII plots, Fourier analyses, and node
+printouts as specified in {\vt .plot}, {\vt .four}, and {\vt .print}
+lines.  If an {\vt out} parameter is given on a {\vt .width} line, the
+effect is the same as ``{\vt set width = ...}''.  Since {\WRspice}
+ASCII plots do not use multiple ranges, however, if vectors together
+on a {\vt .plot} card have different ranges they will not provide as
+much information as they would in SPICE2.  The output of {\WRspice} is
+also much less verbose than SPICE2, in that the only data printed is
+that requested by the above lines.
+
+The following option forms are accepted by {\WRspice}.  The option
+letter can be lower or upper case.
+
+\begin{description}
+\index{command line options!-b}
+\index{batch mode}
+\item{\vt -b}\\
+Run in batch mode.  {\WRspice} will read the standard input or the
+specified input files and do the simulation.  Note that if the
+standard input is not a terminal, {\WRspice} will default to batch
+mode, unless the {\vt -i} option is given.  In batch mode, {\WRspice}
+generates output files for operating range and Monte Carlo analysis,
+otherwise if the {\vt -r} option is used ({\vt -r} {\it filename})
+{\WRspice} generates a plot data file, or generates an ASCII plot or
+print on standard output, as per {\vt .plot/.print} lines, if no {\it
+filename} was specified.  See the description of the {\cb write}
+command (\ref{writecmd}) for information about the file formats
+available and how they can be specified.
+
+\index{command line options!-c}
+\index{case sensitivity}
+\item{\vt -c} {\it flags}\\
+This option sets the case sensitivity of various name classes
+in {\WRspice}.  These classes are:
+
+\begin{quote}
+Function names.\\
+User-defined function names.\\
+Vector names.\\
+.PARAM names.\\
+Codeblock names.\\
+Node and device names.\\
+\end{quote}
+
+The {\it flags} is a word consisting of letters, each letter
+corresponds to a class from the list above.  If lower-case, the class
+will be case-sensitive.  If upper-case, the class will be
+case-insensitive.
+
+The letters are {\vt f}, {\vt u}, {\vt v}, {\vt p}, {\vt c}, and {\vt
+n} corresponding to the classes listed above.  By default, all
+identifiers are case-insensitive, which corresponds to the string
+``{\vt FUVPCN}''.  Letters can appear in any order, and unrecognized
+characters are ignored.  Not all letters need be included, only those
+seen will be used.
+
+This word should follow {\vt -c} or {\vt -C} in the command line
+options, separated by space.
+
+Case sensitivity can also be set from a startup file using the {\cb
+setcase} command.  This command takes as an argument a string as
+described above.  The command line setting occurs after setting from a
+startup file.
+
+\index{command line options!-d}
+\item{\vt -d} [{\it host}]:{\it server}[.{\it screen}]\\
+This option is applicable when running under X windows, and specifies
+the name of the display to use.  The {\it host} is the hostname of the
+physical display, {\it server} specifies the display server number,
+and {\it screen} specifies the screen number.  Either or both of the
+{\it host} and {\it screen} elements to the display specification can
+be omitted.  If {\it host} is omitted, the local display is assumed. 
+If {\it screen} is omitted, screen 0 is assumed (and the period is
+unnecessary).  The colon and (display) {\it server} are necessary in
+all cases.  This option can also be given as {\vt -display} and {\vt
+-\/-display}.
+
+\index{command line options!-dnone}
+\item{\vt -dnone}\\
+This is a special form of the {\vt -d} option that when given will
+suppress all use of graphics.  This can be desirable when running
+{\WRspice} remotely over a slow terminal connection.  This option will
+also work under Windows, if for some reason it is necessary to run
+{\WRspice} in text-only mode.
+
+\index{command line options!-i}
+\item{\vt -i}\\
+Run in interactive (as opposed to batch) mode.  This is useful if the
+standard input is not a terminal but interactive mode is desired. 
+Command completion is not available unless the standard input is a
+terminal, however.  Interactive mode is the default when the standard
+input is a terminal.
+
+\index{command line options!-j}
+\item{\vt -j}\\
+Run in JSPICE3 compatibility mode.  This applies when running
+interactively, and causes the following behavior.
+\begin{enumerate}
+\item{The {\cb Tool Control} window is not shown.}
+\item{The {\et noerrwin} variable is set, which causes error messages
+to be printed in the console rather than to a separate error window.}
+\item{The {\et subc\_catmode} variable is set to ``{\vt spice3}'' and
+the {\et subc\_catchar} variable is set to ``{\vt :}'' (colon).  This
+sets the subcircuit expansion method to match JSPICE3 and SPICE3.}
+\end{enumerate}
+
+%\ifxtlserv
+%\index{command line options!-l}
+%\item{\vt -l} {\it license\_server\/}[{\vt :}{\it port\/}]\\
+%This option provides the host name of a machine running the license
+%server, and optionally the port number in use by the server.  The port
+%number is required if for some reason the license server is using a
+%non-default port.
+%
+%Below is the logic hierarchy for setting the license server host, each
+%method will override those listed lower.  See the documentation for
+%the {\vt xtlserv} (license server) program for more information.
+%\begin{quote}
+%{\vt -l} {\it serverhost}[:{\it port\/}]\\
+%{\et XTLSERVER} in environment\\
+%{\vt license.host} file\\
+%{\vt xtlserver} in {\vt /etc/hosts}\\
+%name of local machine
+%\end{quote}
+%\fi
+
+\index{command line options!-m}
+\item{\vt -m} {\it path}\\
+The {\it path} is to a loadable device module (see \ref{loadable})
+file, or to a directory containing module files.  Giving this option
+causes the indicated module, or modules found in the directory, to be
+loaded into {\WRspice} on program startup, after the
+<tt>.wrspiceinit</tt> file has been read.  The option can be given
+more than once.  If given, auto-loading of modules from the {\et
+modpath} or the {\vt devices} sub-directory in the {\vt startup}
+directory will not be done.  Modules can be loaded from within
+{\WRspice} with the {\cb devload} command.
+
+\index{command line options!-mnone}
+\item{\vt -mnone}\\
+This option will suppress auto-loading of modules from the {\et
+modpath} or the {\vt devices} sub-directory in the {\vt startup}
+directory.
+
+\index{command line options!-n}
+\item{\vt -n}\\
+Don't try to execute the user's startup files ({\vt .wrspiceinit}
+files) upon startup.  Normally {\WRspice} tries to find these files in
+the user's home directory and the current directory, and will execute
+them in that order.  In Windows, the ``home directory'' can be
+specified by setting the {\et HOME} environment variable.  The global
+file {\vt wrspiceinit} in the system startup directory is sourced in
+any case.
+
+\index{command line options!-o}
+\item{\vt -o} {\it outfile}\\
+The argument {\it outfile\/} specifies a file to be used for output,
+rather than the standard output (terminal).
+
+\index{command line options!-p}
+\item{\vt -p}\\
+Open {\WRspice} in a mode which takes input from a UNIX port, used to
+establish interprocess communications as a slave process.
+
+\index{command line options!-q}
+\item{\vt -q}\\
+Disable command completion, which saves memory and may run slightly
+faster.  This prevents initial loading of the command completion data
+structures.  If the variable {\et nocc} is set and unset, command
+completion will be turned on, however most internal keywords will not
+be present in the database.
+
+\index{command line options!-r}
+\item{\vt -r} {\it filename}\\
+Use {\it filename\/} as the default file into which the results of the
+simulation are saved with the {\cb write} command, and for data output
+in batch mode.  This can be overridden with the {\et rawfile}
+variable.  See the description of the {\cb write} command
+(\ref{writecmd}) for information about the file formats available, and
+how they can be specified.
+
+\index{command line options!-s}
+\item{\vt -s}\\
+Run in server mode.  This is like batch mode, except that a temporary
+rawfile is used and then written to the standard output, preceded by a
+line with a single `{\vt @}', after the simulation is done.  This mode
+is used by the {/WRspice} daemon {\vt wrspiced}.  In server mode,
+{\WRspice} reads input from the standard input, and generates output,
+in rawfile or margin analysis file format, on the standard output. 
+The {\vt -r} and {\vt -b} options are ignored.
+
+\index{command line options!-t}
+\item{{\vt -t} {\it termname}}\\
+This specifies the name of the terminal, as known in a termcap or
+terminfo database.  The terminal name is only needed in interactive
+mode when line editing is enabled, and is generally obtained from the
+{\et TERM} environment variable.  Occasionally, this option is useful
+in overriding bad terminal info specifications allowing line editing
+to work, such as by giving a value of ``{\vt vt220}'' when running in
+an {\vt xterm}.
+
+\index{command line options!-x}
+\item{\vt -x}\\
+This option, if given, will cause {\WRspice} to provide its own window
+for text input, if {\WRspice} is in interactive mode and graphics is
+available.  Under the X window system, the ``{\vt xterm}'' command
+is used to obtain the text window.
+\end{description}
+
+The UNIX/Linux graphical subsystem will accept the following options. 
+It is unlikely that the user will ever need these.
+
+\begin{description}
+\index{command line options!--class}
+\item{\vt -\/-class} {\it classname}\\
+This option specifies the application class name under which resources
+for the application should be found.
+
+\index{command line options!--name}
+\item{\vt -\/-name} {\it appname}\\
+This option specifies the name under which resources for the
+application should be found.  This option is useful in shell aliases
+to distinguish between invocations of an application, without
+resorting to creating links to alter the executable file name.
+This option can also be given as ``{\vt -name}''.
+
+\index{command line options!--sync}
+\item{\vt -\/-sync}\\
+This option indicates that requests to the X server should be sent
+synchronously, instead of asynchronously.  Since Xlib normally buffers
+requests to the server, errors do not necessarily get reported
+immediately after they occur.  This option turns off the buffering so
+that the application can be debugged.  It should never be used with a
+working program.  This option can also be given as ``{\vt
+-synchronous}''.
+
+\index{command line options!--no-xshm}
+\item{\vt -\/-no-xshm}\\
+If set, the X server will not use shared memory.
+
+\index{command line options!--v}
+\item{\vt -\/-v}\\
+If this argument is given, {\WRspice} will print a version string
+consisting of three tokens to the standard output, and exit.  The
+format is
+\begin{quote}
+{\it version osname arch}
+\end{quote}
+for example ``{\vt 4.3.11 LinuxCentos7 x86\_64}''.
+
+\index{command line options!--vv}
+\item{\vt -\/-vv}\\
+If this argument is given, {\WRspice} will print a CVS-style release
+tag string in the form
+\begin{quote}
+{\vt wrs-4-3-1}
+\end{quote}
+to the standard output, and exit.
+
+\index{command line options!--vb}
+\item{\vt -\/-vb}\\
+If this argument is given, {\WRspice} will print the build date to the
+standard output, and exit.
+\end{description}
+\index{command line options|)}
 

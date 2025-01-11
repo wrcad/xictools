@@ -1,0 +1,779 @@
+% WRspice Manual file: commands.tex
+
+\chapter{{\WRspice} Commands}
+\label{commands}
+
+<<commands spCommands.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{Control Structures}
+\index{control structures}
+
+<<controlcmds spCommands.hlp>>
+
+\newcommand{\spcmd}[1]{The {\cb #1} Command}
+
+%SU-------------------------------------
+\subsection{\spcmd{cdump}}
+\index{cdump command}
+
+<<cdump spCommands.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{String Comparison and Global Return Value}
+\index{string comparison}
+\index{global return value}
+
+<<strcmds spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{strcmp}}
+\index{strcmp command}
+
+<<strcmp spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{strcicmp}}
+\index{strcicmp command}
+
+<<strcicmp spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{strprefix}}
+\index{strprefix command}
+
+<<strprefix spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{strciprefix}}
+\index{strciprefix command}
+
+<<strciprefix spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{retval}}
+\index{retval command}
+
+<<retval spCommands.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{User Interface Setup Commands}
+\index{user interface setup commands}
+
+<<uicmds spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{mapkey}}
+\index{mapkey command}
+
+<<mapkey spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{setcase}}
+\index{setcase command}
+
+<<setcase spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{setfont}}
+\index{setfont command}
+
+<< setfont spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{setrdb}}
+\index{setrdb command}
+
+<<setrdb spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{tbupdate}}
+\index{tbupdate command}
+
+<<tbupdate spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{wrupdate}}
+\index{wrupdate command}
+
+<<wrupdate spCommands.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{Shell Commands}
+\index{shell commands}
+
+<<shellcmds spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{alias}}
+\index{alias command}
+
+<<alias spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{cd}}
+\index{cd command}
+
+<<cd spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{echo}}
+\index{echo command}
+
+<<echo spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{echof}}
+\index{echof command}
+
+<<echof spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{history}}
+\index{history command}
+
+<<historycomm spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{pause}}
+\index{pause command}
+
+<<pause spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{pwd}}
+\index{pwd command}
+
+<<pwd spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{rehash}}
+\index{rehash command}
+
+<<rehash spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{set}}
+\index{set command}
+\label{setcmd}
+
+<<set spCommands.tex>>
+
+%SU-------------------------------------
+\subsection{\spcmd{shell}}
+\index{shell comand}
+
+<<shell spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{shift}}
+\index{shift command}
+
+<<shift spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{unalias}}
+\index{unalias command}
+
+<<unalias spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{unset}}
+\index{unset command}
+
+<<unset spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{usrset}}
+\index{usrset command}
+
+<<usrset spCommands.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{Input and Output Commands}
+
+<<iocmds spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{codeblock}}
+\index{codeblock command}
+\label{codeblock}
+
+<<codeblock spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{dumpnodes}}
+\index{dumpnodes command}
+
+<<dumpnodes spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{edit}}
+\index{edit command}
+
+<<edit spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{listing}}
+\index{listing command}
+
+<<listing spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{load}}
+\index{load command}
+
+<<load spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{print}}
+\index{print command}
+\label{print}
+
+<<print spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{printf}}
+\index{printf command}
+
+<<printf spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{return}}
+\index{return command}
+
+<<return spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{sced}}
+\index{sced command}
+
+<<sced spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{source}}
+\index{source command}
+
+<<source spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{sprint}}
+\index{sprint command}
+\label{sprint}
+
+<<sprint spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{write}}
+\index{write command}
+\label{writecmd}
+
+<<write spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{xeditor}}
+\index{xeditor command}
+\label{xeditor}
+
+<<xeditorcom spCommands.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{Simulation Control Commands}
+\label{simcmds}
+
+<<simcmds spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{ac}}
+\index{ac command}
+
+<<ac spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{alter}}
+\index{alter command}
+
+<<alter spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{alterf}}
+\index{alterf command}
+
+<<alterf spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{aspice}}
+\index{aspice command}
+
+<<aspice spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{cache}}
+\index{cache command}
+
+<<cache spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{check}}
+\index{check command}
+\label{checkcom}
+
+<<check spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{dc}}
+\index{dc command}
+
+<<dc spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{delete}}
+\index{delete command}
+
+<<delete spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{destroy}}
+\index{destroy command}
+
+<<destroy spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{devcnt}}
+\index{devcnt command}
+
+<<devcnt spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{devload}}
+\index{devload command}
+\index{loadable device modules}
+\label{devload}
+
+<<devload spCommands.tex>>
+
+%SU-------------------------------------
+\subsection{\spcmd{devls}}
+\index{devls command}
+
+<<devls spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{devmod}}
+\index{devmod command}
+
+<<devmod spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{disto}}
+\index{disto command}
+
+<<disto spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{dump}}
+\index{dump command}
+
+<<dump spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{findlower}}
+\index{findlower command}
+
+<<findlower spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{findrange}}
+\index{findrange command}
+
+<<findrange spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{findupper}}
+\index{findupper command}
+
+<<findupper spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{free}}
+\index{free command}
+
+<<free spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{jobs}}
+\index{jobs command}
+
+<<jobs spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{mctrial}}
+\index{mctrial command}
+
+<<mctrial spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{measure}}
+\index{measure command}
+
+<<measure spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{noise}}
+\index{noise command}
+
+<<noise spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{op}}
+\index{op command}
+
+<<op spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{pz}}
+\index{pz command}
+
+<<pz spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{reset}}
+\index{reset command}
+
+<<reset spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{resume}}
+\index{resume command}
+
+<<resume spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{rhost}}
+\index{rhost command}
+\label{rhost}
+
+<<rhostcom spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{rspice}}
+\index{rspice command}
+\label{rspice}
+
+<<rspice spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{run}}
+\index{run command}
+
+<<run spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{save}}
+\index{save command}
+
+<<save spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{sens}}
+\index{sens command}
+
+<<sens spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{setcirc}}
+\index{setcirc command}
+
+<<setcirc spCommands.hlp>>
+ 
+%SU-------------------------------------
+\subsection{\spcmd{show}}
+\index{show command}
+
+<<show spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{state}}
+\index{state command}
+
+<<state spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{status}}
+\index{status command}
+
+<<status spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{step}}
+\index{step command}
+
+<<step spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{stop}}
+\index{stop command}
+
+<<stop spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{sweep}}
+\index{sweep command}
+\index{loop command}
+
+<<sweep spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{tf}}
+\index{tf command}
+
+<<tf spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{trace}}
+\index{trace command}
+
+<<trace spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{tran}}
+\index{tran command}
+
+<<tran spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{vastep}}
+\index{vastep command}
+
+<<vastep spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{where}}
+\index{where command}
+
+<<where spCommands.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{Data Manipulation Commands}
+
+<<datacmds spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{compose}}
+\index{compose command}
+
+<<compose spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{cross}}
+\index{cross command}
+
+<<cross spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{define}}
+\index{define command}
+
+<<define spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{deftype}}
+\index{deftype command}
+
+<<deftype spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{diff}}
+\index{diff command}
+
+<<diff spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{display}}
+\index{display command}
+
+<<display spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{fourier}}
+\index{fourier command}
+
+<<fourier spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{let}}
+\index{let command}
+
+<<let spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{linearize}}
+\index{linearize command}
+
+<<linearize spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{pick}}
+\index{pick command}
+
+<<pick spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{seed}}
+\index{seed command}
+
+<<seed spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{setdim}}
+\index{setdim command}
+
+<<setdim spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{setplot}}
+\index{setplot command}
+
+<<setplot spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{setscale}}
+\index{setscale command}
+
+<<setscale spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{settype}}
+\index{settype command}
+\label{settype}
+
+<<settype spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{spec}}
+\index{spec command}
+
+<<spec spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{undefine}}
+\index{undefine command}
+
+<<undefine spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{unlet}}
+\index{unlet command}
+
+<<unlet spCommands.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{Graphical Output Commands}
+\label{grout}
+
+<<graphcmds sPlot.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{asciiplot}}
+\index{asciiplot command}
+
+<<asciiplot spPlot.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{combine}}
+\index{combine command}
+
+<<combine spPlot.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{hardcopy}}
+\index{hardcopy command}
+
+<<hardcopy spPlot.hlp>>
+ 
+%SU-------------------------------------
+\subsection{\spcmd{iplot}}
+\index{iplot command}
+
+<<iplot spPlot.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{mplot}}
+\label{mplot}
+\index{mplot command}
+
+<<mplot spPlot.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{plot}}
+\index{plot command}
+\label{plotcmd}
+
+<<plot spPlot.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{plotwin}}
+\index{plotwin command}
+
+<<plotwin spPlot.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{xgraph}}
+\index{xgraph command}
+
+<<xgraph spPlot.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{Miscellaneous Commands}
+
+<<misccmds spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{bug}}
+\index{bug command}
+
+<<bug spCommands.tex>>
+
+%SU-------------------------------------
+\subsection{\spcmd{help}}
+\index{help command}
+\label{help}
+
+<<help spCommands.hle>>
+
+%SU-------------------------------------
+\subsection{\spcmd{helpreset}}
+\index{helpreset command}
+
+<<helpreset spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{qhelp}}
+\index{qhelp command}
+
+<<qhelp spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{quit}}
+\index{quit command}
+
+<<quit spCommands.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{rusage}}
+\index{rusage command}
+\label{rusage}
+
+<<rusage spRusage.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{stats}}
+\index{stats command}
+
+<<stats spRusage.hlp>>
+
+%SU-------------------------------------
+\subsection{\spcmd{version}}
+\index{version command}
+
+<<version spCommands.hlp>>

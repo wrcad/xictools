@@ -811,6 +811,552 @@ Plotting Variables
     portion of the vertical axis, so as to not overlap.  Otherwise,
     each trace may occupy the entire vertical range on the plot.
     </dl>
+!!LATEX plot_vars variables.tex
+These variables control the numerous plotting modes and capabilities
+of the {\cb plot}, {\cb hardcopy}, {\cb xgraph}, and {\cb asciiplot}
+commands.  Most of these variables can be set indirectly from the
+{\cb Plot Options} panel and the {\cb Colors} panel in the {\cb Tools}
+menu of the {\cb Tool Control} window.
+
+\begin{description}
+\index{colorN variable}
+\item{\et color}{\it N}\\
+If a variable with the name ``{\vt color}{\it N\/}'' ({\it N} 1--19)
+is set to the name of a color the {\it N\/}'th value used in a window
+will have this color.  The value of {\vt color0} denotes the
+background color and {\vt color1} denotes the grid and text color. 
+The color names recognized are those found in the {\vt rgb.txt} file
+in the X-window system library.  These mappings are built into
+{\WRspice} and apply whether or not X is being run.  The colors can
+also be set using the panel brought up by the {\cb Colors} button in
+the {\cb Tools} menu, and can be set through the X-resource mechanism
+(see \ref{startup}) and the {\cb setrdb} command.
+
+The ``name'' for a color can be given in HTML-style notation:  {\vt
+\#}{\it rrggbb\/}, where {\it rr}, {\it gg}, {\it bb} are the hex
+values for the red, green and blue component of the color.
+
+\index{plotstyle keyword!combplot}
+\index{combplot variable}
+\item{\et combplot}\\
+This is a keyword of the {\et plotstyle} variable, or can be set as a
+boolean.  It directs the use of a comb plot (histogram) instead of
+connected points.  Each point is connected to the bottom of the plot
+area by a line.
+
+\index{curanalysis variable}
+\item{\et curanalysis}\\
+This read-only variable is set to the name of the analysis when
+analysis starts, and retains the value until a new analysis starts. 
+Possible values are
+\begin{quote}
+{\vt ac dc op tran tf noise disto sens}, or not set.
+\end{quote}
+This can be used in a {\vt .postrun} block to make actions specific to
+analysis type.
+
+Example
+\begin{quote}\vt
+.postrun\\
+strcmp("tran", \$curanalysis)\\
+if (\$? = 0)\\
+\hspace*{2em}print v(1) v(2) > tranout.prn\\
+end\\
+.endc
+\end{quote}
+
+\index{curplot variable}
+\item{\et curplot}\\
+This variable holds the name of the current plot.  It can be set to
+another plot name (as listed in the {\et plots} variable), which will
+become the current plot.  This variable can also be set to ``{\vt
+new}'', in which case a new, empty plot is created and becomes the
+current plot.
+
+\index{curplotdate variable}
+\item{\et curplotdate}\\
+This read-only variable contains the creation date of the current
+plot.
+
+\index{curplotname variable}
+\item{\et curplotname}\\
+This read-only variable contains a description of the type of
+simulation which produced the current plot.  Note that this is not the
+name used by the {\cb setplot} command, but rather a description of
+the type of simulation done.
+
+\index{curplottitle variable}
+\item{\et curplottitle}\\
+This read only variable contains the title of the circuit associated
+with the current plot.
+
+\index{gridsize variable}
+\item{\et gridsize}\\
+If this variable is set to an integer greater than zero and less than
+or equal to 10000, this number will be used as the number of equally
+spaced points to use for the X-axis when plotting in the {\cb plot}
+command.  The plot data will be interpolated to these linearly spaced
+points, and the use of this variable makes sense only when the raw
+data are not equally spaced, as from transient analysis with the {\et
+steptype} variable set to {\vt nousertp}.  Otherwise the current scale
+will be used (which may not have equally spaced points).  If the
+current scale isn't strictly monotonic, then this option will have no
+effect.  The degree of the interpolation is given by the variable {\et
+polydegree}.
+
+\index{gridstyle variable}
+\item{\et gridstyle}\\
+This variable is used to determine the style of grid used by the
+commands {\cb plot}, {\cb hardcopy}, and {\cb asciiplot}.  It can be
+set to one of the following values:
+
+\begin{tabular}{|l|l|}\hline
+\vt lingrid & Use a linear grid\\ \hline
+\vt loglog  & Use a log scales for both axes\\ \hline
+\vt xlog    & Use a log scale for the X axis\\ \hline
+\vt ylog    & Use a log scale for the Y axis\\ \hline
+\vt polar   & Use a polar grid\\ \hline
+\vt smith   & Transform data and use a Smith grid\\ \hline
+\vt smithgrid   & Use a Smith grid\\ \hline
+\end{tabular}
+
+\index{scaletype keyword!group}
+\index{group variable}
+\item{\et group}\\
+This is a keyword of the {\et scaletype} variable, or can be set as a
+boolean.  It indicates the use of common scales for three categories
+of data:  voltages, currents, and anything else.  Each group will have
+its own Y-scale.
+
+\index{hcopycommand variable}
+\item{\et hcopycommand}\\
+This variable specifies the operating system command which the {\cb
+hardcopy} command will use to send a job to the printer.  If the
+string contains the characters ``{\vt \%s}'', those characters will be
+replaced by the name of the file being used to store the plot data,
+otherwise the file name will be appended to the end of the string,
+separated by a space character.  This allows reference to the file in
+the middle of the string.  For example, suppose that your site has
+some strange printer, but that there is a filter which converts
+PostScript to a format recognized by that printer.  The command string
+might be ``{\vt myfilt <\%s |lpr -Pstrange\_printer}''.  Note that
+double quotes must be used in the {\cb set} command since the string
+contains space:
+\begin{quote}\vt
+set hcopycommand = "myfilt <\%s |lpr -Pstrange\_printer"
+\end{quote}
+
+\index{hcopydriver variable}
+\index{hardcopy drivers}
+\item{\et hcopydriver}\\
+\label{hardcopydriver}
+This variable specifies the default driver to use in the {\cb
+hardcopy} command.  The variable should be set to one of the following
+keywords:
+
+\begin{quote}
+\begin{tabular}{|l|l|}\hline
+Keyword & Description\\ \hline\hline
+{\vt hp\_laser\_pcl}                & mono HP laser\\ \hline
+{\vt hpgl\_line\_draw\_color}       & color HPGL\\ \hline
+{\vt postscript\_bitmap}            & mono PostScript\\ \hline
+{\vt postscript\_bitmap\_encoded}   & mono PostScript, compressed\\ \hline
+{\vt postscript\_bitmap\_color}     & color PostScript\\ \hline
+{\vt postscript\_bitmap\_color\_encoded} & color PostScript, compressed\\
+  \hline
+{\vt postscript\_line\_draw}        & mono PostScript, vector draw\\ \hline
+{\vt postscript\_line\_draw\_color} & color PostScript\\ \hline
+{\vt windows\_native}               & Microsoft Windows native\\ \hline
+{\vt image}                         & tiff, gif, jpeg, png, etc. images\\
+  \hline
+{\vt xfig\_line\_draw\_color}       & format for the {\vt xfig} program\\
+  \hline
+\end{tabular}
+\end{quote}
+
+These drivers correspond to the drivers available in the format menu
+of the {\cb Print} panel from the {\cb plot} windows.
+
+For PostScript, the line draw drivers are most appropriate for SPICE
+plots.  The bitmap formats will work, but are less efficient for
+simple line drawings.  More information on these drivers can be found
+in \ref{printdrivers}.
+
+If this variable is set to one of these formats, {\cb Print} panels
+from new plot windows will have this format set initially. 
+Otherwise, the initial format will be the first item in the format
+menu, or the last format selected from any plot window.
+
+\index{hcopyheight variable}
+\item{\et hcopyheight}\\
+This variable sets the default height of the image on the page, as
+measured in portrait orientation, used by the {\cb hardcopy} command.  It is
+specified as a floating point number representing inches, unless
+followed by ``cm'' (without space) which indicates centimeters.  The
+default is typically 10.5 inches, but this is driver dependent.
+
+\index{hcopylandscape variable}
+\item{\et hcopylandscape}\\
+This boolean variable, used by the {\cb hardcopy} command, will cause plots
+to be printed in landscape orientation when set.
+
+\index{hcopyresol variable}
+\item{\et hcopyresol}\\
+This variable sets the default resolution used by the driver to
+generate hardcopy data in the {\cb hardcopy} command.  In almost all
+cases, the default resolution which is achieved by not setting this
+variable is the best choice.  One case where this may not be true is
+with the {\vt hp\_laser\_pcl} driver, where the choices are 75, 100,
+150, and 300 (default 150).
+
+\index{hcopyrmdelay variable}
+\item{\et hcopyrmdelay}\\
+When a plot or page is printed, a temporary file is produced in a
+system directory ({\vt /tmp} by default), and by default this file is
+not removed.  There does not appear to be a portable way to know when
+a print job is finished, or to know whether the print spooler requires
+the existence of the file to be printed after the job is queued, thus
+the default action is to not perform any cleanup.
+
+If this variable is set to an integer value larger than 0, it will
+specify that a temporary print file is to be deleted this many minutes
+after creation.
+
+The {\vt at} command, available on all Unix/Linux/OS X platforms (but
+not Windows) is used to schedule deletion, which will occur whether or
+not {\WRspice} is still running.  For this to work, the user must have
+permission to use {\vt at}.  See ``{\vt man at}'' for more
+information.
+
+This variable can also be set from the {\cb hardcopy} page in the {\cb
+Plot Options} tool from the {\cb Tools} menu of the {\cb Tool Control}
+window, in Unix/Linux/OS X releases.
+
+\index{hcopywidth variable}
+\item{\et hcopywidth}\\
+This variable sets the default width of the image on the page, as
+measured in portrait orientation, used by the {\cb hardcopy} command. 
+It is specified as a floating point number representing inches, unless
+followed by ``cm'' (without space) which indicates centimeters.  The
+default is typically 8.0 inches, but this is driver dependent.
+
+\index{hcopyxoff variable}
+\item{\et hcopyxoff}\\
+This variable sets the distance of the image from the left edge of the
+page, viewed in portrait orientation, used by the {\cb hardcopy}
+command.  It is specified as a floating point number representing
+inches, unless followed by ``cm'' (without space) which indicates
+centimeters.  The default is typically 0.25 inches, but this is driver
+dependent.
+
+\index{hcopyyoff variable}
+\item{\et hcopyyoff}\\
+This variable sets the vertical position of the image on the page,
+viewed in portrait orientation, used by the {\cb hardcopy} command. 
+Some drivers measure this distance from the top of the page, others
+from the bottom.  This is a consequence of the internal coordinate
+systems used by the drivers, and the lack of assumption of a
+particular page size.  The offset is specified as a floating point
+number representing inches, unless followed by ``cm'' (without space)
+which indicates centimeters.  The default is typically 0.25 inches,
+but this is driver dependent.
+
+\index{gridstyle keyword!lingrid}
+\index{lingrid variable}
+\item{\et lingrid}\\
+This is a keyword of the {\et gridstyle} variable, or can be set as a
+boolean.  It specifies use of a linear grid.  This is the default grid
+type.
+
+\index{plotstyle keyword!lineplot}
+\index{linplot variable}
+\item{\et linplot}\\
+This is a keyword of the {\et plotstyle} variable, or can be set as a
+boolean.  It specifies the display of plot data as points connected by
+lines.  This is the default.
+
+\index{gridstyle keyword!loglog}
+\index{loglog variable}
+\item{\et loglog}\\
+This is a keyword of the {\et gridstyle} variable, or can be set as a
+boolean.  It specifies use of a log-log grid.
+
+\index{scaletype keyword!multi}
+\index{multi variable}
+\item{\et multi}\\
+This is a keyword of the {\et scaletype} variable, or can be set as a
+boolean.  It indicates the use of separate Y-scales for each trace of
+the plot (the default).
+
+\index{nobreak variable}
+\item{\et nobreak}\\
+If set, suppress page breaks when doing an {\cb asciiplot}.  The {\et
+nopage} variable is similar, but suppresses page breaks in both the
+{\cb asciiplot} and {\cb print} commands.
+
+\index{noasciiplotvalue variable}
+\item{\et noasciiplotvalue}\\
+If set, suppress printing the value of the first variable plotted with
+{\cb asciiplot} on the left side of the graph.
+
+\index{nogrid variable}
+\item{\et nogrid}\\
+Setting this boolean variable specifies plotting without use of a
+grid.  The data will be plotted with only the border lines at the
+bottom and left sides of the plotting area.
+
+\index{nointerp variable}
+\item{\et nointerp}\\
+This variable is used only by the {\cb asciiplot} command.  Normally
+{\cb asciiplot} interpolates data onto a linear scale before plotting
+it.  If this option is given this won't be done --- each line will
+correspond to one data point as generated by the simulation.  Since
+data are already linearized unless from a transient analysis with {\et
+steptype} set to {\vt nousertp}, setting this variable will avoid a
+redundant linearization.
+
+\index{noplotlogo variable}
+\item{\et noplotlogo}\\
+When set, the {\WRspice} logo is not shown in plots and hard-copies.
+
+\index{plotgeom variable}
+\item{\et plotgeom}\\
+This variable sets the size of subsequently created plot windows.  It
+can be set as a string {\vt "}{\it wid hei}{\vt "} or as a list {\vt
+(} {\it wid hei} {\vt )}.  The {\it wid} and {\it hei} are the width
+and height in pixels.
+
+For Microsoft Windows, the default (when {\et plotgeom} is unset)
+width and height are 500, 300 and these apply to the whole window. 
+Due to Microsoft's silly and unnecessary conversion to ``dialog
+units'', the actual pixel size may be slightly different.
+
+For others, the default width and height are 400, 300 and these 
+apply to the plotting area only.
+
+The acceptable numbers for the width and height are 100---2000.  In    
+the string form, a non-numeric character can separate the two
+numbers, e.g., {\vt "300x400"} is ok.
+
+\index{plotposn variable}
+\item{\et plotposn{\it N}}\\
+This variable can be used to set the screen position of the {\it N\/}'th
+plot window.  It can be specified as a list, as
+\begin{quote}
+{\vt set plotposn0 = ( 100 200 )}
+\end{quote}
+or as a string, as in
+\begin{quote}
+{\vt set plotposn2 = "150 250"}.
+\end{quote}
+The {\it N} can range from 0--15.  If not set, the plots are
+positioned by an internal algorithm.
+
+\index{plots variable}
+\item{\et plots}\\
+This list variable is read-only, and contains the names of the plots
+available.  The {\et curplot} variable can be set to any of these, or
+to the word ``new'', in which case a new, empty plot is created.
+
+\index{plotstyle variable}
+\item{\et plotstyle}\\
+This variable is used to determine the plot style in the commands
+{\cb plot}, {\cb hardcopy}, and {\cb asciiplot}.  Its value may be one of:
+
+\begin{tabular}{|l|l|}\hline
+\vt linplot   & Connect points with line segments\\ \hline
+\vt combplot  & Connect each point to the X-axis\\ \hline
+\vt pointplot & Plot each point as a discrete glyph\\ \hline
+\end{tabular}
+
+\index{pointchars variable}
+\item{\et pointchars}\\
+If this variable is set as a boolean, alpha characters will be used as
+glyphs for point plots (i.e., the {\et pointplot} mode is active) in a
+{\cb plot} command.  If set to a string, the characters in this string
+are used to plot successive data values.  The default is ``{\vt
+oxabcdefhgijklmnpqrstuvwyz}''.
+
+\index{plotstyle keyword!pointplot}
+\index{pointplot variable}
+\item{\et pointplot}\\
+This is a keyword of the {\et plotstyle} variable, or can be set as a
+boolean.  This will cause data to be plotted as unconnected points. 
+Each successive expression is plotted with a different glyph to mark
+the points.  The glyphs default to an internally generated set,
+however alpha characters can be used if the variable {\et pointchars}
+is set.
+
+\index{gridstyle keyword!polar}
+\index{polar variable}
+\item{\et polar}\\
+This is a keyword of the {\et gridstyle} variable, or can be set as a
+boolean.  It specifies use of a polar grid instead of a rectangular
+grid.
+
+\index{polydegree variable}
+\item{\et polydegree}\\
+This variable determines the degree of the polynomial that is fit to
+points when a plot is done.  If it is not set or set to 1, then the
+points are connected by lines.  If it is greater than 1, then a
+polynomial curve is fit to the points.  If the value of {\et
+polydegree} is {\it n\/}, then for each {\it n} + 1 adjacent points,
+an {\it n\/}th degree curve is fit.  If this is not possible (due to
+the fact that the points aren't monotonic), the curve is rotated 90
+degrees and another attempt is made.  If is is still unsuccessful,
+{\it n} is decreased by 1 and the process is repeated.  Thus four
+points in the shape of a diamond may be fit with quadratics to
+approximate a circle (although it's not clear that this situation
+comes up often in circuit simulation).  The variable {\et gridsize}
+determines the size of the grid on which the curve is fit if the data
+are monotonic.  If the {\et gridsize} variable is zero or not set, or
+the scale is non-monotonic, no polynomial fitting is done.
+
+\index{polysteps variable}
+\item{\et polysteps}\\
+This variable sets the number of intermediate points to plot between
+each actual point used for interpolation.  If not set, 10 points are
+used. 
+
+\index{present variable}
+\item{\et present}\\
+Setting this boolean variable will cause plots to be rendered without
+certain features, including title strings, date, logo, and vertical
+scale factors in multi-range cases.  The resulting plot window is
+intended to be customized by the user by adding text, and the exported
+image may be more suitable for use in presentations, papers, etc.
+
+\index{scaletype variable}
+\item{\et scaletype}\\
+This variable is used to determine the treatment of the Y-axis scaling
+used in displaying the curves in the {\cb plot} command.  Its value
+may be one of:
+
+\begin{tabular}{|l|l|}\hline
+\vt multi  & Use separate Y-scales for each trace (the default)\\ \hline
+\vt single & Use common Y-scale for all traces\\ \hline
+\vt group  & Use same scale for voltages, currents, and others\\ \hline
+\end{tabular}
+
+\index{scaletype keyword!single}
+\index{single variable}
+\item{\et single}\\
+This is a keyword of the {\et scaletype} variable, or can be set as a
+boolean.  It indicates the use of a common Y-scale for all traces in
+the plot.
+
+\index{gridstyle keyword!smith}
+\index{smith variable}
+\item{\et smith}\\
+This is a keyword of the {\et gridstyle} variable, or can be set as a
+boolean.  It specifies use of a Smith grid instead of a rectangular or
+polar grid, and an implicit transformation of the data into the
+``reflection coefficient'' space through the relation
+$S = (z - 1)/(z + 1)$, where {\it z} is the complex input data.
+
+\index{gridstyle keyword!smithgrid}
+\index{smithgrid variable}
+\item{\et smithgrid}\\
+This is a keyword of the {\et gridstyle} variable, or can be set as a
+boolean.  It specifies use of a Smith grid instead of a rectangular or
+polar grid, and plots the data directly, without transformation.  The
+data must fall within the unit circle in the complex plane to be
+visible.
+
+\index{ticmarks variable}
+\item{\et ticmarks}\\
+If this variable is set as a boolean, than an ``x'' will be printed
+every 10 points for each curve plotted.  This variable may also be set
+as a number, which will be the number of points between each tic mark. 
+If interpolation is used for plotting, the ticmarks feature is
+disabled.
+
+\index{title variable}
+\item{\et title}\\
+This variable provides a string to use as the title printed in the
+plot.  If not specified, the title is taken as the name of the current
+plot.
+
+\index{xcompress variable}
+\item{\et xcompress}\\
+This variable can be set to an integer {\it value}.  It specifies that
+we plot only one out of every {\it value} points in each of the
+vectors.
+
+\index{xdelta variable}
+\item{\et xdelta}\\
+This value is used as the spacing between grid lines on the x-axis, if
+set.
+
+\index{xglinewidth variable}
+\item{\et xglinewidth}\\
+This variable specifies the line width in pixels to use in {\cb
+xgraph} plots.  If not set, a minimum line width is used.
+
+\index{xgmarkers variable}
+\item{\et xgmarkers}\\
+If set, {\cb xgraph} point plots will use cross marks, otherwise big
+pixels are used.
+
+\index{xindices variable}
+\item{\et xindices}\\
+This variable can be set as a list {\vt (} {\it lower upper} {\vt )}
+or as a string {\vt "}{\it lower upper}{\vt "}, where {\it lower} and
+{\it upper} are integers.  Only data points with indices between {\it
+lower} and {\it upper} are plotted.  The value of {\it upper} must be
+greater or equal to {\it lower}.
+
+\index{xlabel variable}
+\item{\et xlabel}\\
+This variable provides a string to be used as the label for the
+x-axis.  If not set, the name of the scale vector is used.
+
+\index{xlimit variable}
+\item{\et xlimit}\\
+This variable can be set as a list {\vt (} {\it lower upper} {\vt )}
+or as a string {\vt "}{\it lower upper}{\vt "}, where {\it lower} and
+{\it upper} are reals.  The plot area in the x-direction is restricted
+to lie between {\vt lower} and {\it upper}.  The area actually used
+may be somewhat larger to provide nicely spaced grid lines, however.
+
+\index{gridstyle keyword!xlog}
+\index{xlog variable}
+\item{\et xlog}\\
+This is a keyword of the {\et gridstyle} variable, or can be set as a
+boolean.  It specifies use of a log scale for the x-axis and a linear
+scale for the y-axis.
+
+\index{ydelta variable}
+\item{\et ydelta}\\
+This value is used as the spacing between grid lines on the y-axis, if
+set.
+
+\index{ylabel variable}
+\item{\et ylabel}\\
+This variable provides a string to be used as the label for the
+y-axis.  If not set, no label is printed.
+
+\index{ylimit variable}
+\item{\et ylimit}\\
+This variable can be set as a list {\vt (} {\it lower upper} {\vt )}
+or as a string {\vt "}{\it lower upper}{\vt "}, where {\it lower} and
+{\it upper} are reals.  Setting this variable will limit the plot area
+in the y-direction to lie between {\it lower} and {\it upper}.  It may
+be expanded slightly to allow for nicely spaced grid lines.
+
+\index{gridstyle keyword!ylog}
+\index{ylog variable}
+\item{\et ylog}\\
+This is a keyword of the {\et gridstyle} variable, or can be set as a
+boolean.  It specifies use of a log scale for the y-axis and a linear
+scale for the x-axis.
+
+\index{ysep variable}
+\item{\et ysep}\\
+If this boolean is set, the traces will be provided with their own
+portion of the vertical axis, so as to not overlap.  Otherwise, each
+trace may occupy the entire vertical range on the plot.
+\end{description}
 
 !!SEEALSO
 variables

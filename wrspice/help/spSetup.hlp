@@ -621,6 +621,439 @@ Environment Variables
     This has the same effect as <b>SPICENOMAIL</b> but also prevents 
     email from the <i>Xic</i> program.
     </dl>
+!!LATEX environment useriface.tex
+Environment variables are keyword/value pairs that are made available
+to an application by the command shell or operating system.  The value
+of an environment variable is a text string, which may be empty. 
+Environment variables can be set by the user to control various
+defaults in {\WRspice}.
+
+%SU-------------------------------------
+\subsection{Unix/Linux}
+\index{environment variables!setting}
+
+Environment variables are maintained by the user's command shell.  It
+is often convenient to set environment variables in a shell startup
+file such as {\vt .cshrc} or {\vt .login} for the C-shell or {\vt
+.profile} for the Bourne shell.  These files reside in the user's home
+directory.  See the manual page for your shell for more information.
+
+For the C-shell, the command that sets an environment variable is
+\begin{quote}
+{\vt setenv} {\it variable\_name} [{\it value\/}]
+\end{quote}
+For example,
+\begin{quote}
+{\vt setenv XT\_DUMMY "hello world!"}
+\end{quote}
+Note that if the value contains white space, it should be quoted. 
+Note also that it is not necessary to have a value, in which case the
+variable acts as a boolean (set or not set).
+
+In the C-shell, one can use {\vt setenv} without arguments, or {\vt
+printenv}, to list all of the environment variables currently set.
+
+For a modern Bourne-type shell, such as {\vt bash}, the
+corresponding command is
+\begin{quote}
+{\vt export} {\it variable\_name\/}[={\it value\/}]
+\end{quote}
+In this type of shell one can list the variables currently set by
+giving the shell {\vt set} command with no arguments.
+
+%SU-------------------------------------
+\subsection{Microsoft Windows}
+
+Under Windows, environment variables can be set in a DOS box with the
+``{\vt set}'' command before starting the program from the command
+line, or in the {\vt AUTOEXEC.BAT} file, or from the {\cb System}
+entry in the {\cb Control Panel}.  Only the latter two methods work if
+the programs are started from an icon.  If using a Cygwin bash-box,
+environment variables can be set in the startup file as under Unix.
+
+{\WRspice} is {\bf not} compatible with the {\vt mintty} terminal
+emulator which is the current default in Cygwin.  Only Cygwin-built
+programs work properly from this terminal if they use a command line
+interface.
+
+%SU-------------------------------------
+\subsection{{\WRspice} Environment Variables}
+
+The following environment variables are used by all {\XicTools}
+programs.
+
+\begin{description}
+\index{environment variables!WRSPICE\_HOME}
+\item{\et WRSPICE\_HOME}\\
+If found in the environment when {\WRspice} starts, it is expected to
+contain a path to the {\WRspice} installation area or equivalent,
+which defaults to ``{\vt /usr/local/xictools/wrspice}''.  This
+overrides {\et XT\_PREFIX} if that environment variable is also found.
+
+There is an important subtlety when using this variable.  Although it
+allows {\WRspice} to find its startup files anywhere, only the
+directory structure implied by {\et XT\_PREFIX}, that is, for
+<i>WRspice</i>,
+\begin{quote} \vt
+\$XT\_PREFIX/xictools/wrspice
+\end{quote}
+is compatible with the program installation script.  The variable is
+perhaps useful for pointing {\WRspice} toward a secondary set of
+startup files, perhaps heavily customized by the user, which may
+reside in an arbitrary location.
+
+\index{environment variables!WRSPICE\_FIFO}
+\item{\et WRSPICE\_FIFO}\\
+When {\WRspice} starts, it creates a ``named pipe'', otherwise known
+as a fifo (see \ref{fifo}).  Text written to the fifo is piped into
+{\WRspice}, as if input with the {\cb source} command.  If this
+variable is found in the environment, the text of this variable is
+taken as the base name for the fifo, instead of ``{\vt wrsfifo}''.  In
+Unix/Linux, this name can have a full path.  All components of the
+path except for the file name must exist.  If there is a conflict with
+an existing entity, an integer suffix will be added to make the name
+unique.  In Windows, any path given is stripped and ignored.
+
+%\ifxtlserv
+%\index{environment variables!XT\_AUTH\_MODE}
+%\item{\et XT\_AUTH\_MODE}\\
+%By default, Unix/Linux versions of {\Xic} and {\WRspice} use
+%authorization provided by an external license server, possibly hosted
+%on a different machine.  On the other hand, the Windows versions and
+%{\XicII}/{\Xiv} use built-in authorization.  Both the external
+%license server and the programs not using the license server make use
+%of a file named ``{\vt LICENSE}'' provided by Whiteley Research, Inc.,
+%which provides authorization to run on the host computer.
+%
+%It is possible to run {\Xic} and {\WRspice} without a license server,
+%and to run {\XicII}/{\Xiv} from a license server.  The status is set
+%with the environment variable {\et XT\_AUTH\_MODE}.  This variable has
+%meaning if set to one of the keywords ``{\vt Server}'' or ``{\vt
+%Local}''
+%
+%If set to ``{\vt Server}'', {\XicII} and {\Xiv} will validate through
+%a license server the same way as {\Xic} and {\WRspice} normally do. 
+%If set to ``{\vt Local}'', {\Xic} and {\WRspice} will be
+%self-validating the way {\XicII} normally is.
+%
+%{\Xic} and/or {\WRspice} users on a single licensed workstation may
+%prefer to set the environment variable in their shell startup file and
+%not use the external license server.
+%
+%When the programs look for the LICENSE file in ``{\vt Local}'' mode,
+%if the file is not found in the startup or license directories, the
+%programs will look in the home and current directories, in that order,
+%unless {\et XT\_LICENSE\_PATH} is also set.
+%
+%\index{environment variables!XT\_LICENSE\_PATH}
+%\index{XT\_LICENSE\_PATH environment variable}
+%\item{\et XT\_LICENSE\_PATH}\\
+%When using local validation (i.e., not using the license server) {\et
+%XT\_LICENSE\_PATH} can be set to the full path to the license file. 
+%Only this file will be used -- the regular search is suppressed.
+%
+%\index{environment variables!XTLSERVER}
+%\index{XTLSERVER environment variable}
+%\item{\et XTLSERVER}\\
+%This provides the host name of the host running the license server
+%needed to validate the application.  It is in a format understandable
+%to the local name server.  The host name can optionally be suffixed by
+%``{\vt :}{\it port\/}'', where {\it port} is the port number in use by
+%the server.  There should be no space around the colon when using this
+%form.
+%\fi
+
+\index{environment variables!XT\_PREFIX}
+\index{XT\_PREFIX environment variable}
+\item{\et XT\_PREFIX}\\
+All of the {\XicTools} programs respond to the {\et XT\_PREFIX}
+environment variable.  When the tools are installed in a non-standard
+location, i.e., other than {\vt /usr/local}, this can be set to the
+directory prefix which effectively replaces ``{\vt /usr/local}'', and
+the programs will be able to access the installation library files
+without further directives.  This should not be needed under Windows,
+as the Registry provides the default paths.
+
+\index{environment variables!XT\_HOMEDIR}
+\index{XT\_HOMEDIR environment variable}
+\item{\et XT\_HOMEDIR}\\
+Under Windows, the user's ``home'' directory is determined by looking
+at environment variables.
+
+In Linux, the {\et HOME} environment variable is set the the user's home
+directory, and this is also true under Windows if using a Linux emulation
+package such as Cygwin or MSYS.  However, in this case {\et HOME} will be
+relative to the file system as seen within the emulator, and not the
+actual Windows file system as seen in {\Xic} or {\WRspice} which are
+Windows-native programs.  Therefor, the {\et HOME} environment variable
+is ignored under Windows.
+
+Instead, the programs will first look for {\et XT\_HOMEDIR}.  This
+should be set to the Windows path to the user's MSYS2 or Cygwin home  
+directory.  For example, this can be done from the {\vt bash\_profile}
+file by adding a line
+\begin{quote}
+{\vt export XT\_HOMEDIR=c:/msys64/home/}{\it yourlogin}
+\end{quote}
+Setting this will allow {\Xic} and {\WRspice} to find files in the
+user's MSYS2 home directory, even though the programs are Windows
+native and don't know the MSYS2 paths.
+
+The deprecated {\et XIC\_START\_DIR} variable is checked next, and if
+found its value is taken as the user's home directory in the same
+manner.
+
+If not found, the {\et HOMEDIR} and {\et HOMEPATH}
+variables, if both are found, are concatenated to yield the home
+directory path.  In the unlikely event that these are not set, the
+{\et USERPROFILE} variable is checked, and if all else fails, ``{\vt
+C:$\backslash$}'' is assumed.  The {\et HOMEDIR}/{\et HOMEPATH} and
+{\et USERPROFILE} variables are set by Windows, at least in some
+Windows versions.
+
+Under other operating systems, the home directory is well-defined
+and is obtained from operating system calls.
+
+\index{environment!XTNETDEBUG}
+\index{XTNETDEBUG environment variable}
+\item{\et XTNETDEBUG}\\
+If the variable {\et XTNETDEBUG} is defined, {\Xic} and {\WRspice}
+will echo interprocess messages sent and received to the console.  In
+server mode, {\Xic} will not go into the background, but will remain
+in the foreground, printing status messages while servicing requests.
+
+\index{environment!XT\_KLU\_PATH}
+\index{XT\_KLU\_PATH environment variable}
+\item{\et XT\_KLU\_PATH}\\
+This can be set to the full path to the KLU (sparse matrix solver)
+plug-in.  For example, this path by default in a Linux installation is
+\begin{quote}\vt
+/usr/local/xictools/wrspice/startup/klu\_wr.so
+\end{quote}
+The plug-in is found automatically so this variable is needed only for
+special cases. 
+
+The KLU version changed in wrspice-4.2.7, and the plug-ins are not
+compatible.  Current {\WRspice} releases will not load the old
+plug-in, however older releases will load a new plug-in if found in
+the default location, which will likely cause a program crash.  This
+variable can be set in this case to avoid the problem.
+
+\index{memory management}
+\index{environment variables!XT\_LOCAL\_MALLOC}
+\index{XT\_LOCAL\_MALLOC environment variable}
+\item{\et XT\_LOCAL\_MALLOC}\\
+Linux and FreeBSD releases can use an included local memory allocation
+package.  In earlier {\WRspice} releases, this allocator, rather than
+the allocator provided by the operating system, was used by default. 
+In 32--bit releases, the local allocator was often able to allocate
+more memory than the allocators provided by the operating system.  It
+also provided custom error reporting and statistics.
+
+This feature is now disabled, as in modern operating systems there is
+dubious benefit, and it can produce stability problems in some cases. 
+However, if this variable is set in the environment when {\WRspice} is
+started, the local allocator will be used.  The interested user is
+encouraged to experiment.
+
+\index{environment variables!XT\_SYSTEM\_MALLOC}
+\index{XT\_SYSTEM\_MALLOC environment variable}
+\item{\et XT\_SYSTEM\_MALLOC}\\
+This variable was once used to disable the internal local memory
+allocator, which in earlier releases was enabled by default. 
+Currently, this variable is ignored.
+
+\index{environment!XT\_GUI\_COMPACT}
+\index{XT\_GUI\_COMPACT environment variable}
+\item{\et XT\_GUI\_COMPACT}\\
+When set, no extra space is allowed around pushbutton contents in the
+graphical interface.  Such space can cause menu button images to
+be truncated on low-resolution displays if the theme in use imposes
+too much space.  Setting this variable is a quick fix for this
+problem, though one could also change the theme.
+\end{description}
+
+There are several environment variables which can be used to alter
+some of the {\WRspice} defaults.  On startup, {\WRspice} checks for the
+following variables in the environment, and alters internal defaults
+accordingly.  The defaults can be modified when the program is built,
+the defaults listed below are those assigned in the distribution.
+
+\begin{description}
+\raggedright
+\index{environment variables!HOME}
+\index{HOME environment variable}
+\item{\et HOME}\\
+This is used only in the Microsoft Windows version, and can be set to
+a full directory path which will be taken as the user's home
+directory.
+
+\index{environment variables!DISPLAY}
+\index{DISPLAY environment variable}
+\item{\et DISPLAY}\\
+This variable defines the X window system display that {\WRspice} will
+use, but is ignored if the {\vt -d} option is used on the {\WRspice}
+command line.  The display must be specified for graphics to be
+enabled in {\WRspice}.
+
+\index{environment variables!EDITOR}
+\index{EDITOR environment variable}
+\item{\et EDITOR}\\
+If defined to the invoking string for a text editor, that editor will
+be used in the {\cb edit} command.  This is superseded by the {\et
+SPICE\_EDITOR} variable, if set.
+
+\index{SPICE\_EDITOR environment variable}
+\index{environment variables!SPICE\_EDITOR}
+\item{\et SPICE\_EDITOR}\\
+The text editor called by the {\cb edit} command can be set with this
+variable.  The variable is defined to the command string one would
+type to invoke the editor.  This will supersede the {\et EDITOR}
+variable, if set, but which would otherwise have the same effect.  If
+no editor is specified in the environment, or with the {\et editor}
+shell variable, which supersedes the environment variables, a default
+internal editor is used.  The default internal editor can also be
+specified by setting {\et SPICE\_EDITOR} to nothing, ``{\vt default}'',
+or ``{\vt xeditor}''.
+
+\index{environment variables!TMPDIR}
+\index{TMPDIR environment variable}
+\item{\et TMPDIR}\\
+This specifies a directory to use for temporary files, and is
+superseded by {\et SPICE\_TMP\_DIR}, if defined.  The default location
+if not specified is {\vt /tmp}.
+
+\index{environment variables!SPICE\_TMP\_DIR}
+\index{SPICE\_TMP\_DIR environment variable}
+\item{\et SPICE\_TMP\_DIR}\\
+When {\WRspice} creates a temporary file, it will look for a directory named
+by the {\et SPICE\_TMP\_DIR} environment variable, and if not found the
+directory named in the {\et TMPDIR} variable, and if still not found
+the file will be created in {\vt /tmp}.
+
+\index{environment variables!SPICE\_EXEC\_DIR}
+\index{SPICE\_EXEC\_DIR environment variable}
+\item{\et SPICE\_EXEC\_DIR}\\
+This variable can be used to define the directory containing the
+{\XicTools} binaries, used by the {\cb aspice} command and the {\vt
+wrspiced} daemon.  If not set, the default is ``{\vt
+/usr/local/xictools/bin}'', or, if {\vt XT\_PREFIX} is set, its
+value replaces ``{\vt /usr/local}''.
+
+\index{environment variables!SPICE\_PATH}
+\index{SPICE\_PATH environment variable}
+\item{\et SPICE\_PATH}\\
+This can be used to set the full path to the {\WRspice} executable,
+for the {\cb aspice} command and the {\vt wrspiced} daemon.  If not
+set, the default is ``{\vt /usr/local/xictools/bin/wrspice}'',
+or, if {\et XT\_PREFIX} is set, its value replaces ``{\vt
+/usr/local}''.  The {\et SPICE\_EXEC\_DIR} variable can also be used
+for this purpose, unless the {\vt wrspice} executable has been
+renamed.  The {\et spicepath} shell variable, if set, will override
+the path set in the environment.
+
+\index{environment variables!SPICE\_LIB\_DIR}
+\index{SPICE\_LIB\_DIR environment variable}
+\item{\et SPICE\_LIB\_DIR}\\
+This variable can be used to change the default location where
+{\WRspice} looks for system startup files.  If not set, the internal
+default is ``{\vt /usr/local/xictools/wrspice/startup}'', or, if
+{\vt XT\_PREFIX} is set, its value replaces ``{\vt /usr/local}''.
+
+\index{environment variables!SPICE\_INP\_PATH}
+\index{SPICE\_INP\_PATH environment variable}
+\item{\et SPICE\_INP\_PATH}\\
+This can be set to a list of directories to search for input files and
+scripts.  If not set, the internal default is ``{\vt ( . 
+/usr/local/xictools/wrspice/scripts )}'', or, if {\et XT\_PREFIX}
+is set, its value replaces ``{\vt /usr/local}''.
+
+\index{environment variables!SPICE\_HLP\_PATH}
+\index{SPICE\_HLP\_PATH environment variable}
+\item{\et SPICE\_HLP\_PATH}\\
+This can be set to a list of directories to search for help database
+files.  If not set, the internal default is ``{\vt (
+/usr/local/xictools/wrspice/help )}'', or, if {\et XT\_PREFIX} is
+set, its value replaces ``{\vt /usr/local}''.  This is superseded by
+the {\et helppath} shell variable, if set.
+
+\index{environment variables!SPICE\_NEWS\_FILE}
+\index{SPICE\_NEWS\_FILE environment variable}
+\item{\et SPICE\_NEWS\_FILE}\\
+This variable can be set to the full path to a text file which is
+printed when {\WRspice} starts.  If not set, the file {\vt
+/usr/local/xictools/wrspice/startup/news} will be printed, if it
+exists (if {\et XT\_PREFIX} is set, its value replaces ``{\vt
+/usr/local}'').
+
+\index{environment variables!SPICE\_BUGADDR}
+\index{SPICE\_BUGADDR environment variable}
+\item{\et SPICE\_BUGADDR}\\
+This variable can be set to an internet mail address to use in the bug
+reporting command.  If not set, the built in default is the Whiteley
+Research technical support address.
+
+\index{environment variables!SPICE\_OPTCHAR}
+\index{SPICE\_OPTCHAR environment variable}
+\item{\et SPICE\_OPTCHAR}\\
+This variable can be defined to a character that will be used to flag
+options on the {\WRspice} command line.  If not defined, the option
+character is ``$-$''.
+
+\index{environment variables!SPICE\_ASCIIRAWFILE}
+\index{SPICE\_ASCIIRAWFILE environment variable}
+\item{\et SPICE\_ASCIIRAWFILE}\\
+If this variable is defined to ``0'' (zero), or to a word starting
+with `{\vt f}' or `{\vt F}' such as ``{\vt False}'', or `{\vt n}' or
+`{\vt N}' such as ``{\vt No}'', {\WRspice} will create binary
+plot-data files (rawfiles).  If not set or set to something else,
+{\WRspice} will create the default ASCII-format rawfiles.  The {\et
+filetype} shell variable can also be used to set the mode, which will
+supersede the environment variable.  The rawfiles are normally created
+with the {\cb write} command.
+
+\index{environment variables!SPICE\_HOST}
+\index{SPICE\_HOST environment variable}
+\item{\et SPICE\_HOST}\\
+This variable can be used to set the host name to use for remote SPICE
+runs.  The host name can optionally be suffixed by a colon followed by
+the port number to use for communication with the {\vt wrspiced}
+daemon.  If not given, the port is obtained from the operating system
+for ``{\vt wrspice/tcp}'', or 6114 (the IANA registered port number
+for this service) if this is not defined.  There is no default for
+this variable.  Hosts can also be specified with the {\cb rhost}
+command, and given with the {\et rhost} shell variable.
+
+\index{environment variables!SPICE\_DAEMONLOG}
+\index{SPICE\_DAEMONLOG environment variable}
+\item{\et SPICE\_DAEMONLOG}\\
+This variable is used by the {\vt wrspiced} daemon program to set an
+alternate path for the log file.  The default path is {\vt
+/tmp/wrspiced.log}.
+
+\index{environment variables!SPICENOMAIL}
+\index{SPICENOMAIL environment variable}
+\item{\et SPICENOMAIL}\\
+If the variable {\et SPICENOMAIL} is set, no mail will be sent during
+a program crash.  If a fatal error is encountered, a file named ``{\vt
+gdbout}'' is created in the current directory, which contains a stack
+backtrace from the stack frame of the error.  Despite the name, the
+file is generated internally on all platforms, and no longer makes use
+of the {\vt gdb} program.
+
+By default, this file will be emailed to Whiteley Research for
+analysis.  However, the emailing can be suppressed by setting this
+variable in the environment.  The {\vt gdbout} file is produced in any
+case, and would be very useful to Whiteley Research for fixing program
+bugs.
+
+\index{environment variables!XTNOMAIL}
+\index{XTNOMAIL environment variable}
+\item{\et XTNOMAIL}\\
+This has the same effect as {\et SPICENOMAIL} but also prevents email
+from the {\Xic} program.
+\end{description}
+\index{environment variables|)}
 
 !!REDIRECT license.host         startup_files#license.host
 !!REDIRECT .wrspiceinit         startup_files#wrspiceinit
@@ -734,6 +1167,97 @@ Startup Files
     The same definitions could be placed in a <tt>.wrspiceinit</tt>
     file with lines like "<tt>set color2 = red</tt>".
     </dl>
+!!LATEX startup_files useriface.tex
+Prior releases of {\WRspice} could be configured to check for the
+availability of program updates on startup.  There was also provision
+for display of a message if one was ``broadcast'' from the Whiteley
+Research web site.  This latter feature was never used, and neither
+feature is currently supported in {\WRspice}.  Thus, there is no
+longer a network access attempt on program startup, which may save
+time.
+
+Program updates are handled in the help system (see \ref{update}),
+for all of the {\XicTools} packages.  Either the help system built
+into {\Xic} and {\WRspice}, or the stand-alone {\it mozy} program can
+be used to check for, download, and install updates.  Giving the
+keyword ``{\vt :xt\_pkgs}'' will display a page that provides update
+information and download/install buttons.
+
+If a new {\WRspice} release is run for the first time, the
+release notes will appear in a pop-up window, as if the {\cb Notes}
+button in the {\cb Help} menu was pressed.  There is a file in the
+user's {\vt .wr\_cache} directory named ``{\vt
+wrspice\_current\_release}'' that contains a release number.  If, when
+{\WRspice} starts, this file is missing or the release number is not
+current, {\WRspice} will show the release notes and update the file. 
+If the release numbers match, there is no action.
+
+\index{wrspiceinit file}
+{\WRspice} will attempt to source startup files used for
+initialization when the program is started.  First, a file named
+``{\vt wrspiceinit}'' is searched for in the system startup directory,
+and if found is sourced into {\WRspice}.  The system startup directory
+has a default location built into the program\\
+({\vt /usr/local/xictools/wrspice/startup}, or if {\et XT\_PREFIX}
+is set in the environment, its value replaces ``{\vt /usr/local}''),
+but this can be changed by setting the {\et SPICE\_LIB\_DIR}
+environment variable to another location.
+
+\begin{description}
+%\ifxtlserv
+%\index{license.host file}
+%\item{{\vt license.host} file}\\
+%When using a license server on a remote machine, it is necessary to
+%provide the name of this machine or {\WRspice} can not run.  One way
+%to do this is to create a {\vt license.host} file in the startup
+%directory, e.g. {\vt /usr/local/xictools/wrspice/startup}.  The
+%{\vt license.host} file consists of a single line of text, giving the
+%host name of the license server machine.  The host name can optionally
+%be suffixed with ``{\vt :}{\it port\/}'', where {\it port} is the port
+%number in use by the license server.  This is required if for some
+%reason the license server is not running on the default port.
+%\fi
+
+\index{.wrspiceinit file}
+\item{{\vt .wrspiceinit} file}\\
+Files named ``{\vt .wrspiceinit}'' are searched for in the user's home
+directory, and the current directory, and are sourced, if found, in
+that order.  If running on Microsoft Windows which does not support
+the notion of a home directory, {\WRspice} will look in the
+environment for a variable named ``{\et HOME}'', and its value will be
+taken as the path to the "home directory".  If not set, the search is
+skipped.
+
+These files have identical format, and contain ordinary script
+commands, which can be used to set the default behavior of {\WRspice}. 
+The first line is ignored, but all remaining lines are taken as script
+commands.  The special directive {\vt tbsetup}, which can only appear
+in these files, provides the setup information for the graphical
+interface.  Unlike ordinary input files, it is not necessary to
+enclose the commands in {\vt .control} or {\vt .exec} blocks in the
+startup files.
+
+\index{X resources}
+\index{colors, setting}
+\item{X Resources}\\
+When using the X-window system, the X resource-passing mechanism can
+be used to set the default colors used in plots.  The resource
+mechanism is otherwise ignored in the current version of {\WRspice}. 
+The base names for the color resources are ``{\vt color0}'' through
+``{\vt color19}'', with the corresponding class names capitalized. 
+Thus, one way to define alternative plotting colors is to create a
+file named ``{\vt Wrspice}'' in the user's home directory, which
+contains lines like
+\begin{quote}\vt
+*color2: red
+\end{quote}
+for each new color definition.  The color name should be known to the
+X window system, i.e., be listed in the {\vt rgb.txt} file in the
+X-windows system library.
+
+The same definitions could be placed in a {\vt .wrspiceinit} file with
+lines like ``{\vt set color2 = red}''.
+\end{description}
 
 !! useriface.tex 012709
 !!KEYWORD
@@ -801,6 +1325,57 @@ tbsetup command
     editing of the <tt>.wrspiceinit</tt> file may be used to remove
     buttons or change the button order in the <b>Tools</b> menu.  Once
     edited, only the tools present will be updated.
+!!LATEX tbsetup useriface.tex
+This command can appear in the startup files only.  It is inserted
+into or updated in the {\vt .wrspiceinit} file in the user's home
+directory in response to the {\cb tbupdate} command, or from pressing
+the {\cb Update Tools} button in the {\cb File} menu of the {\cb Tool
+Control window}.  It is not likely that the user will need to work
+with {\cb tbsetup} directly, though it can be used to customize the
+{\cb Tools} menu in the {\cb Tool Control} window.
+
+The command string takes the following form:
+\begin{lquote}{\vt
+tbsetup [old] [vert] [toolbar on|off {\it x y}] [{\it name1} on|off {\it x y}]
+ [{\it name2} ...}
+\end{lquote}
+The {\vt old} and {\vt vert} keywords are ignored.  They exist for
+backward compatibility.
+
+By invoking the {\cb tbupdate} command from the prompt line or
+pressing the {\cb Update Tools} button in the {\cb File} menu of the
+{\cb Tool Control} window, a {\vt .wrspiceinit} file is created in the
+user's home directory if necessary, and the {\cb tbsetup} command will
+be added or updated.  This will save the current state of the windows
+from the {\cb Tools} menu, which will be recreated when the program is
+started the next time.
+
+If no {\cb tbsetup} command is found on program startup, a
+default configuration is used (all tools initially invisible).
+
+For each argument block in the {\cb tbsetup} call, the first token
+gives the tool name, with the ``{\vt toolbar}'' entry indicating the
+{\cb Tool Control} window itself.  For other than the {\cb Tool
+Control} window, which is always shown, the {\vt on} and {\vt off}
+keywords specify whether the tools are shown at startup.  The two
+numbers that follow give the position of the upper left corner of the
+tool on the screen (the screen origin is the upper left corner,
+coordinates are in pixels).  For other than the first ({\cb Tool
+Control} window) entry, the blocks can be rearranged or deleted.  The
+{\cb Tools} menu will show only the tools listed, in the order given. 
+Thus, the {\cb Tools} menu can be customized.
+
+To generate an initial custom configuration, simply start {\WRspice}
+on a system that supports graphics, and the {\cb Tool Control} window
+will appear somewhere on-screen.  After opening some of the tools from
+the {\cb Tools} menu and arranging them as necessary and/or moving the
+{\cb Tool Control} window, the {\cb Update Tools} button in the {\cb
+File} menu can be pressed.  A {\vt .wrspiceinit} file will be created,
+or an existing file updated, in the user's home directory. 
+Alternatively, the {\cb tbupdate} command can be given from the
+command line.  Hand editing of the {\vt .wrspiceinit} file may be used
+to remove buttons or change the button order in the {\cb Tools} menu. 
+Once edited, only the tools present will be updated.
 
 !!SEEALSO
 graphics

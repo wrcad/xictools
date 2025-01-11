@@ -56,9 +56,6 @@
 #include "regex/regex.h"
 #endif
 
-// Max !!IFDEF nesting depth
-#define SCOPEDEPTH 20
-
 
 namespace {
 
@@ -302,6 +299,7 @@ cHelp::read(const char *keyword)
         return (0);
     HLPtopic *top = new HLPtopic(keyword, bb->title, bb->tag, true);
     top->set_is_html(bb->is_html);
+    bool latex = false;
     bool seealso = false;
     bool subtopics = false;
 
@@ -310,7 +308,18 @@ cHelp::read(const char *keyword)
 
     char buf[256], tbuf[64], *s, *t;
     HLPwords *hw = 0;
+    bool prot = false;
     while ((s = my_fgets(buf, 256, fp)) != 0) {
+
+        if (prot) {
+            if (lstring::ciprefix(HLP_UNPROTECT, s))
+                prot = false;
+            continue;
+        }
+        if (lstring::ciprefix(HLP_PROTECT, s)) {
+            prot = true;
+            continue;
+        }
 
         if (lstring::ciprefix(HLP_COMMENT, s))
             continue;
@@ -379,12 +388,20 @@ cHelp::read(const char *keyword)
             }
             continue;
         }
+        if (lstring::ciprefix(HLP_LATEX, s)) {
+            latex = true;
+            seealso = false;
+            subtopics = false;
+            continue;
+        }
         if (lstring::ciprefix(HLP_SEEALSO, s)) {
+            latex = false;
             seealso = true;
             subtopics = false;
             continue;
         }
         if (lstring::ciprefix(HLP_SUBTOPICS, s)) {
+            latex = false;
             subtopics = true;
             seealso = false;
             continue;
@@ -438,10 +455,11 @@ cHelp::read(const char *keyword)
                     bb = get_entry(tmp);
                     delete [] tmp;
                     if (bb) {
+                        snprintf(tbuf, sizeof(tbuf), "%s: %s", bb->title, s);
                         if (seealso)
-                            top->add_seealso(bb->title, s);
+                            top->add_seealso(tbuf, s);
                         else if (subtopics)
-                            top->add_subtopic(bb->title, s);
+                            top->add_subtopic(tbuf, s);
                         delete [] s;
                         continue;
                     }
@@ -457,17 +475,19 @@ cHelp::read(const char *keyword)
             }
             continue;
         }
-        if ((s = strchr(buf,'\n')) != 0)
-            *s = '\0';
-        if (hw) {
-            hw->next = new HLPwords(buf, hw);
-            hw = hw->next;
+        if (!latex) {
+            if ((s = strchr(buf,'\n')) != 0)
+                *s = '\0';
+            if (hw) {
+                hw->next = new HLPwords(buf, hw);
+                hw = hw->next;
+            }
+            else {
+                hw = new HLPwords(buf, 0);
+                top->set_words(hw);
+            }
+            top->register_word(buf);
         }
-        else {
-            hw = new HLPwords(buf, 0);
-            top->set_words(hw);
-        }
-        top->register_word(buf);
     }
     fclose(fp);
 
@@ -622,6 +642,8 @@ cHelp::isdef(const char *token)
 FILE *
 cHelp::open(const char *keyword, HLPent **pb)
 {
+    if (pb)
+        *pb = 0;
     HLPent *bb = get_entry(keyword);
     FILE *fp = 0;
     if (bb) {
@@ -630,7 +652,8 @@ cHelp::open(const char *keyword, HLPent **pb)
             GRpkg::self()->Perror(bb->filename);
             return (0);
         }
-        *pb = bb;
+        if (pb)
+            *pb = bb;
         fseek(fp, bb->offset, 0);
     }
     return (fp);
@@ -655,6 +678,58 @@ cHelp::get_entry(const char *keyword)
             continue;
         }
         for (HLPent *bb = dl->hd_base[j]; bb; bb = bb->next) {
+            if (!strcmp(keyword, bb->keyword))
+                return (bb);
+        }
+    }
+    return (0);
+}
+
+
+// Access the latex block for keyword.  Return the offset file pointer,
+// and the database structure.
+//
+FILE *
+cHelp::open_latex(const char *keyword, HLPent **pb)
+{
+    if (pb)
+        *pb = 0;
+    HLPent *bb = get_latex_entry(keyword);
+    FILE *fp = 0;
+    if (bb) {
+        fp = fopen(bb->filename, "rb");
+        if (!fp) {
+            GRpkg::self()->Perror(bb->filename);
+            return (0);
+        }
+        if (pb)
+            *pb = bb;
+        fseek(fp, bb->offset, 0);
+    }
+    return (fp);
+}
+
+
+// Return the internal latex block struct for keyword.  No file access.
+//
+HLPent *
+cHelp::get_latex_entry(const char *keyword)
+{
+    if (!keyword)
+        return (0);
+    int j = h_hash(keyword);
+    for (HLPdirList *dl = hlp_dirlist; dl; dl = dl->next) {
+        if (dl->hd_inactive || dl->hd_empty)
+            continue;
+        if (!dl->hd_base)
+            dl->init();
+        if (!dl->hd_base) {
+            dl->hd_empty = true;
+            continue;
+        }
+        if (!dl->hd_latex)
+            continue;
+        for (HLPent *bb = dl->hd_latex[j]; bb; bb = bb->next) {
             if (!strcmp(keyword, bb->keyword))
                 return (bb);
         }
@@ -750,8 +825,18 @@ cHelp::scan_file(FILE *fp, const char *target)
 
     bool found = true;
     bool keyw = false;
+    bool prot = false;
     HLPwords *h0 = 0, *hw = 0;
     while ((s = my_fgets(buf, 256, fp)) != 0) {
+        if (prot) {
+            if (lstring::ciprefix(HLP_UNPROTECT, s))
+                prot = false;
+            continue;
+        }
+        if (lstring::ciprefix(HLP_PROTECT, s)) {
+            prot = true;
+            continue;
+        }
         if (lstring::prefix(HLP_COMMENT, s))
             continue;
         if (lstring::prefix(HLP_REDIR, s))
@@ -908,6 +993,11 @@ HLPdirList::~HLPdirList()
             HLPent::destroy(hd_base[i]);
         delete [] hd_base;
     }
+    if (hd_latex) {
+        for (int i = 0; i < NUMHASH; i++)
+            HLPent::destroy(hd_latex[i]);
+        delete [] hd_latex;
+    }
 }
 
 
@@ -952,6 +1042,12 @@ HLPdirList::reset()
         delete [] hd_base;
         hd_base = 0;
     }
+    if (hd_latex) {
+        for (int i = 0; i < NUMHASH; i++)
+            HLPent::destroy(hd_latex[i]);
+        delete [] hd_latex;
+        hd_latex = 0;
+    }
     if (hd_rdbase) {
         for (int i = 0; i < NUMHASH; i++)
             HLPrdir::destroy(hd_rdbase[i]);
@@ -992,7 +1088,17 @@ HLPdirList::read_file(const char *fnamein)
     bool keyword = false, title = false;
     bool header = false, footer = false;
     bool tagtext = false;
+    bool prot = false;
     while ((s = my_fgets(buf, 256, fp)) != 0) {
+        if (prot) {
+            if (lstring::ciprefix(HLP_UNPROTECT, s))
+                prot = false;
+            continue;
+        }
+        if (lstring::ciprefix(HLP_PROTECT, s)) {
+            prot = true;
+            continue;
+        }
 
         if (lstring::prefix(HLP_COMMENT, s))
             continue;
@@ -1065,9 +1171,10 @@ HLPdirList::read_file(const char *fnamein)
             if (okw && nkw) {
                 int j = h_hash(okw);
                 HLPent *bb = 0;
-                for (bb = hd_base[j]; bb; bb = bb->next)
+                for (bb = hd_base[j]; bb; bb = bb->next) {
                     if (!strcmp(okw, bb->keyword))
                         break;
+                }
                 if (bb) {
                     GRpkg::self()->ErrPrintf(ET_WARN,
                         "help database keyword clash for %s.\n", okw);
@@ -1148,9 +1255,10 @@ HLPdirList::read_file(const char *fnamein)
                 while ((s = lstring::gettok(&t)) != 0) {
                     int j = h_hash(s);
                     HLPent *bb = 0;
-                    for (bb = hd_base[j]; bb; bb = bb->next)
+                    for (bb = hd_base[j]; bb; bb = bb->next) {
                         if (!strcmp(s, bb->keyword))
                             break;
+                    }
                     if (bb) {
                         GRpkg::self()->ErrPrintf(ET_WARN,
                             "help database keyword clash for %s.\n", s);
@@ -1168,6 +1276,40 @@ HLPdirList::read_file(const char *fnamein)
                 delete [] ti;
                 ti = 0;
                 title = false;
+            }
+            continue;
+        }
+        if (lstring::ciprefix(HLP_LATEX, s)) {
+            if (keyword || title) {
+                GRpkg::self()->ErrPrintf(ET_WARN,
+                    "LATEX block out of order.\n");
+            }
+            else if (header || footer || tagtext) {
+                GRpkg::self()->ErrPrintf(ET_WARN,
+                    "LATEX block out of order.\n");
+            }
+            lstring::advtok(&s);
+            char *lkw = lstring::gettok(&s);
+            if (lkw) {
+                if (!hd_latex) {
+                    hd_latex = new HLPent*[NUMHASH];
+                    for (int i = 0; i < NUMHASH; i++)
+                        hd_latex[i] = 0;
+                }
+                int j = h_hash(lkw);
+                HLPent *bb = 0;
+                for (bb = hd_latex[j]; bb; bb = bb->next) {
+                    if (!strcmp(lkw, bb->keyword))
+                        break;
+                }
+                if (bb) {
+                    GRpkg::self()->ErrPrintf(ET_WARN,
+                        "LATEX block keyword clash for %s.\n", lkw);
+                    delete [] lkw;
+                    continue;
+                }
+                hd_latex[j] = new HLPent(lkw, 0, fname, tag,
+                    ftell(fp), hd_latex[j]);
             }
             continue;
         }

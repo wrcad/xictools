@@ -51,6 +51,18 @@ Graphical Interface
     graphical niceties such as plotting (other than the infamous crude
     line-printer plots of yore).  Under Microsoft Windows, graphics is
     (of course) always available.
+!!LATEX graphics useriface.tex
+When the {\et DISPLAY} variable is found in the environment upon
+program startup, {\WRspice} assumes that a graphical (X-window) server
+is available, and will enable its graphical components.  If this
+initialization fails, {\WRspice} will terminate.  If the {\et DISPLAY}
+variable is not set, and the {\vt -d} option is not used on the
+command line to specify the display, or the {\vt -dnone} command line
+option is given, then {\WRspice} will run in text-only mode.  In this
+mode, the core functionality is available, but not the graphical
+niceties such as plotting (other than the infamous crude line-printer
+plots of yore).  Under Microsoft Windows, graphics is (of course)
+always available.
 
 !!REFERENCES
 toolbar
@@ -422,6 +434,284 @@ Tool Control Window
     serve as a supplement to the manual.  Changes and new features
     should also have been incorporated into the help database.
     </dl>
+!!LATEX toolbar useriface.tex
+\index{tool control window}
+When a graphical interface is available, {\WRspice} by default
+provides a small {\cb Tool Control} window which provides menus for
+controlling {\WRspice}, and a display containing a tabulation of
+memory statistics.  The menus contain buttons which bring up graphical
+screens, from which much most of {\WRspice} can be controlled in a
+(perhaps) more user-friendly fashion.  The locations of the pop-ups
+and their active/inactive status at program startup can be preset by
+the user.
+
+When running {\WRspice} through the {\Xic} program, by default the
+{\cb Tool Control} window will appear when connection to {\WRspice}
+has been established.  The {\Xic} variable {\et NoSpiceTools} can be
+set, before the connection is established, to prevent the {\cb Tool
+Control} window from appearing.
+
+\index{memory statistics}
+The text area lists the following quantities, though some may not be
+listed if the operating system does not provide this information. 
+The listing is updated every few seconds.  The first line of text
+shows the current running status of {\WRspice}:  idle, running, or
+stopped.  Also shown on this line is the elapsed wall-clock time
+from the last status change.  The time format is
+hours:minutes:seconds.  The seconds entry has two decimal places
+(resolution is .01 second).  The hours field is not included if
+zero.  The {\cb user} and {\cb system} lines are similar, but display
+the total user cpu time used by the process, and the total system cpu
+time, respectively.  The user time generally includes input/output
+processing time, where the system time is pure cpu usage.  The {\cb
+data size} entry displays the total allocated memory in Kb used by the
+program.  This is only the memory allocated by the program for data,
+and does not include additional memory overhead reported by programs
+such as {\vt top} and {\vt ps}.  This size is limited to the {\cb
+program limit}, which is given in the following line.  This limit can
+be changed with the {\et maxdata} variable.  The final {\cb system
+limit} line displays the maximum memory available from the system for
+the process.
+
+\index{drag and drop}
+{\WRspice} supports the {\et xdnd} and {\et Motif} drag and drop
+protocols.  One is able to drag files from many file manager programs
+into the {\cb Tool Control} window of {\WRspice} or the main window of
+{\Xic}, and that file will be loaded into the program.  The File
+Selection and Files Listing pop-ups participate in the protocols as
+sources and receivers.  The text editor and mail pop-ups are drag
+receivers.
+
+The file must be a standard file on the same machine.  If it is from a
+tar file, or on a different machine, first drag it to the desktop or
+to a directory, then into {\WRspice}.  (Note:  The GNOME {\vt gmc}
+file manager allows one to view the contents of tar files, etc.  as a
+``virtual file system''.  Window Maker and Enlightenment window
+managers, at least, are drag/drop aware.)
+
+\index{WR button}
+In the upper left of the {\cb Tool Control} window is the {\cb WR}
+button, which contains the Whiteley Research corporate logo.  Pressing
+this button brings up a mail client (see \ref{mailclient}), pre-loaded
+with the address of the Whiteley Research support staff.  The text
+field containing the address, as well as the subject, can be changed. 
+This can be used to send questions and bug reports to Whiteley
+Research, or to send messages or data files to colleagues.
+
+To the right of the {\cb WR} button are the {\cb Run} (green arrow)
+and {\cb Stop} (red X) buttons.  Pressing the {\cb Run} button is
+equivalent to giving the {\cb run} command on the command line,
+without arguments.  Pressing the {\cb Stop} button issues an interrupt
+signal that will pause a simulation in progress, the same as if the
+user typed {\kb Ctrl-C} in the console window.
+
+To the right of the buttons is a menu bar with four entries:  {\cb
+File}, {\cb Edit}, {\cb Tools}, and {\cb Help}.  Pressing the mouse
+button 1 on these entries brings up a drop-down menu containing
+various commands.
+
+The {\cb File} menu contains commands for manipulating disk files.
+
+\begin{description}
+\item{\cb File Select}\\
+Bring up a file manager panel.  This panel allows files and
+directories to be created, deleted, and renamed, or read into
+{\WRspice}.  The file manager is described in \ref{filemgr}.
+
+\item{\cb Source}\\
+This button creates a dialog, soliciting a file to input into
+{\WRspice}, as with the {\cb source} command.  When the dialog is
+active, the {\cb Tool Control} text window is active as a drag
+receiver, so that file names can be dragged and dropped from
+compatible windows (such as the file manager), and the file name will
+be loaded into the dialog.
+
+\item{\cb Load}\\
+This button is similar in operation to the {\cb Source} button,
+however the file is expected to be a rawfile, which is the native
+plot-file format, or a Common Simulation Data Format (CSDF) file. 
+Like the {\cb Source} dialog, the {\cb Load} dialog supports drag and
+drop protocols through the text area of the {\cb Tool Control} window. 
+The file is read and data are made available for analysis, similar to
+the {\cb load} command.
+
+\item{\cb Update Tools}\\
+The {\cb Update Tools} button will save the current tool
+configuration, and the next time {\WRspice} is started, the same tools
+will be available, in the same locations on-screen.  The tools are
+available in the {\cb Tools} menu to be described.
+
+Initialization of the graphical interface is directed from the system
+init file {\vt wrspiceinit} found in the startup directory, or more
+appropriately from the user's startup files ({\vt .wrspiceinit} files)
+as found in the current or user's home directory.  Only the file in
+the home directory can be automatically updated from within
+{\WRspice}.  A special command {\vt tbsetup}, which is only recognized
+in these files, performs the initialization.  The {\vt tbsetup}
+function takes a long, messy command line, however fortunately the
+user has an easy way to automatically add this line, using the
+{\cb Update Tools} command.  This action is also available from the
+command line {\cb tbupdate} command.
+
+The {\cb Update Tools} and {\cb tbupdate} commands will create or
+update a {\vt .wrspiceinit} file in the user's home directory.  If the
+home directory can't be determined, the current directory will be
+used.
+
+\item{\cb Update WRspice}\\
+Pressing this button is equivalent to giving the {\cb wrupdate}
+command, and is equivalent to giving the special keyword ``{\vt
+:xt\_pkgs}'' to the help system, which brings up the {\XicTools}
+package management page (see \ref{update}).  The page lists
+installed and available packages for each of the {\XicTools} programs
+for the current operating system, and provides buttons to download and
+install the packages.
+
+Unlike in earlier {\WRspice} releases, there is no provision for
+automatic checking for updates, so this command or equivalent should
+be run periodically to check for updated packages.  The computer must
+have http access to the internet for successful use of this
+functionality.
+
+\item{\cb Quit}\\
+The {\cb Quit} button will terminate the {\WRspice} session, after
+confirmation if there is unsaved work.  This can also be accomplished
+with the {\cb quit} or {\cb exit} command line functions.
+\end{description}
+
+The {\cb Edit} menu contains commands used to modify input files.
+
+\begin{description}
+\item{\cb Text Editor}\\
+This button brings up a text editor, similar to the {\cb edit}
+command.  The default text editor is described in \ref{textedit},
+but the user can specify a different editor with the {\et EDITOR} or
+{\et SPICE\_EDITOR} environment variables, or with the {\et editor}
+variable.
+
+\item{\cb Xic}\\
+This button launches the {\Xic} program, if it is available.
+\end{description}
+
+For schematic capture, the {\Xic} program must be installed.  When
+either editor is started, the currently loaded circuit, if any, and if
+it has graphical information in the case of {\Xic}, is loaded into the
+editor.  The simulation process can be initiated and controlled
+through {\Xic}.  The internal text editor has a {\cb Source} button,
+which allows the modified circuit to be passed directly back to
+{\WRspice} for simulation.  If another editor is used, changes will
+have to be saved to disk and sourced from {\WRspice}.
+
+\index{Tools menu}
+The {\cb Tools} menu contains a configurable collection of command
+buttons which initiate pop-ups which control or display various
+aspects or {\WRspice}.  Each of these pop-ups is a graphical short cut
+to a collection of command line commands.  Many users prefer the
+point-and-click interface to the command line, though some do not. 
+With {\WRspice}, the user has a choice.  The command functions
+available in the {\cb Tools} menu are listed below, in the order found
+in the menu.
+
+\begin{description}
+\item{\cb Fonts}\\
+\index{Fonts tool}
+This brings up the {\cb Font Selection} panel (see \ref{fontspanel})
+that allows selection of the font used in the text areas of the
+various tools, and in plot windows used for displaying simulation
+results.
+
+\item{\cb Files}\\
+\index{Files tool}
+Pop up the {\cb Path Files Listing} panel (see \ref{filespanel}) which
+displays a list of the files found along the {\et sourcepath}.  Files
+can be sourced or edited through this panel.
+
+\item{\cb Circuits}\\
+\index{Circuits tool}
+Bring up the {\cb Circuits} panel (see \ref{circuitspanel}) listing
+the circuits that are currently in memory.  The panel provides
+capabilities for choosing the current circuit and deleting circuits
+from memory.
+
+\item{\cb Plots}\\
+\index{Plots tool}
+Bring up the {\cb Plots} panel (see \ref{plotspanel}) which displays a
+list of the plots in memory.  The panel provides capabilities for
+selecting the current plot, and for deleting plots.
+
+\item{\cb Plot Opts}\\
+\index{Plot Options tool}
+Bring up the {\cb Plot Options} panel (see \ref{plotopts}) to
+control the myriad of variables associated with plotting.
+
+\item{\cb Colors}\\
+\index{Colors tool}
+Bring up the{\cb Plot Colors} panel (see \ref{colors}) to set the
+colors used in the plots.
+
+\item{\cb Vectors}\\
+\index{Vectors tool}
+Pop up the {\cb Vectors} panel (see \ref{vectorspanel}) listing the
+vectors in the current plot.  The panel provides an interface for
+plotting or printing these vectors.
+
+\item{\cb Variables}\\
+\index{Variables tool}
+Pop up the {\cb Variables} panel (see \ref{variablespanel}) displaying
+the shell variables currently set.
+
+\item{\cb Shell}\\
+\index{Shell tool}
+Bring up the {\cb Shell Options} panel (see \ref{shellopts}) used to
+control the default settings associated with the {\WRspice} shell.
+
+\item{\cb Sim Opts}\\
+\index{Simulation Options tool}
+Pop up the {\cb Simulation Options} panel (see \ref{simopts}) used
+to modify the variables which affect circuit simulation.
+
+\item{\cb Commands}\\
+\index{Commands tool}
+Bring up the {\cb Command Options} panel (see \ref{cmdopts}) to
+customize the variables associated with the various commands.
+
+\item{\cb Runops}\\
+\index{Runops tool}
+Pop up the {\cb Runops} panel (see \ref{runoppanel}) which lists the
+``runops'' currently in effect.  The runops are directives to
+interactively plot, or trace variables during simulation, or to pause
+the simulation when a condition is met.  The panel provides capability
+for deactivating or deleting runops.
+
+\item{\cb Debug}\\
+\index{Debug tool}
+Bring up the {\cb Debug Options} panel (see \ref{dbgopts}) used to
+control the debugging modes of {\WRspice}.
+\end{description}
+
+\index{Help menu}
+The {\cb Help} menu provides entry into the help system, and provides
+access to other information.  The buttons found in this menu are listed
+below.
+
+\begin{description}
+\item{\cb Help}\\
+Bring up the help viewer loaded with the top-level page.  The help
+system provides an extensive cross-referenced HTML database, and
+contains the latest information on {\WRspice} features.  The help
+system is described in \ref{helpsys}.
+
+\item{\cb About}\\
+Bring up a text window with the current {\WRspice} version number,
+copyright, and legal disclaimer.
+
+\item{\cb Notes}\\
+Bring up a text browser loaded with the release notes for the current
+release of {\WRspice}.  The release notes provide detailed information
+about changes in the present release, and serve as a supplement to the
+manual.  Changes and new features should also have been incorporated
+into the help database.
+\end{description}
 
 !!SEEALSO
 plot
@@ -470,7 +760,6 @@ The Fonts Tool
     Editor</b></a> pop-up.
     </dl>
 
-!!IFNDEF Windows
     <dl>
     <dt><b>HTML Viewer Proportional Font</b><dd>
     This is the base font used for proportional text in the HTML
@@ -481,7 +770,6 @@ The Fonts Tool
     <dt><b>HTML Viewer Fixed Pitch Font</b><dd>
     This is the base fixed-pitch font used by the HTML viewer.
     </dl>
-!!ENDIF
 
     <p>
     The <b>Font</b> button in the <b>Options</b> menu of the <a
@@ -496,6 +784,48 @@ The Fonts Tool
     automatically when the <b>Update Tools</b> button in the
     <b>File</b> menu is pressed, or an
     <href="tbupdate"><b>tbupdate</b></a> command is given.
+!!LATEX fontspanel useriface.tex
+This panel, available from the {\cb Fonts} button in the {\cb Tools}
+menu of the {\cb Tool Control} window, allows selection of the fonts
+used in the graphical interface.  A drop-down menu provides selection
+of the various font targets.  Pressing the {\cb Apply} button will
+immediately apply the selected font to all visible windows which use
+the font.
+
+The drop-down font targets list contains the following entries:
+
+\begin{description}
+\item{\cb Fixed Pitch Text Window Font}\\
+This sets the font used in pop-up multi-line text windows, such as the
+Files Listing and others, where the names are formatted into columns.
+
+\item{\cb Proportional Text Window Font}\\
+This sets the font used in pop-up multi-line text windows where text
+is not formatted, such as the error message pop-up.
+
+\item{\cb Fixed Pitch Drawing Window Font}\\
+This is the font used in the plot windows and in the {\cb Tool
+Control} window.
+
+\item{\cb Text Editor Font}\\
+This is the font used in the Text Editor pop-up.
+
+\item{{\cb HTML Viewer Proportional Font} (Unix/Linux only)}\\
+This is the base font used for proportional text in the HTML viewer
+(help windows).
+
+\item{{\cb HTML Viewer Fixed Pitch Font} (Unix/Linux only)}\\
+This is the base fixed-pitch font used by the HTML viewer.
+\end{description}
+
+The {\cb Font} button in the {\cb Options} menu of the Text Editor
+brings up a similar panel, as does the {\cb Font} button in ther {\cb
+Options} menu of the help viewer.
+
+These fonts can be set in the {\vt .wrspiceinit} startup file by
+giving {\cb setfont} commands.  These are inserted automatically when
+the {\cb Update Tools} button in the {\cb File} menu is pressed, or a
+{\cb tbupdate} command is given.
 
 !!SEEALSO
 graphics
@@ -556,6 +886,42 @@ The Files Tool
     <dt><b>Dismiss</b>
     <dd>Remove the files panel from the screen.
     </dl>
+!!LATEX filespanel useriface.tex
+\index{sourcepath variable}
+This panel is available from the {\cb Files} button in the {\cb Tools}
+menu of the {\cb Tool Control} window.  It provides a listing of files
+found in each directory of the ``{\vt sourcepath}'' search path.  The
+{\et sourcepath} is a list of directories that are searched for
+circuit description files, if a file name is given to {\WRspice}
+without a path prefix.
+
+The panel contains a drop-down menu which has an entry for each
+directory in the search path.  The main text area lists the files
+found in the currently selected directory.
+
+A file from the list can be selected by clicking with mouse button 1
+on the text.  The text can be deselected by clicking in the text
+window away from any text.  The file listing participates in the
+drag/drop protocol as a drag source and drop receiver.
+
+The following buttons are provided:
+
+\begin{description}
+\item{\cb Edit}\\
+    If a file is selected, bring up a text editor with the
+    file loaded as with the {\cb edit} command.  If
+    no file is selected, the button becomes active, and the user
+    can click on a file in the text window to edit it.
+\item{\cb Source}\\
+    If a file is selected, source it as with the {\cb source}
+    command.  If no file is selected, the button becomes active,
+    and the user can click on a file in the text window to source
+    it.
+\item{\cb Help}\\
+    Bring up help on this panel.
+\item{\cb Dismiss}\\
+    Remove the files panel from the screen.
+\end{description}
 
 !!SEEALSO
 graphics
@@ -592,6 +958,23 @@ The Circuits Tool
     <dt><b>Dismiss</b>
     <dd>Remove the circuits listing from the screen.
     </dl>
+!!LATEX circuitspanel useriface.tex
+This panel is available from the {\cb Circuits} button in the {\cb
+Tools} menu of the {\cb Tool Control} window.  It provides a listing
+of the circuits currently in memory.  A circuit description can be
+read from a file with the {\cb source} command.  If the user clicks on
+the text of one of the listed circuits, that circuit becomes the
+current circuit, i.e., the circuit which will simulate with the {\cb
+run} command.  The panel contains the following buttons:
+
+\begin{description}
+\item{\cb Delete Current}\\
+    Delete the current circuit from memory.
+\item{\cb Help}\\
+    Bring up help on this panel.
+\item{\cb Dismiss}\\
+    Remove the circuits panel from the screen.
+\end{description}
 
 !!SEEALSO
 free
@@ -638,6 +1021,28 @@ The Plots Tool
     <dt><b>Dismiss</b>
     <dd>Remove the plots panel from the screen.
     </dl>
+!!LATEX plotspanel useriface.tex
+This panel is available from the {\cb Plots} button in the {\cb Tools}
+menu of the {\cb Tool Control} window.  It provides a listing of the
+plots currently in memory.  A plot is a collection of output data
+vectors generated during a simulation run.  In addition, there is
+always the {\vt constants} plot, which contains some useful physical
+constants.  A plot from the list can be selected as the current plot
+by clicking on the text in the list.  The current plot is used to
+resolve vector names in expressions given to commands and elsewhere. 
+The panel contains the following buttons:
+
+\begin{description}
+\item{\cb New Plot}\\
+    This creates an empty plot structure, and makes it the current
+    plot.
+\item{\cb Delete Current}\\
+    Delete the current plot from memory.
+\item{\cb Help}\\
+    Bring up help on this panel.
+\item{\cb Dismiss}\\
+    Remove the plots panel from the screen.
+\end{description}
 
 !!SEEALSO
 destroy
@@ -734,6 +1139,65 @@ Plot Options
     program, which was once used for simulation output plotting in
     Berkeley SPICE.
     <br clear=all>
+!!LATEX plotopts format
+The {\cb Plot Options} panel is obtained from the {\cb Plot Opts}
+button in the {\cb Tools} menu of the {\cb Tool Control} window.  The
+panel can control the values of internal variables related to
+plotting.  These variables can also be set with the {\cb set} command,
+though the panel may provide a more convenient interface.
+
+Pressing the {\cb Help} button pops up a window containing a listing
+of the variables which can be set with the panel.  Clicking on a word
+in the listing will bring up the help viewer with a description of
+that variable.
+
+The panel is organized into multiple pages, with each page containing
+the variables in a particular category.  These will be listed below.
+
+Each variable has its own ``box'' in the panel.  This box contains a
+{\cb Set} button, and optionally a {\cb Def} button and a text input
+area.  The text input area can take several forms, depending on the
+type of variable:  string, integer, or real.  Boolean variables have
+only the {\cb Set} button.  Text can be entered into the area, or in
+some cases the up/down arrows to the right of the text area can be
+clicked to adjust the text.
+
+When the {\cb Set} button is active, the variable is set to the value
+shown in the text area (if any), and the text area is frozen, i.e.,
+can't be edited.  The text area can be changed only with the {\cb Set}
+button inactive, in which case the value in the text area is
+arbitrary.  The value is only known to {\WRspice} when the {\cb Set}
+button is active, in which case the variable should appear in the
+listing brought up by the {\cb Variables} button in the {\cb Tools}
+menu in the {\cb Tool Control} window.
+
+The {\cb Def} button will enter the default value for the variable
+into the text area.  This button becomes active if the text area is
+modified.
+
+\begin{description}
+\item{The {\cb plot1} Page}\\
+This page contains entries which control the appearance of plots shown
+on-screen.
+
+\item{The {\cb plot2} Page}\\
+This page contains additional entries which control the appearance of
+plots shown on-screen.
+
+\item{The {\cb asciiplot} Page}\\
+This page sets variables associated with the {\cb asciiplot} command,
+which generates a text-mode ``plot'' of output variables.  This is not
+often used currently, but provides a nostalgic link to the days of
+line printers and punched cards.
+
+\item{The {\cb hardcopy} Page}\\
+This provides a number of entries which relate to the {\cb hardcopy}
+command and graphics printing in general.
+
+\item{The {\cb xgraph} Page}\\
+This provides settings for the interface to the {\et xgraph} program,
+which was once used for simulation output plotting in Berkeley SPICE.
+\end{description}
 
 !!SEEALSO
 graphics
@@ -782,6 +1246,38 @@ Plot Colors
     The <b>Def</b> button will enter the default value for the
     variable into the text area.  This button becomes active if the
     text area is modified.
+!!Latex colors format.tex
+The {\cb Plot Colors} panel is obtained from the {\cb Colors} button
+in the {\cb Tools} menu of the {\cb Tool Control} window.  The panel
+can control the values of internal variables used to define colors
+used in plotting.  These variables can also be set with the {\cb set}
+command, though the panel may provide a more convenient interface.
+
+Pressing the {\cb Help} button pops up a window containing a listing
+of the variables which can be set with the panel.  Clicking on a word
+in the listing will bring up the help viewer with a description of
+that variable.
+
+Each variable has its own ``box'' in the panel.  This box contains a
+{\cb Set} button, and optionally a {\cb Def} button and a text input
+area.  The text input area can take several forms, depending on the
+type of variable:  string, integer, or real.  Boolean variables have
+only the {\cb Set} button.  Text can be entered into the area, or in
+some cases the up/down arrows to the right of the text area can be
+clicked to adjust the text.
+
+When the {\cb Set} button is active, the variable is set to the value
+shown in the text area (if any), and the text area is frozen, i.e.,
+can't be edited.  The text area can be changed only with the {\cb Set}
+button inactive, in which case the value in the text area is
+arbitrary.  The value is only known to {\WRspice} when the {\cb Set}
+button is active, in which case the variable should appear in the
+listing brought up by the {\cb Variables} button in the {\cb Tools}
+menu in the {\cb Tool Control} window.
+
+The {\cb Def} button will enter the default value for the variable
+into the text area.  This button becomes active if the text area is
+modified.
 
 !!SEEALSO
 graphics
@@ -839,6 +1335,34 @@ The Vectors Tool
     <dt><b>Dismiss</b>
     <dd>Remove the vectors panel from the screen.
     </dl>
+!!LATEX vectorspanel format.tex
+This panel is available from the {\cb Vectors} button in the {\cb
+Tools} menu of the {\cb Tool Control} window.  It provides a listing
+of the vectors in the current plot.  The current plot can be selected
+with the {\cb Plots} button in the {\cb Tools} menu.
+
+A vector can be selected by clicking on the text, and selection is
+indicated by a `{\vt >}' symbol in the first column.  Any number of
+vectors can be selected.  Click on the vector entry a second time to
+deselect it.  The selected vectors are used by the buttons described
+below.
+
+\begin{description}
+\item{\cb Help}\\
+    Bring up help on this panel.
+\item{\cb Desel All}\\
+    Desselect all selected vectors.
+\item{\cb Print}\\
+    Print the values of the selected vectors in the console window,
+    as with the {\cb print} command.
+\item{\cb Plot}\\
+    Plot the values of the selected vectors, as with the {\cb plot}
+    command.
+\item{\cb Delete}\\
+    Delete the selected vectors from the plot.
+\item{\cb Dismiss}\\
+    Remove the vectors panel from the screen.
+\end{description}
 
 !!SEEALSO
 graphics
@@ -871,6 +1395,20 @@ The Variables Tool
     <dt><b>Dismiss</b>
     <dd>Remove the variables panel from the screen.
     </dl>
+!!LATEX variablespanel format.tex
+This panel is available from the {\cb Variables} button in the {\cb
+Tools} menu of the {\cb Tool Control} window.  It provides a listing
+of the variables currently set in the shell, either with the {\cb set}
+command or by other means.  The format of the listing is the same as
+that used by the {\cb set} command without arguments.  The following
+buttons are available:
+
+\begin{description}
+\item{\cb Help}\\
+    Bring up help on this panel.
+\item{\cb Dismiss}\\
+    Remove the variables panel from the screen.
+\end{description}
 
 !!SEEALSO
 graphics
@@ -925,6 +1463,40 @@ Shell Options
     The <b>Def</b> button will enter the default value for the
     variable into the text area.  This button becomes active if the
     text area is modified.
+!!LATEX shellopts format.tex
+The {\cb Shell Options} panel is obtained from the {\cb Shell} button
+in the {\cb Tools} menu of the {\cb Tool Control} window.  The panel
+can control the values of internal variables used to define behavior
+of the {\WRspice} shell.  The shell is similar to the UNIX C-shell,
+and many of the variable names may be familiar from that context. 
+These variables can also be set with the {\cb set} command, though the
+panel may provide a more convenient interface.
+
+Pressing the {\cb Help} button pops up a window containing a listing
+of the variables which can be set with the panel.  Clicking on a word
+in the listing will bring up the help viewer with a description of
+that variable.
+
+Each variable has its own ``box'' in the panel.  This box contains a
+{\cb Set} button, and optionally a {\cb Def} button and a text input
+area.  The text input area can take several forms, depending on the
+type of variable:  string, integer, or real.  Boolean variables have
+only the {\cb Set} button.  Text can be entered into the area, or in
+some cases the up/down arrows to the right of the text area can be
+clicked to adjust the text.
+
+When the {\cb Set} button is active, the variable is set to the value
+shown in the text area (if any), and the text area is frozen, i.e.,
+can't be edited.  The text area can be changed only with the {\cb Set}
+button inactive, in which case the value in the text area is
+arbitrary.  The value is only known to {\WRspice} when the {\cb Set}
+button is active, in which case the variable should appear in the
+listing brought up by the {\cb Variables} button in the {\cb Tools}
+menu in the {\cb Tool Control} window.
+
+The {\cb Def} button will enter the default value for the variable
+into the text area.  This button becomes active if the text area is
+modified.
 
 !!SEEALSO
 graphics
@@ -1029,6 +1601,73 @@ Simulation Options
     This page provides controls which affect parsing of circuit
     descriptions.
     <br clear=all>
+!!LATEX simopts format.tex
+The {\cb Simulation Options} panel is obtained from the {\cb Sim Opts}
+button in the {\cb Tools} menu of the {\cb Tool Control} window.  The
+panel can control the values of internal variables used to define
+parameters used while simulating.  These variables can also be set
+with the {\cb set} command, though the panel may provide a more
+convenient interface.  They are also commonly set in {\vt .options}
+lines in SPICE input files.
+
+Pressing the {\cb Help} button pops up a window containing a listing
+of the variables which can be set with the panel.  Clicking on a word
+in the listing will bring up the help viewer with a description of
+that variable.
+
+The panel is organized into multiple pages, with each page containing
+the variables in a particular category.  These will be listed below.
+
+Each variable has its own ``box'' in the panel.  This box contains a
+{\cb Set} button, and optionally a {\cb Def} button and a text input
+area.  The text input area can take several forms, depending on the
+type of variable:  string, integer, or real.  Boolean variables have
+only the {\cb Set} button.  Text can be entered into the area, or in
+some cases the up/down arrows to the right of the text area can be
+clicked to adjust the text.
+
+When the {\cb Set} button is active, the variable is set to the value
+shown in the text area (if any), and the text area is frozen, i.e.,
+can't be edited.  The text area can be changed only with the {\cb Set}
+button inactive, in which case the value in the text area is
+arbitrary.  The value is only known to {\WRspice} when the {\cb Set}
+button is active, in which case the variable should appear in the
+listing brought up by the {\cb Variables} button in the {\cb Tools}
+menu in the {\cb Tool Control} window.
+
+The {\cb Def} button will enter the default value for the variable
+into the text area.  This button becomes active if the text area is
+modified.
+
+\begin{description}
+\item{The {\cb General} Page}\\
+This page contains entries for some common simulation settings.
+
+\item{The {\cb Timestep} Page}\\
+This page privides a number of entries that control or affect the
+timestep prediction in transient analysis, including the integration
+method.
+
+\item{The {\cb Tolerance} Page}\\
+The entries provided on this page set the precision required for
+convergence in simulation.
+
+\item{The {\cb Convergence} Page}\\
+This page provides entries which control convergence iteration limits
+and similar, including setting the algorithm for initial dc operating
+point computation.
+
+\item{The {\cb Devices} Page}\\
+The {\cb Devices} page provides some settings which affect particular
+device types or models.
+
+\item{The {\cb Temperature} Page}\\
+The two global temperature parameters can be set from this page.
+
+\item{The {\cb Parser} Page}\\
+This page provides controls which affect parsing of circuit
+descriptions.
+\end{description}
 
 !!SEEALSO
 graphics
@@ -1170,6 +1809,93 @@ Command Options
     These entries apply to the <a href="write"><b>write</b></a>
     command, which is used to save simulation data to a file.
     <br clear=all>
+!!LATEX cmdopts format.tex
+The {\cb Command Options} panel is obtained from the {\cb Commands}
+button in the {\cb Tools} menu of the {\cb Tool Control} window.  The
+panel can control the values of internal variables used to define
+behavior of {\WRspice} commands.  These variables can also be set with
+the {\cb set} command, though the panel may provide a more convenient
+interface.
+
+Pressing the {\cb Help} button pops up a window containing a listing
+of the variables which can be set with the panel.  Clicking on a word
+in the listing will bring up the help viewer with a description of
+that variable.
+
+The panel is organized into multiple pages, with each page containing
+the variables in a particular category.  These will be listed below.
+
+Each variable has its own ``box'' in the panel.  This box contains a
+{\cb Set} button, and optionally a {\cb Def} button and a text input
+area.  The text input area can take several forms, depending on the
+type of variable:  string, integer, or real.  Boolean variables have
+only the {\cb Set} button.  Text can be entered into the area, or in
+some cases the up/down arrows to the right of the text area can be
+clicked to adjust the text.
+
+When the {\cb Set} button is active, the variable is set to the value
+shown in the text area (if any), and the text area is frozen, i.e.,
+can't be edited.  The text area can be changed only with the {\cb Set}
+button inactive, in which case the value in the text area is
+arbitrary.  The value is only known to {\WRspice} when the {\cb Set}
+button is active, in which case the variable should appear in the
+listing brought up by the {\cb Variables} button in the {\cb Tools}
+menu in the {\cb Tool Control} window.
+
+The {\cb Def} button will enter the default value for the variable
+into the text area.  This button becomes active if the text area is
+modified.
+
+\begin{description}
+\item{The {\cb General} Page}\\
+This page contains entries for variables that are general in nature,
+affecting more than one command.
+
+\item{The {\cb aspice} Page}\\
+This page contains variables that apply to the {\cb aspice} command,
+which initiates asynchronous {\WRspice} runs.
+
+\item{The {\cb check} Page}\\
+This page applies to the {\cb check} command, which initiates Monte
+Carlo and operating range analysis.
+
+\item{The {\cb diff} Page}\\
+The entries in this page affect the {\cb diff} command, which compares
+simulation output data.
+
+\item{The {\cb edit} Page}\\
+This page applies to the {\cb edit} command and related, which edit
+circuit input for {\WRspice}.
+
+\item{The {\cb fourier} Page}\\
+The variables set by entries in this page affect the {\cb fourier}
+command, and other commands which perform Fourier analysis.
+
+\item{The {\cb help} Page}\\
+These entries apply to the help system.
+
+\item{The {\cb print} Page}\\
+This page provides entries which apply to the {\cb print} command. 
+The {\cb print} command is used to print simulation results or other
+vector data.
+
+\item{The {\cb rawfile} Page}\\
+These entries apply to the {\cb rawfile} command, and plot data output
+in general.
+
+\item{The {\cb rspice} Page}\\
+This page contains entries which apply to the {\cb rspice} command,
+which initiates {\WRspice} runs on a remote system.
+
+\item{The {\cb source} Page}\\
+This page contains entries which apply to the {\cb source} command,
+which is used (perhaps implicitly) to load circuit files for
+simulation.
+
+\item{The {\cb write} Page}\\
+These entries apply to the {\cb write} command, which is used to save
+simulation data to a file.
+\end{description}
 
 !!SEEALSO
 graphics
@@ -1212,6 +1938,27 @@ The Runops Tool
     <dt><b>Dismiss</b>
     <dd>Remove the <b>Runops Tool</b> from the screen.
     </dl>
+!!LATEX runoppanel format.tex
+This panel is available from the {\cb Runops} button in the {\cb Tools}
+menu of the {\cb Tool Control} window.  It provides a listing of the
+``runops'' (i.e., traces, breakpoints, interactive plots) currently in
+effect.  These runops are set with the {\cb save}, {\cb trace}, {\cb
+iplot}, {\cb measure}, and {\cb stop} commands.
+
+A runop can be made inactive by clicking on the text in the list, in
+which case an `I' appears in the first column.  Click on the text a
+second time to restore activation.  Inactive runops are ignored during
+simulation.  The following buttons are available:
+
+\begin{description}
+\item{\cb Help}\\
+    Bring up help on this panel.
+\item{\cb Delete Inactive}\\
+    Delete the runops selected as inactive, i.e., those listed with
+    ``I'' in the first column.
+\item{\cb Dismiss}\\
+    Remove the {\cb Runops Tool} from the screen.
+\end{description}
 
 !!SEEALSO
 graphics
@@ -1264,6 +2011,39 @@ Debug Options
     The <b>Def</b> button will enter the default value for the
     variable into the text area.  This button becomes active if the
     text area is modified.
+!!LATEX dbgopts format.tex
+The {\cb Debug Options} panel is obtained from the {\cb Debug} button
+in the {\cb Tools} menu of the {\cb Tool Control} window.  The panel
+can control the values of internal variables used to enable extra
+printing and tracing, used when trying to diagnose problems.  These
+variables can also be set with the {\cb set} command, though the panel
+may provide a more convenient interface.
+
+Pressing the {\cb Help} button pops up a window containing a listing
+of the variables which can be set with the panel.  Clicking on a word
+in the listing will bring up the help viewer with a description of
+that variable.
+
+Each variable has its own ``box'' in the panel.  This box contains a
+{\cb Set} button, and optionally a {\cb Def} button and a text input
+area.  The text input area can take several forms, depending on the
+type of variable:  string, integer, or real.  Boolean variables have
+only the {\cb Set} button.  Text can be entered into the area, or in
+some cases the up/down arrows to the right of the text area can be
+clicked to adjust the text.
+
+When the {\cb Set} button is active, the variable is set to the value
+shown in the text area (if any), and the text area is frozen, i.e.,
+can't be edited.  The text area can be changed only with the {\cb Set}
+button inactive, in which case the value in the text area is
+arbitrary.  The value is only known to {\WRspice} when the {\cb Set}
+button is active, in which case the variable should appear in the
+listing brought up by the {\cb Variables} button in the {\cb Tools}
+menu in the {\cb Tool Control} window.
+
+The {\cb Def} button will enter the default value for the variable
+into the text area.  This button becomes active if the text area is
+modified.
 
 !!SEEALSO
 graphics

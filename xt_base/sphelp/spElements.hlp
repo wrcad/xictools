@@ -169,6 +169,106 @@ Circuit Elements
     option is useful for printing a list of the parameters names that
     can be used on a device instance line.  Only the parameters not
     listed as "<tt>RO</tt>" (read-only) can be specified on the line.
+!!LATEX elements elements.tex
+Each element in the circuit is specified by an element line that
+contains the element name, the circuit nodes to which the element is
+connected, and the values of the parameters that determine the
+electrical characteristics of the element.  The first letter of the
+element name specifies the element type (case insensitive).  For
+example, a resistor name must begin with the letter `{\vt R}' or `{\vt
+r}' and can contain one or more characters.  Hence, {\vt R}, {\vt r1},
+{\vt Rse}, {\vt ROUT}, and {\vt r3ac2zY} are valid resistor names.
+
+\index{current flow convention}
+In the descriptions that follow, data fields that are enclosed in
+square brackets `{\vt [}', `{\vt ]}' are optional.  All indicated
+punctuation (parentheses, equal signs, etc.) is optional and merely
+indicates the presence of any delimiter.  A consistent style such as
+that shown here will make the input easier to understand.  With
+respect to branch voltages and currents, {\WRspice} uniformly uses the
+associated reference convention (current flows in the direction of
+voltage drop).
+
+\index{uic keyword}
+The circuit cannot contain a loop of voltage sources.  If a dc
+operating point analysis is performed, which is true for all analysis
+except for transient analysis with the {\vt uic} (use initial
+conditions) flag set, the circuit can not contain a loop of voltage
+sources and/or inductors and cannot contain a cutset of current
+sources and/or capacitors.  In transient analysis with the {\vt uic}
+flag set (which is always the case when Josephson junctions are
+present), inductor/voltage source loops are allowed, as are
+capacitor/current source cut sets.  However, parallel voltage sources
+and series current sources are not accepted.  It is not strictly
+necessary that each node in the circuit have a dc path to ground with
+the {\vt uic} flag given, however convergence problems may result.  It
+is sometimes necessary to add a large-valued resistor to ground in
+these cases.  In general, nodes should have at least two connections.
+
+\index{device library}
+This and the following sections describe the devices available in the
+standard device library linked into {\WRspice}.  The device library
+contains the element and model code for each device, as well as the
+parser for the element specification lines.
+
+Most of the code for the device library (with the exception of
+restricted third-party semiconductor models) is available upon
+request from Whiteley Research Inc.  In theory, users can build
+their own, customized device library for use with {\WRspice}.  In
+this case, devices can be added to or deleted from the library, or
+modified.  Contace Whiteley Research for more information.
+
+This format for most device lines, including the key letters, number
+of nodes, etc., is standard for the SPICE input language, but is set
+entirely by the code in the device library, and hence can be
+abridged in a custom device library.  The descriptions below pertain
+to the standard library.
+
+The following is a complete list of circuit elements available in
+the standard {\WRspice} library, and the key letter (the first
+letter of the device name).
+
+\begin{tabular}{|l|l|}\hline
+\multicolumn{2}{|c|}{Passive Elements}\\ \hline
+\bf Capacitor & \vt c\\ \hline
+\bf Inductor & \vt l\\ \hline
+\bf Mutual Inductor & \vt k\\ \hline
+\bf Resistor & \vt r\\ \hline
+\bf Current-Controlled Switch & \vt w\\ \hline
+\bf Voltage-Controlled Switch & \vt s\\ \hline
+\bf General Transmission Line & \vt t\\ \hline
+\bf Lossy Transmission Line & \vt o\\ \hline
+\bf Uniform RC Line & \vt u\\ \hline
+\multicolumn{2}{|c|}{Voltage and Current Sources}\\ \hline
+\bf General Voltage Source & \vt v\\ \hline
+\bf General Current Source & \vt i\\ \hline
+\bf Arbitrary Source & \vt a\\ \hline
+\bf Voltage-Controlled Current Source & \vt g\\ \hline
+\bf Voltage-Controlled Voltage Source & \vt e\\ \hline
+\bf Current-Controlled Current Source & \vt f\\ \hline
+\bf Current-Controlled Voltage Source & \vt h\\ \hline
+\multicolumn{2}{|c|}{Semiconductor Devices}\\ \hline
+\bf Junction Diode & \vt d\\ \hline
+\bf Bipolar Junction Transistor & \vt q\\ \hline
+\bf Junction Field-Effect Transistor & \vt j\\ \hline
+\bf MESFET & \vt z\\ \hline
+\bf MOSFET & \vt m\\ \hline
+\multicolumn{2}{|c|}{Superconductor Devices}\\ \hline
+\bf Josephson Junction & \vt b\\ \hline
+\end{tabular}
+
+The models for the semiconductor and some other devices require many
+parameter values.  Often, many devices in a circuit are defined by the
+same set of device model parameters.  For these reasons, a set of
+device model parameters is defined on a separate {\vt .model} line and
+assigned a unique model name.  The device element lines in {\WRspice}
+then refer to the model name.  This scheme alleviates the need to
+specify all of the model parameters on each device element line.
+
+The {\cb show} command with the {\vt -D} option is useful for
+printing a list of the parameters names that can be used on a device
+instance line.  Only the parameters not listed as ``{\vt RO}''
+(read-only) can be specified on the line.
 
 !!SEEALSO
 spinput
@@ -330,6 +430,87 @@ Capacitors
     negative element nodes.  There is no built-in limit to the number
     of terms.
     </dl>
+!!LATEX cap elements.tex
+\spgen{c{\it name} {\it n\/}+ {\it n\/}- [{\it value\/} | {\it modname\/}]
+ [{\it options\/}]
+ [c={\it expr\/} | {\vt poly} {\it c0} [{\it c1} ...]]\\
+ \\{\it Options\/}:
+ [m={\it mult\/}] [ic={\it val\/}] [temp={\it temp\/} [tc1={\it tcoeff1\/}]
+ [tc2={\it tcoeff2\/}] [l={\it length\/}] [w={\it width\/}]}
+
+\spexamp{cload 2 10 10p\\
+cmod 3 7 cmodel l=10u w=1u}
+
+The {\it n\/}{\vt +} and {\it n\/}{\vt -} are the positive and
+negative element nodes, respectively, and {\it value\/} is the
+capacitance for a constant valued capacitor.  Alternatively, a
+capacitor model {\it modname\/} can be specified which allows for the
+calculation of the actual capacitance value from strictly geometric
+information and the specifications of the process.  If {\it value\/}
+is specified, it defines the capacitance.  If {\it modname\/} is
+specified, then the capacitance is calculated from the process
+information in the model {\it modname} and the given {\it length} and
+{\it width}.  If {\it value\/} is not specified, then {\it modname\/}
+and {\it length\/} must be specified.  If {\it width\/} is not
+specified, then it will be taken from the default width given in the
+model.  Either {\it value\/} or {\it modname\/}, {\it length\/}, and
+{\it width\/} may be specified, but not both sets.
+
+The parameters accepted by the capacitor are:
+
+\begin{description}
+\item{\vt m=}{\it mult}\\
+This is the parallel multiplier which is the number of devices
+effectively in parallel.  The given capacitance is multiplied by this
+value.  It overrides any `{\vt m}' multiplier found in the inductor
+model.
+
+\item{\vt ic=}{\it val}\\
+The optional initial condition {\it val} is the initial (time zero)
+voltage across the capacitor.  The initial condition (if any) applies
+only when the {\vt uic} option is specified in transient analysis.
+
+\item{\vt temp=}{\it temp}\\
+The {\it temp} is the Celsius operating temperature of the capacitor,
+for use by the temperature coefficient parameters.
+
+\item{\vt tc1=}{\it tcoeff1}\\
+The first-order temperature coefficient.  This will override the
+first-order coefficient found in a model, if given.
+
+\item{\vt tc2=}{\it tcoeff2}\\
+The second-order temperature coefficient.  This will override the
+second-order coefficient found in a model, if given.
+
+\item{\vt l=}{\it length}\\
+The length of the capacitor.  This applies only when a model is given,
+which will compute the capacitance from geometry.
+
+\item{\vt w=}{\it width}\\
+The width of the capacitor.  This applies only when a model is given,
+which will compute the capacitance from geometry.
+
+\item{\vt c=}{\it expr}\\
+This can also be given as ``{\vt cap=}{\it expr}'', or ``{\vt
+capacitance=}{\it expr}'', where {\it expr} is an expression yielding
+the capacitance in farads.  This is the partial derivative of charge
+with respect to voltage, possibly as a function of other circuit
+variables.  This form is applicable when the first token following the
+node list is not a capacitance value or model name.  It also applies
+when a model is given, it overrides the geometric capacitance value.
+
+This is the default keyword, so actually the parameter name and equals
+sign are optional, a bare expression is acceptable.
+
+\item{\vt poly} {\it c0} [{\it c1} ...]\\
+This form allows specification of a polynomial capacitance, which will
+take the form
+\begin{quote}
+Capacitance = $c0 + c1{\cdot}v + c2{\cdot}v^2 ...$
+\end{quote}
+where $v$ is the voltage difference between the positive and negative
+element nodes.  There is no built-in limit to the number of terms.
+\end{description}
 
 !!SEEALSO
 passive
@@ -410,6 +591,56 @@ Inductors
     positive to the negative element nodes.  There is no built-in
     limit to the number of terms.
     </dl>
+!!LATEX ind elements.tex
+\spgen{l{\it name\/} {\it n\/}+ {\it n\/}- [{\it value} | {\it modname\/}]
+ [{\it options\/}] [{\vt ind=}{\it expr} | {\vt poly} {\it c0} [{\it c1} ...]]\\
+ \\{\it Options\/}:
+ [m={\it mult\/}] [ic={\it val\/}]}
+
+\spexamp{llink 42 69 1uh\\
+lshunt 23 51 10u ic=15.7ma}
+
+The {\it n\/}{\vt +} and {\it n\/}{\vt -} are the positive and
+negative element nodes, respectively, and {\it value} is the
+inductance, for a constant value inductor.  An inductor model {\it
+modname} can optionally be specified.  Presently the inductor model
+holds only a parallel multiplier default, so an inductance must be
+specified in addition to the model.
+
+The parameters accepted for the inductor device are:
+
+\begin{description}
+\item{\vt m=}{\it mult}\\
+This is the parallel multiplier which is the number of devices
+effectively in parallel.  The given inductance is divided by this
+value.  It overrides any `{\vt m}' multiplier found in the inductor
+model.
+
+\item{\vt ic=}{\it val}\\
+The initial condition is the initial (time-zero) value of inductor
+current (in Amps) that flows from {\it n\/}{\vt +}, through the
+inductor, to {\it n\/}{\vt -}.  The initial condition (if any) applies
+only when the {\vt uic} option is specified in transient analysis.
+
+\item{\vt ind=}{\it expr}\\
+The {\it expr} is an expression yielding the inductance in henries. 
+This is the partial derivative of flux with respect to branch current,
+possibly as a function of other circuit variables.  The keyword can
+alse be given as ``{\vt inductance}'' or ``{\vt l}'', or may be
+omitted since this is the default parameter.  Note that the expression
+can depend on the branch current, in which case the device is
+nonlinear.
+
+\item{\vt poly} {\it c0} [{\it c1} ...]\\
+This form allows specification of a polynomial inductance, which will
+take the form
+\begin{quote}
+Inductance = $c0 + c1{\cdot}i + c2{\cdot}i^2 ...$
+\end{quote}
+where {\it i} is the current flowing through the device from the
+positive to the negative element nodes.  There is no built-in limit to
+the number of terms.
+\end{description}
  
 !!SEEALSO
 mut
@@ -447,6 +678,22 @@ Coupled (Mutual) Inductors
     inductors, but results may be close enough in some applications.
     In general, use of <tt>mut</tt> with nonlinear inductors is not
     recommended but allowed.
+!!LATEX mut elements.tex
+\spgen{k{\it name} {\it inductor1 inductor2 value}}
+\spexamp{k43 laa lbb 0.999\\
+kxfrmr l1 l2 0.87}
+
+The {\it inductor1} and {\it inductor2} are the names of the two
+coupled inductors found elsewhere in the circuit, and {\it value\/} is
+the coefficient of coupling, K, which must be greater than 0 and less
+than or equal to 1.  Using the ``dot'' convention, one would have a
+dot on the first node of each inductor.
+
+This formulation applies when the referenced inductors are linear. 
+The model is probably not exactly correct in the case of nonlinear
+inductors, but results may be close enough in some applications.  In
+general, use of {\vt mut} with nonlinear inductors is not recommended
+but allowed.
  
 !!SEEALSO
 ind
@@ -580,6 +827,95 @@ Resistors
     negative element nodes.  There is no built-in limit to the number
     of terms.
     </dl>
+!!LATEX res elements.tex
+\spgen{r{\it name\/} {\it n1 n2} [{\it value} | {\it modname\/}]
+ [{\it options\/}]
+ [r={\it expr\/} | {\vt poly} {\it c0} [{\it c1} ...]]\\
+ \\{\it Options\/}:
+ [m={\it mult\/}] [temp={\it temp\/}] [tc1={\it tcoeff1\/}]
+ [tc2={\it tcoeff2\/}] [l={\it length\/}] [w={\it width\/}]
+ \newline
+ [noise={\it mult\/}]}
+
+\spexamp{rload 2 10 10k\\
+rmod 3 7 rmodel l=10u w=1u}
+
+The {\it n1} and {\it n2} are the two element nodes, and {\it value}
+is the resistance, for a constant value resistor.  A resistor model
+{\it modname} can alternatively be specified and allows the
+calculation of the actual resistance value from strictly geometric
+information and the specifications of the process.  If a resistance is
+specified after {\it modname}, it overrides the geometric information
+(if any) and defines the nominal-temperature resistance.  If {\it
+modname} is specified, then the resistance may be calculated from the
+process information in the model {\it modname} and the given {\it
+length} and {\it width}.  In any case, the resulting value will be
+adjusted for the operating temperature {\it temp} if that is
+specified, using correction factors given.  If {\it value} is not
+specified, then {\it modname} and {\it length} must be specified.  If
+{\it width} is not specified, then it will be taken from the default
+width given in the model.
+
+If the resistance can not be determined from the provided parameters,
+a fatal error results.  This behavior is different from traditional
+Berkeley SPICE, which provides a default value of 1K.
+
+The paramaters that are understood are:
+
+\begin{description}
+\item{\vt m=}{\it mult}\\
+This is the parallel multiplication factor, that represents the number
+of devices effectivly connected in parallel.  The effect is to
+multiply the conductance by this factor, so that the given resistance
+is divided by this value.  This overrides the `{\vt m}' multiplier
+found in the resistor model, if any.
+
+\item{\vt temp=}{\it temp}\\
+The {\it temp} is the Celsius operating temperature of the resistor,
+for use by the temperature coefficient parameters.
+
+\item{\vt tc1=}{\it tcoeff1}\\
+The first-order temperature coefficient.  This will override the
+first-order coefficient found in a model, if given.  The keyword
+``{\vt tc}'' is an alias for ``{\vt tc1}''.
+
+\item{\vt tc2=}{\it tcoeff2}\\
+The second-order temperature coefficient.  This will override the
+second-order coefficient found in a model, if given.
+
+\item{\vt l=}{\it length}\\
+The length of the resistor.  This applies only when a model is given,
+which will compute the resistance from geometry.
+
+\item{\vt w=}{\it width}\\
+The width of the resistor.  This applies only when a model is given,
+which will compute the resistance from geometry.
+
+\item{\vt noise=}{\it mult}\\
+The {\it mult} is a real number which will multiply the linear
+conductance used in the noise equations.  Probably the major use is to
+give {\vt noise=0.0} to temporarily remove a resistor from a circuit
+noise analysis.
+
+\item{\vt r=}{\it expr}\\
+This can also be given as ``{\vt res=}{\it expr\/}'' or ``{\vt
+resistance=}{\it expr\/}'', where {\it expr} is an expression giving
+the nominal-temperature device voltage divided by device current
+(``large signal'' resistance) in ohms, possibly as a function of other
+variables.  This form is applicable when the first token following the
+node list is not a resistance value or model name.  It also applies
+when a model is given, it overrides the geometric resistance value.
+
+\item{\vt poly} {\it c0} [{\it c1} ...]\\
+This form allows specification of a polynomial resistance, which will
+take the form
+\begin{quote}
+Resistance = $c0 + c1{\cdot}v + c2{\cdot}v^2 ...$
+\end{quote}
+where {\it v} is the voltage difference between the positive and
+negative element nodes.  There is no built-in limit to the number of
+terms.
+\end{description}
  
 !!SEEALSO
 passive
@@ -619,6 +955,26 @@ Switches
     positive controlling current flow is from the positive node,
     through the source or inductor, to the negative node.  See the <a
     href="swmodel">switch model</a> description for more information.
+!!LATEX sw elements.tex
+\spgen{s{\it name} {\it n\/}+ {\it n\/}- {\it nc\/}+ {\it nc\/}-
+ {\it model\/} [on | off]\\
+w{\it name} {\it n\/}+ {\it n\/}- {\it vnam model\/} [on | off]}
+\spexamp{s1 1 2 3 4 switch1 on\\
+s2 5 6 3 0 sm2 off\\
+switch1 1 2 10 0 smodel1\\
+w1 1 2 vclock switchmod1\\
+w2 3 0 vramp sm1 on\\
+wreset 5 6 vclck lossyswitch off}
+
+Nodes {\it n\/}{\vt +} and {\it n\/}{\vt -} are the nodes between
+which the switch terminals are connected.  The {\vt model} name is
+mandatory while the initial conditions are optional.  For the voltage
+controlled switch, nodes {\it nc\/}{\vt +} and {\it nc\/}{\vt -} are
+the positive and negative controlling nodes respectively.  For the
+current controlled switch, the controlling current is that through the
+voltage source or inductor {\it vnam}.  The direction of positive
+controlling current flow is from the positive node, through the source
+or inductor, to the negative node.
  
 !!SEEALSO
 passive
@@ -1016,6 +1372,318 @@ Transmission Lines (General)
     <p>
     See the description of the transmission line <a
     href="ltramodel">model</a> for more information.
+!!LATEX tra elements.tex
+\spgen{t{\it name\/} {\it n1 n2 n3 n4} [{\it model\/}]
+ [{\it param\/}={\it value} ...]\\
+o{\it name\/} {\it n1 n2 n3 n4} [{\it model\/}]
+ [{\it param\/}={\it value} ...]}
+\spexamp{t1 1 0 2 0 z0=50 td=10ns\\
+tw 1 0 2 0 z0=50 f=1ghz nl=.1\\
+tx 1 0 4 0 l=9.13e-9 c=3.65e-12 len=24\\
+oy 2 0 4 0 level=2 l=100pH c=5pf r=1.5 len=12\\
+oz 2 0 4 0 level=2 tranmod len=12}
+
+In {\WRspice}, the transmission line element represents a general
+lossless or lossy transmission line.  There are actually three
+historical models unified in the {\WRspice} model:  the SPICE3
+lossless transmission line, the SPICE3 lossy (LTRA) transmission line
+convolution approach of Roychowdhury and Pederson \cite{ltra}, and the
+Pade approximation lossy line approach of Lin and Kuh \cite{lin}.
+
+The device line is keyed by the letters `{\vt t}' and `{\vt o}'
+equivalently, as above.  In SPICE3, `{\vt o}' calls the lossy
+convolution model, but this is not necessarily the case in
+{\WRspice}.  One can enforce use of the convolution model by using
+``{\vt level=2}'' in the device or model line, the default (``{\vt
+level=1}'') is the Pade approximation model.  In the lossless case,
+the {\vt level} parameter has no effect.
+
+Above, {\it n1\/} and {\it n2\/} are the nodes at port 1, {\it n3\/}
+and {\it n4\/} are the nodes at port 2.  Note that this element
+models only one propagating mode.  If all four nodes are distinct in
+the actual circuit, then two modes may be excited.  To simulate such
+a situation, two transmission line elements are required.
+
+There is a fairly lengthly list of parameters which can be applied
+in the device line, or in a model.  If a model is referenced in the
+element line, the element defaults to the parameters specified in
+the model, though any of these parameters can be overridden for the
+element if given new values in the element line.
+
+\subsubsection{Model Level}
+
+\begin{description}
+\item{\vt level}\\
+This parameter can take values 1 (the default if not given) or 2.  The
+level indicates the treatement of a lossy element, and has no effect
+if the transmission line is lossless.
+
+Level 1 handles arbitrary RLCG configurations using the Pade
+approximation approach.  A Pade approximation is used as a rational
+function approximation to the transfer function in the Laplace domain,
+which has a trivial inverse transformation to the time domain. 
+Further, separability avoids the need to perform a complex convolution
+at each time point.  The model is very fast and accurate enough for
+most purposes.
+
+Level 2 handles RLC configurations using a full numerical convolution,
+equivalent to the LTRA model.  It does not allow a G element, and is
+much slower than the Pade approximation approach, however it may be
+more accurate.  Level 2 supports the following types of lines:  RLC
+(uniform transmission line with series loss only), RC (uniform RC
+line), LC (lossless transmission line), and RG (distributed series
+resistance and parallel conductance only).
+\end{description}
+
+\subsubsection{Electrical Characteristics}
+
+\begin{description}
+\item{\vt len}\\
+This provides the physical length of the transmission line in
+arbitrary units, though the units must match the per-length unit in
+the element values discussed below.  If not given, the value is taken
+as unity, unless it is implicitly defined by other parameters.
+
+\item{\vt l}\\
+This parameter provides the series inductance per unit length of the
+line.  The default is 0.
+
+\item{\vt c}\\
+This parameter provides the shunt capacitance per unit length of the
+line.  The default is 0.
+
+\item{\vt r}\\
+This parameter provides the series resistance per unit length of the
+line.  The default is 0.
+
+\item{\vt g}\\
+This parameter provides the shunt conductance per unit length of the
+line.  The default is 0.  With level 2, this cannot be nonzero if
+{\vt l} or {\vt c} is given, i.e., only {\vt r} can be nonzero if
+{\vt g} is nonzero for level = 2, as in the SPICE3 LTRA model.
+
+\item{{\vt z0} or {\vt zo}}\\
+This is the line (lossless) characteristic impedance in ohms, given by
+\begin{displaymath}
+Z_0 = \sqrt{L/C}
+\end{displaymath}
+
+\item{{\vt td} or {\vt delay}}\\
+This is the (lossless) phase delay of the line in seconds, given by
+\begin{displaymath}
+T_d = Length\sqrt{LC}
+\end{displaymath}
+
+\item{\vt nl}\\
+This is the normalized line length at a particular frequency {\it f},
+which must also be specified (see below).  This is an alternative
+means for setting the line delay, where
+\begin{displaymath}
+T_d = nl/f
+\end{displaymath}
+It is an error to give both {\it td} and {\it nl}.
+
+\item{\vt f}\\
+This is the frequency at which the normalized line length (above) is
+representative.
+\end{description}
+
+To model a line with nonzero series inductance and shunt capacitance,
+a complete but non-conflicting subset of the parameters {\vt l}, {\vt
+c}, {\vt z0}, {\vt td}, {\vt len}, {\vt f}, and {\vt nl} must be
+provided.  The {\vt td} parameter is the line delay in seconds, and
+the {\vt z0} parameter is the impedance in ohms, for the lossless
+case.  Specifying these two parameters is sufficient to completely
+specify a lossless line, or the reactive elements of a lossy line. 
+Alternatively, one could specify {\vt l} (inductance per length), {\vt
+c} (capacitance per length) and {\vt len} (line length).  If {\vt len}
+is not specified in either case, the length defaults to unity.  The
+delay can also be specified through the {\vt f} (frequency) and {\vt
+nl} (normalized length) parameters, where the delay would be set to
+{\vt nl/f}.  It is an error to specify both {\vt td} and {\vt f}, {\vt
+nl}.  If {\vt td} is specified, or both {\vt f} and {\vt nl} are
+specified, along with parameters which yield internally the L and C
+values, then the length is determined internally by
+\begin{displaymath}
+Length = T_d/\sqrt{LC}
+\end{displaymath}
+
+One can specify {\vt z0} and {\vt l}, for example, which determines C. 
+Unlike the SPICE3 (and SPICE2) lossless line devices, the delay must
+be specified through the parameters; there is no default.
+
+\subsubsection{Initial Conditions}
+
+\begin{description}
+\item{{\vt v1}, {\vt i1}, {\vt v2}, {\vt i2}}\\
+The (optional) initial condition specification consists of the voltage
+and current at each of the transmission line ports.  The initial
+conditions (if any) apply only when the {\vt uic} option is specified
+in transient analysis.
+\end{description}
+
+\subsubsection{Timestep and Breakpoint Control}
+
+Internally, the transmission line models store a table of past values
+of the currents and voltages at the terminals, which become
+excitations after the delay time.  As excitations, these signals can
+cause errors or nonconvergence if their rate of change is too large. 
+These errors are reduced or eliminated by two mechanisms:  time step
+truncation and breakpoint setting.  Time step truncation occurs if the
+excitation derivative exceeds a certain threshold.  A breakpoint which
+occurs at this time will also be rescheduled to one delay-time later. 
+Breakpoints are set by the independent voltage and current sources at
+times where a slope change occurs, in piecewise linear outputs.  At a
+breakpoint, the internal time step is cut and integration order
+reduced to accommodate the change in input accurately.
+
+\begin{description}
+\item{\vt truncdontcut}\\
+If this flag is given, no complicated timestep cutting will be done. 
+In the {\vt level=1} (Pade) case for a lossy line, there is an initial
+timestep limiting employed in all cases, to $slopetol{\cdot}tau$,
+where $tau$ is an internal time constant of the model.  This limiting
+is usually sufficient, and provides the fastest simulation, and
+therefor {\vt truncdontcut} is the default in this case.
+
+\item{\vt truncsl}\\
+If this flag is given, the device will use a slope-test timestep
+cutting algorithm.  This is the default in the lossless case, for any
+level.
+
+\item{\vt slopetol}\\
+When using the slope-test timestep cutting algorithm, this is the
+fraction used in the slope test.  The default is 0.1.  This parameter
+is also used in the {\vt level=1} pre-cutting for lossy lines,
+described above.
+
+\item{\vt trunclte}\\
+This applies to {\vt level=2} (full convolution) only.  When this flag
+is given, a local truncation error method is used for timestep
+control.  This is the default for lossy lines with {\vt level=2}.
+
+\item{\vt truncnr}\\
+This applies to {\vt level=2} only.  When this flag is given, a
+Newton-Raphson iterative method is used for timestep control.
+\end{description}
+
+If no timestep control keywords are given, the defaults are the
+following:
+
+\begin{tabular}{ll}
+Lossless case, any level & \vt truncsl\\
+Level=1 (Pade) & \vt truncdontcut\\
+Level=2 (convolution) & \vt trunclte\\
+\end{tabular}
+
+Only one of the trunc flags should be given.  The latter two apply
+only to a lossy line with {\vt level=2}, and if given in a different
+case the default timestep control is applied.
+
+The slope algorithm computes the difference between the quadratic
+extrapolation from the last three and the linear extrapolation from
+the last two time points, and uses this difference formula to
+determine the time when this error is equal to {\vt slopetol}
+multiplied by the maximum absolute value of the signal at the
+three time points.
+
+When using {\vt level=2}, there are two alternative timestep control
+options.  If the {\vt trunclte} flag is given, the timestep is reduced
+by one half if the computed local truncation error is larger than an
+error tolerance, which is given by
+\begin{displaymath}
+tol = trtol\cdot(reltol\cdot(abs(input1) + abs(input2)) + abstol
+\end{displaymath}
+where {\it trtol}, {\it reltol} and {\it abstol} are the values of the
+SPICE options {\vt trtol}, {\vt reltol} and {\vt abstol}, and {\it
+input1} and {\it input2} are the internally stored excitations.  If
+the {\vt truncnr} flag is given, a timestep is computed based on
+limiting the local truncation error to the tolerance given above. 
+
+The handling of breakpoints is controlled by the following flags:
+
+\begin{description}
+\item{\vt nobreaks}\\
+When this flag is given, there will be no breakpoint rescheduling.
+
+\item{\vt allbreaks}\\
+When this flag is give, all breakpoints are rescheduled.
+
+\item{\vt testbreaks}\\
+When this flag is given, which is the default, a test is applied and
+only breakpoints that pass this test are rescheduled.
+
+\item{\vt rel}\\
+When testing breakpoints, this is the relative tolerance value.  The
+default is .001.
+
+\item{\vt abs}\\
+When testing breakpoints, this is the absolute tolerance value.  The
+default is 1e-12.
+\end{description}
+
+The breakpoint setting is controlled by the three flags {\vt
+nobreaks}, {\vt allbreaks}, and {\vt testbreaks}.  Only one should be
+given, and the default is {\vt testbreaks}.  If {\vt nobreaks} is set,
+breakpoints will not be rescheduled.  If {\vt allbreaks} is set, all
+breakpoints will be rescheduled to the break time plus the delay time. 
+The default {\vt testbreaks} will reschedule a breakpoint if a slope
+test is passed.  This slope test makes use of the {\vt rel} and {\vt
+abs} parameters.  The slopes at the last two time points are computed. 
+The breakpoint is rescheduled if
+\begin{displaymath}
+abs(d1-d2) > max(.01{\cdot}rel{\cdot}vmax, abs)/dt
+\end{displaymath}
+where {\it d1} and {\it d2} are the two slopes.  The parameters {\vt
+rel} and {\vt abs} default to 1e-3 and 1e-12, respectively.  The {\it
+dt} parameter is the sum of the last two time deltas, and {\it vmax}
+is a running peak detect function representing the maximum voltage
+applied to the line.  Note that these are different defaults (and a
+different algorithm) from the parameters of the same name used in the
+SPICE3 transmission line models.
+
+In most cases, the defaults for the timestep and breakpoint controls
+are sufficient.  Excessive setting of breakpoints and timestep
+truncation increases execution time, while insufficient control can
+produce errors.  An alternative approach is to limit the maximum
+internal timestep used with the {\vt .tran} line, which can provide
+highly accurate results for comparison when experimenting with the
+control parameters.
+
+See the description of the transmission line model (\ref{ltramodel})
+for more information.
+
+\subsubsection{History List}
+
+\begin{description}
+\item{\vt lininterp}\\
+If this flag is set, linear interpolation is used to obtain the
+present value of signals in the history list.
+
+\item{\vt quadinterp}\\
+If this flag is set, which is the default, quadratic interpolation is
+used to obtain the present value of signals in the history list.
+
+\item{\vt compactrel}\\
+This is the relative tolerance used in history list compaction for
+{\vt level=2}.  The default value is the same as the {\WRspice}
+default relative tolerance ({\vt reltol} variable).
+
+\item{\vt compactabs}\\
+This is the absolute tolerance used in history list compaction for
+{\vt level=2}.  The default value is the same as the {\WRspice} default
+absolute tolerance ({\vt abstol} variable).
+\end{description}
+
+The flag {\vt lininterp}, when specified, will use linear
+interpolation instead of the default quadratic interpolation for
+calculating delayed signals.
+
+The parameters {\vt compactrel} and {\vt compactabs} control the
+compaction of the past history of values stored for convolution when
+using {\vt level=2}.  Larger values of these lower accuracy but
+usually increase simulation speed.  These are to be used with the {\vt
+trytocompact} option, described in the {\vt .options} section.
 
 !!SEEALSO
 multidec
@@ -1057,6 +1725,23 @@ Uniform RC Line
     for the length, and <i>f</i> is the maximum frequency.  See the
     description of the uniform RC line <a href="urcmodel">model</a>
     for more information.
+!!LATEX urc elements.tex
+\spgen{u{\it name\/} {\it n1 n2 n3 modname} l={\it len} [n={\it lumps\/}]}
+\spexamp{u1 1 2 0 urcmod l=50u\\
+urc2 1 12 2 umodl l=1mil n=6}
+
+The {\it n1} and {\it n2} are the two element nodes the RC line
+connects, while {\it n3} is the node to which the capacitances are
+connected.  The {\it modname} is the model name, {\it len} is the
+length of the RC line in meters, and {\it lumps}, if specified, is
+the number of lumped segments to use in modeling the RC line.  If
+not specified, the value will be computed as
+\begin{displaymath}
+N = \frac{log\left(2{\pi}{F_{max}}RC\cdot\left((k-1)/k\right)^2\right)}{log(k)}
+\end{displaymath}
+where {\it N} is the number of lumps, {\it k} is the proportionality
+factor, {\it R} and {\it C} are the total values for the length, and
+$F_{max}$ is the maximum frequency.
  
 !!SEEALSO
 passive
@@ -1637,6 +2322,424 @@ Josephson Junctions
     <p>
     See the Josephson junction <a href="jjmodel">model description</a>
     for more information.
+!!LATEX jj elements.tex
+\spgen{b{\it name} {\it n\/}+ {\it n\/}- [{\it np\/}] [{\it modname\/}]
+ [{\it parameters} ...]}
+
+The default Josephson junction model is an extended version of the RSJ
+model as used by Jewett\cite{jewett}.  There are actually three
+Josephson junction models available, through the {\vt level} model
+parameter, which can take values 1 through 3.  The default {\vt
+level=1} model is the RSJ model mentioned.  This model has a
+simplified Verilog-A version which can be found among the Verilog-A
+examples.  This can be compiled with the {\vt adms} utility into a
+run-time loadable module which can be loaded with the {\cb devload}
+command.  A pre-compiled module is provided with the example.  Once
+loaded into {\WRspice}, the model can be accessed with {\vt level=2}.
+
+For {\vt level=3}, a microscopic tunnel junction "Werthamer" model,
+also known as a Tunnel Junction Model (TJM) is provided.  The model is
+more physics-based than the empirical RSJ model.
+
+Unless stated otherwise, information presented here applies to
+instances of the standard RSJ model ({\vt level=1}) and the Verilog-A
+Josephson junction model ({\vt level=2}) provided with {\WRspice} in
+the Verilog-A examples.
+
+The instance parameters for the microscopic model are described in the
+\ref{tjm}.
+
+Josephson Junction Instance parameters, Levels 1 and 2\\
+\begin{longtable}{|l|p{4.5in}|}\hline
+\bf Parameter Name & \bf Description\\ \hline\hline
+{\vt pijj=1|0} & Whether the device is a ``pi'' junction.\\ \hline
+{\vt area=}{\it val} & Scale factor that multiplies all currents and
+  other values, effectively modifying the junction area.\\ \hline
+{\vt ics=}{\it val} & Instantiated critical current, used as scale factor
+  for capacitance, conductances.\\ \hline
+{\vt temp\_k=}{\it val} & Device temperature, Kelvin.\\ \hline
+{\vt lser=}{\it val} & Junction series parasitic inductance. \\ \hline
+{\vt lsh=}{\it val} & Shunt resistor series parasitic inductance. \\ \hline
+{\vt ic=}{\it vj\/},{\it phi} & The initial junction voltage and phase
+  (initial condition) for transient analysis.\\ \hline
+{\vt vj=}{\it vj} & The initial junction voltage (initial condition) for
+  transient analysis, alias {\vt ic\_v}.\\ \hline
+{\vt phi=}{\it phi} & The initial junction phase (initial condition) for
+  transient analysis, alias {\vt ic\_phase}.\\ \hline
+{\vt control=}{\it name} & Controlling voltage source or inductor
+  name.\\ \hline
+{\vt vshunt=}{\it val} & Voltage to specify external shunt resistance.
+  \\ \hline
+
+{\vt n} (read only) & SFQ emission count.\\ \hline
+{\vt phsf} (read only) & True if SFQ count change at current time point.\\
+ \hline
+{\vt phst} (read only) & Time of last SFQ emission.\\ \hline
+{\vt v} (read only) & Terminal voltage.\\ \hline
+{\vt phase} (read only) & Junction phase, alias {\vt phs}.\\ \hline
+{\vt tcf} (read only) & Temperature compensation factor.\\ \hline
+{\vt vg} or {\vt vgap} (read only) & Gap voltage.\\ \hline
+{\vt vless} (read only) & Gap threshold voltage.\\ \hline
+{\vt vmore} (read only) & Gap knee voltage.\\ \hline
+{\vt icrit} (read only) & Maximum critical current.\\ \hline
+{\vt cc} (read only) & Capacitance current.\\ \hline
+{\vt cj} (read only) & Josephson current.\\ \hline
+{\vt cq} (read only) & Quasiparticle current.\\ \hline
+{\vt c} (read only) & Total device current.\\ \hline
+{\vt cap} (read only) & Capacitance.\\ \hline
+{\vt g0} (read only) & Subgap conductance.\\ \hline
+{\vt gn} (read only) & Normal conductance.\\ \hline
+{\vt gs} (read only) & Quasiparticle onset conductance.\\ \hline
+{\vt gshunt} (read only) & External shunt conductance from {\vt vshunt}.\\
+ \hline
+{\vt rshunt} (read only) & External shunt resistance from {\vt vshunt}.\\
+ \hline
+{\vt lshval} (read only) & External shunt resistor parasitic inductance.\\
+ \hline
+{\vt g1} (read only) & NbN quasiparticle parameter.\\ \hline
+{\vt g2} (read only) & NbN quasiparticle parameter.\\ \hline
+{\vt node1} (read only) & Node 1 number.\\ \hline
+{\vt node2} (read only) & Node 2 number.\\ \hline
+{\vt pnode} (read only) & Phase node number.\\ \hline
+{\vt lsernode} (read only) & Internal {\vt lser} node number.\\ \hline
+{\vt lserbrn} (read only) & Internal {\vt lser} branch number.\\ \hline
+{\vt lshnode} (read only) & Internal {\vt lsh} node number.\\ \hline
+{\vt lshbrn} (read only) & Internal {\vt lsh} branch number.\\ \hline
+\end{longtable}
+
+\spexamp{b1 1 0 10 jj1 ics=200uA\\
+b1 1 0 10 jj1 ics=200uA\\
+bxx 2 0 type1 control=l3\\
+b2 4 5 ybco phi=1.57}
+
+The {\it n+} and {\it n-} are the positive and negative element nodes,
+respectively.  These are followed by an optional phase node.  The
+phase node, if specified, generally should have no other connections
+in the circuit, but the voltage of this node gives the phase of the
+junction in radians.  The {\it modname} is the name of the Josephson
+junction model.  If no model is specified, then a default model is
+used (see the description of the Josephson model for the default
+values).  Other (optional) parameters follow in any order.
+
+\begin{description}
+\item{\vt pijj}\\
+If the {\vt pijj} parameter is given and set to a nonzero integer
+value, the device instance will behave as a ``pi'' junction.  This
+type of junction has a ground state with phase $\pi$ rather than 0. 
+The value given on the device line (if any) overrides the value given
+in the model.
+
+\item{\vt area}\\
+{\bf range:} 0.05 -- 20.0\\
+{\bf Deprecated, do not use in new files.}\\
+Histrorically, this parameter has been used to set the actual critical
+current of a Josephson junction instance.  It is not a physical area,
+but rather a scale factor, representing the ratio of the instance
+critical current to the reference critical current.  The parameter is
+retained for backwards compatibility, but should not be used in new
+circuit descrfiptions.  The {\vt ics} parameter (below) should be used
+instead.  By using {\vt ics}, one can change the critical current of
+the reference junction without changing the instance critical
+currents, which is not the case for {\vt area}.  In the new paradigm,
+the reference junction critical current corresponds to a ``typical''
+mid-sized junction, with a not necessarily convenient critical current
+value.  Use of {\vt area} assumes that the reference critical current
+is something nice, like the historical 1mA, and unchanging.  If not
+specified and {\vt ics} is not given, the effective value is 1.0.
+
+\item{\vt ics}\\
+{\bf range:} 0.02*{\vt icrit} -- 50.0*{\vt icrit}\\
+This gives the actual critical current of the instantiated junction,
+and in addition scales all conductance and capacitance values from the
+reference junction appropriately.  This is equivalent to giving the
+{\vt area} parameter with a value of {\vt ics}/{\vt icrit}.  The
+default is {\vt icrit}, the reference junction critical current.
+
+\item{\vt temp\_k}\\
+{\bf range:} 0.0 -- 0.95*{\vt tc}\\
+This is the assumed operating temperature of the device, in Kelvin. 
+The default is the model {\vt deftemp} value.  See the model description
+for more information about temperature modeling.
+
+\item{\vt lser}\\
+{\bf range:} 0.0 -- 10.0pH\\
+This models series inductance of the physical Josephson junction
+structure, caused by constriction of current through the junction
+orifice.  This inductance might typically be in the range of 0.1 to
+0.3 picohenries.  If nonzero, an internal node is added to the model,
+providing the connection point of the inductance and the Josephson
+junction.  The default value is 0.0, meaning that no parasitic
+inductance is assumed.  Nonzero given values less than 0.01pH revert
+to zero.
+
+\item{\vt lsh}\\
+{\bf range:} 0.0 -- 100.0pH\\
+This parameter specifies the series inductance of the external shunt
+resistance.  The {\vt vshunt} instance or model parameter must be
+specified such that a positive external shunt conductance is applied,
+otherwise this parameter is ignored.  Ordinarily, the {\vt lsh0}/{\vt
+lsh1} model parameters would be used to specify the inductance, this
+parameter can be used to override these values on a per-instance basis
+if desired.
+
+\item{\vt ic}\\
+{\bf Levels 1 and 3 only.}\\
+The keyword is expected to be followed by two numbers, giving the
+initial junction voltage and phase in radians.  These apply in
+transient analysis when the ``{\vt uic}'' option is included in the
+transient analysis specification.  The initial junction voltage and
+phase both default to 0.0.
+
+\item{{\vt vj} or {\vt ic\_v}}\\
+This provides the initial voltage of the junction when the ``{\vt
+uic}'' option is included in the transient analysis specification. 
+The initial junction voltage defaults to 0.0.
+
+\item{{\vt phi} or {\vt ic\_phase}}\\
+This provides the initial junction phase in radians when the ``{\vt
+uic}'' option is included in the transient analysis specification.
+
+\item{\vt control}\\
+{\bf level 1 only.}\\
+The {\vt control} parameter is only needed if critical current
+modulation is part of the circuit operation, and is only relevant to
+Josephson junction model types that support critical current
+modulation, that is, the model parameter {\vt cct} is given a value
+larger than 1.  The {\it name} in the {\vt control} specification is
+the name of either a voltage source or inductor which appears
+somewhere in the circuit.  The current flowing through the indicated
+device is taken as the junction control current.
+
+\item{\vt vshunt}\\
+{\bf range:} 0.0 -- nominal gap voltage\\
+See the description of the {\vt vshunt} model parameter.  The model
+parameter, if given, will provide the default used in all instances. 
+However this can be overridden on a per-instance basis with the {\vt
+vshunt} instance parameter.
+\end{description}
+
+The remaining parameters are ``read only'' and can be accessed with
+the {\vt @}{\it device\/}[{\it param\/}] special vector notation
+during the simulation (in callbacks) or after the simulation if the
+vector is saved with the {\cb save} command or equivalent.
+
+\begin{description}
+\item{\vt n} (read only)\\
+This integer value is incremented whenever the junction phase changes
+by plus or minus $2\pi$.  It is intended for pass/fail testing of
+single flux quantum (SFQ) circuit operation.
+ 
+\item{\vt phsf} (read only)\\
+This flag is set true at the time point when the SFQ emission count
+changes.  This is intended to facilitate pass/fail testing of SFQ
+circuits.
+
+\item{\vt phst} (read only)\\
+This read-only parameter contains the last time that the SFQ emission
+count changed, intended for use in SFQ pass/fail testing.
+
+\item{\vt v} (read only)\\
+The voltage across the junction.
+
+\item{\vt phase} (read only)\\
+The junction phase.  Reading this is an alternative to using a third
+node to obtain the phase.
+
+\item{tcf} (read only)\\
+The temperature correction factor that modifies the critical
+current at operating temperatures other than nominal.  See the
+description of the temperature dependence of
+the RSJ model in \ref{rsjtcf}.
+
+\item{\vt vg} or {\vt vgap} (read only)\\
+The gap voltage of the junction.
+
+\item{\vt vless} (read only)\\
+The voltage where the quasiparticle step current begins to rise.  it
+is the lower bounding point used to indicate the {\vt delv} gap
+spread, i.e., it is equal to {\vt vg - delv/2}.
+
+\item{\vt vmore} (read only)\\
+The voltage where the quasiparticle step ends and the normal resistive
+part begins.  It is the upper point used to indicate the {\vt delv}
+gap spread, equal to {\vt vg + delv/2}.
+
+\item{\vt icrit} (read only)\\
+The critical current of the junction instance.
+
+\item{\vt cc} (read only)\\
+The current flowing through the geometric capacitance of the junction.
+
+\item{\vt cj} (read only)\\
+The pair current (supercurrent) flowing through the junction.
+
+\item{\vt cq} (read only)\\
+The quasiparticle (normal) current flowing through the device.
+
+\item{\vt c} (read only)\\
+The total current flowing through the device, the sum of {\vt cc},
+{\vt cj} and {\vt cq}.
+
+\item{\vt cap} (read only)\\
+The geometric capacitance of the device instance.
+
+\item{\vt g0} (read only)\\
+The subgap conductance of the device instance.
+
+\item{\vt gn} (read only)\\
+The normal state conductance of the device instance.
+
+\item{\vt gs} (read only)\\
+The conductance of the quasiparticle branch at the gap voltage.
+
+\item{\vt gshunt} (read only)\\
+If the {\vt vshunt} instance or model parameter is given and nonzero,
+{\vt gshunt} will return the external conductance added to the
+intrinsic conductance so that the total conductance multiplied by the
+critical current will equal {\vt vshunt}.
+
+\item{\vt rshunt} (read only)\\
+If {\vt gshunt} is nonzero, {\vt rshunt} will be the reciprocal,
+otherwise it will be 0.
+
+\item{\vt lshval} (read only)\\
+If the {\vt vshunt} instance or model parameter is given and nonzero,
+this will be the parasitic inductance assumed in the external shunt
+resistance.  This will depend on the settings of the {\vt lsh0} and
+{\vt lsh1} model parameters, and the {\vt lsh} instance parameter
+which overrides the model parameters if given.
+
+\item{\vt g1} (read only)\\
+This applies if the {\vt rtype} model parameter is set to 3, which
+indicates use of the NbN polynomial model for subgap conductance. 
+This is the third-order amplitude in the polynomial.
+
+\item{\vt g2} (read only)\\
+This applies if the {\vt rtype} model parameter is set to 3, which
+indicates use of the NbN polynomial model for subgap conductance. 
+This is the fifth-order amplitude in the polynomial.
+
+\item{\vt node1} (read only)\\
+The internal node number of the first node.
+
+\item{\vt node2} (read only)\\
+The internal node number of the second node.
+
+\item{\vt pnode} (read only)\\
+The internal node number of the third (phase) node, 0 or -1 if not
+used.
+
+\item{\vt lsernode} (read only)\\
+The internal node number of the device internal node added for series
+parasitic inductance.  This will be 0 or -1 if not used (no series
+parasitic inductance assumed).
+
+\item{\vt lserbrn} (read only)\\
+If series parasitic inductance is nonzero ({\vt lser} given) this will
+be the internal number of the branch node of the inductor.
+
+\item{\vt lshnode} (read only)\\
+If the {\vt vshunt} instance or model parameter is given and nonzero,
+and series parasitic inductance is nonzero, this will be the internal
+node number of the internal device node that incorporates the series
+inductance.
+
+\item{\vt lshbrn} (read only)\\
+If the {\vt vshunt} instance or model parameter is given and nonzero,
+and series parasitic inductance is nonzero, this will be the internal
+branch number of the inductor's branch.
+\end{description}
+
+
+\subsubsection{Josephson Junction Description}
+\label{jjdesc}
+
+The Josephson junction device has unique behavior which complicates
+simulation with a SPICE-type simulator.  Central is the idea of phase,
+which is a quantum-mechanical concept and is generally invisible in
+the non-quantum world.  However with superconductivity, and with
+Josephson junctions in particular, phase becomes not only observable,
+but a critical parameter describing these devices and the circuits
+that contain them.
+
+Without going into the detailed physics, one can accept that phase is
+an angle which applies to any superconductor.  The angle is a fixed
+value anywhere on the superconductor, unless current is flowing. 
+Flowing current produces magnetic flux, and magnetic flux produces a
+change in phase.  One can express this as follows:
+
+\begin{quote}
+$LI = flux = \Phi_0(\phi/2\pi)$
+\end{quote}
+
+Here, $L$ is the inductance, $\Phi_0$ is the magnetic flux quantum
+(Planck's constant divided by twice the electron charge) and $\phi$ is
+the phase difference across the inductor.  The supercurrent flowing in
+a Josephson junction is given by
+
+\begin{quote}
+$I = I_c sin(\phi)$
+\end{quote}
+
+where $I_c$ is the junction critical current, and $\phi$ is the phase
+difference across the junction.  The junction phase is proportional to
+the time integral of junction voltage:
+
+\begin{quote}
+$\phi = (2\pi/\Phi_0)\int^t_{-\infty} V(t)dt$
+\end{quote}
+
+The important consequence is that the sum of the phase differences
+around any loop consisting of Josephson junctions and inductors must
+be a multiple of $2\pi$.  This is due to the requirement that the
+superconducting wave function be continuous around the loop.  Further,
+if the loop phase is not zero, it implies that a persistent current is
+flowing around the loop, and that the magnetic flux through the loop
+is a multiple of the flux quantum $\Phi_0$.
+
+We therefor observe that in a circuit containing loops of Josephson
+junctions and inductors, which includes about all useful circuits:
+
+\begin{enumerate}
+\item{The DC voltage across each Junction or inductor is zero.}
+\item{The DC current applied to the circuit splits in such a manner
+as to satisfy the phase relations above.}
+\end{enumerate}
+
+Without any built-in concept of phase, it would appear to be
+impossible to find the DC operating point of a circuit containing
+Josephson junctions and inductors with a SPICE simulator.  However,
+there are ways to accomplish this.
+
+The time-honored approach, used successfully for many years, is to
+skip DC analysis entirely.  One generally is interested only in
+transient analysis, describing the time evolution of the circuit under
+stimulus, and a DC analysis would only be necessary to find the
+initial values of circuit voltages and currents.  Instead of a DC
+analysis, what is done is every voltage and current source starts at
+zero voltage or current, and ramps to the final value in a few
+picoseconds.  The transient analysis is performed using the ``use
+initial conditions'' (``{\vt uic}'') option, where there is no DC
+operating point analysis, and transient analysis starts immediately
+with any supplied initial condicions (which are not generally given in
+this case).  By ramping up from zero, the phase condition around
+junction/inductor loops is satisfied via Kirchhoff's voltage law. 
+Actually, this ensures that the loop phase is constant, but it is zero
+as we started from zero.  Initially, there is no ``trapped flux'' in
+the inductor/junction loops, so assumption of zero phase is correct. 
+Thus the prescription is to ramp up all sources from zero, use the
+{\vt uic} option of transient analysis, and wait for any transients
+caused by the ramping sources to die away before starting the ``real''
+simulation.  The ramping-up effectively replaces the DC operating
+point analysis.
+
+The second approach is to use phase-mode DC analysis (see
+\ref{phasemode}), which is used in {\WRspice} transparently when
+Josephson junctions are present.  This applies to explicit DC analysis
+as well as operating point analysis.  Further, this enables AC and
+similar small-signal analysis with Josephson junctions in {\WRspice}.
+
+See the Josephson junction model description for more information.
 
 !!SEEALSO
 elements
@@ -2095,6 +3198,311 @@ Josephson Junctions (Tunnel Junction Model)
     series parasitic inductance is nonzero, this will be the internal
     branch number of the inductor's branch.
     </dl>
+!!LATEX tjm elements.tex
+\spgen{b{\it name} {\it n\/}+ {\it n\/}- [{\it np\/}] [{\it modname\/}]
+ [{\it parameters} ...]}
+
+Instance parameters, JJ level 3:\\
+\begin{longtable}{|l|p{4.5in}|}\hline
+\bf Parameter Name & \bf Description\\ \hline\hline
+{\vt area=}{\it val} & Scale factor that multiplies all currents and
+  other values, effectively modifying the junction area.\\ \hline
+{\vt ics=}{\it val} & Instantiated critical current, used as scale factor
+  for capacitance, conductances.\\ \hline
+{\vt temp\_k=}{\it val} & Device temperature, Kelvin.\\ \hline
+{\vt lser=}{\it val} & Junction series parasitic inductance. \\ \hline
+{\vt lsh=}{\it val} & Shunt resistor series parasitic inductance. \\ \hline
+{\vt ic=}{\it vj\/},{\it phi} & The initial junction voltage and phase
+  (initial condition) for transient analysis.\\ \hline
+{\vt vj=}{\it vj} & The initial junction voltage (initial condition) for
+  transient analysis, alias {\vt ic\_v}.\\ \hline
+{\vt phi=}{\it phi} & The initial junction phase (initial condition) for
+  transient analysis, alias {\vt ic\_phase}.\\ \hline
+{\vt vshunt=}{\it val} & Voltage to specify external shunt resistance.
+  \\ \hline
+
+{\vt n} (read only) & SFQ emission count.\\ \hline
+{\vt phsf} (read only) & True if SFQ count change at current time point.\\
+ \hline
+{\vt phst} (read only) & Time of last SFQ emission.\\ \hline
+{\vt v} (read only) & Terminal voltage.\\ \hline
+{\vt phase} (read only) & Junction phase, alias {\vt phs}.\\ \hline
+{\vt tcf} (read only) & Temperature compensation factor.\\ \hline
+{\vt icrit} (read only) & Maximum critical current.\\ \hline
+{\vt cc} (read only) & Capacitance current.\\ \hline
+{\vt cj} (read only) & Josephson current.\\ \hline
+{\vt cq} (read only) & Quasiparticle current.\\ \hline
+{\vt c} (read only) & Total device current.\\ \hline
+{\vt cap} (read only) & Capacitance.\\ \hline
+{\vt g0} (read only) & Subgap conductance.\\ \hline
+{\vt gn} (read only) & Normal conductance.\\ \hline
+{\vt rsint} (read only) & Intrinsic subgap resistance.\\ \hline
+{\vt gshunt} (read only) & External shunt conductance from {\vt vshunt}.\\
+ \hline
+{\vt rshunt} (read only) & External shunt resistance from {\vt vshunt}.\\
+ \hline
+{\vt lshval} (read only) & External shunt resistor parasitic inductance.\\
+ \hline
+{\vt del1} (read only) & Side 1 delta.\\ \hline
+{\vt del2} (read only) & Side 2 delta.\\ \hline
+{\vt vg} or {\vt vgap} (read only) & Gap voltage.\\ \hline
+{\vt vdp} (read only) & Dropback voltage.\\ \hline
+{\vt omega} (read only) & Plasma resonance frequency, radians.\\ \hline
+{\vt betac} (read only) & Stewart-McCumber parameter.\\ \hline
+{\vt alphan} (read only) & TJM alphaN value.\\ \hline
+{\vt kgap} (read only) & TJM kgap value.\\ \hline
+{\vt rejpt} (read only) & TJM rejpt value.\\ \hline
+{\vt kgap\_rejpt} (read only) & TJM kgap\_rejpt value.\\ \hline
+{\vt node1} (read only) & Node 1 number.\\ \hline
+{\vt node2} (read only) & Node 2 number.\\ \hline
+{\vt pnode} (read only) & Phase node number.\\ \hline
+{\vt lsernode} (read only) & Internal {\vt lser} node number.\\ \hline
+{\vt lserbrn} (read only) & Internal {\vt lser} branch number.\\ \hline
+{\vt lshnode} (read only) & Internal {\vt lsh} node number.\\ \hline
+{\vt lshbrn} (read only) & Internal {\vt lsh} branch number.\\ \hline
+\end{longtable}
+
+\spexamp{b1 1 0 10 jj1 ics=200uA\\
+b1 1 0 10 jj1 ics=200uA\\
+b2 4 5 ybco phi=1.57}
+
+The {\it n+} and {\it n-} are the positive and negative element nodes,
+respectively.  These are followed by an optional phase node.  The
+phase node, if specified, generally should have no other connections
+in the circuit, but the voltage of this node gives the phase of the
+junction in radians.  The {\it modname} is the name of the Josephson
+junction model.  If no model is specified, then a default model is
+used (see the description of the Josephson model for the default
+values).  Other (optional) parameters follow in any order.
+
+\begin{description}
+\item{\vt area}\\
+{\bf range:} 0.05 -- 20.0\\
+{\bf Deprecated, do not use in new files.}\\
+Histrorically, this parameter has been used to set the actual critical
+current of a Josephson junction instance.  It is not a physical area,
+but rather a scale factor, representing the ratio of the instance
+critical current to the reference critical current.  The parameter is
+retained for backwards compatibility, but should not be used in new
+circuit descrfiptions.  The {\vt ics} parameter (below) should be used
+instead.  By using {\vt ics}, one can change the critical current of
+the reference junction without changing the instance critical
+currents, which is not the case for {\vt area}.  In the new paradigm,
+the reference junction critical current corresponds to a ``typical''
+mid-sized junction, with a not necessarily convenient critical current
+value.  Use of {\vt area} assumes that the reference critical current
+is something nice, like the historical 1mA, and unchanging.  If not
+specified and {\vt ics} is not given, the effective value is 1.0.
+
+\item{\vt ics}\\
+{\bf range:} 0.02*{\vt icrit} -- 50.0*{\vt icrit}\\
+This gives the actual critical current of the instantiated junction,
+and in addition scales all conductance and capacitance values from the
+reference junction appropriately.  This is equivalent to giving the
+{\vt area} parameter with a value of {\vt ics}/{\vt icrit}.  The
+default is {\vt icrit}, the reference junction critical current.
+
+\item{\vt temp\_k}\\
+{\bf range:} 0.0 -- 0.95*{\vt tc}\\
+This is the assumed operating temperature of the device, in Kelvin. 
+The default is the model {\vt deftemp} value.  See the model description
+for more information about temperature modeling.
+
+\item{\vt lser}\\
+{\bf range:} 0.0 -- 10.0pH\\
+This models series inductance of the physical Josephson junction
+structure, caused by constriction of current through the junction
+orifice.  This inductance might typically be in the range of 0.1 to
+0.3 picohenries.  If nonzero, an internal node is added to the model,
+providing the connection point of the inductance and the Josephson
+junction.  The default value is 0.0, meaning that no parasitic
+inductance is assumed.  Nonzero given values less than 0.01pH revert
+to zero.
+
+\item{\vt lsh}\\
+{\bf range:} 0.0 -- 100.0pH\\
+This parameter specifies the series inductance of the external shunt
+resistance.  The {\vt vshunt} instance or model parameter must be
+specified such that a positive external shunt conductance is applied,
+otherwise this parameter is ignored.  Ordinarily, the {\vt lsh0}/{\vt
+lsh1} model parameters would be used to specify the inductance, this
+parameter can be used to override these values on a per-instance basis
+if desired.
+
+\item{\vt ic}\\
+{\bf Levels 1 and 3 only.}\\
+The keyword is expected to be followed by two numbers, giving the
+initial junction voltage and phase in radians.  These apply in
+transient analysis when the ``{\vt uic}'' option is included in the
+transient analysis specification.  The initial junction voltage and
+phase both default to 0.0.
+
+\item{{\vt vj} or {\vt ic\_v}}\\
+This provides the initial voltage of the junction when the ``{\vt
+uic}'' option is included in the transient analysis specification. 
+The initial junction voltage defaults to 0.0.
+
+\item{{\vt phi} or {\vt ic\_phase}}\\
+This provides the initial junction phase in radians when the ``{\vt
+uic}'' option is included in the transient analysis specification.
+
+\item{\vt vshunt}\\
+{\bf range:} 0.0 -- nominal gap voltage\\
+See the description of the {\vt vshunt} model parameter.  The model
+parameter, if given, will provide the default used in all instances. 
+However this can be overridden on a per-instance basis with the {\vt
+vshunt} instance parameter.
+\end{description}
+
+The remaining parameters are ``read only'' and can be accessed with
+the {\vt @}{\it device\/}[{\it param\/}] special vector notation
+during the simulation (in callbacks) or after the simulation if the
+vector is saved with the {\cb save} command or equivalent.
+
+\begin{description}
+\item{\vt n} (read only)\\
+This integer value is incremented whenever the junction phase changes
+by plus or minus $2\pi$.  It is intended for pass/fail testing of
+single flux quantum (SFQ) circuit operation.
+ 
+\item{\vt phsf} (read only)\\
+This flag is set true at the time point when the SFQ emission count
+changes.  This is intended to facilitate pass/fail testing of SFQ
+circuits.
+
+\item{\vt phst} (read only)\\
+This read-only parameter contains the last time that the SFQ emission
+count changed, intended for use in SFQ pass/fail testing.
+
+\item{\vt v} (read only)\\
+The voltage across the junction.
+
+\item{\vt phase} (read only)\\
+The junction phase.  Reading this is an alternative to using a third
+node to obtain the phase.
+
+\item{tcf} (read only)\\
+The temperature correction factor that modifies the critical current
+at operating temperatures other than nominal.  See the description of
+the temperature dependence of the TJM model in \ref{tjmtcf}.
+
+\item{\vt icrit} (read only)\\
+The critical current of the junction instance.
+
+\item{\vt cc} (read only)\\
+The current flowing through the geometric capacitance of the junction.
+
+\item{\vt cj} (read only)\\
+The pair current (supercurrent) flowing through the junction.
+
+\item{\vt cq} (read only)\\
+The quasiparticle (normal) current flowing through the device.
+
+\item{\vt c} (read only)\\
+The total current flowing through the device, the sum of {\vt cc},
+{\vt cj} and {\vt cq}.
+
+\item{\vt cap} (read only)\\
+The geometric capacitance of the device instance.
+
+\item{\vt g0} (read only)\\
+The subgap conductance of the device instance.
+
+\item{\vt gn} (read only)\\
+The normal state conductance of the device instance.
+
+\item{\vt rsint} (read only)\\
+The intrinsic subgap resistance.  This is predicted from the tunnel
+junction model, but the predicted resistance is in general much higher
+than seen in actual fabricated junctions.  There is evidently
+quasiparticle conduction mechanisms that are not described in the
+tunnel junction model.
+
+\item{\vt gshunt} (read only)\\
+If the {\vt vshunt} instance or model parameter is given and nonzero,
+{\vt gshunt} will return the external conductance added to the
+intrinsic conductance so that the total conductance multiplied by the
+critical current will equal {\vt vshunt}.
+
+\item{\vt rshunt} (read only)\\
+If {\vt gshunt} is nonzero, {\vt rshunt} will be the reciprocal,
+otherwise it will be 0.
+
+\item{\vt lshval} (read only)\\
+If the {\vt vshunt} instance or model parameter is given and nonzero,
+this will be the parasitic inductance assumed in the external shunt
+resistance.  This will depend on the settings of the {\vt lsh0} and
+{\vt lsh1} model parameters, and the {\vt lsh} instance parameter
+which overrides the model parameters if given.
+
+\item{\vt del1} (read only)\\
+This is the computed energy gap of the side 1 superconductor. 
+This is computed using the BCS formula taking as input operating
+temperature, the superconducting transition temperature of side 1,
+and the Debye temperature of side 1.
+
+\item{\vt del2} (read only)\\
+This is the computed energy gap of the side 2 superconductor. 
+This is computed using the BCS formula taking as input operating
+temperature, the superconducting transition temperature of side 2,
+and the Debye temperature of side 2.
+
+\item{\vt vg} or {\vt vgap} (read only)\\
+The junction gap voltage, which is the sum of {\vt del1} and {\vt
+del2}.
+
+\item{\vt vdp} (read only)\\
+The dropback voltage, which is the same as the voltage corrresponding
+to the plasma resonance frequency.
+
+\item{\vt omega} (read only)\\
+The plasma resonance frequency in radians per second.
+
+\item{\vt betac} (read only)\\
+The Stewart-McCumber parameter of the junction.
+
+\item{\vt alphan} (read only)\\
+Internal model critical current scaling factor.
+
+\item{\vt kgap} (read only)\\
+Internal model normalized gap parameter.
+
+\item{\vt kgap\_rejpt} (read only)\\
+Internal model normalized gap parameter.
+
+\item{\vt rejpt} (read only)\\
+Internal model normalized resistance.
+
+\item{\vt node1} (read only)\\
+The internal node number of the first node.
+
+\item{\vt node2} (read only)\\
+The internal node number of the second node.
+
+\item{\vt pnode} (read only)\\
+The internal node number of the third (phase) node, 0 or -1 if not
+used.
+
+\item{\vt lsernode} (read only)\\
+The internal node number of the device internal node added for series
+parasitic inductance.  This will be 0 or -1 if not used (no series
+parasitic inductance assumed).
+
+\item{\vt lserbrn} (read only)\\
+If series parasitic inductance is nonzero ({\vt lser} given) this will
+be the internal number of the branch node of the inductor.
+
+\item{\vt lshnode} (read only)\\
+If the {\vt vshunt} instance or model parameter is given and nonzero,
+and series parasitic inductance is nonzero, this will be the internal
+node number of the internal device node that incorporates the series
+inductance.
+
+\item{\vt lshbrn} (read only)\\
+If the {\vt vshunt} model parameter is given and nonzero, and series
+parasitic inductance is nonzero, this will be the internal branch
+number of the inductor's branch.
+\end{description}
 
 !!SEEALSO
 elements

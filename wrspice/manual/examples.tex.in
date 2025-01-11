@@ -1,0 +1,57 @@
+% WRspice Manual file: examples.tex
+
+%S-----------------------------------------------------------------------------
+\section{Example Data Files}
+\label{examples}
+
+<<examples examples.tex>>
+
+%SU-------------------------------------
+\subsection{Circuit 1:  Simple Differential Pair}
+
+<<ex1 spExamples.hlp>>
+
+%SU-------------------------------------
+\subsection{Circuit 2:  MOS Output Characteristics}
+
+<<ex2 spExamples.hlp>>
+
+%SU-------------------------------------
+\subsection{Circuit 3:  Simple RTL Inverter}
+
+<<ex3 spExamples.hlp>>
+
+%SU-------------------------------------
+\subsection{Circuit 4:  Four-Bit Adder}
+
+<<ex4 spExamples.hlp>>
+
+%SU-------------------------------------
+\subsection{Circuit 5:  Transmission Line Inverter}
+
+<<ex5 spExamples.hlp>>
+
+%SU-------------------------------------
+\subsection{Circuit 6:  Function and Table Demo}
+
+<<ex6 spExamples.hlp>>
+
+%SU-------------------------------------
+\subsection{Circuit 7:  MOS Convergence Test}
+
+<<ex7 examples.hlp>>
+
+%SU-------------------------------------
+\subsection{Circuit 8:  Verilog Pseudo-Random Sequence}
+
+<<ex8 spExamples.hlp>>
+
+%SU-------------------------------------
+\subsection{Circuit 9:  Josephson Junction I-V Curve}
+
+<<ex9 spExamples.hlp>>
+
+%SU-------------------------------------
+\subsection{Circuit 10: Josephson Gap Potential Modulation}
+
+<<ex10 spExamples.hlp>>

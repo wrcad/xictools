@@ -126,6 +126,69 @@ Debugging Variables
     and other information printed.  This is done for any operating
     point analysis, for transient analysis or not.
     </dl>
+!!LATEX debug_vars variables.tex
+These variables turn on debugging modes and otherwise provide
+debugging utility.  Most of these variables can be set indirectly from
+the {\cb Debug OPtions} tool from the {\cb Debug} button in the {\cb
+Tools} menu of the {\cb Tool Control} window.
+
+\begin{description}
+\index{debug variable}
+\item{\et debug}\\
+This variable may be a boolean (i.e., set to nothing), in which case
+all debugging is turned on, a string token from the list below, in
+which case the string specifies which part of the program to enable
+debugging for, or a list of these strings, which enables any
+combination.  The possible values are:
+
+\begin{tabular}{|l|l|}\hline
+\vt async & The {\et aspice} and {\et rspice} code\\ \hline
+\vt control & The control structure code\\ \hline
+\vt cshpar & The C-shell pre-processor and parser\\ \hline
+\vt eval & The expression evaluation routines\\ \hline
+\vt ginterface & Graphics package interface routines\\ \hline
+\vt helpsys & The help system\\ \hline
+\vt plot & The plotting routines\\ \hline
+\vt parser & The parser for expressions\\ \hline
+\vt siminterface & The interface to the simulator\\ \hline
+\vt vecdb & The vector database\\ \hline
+\end{tabular}
+
+\index{display variable}
+\item{\et display}\\
+This variable contains the display name for X used by the graphics
+system, generally of the form {\it host\/}:{\it number\/}.  This
+variable is read-only.
+
+\index{dontplot variable}
+\item{\et dontplot}\\
+This variable disables the plotting system for debugging purposes. 
+When this variable is set, and a {\et plot} command is given, no
+graphical operations are performed.
+
+\index{nosubckt variable}
+\item{\et nosubckt}\\
+This variable disables the expansion of subcircuits when set, for
+debugging purposes.  A circuit with subcircuits cannot be parsed if
+this is set.
+
+\index{program variable}
+\item{\et program}\\
+This variable contains the full path name of the program.
+
+\index{trantrace variable}
+\item{\et trantrace}\\
+This can take integer values 0--2, a value 0 is the same as if unset. 
+When set to 1 or 2, a message is printed at every internal time point
+during transient analysis, providing information about the predicted
+and used time step, integration order, convergence testing results,
+and breakpoints.  The value 2 is more verbose than 1.
+
+Also, for values 1 and 2 equivalently, the operating point analysis is
+traced, with iteration counts, step values and other information
+printed.  This is done for any operating point analysis, for transient
+analysis or not.
+\end{description}
 
 !!SEEALSO
 variables

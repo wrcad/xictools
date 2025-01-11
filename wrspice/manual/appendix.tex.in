@@ -1,0 +1,40 @@
+% WRspice Manual file: appendix.tex
+
+\appendix
+\chapter{File Formats}
+\index{file formats}
+
+%S-----------------------------------------------------------------------------
+\section{Rawfile Format}
+\index{file formats!rawfile}
+\label{rawfilefmt}
+
+<<rawfilefmt spMain.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{Comma Separated Value (CSV) Format}
+\index{file formats!CSV file}
+
+<<csvfilefmt spMain.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{Common Simulation Data File (CSDF) Format}
+\index{file formats!CSV file}
+
+<<csdffilefmt spMain.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{Help Database Files}
+\label{helpfiles}
+\index{file formats!help files}
+\index{help files}
+
+<<helpfiles HelpSys.hlp>>
+
+%SU-------------------------------------
+\subsection{{\vt .mozyrc} File}
+\label{mozyrc}
+\index{.mozyrc file}
+
+<<mozyrcfile HelpSys.hlp>>
+

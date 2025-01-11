@@ -131,7 +131,7 @@ namespace {
             }
         }
         else if (mode && strchr(mode, 'w')) {
-            // Writing: trye $HOME, then CWD.
+            // Writing: try $HOME, then CWD.
 
             char *home = pathlist::get_home();
             if (home) {

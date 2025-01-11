@@ -425,6 +425,267 @@ rusage command
     during the last analysis.  If multiple threads are being used,
     this is the total for all threads.
     </dl>
+!!LATEX rusage commands.tex
+The {\cb rusage} command is used to obtain information about the
+consumption of system resources and other statistics during the
+{\WRspice} session.
+\begin{quote}\vt
+rusage [all] [{\it resource\/} ...]
+\end{quote}
+If any resource keywords are given, only those resources are printed. 
+All resources are printed if the keyword {\vt all} is given.  With no
+arguments, only total time and space usage are printed.  The {\cb
+show} command can also be used to obtain resource statistics.  The
+recognized keywords are listed below.
+
+The {\cb stats} command is almost identical to {\cb rusage}, and
+accepts the same keywords.  The difference is that {\cb stats} given
+without arguments will print all run statistics.
+
+In release 4.3.10 and later, statistics accumulate in Monte Carlo,
+operating range, and sweep operations.  This was not the case in
+earlier releases.
+
+The two tables that follow list the available resource statistics.  An
+internal statistical database maintains these values, the {\cb rusage}
+and {\cb stats} commands are the user interface to this database.  The
+following are a few keywords handled by the {\cb rusage} and {\cb
+stats} commands directly.  Other keywords are passed in queries to the
+internal statistical database.
+
+\begin{description}
+\item{\vt elapsed}\\
+\index{rusage command!elapsed}
+This keyword prints the total amount of time that has elapsed since
+the last call of the {\cb rusage} or {\cb stats} command with the {\vt
+elapsed} keyword (explicit or implied with ``{\vt all}''), or to the
+program start time.
+
+\item{\vt faults}\\
+\index{rusage command!faults}
+This keyword prints the number of page faults and context switches
+seen by the program thus far.  See also {\et pagefaults}, {\et
+involcxswitch}, and {\et volcxswitch} for the values that occurred
+during the last anslysis.
+
+\item{\vt space}\\
+\index{rusage command!space}
+This keyword will print the memory presently in use by {\WRspice}.
+
+\item{\vt totaltime}\\
+\index{rusage command!totaltime}
+If this keyword is given, the total time used in the present session
+will be printed.
+\end{description}
+
+subsubsection{Statistical Database Entries}
+\index{statistical database}
+
+The statistical database contains the following data items, listed in
+the tables below and with a more detailed description of each item
+following.
+
+\begin{longtable}{|p{1in}|p{4.75in}l|} \hline
+\bf Resource Name & \bf Description&\\ \hline
+\multicolumn{3}{|l}{}\\
+\multicolumn{3}{|l}{\bf Real-Valued Parameters}\\ \hline
+{\vt cvchktime} & \rr Time spent convergence testing.&\\ \hline
+{\vt loadtime} & \rr Device model evaluation and matrix load time.&\\ \hline
+{\vt lutime} & \rr L-U decomposition time.&\\ \hline
+{\vt reordertime} & \rr Matrix reordering time.&\\ \hline
+{\vt solvetime} & \rr Matrix solve time.&\\ \hline
+{\vt time} & \rr Total analysis time.&\\ \hline
+{\vt tranlutime} & \rr Transient L-U decomposition time.&\\ \hline
+{\vt tranouttime} & \rr Transient output recording time.&\\ \hline
+{\vt transolvetime} & \rr Transient solve time.&\\ \hline
+{\vt trantime} & \rr Transient time.&\\ \hline
+{\vt trantstime} & \rr Transient timestep computation time.&\\ \hline
+
+\multicolumn{3}{|l}{}\\
+\multicolumn{3}{|l}{\bf Integer-Valued Parameters}\\ \hline
+{\vt accept} & \rr Accepted timepoints.&\\ \hline
+{\vt equations} & \rr Circuit equations.&\\ \hline
+{\vt fillin} & \rr Fill-in terms from decomposition.&\\ \hline
+{\vt involcxswitch} & \rr Involuntary context switches during analysis.&\\ \hline
+{\vt loadthrds} & \rr Number of device loading helper threads.&\\ \hline
+{\vt loopthrds} & \rr Number of repetitive analysis helper threads.&\\ \hline
+{\vt matsize} & \rr Matrix size.&\\ \hline
+{\vt nonzero} & \rr Number of nonzero matrix entries.&\\ \hline
+{\vt pagefaults} & \rr Number of page faults during analysis.&\\ \hline
+{\vt rejected} & \rr Number of rejected timepoints.&\\ \hline
+{\vt runs} & \rr Accumulated core analysis runs.&\\ \hline
+{\vt totiter} & \rr Total iterations.&\\ \hline
+{\vt trancuriters} & \rr Transient interations at last timepoint.&\\ \hline
+{\vt traniter} & \rr Transient interations.&\\ \hline
+{\vt tranitercut} & \rr Transient timepoints where iteration limit exceeded.&\\ \hline
+{\vt tranpoints} & \rr Transient timepoints.&\\ \hline
+{\vt trantrapcut} & \rr Transient timepoints where trapcheck failed.&\\ \hline
+{\vt volcxswitch} & \rr Voluntary context switches during analysis.&\\ \hline
+\end{longtable}
+
+\subsubsection{Real Valued Database Entries}
+
+\begin{description}
+\item{\vt cvchktime}\\
+\index{rusage command!cvchktime}
+Print the time spent checking for convergence in the most recent dc or
+transient analysis (including operating point).
+
+\item{\vt loadtime}\\
+\index{rusage command!loadtime}
+If given, print the time spent loading the matrix in the last
+simulation run.  This includes the time spent in computation of device
+characteristics.
+
+\item{\vt lutime}\\
+\index{rusage command!lutime}
+The {\vt lutime} keyword will print the time spent in LU factorization
+of the matrix during the last simulation run.
+
+\item{\vt reordertime}\\
+\index{rusage command!reordertime}
+Print the time spent reordering the matrix for numerical stability in
+the most recent simulation.
+
+\item{\vt solvetime}\\
+\index{rusage command!solvetime}
+This will print the time spent solving the matrix equations, after
+LU decomposition, in the last simulation run.
+
+\item{\vt time}\\
+\index{rusage command!time}
+This keyword will print the time used by the last simulation run.
+
+\item{\vt tranlutime}\\
+\index{rusage command!tranlutime}
+The time spent LU factoring the matrix in the most recent transient
+analysis, not including the dc operating point calculation.
+
+\item{\vt tranouttime}\\
+\index{rusage command!tranouttime}
+Print the time spent saving output in the most recent transient
+analysis.
+
+\item{\vt transolvetime}\\
+\index{rusage command!transolvetime}
+This keyword prints the matrix solution time required by the last
+transient analysis, not including the operating point calculation.
+
+\item{\vt trantime}\\
+\index{rusage command!trantime}
+This keyword will print the total time spent in transient analysis
+in the last transient analysis, not including the operating point
+calculation.
+
+\item{\vt trantstime}\\
+\index{rusage command!trantstime}
+Report the time spent computing the next timestep in the most recent
+transient analysis.
+\end{description}
+
+\subsubsection{Integer Valued Database Entries}
+
+\begin{description}
+\item{\vt accept}\\
+\index{rusage command!accept}
+This keyword prints the number of accepted time points from the last
+transient analysis.
+
+\item{\vt equations}\\
+\index{rusage command!equations}
+Print the number of nodes in the current circuit, including internally
+generated nodes.  This includes the ground node so is one larger than
+the matrix size.
+
+\item{\vt fillin}\\
+\index{rusage command!fillin}
+Print the number of fillins generated during matrix reordering and
+factoring.  This is not available from KLU.
+
+\item{\vt involcxswitch}\\
+\index{rusage command!involcxswitch}
+This provides the number of involuntary context switches seen during
+the last analysis.  If multiple threads are being used, this is the
+total for all threads.
+
+\item{\vt loadthrds}\\
+\index{rusage command!loadthrds}
+Report the number of threads used for device evaluation and matrix
+loading during the most recent dc (including operating point) or
+transient analysis.  This would be at most the value of the {\et
+loadthrds} option variable in effect during the analysis, but is the
+number of threads actually used.
+
+\item{\vt loopthrds}\\
+\index{rusage command!loopthrds}
+Report the number of threads in use for repetitive analysis in the
+most recent analysis run.  This would be at most the value of the {\et
+loopthrds} option variable in effect during the analysis, but is the
+number of threads actually used.
+
+\item{\vt matsize}\\
+\index{rusage command!matsize}
+Print the size of the circuit matrix.
+
+\item{\vt nonzero}\\
+\index{rusage command!nonzero}
+Print the number of nonzero matrix elements.
+
+\item{\vt pagefaults}\\
+\index{rusage command!pagefaults}
+Report the number of page faults seen during the most recent analysis.
+
+\item{\vt rejected}\\
+\index{rusage command!rejected}
+This keyword prints the number of rejected time points in the last
+transient analysis.
+
+\item{runs}\\
+In Monte Carlo, operating range, and sweep analysis, this returns    
+the number of trial runs over which statistics have accumulated.
+
+\item{\vt totiter}\\
+\index{rusage command!totiter}
+This keyword prints the total number of Newton iterations used in
+the last analysis.
+
+\item{\vt trancuriters}\\
+\index{rusage command!trancuriters}
+This prints the number of Newton iterations used in the most recent
+transient analysis time point evaluation.
+
+\item{\vt traniter}\\
+\index{rusage command!traniter}
+The {\vt traniter} keyword will print the number of iterations used in
+the last transient analysis.  This does not include iterations used in
+the operating point calculation, unlike {\vt totiter} which includes
+these iterations.
+
+\item{\vt tranitercut}\\
+\index{rusage command!tranitercut}
+The number if times that the most recent transient analysis had a time
+step cut by iteration count.  If the {\et itl4} limit is reached when
+attempting convergence at a transient time point, the timestep is cut
+and convergence is reattempted.
+
+\item{\vt tranpoints}\\
+\index{rusage command!tranpoints}
+This keyword prints the number of internal time steps used in the
+last transient analysis.
+
+\item{\vt trantrapcut}\\
+\index{rusage command!trantrapcut}
+This is the number of times in the most recent transient analysis that
+a timestep was cut due to the trapcheck algorithm.  This may occur
+when the {\et trapcheck} variable is set, which enables a test to
+detect numerical problems in trapezoidal integration. 
+
+\item{\vt volcxswitch}\\
+\index{rusage command!volcxswitch}
+This provides the number of voluntary context switches seen during the
+last analysis.  If multiple threads are being used, this is the total
+for all threads.
+\end{description}
  
 !!SEEALSO
 misccmds
@@ -445,6 +706,18 @@ stats command
     This is the same as "<tt>rusage all</tt>" with the
     <tt>totaltime</tt>, <tt>elapsed</tt>, <tt>space</tt>, and
     <tt>faults</tt> fields omitted.
+!!LATEX stats commands.tex
+The {\cb stats} command is basically identical to the {\cb rusage}
+command, and accepts the same arguments as described for that command.
+
+\begin{quote}\vt
+stats [all] [{\it resource\/} ...]
+\end{quote}
+
+The difference is that when given without an argument, all run statistics
+are printed.  This is the same as ``{\vt rusage all}'' with the {\vt
+totaltime}, {\vt elapsed}, {\vt space}, and {\vt faults} fields
+omitted.
  
 !!SEEALSO
 misccmds

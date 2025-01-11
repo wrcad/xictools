@@ -515,6 +515,394 @@ Plot Panel
     the left or right, shrinking or expanding the left margin area
     used for the trace label text.  This can improve the appearance of
     the plot when trace labels are unusually long or short.
+!!LATEX plotpanel format.tex
+This panel displays and controls aspects of plots generated from a
+simulation with the {\cb plot} command.  The plot window contains a
+row of buttons on the right side.  The button presence is determined
+by the nature of the data plotted, as not all data support all
+features.  The buttons that may be present are listed below.
+
+\begin{description}
+\item{\cb Dismiss}\\
+Remove the plot from the screen.
+
+\item{\cb Help}\\
+Bring up the help viewer with pertinent information.
+
+\item{\cb Redraw}\\
+Redraw the graph.  This would be necessary to see new colors if the
+colors are changed, with the {\cb Colors} pop-up from the {\cb Tools}
+menu of the {\cb Tool Control} window. 
+
+\item{\cb Print}\\
+Bring up the printer control panel which controls hardcopy
+generation.  The resulting hardcopy data from the plot can be sent to
+a printer or saved in a file.
+
+\item{\cb Save Plot}\\
+The will save the plot data in a rawfile or Common Simulation Data
+Format (CSDF) file.  Either file format can be read in with the {\cb
+load} command to regenerate the plot.  See the description of the {\cb
+write} command (\ref{writecmd}) for information about the formats, and
+how they can be specified.  The user is prompted for a name for the
+file.
+
+\item{\cb Save Print}\\
+This will save the plot data in a file, in the same format as output
+from the {\cb print} command.  The user is prompted for a name for the
+file.
+
+\item{\cb Points}\\
+If this button is active, the data points are marked with a glyph. 
+This is mutually exclusive with the {\cb Comb} button.
+
+\item{\cb Comb}\\
+If this button, which is mutually exclusive with the {\cb Points}
+button, is active, the data will be presented as a histogram.  If
+neither of {\cb Points} or {\cb Comb} is selected, a (possibly
+interpolated) line drawing connecting the points will be presented.
+
+\item{\cb Log X}\\
+If the data are consistent with a logarithmic scale of the x-axis,
+this button will appear.  When active, a log scale will be used on the
+x-axis.
+
+\item{\cb Log Y}\\
+If the data are consistent with a logarithmic scale of the y-axis,
+this button will appear.  When active, a log scale will be used on the
+y-axis.  Note that all traces must be consistent with a log scale, and
+all traces will use a log scale if this button is active.
+
+\item{\cb Marker}\\
+When active, a marker will be attached to the cursor, and the scale
+factors of the plot will be replaced with the current position of the
+marker relative to the data.  This is useful for actually obtaining
+numerical data from the plot.  If button 1 is clicked, a reference
+mark will be left behind, and the readout will be relative to the
+values at the reference.  Clicking with button 2 will remove the
+reference.
+
+When using the marker in a polar or Smith plot, the display indicates
+the real, imaginary, radius, and angle in degrees of the current
+marker position.  The radius and angle are shown in the lower left
+corner of the plot window.  In Smith plots, a family of real and
+imaginary values are shown, corresponding to a set of values usually
+displayed along the x axis.  For the imaginary contours, the values
+correspond to the values printed in left to right order.  If mouse
+button three is used to zoom into a section of the Smith plot such
+that the x axis is invisible, the values corresponding to the
+displayed real contours are listed along the top of the plot window. 
+These numbers correspond to the displayed real contours in left to
+right order.  They also correspond to the imaginary contours, however
+depending on the location in the Smith chart, not all imaginary
+contours, or additional contours, may be visible.  Ambiguity can be
+resolved through use of the marker.
+
+\item{\cb Separate}\\
+When active, each trace will be assigned a portion of the overall
+vertical plot area, and a separate scale.  The traces will be scaled
+so as to not overlap.  Otherwise, the entire vertical area is used for
+each trace.  The button will appear if there is more than one trace in
+the plot.
+
+\item{\cb Single}, {\cb Group}\\
+In the most general case, two buttons in a ``radio group'' control the
+y-axis scales of the traces.  These buttons are labeled {\cb Single}
+and {\cb Group}.  If neither button is active, each trace will have an
+independent ``best fit'' y scale.  If {\cb Single} is active, all
+traces will be plotted on the same ``best fit'' y scale.  If {\cb
+Group} is active, the traces are scaled according to their data type. 
+The types are voltage, current, and other.  Each group will have a
+separate ``best fit'' scale.  If the trace is from a node voltage,
+then it will have type voltage, however functions of voltages will
+probably have type other.  This is similarly true for currents.
+
+The {\cb Single} and {\cb Group} buttons are prevented from being
+active at the same time.  If there is only one trace, or the traces
+are all of the same type, the {\cb Group} button will not appear.  If
+there is only one trace, then the {\cb Single} button will also not
+appear.
+\end{description}
+
+\subsection{Zooming in}
+\index{plot zoom in}
+
+If button 3 is pressed and held while pointing at the graph, an
+outline box is shown, which follows the cursor, anchored at the
+location pointed to.  Releasing button 3 will create a new plot of the
+area in the box.  Pressing {\kb Ctrl}-button 1 is equivalent to button
+3 for this operation.
+
+\subsection{Text String Selection}
+\index{plot text selection}
+\index{plot text editing}
+
+Text that appears in plots will use a font that can be changed from
+the font selection panel obtained from the {\cb Fonts} button in the
+{\cb Tools} menu of the {\cb Tool Control} window.  This is the {\cb
+Fixed Pitch Drawing Window Font} in the menu.  This font can also be
+changed with the {\cb setfont} command.
+
+Most of the text strings in plot windows can be edited, and persistent
+text labels can be added.  The possible manipulations are described
+below.
+
+A string must be selected before it can be edited or otherwise
+altered.  A string can be selected by clicking on it with the left
+mouse button (button 1).  The selection is indicated by the appearance
+of a thick color1 (default black) bar to the left of the string, and a
+thin bar to the right of the string.  At most one string can be
+selected at a time.
+
+A string can be deselected by clicking in the plot window away from
+any string.  Clicking on another string will change the current
+selection to that string.
+
+A drag can be initiated by pressing and holding button 1 over the
+selected string, and moving the mouse pointer.  A ghost outline of the
+string will be attached to the mouse pointer.  When the button is
+released, the string will be moved to the release location.  If the
+{\kb Shift} key is pressed while the mouse button is released, the
+string will be copied to the new location.  Strings can be copied to
+other plot windows using this drag and drop technique, but the {\kb
+Shift} key is ignored in this case.
+
+{\bf GTK release only}\\
+While dragging the string, the left and right arrow keys cycle through
+left, center, and right justification of the string.  The string
+outline box attached to the mouse pointer will shift to indicate the
+justification.
+
+Strings have a termination property.  When selected, the color of the
+right side indicator bar will be color1 (default black) if terminated,
+color2 (default red) if not terminated.  When the selected string is
+not terminated, it can be edited.  Pressing the {\cb Backspace} key
+({\cb Delete} key in Apple) will cause a selected terminated string to
+become non-terminated.  Pressing the {\cb Enter} key will terminate a
+selected non-terminated string.
+
+When the selected string is terminated, as indicated by a color1
+(default black) vertical bar on the right side:
+
+\index{colorN}
+\begin{itemize}
+\item{Pressing the {\cb Delete} key will erase the string.  There is
+no undo/redo so be careful.}
+
+\item{The left and right arrow keys will cycle the current selection
+to other strings in the plot that can be modified.}
+
+\item{The up and down arrow keys cycle through the various available
+colors, recoloring the selected string.  These are the same colorN
+colors used for plot traces.  To change the color of the title, for
+example, one would click on the title string, then press the up or
+down arrow keys until the title color is satisfactory.}
+
+\item{The selected string can be dragged to a new location, or copied
+to a new location or to a different plot window.}
+\end{itemize}
+
+With the selected string not terminated, an editing mode is active.  A
+vertical line cursor may be visible within the word.  This is rendered
+as color2 (default limegreen).  If not visible, it is logically off
+the right side of the string.  Pressing {\cb Backspace} removes the
+character to the left of the cursor, and moves the cursor left by one
+character.  With the cursor invisible, {\cb Backspace} removes the
+rightmost character in the string.  The cursor is moved with the left
+and right arrow keys.  Characters typed on the keyboard are inserted
+into the string to the right of the cursor, advancing the cursor.  The
+{\cb Delete} key will delete the character to the right of the cursor. 
+It will have no effect in editing mode if the cursor is not visible.
+
+{\bf QT release only}\\
+When the cursor is at the beginning or end of the selected string, the
+left and right arrow keys in the direction of impeded cursor movement
+will instead cycle the justification used when the string is moved or
+copied between left, center, and right.  This will be seen in the text
+image used during drag/drop.  The present justification is shown by
+the marks that appear just below the selected text.
+
+If all of the characters are deleted, then the string is deleted. 
+When all characters have been entered, pressing {\cb Enter}
+terminates the string and exits the editing mode.  Note that
+presently there is no undo/redo capability.
+
+With no selection, or if the selection is terminated, typing
+characters into the plot window will start a new string at the mouse
+cursor location, which becomes the new selection.  Terminate the new
+string by pressing {\kb Enter}.
+
+The strings, as modified or added, will appear in hard-copies
+generated from the {\cb Print} button in the plot window.  If a new
+plot is created by using button 3 to zoom in, the child plot will
+inherit the text strings of the parent plot.  However, if the plot is
+saved to disk with the {\cb Save Plot} button, the saved strings will
+revert to the original strings.
+
+\subsection{Trace Drag and Drop}
+
+In plots, the traces can be moved by dragging with mouse button 1,
+either within a plot or between plot windows.  Thus, the order of the
+traces can be changed.  Traces can be ``grabbed'' by pressing button 1
+near the trace legend, but not over the legend text itself.  A square
+wave marker is attached to the pointer when a trace is being dragged.
+
+Traces can be dropped within the legend area of another trace, in
+which case the dragged trace occupies the drop trace location, and the
+drop trace and below are shifted down.  Traces can be dropped in the
+legend area but below all existing legends to move a trace to the end.
+
+Traces can also be dropped on the file cabinet icon in the upper left
+corner of the plot window.  This will remove the dragged trace from
+the display, if the trace is from the same plot window as the icon. 
+If the trace is from a different plot window, a copy of the trace is
+added to the icon storage.  Traces that have been dragged into the
+file cabinet can be dragged out again in first-in last-out order, and
+can be dropped among the existing trace legends to make them visible
+again.
+
+Dragging trace data between plots is an an easy way to see differences
+between simulation runs.  The trace data are copied and interpolated
+to the new scale.  If the new scale is not compatible, the operation
+will fail.
+
+\subsection{Multidimensional Traces}
+
+When a plot window is displaying multidimensional data, the dimension
+map icon will appear in the upper left corner of the plot window. 
+Clicking on this icon will toggle display of the dimension map.  The
+dimension map allows the user to display only chosen dimensions of the
+traces.
+
+Consider the plot produced by
+
+\begin{quote}
+{\vt set value1 = temp}\\
+{\vt loop -50 125 25 dc vds 0.0 1.2 0.02 vgs 0.2 1.2 0.2}
+\end{quote}
+
+The {\cb loop} command produces a three dimensional plot, with
+dimensions \{ 8, 6, 61 \}.  When plotting {\vt i(vds)}, the display
+would contain 48 traces, representing {\vt id} vs.\ {\vt vds} for each
+{\vt vgs} and temperature value.
+
+The visibility of these traces is set by the columns of clickable
+dimension selector indices shown in the dimension map.  Initially, the
+traces for all dimensions are shown.  Clicking anywhere in the
+dimension list with the center mouse button, or equivalently with the
+left (or only) mouse button while pressing {\kb Shift}, will hide the
+traces for all dimensions.  Clicking anywhere in the dimension list
+with the right mouse button, or equivalently with the left (or only)
+mouse button while pressing {\kb Ctrl}, will show the traces for all
+dimensions.  Clicking or dragging over the entries with the left mouse
+button will toggle display of the corresponding traces.
+
+In the present case the dimension map contains two columns:  the left
+column contains eight numbers 0--7, and the right columns contains six
+numbers 0--5.  Clicking on these numbers controls the visibility per
+dimension, i.e., clicking in the left column would display/suppress
+all traces for a given temperature, clicking in the right column will
+display/suppress traces corresponding to a {\vt vgs} value.  Multiple
+entries in the same column can be toggled by dragging the mouse
+pointer over them.
+
+This dimensional partitioning would apply for any number of
+dimensions.  If a column contains too many dimensions to list
+completely, a label ``more'' will exist at the bottom of the listing. 
+Clicking on this label will cycle through all of the dimensions, in
+the columns that require it.
+
+If the plot is displaying a single multidimensional variable, then
+each least dimension is displayed in a separate color.  The numbers in
+the rightmost column of the dimension map will use the same colors. 
+In other columns, and in the rightmost column if more than one
+variable is being plotted, the indices use a uniform color to indicate
+that the dimension is shown, and in all cases black indicates a
+dimension that is not being shown.
+
+The dimensions shown can also be controlled by mplot windows from the
+{\cb mplot} command.  These are the windows generally used to display
+results from operating range and Monte Carlo analysis.  The mplot
+display consists of an array of pass/fail indication cells, one for
+each trial.  These can be selected or deselected by clicking on them.
+
+An mplot window is always associated with an internal plot structure,
+as listed with the {\cb Plots} tool.  The plot structure may also
+contain multidimensional vectors, for example if one uses the ``{\vt
+-k}''" option to the {\cb check} command, all trial data will be
+saved.
+
+If an mplot window with selections is present, and the {\cb plot}
+command is used to plot a multidimensional vector from the same
+internal plot structure as the mplot, then only the dimensions
+corresponding to the selected trials will be shown on the plot window.
+
+In this plot window, a ``flat'' dimension map will be used.  This is a
+single column, with length equal to the product of the ``real''
+dimensions.  The visibility of each flat dimension can be toggled with
+the map entries as usual.  The mplot selections have no effect on a
+plot window once it is displayed, but will initialize new plot windows
+to 1) enforce a flat dimension mapping, and 2) set the initial states
+of the flat map.  After changing the mplot selections, one must use
+the {\cb plot} command again to see the revised dimensions, or
+alternatively one can note the numbers of the mplot cells, and
+manipulate the same numbers in the dimensions map of the first plot,
+to see the new data.
+
+If one has a plot structure containing multidimensional vectors from
+any source, such as from the {\cb loop} commnd, one can still use the
+mplot capability.  Giving the command
+
+\begin{quote}
+{\vt mplot} {\it vector}
+\end{quote}
+
+for any multidimensional vector will produce an mplot window.  The
+number of mplot cells will equal the number of flat dimensions in the
+vector.  The pass/fail indication means nothing in this case, all
+cells display ``fail''.  One can select the dimension cells in the
+mplot, which will affect subsequent plots from the {\cb plot} command
+of any vector in the same internal plot structure, as described above. 
+The {\it vector} given to the {\cb mplot} command can be any vector
+from the plot, it is used for dimension counting only.
+
+In older {\WRspice} releases, the upper dimensions were represented as
+``flat'', so that in the plot there would be a single column of
+numbers (0--47 in our original example above, six {\vt vgs} values
+times eight temperatures), and clicking on these numbers would
+display/suppress the corresponding trace.
+
+\subsection{Scale Icons}
+
+The plot windows contain icons for changing the scales.  These are
+triangles; the x-axis icons are in the lower left corner, and the
+y-axis icons are arrayed along the right edge.  Clicking on one of
+these icons has the following effects:
+
+\begin{tabular}{|l|l|}\hline
+    \multicolumn{2}{|c|}{{\bf right} or {\bf up}}\\ \hline
+      button 1 & move the scale interval to the right or up\\ \hline
+      button 2 or {\kb Shift}--button 1 & extend the right or top scale
+         factor to the right or up\\ \hline
+      button 3 or {\kb Ctrl}--button 1 & contract the right or top scale
+         factor to the left or down\\ \hline
+    \multicolumn{2}{|c|}{{\bf left} or {\bf down}}\\ \hline
+      button 1 & move the scale interval to the left or down\\ \hline
+      button 2 or {\kb Shift}--button 1 & extend the left or bottom scale
+         factor to the left or down\\ \hline
+      button 3 or {\kb Ctrl}--button 1 & contract the left or bottom scale
+         factor to the right or up\\ \hline
+\end{tabular}
+
+\subsection{Field Width Icons}
+
+When a plot is displaying multiple data traces with different scales,
+a pair of triangular marks similar in appearance to the scale icons
+appear near the top-left corner of the plot grid frame.  Clicking on
+these marks will move the plot grid frame to the left or right,
+shrinking or expanding the left margin area used for the trace label
+text.  This can improve the appearance of the plot when trace labels
+are unusually long or short.
 
 !! useriface.tex 012709
 !!KEYWORD
@@ -560,4 +948,35 @@ Mplot Panel
     windows.  See the description of the <a
     href="mplot"><b>mplot</b></a> command for information about use of
     the selections.
+!!LATEX mplotpanel format.tex
+This panel appears when plotting results from operating range or Monte
+Carlo analysis, and is brought up by the {\cb mplot} command.  The
+display consists of an array of cells, each of which represent the
+results of a single trial.  As the results become available, the cells
+indicate a pass or fail, In operating range analysis, the cells
+indicate a particular bias condition according to the axes.  In Monte
+Carlo analysis, the position of the cells has no significance.  In
+this case the display indicates the number of trials completed.
+
+The panel includes a {\cb Help} button which brings up a help message,
+a {\cb Redraw} button to redraw the plot if, for example, the plotting
+colors are redefined, and a {\cb Print} button for generating hard
+copy output of the plot.
+
+Text entered while the pointer is in the {\cb mplot} window will
+appear in the plot, and hardcopies.  This text, and other text which
+appears in the plot, can be edited in the manner of text in {\cb plot}
+windows.
+
+The cells in an {\cb mplot} can be selected/deselected by clicking on
+them.  Clicking with button 1 will select/deselect that cell.  Using
+button 2, the row containing the cell will be selected or deselected,
+and with button 3 the column will be selected or deselected.  A
+selected cell will be shown with a colored background, with an index
+number printed.
+
+Only one {\cb mplot} window can have selections.  Clicking in a new
+window will deselect all selections in other {\cb mplot} windows.  See
+the description of the {\cb mplot} command in \ref{mplot} for
+information about use of the selections.
 

@@ -45,6 +45,7 @@ src/sparse/spsolve.cc
 src/sparse/sputils.cc
 startup/wr_install
 manual/*.aux
+manual/*.tex
 manual/wrsmanual-*
 manual/wrsmanual.aux
 manual/wrsmanual.dvi

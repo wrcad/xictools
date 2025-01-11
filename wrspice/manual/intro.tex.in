@@ -1,0 +1,48 @@
+% WRspice Manual file: intro.tex
+
+\pagenumbering{arabic}
+\chapter{Introduction to {\WRspice}}
+
+%S-----------------------------------------------------------------------------
+\section{History of {\WRspice}}
+
+<<sphistory spMain.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{{\WRspice} Overview}
+
+<<spice spMain.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{Types of Analysis}
+\index{analysis}
+
+<<spanalysis spMain.hlp>>
+
+<<convergence spMain.hlp>>
+
+<<memory spMain.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{Multi-threading}
+\index{threads}
+\index{multi-threads}
+\label{threads}
+
+<<spthreads spMain.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{Program Control}
+
+<<spcontrol spMain.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{Post-Processing and Run Control}
+
+<<sppost spMain.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{Introduction to Interactive Simulation}
+
+<<spintr spMain.hlp>>
+

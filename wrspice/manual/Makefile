@@ -3,6 +3,9 @@
 # To fix mathend000# bug: edit share/latex2html/versions/math.pl, set
 # $mathend_mark = ""; 
 
+import:
+	../../mozy/bin/hlp2latex ../help  .
+
 manual::
 	@sed -e "s/@RELEASE@/`../release.sh wrspice`/" \
   -e "s/@DATE@/`date +'%B %-d, %Y'`/" < wrsmanual.sed > wrsmanual.tex
@@ -35,5 +38,5 @@ pdf::
 	dvipdf wrsmanual.dvi wrsmanual-`../release.sh wrspice`.pdf
 
 clean distclean::
-	-@rm -rf *.log *.aux *.ilg *.ind *.dvi wrsmanual *.gz *.pdf
+	-@rm -rf *.log *.aux *.ilg *.ind *.dvi wrsmanual *.gz *.pdf *.tex
 

@@ -22,7 +22,7 @@ filesel filemgr
 File Selection Panel
 !!HTML
     <img src="screenshots/filesel.png" align=right>
-    The <b>File Selection</b> panel allows the user the navigate the
+    The <b>File Selection</b> panel allows the user to navigate the
     host's file systems, and select a file for input to the program.
 
     <p>
@@ -147,7 +147,7 @@ File Selection Panel
     <tt>copy</tt>, the cursor icon contains a '+' in all cases.  This
     will appear when the user presses the <b>Ctrl</b> key, if the
     underlying window supports a <tt>move</tt> operation.
-!! ENDIF
+!!ENDIF
 
     <p>
     The <b>File</b> menu contains a number of commands which provide
@@ -245,5 +245,198 @@ File Selection Panel
     when the user is being prompted for the name of a file to save. 
     This does not contain the list of files found in the other
     variations, but allows the user to select a directory.
+!!ENDIF
+!!LATEX filesel useriface.tex
+\index{File Selection window}
+The File Selection panel allows the user to navigate the host's
+file systems, and select a file for input to the program.
+
+The panel provides two windows; the left window displays the
+subdirectories in a tree format, and the right window displays a
+listing of files in a columnar form.  The panel is similar in
+operation to the Windows Explorer tool provided by Microsoft.
+
+When the panel first appears, the directories listing contains a
+single entry, which is shown selected, and the files window contains a
+list of files found in that directory.  The tree ``root'' is selected
+by the application, and may or may not be the current directory.  If
+the directory contains subdirectories, a small box containing a `{\vt
++}' symbol will appear next to the directory entry.  Clicking on the
+`{\vt +}' will cause the subdirectories to be displayed in the
+directory listing, and the `{\vt +}' will change to a `{\vt -}'. 
+Clicking again on the `{\vt -}' will hide the subdirectory entries. 
+Clicking on a subdirectory name will select that subdirectory, and
+list its files in the files listing window.  The `{\vt +}' box will
+appear with subdirectories only after the subdirectory is selected.
+
+Clicking on the blue triangle in the menu bar will push the current
+tree root to its parent directory.  If the tree root is pushed to the
+top level directory, the blue triangle is grayed.  The label at the
+bottom of the panel displays the current root of the tree.  There is
+also a {\cb New Root} item in the {\cb File} menu, which allows the
+user to enter a new root directory for the tree listing.  In Windows,
+this must be used to list files on a drive other than the current
+drive.
+
+The {\cb Up} menu is similar, but it produces a drop-down list of
+parent directories.  Selecting one of the parents will set the root to
+that parent, the same as pressing the blue triangle button multiple
+times to climb the directory tree.
+
+The {\cb New CWD} button in the {\cb File} menu allows the user to
+enter a new current working directory for the program.  This will also
+reset the root to the new current working directory.  The small dialog
+window which receives the input, and also a similar dialog window
+associated with the {\cb New Root} button, are sensitive as drop
+receivers for files.  In particular, one can drag a directory from the
+tree listing and drop it on the dialog, and the text of the dialog
+will be set to the full path to the directory.
+
+The files listed in the files listing always correspond to the
+currently selected directory.  File names can be selected in the files
+listing window, and once selected, the files can be transferred to the
+calling application.  The {\cb Go} button, which has a green octagon
+icon, accomplishes this, as does the {\cb Open} entry in the {\cb
+File} menu.  These buttons are only active when a file is selected. 
+One can also double-click the file name which will send the file to
+the application, whether or not the name was selected.
+
+\index{drag and drop}
+Files can be dragged and dropped into the application, as an
+alternative to the {\cb Go} button.  Files and directories can also be
+dragged/dropped between multiple instances of the File Selection
+pop-up, or to other file manager programs, or to other directories
+within the same file manager panel.  The currently selected directory
+is the target for files dropped in the files listing window.  When
+dragging in the directory listing, the underlying directory is
+highlighted.  The highlighted directory will be the drop target.
+
+By default, a confirmation pop-up will always appear after a
+drag/drop.  This specifies the source and destination files or
+directories, and gives the user the choice of moving, copying or (if
+not in Windows) symbolically linking, or aborting the operation.
+
+!!IFDEF Xic
+In {\Xic}, the variable {\et NoAskFileAction} can be set to skip the
+confirmation.  This was the behavior in releases prior to 3.0.0, and
+experienced users may prefer this.  However, some users may find it
+too easy to inadvertently initiate an action.
+
+If the {\et NoAskFileAction} variable is set, the following paragraphs
+apply.
+
+The drag/drop operation is affected by which mouse button is used for
+dragging, and by pressing the {\kb Shift} and {\kb Ctrl} buttons
+during the drag.  The normal operation (button 1 with no keys pressed)
+for drag/drop is copying.  The other options are as follows:
+
+\begin{tabular}{|l|l|} \hline
+\multicolumn{2}{|c|}{\kb Operations}\\ \hline
+\et Button 1 & Copy\\ \hline
+\et Shift-Button 1 & Move\\ \hline
+\et Control-Button 1 & Copy\\ \hline
+\et Shift-Control-Button 1 & Link\\ \hline
+\et Button 2/3 & Ask\\ \hline
+\end{tabular}
+
+Above, ``Ask'' means that a dialog will appear asking the user what
+operation to perform.  Options are {\vt move}, {\vt copy}, or
+(symbolically) {\vt link}.  Both the source and destinations are shown
+in the pop-up, and can be modified.
+
+If a directory is the source for a copy, the directory and all files
+and subdirectories are copied recursively, as with the ``{\vt -R}''
+option of the Unix ``{\vt cp}'' command.
+
+Only one file or directory can be selected.  When the operation is
+{\vt copy}, the cursor icon contains a `+' in all cases.  This will
+appear when the user presses the {\kb Ctrl} key, if the underlying
+window supports a {\vt move} operation.
+!!ENDIF
+
+The {\cb File} menu contains a number of commands which provide
+additional manipulations.  The {\cb New Folder} button will create a
+subdirectory in the currently selected directory (after prompting for
+a name).  The {\cb Delete} button will delete the currently selected
+file.  If no file is selected, and the currently selected directory
+has no files or subdirectories, it will be deleted.  The {\cb Rename}
+command allows the name of the currently selected file to be changed. 
+If no file is selected, the name change applies to the currently
+selected directory.
+
+The {\cb Listing} menu contains entries which affect the file name
+list.  By default, all files are listed, however the user can restrict
+the listing to certain files with the filtering option.  The {\cb Show
+Filter} button displays an option menu at the bottom of the files
+listing.  The first two choices are ``all files'' and the set of
+extensions known to correspond to supported layout file formats.  The
+remaining choices are editable and can be set by the user.  The format
+is the same as one uses on a Unix command line for, e.g., the {\vt ls}
+command, except that the characters up to the first colon (`:') are
+ignored.  It is intended that the first token be a name for the
+pattern set, followed by a colon.  The remaining tokens are
+space-separated patterns, any one of which if matching a file will
+cause the file to be listed.
+
+In matching filenames, the character `{\vt .}' at the beginning of a
+filename must be matched explicitly.  The character `{\vt
+*}' matches any string of characters, including the null string.  The
+character `{\vt ?}' matches any single character.  The sequence
+`$[...]$' matches any one of the characters enclosed.  Within
+`$[...]$', a pair of characters separated by `{\vt -}' matches any
+character lexically between the two.  Some patterns can be negated:
+The sequence `$[\symbol{94}...]$' matches any single character not
+specified by the characters and/or ranges of characters in the braces.
+An entire pattern can also be negated with `{\vt \symbol{94}}'.  The
+notation `{\vt a\{b,c,d\}e}' is a shorthand for `{\vt abe ace ade}'.
+
+The {\cb Relist} button will update the files list.  The file listing
+is automatically updated when a new filter is selected, or when {\kb
+Enter} is pressed when editing a filter string.
+
+The files are normally listed alphabetically, however if {\cb List by
+Date} is selected, files will be listed in reverse chronological order
+of their creation or last modification time.  Thus, the most-recently
+modified file will be listed first.
+
+The {\cb Show Label} toggle button controls whether or not the label
+area is shown.  The label area contains the root directory and current
+directory, or a file info string.  By default, the label area is shown
+when the pop-up is created as a stand-alone file selector, but is not
+shown when the pop-up appears as an adjunct when soliciting a file
+name.
+
+When the pointer is over a file name in the file listing, info about
+the file is printed in the label area (if the label area is visible).
+This is a string very similar to the ``{\vt ls -l}'' file listing in
+Unix/Linux.  It provides:
+
+\begin{enumerate}
+\item{The permission bit settings and file type codes as in
+  ``{\vt ls -l}'' (Unix/Linux only).}
+\item{The owner and group (Unix/Linux only).}
+\item{The file size in bytes.}
+\item{The last modification date and time.}
+\end{enumerate}
+
+While the panel is active, a monitor is applied to the listed files
+and directories which will automatically update the display if the
+directories change.  The listings should respond to external file or
+directory additions or deletions within half a second.
+
+!!IFDEF Xic
+\index{open file dialog}
+\index{save file dialog}
+The {\cb File Selection} pop-up appears when the {\cb File Select}
+button in the {\Xic} {\cb File Menu} is pressed.  Variations of {\cb
+File Selection} panel appear when the user is being prompted (from the
+prompt line) for a path to a file to open or write, such as for the
+commands in the {\cb Convert Menu}.  The {\cb Open File} dialog is
+used when a path to a file to open is being requested.  It is almost
+the same as the {\cb File Selection} panel, except that selecting a
+file will load that path into the prompt line.  The {\cb Save File}
+dialog is used when the user is being prompted for the name of a file
+to save.  This does not contain the list of files found in the other
+variations, but allows the user to select a directory.
 !!ENDIF
 

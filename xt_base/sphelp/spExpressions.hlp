@@ -16,8 +16,8 @@ spExpressions.hlp
 
 !!SUBTOPICS
 plotvec
-expressions
 constants
+expressions
 operators
 mathfuncs
 statfuncs
@@ -580,6 +580,154 @@ Plots and Vectors
     <p>
     Finally, the <a href="rusage"><b>rusage</b> keywords are searched.
     Any of these keywords will match.
+!!LATEX plotvec useriface.tex
+{\WRspice} data are in the form of vectors, which are lists of numbers
+that may represent, e.g., time, voltage, or any typed or untyped set
+of values.  Vectors of length one are termed ``scalars''.  During a
+simulation, each of the circuit variables, plus a scale vector, are
+filled with data from the simulation.  For example, in transient
+analysis, the scale vector (named ``{\vt time}'') will contain the
+time values where output is generated, and each node and other circuit
+variables will have a corresponding vector of the same length as the
+scale, containing the values for the scale points.
+
+\index{exec plot}
+For each simulation, the resulting vectors are contained in a
+``plot'', which is a container data structure for vectors.  The plot
+is given a name (such as ``tran2''), and appended to a list containing
+other previously-generated plots.  If an input file contains an {\vt
+.exec} block in which vectors are created, a special ``exec'' plot
+will be created to hold these.  There is also an internally generated
+plot named ``{\vt constants}'' which contains various scalars set to
+constant values.  The {\vt constants} plot can not be deleted, thus
+the internal plot list is never empty.
+
+When a plot data file is read into {\WRspice} with the {\cb load}
+command, a plot containing vectors is produced, as if an anaylsis had
+been run.  The new plot becomes the current plot.
+
+\index{current plot}
+When a new plot is created by an analysis or with the {\cb load}
+command, it becomes the ``current plot''.  The current plot represents
+a context, where the existing vectors can be accessed by their name,
+and new vectors created, for example with the {\cb let} command, will
+(by default) be added to the current plot.
+
+The current plot is usually the last plot produced by an analysis run,
+or the {\vt constants} plot if no analyses have been run or rawfiles
+loaded.  The current plot can be changed with the {\cb setplot}
+command, or with the {\cb Plots} panel from the {\cb Tools} menu.  A
+vector from the current plot or the {\vt constants} plot can be
+referenced by name.  A vector from any plot can be referenced with the
+notation
+\begin{quote}
+{\it plotname\/}.{\it vecname}
+\end{quote}
+where {\it plotname} is the name of the plot or an alias, and {\it
+vecname} is the vector name.
+
+The default separation character is a period, however this can be
+changed by setting the variable {\et plot\_catchar}.  If this variable
+is set to a string consisting of a single punctuation character, that
+character becomes the separator.  We will continue to use a period in
+the examples, but be aware that other options exist.
+
+The {\it plotname} can also be a numerical index.  Plots are saved in
+the order created, and as listed by the {\cb setplot} command without
+arguments, and in the {\cb Plots} tool.  The numerical forms below are
+equivalent to the Berkeley SPICE3 syntax.  These cause trouble in
+{\WRspice}, however, since they are often misinterpreted as numbers,
+and typically require double quoting when used as arguments to
+commands.  {\WRspice} has an equivalent set of alias keywords which do
+not require special treatment. 
+
+Below is a list of the special alias keywords and constructs which can
+be given as the {\it plotname}, in addition to the actual name of the
+plot to reference.  Below, {\it N} is an unsigned integer.
+
+\begin{description}
+\item{\vt curplot}\\
+This is an alias for the name of the current plot.  Use of this
+keyword may seem redundant, but it has an important use to be
+explained below.
+
+\item{\vt -}{\it N}\\
+Use the {\it N\/}'th plot back from the current plot.  {\it N} must be
+1 or larger.  For example, ``{\vt -1.v(1)}'' will reference {\vt v(1)}
+in the previous plot.  It is likely that this form must be
+double-quoted to avoid misinterpretation as a number.
+
+\item{\vt prev}[{\it N\/}]\\
+This is very similar functionally to the form above, but does not
+cause parse errors.  The square brackets above are {\bf not} literal,
+but indicate that the integer is optional.  If missing, {\it N\/}=1 is
+implied.  With {\it N\/}=0, the current plot is indicated (equivalent
+to {\vt curplot}).
+
+\item{\vt +}{\it N}\\
+This goes in the reverse direction, indicating a plot later in the
+list than the current plot.  It is likely that this form must be
+double-quoted to avoid misinterpretation as a number.
+
+\item{\vt next}[{\it N\/}]\\
+This is very similar functionally to the form above, but does not
+cause parse errors.  The square brackets above are {\bf not} literal,
+but indicate that the integer is optional.  If missing, {\it N\/}=1 is
+implied.  With {\it N\/}=0, the current plot is indicated (equivalent
+to {\vt curplot}).
+
+\item{\it N}\\
+An integer without {\vt +} or {\vt -} indicates an absolute index into
+the plot list, zero-based.  The value 0 will always indicate the
+``constants'' plot, which is the first plot created (on program
+startup).  It is likely that this form must be double-quoted to avoid
+misinterpretation as a number.
+
+\item{\vt plot}[{\it N\/}]\\
+This is very similar functionally to the form above, but does not
+cause parse errors.  The square brackets above are {\bf not} literal,
+but indicate that the integer is optional.  If missing, {\it N\/}=0 is
+implied, which will specify the {\vt constants} plot.
+\end{description}
+
+When using the {\it plotname\/}.{\it vecname} construct, internally
+the vector and its scale are copied into the current plot as temporary
+vectors.  If you do ``{\vt plot -1.v(1)}'' (for example) it may be
+surprising to find that the plot title, etc.  are from the current
+plot, and not the source plot.
+
+When a script is run, the current plot when the script starts is taken
+as the ``context plot'' which will be used to resolve references to
+vectors in the script, after searching the current plot (if
+different).  Suppose that we have a script that defines a loop counter
+vector, then runs a loop that performs an analysis.  If we didn't save
+and search the context plot, the loop counter vector would not be
+accessible after the analysis is run, since the analysis will set a
+new current plot.
+
+One should keep this behavior in mind, as it can sometimes cause
+surprises.  For example, consider the script fragment
+
+\begin{quote} \vt
+run\\
+let foo = i(vds)\\
+plot foo
+\end{quote}
+
+Now suppose that the context plot contains a vector named ``{\vt
+foo}''.  Instead of creating a new vector in the current plot, the
+``{\vt foo}'' vector in the context plot will be used, probably
+meaning that the scale in the displayed plot is incorrect.
+
+To enforce the desired behavior, the second line above should be
+changed to
+\begin{quote} \vt
+let curplot.foo = i(vds)
+\end{quote}
+
+Script authors should be in the habit of using this form when creating
+vectors, when there is any possibility of a name clash with the
+context plot.
 
 !!SUBTOPICS
 constants
@@ -651,6 +799,32 @@ Constants
      <td>Truth value (1)</td></tr>
     </table>
     </blockquote>
+!!LATEX constants useriface,tex
+The following values are defined in a plot named ``{\vt constants}''. 
+This is the default plot if no rawfile has been loaded and no
+simulation has been run.  These constants are visible no matter what
+the current plot is, but they are overridden by a vector with the same
+name in the current plot.  The {\vt constants} plot can not be
+deleted, and its vectors are read-only.  The values are in MKS units.
+\begin{quote}
+\begin{tabular}{|l|l|}\hline
+{\vt boltz} & Boltzmann's constant (1.38062e-23 joules/degree kelvin)\\ \hline
+{\vt const\_c} & The speed of light (2.997925e8 meters/second)\\ \hline
+{\vt const\_e} & The base of natural logarithms (2.71828182844590452353)\\
+  \hline
+{\vt echarge} & The charge on an electron (1.60219e-19 coulombs)\\ \hline
+{\vt false} & False value (0)\\ \hline
+{\vt const\_j} & The square root of -1, can be expressed as (0,1)\\ \hline
+{\vt kelvin} & Absolute 0 in Centigrade (-273.15 degrees)\\ \hline
+{\vt no} & False value (0)\\ \hline
+{\vt phi0} & The flux quantum (Planck's constant over twice {\vt echarge})\\ \hline
+{\vt phi0\_2pi} & Value of the flux quantum normalized to $2\pi$\\ \hline
+{\vt pi} & $\pi$ (3.14159265358979323846)\\ \hline
+{\vt planck} & Planck's constant (6.62620e-34 joule-seconds)\\ \hline
+{\vt true} & Truth value (1)\\ \hline
+{\vt yes} & Truth value (1)\\ \hline
+\end{tabular}
+\end{quote}
 
 !!SEEALSO
 plotvec
@@ -743,13 +917,84 @@ Vector Expressions
     </blockquote>
     <tt>$&@foo</tt> will expand to "<tt>hello there</tt>" in this
     case.  Other references to <tt>@foo</tt> will return 0.0.
+!!LATEX expressions useriface.tex
+An expression is an algebraic combination of already defined vectors,
+scalars (a scalar is a vector of length 1), constants, operators and
+functions.  Some examples of expressions are:
+\begin{quote}
+{\vt cos(time) + db(v(3))}\\
+{\vt sin(cos(log(10)))}\\
+{\vt TIME*rnd(v(9)) - 15*cos(vin\#branch)\symbol{94}7.9e5}\\
+{\vt not ((ac3.freq[32] \& tran1.time[10]) gt 3)}
+\end{quote}
+
+One should note that there are two math subsystems in {\WRspice}, the
+vector system described here, and a second system for processing
+equations found in device descriptions during simulation (see
+\ref{devexpr}).  Although the expressions are syntactically similar,
+there are important differences that must be taken into account, and
+one should refer to the appropriate documentation for the type of
+expression.
+
+Vector expressions can also contain calls to the built-in ``tran''
+functions ordinarily used in voltage/current source specifications in
+transient analysis.  These are the {\vt pulse}, {\vt pwl}, etc. 
+functions described in \ref{tranfuncs}.  If assigned to a vector, the
+vector will have a length equal to the current scale (e.g., the time
+values of the last transient analysis plot), and be filled in with
+values just as if the analysis was run with the given source
+specification.  For example
+\begin{quote}
+    (run transient analysis: tran .1n 10n)\\
+    {\vt let a = pulse(0 1 1n 1n)}
+\end{quote}
+Vector {\vt a} will have length 101 and contain the pulse values.
+
+There are three such functions, {\vt sin}, {\vt exp}, and {\vt
+gauss}, that have the same names as math functions.  The math
+functions always return data of the same length as the argument(s),
+and take 1 argument for {\vt sin}, {\vt exp} and 2 for {\vt gauss}. 
+When one of these names is encountered in an expression, {\WRspice}
+counts the arguments.  If the number of arguments is 1 for {\vt
+sin}/{\vt exp} or 1 or 2 for {\vt gauss}, the math function is called,
+otherwise the tran function is called.  It may be necessary to give
+the {\vt gauss} function a phony additional argument to force calling
+the tran function.
+
+\index{vector substitution}
+Vectors can be evaluated by the shell parser by adding the prefix {\vt
+\$\&} to the vector's name.  This is useful, for example, when the
+value of a vector needs to be passed to the shell's {\cb echo}
+command, or in circuit description files where vectors are to be
+evaluated by the shell as the file is read.  Similar to the shell
+constructs, {\vt \$?\&{\it word\/}} expands to 1 if {\it word\/} is a
+defined vector, 0 otherwise.  Also {\vt \$\#\&{\it word\/}} expands to
+the length of {\it word\/} if {\it word\/} is a defined vector, or 0
+if not found.  Additionally, the notation {\vt \$\&({\it vector
+expression\/})} is replaced by the value of the vector expression.  A
+range specification can be added, for example {\vt echo \$\&(a+1)[2]}
+prints the third entry in {\vt a+1}, or 0 if out of range.  If white
+space exists in the {\vt \$\&(...)} construct, it probably should be
+quoted.  Finally, the shell recognizes the construct {\vt \$\&v(\${\it
+something\/})} as a reference to a SPICE node voltage, so that one can
+index node voltages as {\vt echo \$\&v(\$\&i)}, for example.  A range
+specification can be added, which can contain shell variables.  This
+is true for both vectors ({\vt \$\&} prefix) and variables.
+
+There is a special case when {\vt \$\&} is used with a special vector
+(see \ref{specialvec}) that is referencing a string-type parameter. 
+Since one can have
+\begin{quote}\vt
+.param foo="hello there"
+\end{quote}
+{\vt \$\&@foo} will expand to ``{\vt hello there}'' in this case. 
+Other references to {\vt @foo} will return 0.0.
 
 !!SUBTOPICS
 explists
 hs_functions
 mathfuncs
 operators
-
 
 !!REDIRECT plus         operators#plus
 !!REDIRECT minus        operators#minus
@@ -960,6 +1205,129 @@ Operators
     <i>high</i> and <i>low</i>, inclusive.  If <i>high</i> is less
     than <i>low</i>, the order of the elements in the result is
     reversed.
+!!LATEX operators useriface.tex
+The operations available in vector expressions are listed below.  They
+all take two operands, except for unary minus and logical negation. 
+
+\begin{description}
+\item{{\bf addition operator}: {\vt $+$}}\\
+Add the two operands.
+
+\item{{\bf subtraction amd negation operator}: {\vt $-$}}\\
+Evaluates to the first argument minus the second, and also may be used
+as unary minus.
+
+\item{{\bf multiply operator}: {\vt $*$}}\\
+Multiply the two operands.
+
+\item{{\bf divide operator}: {\vt $/$}}\\
+The first operand divided by the second.
+
+\item{{\bf modulo operator}: {\vt $\%$}}\\
+This operates in the manner of the C {\vt fmod} function, returning
+the remainder.  That is, for {\vt x$\%$y}, the value of {\vt
+x$-$i$*$y} is returned for some integer {\vt i} such that the result
+has the same sign of {\vt x} and magnitude less than the magnitude of
+{\vt y}.  An error is indicated if {\vt y} is zero.  If {\vt x} or
+{\vt y} is complex, the magnitudes are used in the division.
+
+\item{{\bf power operator}: {\vt $\symbol{94}$} or {\vt $**$}}\\
+Evaluates to the first operand raised to the power of the second.
+
+\item{{\bf and operator}: {\vt $\&$} or {\vt $\&\&$} or {\vt and}}\\
+Evaluates to 1 if both operands are non-zero, 0 otherwise.
+
+\item{{\bf or operator}: {\vt $|$} or {\vt $||$} or {\vt or}}\\
+Evaluates to 1 if either of the two operands is nonzero, 0 otherwise.
+
+\item{{\bf not operator}: {\vt $\symbol{126}$} or {\vt !} or {\vt not}}\\
+Evaluates to 1 if the operand is 0, 0 otherwise.
+
+\item{{\bf greater-than operator}: {\vt $>$} or {\vt gt}}\\
+Evaluates to 1 if the first operand is greater than the second, 0
+otherwise.
+
+\item{{\bf greater-than-or-equal operator}: {\vt $>=$} or {\vt ge}}\\
+Evaluates to 1 if the first operand is greater than or equal to
+the second, 0 otherwise.
+
+\item{{\bf less-than operator}: {\vt $<$} or {\vt lt}}\\
+Evaluates to 1 if the first argument is less than the second, 0
+otherwise.
+
+\item{{\bf less-than-or-equal operator}: {\vt $<=$} or {\vt le}}\\
+Evaluates to 1 if the first argument is less than or equal to the
+second, 0 otherwise.
+
+\item{{\bf not-equal operator}: {\vt $<>$} or {\vt $!=$} or {\vt ne}}\\
+Evaluates to 1 if the two operands are not equal, 0 otherwise.
+
+\item{{\bf equal operator}: {\vt $=$} or {\vt $==$} or {\vt eq}}\\
+Evaluates to 1 if both operands are equal, 0 otherwise.
+
+\item{{\bf ternary conditional operator}:
+      {\it expr} {\vt ?} {\it expr1} {\vt :} {\it expr2}}\\
+If {\it expr} evaluates nonzeor (true), the result of the evaluation
+of {\it expr1} is returned.  Otherwise, the result of evaluating
+{\it expr2} is returned.  For Example:
+\begin{quote}
+\vt let v = (a == 2) ? v(1) : v(2)
+\end{quote}
+This will set {\vt v} to {\vt v(1)} if vector {\vt a} is equal to 2,
+{\vt v} to {\vt v(2)} otherwise.
+
+\item{{\bf comma operator}: {\vt ,}}\\
+The notation {\it a\/},{\it b} refers to the complex number with real
+part {\it a} and imaginary part {\it b}.  Such a construction may not
+be used in the argument list to a macro function, however, since
+commas are used to separate the arguments and parentheses may be
+ignored.  The expression {\it a} + {\vt j}({\it b\/}) is equivalent. 
+The comma does {\it not} behave as an operation (return a value) as it
+does in C.
+\end{description}
+
+The logical operations are {\vt $\&$} (and), {\vt $|$} (or), {\vt
+$\symbol{126}$} (not), and their synonyms.  A nonzero operand is
+considered ``true''.  The relational operations are {\vt $<$}, {\vt
+$>$}, {\vt $<=$}, {\vt $>=$}, {\vt $=$}, and {\vt $<>$} (not equal),
+and their synonyms.  If used in an algebraic expression they work like
+they would in C, producing values of 0 or 1.  The synonyms are useful
+when {\vt <} and {\vt >} might be confused with IO redirection (which
+is almost always).
+
+\begin{description}
+\item{\bf expression terminator}: {\vt ;}\\
+The expression parser will terminate an expression at a semicolon. 
+This can be used to enforce tokenization of expression lists, however
+it will also terminate command parsing if surrounded by white space.
+\end{description}
+
+Vectors may be indexed by {\it value\/}[{\it index\/}] or {\it
+value\/}[{\it low,high\/}].
+
+The first notation refers to the {\it index\/}'th element of {\it
+value}.  The second notation refers to all of the elements of {\it
+value} which fall between the {\it high\/}'th and the {\it low\/}'th
+element, inclusive.  If {\it high} is less than {\it low}, the order
+of the elements in the result is reversed.  Note that a complex index
+will have the same effect as using the real part for the lower value
+and the imaginary part for the upper, since this is the way the parser
+reads this expression.  Multi-dimensional vectors are referenced as
+Vec[{\it ind\/}N][{\it ind\/}N-1]...[{\it ind\/}0], where each of the
+{\it ind\/}I can be a range, or single value.  The range must be
+within the vector's spanning space.  If fewer than the vector's
+dimensions are specified, the resulting object is a sub-dimensional
+vector.
+
+Finally, there is the ran operator:  {\it value1\/}[[{\it value2\/}]]
+or {\it value\/}[[{\it low,high\/}]].
+
+The first notation refers to all the elements of {\it value1} for
+which the element of the corresponding scale equals {\it value2}.  The
+second notation refers to all of the elements of {\it value} for which
+the corresponding elements of the scale fall between {\it high} and
+{\it low}, inclusive.  If {\it high} is less than {\it low}, the order
+of the elements in the result is reversed.
 
 !!SEEALSO
 expressions
@@ -1557,6 +1925,406 @@ Math Functions
     <p>
     If <i>vector</i> is real, the effective value of <i>n</i> is 0.
     </dl>
+!!LATEX mathfuncs spExpressions.hlp
+There are a number of built-in math functions which take and return
+vectors.  Generally, these functions operate on the supplied vector
+term-by-term, returning a vector of the same length as that given.
+
+The pre-defined functions available are listed below.  In general, all
+operations and functions will work on either real or complex values,
+providing complex data output when necessary.
+
+In addition, there are statistical random number sources, as well as
+measurement functions exported by the {\cb measure} command, and a
+number of compatibility functions to support HSPICE extensions
+available.  These are described in sections that follow.
+
+It should be noted that the mathematics subsystem used to evaluate
+expressions in voltage/current sources is completely different.  In
+that subsystem, functions take real valued scalars as input.  Although
+many of the same functions are available in both systems, the
+correspondence is not absolute.
+
+\newcommand{\zzfmt}[1]{{\vt #1({\it vector\/})}}
+\newcommand{\zzfmtt}[1]{{\vt #1({\it vector\_x\/}, {\it vector\_y\/})}}
+
+\begin{description}
+\index{abs function}
+\item{\zzfmt{abs}}\\
+Each point of the returned vector is the absolute value of the
+corresponding point of {\it vector\/}.  This is the same as the {\vt
+mag} function.
+
+\index{acos function}
+\item{\zzfmt{acos}}\\
+Each point of the returned vector is the arc-cosine of the
+corresponding point of {\it vector\/}.  This and all trig functions
+operate with radians unless the {\et units} variable is set to {\vt
+degrees}.
+
+\index{acosh function}
+\item{\zzfmt{acosh}}\\
+Each point of the returned vector is the arc-hyperbolic cosine of the
+corresponding point of {\it vector\/}.  This and all trig functions
+operate with radians unless the {\et units} variable is set to {\vt
+degrees}.
+
+\index{asin function}
+\item{\zzfmt{asin}}\\
+Each point of the returned vector is the arc-sine of the
+corresponding point of {\it vector\/}.  This and all trig functions
+operate with radians unless the {\et units} variable is set to {\vt
+degrees}.
+
+\index{asinh function}
+\item{\zzfmt{asinh}}\\
+Each point of the returned vector is the arc-hyperbolic sine of the
+corresponding point of {\it vector\/}.  This and all trig functions
+operate with radians unless the {\et units} variable is set to {\vt
+degrees}.
+
+\index{atan function}
+\item{\zzfmt{atan}}\\
+Each point of the returned vector is the arc-tangent of the
+corresponding point of {\it vector\/}.  This and all trig functions
+operate with radians unless the {\et units} variable is set to {\vt
+degrees}.
+
+\index{atanh function}
+\item{\zzfmt{atanh}}\\
+Each point of the returned vector is the arc-hyperbolic tangent of the
+corresponding point of {\it vector\/}.  This and all trig functions
+operate with radians unless the {\et units} variable is set to {\vt
+degrees}.
+
+\index{cbrt function}
+\item{\zzfmt{cbrt}}\\
+Each point of the returned vector is a cube root of the corresponding
+point of {\it vector\/}.
+
+\index{ceil function}
+\item{\zzfmt{ceil}}\\
+This function returns the smallest integer greater than or equal to the
+argument, in the manner of the C function of the same name.  If the
+argument is complex, the operation is performed on both components,
+with the result being complex.  This operation is performed at each
+point in the given {\it vector}.
+
+\index{cos function}
+\item{\zzfmt{cos}}\\
+Each point of the returned vector is the cosine of the
+corresponding point of {\it vector\/}.  This and all trig functions
+operate with radians unless the {\et units} variable is set to {\vt
+degrees}.
+
+\index{cosh function}
+\item{\zzfmt{cosh}}\\
+Each point of the returned vector is the hyperbolic cosine of the
+corresponding point of {\it vector\/}.  This and all trig functions
+operate with radians unless the {\et units} variable is set to {\vt
+degrees}.
+
+\index{db function}
+\item{\zzfmt{db}}\\
+Each point of the returned vector is the decibel value ({\vt 20 *
+log10(mag)}) of the corresponding point of {\it vector}.
+
+\index{deriv function}
+\index{dpolydegree variable}
+\item{\zzfmt{deriv}}\\
+This calculates the derivative of the given {\it vector}, using
+numeric differentiation by interpolating a polynomial.  However, it
+may be prone to numerical errors, particularly with iterated
+differentiation.  The implementation only calculates the derivative
+with respect to the real component of that vector's scale.  The
+polynomial degree used for differentiation can be specified with the
+{\et dpolydegree} variable.  If {\et dpolydegree} is unset, the value
+taken is 2 (quadratic).  The valid range is 0--7.
+
+\index{erf function}
+\item{\zzfmt{erf}}\\
+Each point of the real returned vector is the error function of the
+corresponding real point of {\it vector}.  Unlike most of the
+functions, this function operates only on the real part of a complex
+argument, and always returns a real valued result.
+
+\index{erfc function}
+\item{\zzfmt{erfc}}\\
+Each point of the real returned vector is the complementary error
+function of the corresponding real point of {\it vector}.  Unlike most
+of the functions, this function operates only on the real part of a
+complex argument, and always returns a real valued result.
+
+\index{exp function}
+\item{\zzfmt{exp}}\\
+Each point of the returned vector is the exponentiation ($e^x$)
+of the corresponding point of {\it vector\/}.
+
+\index{fft function}
+\item{\zzfmt{fft}}\\
+The {\vt fft} function returns the Fourier transform of {\it
+vector\/}, using the present scale of {\it vector}.  The scale should
+be linear and monotonic.  The length is zero-padded to the next binary
+power.  Only the real values are considered in the transform, so that
+the negative frequency terms are the complex conjugates of the
+positive frequency terms.  The negative frequency terms are not
+included in the (complex) vector returned.  A scale for the returned
+vector is also generated and linked to the returned vector.
+
+\index{floor function}
+\item{\zzfmt{floor}}\\
+This function returns the largest integer less than or equal to the
+argument, in the manner of the C function of the same name.  If the
+argument is complex, the operation is performed on both components,
+with the result being complex.  The operation is performed at each
+point of the argument.
+
+\index{gamma function}
+\item{\zzfmt{gamma}}\\
+This function returns the gamma value of the real argument (or the
+real part of a complex argument), returning real data.
+
+\index{ifft function}
+\item{\zzfmt{ifft}}\\
+The {\vt ifft} function returns the inverse Fourier transform of {\it
+vector\/}, using the present scale of {\it vector\/}.  The scale
+should be linear and monotonically increasing, starting at 0. 
+Negative frequency terms are assumed to be complex conjugates of the
+positive frequency terms.  The length is zero-padded to the next
+binary power.  A scale for the returned vector is also generated and
+linked to the returned vector.  The returned vector is always real.
+
+\index{im function}
+\item{\zzfmt{im}}\\
+Each point of the real returned vector is the imaginary part of the
+corresponding point of the given {\it vector\/}.  This function can
+also be calld as ``{\vt imag}''.
+
+\index{int function}
+\item{\zzfmt{int}}\\
+The returned value is the nearest integer to the argument, in the
+manner of the C {\vt rint} function.  If the argument is complex, the
+operation is performed on each component with the result being
+complex.  The operation is performed at each point in the argument.
+
+\index{integ function}
+\item{\zzfmt{integ}}\\
+The returned vector is the (trapezoidal) integral of {\it vector}
+with respect to the {\it vector\/}'s scale (which must exist).
+
+\index{interpolate function}
+\item{\zzfmt{interpolate}}\\
+This function takes its data and interpolates it onto a grid which is
+determined by the default scale of the currently active plot.  The
+degree is determined by the {\et polydegree} variable.  This is useful
+if the argument belongs to a plot which is not the current one.  Some
+restrictions are that the current scale, the {\it vector\/}'s scale,
+and the argument must be real, and that either both scales must be
+strictly increasing or strictly decreasing if they differ.
+
+This function is used when operating on vectors from different plots,
+where the scale may differ.  For example, the x-increment may be
+different, or the points may correspond to internal time points from
+transient analysis rather than the user time points.  Without
+interpolation, operations are generally term-by-term, padding when
+necessary.  This result is probably not useful if the scales are
+different.
+
+For example, the correct way to print the difference between a vector
+in the current plot and a vector from another plot with a different
+scale would be
+\begin{quote}
+{\vt print v(2) - interpolate(tran2.v(2))}
+\end{quote}
+
+\index{j function}
+\item{\zzfmt{j}}\\
+Each point of the returned vector is the corresponding point of
+{\it vector} multiplied by the square root of -1.
+
+\index{j0 function}
+\item{\zzfmt{j0}}\\
+Each point of the real returned vector is the Bessel order 0 function
+of the corresponding real point of {\it vector}.  Unlike most of the
+functions, this function operates only on the real part of a complex
+argument, and always returns a real valued result.
+
+\index{j1 function}
+\item{\zzfmt{j1}}\\
+Each point of the real returned vector is the Bessel order 1 function
+of the corresponding real point of {\it vector}.  Unlike most of the
+functions, this function operates only on the real part of a complex
+argument, and always returns a real valued result.
+
+\index{jn function}
+\item{\vt jn}({\it n\/}, {\it vector\/})\\
+Each point of the real returned vector is the Bessel order {\it n}
+function of the corresponding real point of {\it vector}, with {\it n}
+the truncated integer value of the imaginary part of {\it vector}.
+
+Recall that for most math function, comma argument separators
+are interpreted as the comma operator
+\begin{quote}
+\vt a,b = (a + j*b)
+\end{quote}
+which resolves to a single complex value.  Thus, since scalars are
+extended to vectors by replicating the value, on calling this function
+as, for example, ``{\vt jn(v,3)}'' where {\vt v} is a real vector, the
+return will be {\vt j3(v)} for each element of {\vt v}.
+
+If {\it vector} is real, the effective value of {\it n} is 0.
+
+\index{length function}
+\item{\zzfmt{length}}\\
+This function returns the scalar length of {\it vector\/}.
+
+\index{ln function}
+\item{\zzfmt{ln}}\\
+Each point of the returned vector is the natural logarithm of the
+corresponding point of {\it vector}.
+
+\index{log function}
+\item{\zzfmt{log}}\\
+Each point of the returned vector is the base-10 logarithm of the
+corresponding point of {\it vector}.
+
+\index{log10 function}
+\item{\zzfmt{log10}}\\
+Each point of the returned vector is the natural logarithm of the
+corresponding point of {\it vector} (same as {\vt ln}).
+
+{\bf Warning:} in releases prior to 3.2.15, the {\vt log} function
+returned the base-10 logarithm (as in Berkeley SPICE3).  This was
+changed in 3.2.15 for compatibility with device simulation models
+intended for HSPICE.
+
+\index{mag function}
+\item{\zzfmt{mag}}\\
+Each point of the real returned vector is the magnitude of the
+corresponding point of {\it vector}.
+
+\index{mean function}
+\item{\zzfmt{mean}}\\
+This function returns the (scalar) mean value of the elements in
+the argument.
+
+\index{norm function}
+\item{\zzfmt{norm}}\\
+Each point of the returned vector is the corresponding point of the
+given vector multiplied by the magnitude of the inverse of the largest
+value in the given vector.  The returned vector is therefor normalized
+to 1 (i.~e, the largest magnitude of any component will be 1).
+
+\index{ph function}
+\item{\zzfmt{ph}}\\
+Each point of the real returned vector is the phase of the
+corresponding point of {\it vector}, expressed in radians.
+
+\index{pos function}
+\item{\zzfmt{pos}}\\
+This function returns a real vector which is 1 if the corresponding
+element of the argument has a non-zero real part, and 0 otherwise.
+
+\index{re function}
+\item{\zzfmt{re}}\\
+Each point of the real returned vector is the real part of the
+corresponding point of {\it vector}.  The function can also be called
+as ``{\vt real}''.
+
+\index{rms function}
+\item{\zzfmt{rms}}\\
+This function integrates the magnitude-squared of {\it vector} over
+the {\it vector\/}'s scale (using trapezoidal integration), divides by
+the scale range, and returns the square root of this result.  If the
+{\it vector} has no scale, the square root of the sum of the squares
+of the elements is returned.
+
+\index{sgn function}
+\item{\zzfmt{sgn}}\\
+Each value of the output vector is 1, 0, or -1 according to whether
+the corresponding value of the input vector is larger than 0, equal to
+zero, or less than 0.  The vector can be complex or real.
+
+\index{sin function}
+\item{\zzfmt{sin}}\\
+Each point of the returned vector is the sine of the
+corresponding point of {\it vector\/}.  This and all trig functions
+operate with radians unless the {\et units} variable is set to {\vt
+degrees}.
+
+\index{sinh function}
+\item{\zzfmt{sinh}}\\
+Each point of the returned vector is the hyperbolic sine of the
+corresponding point of {\it vector\/}.  This and all trig functions
+operate with radians unless the {\et units} variable is set to {\vt
+degrees}.
+
+\index{sqrt function}
+\item{\zzfmt{sqrt}}\\
+Each point of the returned vector is the square root of the
+corresponding point of {\it vector}.
+
+\index{sum function}
+\item{\zzfmt{sum}}\\
+This function returns the (scalar) sum of the elements of {\it
+vector}.
+
+\index{tan function}
+\item{\zzfmt{tan}}\\
+Each point of the returned vector is the tangent of the
+corresponding point of {\it vector\/}.  This and all trig functions
+operate with radians unless the {\et units} variable is set to {\vt
+degrees}.
+
+\index{tanh function}
+\item{\zzfmt{tanh}}\\
+Each point of the returned vector is the hyperbolic tangent of the
+corresponding point of {\it vector\/}.  This and all trig functions
+operate with radians unless the {\et units} variable is set to {\vt
+degrees}.
+
+\index{unitvec function}
+\item{\zzfmt{unitvec}}\\
+This function returns a real vector consisting of all 1's, with length
+equal to the magnitude of the first element of the argument.
+
+\index{vector function}
+\item{\zzfmt{vector}}\\
+This function returns a vector consisting of the integers from 0 up to the
+magnitude of the first element of its argument.
+
+\index{y0 function}
+\item{\zzfmt{y0}}\\
+Each point of the real returned vector is the Neumann order 0 function
+of the corresponding real point of {\it vector}.  Unlike most of the
+functions, this function operates only on the real part of a complex
+argument, and always returns a real valued result.
+
+\index{y1 function}
+\item{\zzfmt{y1}}\\
+Each point of the real returned vector is the Neumann order 1 function
+of the corresponding real point of {\it vector}.  Unlike most of the
+functions, this function operates only on the real part of a complex
+argument, and always returns a real valued result.
+
+\index{yn function}
+\item{\vt yn}({\it n\/}, {\it vector\/})\\
+Each point of the real returned vector is the Neumann order {\it n}
+function of the corresponding real point of {\it vector}, with {\it n}
+the truncated integer value of the imaginary part.
+
+Recall that for most math function, comma argument separators
+are interpreted as the comma operator
+\begin{quote}
+\vt a,b = (a + j*b)
+\end{quote}
+which resolves to a single complex value.  Thus, since scalars are
+extended to vectors by replicating the value, on calling this function
+as, for example, ``{\vt yn(v,3)}'' where {\vt v} is a real vector, the
+return will be {\vt y3(v)} for each element of {\vt v}.
+
+If {\it vector} is real, the effective value of {\it n} is 0.
+\end{description}
 
 !!SEEALSO
 expressions
@@ -1710,6 +2478,110 @@ Statistical Functions
     separate results for the real and imaginary parts, obtained using
     the real and imaginary parts of <i>vector</i>.
     </dl>
+!!LATEX statfuncs useriface.tex
+These functions generate random values, in accord with different
+statistical distribution properties.  Each relies on the {\cb seed}
+command to seed the internal random number generator which is common
+to all random sources.  Each distribution is defined by one or two
+parameters.  For distributions that take a single parameter, if passed
+a complex vector, the result will be a complex vector, using
+separately the distribution parameters in the real and imaginary
+parts.  For distributions that require two parameters, the return
+vector is always real, and the complex vector given will supply the
+two parameters as the real and imaginary parts.  If a real vector is
+given, a default value will be used for the second parameter.
+
+Note that it is not likely that one would use different values for
+different indices of the given vector.  If all indices have the same
+value, then the return would contain a number of samples from the same
+distribution, which is what is almost always needed.
+
+Perhaps most of the time the functions will be called with scalar
+values.  With these and other functions, bear in mind that the
+syntactic element expected as an argument is a ``single'' number,
+which can be real or complex.  When complex, it has the form ``{\it
+a\/}, {\it b\/}'' which looks like two numbers.  The take-away is that
+any of these functions can be called as {\it func\/}({\it a\/}), or
+{\it func\/}({\it a\/}, {\it b\/}) where {\it a} and {\it b} are
+scalars.  The return depends on the function.
+
+The user is expected to know the properties of these distributions and
+when to apply them.  There is much information about these
+distributions available on-line, and in Knuth.
+
+\begin{description}
+\index{beta function}
+\item{\zzfmt{beta}}\\
+The beta distribution is defined by two positive real values {\vt a}
+and {\vt b}.  These are taken term by term as the real and imaginary
+parts of {\it vector} when complex.  When real, the {\vt b} will use
+the default value 1.0.
+
+\index{binomial function}
+\item{\zzfmt{binomial}}\\
+The binomial distribution is defined by a positive real value {\vt p}
+and positive integer {\vt n}.  These are taken term by term as the
+real and imaginary parts of {\it vector} when complex.  The imaginary
+value is truncated to form the integer.  When {\it vector} is real,
+the {\vt n} will use the default value 1.
+
+\index{chisq function}
+\item{\zzfmt{chisq}}\\
+The chi-square distribution is defined by a positive real
+degrees-of-freedom value.  This is taken from {\it vector}
+term-by-term.  If {\it vector} is real, the return is also real.  If
+{\it vector} is complex, the return is also complex, with separate
+results for the real and imaginary parts, obtained using the real and
+imaginary parts of {\it vector}.
+
+\index{erlang function}
+\item{\zzfmt{erlang}}\\
+The Erlang distribution is defined by two positive real values {\vt k}
+and {\vt mean}.  These are taken term by term as the real and
+imaginary parts of {\it vector} when complex.  When real, the {\vt
+mean} will use the default value 10.0.  The return is a real vector of
+the same length as {\it vector}.
+
+\index{exponential function}
+\item{\zzfmt{exponential}}\\
+The exponential distribution is defined by a positive real mean value. 
+This is taken from {\it vector} term-by-term.  If {\it vector} is
+real, the return is also real.  If {\it vector} is complex, the return
+is also complex, with separate results for the real and imaginary
+parts, obtained using the real and imaginary parts of {\it vector}.
+
+\index{ogauss function}
+\item{\zzfmt{ogauss}}\\
+This function returns a real vector which contains normally
+distributed random values.  The standard deviation and mean are set by
+the corresponding real and imaginary coefficients of {\it vector}
+term-by-term, and the mean is zero if {\it vector} is real.
+
+\index{poisson function}
+\item{\zzfmt{poisson}}\\
+The Poisson distribution is defined by a positive real mean value. 
+This is taken from {\it vector} term-by-term.  If {\it vector} is
+real, the return is also real.  If {\it vector} is complex, the return
+is also complex, with separate results for the real and imaginary
+parts, obtained using the real and imaginary parts of {\it vector}.
+
+\index{rnd function}
+\item{\zzfmt{rnd}}\\
+This function returns a vector which contains uniformly distributed
+random values between 0 and the corresponding element of {\it
+vector\/}.  If {\it vector} is complex then the return is also
+complex, with the real and imaginary values within the range set by
+the corresponding entries in {\it vector}.
+
+\index{tdist function}
+\item{\zzfmt{tdist}}\\
+The student's T distribution is defined by a positive real
+degrees-of-freedom value.  This is taken from {\it vector}
+term-by-term.  If {\it vector} is real, the return is also real.  If
+{\it vector} is complex, the return is also complex, with separate
+results for the real and imaginary parts, obtained using the real and
+imaginary parts of {\it vector}.
+\end{description}
 
 !!SEEALSO
 expressions
@@ -1821,6 +2693,64 @@ Measure Functions
     Compute the root mean square (RMS) value of <i>vec</i> over the
     range <i>start</i> to <i>end</i>. 
     </dl>
+!!LATEX measfuncs useriface.tex
+These functions are exported from the {\cb measure} command and provide
+the same measurement capability in post-processing.
+
+Each function takes three arguments.  The first argument is a
+simulation result vector.  The second two arguments are scalar values
+of the vector's scale that define the measurement range (effectively
+the trigger and target points).  These are clipped to the actual
+vector scale if out of range.  The return value is a real scalar.
+
+\begin{description}
+\index{mavg function}
+\item{\vt mavg}({\it vec\/}, {\it start\/}, {\it end\/})\\
+Compute the average value of {\it vec} over the range {\it start} to
+{\it end\/}.
+
+\index{mmax function}
+\item{\vt mmax}({\it vec\/}, {\it start\/}, {\it end\/})\\
+Find the maximum value of {\it vec} over the range {\it start} to {\it
+end\/}.
+
+\index{mmin function}
+\item{\vt mmin}({\it vec\/}, {\it start\/}, {\it end\/})\\
+Find the minimum value of {\it vec} over the range {\it start} to {\it
+end\/}.
+
+\index{mpp function}
+\item{\vt mpp}({\it vec\/}, {\it start\/}, {\it end\/})\\
+Find the peak to peak (maximum minus minimum) value of {\it vec} over
+the range {\it start} to {\it end\/}.
+
+\index{mpw function}
+\item{\vt mpw}({\it vec\/}, {\it start\/}, {\it end\/})\\
+Find the full-width half-maximum pulse width of {\it vec} over the
+range {\it start} to {\it end\/}.  The {\it start} and {\it end} are
+assumed to frame a single pulse.  The maximum and minimum values are
+found, and the first two crossings of the average of these values
+provide the result.
+
+\index{mrft function}
+\item{\vt mrft}({\it vec\/}, {\it start\/}, {\it end\/})\\
+Find the 10\% to 90\% rise or fall duration for an edge assumed to be
+framed by {\it start} and {\it end\/}.
+
+\index{mrft2 function}
+\item{\vt mrft2}({\it vec\/}, {\it start\/}, {\it end\/},
+ {\it firstval\/}, {\it secondval\/})\\
+This is identical to {\cb mrft}, except that two additional real
+valued variables provide the measurement thresholds rather than being
+fixed an 0.1 and 0.9.  This will find the rise or fall duration (time
+between threshold crossings) for an edge assumed to be framed by {\it
+start} and {\it end\/}.
+
+\index{mrms function}
+\item{\vt mrms}({\it vec\/}, {\it start\/}, {\it end\/})\\
+Compute the root mean square (RMS) value of {\it vec} over the range
+{\it start} to {\it end\/}.
+\end{description}
 
 !!SEEALSO
 expressions
@@ -2162,6 +3092,284 @@ Compatibility Functions
       <tt>out[i] = (sign of y[i])abs(x[i])</tt>
     </dl>
     </dl>
+!!LATEX hs_functions useriface.tex
+The following functions are available, for compatibility with HSPICE.
+
+These functions differ from other math functions in that they take
+multiple comma-separated arguments, Other math functions
+internally accept a single argument, but if there are multiple
+comma-separated terms, they will be collapsed into a single
+argument through evaluation of the comma operator
+\begin{quote}
+\vt a,b = (a + j*b)
+\end{quote}
+which yields a complex value.  This will not be true in the functions
+listed below -- the comma really means separate arguments in this
+case.
+
+The first group of functions are equivalent to the HSPICE Monte Carlo
+functions that are called in {\vt .param} lines in HSPICE.  In
+{\WRspice}, these are regular math functions.
+
+These functions will return mean values unless enabled.  They are
+enabled while in Monte Carlo analysis, or if the {\et random} variable
+is set, either from the command line or from a {\vt .options} line in
+a circuit file.
+
+\begin{description}
+\index{unif function}
+\item{\vt unif}({\it nom\/}, {\it rvar\/})\\
+Uniform relative random value function.
+
+This returns a vector the same length as {\it nom}, complex or real as
+{\it nom}.  If the length of {\it rvar} is less than the length of
+{\it nom}, {\it rvar} is extended by replicating the highest index
+value of {\it rvar}.
+
+If we are not running Monte Carlo analysis, and the {\et random}
+variable is not set, the return vector is the same as {\it nom} (no
+random values are generated).  Otherwise the return vector contains
+uniformly distributed random values, each in the range [{\it nom} -
+{\it nom\/}*{\it rvar\/}, {\it nom} + {\it nom\/}*{\it rvar\/}]
+term-by-term.
+
+Below, {\vt random} is a pseudo-function that returns a random number
+between -1 and 1.
+
+\begin{description}
+\item{If {\it nom} is complex and {\it var} is complex:}\\
+  {\vt out[i].real = nom[i].real*(1 + random()*rvar[i].real)}\\
+  {\vt out[i].imag = nom[i].imag*(1 + random()*rvar[i].imag)}
+
+\item{If {\it nom} is complex and {\it var} is real:}\\
+  {\vt out[i].real = nom[i].real*(1 + random()*rvar[i])}\\
+  {\vt out[i].imag = nom[i].imag*(1 + random()*rvar[i])}
+
+\item{If {\it nom} is real and {\it var} is complex:}\\
+  {\vt out[i] = nom[i].real*(1 + random()*rvar[i].real)}
+
+\item{If {\it nom} is real and {\it var} is real:}\\
+  {\vt out[i] = nom[i]*(1 + random()*rvar[i])}
+\end{description}
+
+\index{aunif function}
+\item{\vt aunif}({\it nom\/}, {\it var\/})\\
+Uniform absolute random value function.
+
+This returns a vector the same length as {\it nom\/}, complex or real
+as {\it nom\/}.  If the length of {\it var} is less than the length of
+{\it nom\/}, {\it var} is extended by replicating the highest index
+value of {\it var\/}.
+
+If we are not running Monte Carlo analysis, and the {\et random}
+variable is not set, the return vector is the same as {\it nom} (no
+random values are generated).  Otherwise The return vector contains
+uniformly distributed random values, each in the range [{\it nom} -
+{\it var\/}, {\it nom} + {\it var\/}] term-by-term.
+
+Below, {\vt random} is a pseudo-function that returns a random number
+between -1 and 1.
+
+\begin{description}
+\item{If {\it nom} is complex and {\it var} is complex:}\\
+  {\vt out[i].real = nom[i].real + random()*var[i].real}\\
+  {\vt out[i].imag = nom[i].imag + random()*var[i].imag}
+
+\item{If {\it nom} is complex and {\it var} is real:}\\
+  {\vt out[i].real = nom[i].real + random()*var[i]}\\
+  {\vt out[i].imag = nom[i].imag + random()*var[i]}
+
+\item{If {\it nom} is real and {\it var} is complex:}\\
+  {\vt out[i] = nom[i].real + random()*var[i].real}
+
+\item{If {\it nom} is real and {\it var} is real:}\\
+  {\vt out[i] = nom[i] + random()*var[i]}
+\end{description}
+
+\index{gauss function}
+\item{\vt gauss}({\it nom\/}, {\it rvar\/},
+  {\it sigma\/})\\
+Gaussian relative random number generator.
+
+This returns a vector the same length as {\it nom\/}, complex or real
+as {\it nom\/}.  If the length of {\it rvar} is less than the length
+of {\it nom\/}, {\it rvar} is extended by replicating the highest
+index value of {\it rvar\/}.  Only the zero'th (real) component of
+{\it sigma} is used.
+
+If fewer than three arguments are given, this reverts to the original
+{\WRspice} {\vt gauss} function (now called {\vt ogauss}).
+
+If we are not running Monte Carlo analysis, and the {\et random}
+variable is not set, the return vector is the same as {\it nom} (no
+random values are generated).  Otherwise the return vector contains
+gaussian-distributed random values.  The (scalar) {\it sigma} value
+gives the specified sigma of the {\it rvar} data, generally 1 or 3.
+
+Below, the pseudo-function {\vt gauss} returns a gaussian random
+number with zero mean and unit standard deviation.
+
+\begin{description}
+\item{If {\it nom} is complex and {\it var} is complex:}\\
+  {\vt out[i].real = nom[i].real*(1 + gauss()*rvar[i].real/sigma)}\\
+  {\vt out[i].imag = nom[i].imag*(1 + gauss()*rvar[i].imag/sigma)}
+
+\item{If {\it nom} is complex and {\it var} is real:}\\
+  {\vt out[i].real = nom[i].real*(1 + gauss()*rvar[i]/sigma)}\\
+  {\vt out[i].imag = nom[i].imag*(1 + gauss()*rvar[i]/sigma)}
+
+\item{If {\it nom} is real and {\it var} is complex:}\\
+  {\vt out[i] = nom[i].real*(1 + gauss()*rvar[i].real/sigma)}
+
+\item{If {\it nom} is real and {\it var} is real:}\\
+  {\vt out[i] = nom[i]*(1 + gauss()*rvar[i]/sigma)}
+\end{description}
+
+\index{agauss function}
+\item{\vt agauss}({\it nom\/}, {\it var\/},
+  {\it sigma\/})\\
+Gaussian absolute random number generator.
+
+This returns a vector the same length as {\it nom\/}, complex or real
+as {\it nom\/}.  If the length of {\it var} is less than the length of
+{\it nom\/}, {\it var} is extended by replicating the highest index
+value of {\it var\/}.  Only the zero'th (real) component of {\it
+sigma} is used.
+
+If we are not running Monte Carlo analysis, and the {\et random}
+variable is not set, the return vector is the same as {\it nom} (no
+random values are generated).  Otherwise the return vector contains
+gaussian-distributed random values.  The (scalar) {\it sigma} value
+gives the specified sigma of the var data, generally 1 or 3.
+
+Below, the pseudo-function {\vt gauss} returns a gaussian random
+number with zero mean and unit standard deviation.
+
+\begin{description}
+\item{If {\it nom} is complex and {\it var} is complex:}\\
+  {\vt out[i].real = nom[i].real + gauss()*var[i].real/sigma}\\
+  {\vt out[i].imag = nom[i].imag + gauss()*var[i].imag/sigma}
+
+\item{If {\it nom} is complex and {\it var} is real:}\\
+  {\vt out[i].real = nom[i].real + gauss()*var[i]/sigma}\\
+  {\vt out[i].imag = nom[i].imag + gauss()*var[i]/sigma}
+
+\item{If {\it nom} is real and {\it var} is complex:}\\
+  {\vt out[i] = nom[i].real + gauss()*var[i].real/sigma}
+
+\item{If {\it nom} is real and {\it var} is real:}\\
+  {\vt out[i] = nom[i] + gauss()*var[i]/sigma}
+\end{description}
+
+\index{limit function}
+\item{\vt limit}({\it nom\/}, {\it var\/})\\
+Random limit function.
+
+This returns a vector the same length as {\it nom\/}, complex or real
+as {\it nom\/}.  If the length of {\it var} is less than the length of
+{\it nom\/}, {\it var} is extended by replicating the highest index
+value of {\it var\/}.
+
+If we are not running Monte Carlo analysis, and the {\et random}
+variable is not set, the return vector is the same as {\it nom} (no
+random values are generated).  Otherwise the return vector contains
+either {\it nom} + {\it var} or {\it nom} - {\it var} determined
+randomly, term-by-term.
+
+\begin{description}
+\item{If {\it nom} is complex and {\it var} is complex:}\\
+  {\vt out[i].real = nom[i].real +/- var[i].real} randomly\\
+  {\vt out[i].imag = nom[i].imag +/- var[i].imag} randomly
+
+\item{If {\it nom} is complex and {\it var} is real:}\\
+  {\vt out[i].real = nom[i].real +/- var[i]} randomly\\
+  {\vt out[i].imag = nom[i].imag +/- var[i]} randomly
+
+\item{If {\it nom} is real and {\it var} is complex:}\\
+  {\vt out[i] = nom[i].real +/- var[i].real} randomly
+
+\item{If {\it nom} is real and {\it var} is real:}\\
+  {\vt out[i] = nom[i] +/- var[i]} randomly
+\end{description}
+\end{description}
+
+The remaining functions are for HSPICE compatibility, but are not
+exclusive to the HSPICE Monte Carlo analysis.  These also have
+multiple arguments.
+
+\begin{description}
+\index{pow function}
+\item{\vt pow}({\it x\/}, {\it y\/})\\
+This returns a real or complex vector the same length as {\it x\/}. 
+If the length of {\it y} is less than the length of {\it x\/}, {\it y}
+is extended by replicating the highest index value of {\it y\/}.
+
+This returns a vector containing $x^y$ computed using complex values,
+term-by-term, however if {\it y} is real, is is truncated to an
+integer value.
+
+\begin{description}
+\item{If {\it x} is complex and {\it y} is complex:}\\
+  {\vt out =} $x^y$ (same as $\symbol{94}$ operator)
+
+\item{If {\it x} is complex and {\it y} is real:}\\
+  {\vt out =} $x^(int)y$ (same as $\symbol{94}$ operator, but {\it y}
+    is truncated to integer)
+
+\item{If {\it x} is real and {\it y} is complex:}\\
+  {\vt out =} $x^y$ (same as $\symbol{94}$ operator)
+
+\item{If {\it x} is real and {\it y} is real:}\\
+  {\vt out =} $x^(int)y$ (same as $\symbol{94}$ operator, but {\it y}
+    is truncated to integer)
+\end{description}
+
+\index{pwr function}
+\item{\vt pwr}({\it x\/}, {\it y\/})\\
+This returns a real vector the same length as {\it x\/}.  If the
+length of {\it y} is less than the length of {\it x\/}, {\it y} is
+extended by replicating the highest index value of {\it y\/}.
+
+\begin{description}
+\item{If {\it x} is complex and {\it y} is complex:}\\
+  {\vt out[i] =} (sign of {\vt x[i].real})({\vt mag(x[i])} $\symbol{94}$
+  {\vt y[i].real})
+
+\item{If {\it x} is complex and {\it y} is real:}\\
+  {\vt out[i] =} (sign of {\vt x[i].real})({\vt mag(x[i])} $\symbol{94}$
+  {\vt y[i]})
+
+\item{If {\it x} is real and {\it y} is complex:}\\
+  {\vt out[i] =} (sign of {\vt x[i].real})({\vt abs(x[i])} $\symbol{94}$
+  {\vt y[i].real})
+
+\item{If {\it x} is real and {\it y} is real:}\\
+  {\vt out[i] =} (sign of {\vt x[i]})({\vt abs(x[i])} $\symbol{94}$ {\vt y[i]})
+\end{description}
+
+\index{sign function}
+\item{\vt sign}({\it x\/}, {\it y\/})\\
+This returns a vector the same length as {\it x\/}, complex or real as
+{\it x\/}.  If the length of {\it y} is less than the length of {\it
+x\/}, {\it y} is extended by replicating the highest index value of
+{\it y\/}.
+
+\begin{description}
+\item{If {\it x} is complex and {\it y} is complex:}\\
+  {\vt out[i].real =} (sign of {\vt y[i].real}){\vt abs(x[i].real)}\\
+  {\vt out[i].imag =} (sign of {\vt y[i].imag}){\vt abs(x[i].imag)}
+
+\item{If {\it x} is complex and {\it y} is real:}\\
+  {\vt out[i].real =} (sign of {\vt y[i]}){\vt abs(x[i].real)}\\
+  {\vt out[i].imag =} (sign of {\vt y[i]}){\vt abs(x[i].imag)}
+
+\item{If {\it x} is real and {\it y} is complex:}\\
+  {\vt out[i] =} (sign of {\vt y[i].real}){\vt abs(x[i])}
+
+\item{If {\it x} is real and {\it y} is real:}\\
+  {\vt out[i] =} (sign of {\vt y[i]}){\vt abs(x[i])}
+\end{description}
+\end{description}
 
 !!SEEALSO
 expressions
@@ -2242,6 +3450,69 @@ Expression Lists
     plot is never matched by a plot wildcard.  Note that you may not
     use binary operations on expressions involving wildcards - it is
     not obvious what "<tt>all + all</tt>" should denote, for instance.
+!!LATEX explists useriface.tex
+Some commands, such as {\cb print} and {\cb plot}, take expression
+lists as arguments.  In the simplest form, an expression list is a
+space-separated list of vectors.  In the general form, an expression
+list is a sequence of expressions involving vectors.  The parsing is
+context dependent, i.e., white space does not necessarily terminate an
+expression.  This leads to ambiguities.  For example, the command
+\begin{quote}
+{\vt plot v(2) -v(3)}
+\end{quote}
+can be interpreted as two vectors, or as a single vector representing
+the difference.  {\WRspice} will assume the latter.
+
+There are several ways to ensure that the former interpretation prevails.
+Double quotes may be used to separate the tokens, but white space must
+precede the leading quote mark:
+\begin{quote}
+\vt plot v(2) "-v(3)"
+\end{quote}
+Parentheses can also be used to enforce precedence, with white space
+ahead of the opening paren, as:
+\begin{quote}
+\vt plot v(2) (-v(3))
+\end{quote}
+In addition, the expression termination character, a semicolon,
+can be used.  This must be hidden from the shell, for example
+with a backslash:
+\begin{quote}
+\vt plot v(2)$\backslash$; -v(3)
+\end{quote}
+
+There are situations where the name of a vector is so strange that it
+can't be accessed in the usual way.  For example, if a list-type
+special variable is saved with the {\cb save} command, the plot may
+contain a vector with a name like ``{\vt @b1[ic,0]}''.  To access
+this vector, one can't simply type the name, since the name is an
+expression which will actually lead to an evaluation error.  One has
+to fool the expression parser into taking the name as a string.  This
+will happen if the name is not the lead in a token and the name is
+double quoted.  If the name is the leading part of a token, it should
+be backslash-double-double quoted.
+
+To use the double quotes to enforce string interpretation, one should
+have, for example,
+\begin{quote}
+{\vt plot v(2) $\backslash$""@b1[ic,0]"$\backslash$"}
+\end{quote}
+The extra set of quotes is needed only if the string is at the start
+of a token, thus
+\begin{quote}
+{\vt plot 2*"@b1[ic,0]"}
+\end{quote}
+is ok.  This may be a bit confusing, but this feature is seldom
+used, and a bit of experimentation will illustrate the behavior.
+
+These commands can accept the {\it plotname\/}.{\it vecname}
+notation, where either field may be the wildcard ``{\vt all}''.  If
+the plotname is {\vt all}, matching vectors from all plots are
+specified, and if the vector name is {\vt all}, all vectors in the
+specified plots are referenced.  The {\vt constants} plot is never
+matched by a plot wildcard.  Note that you may not use binary
+operations on expressions involving wildcards - it is not obvious what
+``{\vt all + all}'' should denote, for instance.
 
 !! useriface.tex 041611
 !!KEYWORD
@@ -2443,6 +3714,184 @@ Set and Let
     parsing, the shell variables are evaluated, and their values put
     back into the expression as constants.  Then the expression is
     evaluated as a vector expression. 
+!!LATEX setandlet useriface.tex
+Novice {\WRspice} users may be confused by the different
+interpretations of shell variables and vectors.  Any variable can be
+defined with the {\cb set} command, and undefined with {\cb unset}. 
+If defined, the value of the variable is the string, if given.  For
+example, if
+\begin{quote}\vt
+set a = 10*2
+\end{quote}
+is entered, the value of {\vt a} (obtained as {\vt \$a}) is the string
+``{\vt 10*2}'' and {\it not} the integer 20.
+
+Some internally used variables have boolean values, such as 
+\begin{quote}\vt
+set unixcom
+\end{quote}
+which if set causes certain modes or functions to be active.
+
+Vectors, however, always have numeric values, and can be created with
+{\cb let} and {\cb compose}, and deleted with {\cb unlet}.  If one
+enters
+\begin{quote}\vt
+let a = 10*2, {\rm or more simply}\\
+a = 10*2
+\end{quote}
+the value of the vector {\vt a} is {\vt 20}.  Note that the ``{\vt let}''
+is generally optional when assigning vectors.
+
+At the risk of adding confusion, it should be noted that in recent
+{\WRspice} releases, the {\cb set} command can also be used to assign
+values to vectors.  The syntax
+
+\begin{quote}
+{\vt set \&}{\it vector} {\vt =} {\it value}
+\end{quote}
+ 
+is equivalent to
+ 
+\begin{quote}
+{\vt let} {\it vector} {\vt =} {\it value}
+\end{quote}
+
+Vectors can be set to shell variables, in which case they take on
+the interpreted numerical values.  For example,
+\begin{quote}\vt
+set a=10*2\\
+b = \$a
+\end{quote}
+would assign the string {\vt 10*2} to the shell variable {\vt a}, but the
+vector {\vt b} would contain the value {\vt 20}.
+
+The inputs to most commands are vectors, however some commands,
+such as {\cb echo}, substitute for shell variables.  For example,
+\begin{quote}\vt
+set a = "foo"\\
+set b = "bar"\\
+echo \$a\$b
+\end{quote}
+would print ``{\vt foobar}''.
+
+Shell variables are expanded by {\cb echo}, and in {\WRspice} input when
+sourced.  If the value of a vector is needed in shell expansion,
+then the special prefix {\vt \$\&} should be added.  This tells the
+shell interpreter that the following symbol is a vector, to be
+replaced by its value.  For example,
+\begin{quote}\vt\rr
+let a = 2.0e-2\\
+echo \$\&a\\
+\end{quote}
+will print {\vt 2.00000e-2}.  However
+\begin{quote}\vt\rr
+let a = 2.0e-2\\
+echo \$a\\
+\end{quote}
+would give an error message (unless {\vt a} is also a shell variable),
+and
+\begin{quote}\vt
+let a = 2.0e-2\\
+echo a
+\end{quote}
+would print ``{\vt a}''.
+
+Double quotes will cause multiple tokens to be taken as one, for
+example
+\begin{quote}\vt
+set a = "a string"
+\end{quote}
+will set {\vt a} accordingly, whereas
+\begin{quote}\vt
+set a = a string
+\end{quote}
+will set shell variable {\vt a} to ``{\vt a}'' and shell variable {\vt
+string} to boolean true.
+
+Single quotes do about the same thing, but suppress shell variable
+expansion.  For example:
+\begin{quote}\vt
+set a = foo\\
+set b = bar\\
+echo \$a \$b
+\end{quote}
+and
+\begin{quote}\vt
+set a = foo\\
+set b = bar\\
+echo "\$a \$b"
+\end{quote}
+would print ``{\vt foo bar}'', whereas
+\begin{quote}\vt
+set a = foo\\
+set b = bar\\
+echo '\$a \$b'
+\end{quote}
+would print ``{\vt \$a \$b}''.
+
+In the present version, {\vt \$} can not be nested.  For example,
+\begin{quote}\vt
+set a = foo\\
+set b = bar\\
+set c = '\$a\$b'\\
+echo \$c
+\end{quote}
+prints ``{\vt \$a\$b}'', not ``{\vt foobar}''.  However,
+\begin{quote}\vt
+set a = foo\\
+set b = bar\\
+set c = \$a\$b\\
+echo \$c
+\end{quote}
+does print ``{\vt foobar}'' (the value of {\vt c}).
+
+Shell variables that are lists are referenced with zero-based index,
+for example
+\begin{quote}\vt
+set a = ( aa bb cc )\\
+echo \$a[1]
+\end{quote}
+prints ``{\vt bb}''.
+
+Actually, what can be in the brackets is {\vt [{\it lo\/}-{\it hi\/}]},
+where {\it lo\/} defaults to 0 and {\it hi\/} defaults to the length - 1. 
+If {\it lo\/} $>$ {\it hi\/}, the list is reversed.
+
+If the reference is to a vector, as in
+\begin{quote}\vt
+compose a values .1 .2 .3\\
+echo \$\&a[1]
+\end{quote}
+the index is also zero-based, so ``{\vt 2.0000e-1}'' is printed.
+
+The {\vt []} subscripting is interpreted a little differently by the
+shell and by the vector parser.  If a variable starts with {\vt \$},
+as in {\vt \$\&value[]}, the {\vt []} is interpreted by the shell
+parser.  In this case, the terms inside {\vt []} must be interpreted
+as shell variables, with the (optional) {\it low\/}-{\it high}
+notation.  In a vector expression, i.~e.~, one using {\vt value[]},
+the terms inside {\vt []} will be interpreted as vector expressions,
+with the optional {\it low\/},{\it high} notation.  Thus,
+\begin{quote}\vt
+if (value[index] = 0)
+\end{quote}
+is perfectly legal for vectors {\vt value} and {\vt index}.  Also,
+equivalently,
+\begin{quote}\vt
+if (\$\&value[\$\&index] = 0)
+\end{quote}
+is also ok, though not as efficient.  However
+\begin{quote}\vt
+if (\$\&value1[index] = 0)
+\end{quote}
+is an error, as the shell parser does not know that {\vt index} is a
+vector.
+
+Shell variables can be used freely in vector expressions, however
+one must keep in mind how the variables are interpreted.  During
+parsing, the shell variables are evaluated, and their values put
+back into the expression as constants.  Then the expression is
+evaluated as a vector expression. 
 
 !!SEEALSO
 expressions

@@ -1,0 +1,44 @@
+% WRspice Manual file: utilities.tex
+
+\chapter{Utility Programs}
+
+<<utilities spMain.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{The {\vt csvtoraw} Utility: CSV to Rawfile Conversion}
+\index{csvtoraw program}
+
+<<csvtoraw spMain.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{The {\vt mmjco} Utility: Tunnel Junction Model Calculator}
+\index{mmjco program}
+\label{mmjco}
+
+<<mmjco spMain.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{The {\vt multidec} Utility: Coupled Lossy Transmission Lines}
+\index{multidec program}
+
+<<multidec spMain.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{The {\vt printtoraw} Utility: Print to Rawfile Conversion}
+\index{printtoraw program}
+
+<<printtoraw spMain.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{The {\vt proc2mod} Utility: BSIM1 Model Generation}
+\index{proc2mod program}
+
+<<proc2mod spMain.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{The {\vt wrspiced} Daemon: Remote SPICE Controller}
+\label{wrspiced}
+\index{wrspiced program}
+
+<<wrspiced spMain.hlp>>
+

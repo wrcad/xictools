@@ -70,7 +70,46 @@ Variables
     href="unset">unset</a>, and may be substituted in a command line
     with the $<i>varname</i> notation.  A vector is a numerical object
     that can be manipulated algebraically, printed and plotted, etc.
+!!LATEX variables variables.tex
+Shell variables can be set from the shell with the {\cb set} command. 
+Equivalently, most of the variables that have internal meaning to
+{\WRspice} can be set from variaous panels available in the {\cb
+Tools} menu of the {\cb Tool Control} window.  These are the {\cb Plot
+Options}, {\cb Plot Colors}, {\cb Shell Options}, {\cb Simulation
+Options}, {\cb Command Options} and {\cb Debug Options} panels.  The
+{\cb Variables} panel from the {\cb Tools} menu will list the
+variables currently set, as will giving the {\cb set} command without
+arguments.
 
+In addition, shell variables are set which correspond to definitions
+supplied on the {\vt .options} line of the current circuit, and there
+are additional shell variables which are set automatically in accord
+with the current plot.  In the variable listings, a `{\vt $+$}' symbol
+is prepended to variables defined from a {\vt .options} line in the
+current circuit, and a `{\vt $*$}' symbol is prepended to those
+variables defined for the current plot.  These variable definitions
+will change as the current circuit and current plot change.  Some
+variables are read-only and may not be changed by the user, though
+this is not indicated in the listing.
+
+Before a simulation starts, the options from the {\vt .options} line
+of the current circuit are merged with any variables of the same name
+that have been set using the shell.  The default result of the merge
+is that options that are booleans will be set if set in either case,
+and those that take values will assume the value set through the shell
+if conflicting definitions are given.  The merging behavior can be
+altered by the user, as described in the section listing circuit
+options (\ref{options}).  In general, variables set in the {\vt
+.options} line are available for expansion in \${\it varname}
+references, but do not otherwise affect the shell.
+
+While any variable may be set, there are many shell variables that
+have special meaning to {\WRspice}, which will be described.  Note the
+difference between a variable and a vector --- a variable is
+manipulated with the commands {\cb set} and {\cb unset}, and may be
+substituted in a command line with the \${\it varname} notation.  A
+vector is a numerical object that can be manipulated algebraically,
+printed and plotted, etc.
  
 !!SUBTOPICS
 shell_vars

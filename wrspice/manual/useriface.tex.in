@@ -1,0 +1,755 @@
+% WRspice Manual file: useriface.tex
+
+\chapter{The {\WRspice} User Interface}
+
+%S-----------------------------------------------------------------------------
+\section{Starting {\WRspice}}
+\index{command line options|(}
+
+<<arguments spCmdLine.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{Environment Variables}
+\index{environment variables|(}
+
+<<environment spSetup.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{Sparse Matrix Package}
+\index{sparse matrix package}
+\index{KLU plug-in}
+
+<<sparse spMain.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{Initialization Files}
+\index{initialization files}
+\index{startup file}
+\label{startup}
+
+<<startup_files spSetup.hlp>>
+
+%SU-------------------------------------
+\subsection{The {\vt tbsetup} Command}
+
+\index{startup file}
+\index{tbupdate command}
+\index{Update Tools button}
+\index{tbsetup command}
+
+<<tbsetup spSetup.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{Graphical Interface}
+\index{DISPLAY environment variable}
+
+<<graphics spToolbar.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{The Tool Control Window}
+\label{tcwin}
+
+<<toolbar spToolbar.hlp>>
+
+%SU-------------------------------------
+\section{Text Entry Windows}
+\index{text entry windows}
+
+<<textentry TextEditor.hlp>>
+
+\subsection{Single-Line Text Entry}
+
+<<onelineentry TextEditor.hlp>>
+
+\subsection{Selections and Clipboards}
+\label{clipboard}
+
+<<clipboard TextEditor.hlp>>
+
+\subsection{GTK Text Input Key Bindings}
+\label{textkeybind}
+
+<<keybind TextEditor.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{The File Manager}
+\label{filemgr}
+\index{file manager}
+
+<<filesel FileSel.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{The Text Editor}
+\label{textedit}
+\index{text editor}
+
+<<xeditor TextEditor.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{The Mail Client}
+\label{mailclient}
+\index{mail window}
+
+<<mailclient TextEditor.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{The Tools Menu Tools and Panels}
+
+The sub-sections describe the tools and panels that are obtained from
+buttons in the {\cb Tools} menu of the {\cb Tool Control} windows. 
+These provide a graphical interface to list data and manipulate
+{\WRspice}, supplementing the traditional command line interface.
+
+%SU-------------------------------------
+\subsection{The Fonts Tool}
+\label{fontspanel}
+\index{Fonts tool}
+
+<<fontspanel spToolbar.hlp>>
+
+%SU-------------------------------------
+\subsection{The Files Tool}
+\label{filespanel}
+\index{Files tool}
+
+<<filespanel spToolbar.hlp>>
+
+%SU-------------------------------------
+\subsection{The Circuits Tool}
+\label{circuitspanel}
+\index{Circuits tool}
+
+<<circuitspanel spToolbar.hlp>>
+
+%SU-------------------------------------
+\subsection{The Plots Tool}
+\label{plotspanel}
+\index{Plots tool}
+
+<<plotspanel spToolbar.hlp>>
+
+%SU-------------------------------------
+\subsection{Plot Options Panel}
+\label{plotopts}
+\index{Plot Options panel}
+
+<<plotopts spToolbar.hlp>>
+
+%SU-------------------------------------
+\subsection{Plot Colors Panel}
+\label{colors}
+\index{Plot Colors panel}
+
+<<colors spToolbar.hlp>>
+
+%SU-------------------------------------
+\subsection{The Vectors Tool}
+\label{vectorspanel}
+\index{Vectors tool}
+
+<<vectorspanel spToolbar.hlp>>
+
+%SU-------------------------------------
+\subsection{The Variables Tool}
+\label{variablespanel}
+\index{Variables tool}
+
+<<variablespanel spToolbar.hlp>>
+
+%SU-------------------------------------
+\subsection{Shell Options Panel}
+\label{shellopts}
+\index{Shell Options panel}
+
+<<shellopts spToolbar.hlp>>
+
+%SU-------------------------------------
+\subsection{Simulation Options Panel}
+\label{simopts}
+\index{Simulation Options panel}
+
+<<simopts spToolbar.hlp>>
+
+%SU-------------------------------------
+\subsection{Command Options Panel}
+\label{cmdopts}
+\index{Command Options panel}
+
+<<cmdopts spToolbar.hlp>>
+
+%SU-------------------------------------
+\subsection{The Runops Tool}
+\label{runoppanel}
+\index{Runops tool}
+
+<<runoppanel spToolbar.hlp>>
+
+%SU-------------------------------------
+\subsection{Debug Options}
+\label{dbgopts}
+\index{Debug Options panel}
+
+<<dbgopts spToolbar.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{The Plot Panel}
+\label{plotpanel}
+\index{plot window}
+\index{plot panel}
+
+<<plotpanel PlotPanel.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{The Mplot Panel}
+\index{mplot window}
+
+<<mplotpanel PlotPanel.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{The Print Control Panel}
+\index{print panel}
+
+<<hcopypanel Hardcopy.hlp>>
+
+%SU-------------------------------------
+\subsection{Print Drivers}
+\label{printdrivers}
+
+<<hcopyfmt Hardcopy.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{The {\WRspice} Help System}
+\index{help system}
+\label{helpsys}
+
+<<helpsys HelpSys.hlp>>
+
+%SU-------------------------------------
+\subsection{{\XicTools} Update}
+\index{updating {\XicTools}}
+\label{update}
+
+<<update HelpSys.hlp>>
+
+%SU-------------------------------------
+\subsection{The HTML Viewer}
+\index{help viewer!back}
+\index{help viewer!forward}
+\index{help viewer!stop}
+
+<<helpview HelpSys.hlp>>
+
+%SU-------------------------------------
+\subsection{The Help Database}
+\index{help database}
+
+<<helpdb HelpSys.hlp>>
+
+%SU-------------------------------------
+\subsection{Help System Forms Processing}
+
+<<helpforms HelpSys.hlp>>
+
+%SU-------------------------------------
+\subsection{Help System Initialization File}
+
+<<helpinit HelpSys.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{The {\WRspice} Shell}
+\label{shell}
+\index{shell}
+
+<<spshell spShell.hlp>>
+
+%SU-------------------------------------
+\subsection{Command Line Editing}
+\index{command editing}
+
+<<editing spShell.hlp>>
+
+%SU-------------------------------------
+\subsection{Command Completion}
+\index{command completion}
+
+<<ccom spShell.hlp>>
+
+%SU-------------------------------------
+\subsection{History Substitution}
+\index{history substitution}
+
+<<historysub spShell.hlp>>
+
+%SU-------------------------------------
+\subsection{Alias Substitution}
+\index{alias substitution}
+
+<<aliases spShell.hlp>>
+ 
+%SU-------------------------------------
+\subsection{Global Substitution}
+\index{global substitution}
+
+<<glob spShell.hlp>>
+
+%SU-------------------------------------
+\subsection{Quoting}
+\index{quoting}
+
+<<quoting spShell.hl>>
+
+%SU-------------------------------------
+\subsection{I/O Redirection}
+\index{io redirection}
+
+<<io spShell.hlp>>
+
+%SU-------------------------------------
+\subsection{Semicolon Termination}
+\index{semicolon termination}
+
+<<semi spShell.hlp>>
+
+%SU-------------------------------------
+\subsection{Variables and Variable Substitution}
+\label{variablesub}
+\index{shell variables}
+\index{variables, shell}
+\index{Variables tool}
+
+<<variablesub spShell.hlp>>
+
+%SU-------------------------------------
+\subsection{Commands and Scripts}
+\index{command interpretation}
+\index{command scripts}
+\index{scripts}
+
+<<script spShell.hlp>>
+
+%SU-------------------------------------
+\subsection{The FIFO}
+\label{fifo}
+\index{fifo}
+\index{named pipe}
+\index{wrsfifo}
+
+<<fifo spShell.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{Plots, Vectors and Expressions}
+\label{vectors}
+\index{plot description}
+\index{vector description}
+
+%SU-------------------------------------
+\subsection{Plots and Vectors}
+
+<<plotvec spExpressions.hlp>>
+
+%SU-------------------------------------
+\subsubsection{The {\vt constants} Plot}
+\index{constants plot}
+
+<<constants spExpressions.hlp>>
+
+%SU-------------------------------------
+\subsection{Vector Characteristics}
+
+\index{multidimensional vectors}
+\index{dimensions, vectors}
+\index{vectors, dimensions}
+
+% spExpressions.hlp:expressions resumed
+
+Vectors posses a dimensionality.  A scalar is a vector of the lowest
+dimensionality.  Most vectors are one-dimensional lists of numbers. 
+Certain types of analysis produce multidimensional vectors, which are
+analogous to arrays.  This dimensionality is indicated when the
+vectors are listed with the {\cb display} command or the {\cb let}
+command without arguments.  Plotting a multidimensional vector will
+produce a family of traces.  Elements and sub-dimensional vectors are
+specified with multiple square brackets, with the bracket on the right
+having the lowest dimensionality.
+
+For example, one might issue the following command:
+\begin{quote}
+{\vt .ac dec 10 1Hz 1Mhz dc v1 0 2 .1 v2 4.5 5.5 .25}
+\end{quote}
+which will perform an ac analysis with the dc sources {\vt v1} and
+{\vt v2} stepped through the ranges 0--2 step .1 for {\vt v1},
+4.5--5.5 step .25 for {\vt v2}.  The resulting output vectors will
+have dimensions [5,21,61], i.e., 5 values for {\vt v2}, 21 for {\vt
+v1}, and 61 for the ac analysis.  Typing ``{\vt plot v(1)}'' (for
+example) would plot all 21*5 analyses on the same scale (this would
+not be too useful).  However, one can plot subranges by entering, for
+example, ``{\vt plot v(1)[1]}'' which would plot the results for {\vt
+v2} = 4.75, or ``{\vt plot v(1)[1][2]}'' for {\vt v2} = 4.75, {\vt v1}
+= .2, etc.  Range specifications also work, for example ``{\vt plot
+v(1)[2][0,2]}'' plots the values for {\vt v2} = 5, {\vt v1} = 0, .1,
+.2.  The memory space required to hold the multidimensional plot data
+can grow quite large, so one should be reasonable.
+
+\index{vector indexing}
+Vectors have an indexing that begins with 0, and an index, or range of
+indices, can be specified in square brackets following the vector
+name, for each dimension.  The notation {\vt [{\it lower\/},{\it
+upper\/}]}, where {\it lower} and {\it upper} are integers, denotes
+the range of elements between {\it lower} and {\it upper}.  The
+notation {\vt [{\it num\/}]} denotes the {\it num\/}'th element.  If
+{\it upper} is less than {\it lower}, the order of the elements is
+reversed.
+
+Vectors typically have defined units.  The units are carried through a
+computation, and simplified when the result is generated.  Presently,
+the system can not handle fractional powers.  The units of a vector
+can be set with the {\cb settype} command.
+
+%SU-------------------------------------
+\subsection{Vector Creation and Assignment}
+
+Vectors can be created with the {\cb let} and {\cb compose} commands. 
+
+\index{let command}
+Using the {\cb let} command, a vector may be assigned the values of a
+vector already defined, or a floating-point number (a real scalar), or
+a comma separated pair of numbers (a complex scalar).  A number may be
+written in any format acceptable to SPICE2, such as {\vt 14.6MEG} or
+{\vt -1.231e-4}.  Note that one can use either scientific notation or
+one of the abbreviations like MEG or G (case insensitive), but not
+both.  As with SPICE2, a number may have trailing alphabetic
+characters after it, which can indicate the units.  If the vector
+being assigned to does not exist, it will be created.
+
+The {\cb compose} command can also be used to create vectors, and is
+useful for creating vectors with multiple points that follow some
+relationship, such as linear or logarithmic.
+
+Newly-created vectors are added to the current plot, unless a {\it
+plotname} field is specified as part of the vector reference name. 
+For example, entering
+\begin{quote}
+{\vt let constants.myvec = 2}
+\end{quote}
+will assign a vector {\vt myvec} in the {\vt constants} plot the value
+2.0.  Entering
+\begin{quote}
+{\vt let myvec = constants.const\_e}
+\end{quote}
+will assign a vector {\vt myvec} in the current plot the values of the
+vector {\vt const\_e} in the {\vt constants} plot.  The {\cb let} command
+without arguments will print a listing of vectors in the current plot.
+
+Recent {\WRspice} releases also allow vectors to be assigned a value
+with the {\cb set} command.  The syntax in this case is
+ 
+\begin{quote}
+{\vt set \&}{\it vector} {\vt =} {\it value}
+\end{quote}
+ 
+which is equivalent to
+ 
+\begin{quote}
+{\vt let} {\it vector} {\vt =} {\it value}
+\end{quote}
+ 
+When entering this form from the {\WRspice} command line, the `{\vt
+\&}' character must be hidden from the shell, perhaps most
+conveniently be preceding it with a backslash.  The {\it value} must
+be numeric, and a value must be given, unlike normal usage of the {\cb
+set} command which can set a variable as a boolean by omitting the
+right side of the assignment.
+
+%SU-------------------------------------
+\subsection{Analysis Vectors and Access Mapping}
+
+The vectors actually produced depend on the type of analysis, but the
+most common output is the node voltage.  Node voltages are denoted by
+vectors of the form {\vt v({\it N\/})}, where {\it N} is a name
+representing the node.  Although the notation looks like a function
+call, the construct actually refers to a vector, and may be used in
+expressions whenever a vector is syntactically expected.  Another
+common form is {\it name\/}{\vt \#branch}, which represents the
+``branch'' current through voltage sources and inductors.  The SPICE
+algorithm adds a term to the matrix for these elements, which
+represents the current flowing through the device.  As there is a
+specific matrix element for the current for these devices, the value
+is available as an output variable.  The {\it name} is the name of the
+voltage source or inductor.
+
+For compatibility with SPICE2, several mappings and equivalences are
+provided.  When referencing node voltages, one can reference a node by
+name (e.g.  {\vt v(6)} or {\vt v(input)}).  These are string names of
+the produced vectors.  In addition, one can use the SPICE2 form for
+the argument inside the parentheses of the node voltage construct. 
+This is {\vt (}{\it node1} [{\vt ,}{\it node2\/}]{\vt )}, where if
+both {\it node1} and {\it node2} are given, the vector represents the
+voltage difference between nodes {\it node1} and {\it node2}.  For
+example, {\vt v(1,2)} is equivalent to {\vt v(1) - v(2)}.  The {\vt
+v()} construct in the case of two arguments is like a function.
+
+Additionally, the construct {\vt i({\it name\/})} is internally mapped
+to {\it name\/}{\vt \#branch}, and the two notations can be used
+interchangeably.  The {\it name} is the name of a voltage source or
+inductor.
+
+Additional mappings familiar from SPICE2 are also recognized in
+{\WRspice}.  In addition to {\vt v} and {\vt i}, the following are
+recognized for node voltages.  These are most useful for complex
+vectors as are produced in ac analysis.
+
+\begin{description}
+\item{\vt vm}\\
+This computes the magnitude, by mapping to the {\vt mag} vector
+function.  The following forms are equivalent:
+\begin{quote}\vt
+vm(a) = mag(v(a))\\
+vm(a,b) = mag(v(a) - v(b))
+\end{quote}
+
+\item{\vt vp}\\
+This computes the phase, by mapping to the {\vt ph} vector
+function.  The following forms are equivalent:
+\begin{quote}\vt
+vp(a) = ph(v(a))\\
+vp(a,b) = ph(v(a) - v(b))
+\end{quote}
+
+\item{\vt vr}\\
+This computes the real part, by mapping to the {\vt re} vector
+function.  The following forms are equivalent:
+\begin{quote}\vt
+vr(a) = re(v(a))\\
+vr(a,b) = re(v(a) - v(b))
+\end{quote}
+
+\item{\vt vi}\\
+This computes the imaginary part, by mapping to the {\vt im} vector
+function.  The following forms are equivalent:
+\begin{quote}\vt
+vi(a) = im(v(a))\\
+vi(a,b) = im(v(a) - v(b))
+\end{quote}
+
+\item{\vt vdb}\\
+This computes the decibel value (20*log10), by mapping to the
+{\vt db} vector function.  The following forms are equivalent:
+\begin{quote}\vt
+vdb(a) = db(v(a))\\
+vdb(a,b) = db(v(a) - v(b))
+\end{quote}
+\end{description}
+
+Similar constructs are available for the current vectors of voltage
+sources and inductors.  In these constructs, the single argument is
+always the name of a ``branch'' device, either a voltage source or
+inductor.
+
+\begin{description}
+\item{\vt img}\\
+This computes the magnitude, by mapping to the {\vt mag} vector
+function.  The following forms are equivalent:
+\begin{quote}\vt
+img(vx) = mag(vx\#branch)
+\end{quote}
+Note that this name differs from the SPICE2 ``{\vt im}'' to avoid
+a clash with the {\vt im()} vector function in {\WRspice}.
+
+\item{\vt ip}\\
+This computes the phase, by mapping to the {\vt ph} vector
+function.  The following forms are equivalent:
+\begin{quote}\vt
+ip(vx) = ph(vx\#branch)
+\end{quote}
+
+\item{\vt ir}\\
+This computes the real part, by mapping to the {\vt re} vector
+function.  The following forms are equivalent:
+\begin{quote}\vt
+ir(vx) = re(vx\#branch)
+\end{quote}
+
+\item{\vt ii}\\
+This computes the imaginary part, by mapping to the {\vt im} vector
+function.  The following forms are equivalent:
+\begin{quote}\vt
+ii(vx) = im(vx\#branch)
+\end{quote}
+
+\item{\vt idb}\\
+This computes the decibel value (20*log10), by mapping to the
+{\vt db} vector function.  The following forms are equivalent:
+\begin{quote}\vt
+vdb(vx) = db(vx\#branch)
+\end{quote}
+\end{description}
+
+\index{p pseudo-function}
+There is one additional mapping available, {\vt p}({\it devname\/}),
+which returns the instantaneous power of a device {\it devname\/}. 
+This can be applied to any device that has a readable ``{\vt p}''
+parameter defined, which is true for most devices.  The {\cb show}
+command can be used to list available device parameters.  This is
+particularly useful for sources, as it returns the power supplied to
+the circuit.  For non-dissipative elements, it represents the stored
+power.
+
+This is a mapping to the special vector {\vt @}{\it devname\/}{\vt
+[p]} (see below).  Thus, the special vector data must be available for
+this form to be used successfully, meaning that in analysis, as with
+other special vectors representing device parameters, the vector must
+be explicitly saved with the {\cb save} command or in a {\vt .save}
+line.  However, if this form is used in a {\vt .measure} line, the
+needed vector will be saved automatically.  This is also true if the
+form is used in one of the ``runops'' as listed with the {\cb status}
+command.
+
+%SU-------------------------------------
+\subsection{Special Vectors}
+\label{specialvec}
+
+Most simply, vector names can be any alphanumeric word that starts
+with an alpha character.  Vector names may also be of the form {\it
+string\/}({\it something\/}), if the {\it string} is not the name of a
+built-in or user-defined function.
+
+\index{temper variable}
+There is one vector named ``{\vt temper}'' that is always available,
+though not saved in any plot.  This is the current temperature assumed
+by the program, in Celsius.
+
+In {\WRspice}, a vector name beginning with the `{\vt @}' symbol is a
+``special'' vector, and is considered a reference to an internal
+device or model parameter, or a circuit parameter.  If the variable
+{\et spec\_catchar} is set to a string consisting of a single
+punctuation character, then that character will identify a special
+vector, instead of `{\vt @}'.  The descriptions below use `{\vt @}',
+but in actuality this character can be respecified by the user.
+
+If the vector name is of the form {\vt @{\it name}[{\it param}]}, this
+denotes the parameter {\it param} of the device or model named {\it
+name}.  Of course, there must be a device or model with that name
+defined for the current circuit and {\it param} must be a valid
+parameter name for that device or model type.  See the documentation
+or use the {\cb show} command for a listing of the parameters
+available.
+
+Special vectors should be saved with the {\cb save} command or on a
+{\vt .save} line during analysis if a value is required at each
+analysis point.  Otherwise, only the current value is available, which
+is the value used at the final analysis point after analysis
+completes.
+
+The special vectors that correspond to device and model parameters in
+the current circuit can be assigned.  When a special vector is
+assigned, the effect is similar to the {\cb alter} command.  Actual
+assignment is deferred until the next analysis run of the current
+circuit, and assignment applies to that run only.  The assignment must
+be repeated if needed for additional runs.
+
+Other special vectors are read-only.
+
+If the vector name is of the form {\vt @}{\it param}, this refers to a
+parameter of the circuit with the name {\it param}.
+
+These are resolved in the following way.  First, a match to one of the
+``official'' options is sought.  These are the options listed in the
+table in the options description (\ref{options}).  Any of these will
+match, with the exceptions in the sub-tables listing batch mode and
+obsolete options.
+
+If this fails, parameters defined in the current circuit are searched
+for a matching name.  These are defined in {\vt .param} lines.
+
+Finally, the {\cb rusage} command (see \ref{rusage}) keywords are
+searched.  Any of these keywords will match.
+
+
+%SU-------------------------------------
+\subsection{Vector Expressions}
+\label{vecexpr}
+
+<<expressions spExpressions.hlp>>
+
+%SU-------------------------------------
+\subsection{Operators in Expressions}
+\index{operators}
+
+<<operators spExpressions.hlp>>
+
+%SU-------------------------------------
+\subsection{Math Functions}
+\index{math functions}
+
+<<mathfuncs spExpressions.hlp>>
+
+%SU-------------------------------------
+\subsection{Statistical Functions}
+\index{statistical functions}
+\label{statfuncs}
+
+<<statfuncs spExpressions.hlp>>
+
+%SU-------------------------------------
+\subsection{Measurement Functions}
+\index{measurement functions}
+\label{measfuncs}
+
+<<measfuncs spExpressions.hlp>>
+
+%SU-------------------------------------
+\subsection{HSPICE Compatibility Functions}
+\index{HSPICE functions}
+
+<<hs_functions spExpressions.hlp>>
+
+%SU-------------------------------------
+\subsection{Expression Lists}
+\index{expression list}
+
+<<explists spExpressions.hlp>>
+
+%SU-------------------------------------
+\subsection{Set and Let}
+\index{set and let}
+
+<<setandlet spExpressions.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{Batch Mode}
+\index{batch mode}
+\index{scripts}
+
+<<batchmode spMain.hlp>>
+ 
+%S-----------------------------------------------------------------------------
+\section{Loadable Device Modules}
+\label{loadable}
+\index{loadable device modules}
+
+<<loadable spMain.hlp>>
+
+%SU-------------------------------------
+\subsection{Support for AMDS/Verilog-A}
+
+<<veriloga spMain.hlp>>
+
+%S-----------------------------------------------------------------------------
+\section{The {\WRspice} Daemon and Remote SPICE Runs}
+\index{daemon, wrspiced}
+\index{wrspiced daemon}
+% not in help
+
+{\WRspice} can be accessed and run from a remote system for
+asynchronous simulation runs, for assistance in computationally
+intensive tasks such as Monte Carlo analysis, and as a simulator for
+the {\Xic} graphical editor.  This is made possible through a daemon
+(background) process which controls {\WRspice} on the remote
+machine.  The daemon has the executable name ``wrspiced'', and
+should be run as a root process on the remote machine.  Typically,
+this can be initiated in the system startup script, or manually.  Of
+course, the remote machine must have a valid {\WRspice} executable
+present.
+
+The {\vt wrspiced} program is described in \ref{wrspiced}.
+

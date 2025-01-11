@@ -347,6 +347,567 @@ Shell Option Variables
     plot windows and some others will always be shown on top of other
     windows.
     </dl>
+!!LATEX shell_vars variables.tex
+These variables control behavior of the {\WRspice} shell.  Most of
+these variables can be set indirectly from the {\cb Shell Options}
+tool from the {\cb Shell} button in the {\cb Tools} menu of the {\cb
+Tool Control} window.
+
+\begin{description}
+\index{argc variable}
+\item{\et argc}\\
+This read-only variable is set to the number of arguments used to
+invoke the currently executing script, including the script name. 
+This can be referenced from within scripts only.
+
+\index{argv variable}
+\item{\et argv}\\
+This is a read-only list of tokens from the invoking line of the
+currently executing script, including the script name.  This can be
+referred to within scripts only.
+
+\index{cktvars variable}
+\item{\et cktvars}\\
+When this boolean variable is set with the {\cb set} command or the
+{\cb Shell} tool ({\it not} in a SPICE {\vt .options} line), variables
+set in the {\vt .options} line of the current circuit will be treated
+the same as variables set with the {\cb set} command.
+
+With this variable unset, the legacy behavior is maintained, i.e.,
+variables set in {\vt .options} will work in variable substitution,
+but will be ignored in most commands.
+
+In releases prior to 2.2.61, when a variable is set in a {\vt
+.options} line, it becomes visible almost like it was set with the
+{\cb set} command, when the circuit containing the {\vt .options} line
+is the current circuit.  In the variables listing ({\cb set} command
+without arguments or the {\cb Variables} tool), these have a `+' in
+the first column.  However, they are not part of the normal variable
+database, and they only ``work'' in special cases.  For example, they
+will work in variable substitution, but won't affect the defaults in
+most commands, such as the {\cb plot} command.  If the same variable
+is also set with {\cb set}, the {\cb set} definition will have
+precedence.  The variables set with {\vt .options} can't be unset,
+except by changing the current circuit.
+
+This was confusing to the user.  If a {\vt .options} line contains an
+assignment for a plot-specific variable (for example), the variable
+will appear to be active when listed, but it will have no effect on
+the {\cb plot} command.
+
+It can be argued that making the circuit variables behave the same as
+those set with the {\cb set} command would be an improvement.  In this
+case, variables listed in the {\cb set} or {\cb Variables} tool
+listing will always have effect, and one can set any variable in the
+{\vt .options} line, and have it always ``work''.
+
+On the other hand, circuit variables can't be unset, so a variable in
+the current circuit would always have effect, desired or not.  Also,
+changing present behavior would possibly adversely affect existing
+users who expect the current behavior, and this change might break
+existing scripts.
+
+The {\et cktvars} variable gives the user control over how to handle
+the circuit variables.
+
+\index{height variable}
+\item{\et height}\\
+This variable sets the number of lines assumed in a page to use when
+printing output to a file.  It will also be used for standard output
+if for some reason {\WRspice} cannot determine the size of the
+terminal window (or has no terminal window).  If not set, 66 lines
+will be assumed.
+
+\index{history variable}
+\item{\et history}\\
+The {\et history} variable sets the number of commands saved in
+the history list.  The default is 1000.
+
+\index{ignoreeof variable}
+\item{\et ignoreeof}\\
+If this boolean variable is set, the {\vt EOF} character ({\kb
+Ctrl-D}) is ignored in file input.  If not set, an {\vt EOF}
+character will terminate the input.  When typed as keyboard input,
+{\kb Ctrl-D} prints a list of completion matches, if command
+completion is in use.
+
+\index{noaskquit variable}
+\item{\et noaskquit}\\
+If this variable is set, {\WRspice} will skip the exit confirmation
+prompting it there are simulations in progress or unsaved data when a
+{\cb quit} command has been given.
+
+\index{nocc variable}
+\item{\et nocc}\\
+If this boolean variable is set, command completion will be disabled.
+
+\index{noclobber variable}
+\item{\et noclobber}\\
+If this boolean variable is set, files will not be overwritten with
+input/output redirection.
+
+\index{noedit variable}
+\item{\et noedit}\\
+By default, command line editing is enabled in interactive mode, which
+means that {\WRspice} takes control of the low level functions of the
+terminal window.  This can be defeated if {\et noedit} is set.  If the
+terminal window doesn't work properly with the editor, it is
+recommended that ``{\vt set noedit}'' appear in the {\vt .wrspiceinit}
+file.  Note that the command completion character is {\kb Tab} when
+editing is on, and {\kb Esc} otherwise.
+
+This variable is ignored under Microsoft Windows.  The editing is
+always enabled in that case.
+
+\index{noerrwin variable}
+\item{\et noerrwin}\\
+In interactive mode, error messages are generally printed in a
+separate pop-up window.  When this variable is set, error messages
+will appear in the console window instead.  This variable is
+automatically set when {\WRspice} is started in JSPICE3 emulation mode
+({\vt -j} command line option given).
+
+\index{noglob variable}
+\item{\et noglob}\\
+If this boolean variable is set, global pattern matching using the
+characters `{\vt *}', `{\vt ?}', `{\vt [}', and `{\vt ]}' is disabled. 
+This variable is set by default, since `{\vt *}' is often used in
+algebraic expressions.
+
+\index{nomoremode variable}
+\item{\et nomoremode}\\
+If {\et nomoremode} is not set, whenever a large amount of text is
+being printed to the screen (e.g., from the {\cb print} or {\cb
+asciiplot} commands), the output will be stopped every screenful and
+will continue when a character is typed.  The following characters
+have special meaning:
+\begin{quote}
+\begin{tabular}{ll}
+\vt q & Discard the rest of the output\\
+\vt c & Print the rest of the output without pausing\\
+\vt ? & Print a help message\\
+\end{tabular}
+\end{quote}
+If {\et nomoremode} is set, all output will be printed without pauses.
+
+\index{nonomatch variable}
+\item{\et nonomatch}\\
+If set, and {\et noglob} is unset and a global expression cannot be
+matched, the global characters will be used literally.  If not set,
+lack of a match produces an error.
+
+\index{nosort variable}
+\item{\et nosort}\\
+If this boolean is set, lists of output are not sorted alphabetically.
+
+\index{prompt variable}
+\item{\et prompt}\\
+This variable contains a string to use as the command prompt.  In this
+string, the `!' character is replaced by the event number, and ``{\vt
+-p}'' is replaced by the current directory.  If the program is reading
+lines which form a part of a control block, the prompt becomes a set
+of `$>$' characters, one for each level of control structure.  The
+default prompt is ``{\vt \$program !  $->$ }''.
+
+\index{revertmode variable}
+\item{\et revertmode}\\
+This sets up the strategy to revert keyboard focus to the terminal
+window when a new window pops up, stealing focus.  This is highly
+dependent on operating system/window manager.  The default auto mode
+makes a guess based on the operating system.  The variable can be set
+to one of the integer values below explicitly.
+\begin{quote}
+\begin{tabular}{ll}
+0 & default ``auto'' mode.\\
+1 & off, don't attempt to revert focus.\\
+2 & assume older linux, e.g. CentOS 6 and Gnome.\\
+3 & assume newish linux, e.g., CentOS 7 and KDE.\\
+4 & Apple Mac.\\
+5 & Microsoft Windows.\\
+\end{tabular}
+\end{quote}
+
+\index{sourcepath variable}
+\item{\et sourcepath}\\
+This list variable contains directories to search for command scripts
+or input files.  A list variable in {\WRspice} takes the form of a
+list of words, surrounded by space-separated parentheses, for example
+\begin{quote}\vt
+( /path/to/dir1 /path/to/dir2 "/usr/bill/my files" )
+\end{quote}
+If a directory path contains white space, it should be quoted, as
+above.
+
+\index{unixcom variable}
+\item{\et unixcom}\\
+When this boolean is set, {\WRspice} will attempt to execute unrecognized
+commands as operating system commands.
+
+\item{\et width}\\
+This variable sets the number of columns assumed in printed output,
+when output is being directed to a file.  This will also be used for
+standard output if for some reason {\WRspice} cannot determine the
+width of the terminal window (or has no terminal window).  If not set,
+80 columns will be assumed.
+
+\item{\et wmfocusfix}\\
+When {\WRspice} starts in interactive graphical mode from a terminal
+window, the tool control window will appear above other windows, and
+the keyboard focus should stay with the terminal window.  Similarly,
+when the user types a command such as a plot command that brings up
+another window, the new window should appear above existing windows,
+and the terminal window should retain the keyboard focus.
+
+Unfortunately, not all window managers are cooperative, or know the
+protocols.  By setting this variable, a slightly more brute-force
+approach is taken to keep the terminal window from losing focus.  This
+may fix the problem, but in some cases this may have side-effects,
+such as causing pop-up windows to appear below existing windows. 
+Anyway, if the terminal window loses focus when another window pops
+up, and the user finds this annoying, then setting this boolean
+variable in the {\vt .wrspiceinit} file might fix the problem.
+
+\item{\et nototop}\\
+Ordinarily, the window manager is asked to raise new windows to the
+top.  If this boolean variable is set, that will not happen.  This
+will probably be needed when using a Windows PC X-server to run
+{\WRspice}.  In Windows, it is not possible to revert the ``window on
+top'' property, so that if this variable is not set, plot windows and
+some others will always be shown on top of other windows.
+
+\end{description}
+!!LATEX command_vars variables.tex
+These variables control the operation of specific {\WRspice} commands
+and functions.  Most of these variables can be set indirectly from the
+{\cb Command Options} tool from the {\cb Commands} button in the {\cb
+Tools} menu of the {\cb Tool Control} window.
+
+\begin{description}
+\index{appendwrite variable}
+\item{\et appendwrite}\\
+When set, data written with the {\cb write} command will be appended
+to the file, if the file already exists.  If not set, the
+file will be overwritten.
+
+\index{checkiterate variable}
+\item{\et checkiterate}\\
+This sets the binary search depth used in finding operating range
+extrema in operating range analysis initiated with the {\cb check}
+command.  It can be set to an integer value 0--10.  If not set or set
+to zero, the search is skipped.
+
+\index{diff\_abstol variable}
+\item{\et diff\_abstol}\\
+This variable sets the absolute error tolerance used by the {\cb diff}
+command.  The default is 1e-12.
+
+\index{diff\_reltol variable}
+\item{\et diff\_reltol}\\
+This variable sets the relative error tolerance used by the {\cb diff}
+command.  The default is 1e-3.
+
+\index{diff\_vntol variable}
+\item{\et diff\_vntol}\\
+This variable sets the absolute voltage tolerance used by the {\cb
+diff} command.  The default is 1e-6.
+
+\index{dollarcmt variable}
+\item{\et dollarcmt}\\
+This boolean variable, when set, alters the interpretation of comments
+triggered by `{\vt \$}' and `{\vt ;}' characters, for compatibility
+with input files intended for other simulators.
+
+In other simulators, the `{\vt \$}' character always indicates the
+start of a comment.  The `{\vt ;}' (semicolon) character is
+interpreted as equivalent to `{\vt \$}' for purposes of comment
+identification.  In {\WRspice}, `{\vt \$}' is used for shell variable
+substitution, a feature that does not appear in other simulators and
+prevents general use of `{\vt \$}' comments.  This can cause trouble
+when reading files intended for other simulators.  {\WRspice} will
+detect and strip ``obvious'' comments, where the `{\vt \$}' is
+preceded with a backslash or surrounded by white space, but this may
+not be sufficient.
+
+Setting this variable will cause `{\vt \$}' and `{\vt ;}' to indicate
+the start of a comment when reading input, if the character is
+preceded by start of line, white space, or a comma, independent of
+what follows the character.
+
+\index{dpolydegree variable}
+\item{\et dpolydegree}\\
+This variable sets the polynomial degree used by the {\vt deriv}
+function for differentiation.  If not set, the value is 2 (quadratic). 
+The valid range is 0--7.
+
+\index{editor variable}
+\item{\et editor}\\
+This variable is set to the name or path of the text editor to be used
+within {\WRspice}.  This overrides the {\et SPICE\_EDITOR} and {\et
+EDITOR} environment variables.  If no editor is set, the internal
+editor {\cb xeditor} is used if graphics is available, otherwise the
+{\vt vi} editor is used.
+
+\index{errorlog variable}
+\item{\et errorlog}\\
+If this variable is set to a file path, all error and warning messages
+will be copied to the file.  The variable can also be set as a
+boolean, in which case all errors and warnings will be copied to a
+file named ``{\vt wrspice.errors}'' in the current directory.  When
+not set, errors that are not currently displayed in the error window
+are lost.  Only the last 200 messages are retained in the error
+window.
+
+\index{filetype variable}
+\item{\et filetype}\\
+This variable can be set to either of the keywords {\vt ascii} or {\vt
+binary}.  It determines whether ASCII or binary format is used in the
+generated rawfiles, for example from the {\cb write} command.  The
+default is {\vt ascii}, but this can be overridden with the
+environment variable {\et SPICE\_ASCIIRAWFILE}, which is set to ``1''
+(for ASCII), or ``0'' (zero, for binary).
+
+\index{fourgridsize variable}
+\item{\et fourgridsize}\\
+When a {\cb fourier} command is given, the data are first interpolated
+onto a linear grid.  The size of the grid is given by this variable. 
+If unspecified, a size of 200 is used.
+
+\index{helpinitxpos variable}
+\item{\et helpinitxpos}\\
+This variable specifies the distance in pixels from the left edge of
+the screen to the left edge of the help window, when it first appears. 
+If not set, the value taken is 100 pixels.
+
+\index{helpinitypos variable}
+\item{\et helpinitypos}\\
+This variable specifies the distance in pixels from the top edge of
+the screen to the top edge of the help window, when it first appears. 
+If not set, the value taken is 100 pixels.
+
+\index{helppath variable}
+\item{\et helppath}\\
+This variable specifies the search path used to locate directories
+containing help database files.  This variable takes its initial value
+from the {\et SPICE\_HLP\_PATH} environment variable, if set,
+otherwise it assumes a built-in default ``{\vt (
+/usr/local/xictools/wrspice/help )}'', or, if {\et XT\_PREFIX} is
+defined in the environment, its value replaces ``{\vt /usr/local}''.
+
+\index{modpath variable}
+\item{\et modpath}\\
+This list variable contains directory paths where loadable device
+module files are expected to be found.  A list variable in {\WRspice}
+takes the form of a list of words, surrounded by space-separated
+parentheses, for example
+\begin{quote}\vt
+( /path/to/dir1 /path/to/dir2 "/usr/bill/my files" )
+\end{quote}
+If a directory path contains white space, it should be quoted, as
+above.
+
+The loadable device modules found in {\vt modpath} directories are
+normally loaded automatically on program start-up.  See the
+description of the {\cb devload} command in \ref{devload} for more
+information.
+
+\index{mplot\_cur variable}
+\item{\et mplot\_cur}\\
+This variable contains the name of the last margin analysis output
+file generated.  This variable can be set, but has no effect, as the
+file names are generated internally.
+
+\index{nfreqs variable}
+\item{\et nfreqs}\\
+This variable specifies how many multiples of the fundamental
+frequency to print in the {\cb fourier} command.  If not set, 10
+values are printed.
+
+\index{noeditwin variable}
+\item{\et noeditwin}\\
+If this boolean variable is set, no window is created for the text
+editor.  This is desirable for editors that create their own windows.
+
+\index{nomodload variable}
+\item{\et nomodload}\\
+This variable has relevance only if set in the {\vt .wrspiceinit}
+file.  If set, the automatic loading of device model modules will be
+suppressed.  This normally occurs after the {\vt .wrspiceinit} file
+(if any) is read and processed.  This variable is set if the {\vt -m}
+command line option is given.
+
+\index{nopadding variable}
+\item{\et nopadding}\\
+If set, binary rawfiles with vectors of less than maximum length are
+not zero padded.
+
+\index{nopage variable}
+\item{\et nopage}\\
+If set, page breaks are suppressed in the {\cb print} and {\cb
+asciiplot} commands.  The {\et nobreak} variable is similar, but
+suppresses page breaks only in the {\cb asciiplot} command.
+
+When given in the {\vt .options} line, page ejects are suppressed in
+printed output, in batch mode.
+
+\index{noprtitle variable}
+\item{\et noprtitle}\\
+In interactive mode, when a circuit file is sourced, the title line
+from the circuit is printed on-screen.  If this boolean variable is
+set, the title printing is suppressed, and circuit sourcing is silent
+unless there are errors.  The variable can be set by checking the box
+in the {\cb source} page of the {\cb Command Options} tool from the
+{\cb Tools} menu.
+
+\index{numdgt variable}
+\item{\et numdgt}\\
+This variable specifies the number of significant digits to print in
+{\cb print}, {\cb asciiplot}, {\cb fourier}, and some other commands. 
+The default precision is six digits.
+
+This variable sets the number of significant digits printed in output
+from batch mode, when used in the {\vt .options} line.
+
+\index{printautowidth variable}
+\item{\et printautowidth}\\
+In column mode of the {\cb print} command, if this boolean variable is
+set, the logical page width is expanded as necessary to print all
+vectors, up to a hard limit of 2048 characters.
+
+\index{printnoheader variable}
+\item{\et printnoheader}\\
+In column mode of the {\cb print} command, if this boolean variable is
+set, the three-line header that normally appears at the top of the
+first page of output is suppressed.
+
+\index{printnoindex variable}
+\item{\et printnoindex}\\
+In column mode of the {\cb print} command, if this boolean variable is
+set, the column of index values that normally appears to the left of
+all vector data is suppressed.
+
+\index{printnopageheader variable}
+\item{\et printnopageheader}\\
+In column mode of the {\cb print} command, if this boolean variable is
+set, the two line page header which is normally printed at the top of
+each page is omitted.
+
+\index{printnoscale variable}
+\index{noprintscale variable}
+\item{\et printnoscale}\\
+In column mode of the {\cb print} command, the values of the scale
+vector are by default printed in the first data column of each page. 
+Setting this boolean variable suppresses this.  A deprecated alias
+{\et noprintscale} is also recognized, for backwards compatibility
+with Spice3 and earlier {\WRspice} releases.
+
+\index{random variable}
+\item{\et random}\\
+When set, the HSPICE-compatible random number functions ({\vt unif},
+{\vt aunif}, {\vt gauss}, {\vt agauss}, {\vt limit}) will return
+random values.  When not set and not running Monte Carlo analysis
+these functions always return mean values.
+
+This applies to the listed functions only, and not the statistical
+functions in \ref{statfuncs}, and not the voltage/current source
+random functions, which always produce random output.
+
+This can be set with the {\cb set} command or in a {\vt .options} line
+to enable the random functions for use in scripts, during analysis, or
+working from the command line.  The random output is disabled by
+default since some foundry model sets make use of random functions
+intended for HSPICE Monte Carlo analysis, and this would cause big
+trouble in {\WRspice}.
+
+Warning:  with this variable set, reading in foundry models such as
+those from IBM will generate random model parameters, as these models
+have built-in random generation compatible with HSPICE and {\WRspice}. 
+This may be exactly what you want, but if not, be forewarned.
+
+\index{rawfile variable}
+\item{\et rawfile}\\
+This variable sets the default name for the data file to be produced. 
+The default is as entered with the {\vt -r} command line option, or
+``{\vt rawspice.raw}''.  An extension sets the file format, which can
+be the native rawfile format, or the Common Simulation Data Format
+(CSDF).  See the description of the {\cb write} command
+(\ref{writecmd}) for more information about the formats and how they
+can be specified.  In server mode (the {\vt -s} command line option
+was given) data will be output in rawfile format in all cases.  The
+{\vt filetype} variable is used to set whether native rawfiles are
+written using ASCII or binary number representations (ASCII is the
+default).
+
+\index{rawfileprec variable}
+\item{\et rawfileprec}\\
+This variable sets the number of digits used to print data in an ASCII
+rawfile.  The default is 15.
+
+\index{rhost variable}
+\item{\et rhost}\\
+This variable specifies the name of the default machine to submit
+remote simulations to.  This machine must have a {\vt wrspiced} daemon
+running.  The default machine can also be specified in the {\et
+SPICE\_HOST} environment variable, which will be overridden if {\et
+rhost} is set.  Additional machines can be added to an internal list
+with the {\cb rhost} command.  The host name can be optionally
+suffixed with a colon followed by the port number to use to
+communicate with the {\vt wrspiced} daemon.  The port must match that
+set up by the daemon.  If not given, the port number is obtained from
+the operating system for ``{\vt wrspice/tcp}'' or 6114 (the IANA
+registered port number for this service) if this is not defined.
+
+\index{rprogram variable}
+\item{\et rprogram}\\
+The name of the program to run when an {\cb rspice} command is given. 
+If not set, the program path used will be determined as in the {\cb
+aspice} command.
+
+\index{spectrace variable}
+\item{\et spectrace}\\
+This enables messages to be printed during Fourier analysis with the
+{\cb spec} command, for debugging purposes.
+
+\index{specwindow variable}
+\item{\et specwindow}\\
+This variable is set to one of the following strings, which will
+determine the type of windowing used for the Fourier transform in the
+{\cb spec} command.  If not set, the default is {\vt hanning}.
+
+\begin{tabular}{ll}
+\vt bartlet & Bartlet (triangle) window\\
+\vt blackman & Blackman order 2 window\\
+\vt cosine & Hanning (cosine) window\\
+\vt gaussian & Gaussian window\\
+\vt hamming & Hamming window\\
+\vt hanning & Hanning (cosine) window\\
+\vt none & No windowing\\
+\vt rectangular & Rectangular window\\
+\vt triangle & Bartlet (triangle) window\\
+\end{tabular}
+
+\index{specwindoworder variable}
+\item{\et specwindoworder}\\
+This can be set to an integer in the range 2--8.  This sets the order
+when the gaussian window is used in the {\cb spec} command.  If not
+set, order 2 is used.
+
+\index{spicepath variable}
+\item{\et spicepath}\\
+This variable can be set to a path to a simulator executable which
+will be executed when asynchronous jobs are submitted with the {\cb
+aspice} command.  If not set, the path used will default to the value
+of the environment variable {\et SPICE\_PATH}.  If this environment
+variable is not set, the path is constructed from the value of the
+environment variable {\et SPICE\_EXEC\_DIR} prepended to the name of
+the presently running program.  If the {\et SPICE\_EXEC\_DIR} variable
+is not set, the path used is that of the presently running {\WRspice}.
+
+\index{units variable}
+\item{\et units}\\
+If this variable is set to ``{\vt degrees}'', all trig functions will
+use degrees instead of radians for the units of their arguments.  The
+default is ``{\vt radians}''.
+\end{description}
 
 !!SEEALSO
 variables

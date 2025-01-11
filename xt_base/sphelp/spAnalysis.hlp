@@ -91,6 +91,47 @@ Analysis Types
     point for AC/small signal analysis (including pole-zero, transfer
     function, and noise analysis).  It is the starting point for DC
     and transient analysis.
+!!LATEX analyses format.tex
+\index{dc analysis, chained}
+{\WRspice} provides the analysis capabilities tabulated below. 
+Monte Carlo and operating range analysis (described in Chpt. 
+\ref{oprange}) require a special input file format, while other types
+of analysis can be specified in a standard input deck.
+
+Analyses will pause if {\WRspice} receives an interrupt signal, i.e.,
+the user types {\kb Ctrl-C} while {\WRspice} has the keyboard focus. 
+The {\cb resume} command can be used to resume the analysis.
+
+\index{maxdata variable}
+By default, the maximum size of the data produced by an analysis run
+is limited to 256Mb.  This can be changed by setting the variable {\et
+maxdata} to the desired value in Kb, using the {\cb set} command or
+the {\cb Simulation Options} tool from the {\cb Tools} menu of the
+{\cb Tool Control} window.  In transient analysis, if the {\et
+steptype} is not set to ``{\vt nousertp}", the run will abort at the
+beginning if the memory would exceed the limit.  Otherwise, the run
+will end when the limit is reached.
+
+The table below lists the basic analysis types and input file keyword.
+
+\begin{tabular}{|l|l|}\hline
+\vt .ac & AC Small-Signal Analysis\\ \hline
+\vt .dc & DC Analysis\\ \hline
+\vt .disto & Small-Signal Distortion Analysis\\ \hline
+\vt .noise & Small-Signal Noise Analysis\\ \hline
+\vt .op & Operating Point\\ \hline
+\vt .pz & Pole-Zero Analysis\\ \hline
+\vt .sens & DC or Small-Signal AC Sensitivity Analysis\\ \hline
+\vt .tf & DC or Small-Signal AC Transfer Function Analysis\\ \hline
+\vt .tran & Transient Analysis\\ \hline
+\end{tabular}
+
+An operating point analysis is performed implicitly before other types
+of analysis, with the exception of transient analysis when the {\vt
+uic} keyword is given.  This solves for the initial dc operating point
+of the circuit.  The circuit is linearized at this point for AC/small
+signal analysis (including pole-zero, transfer function, and noise
+analysis).  It is the starting point for dc and transient analysis.
 
 !!SUBTOPICS
 loop
@@ -103,7 +144,6 @@ multidc
 !!TITLE
 Chained Sweep Analysis
 !!HTML
-
     <i>WRspice</i> has a swept analysis feature.  This allows <a
     href=".ac">ac</a>, <a href=".noise">noise</a>, <a
     href=".tf">transfer function</a>, <a href=".sens">sensitivity</a>,
@@ -166,6 +206,58 @@ Chained Sweep Analysis
     analysis if the <a href="loopthrds"><b>loopthrds</b></a> variable
     is set to a positive value.  This can parallelize the runs on
     computers with multiple cores or CPUs, speeding evaluation.
+!!LATEX multidc format.tex
+\newcommand{\swspec}{{{\it pstr1 start1\/} [{\it stop1\/} [{\it incr1\/}]]
+ [{\it pstr2 start2\/} [{\it stop2\/} [{\it incr2\/}]]]}}
+
+{\WRspice} has a swept analysis feature.  This allows ac, noise,
+transfer function, sensitivity, and transient analyses to have an
+additional one or two dimensional sweep specification, resulting in
+the analysis being performed at each parameter value, producing a
+multidimensional output plot.
+
+The syntax is
+\begin{quote}
+{\it analysis} {\vt dc}$|${\vt sweep} \swspec
+\end{quote}
+
+The initiating keyword can be ``{\vt dc}'' or ``{\vt sweep}'', and is
+followed by one or two parameter specifiers and ranges.  This is the
+same syntax as accepted in the {\WRspice} {\vt .dc} line, which is an
+extension of the traditional DC source sweep.  In {\WRspice}, any
+circuit parameter can be swept.  This is far more powerful than the
+original SPICE dc sweep, which only allowed sweeping of source
+outputs.
+
+For example, a regular SPICE dc sweep would have a form like:
+\spexampo{.ac dec 10 1Hz 1Khz dc v1 0 2 .1 v2 4.5 5.5 .25}
+
+\index{vectors, dimension}
+This will perform an ac analysis with the dc sources {\vt v1} and {\vt
+v2} stepped through the respective ranges.  The resulting output
+vectors will have dimensions [5,21,61], as can be seen with the {\et
+display} command interactively.  This represents 61 points of
+frequency data at 21 {\vt v1} values at 5 {\vt v2} values.  Typing
+``{\vt plot v(1)}'' (for example) would plot all 21*5 analyses on the
+same scale (you probably don't want to do this).  One can also type
+(as examples) ``{\vt plot v(1)[1]}'' to plot the results for {\vt v2}
+= 4.75, or ``{\vt plot v(1)[0][1]}'' for {\vt v2} = 4.5, {\vt v1} =
+.1, etc.  Range specifications also work, for example ``{\vt plot
+v(1)[2][0,2]}'' plots the values for {\vt v2} = 5.0, {\vt v1} = 0.0,
+0.1, 0.2.
+
+{\WRspice} also allows forms like
+\spexampo{.ac dec 10 1Hz 1Khz dc R1[res] 800 1200 100 R5[res] 10 20 1}
+This will perform the ac analysis as the values of two resistors
+are swept.
+
+Warning:  The memory space required to hold the plot data can grow
+quite large, so be reasonable.
+
+Multi-threading (see \ref{threads}) will be used for chained analysis
+if the {\et loopthrds} variable is set to a positive value.  This can
+parallelize the runs on computers with multiple cores or CPUs,
+speeding evaluation.
 
 !!SEEALSO
 analyses
@@ -258,6 +350,70 @@ AC Small-Signal Analysis
     In interactive mode, the <a href="ac">ac</a> command, which takes
     the same arguments as the <tt>.ac</tt> line, can be used to
     initiate ac analysis.
+!!LATEX .ac format.tex
+The ac small-signal portion of {\WRspice} computes the ac output
+variables as a function of frequency.  The program first computes the
+dc operating point of the circuit and determines linearized,
+small-signal models for all of the nonlinear devices in the circuit. 
+The resultant linear circuit is then analyzed over a user-specified
+range of frequencies.  The desired output of an ac small-signal
+analysis is usually a transfer function (voltage gain, transimpedance,
+etc).  If the circuit has only one ac input, it is convenient to set
+that input to unity and zero phase, so that output variables have the
+same value as the transfer function of the output variable with
+respect to the input.
+
+\spgen{.ac dec|oct|lin {\it np fstart fstop\/} [dc$|$sweep {\it args\/}]}
+\spexamp{.ac dec 10 1 10k\\
+.ac dec 10 1k 100meg\\
+.ac lin 100 1 100hz dc vcc 10 15 5\\
+.ac dec 10 1meg 1g dc vdd 5 7.7 .25}
+
+The keyword {\vt dec} specifies decade variation, with {\it np\/} the
+number of points per decade.  The keyword {\vt oct} specifies octave
+variation, with {\it np\/} the number of points per octave, and {\vt
+lin} specifies linear variation, with {\it np\/} the number of points. 
+The two parameters {\it fstart\/} (the starting frequency), and {\it
+fstop\/} (the final frequency) complete the basic analysis
+specification.  If this line is included in the circuit file,
+{\WRspice} will perform an ac analysis of the circuit over the
+specified frequency range.  Note that in order for this analysis to be
+meaningful, at least one voltage or current source must have been
+specified with an {\vt ac} value.
+
+There is a subtlety when using {\vt dec} with {\it fstop\/}/{\it
+fstart} less than 10.  {\WRspice} will adjust the frequency delta to
+hit the final value, if the frequency ratio is integral.  This is very
+appropriate when {\it fstop\/}/{\it fstart} is a power of two and {\it
+np} is 10.  The table shows the frequency multiplication factors
+without and with correction.  Without correction, the frequency
+multiplier is the tenth root of 10.  The corrected multiplier is the
+ninth root of 8.  With correction, the binary powers are hit exactly.
+
+\begin{quote}
+\begin{tabular}{ll}
+\bf Uncorrected & \bf Binary Correction\\
+1.000000 & 1.000000\\
+1.258925 & 1.259921\\
+1.584893 & 1.587401\\
+1.995262 & 2.000000\\
+2.511886 & 2.519842\\
+3.162278 & 3.174802\\
+3.981072 & 4.000000\\
+5.011872 & 5.039684\\
+6.309573 & 6.349604\\
+7.943282 & 8.000000\\
+10.000000 & 10.079368\\
+\end{tabular}
+\end{quote}
+
+The optional dc sweep is a dc analysis specification which will cause
+the ac analysis to be performed at each point of the dc sweep.  The
+small-signal parameters are reevaluated at every sweep point, and the
+output vectors will be multidimensional.
+
+In interactive mode, the {\cb ac} command, which takes the same
+arguments as the {\vt .ac} line, can be used to initiate ac analysis.
 
 !!SEEALSO
 analyses
@@ -374,8 +530,6 @@ DC Analysis
     <a name="phasemode"></a>
     <h2>Phase-Mode DC Analysis</h2>
 
-!! format.tex 051422
-
     The <a href="jjdesc">Josephson junction</a> device has unique
     behavior which complicates simulation with a SPICE-type simulator. 
     Central is the idea of phase, which is a quantum-mechanical
@@ -488,6 +642,184 @@ DC Analysis
     "<tt>uic</tt>" and ramp sources up from zero, and makes available
     DC sweep analysis, and for the first time in any simulator AC
     small-signal analysis.
+!!LATEX .dc format.tex
+The dc analysis portion of {\WRspice} determines the dc operating
+point of the circuit with inductors shorted and capacitors opened. 
+The dc analysis is used to generate dc transfer curves:  a specified
+device parameter (commonly a voltage or current source output) is
+stepped over a user-specified range and the dc output variables are
+stored for each sequential parameter value.
+
+\spgen{.dc \swspec}
+\spexamp{.dc vin 0.25 5.0 0.25\\
+.dc vds 0 10 .5 vgs 0 5 1\\
+.dc vce 0 10 .25 ib 0 10u 1u\\
+.dc vdd 5 6\\
+.dc r1 1k 2k 100\\
+.dc d1[temp] 0 50 5}
+
+The {\vt .dc} line defines the dc sweep source and sweep limits.  The
+variation may be in one or two dimensions, depending upon whether the
+second block is provided.
+
+In traditional Berkeley SPICE, the {\it pstr1} and {\it pstr2} are the
+names of voltage or current sources in the circuit, and the specified
+range applies to the output from that source.  In {\WRspice} the {\it
+pstr1} and {\it pstr2} can specify arbitrary device parameters which
+will be varied through the given range.  The complete syntax is
+
+\begin{quote}
+{\it devname\/}{\vt [}{\it param\/}{\vt ]}
+\end{quote}
+
+The {\it devname} is the name of a device in the circuit.  The square
+brackets are literal, and enclose the name of a parameter of the
+device.  Device parameter names are defined in the device model, and
+can be listed with the {\cb show} command.
+
+If the {\it devname} is that of a source device, or a resistor,
+capacitor, or inductor, the square brackets and parameter name can be
+omitted.  In this case, the parameter will default to the source
+output, or resistance, capacitance, or inductance of the respective
+device.  Other device types require specification of a parameter in
+square brackets.
+
+The {\it start\/}, {\it stop\/}, and {\it incr} parameters are the
+starting, final, and incrementing values respectively.  If the {\it
+incr} parameter is not supplied, analysis is performed at {\it start}
+and {\it stop\/}.  If in addition the {\it stop} parameter is not
+given, analysis is performed at {\it start\/}, i.e., the level is
+fixed.  A parameter can be omitted only if all parameters to the right
+are also omitted.
+
+A second parameter ({\it pstr2\/}) may optionally be specified with
+associated sweep specification.  In this case, the first parameter
+will be swept over its range for each value of the second parameter. 
+This option can be useful for obtaining semiconductor device output
+characteristics.
+
+The first example will cause the value of the voltage source {\vt vin}
+to be swept from 0.25 volts to 5.0 volts in increments of 0.25 volts.
+
+In stand-alone dc sweep analysis, the circuit operating point is
+computed for each parameter value.  In {\WRspice}, other types of
+analysis (ac, noise, transfer function, sensitivity, and transient)
+can be chained to a dc analysis specification.  In this case, the
+requested analysis is performed at each successive operating point, as
+specified by the dc part of the analysis specification.  The resulting
+circuit variables are saved as multidimensional vectors, which can
+subsequently be saved in a rawfile or plotted (together or as
+individual traces).
+
+In intetactive mode, the {\cb dc} command, which takes the same
+arguments as the {\vt .dc} line, can be used to initiate dc analysis.
+
+If the {\et loopthrds} variable is set to a value larger than zero,
+the calculations will use multi-threading so that if multiple CPUs are
+available, work can be done in parallel, saving time.
+
+\subsubsection{Phase-Mode DC Analysis}
+\index{phase-mode DC}
+\label{phasemode}
+
+The Josephson junction device has unique behavior which complicates
+simulation with a SPICE-type simulator (see \ref{jjdesc}).  Central is
+the idea of phase, which is a quantum-mechanical concept and is
+generally invisible in the non-quantum world.  However with
+superconductivity, and with Josephson junctions in particular, phase
+becomes not only observable, but a critical parameter describing these
+devices and the circuits that contain them.
+
+A general superconducting circuit contains loops of inductors and
+Josephson junctions.  When quiescent, the voltage at all nodes of such
+a circuit is identically zero, and thus it would seem to be impossible
+to use a SPICE-type simulator to perform DC analysis on this type of
+circuit.  However, by using phase, which is nonzero at each node,
+instead of voltage, one can perform DC analysis, using ``phase-mode
+DC''.
+
+{\WRspice} after release 4.3.3 offers a DC analysis capability which
+uses phase-mode for circuits containing Josephson junctions.  Unlike
+strictly phase-mode simulators, {\WRspice} allows a mixture of phase
+(inductors and Josephson junctions) and voltage mode components.
+
+Within {\WRspice}, every node connected to a Josephson junction,
+inductor, or lossless transmission line (treated as an inductor in DC
+analysis) has a ``Phase'' flag set.  This indicates that the computed
+value is phase, not voltage, for these nodes.  We have to special-case
+the matrix loading functions for inductors, mutual inductors, lossless
+transmission lines, and resistors.  Other devices are treated
+normally.
+
+A Josephson junction can be modeled by the basic formula
+
+\begin{quote}
+$I = I_c sin(V(i,j))$
+\end{quote}
+
+where $V(i,j)$ is the ``voltage'' difference between nodes i and j
+(across the junction) which is actually the phase.  Inductors look
+like resistors:
+
+\begin{quote}
+$I = \Phi_0 V(i,j)/2{\pi}L$
+\end{quote}
+
+Where $V(i,j)$ is the phase difference across the inductor.  Mutual
+inductance adds similar cross terms.
+
+Capacitors are completely ignored as in normal DC analysis.  The
+treatment of resistors is slightly complicated.  The connected nodes
+can be ``Ground'', ``Phase'', or ``Voltage'' type.  If both nodes are
+Voltage or Ground, the resistor is loaded normally.  If both nodes are
+Phase or Ground, the resistor is not loaded at all.  The interresting
+case is when one node is Phase, the other Voltage.  In this case, we
+load the resistor as if the phase node is actually ground (node number
+0).  In addition we load a voltage-controlled current source template
+that injects current into the phase node of value
+$V(voltage\_node)/Resistance$.
+
+Resistors are the bridge between normal voltage-mode devices and phase
+nodes.  Some circuits may require introduction of resistors to get
+correct results.  For example, assume a Josephson junction logic gate
+driving a CMOS comparator circuit.  If the input MOS gate is connected
+directly to the junction, the DC operating point will be incorrect, as
+the comparator will see phase as input.  However, if a resistor
+separates the MOS gate from the junction, the comparator input will be
+zero, as it should be.
+
+There is (at present) a topological requirement that all phase nodes
+must be at ground potential.  This means that for a network of
+Josephson junctions and inductors, there must be a ground connection
+to one of these devices.  A nonzero voltage source connected to an
+inductor, which is connected to a resistor to ground, although a
+perfectly valid circuit, will fail.  One must use the equivalent
+consisting of the voltage source connected to a resistor, connected to
+the inductor which is grounded.  This satisfies the two topological
+requirements:
+
+\begin{description}
+\item{Rule 1}\\
+There must be a resistor between a voltage-mode device and a
+phase-mode device, no direct connections allowed.
+
+\item{Rule 2}\\
+Every phase-node subnet must have a connection to ground, so all phase
+nodes are at ground potential.
+\end{description}
+
+With this bit of information, and the warning that controlled sources
+can cause unexpected behavior, the DC analysis using thes technique
+can apply to general circuits containing Josephson junctions.
+
+Of course, for this to work, no Josephson junction can be biased above
+its critical current or nonconvergence results.  Both DC operating
+point and DC sweep are available, as is AC analysis.  Noise analysis
+is available with the internal Josephson junction model.  This new
+hybrid technique appears to be an important advance, which should
+avoid the long-standing need to use ``{\vt uic}'' and ramp sources up
+from zero, and makes available DC sweep analysis, and for the first
+time in any simulator AC small-signal analysis.
 
 !!SEEALSO
 analyses
@@ -658,6 +990,135 @@ Small-Signal Distortion Analysis
     <p>
     Distortion analysis is not available if Josephson junctions are
     included in the circuit.
+!!LATEX .disto format.tex
+The distortion analysis portion of {\WRspice} computes steady-state
+harmonic and intermodulation products for small input signal
+magnitudes.  If signals of a single frequency are specified as the
+input to the circuit, the complex values of the second and third
+harmonics are determined at every point in the circuit.  If there are
+signals of two frequencies input to the circuit, the analysis finds
+the complex values of the circuit variables at the sum and difference
+of the input frequencies, and at the difference of the smaller
+frequency from the second harmonic of the larger frequency.
+
+Distortion analysis is supported in {\WRspice} only through
+residual incorporation from code imported from Berkeley SPICE3.  This
+code is particularly complex, poorly documented, and ugly.  Distortion
+analysis has not been tested, and may not work.
+
+Distortion analysis is included for the following nonlinear devices: 
+diodes, bipolar transistors, JFETs, MOSFETs (levels 1, 2, 3 and BSIM1)
+and MESFETS.  All linear devices are automatically supported by
+distortion analysis.  If there are switches present in the circuit,
+the analysis will continue to be accurate provided the switches do not
+change state under the small excitations used for distortion
+calculations.
+
+\spgen{.disto dec|oct|lin {\it np fstart fstop\/} [{\it f2overf1\/}]
+ [dc {\it dc\_args}]}
+\spexamp{.disto dec 10 1khz 100mhz\\
+.disto dec 10 1khz 100mhz 0.9}
+
+A multi-dimensional Volterra series analysis is performed using a
+multi-dimensional Taylor series to represent the nonlinearities at the
+operating point.  Terms of up to third order are used in the series
+expansions.
+
+If the optional parameter {\it f2overf1\/} is not specified, a
+harmonic analysis is performed --- i.e., distortion is analyzed in the
+circuit using only a single input frequency {\it f1}, which is swept
+as specified by arguments of the {\vt .disto} line exactly as in an
+{\vt .ac} line.  Inputs at this frequency may be present at more than
+one input source, and their magnitudes and phases are specified by the
+arguments of the {\vt distof1} keyword in the input file lines for the
+input sources.  The arguments of the {\vt distof2} keyword are not
+relevant in this case.  The analysis produces information about the ac
+values of all node voltages and branch currents at the harmonic
+frequencies $2f1$ and $3f1$, vs.  the input frequency {\it f1} as it
+is swept.  A value of 1 (as a complex distortion output) signifies
+$cos(2\pi(2f1)t)$ at $2f1$ and $cos(2\pi(3f1)t)$ at $3f1$, using the
+convention that 1 at the input fundamental frequency is equivalent to
+$cos(2\pi\/f1\/t)$.
+
+The distortion component desired ($2f1$ or $3f1$) can be selected
+using commands in {\WRspice}, and then printed or plotted.  Normally,
+one is interested primarily in the magnitude of the harmonic
+components, so the magnitude of the ac distortion value is considered. 
+It should be noted that these are the ac values of the actual harmonic
+components, and are not equal to HD2 and HD3.  To obtain HD2 and HD3,
+one must divide by the corresponding ac values at {\it f1}, obtained
+from an {\vt .ac} line.  This division can be done using {\WRspice}
+commands.
+
+If the optional {\it f2overf1} parameter is specified, it should be a
+real number between (and not equal to) 0.0 and 1.0; in this case, a
+spectral analysis is performed.  The circuit is considered with
+sinusoidal inputs at two different frequencies {\it f1} and {\it f2}. 
+Frequency {\it f1} is swept according to the {\vt .disto} line options
+exactly as for the {\vt .ac} card.  Frequency {\it f2} is kept fixed
+at a single frequency as {\it f1} sweeps --- the value at which it is
+kept fixed is equal to {\it f2overf1*fstart\/}.  Each voltage and
+current source in the circuit may potentially have two (superimposed)
+sinusoidal inputs for distortion, at the frequencies {\it f1} and {\it
+f2}.  The magnitude and phase of the {\it f1} component are specified
+by the arguments of the {\vt distof1} keyword in the source's input
+line, as described in \ref{indepsrc}; the magnitude and phase of the
+{\it f2} component are specified by the arguments of the {\vt distof2}
+keyword.  The analysis produces plots of all node voltages/branch
+currents at the intermodulation product frequencies $f1+f2$, $f1-f2$,
+and $(2f1)-f2$, vs the swept frequency {\it f1}.  The IM product of
+interest may be selected using the {\cb setplot} command, and
+displayed with the {\cb print} and {\cb plot} commands.  As in the
+harmonic analysis case, the results are the actual ac voltages and
+currents at the intermodulation frequencies, and need to be normalized
+with respect to {\vt .ac} values to obtain the IM parameters.
+
+If the {\vt distof1} or {\tt distof2} keywords are missing from the
+description of a voltage or current source, then that source is
+assumed to have no input at the corresponding frequency.  The default
+values of the magnitude and phase are 1.0 and 0.0 respectively.  The
+phase should be specified in degrees.
+
+It should be noted that the number {\it f2overf1\/} should ideally be
+an irrational number, and that since this is not possible in practice,
+efforts should be made to keep the denominator in its fractional
+representation as large as possible, certainly above 3, for accurate
+results.  If {\it f2overf1\/} is represented as a fraction $A/B$,
+where $A$ and $B$ are integers with no common factors, $B$ should be
+as large as possible.  Note that $A < B$ because {\it f2overf1\/} is
+constrained to be {\vt <} 1).  To illustrate why, consider the cases
+where {\it f2overf1\/} is 49/100 and 1/2.  In a spectral analysis, the
+outputs produced are at $f1+f2$, $f1-f2$ and $2f1-f2$.  In the latter
+case, $f1-f2 = f2$, so the result at the $f1-f2$ component is
+erroneous because there is the strong fundamental $f2$ component at
+the same frequency.  Also, $f1+f2 = 2f1-f2$ in the latter case, and
+each result is erroneous individually.  This problem is not seen in
+the case where $f2overf1 = 49/100$, because $f1-f2 = 51/100 f1$ which
+is not equal to $49/100 f1 = f2$.  In this case, there will be two
+very closely spaced frequency components at $f2$ and $f1-f2$.  One of
+the advantages of the Volterra series technique is that it computes
+distortions at mix frequencies expressed symbolically (i.e. 
+n$\cdot$f1 $\pm$ m$\cdot$f2), therefore one is able to obtain the
+strengths of distortion components accurately even if the separation
+between them is very small, as opposed to transient analysis for
+example.  The disadvantage is of course that if two of the mix
+frequencies coincide, the results are not merged together and
+presented, though this could presumably be done as a postprocessing
+step.  Currently, the interested user should keep track of the mix
+frequencies and add the distortions at coinciding
+mix frequencies together should it be necessary.
+
+The optional dc sweep is a dc analysis specification which will cause
+the distortion analysis to be performed at each point of the dc sweep. 
+The small-signal parameters are reevaluated at every sweep point, and
+the output vectors will be multidimensional.
+
+In interactive mode, the {\cb disto} command, which takes the same
+arguments as the {\vt .disto} line, can be used to initiate distortion
+analysis.
+
+Distortion analysis is not available if Josephson junctions are
+included in the circuit.
 
 !!SEEALSO
 analyses
@@ -761,6 +1222,77 @@ Small-Signal Noise Analysis
     <p>
     Noise analysis is not available if Josephson junctions are
     included in the circuit.
+!!LATEX .noise format.tex
+The noise analysis portion of {\WRspice} performs analysis of
+device-generated noise for the given circuit.  When provided with an
+input source and an output node or current, the analysis calculates
+the noise contributions of each device (and each noise generator
+within the device) to the output node voltage or current.  It also
+calculates the level of input noise from the specified input source
+to generate the equivalent output noise.  This is done for every
+frequency point in a specified range --- the calculated value of the
+noise corresponds to the spectral density of the circuit variable
+viewed as a stationary Gaussian stochastic process.
+
+This is the classic frequency-domain SPICE noise analysis.  {\WRspice}
+also provides the capability of simulating thermal noise in the time
+domain.  See the description of the {\vt tgauss} ``tran'' function in
+\ref{tgauss} for discussion and an example.
+
+After calculating the spectral densities, noise analysis integrates
+these values over the specified frequency range to arrive at the total
+noise voltage/current (over this frequency range).  This calculated
+value corresponds to the variance of the circuit variable viewed as a
+stationary Gaussian process.
+
+\spgen{.noise {\it out\/} {\it src\/}
+ {\vt dec|oct|lin} {\it pts fstart fstop\/} [{\it
+ summary\_pts\/}] [dc$|$sweep {\it args}]}
+\spexamp{.noise v(5) vin dec 10 1khz 100mhz\\
+.noise v(5,3) v1 oct 8 1.0 1.0e6 1 dc vee -5 -3 1}
+
+Above, {\it out} represents the output, which can be a node voltage
+in the standard form
+\begin{quote}
+ v({\it out\/}[,{\it ref\/}])
+\end{quote}
+or the current through a voltage source (or inductor) in one of the
+standard and equivalent forms
+\begin{quote}
+ {\it Vsource}\\
+ {\it Vsource\/}{\tt \#branch}\\
+ {\vt i(}{\it Vsource\/}{\vt )}
+\end{quote}
+
+This directive initiates a noise analysis of the circuit.  The
+parameter {\it out} is the point at which the total output noise is
+desired, and if this is a voltage and {\it ref} is specified, then
+the noise voltage v({\it out\/}) - v({\it ref\/}) is calculated.  By
+default, {\it ref\/} is assumed to be ground.  The parameter {\it
+src\/} is the name of a voltage or current source to which input
+noise is referred, with {\it pts\/}, {\it fstart\/} and {\it fstop\/}
+being the {\vt .ac} parameters that specify the frequency range over
+which analysis is desired.  The optional {\it summary\_pts\/} is an
+integer; if specified, the noise contributions of each noise
+generator is produced every {\it summary\_pts\/} frequency points.
+
+The {\vt .noise} analysis produces two plots --- one for the Noise
+Spectral Density curves and one for the total Integrated Noise over
+the specified frequency range.  All noise voltages/currents are in
+squared units (V$^2$/Hz and A$^2$/Hz for spectral density, V$^2$ and
+A$^2$ for integrated noise).
+
+The optional dc sweep is a dc analysis specification which will cause
+the noise analysis to be performed at each point of the dc sweep.  The
+small-signal parameters are reevaluated at every sweep point, and the
+output vectors will be multidimensional.
+
+In interactive mode, the {\cb noise} command, which takes the same
+arguments as the {\vt .noise} line, can be used to initiate noise
+analysis.
+
+Noise analysis is not available if Josephson junctions are
+included in the circuit.
  
 !!SEEALSO
 analyses
@@ -1033,6 +1565,221 @@ Operating Point
     gives the user another parameter to twiddle when trying to achieve
     DC convergence.  This can be set from the <b>Convergence</b> page
     of the <b>Simulation Options</b> tool.
+!!LATEX .op format.tex
+\spgen{.op}
+The inclusion of this line in an input file will force {\WRspice} to
+determine the dc operating point of the circuit with inductors shorted
+and capacitors opened.  This is done automatically prior to most other
+analyses, to determine the operating point of the circuit, yielding
+transient initial conditions or the linearized models for nonlinear
+devices for small-signal analysis.  It will not be done in transient
+analysis if the {\vt uic} keyword is given in the transient analysis
+specification.
+
+{\WRspice} performs a dc operating point analysis if no other analyses
+are requested.
+
+In interactive mode, the {\cb op} command can be used to compute
+the operating point.
+
+Operating point analysis will fail due to a singular circuit matrix if
+the circuit topology contains inductor and/or voltage source loops. 
+Circuits containing such loops can only be simulated in transient
+analysis using the {\vt uic} keyword in the analysis command, which
+will cause the operating point analysis to be skipped.  On convergence
+failure, {\WRspice} will check for and print a list of inductor and
+voltage source names found to be connected in loops.  The dual
+situation of current source/capacitor cut sets will often converge in
+operating point analysis, as there is an added minimum conductance
+which will keep the solution finite (but huge).
+
+If Josephson junctions are present in the circuit, phase-mode DC
+analysis )see (\ref{phasemode}) is used to compute the DC operating
+point.  Historically, transient analysis with Josephson junctions was
+performed using the {\vt uic} option since it was not previously
+possible to perform a true DC analysis with Josephson junctions
+present.  The phase-mode DC feature in {\WRspice} avoids the need to
+use {\vt uic} in most circuits, however some circuits may still
+require it, for example if the circuit is not quiescent with its
+initial DC bias.
+
+In operating point analysis, any {\vt .save} or {\cb save} directives
+will be ignored.  All node voltages and branch currents will be saved
+in an "op" plot in interactive mode.
+
+Given that operating point analysis is the starting point of most
+types of analysis, it is critical that this step succeeds. 
+Unfortunately, many circuits are prone to convergence failure at this
+step, and achieving dc convergence has been one of the traditional
+battles when using SPICE simulators.
+
+The original operating point calculation algorithm, which was very
+similar to the SPICE3 algorithm, was really pretty poor.  For example,
+when attempting to simulate a large CMOS mixed-signal circuit, the old
+convergence algorithm would iterate for several minutes before
+ultimately failing.  On the other hand, HSPICE could find the
+operating point within seconds (if that).
+
+Lots of work was done to improve this, and a new algorithm is now the
+default in release 3.2.15 and later.  The new algorithm seems to work
+pretty well, and the Berkeley algorithms have been retained as
+alternatives.  There is flexibility in algorithm choice, giving the
+user some tools needed to obtain convergence of their circuits with
+the fewest iterations (quickest convergence).
+
+There are two basic ways to solve for the circuit operating point.  In
+``gmin stepping'', a conductance is applied between every circuit node
+and ground.  When this conductance is large enough, convergence can
+always be achieved.  The conductance is then progressively reduced,
+while continuing to solve the circuit equations with the previous
+solution as a starting point.  If all goes well, convergence is
+maintained when the conductance approaches zero, and the method
+succeeds.
+
+The second method is ``source stepping''.  In this method, all voltage
+and current sources are set to zero initially, where the circuit is
+guaranteed to have a trivial solution with every node at zero voltage. 
+The sources are progressively ramped up, while solving the circuit
+equations using the previous solution as the starting point. 
+Ultimately, if convergence is maintained when the sources reach their
+true values, the method succeeds.
+
+The original Berkeley algorithm is as follows.  First, unless the
+option variable {\et noopiter} is set, an attempt is made to solve the
+equation set directly, without using stepping.  If convergence is
+acheived within the number of iterations specified by the {\et itl1}
+variable (default 400), the operating point analysis succeeds.
+
+If, as is likely, the initial attempt fails, gmin stepping is
+attempted.  In the Berkeley algorithm, the conductance is reduced by a
+factor of 10 for each gmin step.  If convergence is maintained through
+all steps, a final solution is attempted with no added conductance,
+and if this too succeeds, operating point analysis succeeds.  However,
+it is possible that at some step, convergence will fail, and thus gmin
+stepping will fail.
+
+If gmin stepping fails, or is not attempted, source stepping is tried. 
+In the Berkeley algorithm, each source step is a fixed percentage of
+the final value.  If convergence is maintained through all steps, then
+operating point analysis succeeds.  Otherwise, the user will have to
+alter the circuit or change parameters to coerce convergence in a
+subsequent run.
+
+The number of gmin and source steps is set by the option variables
+{\et gminsteps} and {\et srcsteps}, both default to 10 in SPICE3, and
+in earlier versions of {\WRspice}.
+
+The new algoritm uses ``dynamic'' stepping, for both gmin and source. 
+In dynamic stepping, if a step fails, the step size is cut, and the
+calculation is repeated.  If the step size is cut below a threshold
+after repeated failures, the method is exited with failure.  On the
+other hand, if convergence is achieved with just a few iterations,
+then the step size is increased.  This method is far more effective
+than the original approach.  This concept was borrowed from the
+open-source NGSPICE project.
+
+The new algorithm is invoked when both the {\et gminsteps} and {\et
+srcsteps} values are 0, which are the current defaults (these can be
+set from the {\cb Convergence} page of the {\cb Simulation Options}
+tool).  If either is positive, a modified SPICE3 algorithm is used. 
+If negative (-1 is now an allowed value) that convergence method will
+not be attempted.  If both are negative, a direct solution will be
+attempted, whatever the state of the {\et noopiter} option variable.
+
+The new algorithm is the following.  If either {\et gminsteps} or {\et
+srcsteps} is positive, we are in a quasi-SPICE3 compatibility mode. 
+In this case, if the {\et noopiter} variable is not set, the first
+task is to Newton iterate the matrix to attempt direct convergence. 
+If convergence is not achieved in an iteration count given by the
+value of the {\et itl1} variable, this is aborted, and the stepping
+options are attempted.
+
+This initial direct convergence attempt can be very time-consuming and
+is rarely successful for large circuits, thus it is not done unless
+\begin{enumerate}
+\item{as above, either of {\et gminsteps} or {\et srcsteps} is
+positive, and {\et noopiter} is not set.}
+\item{if {\et gminsteps} and {\et srcsteps} are both -1.  Direct
+convergence will be attempted whether or not {\et noopiter} is
+set in this case.}
+\end{enumerate}
+
+For very simple sircuits, when the direct method succeeds, this will
+probably yield the fastest operating point calculation.  However, in
+these simple cases the difference is too small to be noticeable by the
+user, although in some automated tasks the accumulated time difference
+might be important.
+
+By default, the next attempt will use source stepping.  This is
+different from SPICE3, which would attempt gmin stepping before source
+stepping.  However, it appears that source stepping is more effective
+on large CMOS circuits, so we try it first.  However, if the option
+variable {\et gminfirst} is set, gmin stepping will be attempted
+before source stepping.
+
+The default value of {\et srcsteps} is 0, which indicates use of the
+new dynamic source stepping algorithm.  This algorithm takes
+variable-sized steps when raising the source values to their specified
+initial values, and backs up and tries again with a smaller step on
+failure.  The SPICE3 source stepping takes fixed-size steps, and
+aborts on failure.  The dynamic approach is far more effective.  If
+{\et srcsteps} is positive, the SPICE3 approach will be used, with the
+given number of steps.  If {\et srcsteps} is -1, source stepping will
+be skipped.
+
+The gmin stepping, which is attempted if convergence has not been
+achieved, is similar.  The default value of the {\et gminsteps} option
+variable is 0, indicating use of the dynamic gmin stepping algorithm. 
+This reduces the ``gmin'' conductivity that is added to the circuit to
+achieve convergence in variable sized increments.  If convergence
+fails, a smaller step is tried.  The SPICE3 gmin stepping algorithm
+uses fixed-size steps (actually, orders of magnitude) when reducing
+gmin, and if convergence fails, the operation is aborted.  This is
+done if {\et gminsteps} is given a positive value.  The dynamic
+algorithm is much more effective.  If {\et gminsteps} is given a value
+-1, gmin stepping is not done.
+
+Another difference between {\WRspice} and Berkeley SPICE is that in
+{\WRspice}, the minimum value of conductance allowed on the matrix
+diagonal, in any analysis mode, is the value of the {\et gmin} option
+variable.  This defaults to $10^{-12}$Si.  This avoids a singular matrix
+in various cases, such as series capacitors in dc analysis, or
+elements that have a floating node.
+
+There are option variables which set the number of iterations to
+allow between steps when using the dynamic stepping algorithms. 
+These are {\et itl2gmin} and {et itl2src}, both of which default to
+20.  The ``{\et itl2}'' prefix derives from the fact that in earlier
+versions of {\WRspice}, the dc sweep iteration limit was used, which
+is set with the <a href="itl2"><tt>itl2</tt></a> variable and
+defaults to 100.  It is probably counter-intuitive that reducing this
+number is a good thing, however this proved to be effective in
+solving some difficult convergence problems, in particular with some
+of the Verilog-A bipolar transistor models (hicum2, mextram).  What
+happens is that when iterating and not converging, the computed
+matrix element entries can blow up to a point where the matrix
+becomes singular, and the run aborts.  With the smaller iteration
+limit, the limit is reached before the matrix becomes singular, so
+the step gracefully fails, and a smaller step is then attempted,
+which converges.
+
+Operating point analysis can be halted by the user by pressing {\kb
+Ctrl-C}.  However, unlike other analysis types, it can not be resumed.
+
+If the {\et trantrace} debugging variable is set to a nonzero value,
+during operating point analysis, messages will be printed giving
+information about the analysis, including iteration counts and
+stepsize.  This applies for any operating point calculation, not just
+in transient analysis.
+
+The {\et dcmu} option variable can be used to improve convergence
+during operating point analysis.  This variable takes a value of
+0.0--0.5, with the default being 0.5.  When set to a value less than
+0.5, the Newton iteration algorithm mixes in some of the previous
+solution, which can improve convergence.  The smaller the value, the
+larger the mixing.  This gives the user another parameter to twiddle
+when trying to achieve dc convergence.  This can be set from the {\cb
+Convergence} page of the {\cb Simulation Options} tool.
 
 !!SEEALSO
 analyses
@@ -1100,6 +1847,47 @@ Pole-Zero Analysis
     <p>
     Pole-zero analysis is not available if Josephson junctions are
     included in the circuit.
+!!LATEX .pz format.tex
+The pole-zero analysis portion of {\WRspice} computes the poles
+and/or zeros in the small-signal ac transfer function.  The program
+first computes the dc operating point and then determines the
+linearized, small-signal models for all the nonlinear devices in the
+circuit.  This circuit is then used to find the poles and zeros.
+
+Two types of transfer functions are allowed:  one of the form (output
+voltage)/(input voltage) and the other of the form (output
+voltage)/(input current).  These two types of transfer functions cover
+all the cases and one can find the poles/zeros of functions like
+input/output impedance and voltage gain.  The input and output ports
+are specified as two pairs of nodes.
+
+The pole-zero analysis works with resistors, capacitors, inductors,
+linear controlled sources, independent sources, BJTs, MOSFETs, JFETs
+and diodes.  Transmission lines and Josephson junctions are not
+supported.
+
+\spgen{.pz {\it node1 node2 node3 node4\/} cur|vol pol|zer|pz}
+\spexamp{.pz 1 0 3 0 cur pol\\
+.pz 2 3 5 0 vol zer\\
+.pz 4 1 4 1 cur pz}
+
+The keyword {\vt cur} stands for a transfer function of the type
+(output voltage)/(input current) while {\vt vol} stands for a transfer
+function of the type (output voltage)/(input voltage).  The keyword
+{\vt pol} stands for pole analysis only, {\tt zer} for zero analysis
+only and {\vt pz} for both.  This feature is provided mainly because
+if there is a nonconvergence in finding poles or zeros, then, at least
+the other can be found.  Finally, {\it node1\/} and {\it node2\/} are
+the two input nodes and {\it node3\/} and {\it node4\/} are the two
+output nodes.  Thus, there is complete freedom regarding the output
+and input ports and the type of transfer function.
+
+In interactive mode, the {\cb pz} command, which takes the same
+arguments as the {\vt .pz} line, can be used to initiate pole-zero
+analysis.
+
+Pole-zero analysis is not available if Josephson junctions are
+included in the circuit.
 
 !!SEEALSO
 analyses
@@ -1149,6 +1937,32 @@ DC or Small-Signal AC Sensitivity Analysis
     In interactive mode, the <a href="sens"><b>sens</b></a> command,
     which takes the same arguments as the <tt>.sens</tt> line, can be
     used to initiate sensitivity analysis.
+!!LATEX .sens format.tex
+\spgen{.sens {\it outvar} [ac dec|oct|lin {\it np fstart fstop\/}]
+ [dc$|$sweep {\it args}]}
+\spexamp{.sens v(1,out)\\
+.sens v(out) ac dec 10 100 100k\\
+.sens i(vtest)}
+
+The sensitivity of {\it outvar\/} to all non-zero device parameters is
+calculated when the sensitivity analysis is specified.  The parameter
+{\it outvar\/} is a circuit variable (node voltage or branch current). 
+Without the ac specification, the analysis calculates sensitivity of
+the dc operating point value of {\it outvar\/}.  If an ac sweep
+specification is included, the analysis calculates sensitivity of the
+ac values of {\it outvar\/}.  The parameters listed for ac sensitivity
+are the same as in an ac analysis.  The output values are in
+dimensions of change in output per unit change of input (as opposed to
+percent in output or per percent of input).
+
+The optional dc sweep is a dc analysis specification which will cause
+the sensitivity analysis to be performed at each point of the dc
+sweep.  The small-signal parameters are reevaluated at every sweep
+point, and the output vectors will be multidimensional.
+
+In interactive mode, the {\cb sens} command, which takes the same
+arguments as the {\vt .sens} line, can be used to initiate sensitivity
+analysis.
 
 !!SEEALSO
 analyses
@@ -1203,6 +2017,38 @@ DC or Small-Signal AC Transfer Function Analysis
     In interactive mode, the <a href="tf"><b>tf</b></a> command, which
     takes the same arguments as the <tt>.tf</tt> line, can be used to
     initiate transfer function analysis.
+!!LATEX .tf format.tex
+\spgen{.tf {\it outsrc} | v({\it n1\/}[,{\it n2\/}]) {\vt insrc}
+ [ac dec|oct|lin {\it np fstart fstop\/}]
+ [dc$|$sweep {\it args}]}
+\spexamp{.tf v(5,3) vin\\
+.tf I(vload) vin ac dec 10 1 1e12\\
+.tf v(2) vin ac dec 10 1 1meg\\
+.tf v(4) vx dc vcc 5 10 1\\
+.tf v(5) vy ac dec 10 1 1meg dc 5 10 1}
+
+The {\vt .tf} line defines the small-signal output and input for the
+dc or ac small-signal analysis.  The first parameter is the
+small-signal output variable (node voltage or name of inductor or
+voltage source for branch current) and {\it insrc\/} is the small
+signal input source.  If this line is included, {\WRspice} computes
+the dc or ac small-signal value of the transfer function
+(output/input), input resistance or impedance, and output resistance
+or impedance.  For the first example, {\WRspice} would compute the
+ratio of {\vt v(5,3)} to {\vt vin}, the small signal input resistance
+at {\tt vin}, and the small-signal output resistance measured across
+nodes 5 and 3.  If the ac parameters are given, the {\vt .tf} line
+produces output vectors representing the impedance and other
+parameters at each frequency point.
+
+The optional dc sweep is a dc analysis specification which will cause
+the transfer function analysis to be performed at each point of the dc
+sweep.  The small-signal parameters are reevaluated at every sweep
+point, and the output vectors will be multidimensional.
+
+In interactive mode, the {\cb tf} command, which takes the same
+arguments as the {\vt .tf} line, can be used to initiate transfer
+function analysis.
  
 !!SEEALSO
 analyses
@@ -1362,6 +2208,167 @@ Transient Analysis
     the <a href="save"><b>save</b></a> command).  It is sometimes
     useful or interesting to see how the internal timestep varies in a
     simulation.
+!!LATEX .tran format.tex
+The transient analysis portion of {\WRspice} computes the transient
+output variables as a function of time over a user-specified time
+interval.  The initial conditions are automatically determined by a dc
+analysis.  All sources which are not time dependent (for example,
+power supplies) are set to their dc value.  The transient time
+interval is specified on a {\vt .tran} control line.
+
+\spgen{.tran {\it tstep1 tstop1} [[start=]{\it tstart1} [{\it tmax\/}]]
+ [{\it tstep2 tstop2} ... {\it tstepN tstopN\/}] [uic]\\
+ \hspace*{5mm} [scroll | segment {\it base delta\/}] [dc$|$sweep {\it args}]}
+\spexamp{.tran 1ns 100ns\\
+.tran 1ns 1000ns 500ns\\
+.tran 10ns 1us uic}
+
+The {\it tstep} values are the printing or plotting increments for
+output, in the ranges
+
+\begin{tabular}{ll}
+{\it tstep1\/}: & {\it tstart} $<=$ {\it time} $<$ {\it tstop1}\\
+{\it tstep2\/}: & {\it tstop1} $<=$ {\it time} $<$ {\it tstop2}\\
+\multicolumn{2}{c}{...}\\
+{\it tstepN\/}: & {\it tstopN-1} $<=$ {\it time} $<$ {\it tstopN}\\
+\end{tabular}
+
+The {\it tstart} is the initial time, assumed 0 if not given.  This
+can be preceded by a ``{\vt start=}'' keyword, for HSPICE
+compatibility.  The transient analysis always begins at time zero
+internally.  In the interval [0, {\it tstart\/}), the circuit is
+analyzed (to reach a steady state), but no outputs are stored. 
+Subsequently, the circuit is analyzed and outputs are stored.
+
+The parameter {\it tmax\/} is the maximum internal timestep size that
+{\WRspice} will use.  The internal timestep is computed dynamically
+from the circuit.  The output generated at the specified {\it tstep}
+points is interpolated from the ``real'' internal time points.  The
+{\it tmax} parameter can be used when one wishes to guarantee a
+computing interval which is smaller than the output increment, {\it
+tstep\/}.
+
+If not given, the effective {\it tmax} is taken as the {\bf smaller}
+of {\it tstep\/}, and ({\it tstop} -- {\it tstart\/})/50.  This is
+different from Berkeley SPICE3, which chooses the larger value (which
+may be a bug), and earlier releases of {\WRspice}.
+
+It is important to understand the consequences of this difference. 
+This change was made to improve results from circuits containing only
+devices that weakly limit the time step (e.g.  MOSFETs, ring
+oscillator results) which otherwise can be ugly and wrong.  This
+allows users of such devices to get good results without having to set
+an explicit maximum time step in the tran line. 
+ 
+However, if the printing time increment {\it tstep} is too small, the
+simulation time can dramatically increase, since these points are
+actually being calculated and not just interpolated.  The user in this
+situation has several options:
+
+\begin{enumerate}
+\item{Accept the longer analysis time as the cost of greater accuracy.}
+\item{Use a larger printing time increment ({\it tstep\/}).}
+\item{ Use the {\it tmax} parameter to set a larger limit.}
+\item{Use {\vt .options oldsteplim} to
+use the old limit of ({\it tstop\/} -- {\it tstart\/})/50.}
+\end{enumerate}
+
+The {\vt uic} keyword (use initial conditions) is an optional keyword
+which indicates that the user does not want {\WRspice} to solve for
+the quiescent operating point before beginning the transient analysis. 
+If this keyword is specified, {\WRspice} uses the values specified
+using {\vt ic=}...  on the various elements as the initial transient
+condition and proceeds with the analysis.  If the {\vt .ic} line has
+been given, then the node voltages on the {\vt .ic} line are used to
+compute the initial conditions for the devices.  See the description
+of the {\vt .ic} line (\ref{icline}) for its interpretation when {\vt
+uic} is not specified.
+
+If Josephson junctions are present in the circuit, if {\vt uic} is not
+given, the operating point is computed taking the Josephson junctions
+as shorted (actually, a resistance of 1uV/Ic).  After this, the
+Josephson junctions will be given any specified initial voltage and
+phase (or these will be reset to exactly zero with no initial
+conditions given).  Thus, the Josephson junctions are always ``{\vt
+uic}'', but the circuit is not in {\vt uic} mode unless {\vt uic} is
+actually given in the transient analysis command.
+
+In addition, with Josephson junctions present the value of current
+flowing through all inductors in the circuit is reset to zero before
+transient analysis and after the operating point is calculated.  This
+is required to enforce the flux and Josephson phase relationship
+around loops of Josephson junctions and inductors.  The algorithm
+requires that both phase and flux start at zero, and evolve acording
+to the forces applied by the rest of the circuit.
+
+In 3.2.11 and earlier releases, the presence of Josephson junctions
+would automatically cause simulation in {\vt uic} mode.  as if ``{\vt
+uic}'' was included in the {\vt tran} command.  In releases after
+3.2.11, the presence of Josephson junctions does not automatically
+specify {\vt uic} mode.  Instead, as with simulations without
+Josephson junctions, a dc operating point calculation is performed to
+obtain the initial node voltages, which are used as the starting point
+for transient analysis.  If Josephson junctions are present, the
+calculated inductor currents are zeroed before transient analysis
+starts, which is a technical requirement for maintaining the
+flux/phase relationship in JJ/inductor loops.
+
+If a circuit containing Josephson junctions has all sources with a
+time=0 value of zero, then it is possible to give {\vt uic} explicitly
+in the {\vt tran} command line.  This will avoid the dc operating
+point analysis, and therefor perhaps simulate slightly faster.
+
+If a circuit has sources that have nonzero time=0 values, it is not
+recommended to give {\vt uic}, though it will typically work. 
+Effectively, there is a large initial transient, which may initialize
+multi-valued Josephson circuits into an unexpected mode, or produce
+other undesirable effects.
+
+The advantage of the present non-uic approach when simulating with
+Josephson junctions is that it facilitates simulating hybrid
+semiconductor/superconductor circuits.  In this case, a dc operating
+point calculation is generally needed to initialize the semiconductor
+circuitry.
+
+The {\vt scroll} keyword is useful in the {\cb tran} command in
+interactive mode.  If the {\vt scroll} keyword is given, the
+simulation will continue indefinitely, until stopped by a {\cb stop}
+command or interrupt.  The time range of data {\it tstop - tstart}
+behind the current time is retained in the plot.
+
+If the {\vt segment} keyword is given, along with a character string
+token {\it base} and real value {\it delta}, individual rawfiles are
+output for each range of delta as the simulation advances.  The
+internal plot data are cleared after each segment is output.  The
+files are named with the {\it base} given, as {\it base\/}.{\vt s00},
+{\it base\/}.{\vt s01}, etc.  This will not happen if a rawfile is
+being produced.  If {\vt scroll} is also given, it is ignored.  If a
+dc analysis is chained, it is legitimate to pass a {\it delta} of
+zero, in which case a file is produced for each cycle.  Otherwise, the
+{\it delta} should be a multiple or submultiple of {\vt tstop}, or the
+files will be difficult to interpret.  It is an error if {\it delta}
+is nonpositive if there is no chained dc analysis.  The purpose of
+this feature is to facilitate extremely lengthly transient analysis
+runs.
+
+The optional dc sweep is a dc analysis specification which will cause
+the transient analysis to be performed at each point of the dc sweep. 
+The dc operating point is reevaluated at every sweep point, and output
+vectors will be multidimensional.  The optional parameters before {\vt
+dc} can be omitted in this case, as the parser recognizes the ``{\vt
+dc}'' keyword as the start of a dc sweep specification.  If the {\vt
+scroll} keyword is given, the dc sweep is not available.
+
+In interactive mode, the {\cb tran} command, which takes the same
+arguments as the {\vt .tran} line, can be used to initiate transient
+analysis.
+
+\index{"@delta vector}
+During transient analysis, a special vector {\vt @delta} maps to the
+(most recent) internal time step.  To use in a plot, it must be saved
+first (using a {\vt .save} line or the {\cb save} command).  It is
+sometimes useful or interesting to see how the internal timestep
+varies in a simulation.
 
 !!SEEALSO
 analyses
