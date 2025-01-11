@@ -6348,7 +6348,7 @@ can transfer the same data attributes as the rawfile format.
 
 The file structure is reminiscent of the rawfile format, and the same
 format for the strings is used, but strings are printed after a leading
-`{\vt #}' which indicates a comment.  These comments will be used by
+`{\vt \#}' which indicates a comment.  These comments will be used by
 {\WRspice} as the file is read, but are expected to be ignored by other
 programs.  Numerical data values are ASCII text in exponential or
 integer format, unlike rawfiles there is no binary option.

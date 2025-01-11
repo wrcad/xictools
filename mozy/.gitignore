@@ -4,6 +4,8 @@ bin/QT5
 bin/QT6
 bin/hlp2html
 bin/hlp2html.exe
+bin/hlp2latex
+bin/hlp2latex.exe
 bin/hlpsrv
 bin/hlpsrv.exe
 bin/httpget

@@ -725,7 +725,6 @@ search path (a colon-delimited list of directories) can be provided in
 the environment variable {\et IMSAVE\_PATH}.  If not set, the internal
 path is ``{\vt /usr/bin:/usr/local/bin:/usr/X11R6/bin}''.  The helper
 function capability is not available under Microsoft Windows.
-\end{description}
 
 If the {\cb Legend} button is active, the image will contain the
 legend.  If {\cb Landscape} is selected, the image will be rotated 90
