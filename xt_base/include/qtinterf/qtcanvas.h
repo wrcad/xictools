@@ -338,19 +338,19 @@ private:
             da_regy1 = size().height() - 1;
             da_regfull = true;
         }
-    void region_addx(int x)
+    void region_addx(int xx)
         {
-            if (x < da_regx0)
-                da_regx0 = x;
-            if (x > da_regx1)
-                da_regx1 = x;
+            if (xx < da_regx0)
+                da_regx0 = xx;
+            if (xx > da_regx1)
+                da_regx1 = xx;
         }
-    void region_addy(int y)
+    void region_addy(int yy)
         {
-            if (y < da_regy0)
-                da_regy0 = y;
-            if (y > da_regy1)
-                da_regy1 = y;
+            if (yy < da_regy0)
+                da_regy0 = yy;
+            if (yy > da_regy1)
+                da_regy1 = yy;
         }
     void region_add(int x1, int y1)
         {
