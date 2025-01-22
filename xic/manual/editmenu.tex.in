@@ -1,0 +1,119 @@
+% -----------------------------------------------------------------------------
+% Xic Manual
+% (C) Copyright 2025, Whiteley Research Inc., Sunnyvale CA
+% editmenu.tex.in
+% -----------------------------------------------------------------------------
+
+% -----------------------------------------------------------------------------
+\chapter{The Edit Menu:  Edit Layout}
+\index{Edit Menu}
+
+% xic:editmenu 031815
+<<xic:editmenu xiEdit.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Cell, Instance, and Object Properties}
+\index{properties}
+
+% properties 021513
+<<properties xiProperties.hlp>>
+
+%-----------------------------------
+\subsection{Physical Mode Properties}
+
+%physprops 032015
+<<physprops xiProperties.hlp>>
+
+%--------------------------------------------
+\subsection{Pseudo-Properties}
+\index{pseudo-properties}
+\label{pseudoprops}
+
+% pseudoprops 101016
+<<pseudoprops xiProperties.hlp>>
+
+%-------------------------------------
+\subsection{Electrical Mode Properties}
+\label{elprops}
+
+% elecprops 110313
+<<elecprops xiProperties.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Enable Editing} Button: Enable Cell Editing}
+\index{Enable Editing button}
+
+% xic:cedit 111609
+<<xic:cedit xiEdit.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Setup} Button: Show Editing Setup Panel}
+\index{Setup button (Edit Menu)}
+
+% xic:edset 100416
+<<xic:edset xiEdit.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb PCell Control} Button: PCell Control Panel}
+\index{PCell Control button}
+\index{PCell Control panel}
+\index{pcell options}
+
+% xic:pcctl 091614
+<<xic:pcctl xiEdit.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Create Cell} Button: Create New Cell}
+\index{Create Cell button}
+\index{cell creation}
+
+% xic:crcel 062109
+<<xic:crcel xiEdit.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Create Via} Button: Create Standard Via Variant}
+\index{Create Via button}
+\index{standard via}
+
+% xic:crvia 071820
+<<xic:crvia xiEdit.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Flatten} Button: Flatten Hierarchy}
+\index{Flatten button}
+\index{flatten hierarchy}
+
+% xic:flatn 020918
+<<xic:flatn xiEdit.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Join/Split} Button: Join or Split Objects}
+\index{Join/Split button}
+
+% xic:join 070616
+<<xic:join xiEdit.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Layer Expression} Button: Evaluate Layer Expression}
+\index{Layer Expression button}
+
+% xic:lexpr 100516
+<<xic:lexpr xiEdit.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Properties} Button: Property Editor Panel}
+\label{prptybut}
+\index{Properties button}
+\index{properties}
+\index{Property Editor window}
+
+% xic:prpty 030415
+<<xic:prpty xiEdit.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Cell Properties} Button: Edit Cell properties}
+\index{Cell Properties button}
+
+% xic:cprop 081418
+<<xic:cprop xiEdit.hlp>>
+

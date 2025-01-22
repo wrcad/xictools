@@ -117,6 +117,85 @@ layers
     <i>Xic</i> layers may also contain a description string,
     presentation attributes such as color and fill pattern, and a host
     of other flags and properties for use within <i>Xic</i>.
+!!LATEX layers interface.tex
+In {\Xic}, boxes, polygons, and other objects are created on {\it
+layers\/}.  These often correspond to mask levels in a fabrication
+process, but the actual interpretation is up to the user.
+
+Most often, layers are defined in the technology file, and these are
+shown within {\Xic} in the layer table.  One of the layers is selected
+as the ``current layer'', which is used for drawing objects.
+
+Layers have an order, as shown in the layer table display.  Layers
+that come later in the listing are considered to be ``above'' the
+layers listed earlier.  This is reflected in how layouts are drawn
+on-screen and in plots, as the fill (if any) of a layer will obscure
+the lower layers.
+
+Historically, {\Xic} has used a very simple model for layers based on
+CIF.  In this model, each layer has a unique name of four characters
+or fewer.
+
+Starting with the {\Xic}-3.3 branch, the OpenAccess model is used. 
+This provides fundamental compatibility with design tools based on the
+OpenAccess database, including Cadence Virtuoso.  However, it is a bit
+more complicated.
+
+The word ``layer'' now has two meanings.  This is unfortunate, but the
+meaning should be clear in context.  First, there are the {\Xic}
+layers we have mentioned.  Second, there is the concept of a component
+(or OpenAccess) layer.  In OpenAccess, layer names are associated with
+layer numbers, forming an abstraction that can be identified by name
+or number.  OpenAccess also similarly defines another abstract type
+called the ``purpose''.  Again, there are purpose names and purpose
+numbers, and an abstraction identifiable by name or number.  In order
+to draw an object in OpenAccess, one requires a layer and a purpose. 
+A layer and a purpose in OpenAccess is called a layer/purpose pair
+(LPP).  An LPP is actually what corresponds to an {\Xic} layer.
+
+In {\Xic}, there is a default purpose, with name ``{\vt drawing}''. 
+When a purpose name is not explicitly specified, this purpose will be
+assumed.
+
+Every {\Xic} layer has a component layer name and purpose.  The name
+of an {\Xic} layer is given or printed in the form
+\begin{quote}
+{\it component\_layer\/}[{\vt :}{\it purpose\/}]
+\end{quote}
+If the purpose name is ``{\vt drawing}'', then it is not printed or
+given explicitly.  Otherwise, the purpose is separated from the
+component layer name by a colon ('{\vt :}') character.  Note that when
+the purpose is ``{\vt drawing}'', the {\Xic} layer name is simply the
+component layer name, so if the only purpose used is ``{\vt
+drawing}'', the distinction between OpenAccess and {\Xic} layer names
+vanishes.
+
+Example {\Xic} layer names:
+\begin{quote}\vt
+m1\\
+m1:pin
+\end{quote}
+The first name corresponds to component layer name {\vt m1} and
+purpose {\vt drawing}.  The second example uses a purpose named ``{\vt
+pin}''.
+
+In {\Xic}, layer names of both types, and purpose names, are always
+recognized and treated without case-sensitivity.  There is no limit on
+the length of these names.  Component layer and purpose names can
+contain alphanumeric characters plus dollar sign ('{\vt \$}') and
+underscore ('{\vt \_}').
+
+All of the component layer and purpose names also have corresponding
+numbers.  These may be assigned by the user, or assigned internally by
+{\Xic}.  {\Xic} will maintain the associations, but the numbers are
+not used by {\Xic}.  They are, however, important for compatibility
+with other tools.
+
+All {\Xic} layers may be given an alias name.  The layer will be
+recognized by this name, as well as its normal name.  {\Xic} layers
+may also contain a description string, presentation attributes such as
+color and fill pattern, and a host of other flags and properties for
+use within {\Xic}.
 
 !!SEEALSO
 layertab
@@ -293,6 +372,142 @@ Layer Table
     table takes a lot of screen area, and often it is not needed.  The
     <a href="xic:lpal">layer palette</a> can be used instead to
     provide access to a few chosen layers.
+!!LATEX layertab interface.tex
+The layer table is arrayed vertically to the left of the main drawing
+window.  If layers have been specified to {\Xic}, they will be shown
+in this area.  If there are more layers than space available for
+display, a scroll bar is provided.  There is no limit on the number of
+layers that can be defined in {\Xic}.  Separate layer tables are
+provided for electrical and physical modes.
+
+The ``grip'' that separates the layer table from the main drawing
+window can be dragged to change the layer table width.
+
+To the left of each entry sample box are indicators that when clicked
+on will toggle either the visibility or selectability of that layer. 
+If the layer is not visible, objects on that layer will not be shown
+in layout images.  It the layer is not selectable, objects on the
+layer can't be selected.
+
+To the right of the sample box are the layer name and purpose names.
+
+When the layer is not visible, the sample box is not drawn, and the
+green ``{\vt v}'' indicator becomes a red ``{\vt nv}''.  Layers with
+the {\vt Invisible} technology file keyword will by default be
+invisible.  If the layer is not selectable, the layer name / purpose
+name area is shown with a dark background, and the green ``{\vt s}''
+indicator becomes a red ``{\vt ns}''.  Layers with the {\vt NoSelect}
+technology file keyword will by default be non-selectable.
+
+Visibility can be toggled by clicking on the {\vt v}/{\vt nv}
+indicator with button 1, or by clicking in the sample box area with
+button 2, or by clicking anywhere in the entry with button 1 and the
+{\kb Shift} key held.
+
+In releases earlier than 4.1.6, a layer visibility change would not
+automatically redraw the screen in physical mode.  This is ancient
+behavior intended to accommodate slow screen redraws.  When several
+layer visibility changes are to be made, one can make the changes and
+then force a screen redraw.  This seems to be unnecessary on newer
+computers, which render very quickly, so the updating is now
+automatic.  There is a variable, {\et NoPhysRedraw}, that if set will
+revert to the original behavior of no automatic redraw in physical
+mode, if the user prefers this.
+
+Pressing {\kb Shift} along with clicking button 2 in the sample box
+area will suppress redraw if the variable is not set.  If the variable
+is set, then the {\kb Shift}-click will redraw tha main window and all
+similar sub-windows after the operation.  The drawing window that has
+the keyboard focus can be redrawn by pressing {\kb Ctrl-r}.  The {\cb
+rdraw} button to the left of the coordinate readout will redraw the
+main window and all similar sub-windows.
+
+In electrical mode, the SCED layer, which is the electrical mode
+active wiring layer, is always visible.  Instead, of toggling
+visibility of this layer, the button presses will toggle between solid
+and empty fill.
+
+Selectability can be toggled by clicking on the {\vt s}/{\vt ns}
+indicator with button 1, or by clicking in the layer name/purpose name
+area with button 2, or by clicking anywhere on the entry with button 1
+and the {\kb Ctrl} key held.
+
+One can also toggle the visibility and selectability states of all
+layers except for the current layer.  At the bottom of the layer
+table, there are two gray areas labeled ``{\vt vis}'' and ``{\vt
+sel}''.
+
+Clicking the ``{\vt vis}'' area with button 1 or button 2 will switch
+all layers except for the current layer to invisible, and back.  The
+comment above regarding window redraw in physical mode applies here as
+well.  If {\kb Shift} is held while clicking, the current redrawing
+behavior is reversed.  When switching back to ``all layers visible'',
+layers with the {\vt Invisible} keyword applied in the technology file
+will remain invisible.
+
+Similarly, clicking the ``{\vt sel}'' area will switch all layers
+except for the current layer to non-selectable and back.  When
+switching back to ``all layers selectable'', layers with the {\vt
+NoSelect} keyword applied in the technology file will remain
+non-selectable.
+
+Button 3 enables layer blinking, if neither of {\kb Shift} or {\cb
+Ctrl} is pressed.  Pressing and holding button 3 over a layer entry in
+the layer table will cause that layer to blink periodically in the
+drawing windows, while button 3 remains pressed.  Layers that happen
+to have the same color as the selected blinking layer will also blink,
+since the operation is sensitive only to the layer color.
+
+In combination with {\kb Shift} and {\kb Ctrl}, clicking with button 3
+on a layer entry provides a shortcut:
+
+\begin{itemize}
+\item{{\kb Ctrl}-button 3 will set the current layer to the clicked-on
+layer, and bring up the {\cb Color Selection} panel, loaded with that
+layer's color.}
+
+\item{{\kb Shift}-button 3 will set the current layer to the
+clicked-on layer, and bring up the {\cb Fill Pattern Editor} loaded
+with that layers pattern.}
+
+\item{{\kb Ctrl-Shift}-button 3 will set the current layer to the
+clicked-on layer, and bring up the {\cb Tech Parameter Editor}
+targeted to the layer.}
+\end{itemize}
+
+\index{current layer}
+The current layer is shown with a blue highlighting box.  Clicking
+on a layer entry with button 1 will make it the current layer.
+The current layer is used when creating objects in the layout.
+
+One can also search for a layer to set as the current layer by name. 
+Just above the layer table is a text entry area, with a button
+containing a blue triangle icon to the left.  The name of the current
+layer is displayed in this area.  This can be used to find layers by
+name.  One can enter the first few characters of a layer name into the
+text area, then press the button to the left.  The button icon will
+change to two triangles, and the layer table will scroll to the first
+matching layer found (if any), as the current layer.  Clicking the
+button a second and subsequent time will scroll to the next and later
+matches.  Though the text in the entry area will take on the selected
+layer name, the search string is retained internally as long as the
+two-triangle icon is displayed on the button.  This will revert to the
+single triangle after a few seconds if not clicked.  When using the
+{\it layer\/}{\vt :}{\it purpose} form, both the layer and purpose
+strings are handled independently, and both can contain just the first
+few characters of the actual layer and purpose names.
+
+The current layer can also be set with the {\cb setcl} button in the
+top button menu.  If one presses this button, then clicks on an object
+in a drawing window (the object must be contained in the current
+cell), the current layer will be changed to the object's layer.  All
+of the rules for selections apply when interpreting which object will
+specify the layer, and in particular the object must be selectable.
+
+The {\cb ltvis} button in the top button menu will toggle the
+visibility of the layer table.  The layer table takes a lot of screen
+area, and often it is not needed.  The layer palette can be used
+instead to provide access to a few chosen layers.
 
 !!SEEALSO
 layers

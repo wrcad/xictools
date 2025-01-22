@@ -1,0 +1,198 @@
+% -----------------------------------------------------------------------------
+% Xic Manual
+% (C) Copyright 2025, Whiteley Research Inc., Sunnyvale CA
+% language.tex.in
+% -----------------------------------------------------------------------------
+
+\chapter{The {\Xic} Scripting Language}
+
+% -----------------------------------------------------------------------------
+\section{The Macro Preprocessor}
+\label{macro}
+\index{macros}
+
+% macro 052222
+<<macro xiScript.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Introduction to {\Xic} Scripts}
+\label{scriptintro}
+\index{user-definable commands}
+\index{scripts}
+
+% xicscript 110815
+<<xicscript xiScript.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Math Operators}
+\index{scripts!operators}
+\label{mathops}
+
+% scr:mathops 110115
+<<mathops xiScript.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Control Structures}
+
+% scr:control 032612
+<<scr:control xiScript.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{``Preprocessor'' Directives}
+\label{preproc}
+
+% scr:preproc 020511
+<<scr:preproc xiScript.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Math Functions}
+\index{scripts!math functions}
+
+% scr:mathfuncs 110115
+<<scr:mathfuncs xiScript.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{User-Defined Functions}
+\label{functions}
+
+% scr:functions 062908
+<<scr:functions xiScript.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\vt exec} Keyword --- Immediate Execution}
+\label{screxec}
+\index{exec keyword in scripts}
+\index{immediate execution}
+
+% scr:exec 062908
+<<scr:exec xiScript.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Static and Global Variables}
+\label{static}
+\index{static variables}
+\index{static keyword}
+
+% scr:global 062908
+<<scr:global xiScript.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Predefined Constants}
+
+% scr:constants 032613
+<<scr:constants xiScript.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{HTML Forms and Scripts}
+\index{HTML forms}
+\label{htmlforms}
+
+% scr:forms 062908
+<<scr:forms xiScript.hlp>>
+
+% -----------------------------------------------------------------------------
+% not in help
+\section{Example Script}
+Below is the text of a script which will generate a spiral object, provided
+as an example.
+
+\begin{verbatim}
+# Example script to produce a spiral on the current layer
+#
+# solicit geometrical info from user
+num = AskReal("Number of turns? ", "1")
+if (num < 0 | num > 100)
+    ShowPrompt("Bad input (< 0 or > 100) for turns: ", num)
+    Exit()
+end
+width = AskReal("Width of spiral path? ", "4")
+if (width < 0)
+    ShowPrompt("Bad input (< 0) for width: ", width)
+    Exit()
+end
+rmin = AskReal("Starting radius? ", "20")
+if (rmin < width/2)
+    ShowPrompt("Bad input (< width/2) for min radius: ", rmin)
+    Exit()
+end
+spa = AskReal("Pitch? ", "10")
+if (spa < width)
+    ShowPrompt("Bad input (< width) for pitch: ", pitch)
+    Exit()
+end
+nums = AskReal("Edges per 360 degrees? ", "50")
+if (nums < 3 | nums > 90)
+    ShowPrompt("Bad input (< 3 or > 90) for edge count: ", nums)
+    Exit()
+end
+
+# initialize
+width = width/2
+dth = 2*pi/nums
+n = nums*num + 1
+i = 0
+theta = 0
+
+# there is an internal limit of 2000 polygon vertices
+nverts = 2*n + 1
+if (nverts > 2000)
+    ShowPrompt("Sorry, resulting polygon would have too many vertices.")
+    Exit()
+end
+
+# allocate array, size 2*nverts
+array[4000] = 0
+
+l = 4*n
+j = 0
+
+# fill in the array
+while (i < n)
+    r = rmin + theta*spa/(2*pi)
+    x = (r-width)*cos(theta)
+    y = (r-width)*sin(theta)
+    array[j] = x
+    array[j+1] = y
+    x = (r+width)*cos(theta)
+    y = (r+width)*sin(theta)
+    array[l-j-2] = x
+    array[l-j-1] = y
+    j = j + 2
+    i = i + 1
+    theta = theta + dth
+end
+
+# close the path, necessary for polygon
+array[l] = array[0]
+array[l+1] = array[1]
+
+# get the location for the spiral and transform array
+ShowPrompt("Point to locate center of spiral")
+xy[2]
+PushGhost(array, nverts)
+ShowGhost(8)
+if !Point(xy)
+    Exit()
+end
+ShowGhost(0)
+PopGhost()
+
+i = 0
+j = 0
+while (i < nverts)
+    array[j] = array[j] + xy[0]
+    array[j+1] = array[j+1] + xy[1]
+    i = i + 1
+    j = j + 2
+end
+
+# create the polygon
+drc = DRCstate(0)
+Polygon(nverts, array)
+Commit()
+DRCstate(drc)
+ShowPrompt("Info: spiral not drc'ed.  Drc takes a long time for these objects.")
+
+#done
+\end{verbatim}
+

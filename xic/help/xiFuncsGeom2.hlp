@@ -830,6 +830,372 @@ Cells, PCells, Vias, and Instance Placement
     On success, a name is returned.  One can use this name with the
     <a href="Place"><tt>Place</tt></a> function to instantiate the
     via.  Otherwise, a fatal error is triggered.
+!!LATEX funcs:geom2:cell scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 102414
+\index{CheckPCellParam function}
+\item{(int) \vt CheckPCellParam({\it library\/}, {\it cell\/},
+{\it view\/}, {\it pname\/}, {\it value\/})}\\
+The first three arguments specify a parameterized cell.
+%\ifoa
+If {\it library} is not given as a scalar 0, it is the name of the
+OpenAccess library containing the pcell super-master, whose name is
+given in the {\it cell} argument.  The {\it view} argument can be
+passed a scalar 0 to indicate that the OpenAccess view name is ``{\vt
+layout}'', or the actual view name can be passed if different.  For
+{\Xic} native pcells not stored in OpenAccess, the {\it library} and
+{\it view} should both be 0 (zero).
+%\else
+%The {\it library} and {\it view} arguments passed to this function
+%should always be 0 (zero).
+%\fi
+
+The {\it pname} is a string containing a parameter name for a
+parameter of the specified pcell, and the {\it value} argument is
+either a scalar or string value.  The function returns 1 if the value
+is not forbidden by a constraint, 0 otherwise.
+
+%------------------------------------
+% 102414
+\index{CheckPCellParams function}
+\item{(int) \vt CheckPCellParams({\it library\/}, {\it cell\/},
+{\it view\/}, {\it params\/})}\\
+The first three arguments specify a parameterized cell.
+%\ifoa
+If {\it library} is not given as a scalar 0, it is the name of the
+OpenAccess library containing the pcell super-master, whose name is
+given in the {\it cell} argument.  The {\it view} argument can be
+passed a scalar 0 to indicate that the OpenAccess view name is ``{\vt
+layout}'', or the actual view name can be passed if different.  For
+{\Xic} native pcells not stored in OpenAccess, the {\it library} and
+{\it view} should both be 0 (zero).
+%\else
+%The {\it library} and {\it view} arguments passed to this function
+%should always be 0 (zero).
+%\fi
+
+The {\it params} argument is a string providing the parameter values
+in the format of the {\et pc\_params} property as applied to
+sub-masters and instances.  i.e., values are constants and constraints
+are not included.  The function returns 1 if no parameter has a value
+forbidden by a constraint, 0 otherwise.
+
+%------------------------------------
+% 062109
+\index{CreateCell function}
+\item{(int) \vt CreateCell({\it cellname\/}, [{\it orig\_x\/},
+  {\it orig\_y\/}])}\\
+This will create a new cell from the contents of the selection
+queue, with the given name, which can not already be in use.  The new
+cell is created in memory only, with the modified flag set so as to
+generate a reminder to the user to save the cell to disk when exiting
+{\Xic}.  This provides functionality similar to the {\cb Create Cell}
+button in the {\cb Edit Menu}.
+
+If the optional coordinate pair {\it orig\_x} and {\it orig\_y} are
+given (in microns), then this point will be the new cell origin in
+physical mode only.  Otherwise, the lower-left corner of the bounding
+box of the objects will be the new cell origin.  In electrical mode,
+the cell origin is selected to keep contacts on-grid, and the origin
+arguments are ignored.
+
+By default, this function will fail if a cell of the same name already
+exists in the current symbol table.  However, if the {\et
+CrCellOverwrite} variable is set, existing cells will be overwritten
+with the new data, and the function will succeed.
+
+%------------------------------------
+% 100408
+\index{CopyCell function}
+\item{(int) \vt CopyCell({\it name\/}, {\it newname\/})}\\
+This function will copy the cell in memory named {\it name} to {\it
+newname}.  The function returns 1 if the operation was successful, 0
+otherwise.  The {\it name} cell must exist in memory, and the {\it
+newname} can not clash with an existing cell or library device.
+
+%------------------------------------
+% 030104
+\index{RenameCell function}
+\item{(int) \vt RenameCell({\it oldname\/}, {\it newname\/})}\\
+This function will rename the cell in memory named {\it oldname} to
+{\it newname\/}, and update all references.  The function returns 1 if
+the operation was successful, 0 otherwise.  The {\it oldname} cell
+must exist in memory, and the {\it newname} can not clash with an
+existing cell or library device.
+
+%------------------------------------
+% 062109
+\index{Delete Empties function}
+\item{(int) \vt DeleteEmpties({\it recurse\/})}\\
+This function will delete empty cells found in the hierarchy under the
+current cell.  This operation can not be undone.  The argument is an
+integer flag; if zero, one pass is done, and all empty cells are
+deleted.  If the argument is nonzero, additional passes are done to
+delete cells that are newly empty due to their subcells being deleted
+on the previous pass.  The top-level cells is never deleted.  The
+return value is the number of cells deleted.
+
+%------------------------------------
+% 030215
+\index{Place function}
+\item{(int) \vt Place({\it cellname\/}, {\it x\/}, {\it y\/} [, {\it refpt\/},
+  {\it array\/}, {\it smash\/}, {\it usegui\/}, {\it tfstring\/}])}\\
+This function places an instance of the named cell at {\it x\/}, {\it
+y\/}.  The first argument is of string type and contains the name of
+the cell to place.  The string can consist of two space-separated
+words.  If so, the first word may be a CHD name, an archive file name,
+or a library
+%\ifoa
+name (including OpenAccess when available).
+%\else
+%name.
+%\fi
+
+The interpretation is similar to the {\cb new} selection in the {\cb
+Open} command in the {\cb File Menu}.  In the case of two words, the
+second word is the name of the cell to extract from the source
+specified as the first word.  If only one word is given, it can be an
+archive file name in which case the top-level cell is understood, or a
+CHD name in which case the default cell is understood, or it can be
+the name of a cell available as a native cell from a library or the
+search path, or already exist in memory.
+
+The second two arguments define the placement location, in microns.
+
+The remaining arguments are optional, meaning that they need not
+be given, but all arguments to the left must be given.
+       
+The {\it refpt} argument is an integer code that specifies the
+reference point which will correspond to {\it x\/}, {\it y} after
+placement.  The values can be
+\begin{quote}
+\begin{tabular}{ll}
+0 & the cell origin (the default)\\
+1 & the lower left corner\\
+2 & the upper left corner\\
+3 & the upper right corner\\
+4 & the lower right corner\\
+\end{tabular}
+\end{quote}
+The corners are those of the untransformed array or cell.
+       
+In electrical mode, if the cell has terminals, this code is ignored,
+and the location of the first terminal is the reference point.  If the
+cell has no terminals, the corner reference points are snapped to the
+nearest grid location.  This is to avoid producing off-grid terminal
+locations.
+
+The {\it array} argument, if given, can be a scalar, or the name of an
+array containing four numbers.  This argument specifies the arraying
+parameters for the instance placement, which apply in physical mode
+only.  If a scalar 0 is passed, the placement will not be arrayed,
+which is also the case if this argument does not appear and is always
+true in electrical mode.  If the scalar is nonzero, then the placement
+will use the current array parameters, as displayed in the {\cb Cell
+Placement Control} pop-up, or set with the {\vt PlaceSetArrayParams}
+function.  If the argument is the name of an array, the array contains
+the arraying parameters.  These parameters are:
+
+\begin{quote}
+\begin{tabular}{ll}
+{\it array\/}[0] & NX, integer number in the X direction.\\
+{\it array\/}[1] & NY, integer number in the Y direction.\\
+{\it array\/}[2] & DX, the real value spacing between cells in
+  the X direction, in microns.\\
+{\it array\/}[3] & DY, the real value spacing between cells in
+  the Y direction, in microns.\\
+\end{tabular}
+\end{quote}
+
+The NX and NY values will be clipped to the range of 1 through 32767. 
+The DX and DY are edge to adjacent edge spacing, i.e., when zero the
+elements will abut.  If DX or DY is given the negative cell width or
+height, so that all elements appear at the same location, the
+corresponding NX or NY is taken as 1.  Otherwise, there is no
+restriction on DX or DY.
+
+If the boolean value {\it smash} is given and nonzero (TRUE), the cell
+will be flattened into the parent, rather than placed as an instance. 
+The flatten-level is 1, so subcells of the cell (if any) become
+subcells of the parent.  This argument is ignored if the cell being
+placed is a parameterized cell (pcell).
+
+The {\it usegui} argument applies only when placing a pcell.  If
+nonzero (TRUE), the {\cb Parameters} panel will appear, and the
+function will block until the user dismisses the panel.  The panel can
+be used to set cell parameters before instantiation.  Initially, the
+parameters will be shown with default values, or values that were last
+given to {\vt PlaceSetPCellParams}.  If the {\it usegui} argument is
+not given or zero (FALSE), the default parameter set as updated with
+parameters given to {\vt PlaceSetPCellParams} will be used to
+instantiate the cell immediately.
+
+The final argument can be a null string or scalar 0 which is
+equivalent, an empty string, or a transform description in the format
+returned by {\vt GetTransformString}.  If null or not given, the
+arguemnt is ignored.  In this case, the cell will be transformed
+before placement according to the current transform.  Otherwise, the
+given transformation will be used when placing the instance.  An empty
+string is taken as the identity transform.  If the {\vt UseTransform}
+mode is in effect, the current transform will be added to the string
+transform, giving an overall transfromation that will match geometry
+placement in this mode.
+
+On success, the function returns 1, 0 otherwise.
+
+%------------------------------------
+% 030215
+\index{PlaceH function}
+\item{(object\_handle) \vt PlaceH({\it cellname\/}, {\it x\/}, {\it y\/}
+  [, {\it refpt\/}, {\it array\/}, {\it smash\/}, {\it usegui\/},
+  {\it tfstring\/}])}\\
+This is similar to the {\vt Place} function, however it returns a
+handle to the newly created instance.  However, if the {\it smash}
+boolean is true or on error, a scalar 0 is returned.
+
+%------------------------------------
+% 030215
+\index{PlaceSetArrayParams function}
+\item{(int) \vt PlaceSetArrayParams({\it nx\/}, {\it ny\/}, {\it dx\/},
+{\it dy\/})}\\
+This function provides array parameters which may be used when
+instantiating physical cells.  These parameters will appear in the
+{\cb Cell Placement Control} panel.  The arguments are:
+  
+\begin{quote}
+\begin{tabular}{ll}
+{\it nx\/} & Integer number in the X direction.\\
+{\it ny\/} & Integer number in the Y direction.\\
+{\it dx\/} & The real value spacing between cells in
+  the X direction, in microns.\\
+{\it dy\/} & The real value spacing between cells in
+  the Y direction, in microns.\\
+\end{tabular}
+\end{quote}
+  
+The {\it nx} and {\it ny} values will be clipped to the range of 1
+through 32767.  The {\it dx} and {\it dy} are edge to adjacent edge
+spacing, i.e., when zero the elements will abut.  If {\it dx} or {\it
+dy} is given the negative cell width or height, so that all elements
+appear at the same location, the corresponding {\it nx} or {\it ny} is
+taken as 1.  Otherwise, there is no restriction on {\it dx} or {\it
+dy}.
+
+The function returns 1 and sets the array parameters in physical mode. 
+In electrical mode, the function returns 0 and does nothing.
+
+%------------------------------------
+% 102414
+\index{PlaceSetPCellParams function}
+\item{(int) \vt PlaceSetPCellParams({\it library\/}, {\it cell\/},
+{\it view\/}, {\it params\/})}\\
+This sets the default parameterized cell (pcell) parameters used when
+instantiating the pcell indicated by the {\it libname\/}/{\it
+cell\/}/{\it view\/}.
+%\ifoa
+If {\it library} is not given as a scalar 0, it is the name of the
+OpenAccess library containing the pcell super-master, whose name is
+given in the {\it cell} argument.  The {\it view} argument can be
+passed a scalar 0 to indicate that the OpenAccess view name is ``{\vt
+layout}'', or the actual view name can be passed if different.  For
+{\Xic} native pcells not stored in OpenAccess, the library and view
+should both be 0 (zero).
+%\else
+%The {\it library} and {\it view} arguments passed to this function
+%should always be 0 (zero).
+%\fi
+
+The {\it params} argument is a string providing the parameter values
+in the format of the {\et pc\_params} property as applied to
+sub-masters and instances, i.e., values are constants and constraints
+are {\bf not} included.  Not all parameters need be given, only those
+with non-default values.
+
+Be aware that there is no immediate constraint testing of the
+parameter values given to this function, though bad values will cause
+subsequent instantiation of the named pcell to fail.  The {\vt
+CheckPCellParams} fuction can be used to validate the params list
+before calling this function.  When giving parameters for non-native
+pcells, it is recommended that the type specification prefixes be
+used, though an attempt is made internally to recognize and adapt to
+differing types.
+
+The saved parameter set will be used for all instantiations of the
+pcell, until changed with another call to {\vt PlaceSetPCellParams}. 
+The placement is done with the {\vt Place} script function, as for
+normal cells.
+
+In graphical mode, the given parameter set will initialize the {\cb
+Parameters} pop-up.
+
+This function manages an internal table of cellname/parameter list
+associations.  If 0 is given for all arguments, the table will be
+cleared.  If the {\it params} argument is 0, the specified entry will
+be removed from the table.  When the script terminates, parameter
+lists set with this function will revert to the pre-script values. 
+Entries that were cleared by passing null arguments are {\bf not}
+reverted, and remain cleared.
+
+The function returns 1 on success, 0 if an error occurred, with an
+error message available from {\vt GetError}.
+
+%------------------------------------
+% 030215
+\index{Replace function}
+\item{(int) \vt Replace({\it cellname\/}, {\it add\_xform\/}, {\it array\/})}\\
+This will replace all selected subcells with {\it cellname\/}.  The same
+transformation applied to the previous instance is applied to the
+replacing instance.  In addition, if {\it add\_xform\/} is nonzero, the
+current transform will be added.  The function returns 1 if
+successful, 0 if the new cell could not be opened.
+
+The {\it array} argument can be a scalar, or the name of an array
+containing four numbers.  This argument specifies the arraying
+parameters for the instance placement, which apply in physical mode
+only.  If a scalar 0 is passed, the placement will retain the same
+arraying parameters as the previous instance.  If the scalar is
+nonzero, then the placement will use the current array parameters, as
+displayed in the {\cb Cell Placement Control} pop-up, or set with the
+{\vt PlaceSetArrayParams} function.  If the argument is the name of an
+array, the array contains the arraying parameters.  These parameters
+are:
+\begin{quote}
+\begin{tabular}{ll}
+{\it array\/}[0] & NX, integer number in the X direction.\\
+{\it array\/}[1] & NY, integer number in the Y direction.\\
+{\it array\/}[2] & DX, the real value spacing between cells in
+  the X direction, in microns.\\
+{\it array\/}[3] & DY, the real value spacing between cells in
+  the Y direction, in microns.\\
+\end{tabular}
+\end{quote}
+
+The NX and NY values will be clipped to the range of 1 through 32767. 
+The DX and DY are edge to adjacent edge spacing, i.e., when zero the
+elements will abut.  If DX or DY is given the negative cell width or
+height, so that all elements appear at the same location, the
+corresponding NX or NY is taken as 1.  Otherwise, there is no
+restriction on DX or DY.
+
+%------------------------------------
+% 032115
+\index{OpenViaSubMaster function}
+\item{(int) \vt OpenViaSubMaster({\it vianame\/}, {\it defnstr\/})}\\
+This function will create if necessary and return the name of a
+standard via sub-master cell in memory.  The first argument is the
+name of a standard via, as defined in the technology file or imported
+from Virtuoso.  The second argument contains a string that specifies
+the parameters that differ from the default values.  This can be null
+or empty if no non-default values are used.  The format is the same as
+described for the {\et stdvia} property, with the standard via name
+token stripped (see \ref{stdviaprp}).
+
+On success, a name is returned.  One can use this name with the {\vt
+Place} function to instantiate the via.  Otherwise, a fatal error is
+triggered.
+
+\end{description}
 
 !!SEEALSO
 funcs:geom2
@@ -1024,6 +1390,165 @@ Clipping Functions
     fatal error is triggered if either argument is not a handle to a
     list of objects.
     </dl>
+!!LATEX funcs:geom2:clip scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 100508
+\index{ClipAround function}
+\item{(int) \vt ClipAround({\it object\_handle1}, {\it all1\/},
+ {\it object\_handle2}, {\it all2\/})}\\
+This function will clip out the pieces of objects in the second handle
+list that intersect with objects in the first handle list.
+
+If the boolean value {\it all1} is nonzero, all objects in the first
+handle are used for clipping, otherwise only the first object is used. 
+If the boolean value {\it all2} is nonzero, all objects in the second
+handle list may be clipped, otherwise only the first object in the
+list is a candidate for clipping.  Only boxes, polygons, and wires
+that appear in the second handle list will be clipped.  The objects in
+the first handle list can be of any type, and labels and subcells will
+use the bounding box.  The objects in the second list must be database
+objects, if they are are copies, no clipping is performed.  The
+objects in the first list can be copies.
+
+The newly created objects are added to the front of the second handle
+list, and the original object is removed from the list.  The return
+value is the number of objects created, or -1 if either handle is
+empty or some other error occurred.  The function fails if either
+handle does not reference an object list.
+
+%------------------------------------
+% 100508
+\index{ClipAroundCopy function}
+\item{(object\_handle) \vt ClipAroundCopy({\it object\_handle1},
+ {\it all1\/}, {\it object\_handle2}, {\it all2\/}, {\it lname})}\\
+This function is similar to {\vt ClipAround}, however no new objects
+are created in the database, and neither of the lists passed as
+arguments is altered.  Instead, a new object list handle is returned,
+which references a list of ``copies'' of objects that are created by
+the clipping.  The new objects are the pieces of the object or objects
+referenced by the second handle that do not intersect the object or
+objects referenced by the first handle.
+
+If the boolean value {\it all1} is nonzero, all objects in the first
+handle are used for clipping, otherwise only the first object is used. 
+If the boolean value {\it all2} is nonzero, all objects in the second
+handle list may be clipped, otherwise only the first object in the
+list is a candidate for clipping.  Only boxes, polygons, and wires
+that appear in the second handle list will be clipped.  The objects in
+the first handle list can be of any type, and labels and subcells will
+use the bounding box.  The objects in the second list can be database
+objects or copies.
+
+If {\it lname} is a non-empty string, it is taken as the name for a
+layer on which all of the returned objects will be placed.  The layer
+will be created if it does not exist.  If zero or an empty or null
+string is passed, the object copies will retain the layer of the
+original object from the second handle list.
+
+The returned list can be used by most functions that expect a list of
+objects, however they are not copies of ``real'' objects.  If no new
+object copy would be created by clipping, the function returns 0.  The
+function will fail if either handle is not an object-list handle.
+
+%------------------------------------
+% 100508
+\index{ClipTo function}
+\item{(int) \vt ClipTo({\it object\_handle1}, {\it all1\/},
+  {\it object\_handle2}, {\it all2\/})}\\
+This function will clip objects referenced by the second handle to the
+boundaries of objects referenced by the first handle.
+
+If the boolean value {\it all1} is nonzero, all objects in the first
+handle are used for clipping, otherwise only the first object is used. 
+If the boolean value {\it all2} is nonzero, all objects in the second
+handle list may be clipped, otherwise only the first object in the
+list is a candidate for clipping.  Only boxes, polygons, and wires
+that appear in the second handle list will be clipped.  The objects in
+the first handle list can be of any type, and labels and subcells will
+use the bounding box.  The objects in the second list must be database
+objects, if they are are copies, no clipping is performed.  The
+objects in the first list can be copies.
+
+The newly created objects are added to the front of the second handle
+list, and the original object is removed from the list.  The return
+value is the number of objects created, or -1 if either handle is
+empty or some other error occurred.  The function fails if either
+handle does not reference an object list.
+
+%------------------------------------
+% 100508
+\index{ClipToCopy function}
+\item{(object\_handle) \vt ClipToCopy({\it object\_handle1}, {\it all1\/},
+  {\it object\_handle2}, {\it all2\/}, {\it lname})}\\
+This function is similar to {\vt ClipTo}, however no new objects are
+created in the database, and neither of the lists passed as arguments
+is altered.  Instead, a new object list handle is returned, which
+references a list of ``copies'' of objects that are created by the
+clipping.  The new objects are the pieces of the object or objects
+referenced by the second handle that intersect the object or objects
+referenced by the first handle.
+
+If the boolean value {\it all1} is nonzero, all objects in the first
+handle are used for clipping, otherwise only the first object is used. 
+If the boolean value {\it all2} is nonzero, all objects in the second
+handle list may be clipped, otherwise only the first object in the
+list is a candidate for clipping.  Only boxes, polygons, and wires
+that appear in the second handle list will be clipped.  The objects in
+the first handle list can be of any type, and labels and subcells will
+use the bounding box.  The objects in the second list can be database
+objects or copies.
+
+If {\it lname} is a non-empty string, it is taken as the name for a
+layer on which all of the returned objects will be placed.  The layer
+will be created if it does not exist.  If zero or an empty or null
+string is passed, the object copies will retain the layer of the
+original object from the second handle list.
+
+The returned list can be used by most functions that expect a list of
+objects, however they are not copies of ``real'' objects.  If no new
+object copy would be created by clipping, the function returns 0.  The
+function will fail if either handle is not an object-list handle.
+
+%------------------------------------
+% 030204
+\index{ClipObjects function}
+\item{(int) \vt ClipObjects({\it object\_handle\/}, {\it merge\/})}\\
+This function will clip boxes, polygons, and wires in the list on the
+same layer as the first such object in the list so that none of these
+objects overlap.  Newly created objects are added to the front of the
+handle list, and deleted objects are removed from the list.  Objects
+in the list that are not on the same layer as the first box, polygon,
+or wire or are not boxes, polygons or wires are ignored.  If the merge
+argument is nonzero, adjacent new objects will be merged, otherwise
+the pieces will remain separate objects.  If successful, the number of
+newly created objects is returned, otherwise -1 is returned.  The
+function will fail if the handle does not reference an object list.
+
+%------------------------------------
+% 100508
+\index{ClipIntersectCopy function}
+\item{(object\_handle) \vt ClipIntersectCopy({\it object\_handle1},
+ {\it all1\/}, {\it object\_handle2}, {\it all2\/}, {\it lname})}\\
+This function returns a list of object copies which represent the
+exclusive-or of box, polygon, and wire objects in the two object lists
+passed.  The lists are not altered in any way, and the new objects,
+being ``copies'', are not added to the database.  Objects found in the
+lists that are not boxes, polygons, or wires are ignored.  The new
+objects are placed on the layer with the name given in {\it lname},
+which is created if it does not exist, independent of the originating
+layer of the objects.  If a null string or 0 is passed for {\it
+lname}, the target layer is the first layer found in {\it
+object\_handle1}, or {\it object\_handle2} if {\it object\_handle1} is
+empty.  The {\it all1} and {\it all2} are integer arguments indicating
+whether to use only the first object in the list, or all objects in
+the list.  If nonzero, then all boxes, polygons, and wires in the
+corresponding list will be used, otherwise only the first box,
+polygon, or wire will be processed.  On success, a handle to a list of
+object copies is returned, zero is returned otherwise.  A fatal error
+is triggered if either argument is not a handle to a list of objects.
+
+\end{description}
 
 !!SEEALSO
 funcs:geom2
@@ -1824,6 +2349,629 @@ Other Object Management Functions
     There is no return value; the function either succeeds or will
     terminate the script on error.
     </dl>
+!!LATEX funcs:geom2:obj scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 100408
+\index{ChangeLayer function}
+\item{(int) \vt ChangeLayer()}\\
+This function will change the layer of all selected geometry to the
+current layer.  This is similar to the functionality of the {\cb
+Chg Layer} button in the {\cb Modify Menu}.
+
+%------------------------------------
+% 100412
+\index{Bloat function}
+\item{(int) \vt Bloat({\it dimen\/}, {\it mode\/})}\\
+Each selected object is bloated by the given dimension, similar to the
+{\cb !bloat} command.  The returned value is 0 on success, or 1 if
+there was a runtime error.  This function will return 1 if not called
+in physical mode.
+
+The second argument is an integer that specifies the algorithm to use
+for bloating.  Giving zero specifies the default algorithm.  See the
+description of the {\cb !bloat} command (\ref{bloatcmd}) for
+documentation of the algorithms available. 
+
+%------------------------------------
+% 100412
+\index{Manhattanize function}
+\item{(int) \vt Manhattanize({\it dimen\/}, {\it mode\/})}\\
+Each selected non-Manhattan polygon or wire is converted to a
+Manhattan polygon or box approximation, similar to the {\cb !manh}
+command.  The first argument is a size in microns representing the
+smallest dimension of the boxes created to approximate the
+non-Manhattan parts.  The second argument is a boolean value that
+specifies which of two algorithms to use.  These algorithms are
+described with the {\cb !manh} command.
+
+The returned value is 0 on success, or 1 if there was a runtime error. 
+This function will return 1 if not called in physical mode.  The
+function will fail if the {\it dimen} argument is smaller than 0.01.
+
+%------------------------------------
+% 030204
+\index{Join function}
+\item{(int) \vt Join()}\\
+The selected objects that touch or overlap are merged together into
+polygons, similar to the {\cb !join} command.  The returned value is 0
+on success, 1 if there is a runtime error.  This function will return
+1 if not called in physical mode.
+
+%------------------------------------
+% 030204
+\index{Decompose function}
+\item{(int) \vt Decompose({\it vert\/})}\\
+The selected polygons and wires are decomposed into elemental
+non-overlapping trapezoids (polygons) similar to the {\cb !split}
+command.  If the integer argument is nonzero, the decomposition favors
+a vertical orientation, otherwise the splitting favors horizontal. 
+The returned value is 0 if called in physical mode, 1 if not called in
+physical mode (an error).
+
+%------------------------------------
+% 030204
+\index{object creation!boxes}
+\index{Box function}
+\item{(int) \vt Box({\it left\/}, {\it bottom\/}, {\it right\/},
+ {\it top\/})}\\
+The four arguments are real values specifying the coordinates of a
+rectangle in microns.  Calling this function will generate a box on
+the current layer with the given coordinates.  This provides
+functionality similar to the {\cb box} menu button.
+
+If the {\vt UseTransform} function has been called to enable use of
+the current transform, the current transform will be applied to given
+coordinates before the box is created.  The translation supplied to
+{\vt UseTransform} is added to the coordinates before the current
+transform is applied.
+
+The {\vt Box} function will actually create a polygon if the current
+transform is being used and the rotation angle is 45 degrees or one of
+the other non-Manhattan angles.
+
+%------------------------------------
+% 021913
+\index{object creation!boxes}
+\index{BoxH function}
+\item{(object\_handle) \vt BoxH({\it left\/}, {\it bottom\/}, {\it right\/},
+ {\it top\/})}\\
+This is similar to the {\vt Box} function, but will return a handle to
+the new object.  On error, a scalar 0 is returned.
+
+%------------------------------------
+% 030204
+\index{Polygon function}
+\index{object creation!polygons}
+\item{(int) \vt Polygon({\it num\/}, {\it arraypts\/})}\\
+This function creates a polygon on the current layer.  The second
+argument is an array of values, taken as x-y pairs.  The first pair of
+values must be the same as the last, i.e., the path must be closed. 
+The first argument is the number of pairs of coordinates in the array. 
+This provides functionality similar to the {\cb polyg} menu button.
+
+If the {\vt UseTransform} function has been called to enable use of
+the current transform, the current transform will be applied to the
+given coordinates before the polygon is created.  The translation
+supplied to {\vt UseTransform} is added to the coordinates before the
+current transform is applied.
+
+The {\vt Polygon} function will actually create a box if the rotated
+figure can be so represented.  The {\vt Polygon} function will never
+create boxes unless use of the current transform is enabled.
+
+%------------------------------------
+% 021913
+\index{PolygonH function}
+\index{object creation!polygons}
+\item{(object\_handle) \vt PolygonH({\it num\/}, {\it arraypts\/})}\\
+This is similar to the {\vt Polygon} function, but will return a
+handle to the new object.  On error, a scalar 0 is returned.
+
+%------------------------------------
+% 012815
+\index{Arc function}
+\item{(int) \vt Arc({\it x\/}, {\it y\/}, {\it rad1X\/}, {\it rad1Y\/},
+ {\it rad2X\/}, {\it rad2Y\/}, {\it ang\_start\/}, {\it ang\_end\/})}\\
+This produces a circular or elliptical solid or ring-like figure,
+providing functionality similar to the {\cb round}, {\cb donut}, and
+{\cb arc} buttons in the physical side menu.
+
+\begin{tabular}{ll}
+\it x, y & center coordinates\\
+\it rad1X, rad1Y & x and y inner radii\\
+\it rad2X, rad2Y & x and y outer radii\\
+\it ang\_start & starting angle in degrees\\
+\it ang\_end & ending angle in degrees\\
+\end{tabular}
+
+All dimensions are given in microns.  The first two arguments provide
+the center coordinates.  The second two arguments are the inner radius
+in the X and Y directions.  If these differ, the inner radus will be
+elliptical, otherwise it will be circular.  If both are zero, the
+figure will not have an inner surface.
+
+Similarly, the next two arguments specify the outer radius, X and Y
+directions separately.  Both are required to be larger than the inner
+radius counterpart.
+
+The final two arguments are the start and end angle, given in degrees. 
+If {\it ang\_start\/} and {\it ang\_end\/} are equal, a donut (ring
+figure) is produced.  If the outer and inner radii are equal, a solid
+figure is produced.  Angles are defined from the positive x-axis, in a
+counter-clockwise sense.  The arc is generated in a clockwise
+direction.
+
+If the {\vt UseTransform} function has been called to enable use of
+the current transform, the current transform will be applied to the
+arc coordinates before the arc is created.  The translation supplied
+to {\vt UseTransform} is added to the coordinates before the current
+transform is applied.
+
+The function returns 1 on success, 0 otherwise.
+
+%------------------------------------
+% 021913
+\index{ArcH function}
+\item{(object\_handle) \vt ArcH({\it x\/}, {\it y\/}, {\it rad1X\/},
+ {\it rad1Y\/}, {\it rad2X\/}, {\it rad2Y\/}, {\it ang\_start\/},
+ {\it ang\_end\/})}\\
+This is similar to the {\vt Arc} function, but will return a handle to
+the new object.  On error, a scalar 0 is returned.
+
+
+%------------------------------------
+% 012815
+\index{Round function}
+\item{(int) \vt Round({\it x\/}, {\it y\/}, {\it rad\/})}\\
+This a simplification of the {\vt Arc} function which simply creates a
+circular disk object at the location specified in the first two
+arguments.  All dimensions are in microns.  The third argument
+specifies the radius.
+  
+The function returns 1 on success, 0 otherwise.
+
+%------------------------------------
+% 012815
+\index{RoundH function}
+\item{(object\_handle) \vt RoundH({\it x\/}, {\it y\/}, {\it rad\/})}\\
+This is similar to the {\vt Round} function, but will return a handle
+to the new object.  On error, a scalar 0 is returned.
+
+%------------------------------------
+% 012815
+\index{HalfRound function}
+\item{(int) \vt HalfRound({\it x\/}, {\it y\/}, {\it rad\/},
+ {\it dir\/})}\\
+This is a simplification of the {\vt Arc} function which creates a
+half-circular figure.  The first two arguments indicate the center of
+an equivalent full circle, i.e., it is the midpoint of the flat edge. 
+The {\it dir} argument is an integer 0--7 which specifies the
+orientation, in increments of 45 degrees.  With 0, the flat section is
+horizontal with the curved surface on top.  The dir rotates clockwise,
+so that a value of 2 would produce a figure that looks like the letter
+D.
+  
+The function returns 1 on success, 0 otherwise.
+
+%------------------------------------
+% 012815
+\index{HalfRoundH function}
+\item{(object\_handle) \vt HalfRoundH({\it x\/}, {\it y\/}, {\it rad\/},
+ {\it dir\/})}\\
+This is similar to the {\vt HalfRound} function, but will return a
+handle to the new object.  On error, a scalar 0 is returned.
+
+%------------------------------------
+% 021515
+\index{Sides function}
+\item{(int) \vt Sides({\it numsides\/})}\\
+This sets the number of segments to use in generating round objects,
+for the current display mode (electrical or physical).  The function
+returns the present value for this parameter.  This is similar to the
+{\cb sides} side menu button in physical mode.  It simply sets the
+{\et RoundFlashSides} variable, or clears the variable if the number
+of sides given is the default.  Similarly, in electrical mode it is
+similar to the {\cb sides} entry in the menu from the {\cb shape}
+button in the side menu, and sets or clears the {\et
+ElecRoundFlashSides} variable.
+
+%------------------------------------
+% 030204
+\index{Wire function}
+\index{object creation!wires}
+\item{(int) \vt Wire({\it width\/}, {\it num\/}, {\it arraypts\/},
+ {\it end\_style\/})}\\
+This function creates a wire on the current layer.  The first argument
+is the width of the wire in microns.  The third argument is the name
+of an array of coordinates, taken as x-y pairs.  The second argument
+is the number of coordinate pairs in the array.  The fourth argument
+is 0, 1, or 2 to set the end style to flush, rounded, or extended,
+respectively.  This provides the functionality of the {\cb wire} menu
+button.
+
+If the {\vt UseTransform} function has been called to enable use of
+the current transform, the current transform will be applied to the
+given coordinates before the wire is created.  The translation
+supplied to {\vt UseTransform} is added to the coordinates before the
+current transform is applied.  The variable {\et NoWireWidthMag} will
+suppress changes to the wire width due to the magnification component
+of the current transform when set.
+
+%------------------------------------
+% 021913
+\index{WireH function}
+\index{object creation!wires}
+\item{(object\_handle) \vt WireH({\it width\/}, {\it num\/}, {\it arraypts\/},
+ {\it end\_style\/})}\\
+This is similar to the {\vt Wire} function, but will return a handle
+to the new object.  On error, a scalar 0 is returned.
+
+%------------------------------------
+% 022713
+\index{Label function}
+\index{object creation!labels}
+\item{(int) \vt Label({\it text}, {\it x}, {\it y} [, {\it width\/},
+{\it height\/}, {\it flags\/})]}\\
+This function creates a label on the current layer.  The function
+takes a variable number of arguments, but the first three must be
+present.  The first argument is of string type and contains the label
+text.  The next two arguments specify the x and y coordinates of the
+label reference point.
+
+The remaining arguments are optional.  The {\it width} and {\it
+height} specify the size of the bounding box into which the text will
+be rendered, in microns.  if both are zero or negative or not given, a
+default size will be used.  If only one is given a value greater than
+zero, the other will be computed using a default aspect ratio.  If
+both are greater than zero, the text will be squeezed or stretched to
+conform.
+
+The {\it flags} argument is a label flags word used in {\Xic} to set
+various label attributes, as described in \ref{labelflags}.  If given,
+the {\vt Justify} function and {\vt UseTransform} function settings
+will be ignored, and these attributes will be set from the {\it
+flags}.  If {\it flags} is not given, the functions will set the
+justification and transformation.
+
+This function always returns 1.
+
+%------------------------------------
+% 022713
+\index{LabelH function}
+\index{object creation!labels}
+\item{(object\_handle) \vt LabelH({\it text}, {\it x}, {\it y}
+ [, {\it width\/}, {\it height\/}, {\it xform\/})]}\\
+This is similar to the {\vt Label} function, but will return a handle
+to the new object.  On error, a scalar 0 is returned.
+
+%------------------------------------
+% 121617
+\index{Logo function}
+\item{(int) \vt Logo({\it string\/}, {\it x\/}, {\it y\/} [, {\it width\/},
+{\it height\/}])}\\
+This creates and places physical text, i.e., text that is constructed
+with database polygons that will appear in the mask layout.  The
+function takes a variable number of arguments, but the first three
+must be present.  The first argument is of string type and contains
+the label text.  The next two arguments specify the x and y
+coordinates of the reference point, which is dependent on the current
+justification, as set with the {\vt Justify} function.  The default is
+the lower-left corner of the bounding box.  The text will be
+transformed according to the current transform.
+
+The remaining arguments are optional.  The {\it width} and {\it
+height} specify the approximate size of the rendered text.  Unlike the
+{\vt Label} function, the text aspect ratio is fixed.  The first of
+{\it height} or {\it width} which is positive will be used to set the
+``pixel'' size used to render the text, by dividing this value by the
+character cell height or width of the default font.  Thus, the
+rendered text size will only be accurate for this font, and will scale
+with the number of pixels used in the ``pretty'' fonts.  One must
+experiment with a chosen font to obtain accurate sizing.  If neither
+parameter is given and positive, a default size will be used.
+
+This provides the functionality of the {\cb logo} menu button, and is
+sensitive to the following variables.
+
+\begin{quote}\et
+ LogoEndStyle\\
+ LogoPathWidth\\
+ LogoAltFont\\
+ LogoPrettyFont\\
+ LogoPixelSize\\
+ LogoToFile
+\end{quote}
+
+This function always returns 1.
+
+%------------------------------------
+% 030204
+\index{Justify function}
+\item{(int) \vt Justify({\it hj\/}, {\it vj\/})}\\
+This sets the justification for text created with the {\cb logo} and
+{\cb label} commands and corresponding script functions.  The
+arguments can have the following values:
+
+\begin{tabular}{lll}
+\it hj/vj & horizontal & vertical\\
+0 & left & bottom\\
+1 & center & center\\
+2 & right & top\\
+\end{tabular}
+
+Values out of range will preserve the present justification setting.
+The function always returns 1.
+
+%------------------------------------
+% 030204
+\index{Delete function}
+\index{object deletion}
+\item{(int) \vt Delete()}\\
+This function deletes all selected objects from the database.
+
+%------------------------------------
+% 030204
+\index{Erase function}
+\index{object erasing}
+\item{(int) \vt Erase({\it left\/}, {\it bottom\/}, {\it right\/},
+ {\it top\/})}\\
+This function erases the rectangular area defined by the arguments. 
+Polygons, wires, and boxes are appropriately clipped.  The erase
+function has no effect on subcells or labels.  This provides an erase
+capability similar to the {\cb erase} menu button.
+
+%------------------------------------
+% 100412
+\index{EraseUnder function}
+\item{(int) \vt EraseUnder()}\\
+This function will erase geometry from unselected objects that
+intersect with objects that are selected.  This is equivalent to the
+{\cb Erase Under} command in {\Xic}.  This function always returns 1.
+
+%------------------------------------
+% 030204
+\index{Yank function}
+\item{(int) \vt Yank({\it left\/}, {\it bottom\/}, {\it right\/},
+ {\it top\/})}\\
+This function puts the geometry in the specified rectangle in yank
+buffer 0.  It can be placed with the {\vt Put} function, or the {\cb
+put} command.  This provides a yank capability similar to the {\cb
+erase} button in the side menu.
+
+%------------------------------------
+% 030204
+\index{Put function}
+\item{(int) \vt Put({\it x\/}, {\it y\/}, {\it bufnum\/})}\\
+This puts the contents of the indicated yank buffer in the current
+layout, with the lower left at {\it x\/}, {\it y\/}.  The {\it bufnum\/} is
+the yank buffer index, which can be 0--4.  Buffer 0 is the most recent
+yank or erase, buffer 1 is the next most recent, etc.  This provides
+functionality similar to the {\cb put} button in the side menu.
+
+%------------------------------------
+% 030204
+\index{Xor function}
+\index{object invert}
+\item{(int) \vt Xor({\it left\/}, {\it bottom\/}, {\it right\/},
+ {\it top\/})}\\
+This function exclusive-or's the rectangular area defined by the
+arguments with boxes, polygons, and wires on the current layer. 
+Existing objects become clear areas.  This provides functionality
+similar to the {\cb xor} button in the side menu.
+
+%------------------------------------
+% 082009
+\index{Copy function}
+\index{object copy}
+\item{(int) \vt Copy({\it fromx\/}, {\it fromy\/}, {\it tox\/},
+ {\it toy\/}, {\it repcnt\/})}\\
+Copies of selected objects are created and placed such that the point
+specified by the first two arguments is moved to the location
+specified by the second two arguments.
+
+The {\it repcnt} is an integer replication count in the range
+1--100000, which will be silently taken as one if out of range.  If
+not one, multiple copies are made, at multiples of the translation
+factors given.
+
+This provides functionality similar to the {\cb Copy} button in the
+{\cb Modify Menu}.  The return value is 1 if there were no errors and
+something was copied, 0 otherwise.
+
+%------------------------------------
+% 082009
+\index{CopyToLayer function}
+\item{(int) \vt CopyToLayer({\it fromx\/}, {\it fromy\/}, {\it tox\/},
+ {\it toy\/}, {\it oldlayer\/}, {\it newlayer\/}, {\it repcnt\/})}\\
+This is similar to the {\vt Copy} function, but allows layer change. 
+If {\it newlayer} is 0, null, or empty, {\it oldlayer} is ignored and
+the function behaves identically to {\vt Copy}.  Otherwise the {\it
+newlayer} string must be a layer name.  If {\it oldlayer} is 0, null,
+or empty, all copied objects are placed on {\it newlayer\/}. 
+Otherwise, {\it oldlayer} must be a layer name, in which case only
+objects on {\it oldlayer} will be placed on {\it newlayer\/}, other
+objects will remain on the same layer.  Subcell objects are copied as
+in {\vt Copy}, i.e., the layer arguments are ignored.
+
+%------------------------------------
+% 100408
+\index{Move function}
+\index{object move}
+\item{(int) \vt Move({\it fromx\/}, {\it fromy\/}, {\it tox\/},
+ {\it toy\/})}\\
+This function moves the selected objects such that the reference point
+specified in the first two arguments is moved to the point specified
+by the second two arguments.  This provides functionality similar to
+the {\cb Move} button in the {\cb Modify Menu}.  The return value is 1
+if there were no errors and something was moved, 0 otherwise.
+
+%------------------------------------
+% 030204
+\index{MoveToLayer function}
+\item{(int) \vt MoveToLayer({\it fromx\/}, {\it fromy\/}, {\it tox\/},
+ {\it toy\/}, {\it oldlayer\/}, {\it newlayer\/})}\\
+This is similar to the {\vt Move} function, but allows layer change. 
+If {\it newlayer} is 0, null, or empty, {\it oldlayer} is ignored and
+the function behaves identically to {\vt Move}.  Otherwise the {\it
+newlayer} string must be a layer name.  If {\it oldlayer} is 0, null,
+or empty, all moved objects are placed on {\it newlayer\/}. 
+Otherwise, {\it oldlayer} must be a layer name, in which case only
+objects on {\it oldlayer} will be placed on {\it newlayer\/}, other
+objects will remain on the same layer.  Subcell objects are moved as
+in {\vt Move}, i.e., the layer arguments are ignored.
+
+%------------------------------------
+% 081908
+\index{Rotate function}
+\index{object rotation}
+\item{(int) \vt Rotate({\it x\/}, {\it y\/}, {\it ang\/}, {\it remove\/})}\\
+The selected objects are rotated counter-clockwise by {\it ang\/} (in
+degrees) about he point specified in the first two arguments.  This
+provides functionality similar to the {\cb spin} button in the side
+menu.
+
+If the boolean argument {\it remove} is true (nonzero), the original
+objects will be deleted.  Otherwise, the original objects are
+retained, and will become deselected.
+
+The return value is 1 if there were no errors and something was
+rotated, 0 otherwise.
+
+Note:  in releases prior to 3.0.5, the {\it remove} argument was 
+absent and effectively 0 in the current function implementation.
+
+%------------------------------------
+% 081908
+\index{RotateToLayer function}
+\item{(int) \vt RotateToLayer({\it x\/}, {\it y\/}, {\it ang\/},
+ {\it oldlayer\/}, {\it newlayer\/}, {\it remove\/})}\\
+This is similar to the {\vt Rotate} function, but allows layer change. 
+If {\it newlayer} is 0, null, or empty, {\it oldlayer} is ignored and
+the function behaves identically to {\vt Rotate}.  Otherwise the {\it
+newlayer} string must be a layer name.  If {\it oldlayer} is 0, null,
+or empty, all rotated objects are placed on {\it newlayer\/}. 
+Otherwise, {\it oldlayer} must be a layer name, in which case only
+objects on {\it oldlayer} will be placed on {\it newlayer\/}, other
+objects will remain on the same layer.  Subcell objects are rotated as
+in {\vt Rotate}, i.e., the layer arguments are ignored.
+
+If the boolean argument {\it remove} is true (nonzero), the original
+objects will be deleted.  Otherwise, the original objects are
+retained, and will become deselected.
+
+The return value is 1 if there were no errors and something was
+rotated, 0 otherwise.
+
+Note:  in releases prior to 3.0.5, the {\it remove} argument was 
+absent and effectively 0 in the current function implementation.
+
+%------------------------------------
+% 030204
+\index{Split function}
+\item{(int) \vt Split({\it x\/}, {\it y\/}, {\it flag\/}, {\it orient\/})}\\
+This will sever selected objects along a vertical or horizontal line
+through {\it x\/}, {\it y\/} if {\it flag\/} is nonzero.  If {\it orient\/}
+is 0, the break line is vertical, otherwise it is horizontal.  If {\it
+flag\/} is zero, the function will return 1 if an object would be split,
+0 otherwise, though no objects are actually split.  This provides
+functionality similar to the {\cb break\/} button in the side menu.
+
+%------------------------------------
+% 102913
+\index{Flatten function}
+\index{hierarchy of cells}
+\index{flatten hierarchy}
+\item{(int) \vt Flatten({\it depth\/}, {\it use\_merge\/},
+  {\it fast\_mode\/})}\\
+The selected subcells are flattened into the current cell, recursively
+to the given depth, similar to the effect of the {\cb Flatten} button
+in the {\cb Edit Menu}.
+
+The {\it depth} argument may be an integer representing the depth into
+the hierarchy to flatten:  0 for top-level subcells only, 1 to include
+second-level subcells, etc.  This argument can also be a string
+starting with `{\vt a}' to signify flattening all levels.  A negative
+depth also signifies flattening all levels.
+
+The {\it use\_merge} argument is a boolean which if nonzero indicates
+that new objects will be merged with existing objects when added to
+the current cell.  This is the same merging as specified in the {\cb
+Editing Setup} panel from the {\cb Edit Menu}, or corresponding
+variables.
+
+If the boolean argument {\it fast\_mode} is nonzero, ``fast'' mode is used,
+meaning that there will be no undo list generation and no object
+merging.  This is not undoable so should be used with care.
+
+The function returns 1 on success, 0 otherwise, with an error message
+probably available from {\vt GetError}.
+
+%------------------------------------
+% 082809
+\index{Layer function}
+\item{\vt Layer({\it string}, {\it mode\/}, {\it depth}, {\it recurse\/},
+ {\it noclear\/}, {\it use\_merge\/}, {\it fast\_mode\/})}\\
+This is very similar to the {\cb !layer} command, and operations from
+the {\cb Evaluate Layer Expression} panel brought up with the {\cb
+Layer Expression} button in the {\cb Edit Menu}.  The {\it string} is
+of the form
+\begin{quote}
+  ``{\it new\_layer\_name} [=] {\it layer\_expression}''.
+\end{quote}
+
+The {\it mode} argument is an integer which sets the split/join mode,
+similar to the keywords in the {\cb !layer} command, and the buttons
+in the {\cb Evaluate Layer Expression} panel.  Only the two
+least-significant bits of the integer value are used.
+
+\begin{quote}
+\begin{tabular}{ll}
+0 & default\\
+1 & horizontal split\\
+2 & vertical split\\
+3 & join\\
+\end{tabular}
+\end{quote}
+
+The {\it depth} is the search depth, which can be an integer which
+sets the maximum depth to search (0 means search the current cell
+only, 1 means search the current cell plus the subcells, etc., and a
+negative integer sets the depth to search the entire hierarchy).  This
+argument can also be a string starting with `{\vt a}' such as ``{\vt
+a}'' or ``{\vt all}'' which specifies to search the entire hierarchy.
+
+The {\it recurse} argument is a boolean value which corresponds to the
+``{\vt -r}'' option of the {\cb !layer} command, or the {\cb
+Recursively create in subcells} check box in the {\cb Evaluate Layer
+Expression} panel.  If nonzero, evaluation will be performed in
+subcells to depth, using only that cell's geometry.  When zero,
+geometry is created in the current cell only, using geometry found in
+subcells to depth.
+
+If the boolean argument {\it noclear} is true, the target layer will
+not be cleared before expression evaluation.  This corresponds to the
+``{\vt -c}'' option of the {\cb !layer} command, and the {\cb Don't
+clear layer before evaluation} button in the {\cb Evaluate Layer
+Expression} panel.
+
+The boolean argument {\it use\_merge} corresponds to the ``{\vt -m}''
+option in the {\cb !layer} command, and the {\cb Use object merging
+while processing} check box in the {\cb Evaluate Layer Expression}
+panel.  When nonzero, new objects will be merged with existing objects
+when added to a cell.
+
+The {\it fast\_mode} argument is a boolean value that corresponds to
+the ``{\vt -f}'' option in the {\cb !layer} command, and the {\cb Fast
+mode} check box in the {\cb Evaluate Layer Expression} panel.  When
+nonzero, undo list processing and merging are skipped for speed and to
+reduce memory use.  However, the result is not undoable so this flag
+should be used with care.
+
+There is no return value; the function either succeeds or will
+terminate the script on error.
+
+\end{description}
 
 !!SEEALSO
 funcs:geom2
@@ -2319,6 +3467,390 @@ Property Management
     <p>
     The function returns the number of properties removed.
     </dl>
+!!LATEX funcs:geom2:prp sc rfuncs.tex
+% 030515
+The functions described in this section provide an interface for
+working with properties.
+
+When specifying the property ``number'' for electrical mode
+properties, either a number or string equivalent can be used.  The
+string equivalent is a prefix of one of the supported property names. 
+In addition, some of the properties have a letter that any word that
+starts with the letter will indicate that property.  The idea was that
+each property could be keyed by a single letter, and this is almost
+still true ({\et node} is the exception).
+
+The following table identifies the recognized strings.  Not all of
+these properties apply in all functions.  The listed order is the
+order of testing, the first match yields the equivalence.
+
+\begin{tabular}{|l|l|l|} \hline
+\bf Number & \bf Name & \bf String\\ \hline\hline
+1  & \et model  & prefix\\ \hline
+2  & \et value  & prefix\\ \hline
+3  & \et param  & prefix\\ \hline
+3  & \et initc  & prefix\\ \hline
+4  & \et other  & prefix\\ \hline
+11 & \et name   & prefix\\ \hline
+5  & \et nophys & prefix or starts with `y' or `Y'\\ \hline
+6  & \et virtual & prefix or starts with `t' ot `T'\\ \hline
+7  & \et flatten & prefix\\ \hline
+8  & \et range  & prefix\\ \hline
+10 & \et node   & prefix\\ \hline
+18 & \et nosymb & prefix or starts with `s' or `S'\\ \hline
+20 & \et macro  & prefix or starts with `c' or `C'\\ \hline
+21 & \et devref & prefix\\ \hline
+\end{tabular}
+
+The {\et initc} is an archaic alias for the {\et param} property that
+is still recognized.  In some functions, an additonal keyword ``{\vt
+all}'' is recognized in a way that has significance to the function. 
+If the string does not match, an error is indicated.
+
+\begin{description}
+%------------------------------------
+% 030215
+\index{PrpHandle function}
+\item{(prpty\_handle) \vt PrpHandle({\it object\_handle})}\\
+This function returns a handle to the list of properties of the object
+referenced by the passed object handle.  The function fails if the
+argument is not a valid object handle, use {\vt CellPrpHandle} to list
+cell properties.
+
+%------------------------------------
+% 040106
+\index{GetPrpHandle function}
+\item{(prpty\_handle) \vt GetPrpHandle({\it number\/})}\\
+Since there can be arbitrarily many properties defined with the same
+number, a generator function is used to read properties one at a time. 
+This function returns a handle to a list of the properties that match
+the {\it number} passed.  This applies to the first object in the
+selection queue (the most recent object selected).  The returned value
+is used by other functions to actually retrieve the property text.
+
+If the {\it number} argument is a prefix of ``{\vt all}'', then any
+property string will be returned.  In physical mode, the {\it number}
+argument should otherwise be an integer.  In electrical mode, the {\it
+number} argument can have string form as described in the introduction
+to this section.
+
+%------------------------------------
+% 030215
+\index{CellPrpHandle function}
+\item{(prpty\_handle) \vt CellPrpHandle()}\\
+This function returns a handle to the list of properties of the
+current cell, applicable to the current display mode in the main
+window.
+
+%------------------------------------
+% 040106
+\index{GetCellPrpHandle function}
+\item{(prpty\_handle) \vt GetCellPrpHandle({\it number\/})}\\
+Since there can be arbitrarily many properties defined with the same
+number, a generator function is used to read properties one at a time. 
+This function returns a handle to a list of the properties that match
+the {\it number} passed, from the current cell.  The returned value is
+used by other functions to actually retrieve the property text.
+
+A prefix of the string ``{\vt all}'' can be passed for the {\it
+number} argument, in which case the handle will reference all
+properties of the cell.  In physical mode, the {\it number} argument
+should otherwise be an integer.  In electrical mode, the {\it number}
+argument can have string form as described in the introduction to this
+section.
+
+%------------------------------------
+% 030215
+\index{PrpNext function}
+\item{(int) \vt PrpNext({\it prpty\_handle})}\\
+This function causes the referenced property of the passed handle to
+be advanced to the next in the list.  If there are no other properties
+in the list, the handle is closed, and 0 is returned.  Otherwise, the
+handle (same as the argument) is returned.  The number of remaining
+reference objects can be obtained with the {\vt HandleContent} function.
+
+%------------------------------------
+% 030215
+\index{PrpNumber function}
+\item{(int) \vt PrpNumber({\it prpty\_handle})}\\
+This function returns the number of the property referenced by the
+handle.
+
+%------------------------------------
+% 030215
+\index{PrpString function}
+\item{(string) \vt PrpString({\it prpty\_handle})}\\
+This function returns the string of the property referenced by the
+handle.  The ``raw'' string is returned, meaning that if the property
+comes from an electrical object, all of the detail from the internal
+property string is returned.
+
+%------------------------------------
+% 030215
+\index{PrptyString function}
+\item{(string) \vt PrptyString({\it obj\_or\_prp\_handle\/}, {\it number\/})}\\
+The first argument can be a property handle, or an object handle.  If
+a property handle is given, the function returns the string of the
+first property referenced by the handle that matches the {\it number}. 
+If the {\it number} argument is a prefix of ``{\vt all}'', then any
+property string will be returned.  In physical mode, the {\it number}
+argument should otherwise be an integer.  In electrical mode, the {\it
+number} argument can be a string, as described in the introduction to
+this section.  The handle is set to reference the next property in the
+reference list, following the one returned.  When there are no more
+properties, this function returns a null string.
+
+If the first argument is an object handle, the function returns the
+strings from properties or pseudo-properties for the object referenced
+by the handle.
+
+In physical mode, the function will locate a property with the given
+number, and return its string.  If no property is found with that
+number, and a pseudo-property for the object matches the number, then
+the pseudo-property string is returned.  If no matching
+pseudo-property is found, a null string is returned.  Note:  objects
+can be modified through setting pseudo-properties using the {\vt
+PrptyAdd} function.
+
+In electrical mode, the number argument can be a string, as described
+in the introduction to this section.  In the case of an object handle,
+the ``{\vt all}'' keyword is not supported.
+
+The function will fail if the argument is not a valid object or
+property handle.  Use\\ {\vt GetCellPropertyString} to obtain strings
+from cell properties.
+
+If the requested property is a {\et name} property of an electrical
+device or subcircuit, only the name is returned (the internal property
+string is more complex).  Otherwise the ``raw'' string is returned.
+
+%------------------------------------
+% 030215
+\index{GetPropertyString function}
+\item{(string) \vt GetPropertyString({\it number\/})}\\
+This function searches the selection queue for an object with a
+property matching {\it number\/}.  The string for the first such
+property found is returned.  A null string is returned if no matching
+property was found.
+
+%------------------------------------
+% 030215
+\index{GetCellPropertyString function}
+\item{(string) \vt GetCellPropertyString({\it number\/})}\\
+This function searches the properties of the current cell, and returns
+the string for the first property found that matches {\it number}.  If
+no match, a null string is returned.
+
+%------------------------------------
+% 030515
+\index{PrptyAdd function}
+\item{(int) \vt PrptyAdd({\it object\_handle}, {\it number\/},
+ {\it string\/})}\\
+This function will create a new property using the {\it number} and
+{\it string} provided, on the object referenced by the handle.  The
+object must be defined in the current cell.  The function will fail if
+the handle is invalid.  Use {\vt CellPropertyAdd} to add properties to
+the current cell.
+
+In physical mode, the property number can take any non-negative value. 
+This includes property numbers that are used by {\Xic} for various
+purposes in the range 7000--7199.  Unless the user is expecting the
+{\Xic} interpretation of the property number, these numbers should be
+avoided.  It is the caller's responsibility to ensure that the
+properties in this range are applied to the appropriate objects, in
+the correct context and with correct syntax, as there is little or no
+checking.  Adding some properties in this range such as {\et flags},
+{\et flatten}, or a pcell property will automatically remove an
+existing property with the same number, if any.
+
+The pseudo-properties in the range 7200--7299 will have their
+documented effect when applied, and no property is added (see
+\ref{pseudoprops}),
+
+In electrical mode, it is possible to set these properties of
+device instances:
+\begin{quote}
+{\et name}, {\et model}, {\et value}, {\et param}, {\et devref},
+{\et other}, {\et range} {\et nophys}, {\et symblc}
+\end{quote}
+and the following properties of subcircuit instances:
+\begin{quote}
+{\et name}, {\et param}, {\et other}, {\et flatten},
+{\et range} {\et nophys}, {\et symblc}.
+\end{quote}
+Attempts to set properties not listed here will silently fail.  The
+object must be defined in the current cell, thus the mode must be
+electrical.
+
+If the function succeeds, 1 is returned.  otherwise 0 is returned.
+
+%------------------------------------
+% 030515
+\index{AddProperty function}
+\item{(int) \vt AddProperty({\it number}, {\it string})}\\
+This function adds a property with the given number and string to all
+selected objects.
+
+In physical mode, the property number can take any non-negative value. 
+This includes property numbers that are used by {\Xic} for various
+purposes in the range 7000--7199.  Unless the user is expecting the
+{\Xic} interpretation of the property number, these numbers should be
+avoided.  It is the caller's responsibility to ensure that the
+properties in this range are applied to the appropriate objects, in
+the correct context and with correct syntax, as there is little or no
+checking.
+
+The pseudo-properties in the range 7200--7299 will have their
+documented effect when applied, and no property is added,
+
+In electrical mode, it is possible to set these properties of
+device instances:
+\begin{quote}
+{\et name}, {\et model}, {\et value}, {\et param}, {\et devref},
+{\et other}, {\et range} {\et nophys}, {\et symblc}
+\end{quote}
+and the following properties of subcircuit instances:
+\begin{quote}
+{\et name}, {\et param}, {\et other}, {\et flatten},
+{\et range} {\et nophys}, {\et symblc}.
+\end{quote}
+Attempts to set properties not listed here will silently fail.  The
+object must be defined in the current cell, thus the mode must be
+electrical.
+
+The number of properties added plus the number of pseudo-properties
+applied is returned.
+
+%------------------------------------
+% 030515
+\index{AddCellProperty function}
+\item{(int) \vt AddCellProperty({\it number}, {\it string})}\\
+This function adds a property to the current cell.
+
+In physical mode, the property number can take any non-negative value. 
+This includes property numbers that are used by {\Xic} for various
+purposes in the range 7000--7199.  Unless the user is expecting the
+{\Xic} interpretation of the property number, these numbers should be
+avoided.  It is the caller's responsibility to ensure that the
+properties in this range are applied to the appropriate objects, in
+the correct context and with correct syntax, as there is little or no
+checking.  Adding some properties in this range such as {\et flags},
+{\et flatten}, or a pcell property will automatically remove an
+existing property with the same number, if any.
+
+Numbers in the pseudo-property range 7200--7299 will do nothing.
+
+In electrical mode, it is possible to set the {\et param}, {\et
+other}, {\et virtual}, {\et flatten}, {\et macro}, {\et node}, {\et
+name}, and {\et symbolic} properties of the current cell.  The last
+three are not ``user settable'' but are needed when building up a new
+circuit cell in memory, as in the scripts produced by the {\cb
+!mkscript} command.  The string should have the format as read from a
+native cell file.
+
+The function returns 1 if the operation was successful, 0 otherwise.
+
+%------------------------------------
+% 030515
+\index{PrptyRemove function}
+\item{(int) \vt PrptyRemove({\it object\_handle}, {\it number\/},
+ {\it string\/})}\\
+This function will remove properties matching the given {\it number}
+and {\it string} from the object referenced by the handle.
+
+In physical mode, the property number can take any non-negative value. 
+This includes property numbers that are used by {\Xic} for various
+purposes in the range 7000--7199.  It is the caller's responsibility
+to make sure that removal of properties in this range is appropriate. 
+Giving numbers in the pseudo-property range 7200--7299 will do
+nothing.
+
+If the {\it string} is null or empty, only the {\it number} is used
+for comparison, and all properties with that number will be removed. 
+Otherwise, if the {\it string} is a prefix of the property string and
+the numbers match, the property will be removed.
+
+In electrical mode, it is possible to remove these properties of
+device instances:
+\begin{quote}
+{\et name}, {\et model}, {\et value}, {\et param}, {\et devref},
+{\et other}, {\et range} {\et nophys}, {\et symblc}
+\end{quote}
+and the following properties of subcircuit instances:
+\begin{quote}
+{\et name}, {\et param}, {\et other}, {\et flatten},
+{\et range} {\et nophys}, {\et symblc}.
+\end{quote}
+Attempts to remove properties not listed here will silently fail. 
+Except for {\et other}, the string argument is ignored.  For {\et
+other} properties, the string is used as above to identify the
+property to delete.
+
+Objects must be defined in the current cell.  The function returns
+the number of properties removed.
+
+%------------------------------------
+% 030515
+\index{RemoveProperty function}
+\item{(int) \vt RemoveProperty({\it number}, {\it string})}\\
+This function will remove properties from selected objects.
+
+In physical mode, the property number can take any non-negative value. 
+This includes property numbers that are used by {\Xic} for various
+purposes in the range 7000--7199.  It is the caller's responsibility
+to make sure that removal of properties in this range is appropriate. 
+Giving numbers in the pseudo-property range 7200--7299 will do
+nothing.
+
+If the {\it string} is null or empty, only the {\it number} is used
+for comparison, and all properties with that number will be removed. 
+Otherwise, if the {\it string} is a prefix of the property string and
+the numbers match, the property will be removed.
+
+In electrical mode, it is possible to remove these properties of
+device instances:
+\begin{quote}
+{\et name}, {\et model}, {\et value}, {\et param}, {\et devref},
+{\et other}, {\et range} {\et nophys}, {\et symblc}
+\end{quote}
+and the following properties of subcircuit instances:
+\begin{quote}
+{\et name}, {\et param}, {\et other}, {\et flatten},
+{\et range} {\et nophys}, {\et symblc}.
+\end{quote}
+Attempts to remove properties not listed here will silently fail. 
+Except for {\et other}, the string argument is ignored.  For {\et
+other} properties, the string is used as above to identify the
+property to delete.
+ 
+The number of properties removed is returned.
+
+%------------------------------------
+% 030515
+\index{RemoveCellProperty function}
+\item{(int) \vt RemoveCellProperty({\it number}, {\it string})}\\
+This function will remove properties from the current cell.
+
+In physical mode, the property number can take any non-negative value. 
+This includes property numbers that are used by {\Xic} for various
+purposes in the range 7000--7199.  It is the caller's responsibility
+to make sure that removal of properties in this range is appropriate. 
+Giving numbers in the pseudo-property range 7200--7299 will do
+nothing.
+
+If the {\it string} is null or empty, only the {\it number} is used
+for comparison, and all properties with that number will be removed. 
+Otherwise, if the {\it string} is a prefix of the property string and
+the numbers match, the property will be removed.
+
+In electrical mode, it is possible to remove the {\et param}, {\et
+other}, {\et virtual}, {\et flatten}, and {\et macro} properties of
+the current cell.  Except for {\et other}, the string argument is
+ignored.  For {\et other} properties, the string is used as above to
+identify the property to delete.
+
+The function returns the number of properties removed.
+\end{description}
 
 !!SEEALSO
 funcs:geom2

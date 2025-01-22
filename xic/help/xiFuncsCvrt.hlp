@@ -637,6 +637,95 @@ Layer Conversion Aliasing
     layer name string, obtained from the layer alias table.  If no
     alias exists for <i>lname</i>, a null string is returned.
     </dl>
+!!LATEX funcs:cvrt:lalias scrfuncs.tex
+% 101412
+There is provision for a layer aliasing mechanism which is applied
+when a data file is read.  This capability is exported through an
+interface consisting of the {\et UseLayerAlias} and {\et LayerAlias}
+variables, and the script functions described below.
+
+This is different from the {\vt LppName} aliasing which applies to
+{\Xic} layers, and is built into the layer database.  The conversion
+aliases apply only while a layout file is being read.
+
+\begin{description}
+%------------------------------------
+% 101412
+\index{ReadLayerCvAliases function}
+\item{(int) \vt ReadLayerCvAliases({\it handle\_or\_filename\/})}\\
+The argument can be either a string giving a file name, or a file
+handle as returned from the {\vt Open} function or equivalent (opened
+for reading).  This function will read layer aliases, adding the
+definitions to the layer alias table.  The format consists of lines of
+the form
+\begin{quote}
+      {\it name\/}$=${\it newname}
+\end{quote}
+where both {\it name} and {\it newname} are four-character CIF-type
+layer names, and there is one definition per line.  Lines with a
+syntax error or bad layer name are silently ignored.  When the layer
+alias table is active, layers read from an input file will be
+substituted, i.e., if a layer named {\it name} is read, it will be
+replaced with {\it newname}.  For data formats that use layer number
+and datatype numbers, such as GDSII, the layer names should be in the
+form of a four or eight-byte hex number, using upper case, where the
+left bytes represent the hex value of the layer number, zero padded,
+and the right bytes represent the zero padded datatype number.  The
+eight-byte form should be used if the layer or datatype is larger than
+255.  Alternatively, the decimal form L,D is accepted for layer
+tokens, where the decimal layer and datatype numbers are separated by
+a comma with no space.
+
+The function returns 1 on success, 0 otherwise.
+
+%------------------------------------
+% 101412
+\index{DumpLayerCvAliases function}
+\item{(int) \vt DumpLayerCvAliases({\it handle\_or\_filename\/})}\\
+The argument can be either a string giving a file name, or a file
+handle as returned from the {\vt Open} function or equivalent (opened
+for writing).  This function will dump the layer alias table.  The
+format consists of lines of the form
+\begin{quote}
+      {\it name\/}$=${\it newname}
+\end{quote}
+with one definition per line, where {\it name} and {\it newname} are
+CIF-type four character layer names, with {\it newname} being the
+replacement.  The function returns 1 on success, 0 otherwise.
+
+%------------------------------------
+% 101412
+\index{ClearLayerCvAliases function}
+\item{(int) \vt ClearLayerCvAliases()}\\
+This function will remove all entries in the layer alias table.
+The function always returns 1.
+
+%------------------------------------
+% 101412
+\index{AddLayerCvAlias function}
+\item{(int) \vt AddLayerCvAlias({\it lname\/}, {\it new\_lname\/})}\\
+This function will add the layer name string {\it new\_lname} as an
+alias for the layer name string {\it lname} to the layer alias table. 
+If an error occurs, or an alias for {\it lname} already exists in the
+table (it will not be replaced) the function returns 0.  The function
+otherwise returns 1.
+
+%------------------------------------
+% 101412
+\index{RemoveLayerCvAlias function}
+\item{(int) \vt RemoveLayerCvAlias({\it lname\/})}\\
+This function removes any alias for {\vt lname} from the layer alias
+table.  The function always returns 1.
+
+%------------------------------------
+% 101412
+\index{GetLayerCvAlias function}
+\item{(string) \vt GetLayerCvAlias({\it lname\/})}\\
+This function returns a string containing the alias for the passed
+layer name string, obtained from the layer alias table.  If no alias
+exists for {\it lname}, a null string is returned.
+
+\end{description}
 
 !!SEEALSO
 funcs:cvrt
@@ -697,6 +786,49 @@ Cell Name Mapping
     href="OutToUpper"><b>OutToUpper</b></a> variables.  The return
     value is the previous setting of the variable.
     </dl>
+!!LATEX funcs:cvrt:cnmap scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 100108
+\index{SetMapToLower function}
+\item{(int) \vt SetMapToLower({\it state}, {\it rw})}\\
+This function sets a flag which causes upper case cell names to be
+mapped to lower case when reading, writing, or format converting
+archive files.  The first argument is a boolean value which if nonzero
+indicates case conversion will be applied, and if zero case conversion
+will be disabled.
+
+The second argument is a boolean value that if zero indicates that
+case conversion will be applied when reading or format converting
+archive files, and nonzero will apply case conversion when writing an
+archive file from memory.
+ 
+Within {\Xic}, this flag can also be set from the panels available
+from the {\cb Convert Menu}.  The internal effect is to set or clear
+the {\et InToLower} or {\et OutToLower} variables.  The return value
+is the previous setting of the variable.
+
+%------------------------------------
+% 100108
+\index{SetMapToUpper function}
+\item{(int) \vt SetMapToUpper({\it state}, {\it rw})}\\
+This function sets a flag which causes lower case cell names to be
+mapped to upper case when reading, writing, or format converting
+archive files.  The first argument is a boolean value which if nonzero
+indicates case conversion will be applied, and if zero case conversion
+will be disabled.
+
+The second argument is a boolean value that if zero indicates that
+case conversion will be applied when reading or format converting
+archive files, and nonzero will apply case conversion when writing an
+archive file from memory.
+ 
+Within {\Xic}, this flag can also be set from the panels available
+from the {\cb Convert Menu}.  The internal effect is to set or clear
+the {\et InToUpper} or {\et OutToUpper} variables.  The return value
+is the previous setting of the variable.
+
+\end{description}
 
 !!SEEALSO
 funcs:cvrt
@@ -784,6 +916,67 @@ Cell Table
     table</a>.  The function always returns 1.
     </dl>
     <hr>
+!!LATEX funcs:cvrt:ctab scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 100108
+\index{CellTabAdd function}
+\item{(int) \vt CellTabAdd({\it cellname\/}, {\it expand\/})}\\
+This function is used to add cell names to the cell table for the
+current symbol table.  The {\it cellname} must match a name in the
+global string table, which includes all cells read into memory or
+referenced by a CHD in memory.
+
+If the boolean argument {\it expand} is nonzero, and the name matches
+a cell in the main database, the cell and all of the cells in its
+hierarchy will be added to the table, otherwise only the named cell
+will be added.  It is not an error to add the same cell more than
+once, duplicates will be ignored.
+
+\index{UseCellTab variable}
+If the {\it UseCellTab} variable is set, when a Cell Hierarchy Digest
+(CHD) is used to process a cell hierarchy for anything other than
+reading cells into the main database, cells listed in the cell table
+will override cells of the same name in the CHD.  Thus, for example,
+one can substitute modified versions of cells as a layout file is
+being written.
+
+The return value is 1 if all goes well, 0 if the table is not
+initialized or the cell is not found.
+
+%------------------------------------
+% 100108
+\index{CellTabCheck function}
+\item{(int) \vt CellTabCheck({\it cellname\/})}\\
+This function returns 1 if {\it cellname} is in the current cell
+table.  If the {\it cellname} is valid but {\it cellname} is not in
+the table, 0 is returned.  If the cellname is invalid (not a known
+cell name) or the cell table is uninitialized, the return value is -1.
+
+%------------------------------------
+% 100108
+\index{CellTabRemove function}
+\item{(int) \vt CellTabRemove({\it cellname\/})}\\
+If {\it cellname} is found in the current cell table, it will be
+removed.  If the name was found in the table and removed, the return
+value is 1, otherwise the function returns 0.
+
+%------------------------------------
+% 100108
+\index{CellTabList function}
+\item{(stringlist\_handle) \vt CellTabList()}\\
+This function returns a handle to a list of cell name strings obtained
+from the current cell table.  If the table is empty, a scalar 0 is
+returned.
+
+%------------------------------------
+% 100108
+\index{CellTabClear function}
+\item{(int) \vt CellTabClear()}\\
+This function will clear the current cell table.  The function always
+returns 1.
+
+\end{description}
 
 !!SEEALSO
 funcs:cvrt
@@ -880,6 +1073,79 @@ Windowing and Flattening
     <p>
     The function always returns 1.
     </dl>
+!!LATEX funcs:cvrt:wnd scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 022916
+\index{SetConvertFlags function}
+\item{(int) \vt SetConvertFlags({\it use\_window}, {\it clip},
+     {\it flatten\/}, {\it ecf\_level\/}, {\it rw\/})}\\
+This function sets the status of flags used in format conversions and
+when writing output.  The first three arguments correspond to the {\cb
+Use Window}, {\cb Clip to Window}, and {\cb Flatten Hierarchy} buttons
+in the {\cb Format Conversion} panel and similar.  A nonzero integer
+value will set the flag, 0 will reset the flag.
+
+The {\it ecf\_level} is an integer 0--3 which sets the empty cell
+filtering level, as described for the {\cb Format Conversion} panel in
+\ref{ecfilt}.  The values are
+
+\begin{tabular}{ll}
+0 & No empty cell filtering.\\
+1 & Apply pre- and post-filtering.\\
+2 & Apply pre-filtering only.\\
+3 & Apply post-filtering only.\\
+\end{tabular}
+
+The {\it rw} argument is a boolean value that if zero indicates that
+the flags will be applied when converting archive files, as if set
+from the {\cb Format Conversion} panel, and also apply to the {\vt
+FromArchive} script function.  With {\it rw} nonzero, the flags apply
+when writing output with the {\cb Export Control} panel, or when using
+the {\vr Export} and {\vt To}{\it XXX} script functions.  In this
+case, the {\it no\_empties} flag is ignored, and the windowing is
+ignored except when flattening.
+
+The data window can be set with the {\vt SetConvertArea} script
+function.  To apply clipping, both the {\it use\_window} and {\it
+clip} flags must be set.
+
+This function returns the previous value of the internal variable that
+contains the flags.  The two ecf filter bits encode the filtering
+level as above.  The bits are:
+
+\begin{tabular}{ll}
+\it flatten     & \vt 0x1\\
+\it use\_window & \vt 0x2\\
+\it clip        & \vt 0x4\\
+\it ecf level0  & \vt 0x8\\
+\it ecf level1  & \vt 0x10\\
+\end{tabular}
+
+%------------------------------------
+% 022916
+\index{SetConvertArea function}
+\item{(int) \vt SetConvertArea({\it l}, {\it b}, {\it r}, {\it t\/},
+  {\it rw\/})}\\
+This function sets the rectangular area used to filter or clip objects
+during format conversion or file writing.  The first four arguments
+are the window coordinates in microns, in the coordinate system of the
+top level cell, after scaling (if any).
+
+The {\it rw} argument is a boolean value that if zero indicates that
+the values will be applied when converting archive files, as if set
+from the {\cb Format Conversion} panel, and also apply when using the
+{\vt FromArchive} script function.  With {\it rw} nonzero, the values
+apply when writing output with the {\cb Export Control} panel, or when
+using the {\vt Export} and {\vt To}{\it XXX} script functions.  In
+this case, windowing is ignored except when flattening.
+
+Use of the window can be enabled with the
+{\vt SetConvertFlags} script function.
+
+The function always returns 1.
+
+\end{description}
 
 !!SEEALSO
 funcs:cvrt
@@ -929,6 +1195,39 @@ Scale Factor
     The scale argument is a real value in the inclusive range 0.001 -
     1000.0.  The return value is the previous scale value. 
     </dl>
+!!LATEX funcs:cvrt:scale scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 022916
+\index{SetConvertScale function}
+\item{(real) \vt SetConvertScale({\it scale\/}, {\it which\/})}\\
+This sets the scale used for conversions.  There are three such
+scales, and the one to set is specified by the second argument, which
+is an integer 0--2.
+\begin{description}
+\item{{\it which} = 0}\\
+Set the scale used when converting an archive file directly to another
+format with the\newline
+{\vt FromArchive} script function or similar, or with the {\cb Format
+Conversion} panel.
+\item{{\it which} = 1}\\
+Set the scale used when writing a file with the {\vt Export} and {\vt
+To{\it XXX\/}} script functions or similar, or the {\cb Export
+Control} panel.
+\item{{\it which} = 2}\\
+Set the scale used when reading a file into {\Xic} with the {\vt Edit}
+or {\vt OpenCell} functions or similar, or from the {\cb Import
+Control} panel in {\Xic}.
+\end{description}
+Script functions that read, write, or convert archive file data will
+in general make use of one of these scale factors, however if the
+function takes a scale value as an argument, that value will be used
+rather than the values set with this function.
+
+The scale argument is a real value in the inclusive range 0.001 --
+1000.0.  The return value is the previous scale value.
+
+\end{description}
 
 !!SEEALSO
 funcs:cvrt
@@ -971,6 +1270,37 @@ Export Flags
     check boxes in the <a href="xic:exprt"><b>Export Control</b></a>
     panel.
     </dl>
+!!LATEX funcs:cvrt:wrflg scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 022816
+\index{SetStripForExport function}
+\item{(int) \vt SetStripForExport({\it state\/})}\\
+This function sets the state of the {\cb Strip For Export} flag.  When
+set, output from the conversion functions will contain physical
+information only.  This should be applied when generating output for
+mask fabrication.  See the {\cb Export Control} panel
+description for more information.  If the integer argument is nonzero,
+the state will be set active.  The return value is the previous state
+of the flag.
+
+%------------------------------------
+% 022816
+\index{SetSkipInvisLayers function}
+\item{(int) \vt SetSkipInvisLayers({\it code\/})}\\
+This function sets the variable which controls how invisible layers
+are treated by the output conversion functions.  Layer visibility is
+set by clicking in the layer table with mouse button 2, or through the
+{\vt SetLayerVisible} script function.  If {\it code} is 0 or
+negative, invisible layers will be converted.  If {\it code} is 1,
+invisible physical layers will not be converted.  If {\it code} is 2,
+invisible electrical layers will not be converted.  if {\it code} is 3
+or larger, both electrical and physical invisible layers will not be
+converted.  The return value is the previous code, which represents
+the state of the {\et SkipInvisible} variable, and the check boxes in
+the {\cb Export Control} panel.
+
+\end{description}
 
 !!SEEALSO
 funcs:cvrt
@@ -991,6 +1321,19 @@ Import Flags
     argument is nonzero, the flag will be set.  The return value is
     the previous state of the flag.
     </dl>
+!!LATEX funcs:cvrt:rdflg scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 022816
+\index{SetMergeInRead function}
+\item{(int) \vt SetMergeInRead({\it state\/})}\\
+This function controls the setting of an internal flag which enables
+merging of boxes and coincident objects while a file is being read. 
+This flag is set from within {\Xic} in the {\cb Import Control}
+panel.  If the integer argument is nonzero, the flag will be set.  The
+return value is the previous state of the flag.
+
+\end{description}
 
 !!SEEALSO
 funcs:cvrt
@@ -1081,6 +1424,76 @@ Layout File Format Conversion
     The value 1 is returned on success, 0 otherwise, with possibly an
     error message available from <a href="GetError"><tt>GetError</tt></a>.
     </dl>
+!!LATEX funcs:cvrt:cvt srcfuncs.tex
+\begin{description}
+%------------------------------------
+% 100308
+\index{FromArchive function}
+\item{(int) \vt FromArchive({\it file\_or\_chd}, {\it destination})}\\
+This function will read an archive (GDSII, CIF, CGX, or OASIS) file
+and translate the contents to another format.  The {\it file\_or\_chd}
+argument is a string giving a path to the source archive file, or the
+name of a Cell Hierarchy Digest (CHD) in memory.
+
+The type of file written is implied by the {\it destination}.  If the
+{\it destination} is null or empty, native cell files will be created
+in the current directory.  If the {\it destination} is the name of an
+existing directory, native cell files will be created in that
+directory.  Otherwise, the extension of the {\it destination}
+determines the file type:
+
+\begin{tabular}{ll}
+CGX   & \vt .cgx\\
+CIF   & \vt .cif\\
+GDSII & \vt .gds, .str, .strm, .stream\\
+OASIS & \vt .oas\\
+\end{tabular}
+
+Only these extensions are recognized, however CGX and GDSII allow
+an additional {\vt .gz} which will imply compression.
+
+See the table in \ref{functions} for the features that apply during a
+call to this function.
+
+The value 1 is returned on success, 0 otherwise, with possibly an
+error message available from {\vt GetError}.
+
+%------------------------------------
+% 100108
+\index{FromTxt function}
+\item{(int) \vt FromTxt({\it text\_file\/}, {\it gds\_file\/})}\\
+This function will translate a text file in the format produced by the
+{\vt ToTxt} function into a GDSII format file.  This is useful after
+text mode editing has been performed on the file, to repair corruption
+or incompatibilities.  If {\it gds\_file} is null or empty, the name
+is generated from the {\it text\_file} and given a ``{\vt .gds}''
+suffix.
+
+%------------------------------------
+% 072710
+\index{FromNative function}
+\item{(int) \vt FromNative({\it dir\_path\/}, {\it archive\_file\/})}\\
+This function will translate native cell files found in the directory
+given in {\it dir\_path} into an archive file given in the second
+argument.  The format of the archive file produced is determined by
+the file extension provided, as for the {\vt FromArchive} function. 
+All native cell files found in the directory, except those with a
+``{\vt .bak}'' extension or whose name is the same as a device library
+symbol, are translated and concatenated, independently of any
+hierarchical relationship between the cells.
+
+See the table in \ref{functions} for the features that apply during a
+call to this function.  The supported manipulations are cell name
+aliasing, layer filtering, and scaling.  Windowing manipulations and
+flattening are not supported.  If a file named ``{\vt aliases.alias}''
+exists in the {\it dir\_path}, it will be used as an input alias list
+for conversion.  Each line consists of a native cell name followed by
+an alias to be used in the archive file, separated by white space.
+
+The value 1 is returned on success, 0 otherwise, with possibly an
+error message available from {\vt GetError}.
+
+\end{description}
 
 !!SEEALSO
 funcs:cvrt
@@ -1367,6 +1780,219 @@ Export Layout File
     href="GetError"><tt>GetError</tt></a>.
     </dl>
     <hr>
+!!LATEX funcs:cvrt:exprt scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 100108
+\index{SaveCellAsNative function}
+\item{(int) \vt SaveCellAsNative({\it cellname\/}, {\it directory\/})}\\
+Save the cell named in the first (string) argument, which must exist
+in the current symbol table, to a native format file in the {\it
+directory\/}.  If the directory string is null or empty (or 0 is
+passed for this argument), the cell is saved in the current directory. 
+
+See the table in \ref{features} for the features that apply during a
+call to this function.
+
+This functions returns 1 on success, 0 otherwise, with an error
+message likely available from {\vt GetError}.
+
+%------------------------------------
+% 022816
+\index{Export function}
+\item{(int) \vt Export({\it filepath\/}, {\it allcells\/})}\\
+This function exports design data to a disk file (or files).  It can
+perform the same operations as the {\vt To}{\it XXX} functions also
+described in this section.  The type of file produced is set by the
+extension found on the {\it filepath} string.  Recognized extensions
+are
+
+\begin{quote}
+\begin{tabular}{ll}
+native  & \vt .xic\\
+CGX     & \vt .cgx\\
+CIF     & \vt .cif\\
+GDSII   & \vt .gds, .str, .strm, .stream\\
+OASIS   & \vt .oas\\
+\end{tabular}
+\end{quote}
+
+Only these extensions are recognized, however CGX and GDSII allow an
+additional ``{\vt .gz}'' which will imply compression.  For native
+cell file output, the {\it filepath} must provide a path to an
+existing directory.  If none of the other formats is matched, and the
+{\it filepath} exists as a directory, then native cell files will be
+written to that directory.  Alternatively, if the {\it filepath} has a
+``{\vt .xic}'' extension, and the {\it filepath} with the {\vt .xic}
+stripped is an existing directory, or the {\it filepath} including the
+{\vt .xic} is an existing directory (checked in this order), again
+native cell files will be written to that directory.
+
+The second argument is a boolean.  If false, then the current cell
+hierarchy is written to output.  If true, all cells found in the
+current symbol table will be written to output.  In either case, by
+default cells that are sub-masters or library cells are not written
+unless the controlling variables are set, as from the {\cb Export
+Control} panel.  The other controls for windowing, flattening,
+scaling, and cell name mapping found in this panel apply as well, as
+do their underlying variables.  These flags and values can also be set
+with the {\vt SetConvertFlags}, {\vt SetConvertArea}, and {\vt
+SetConvertScale} functions, and others that apply to output
+generation.  When writing all files, any windowing or flattening in
+force is ignored.
+
+See the table in \ref{features} for the features that apply during a
+call to this function.
+
+The function return 1 on success, 0 otherwise with an error message
+available from {\vt GetError}.
+
+%------------------------------------
+% 100108
+\index{ToXIC function}
+\item{(int) \vt ToXIC({\it destination\_dir\/})}\\
+The {\vt ToXIC} function will write the current cell hierarchy to disk
+files in native format, no questions asked.  The argument is the
+directory where the {\Xic} files will be created.  If this argument is
+a null or empty string or zero, the {\Xic} files will be created in
+the current directory.
+
+See the table in \ref{features} for the features that apply during a
+call to this function.
+
+This functions returns 1 on success, 0 otherwise, with an error
+message likely available from {\vt GetError}.
+
+%------------------------------------
+% 062109
+\index{ToCGX function}
+\item{(int) \vt ToCGX({\it cgx\_name\/})}\\
+This function will write the current cell hierarchy to a CGX format
+file on disk.  The argument is the name of the CGX file to create.  If
+the {\it cgx\_name} is null or an empty string, the name used will be
+the top level cell name suffixed with ``{\vt .cgx}''.
+
+See the table in \ref{features} for the features that apply during a
+call to this function.
+
+This functions returns 1 on success, 0 otherwise, with an error
+message likely available from {\vt GetError}.
+
+%------------------------------------
+% 062109
+\index{ToCIF function}
+\item{(int) \vt ToCIF({\it cif\_name\/})}\\
+This function will write the current cell hierarchy to a CIF format
+file on disk.  The argument is the name of the CIF file to create.  If
+the {\it cif\_name\/} is null or an empty string, the name used will
+be the top level cell name suffixed with ``{\vt .cif}''.
+
+See the table in \ref{features} for the features that apply during a
+call to this function.
+
+This functions returns 1 on success, 0 otherwise, with an error
+message likely available from {\vt GetError}.
+
+%------------------------------------
+% 062109
+\index{ToGDS function}
+\item{(int) \vt ToGDS({\it gds\_name\/})}\\
+This function will write the current cell hierarchy to a GDSII format
+file on disk.  The argument is the name of the GDSII file to create. 
+If the {\it gds\_name\/} is null or an empty string, the name used
+will be the top level cell name suffixed with ``{\vt .gds}''.
+
+See the table in \ref{features} for the features that apply during a
+call to this function.
+
+This functions returns 1 on success, 0 otherwise, with an error
+message likely available from {\vt GetError}.
+
+%------------------------------------
+% 062109
+\index{ToGdsLibrary function}
+\item{(int) \vt ToGdsLibrary({\it gds\_name}, {\it cellname\_list\/})}\\
+This function will create a GDSII file from a list of cells in memory. 
+The first argument is the name of the GDSII file to create.  The
+second argument is a string consisting of space-separated cell names. 
+The cells must be in memory, in the current symbol table.  Both
+arguments must provide values as there are no defaults.  The GDSII
+file will contain the hierarchy under each cell given, but any cell is
+added once only.  The resulting file will in general contain multiple
+top-level cells.
+
+See the table in \ref{features} for the features that apply during a
+call to this function.
+
+This functions returns 1 on success, 0 otherwise, with an error
+message likely available from {\vt GetError}.
+
+%------------------------------------
+% 062109
+\index{ToOASIS function}
+\item{(int) \vt ToOASIS({\it oas\_name\/})}\\
+This function will write the current cell hierarchy to an OASIS format
+file on disk.  The argument is the name of the OASIS file to create. 
+If the {\it oas\_name} is null or an empty string, the name used will
+be the top level cell name suffixed with ``{\vt .oas}''.
+
+See the table in \ref{features} for the features that apply during a
+call to this function.
+
+This functions returns 1 on success, 0 otherwise, with an error
+message likely available from {\vt GetError}.
+
+%------------------------------------
+% 100108
+\index{ToTxt function}
+\item{(int) \vt ToTxt({\it archive\_file\/}, {\it text\_file\/})}\\
+This function will create an ASCII text file {\it text\_file\/} from
+the contents of the archive file.  The human-readable text file is
+useful for diagnostics.  If {\it text\_file} is null or empty, the
+name is derived from the {\it archive\_file} and given a ``{\vt
+.txt}'' extension.  No output is produced for CIF, since these are
+already in readable format.
+
+The third argument is a string, which can be passed to specify the
+range of the conversion.  If this argument is passed 0, or the string
+is null or empty, the entire archive file will be converted.  The
+string is in the form
+
+\begin{quote}
+    [{\it start\_offs\/}[{\vt -}{\it end\_offs\/}]] [{\vt -r}
+      {\it rec\_count\/}] [{\vt -c} {\it cell\_count\/}]
+\end{quote}
+
+The square brackets indicate optional terms.  The meanings are
+
+\begin{description}
+\item{\it start\_offs}\\
+An integer, in decimal or ``{\vt 0x}'' hex format (a hex integer
+preceded by ``{\vt 0x}'').  The printing will begin at the first
+record with offset greater than or equal to this value.
+
+\item{\it end\_offs}\\
+An integer in decimal or ``{\vt 0x}'' hex format.  If this value is
+greater than {\it start\_offs}, the last record printed is at most the
+one containing this offset.  If given, this should appear after a
+`{\vt -}' character following the {\it start\_offs}, with no space.
+
+\item{\it rec\_count}\\
+A positive integer, at most this many records will be printed.
+
+\item{\it cell\_count}\\
+A non-negative integer, at most the records for this many cell
+definitions will be printed.  If given as 0, the records from the {\it
+start\_offs} to the next cell definition will be printed.
+\end{description}
+
+See the table in \ref{features} for the features that apply during a
+call to this function.
+
+The function returns 1 on success, 0 otherwise with an error message
+possibly available from {\vt GetError}.
+
+\end{description}
 
 !!SEEALSO
 funcs:cvrt
@@ -3462,6 +4088,1632 @@ Cell Hierarchy Digest
     otherwise 0 is returned, with an error message possibly available
     from <a href="GetError"><tt>GetError</tt></a>.
     </dl>
+!!LATEX funcs:cvrt:chd scrfuncs.tex
+% 100108
+The Cell Hierarchy Digest (CHD) is a data structure for saving a
+description of a cell hierarchy in compact form.  The CHD can be used
+to access data in the original file, without having to load the file,
+in an efficient manner.  This capability is accessible from a set of
+script functions described below.  This capability applies to physical
+data only.
+
+\begin{description}
+%------------------------------------
+% 120110
+\index{FileInfo function}
+\item{(string) \vt FileInfo({\it filename\/}, {\it handle\_or\_filename\/},
+  {\it flags\/})}\\
+This function provides information about the archive file given by the
+first argument.  If the second argument is a string giving the name of
+a file, output will go to that file.  If the second argument is a
+handle returned from the {\vt Open} function or similar (opened for
+writing), output goes to the handle stream.  In either case, the
+return value is a null string.  If the second argument is a scalar 0,
+the output will be in the form of a string which is returned.
+
+The third argument is an integer or string which determines the type
+of information to return.  If an integer, the bits are flags that
+control the possible data fields and printing modes.  The string form
+is a space or comma-separated list of text tokens or hex integers. 
+The hex numbers or equivalent values for the text tokens are or'ed
+together to form the flags integer.
+  
+This is really just a convenience wrapper around the {\vt ChdInfo}
+function.  See the description of that function for a description of
+the flags.  In this function, the following keyword flags will show as
+follows:
+
+\begin{description}
+\item{\vt alias}\\
+No aliasing is applied.
+\item{\vt flags}\\
+The flags will always be 0.
+\end{description}
+
+On error, a null string is returned, with an error message likely
+available from {\vt GetError}.
+
+%------------------------------------
+% 100108
+\index{OpenCellHierDigest function}
+\item{(chd\_name) \vt OpenCellHierDigest({\it filename\/},
+ {\it info\_saved\/})}\\
+This function returns an access name to a new Cell Hierarchy Digest
+(CHD), obtained from the archive file given as the argument.  The new
+CHD will be listed in the {\cb Cell Hierarchy Digests} panel, and the
+access name is used by other functions to access the CHD.
+
+See the table in \ref{features} for the features that apply during a
+call to this function.  In particular, the names of cells saved in the
+CHD reflect any aliasing that was in force at the time the CHD was
+created.
+
+The file is opened from the library search path, if a full path is not
+provided.  The CHD is a data structure that provides information about
+the hierarchy in compact form, and does not use that main database. 
+The second argument is an integer that determines the level of
+statistical information about the hierarchy saved.  This info is
+available from the {\vt ChdInfo} function and by other means.  The
+values can be:
+
+\begin{quote}
+\begin{tabular}{|l|l|} \hline
+0 & No information is saved.\\ \hline
+1 & Only total object counts are saved (default).\\ \hline
+2 & Object totals are saved per layer.\\ \hline
+3 & Object totals are saved per cell.\\ \hline
+4 & Objects counts are saved per cell and per layer.\\ \hline
+\end{tabular}
+\end{quote}
+
+The larger the value, the more memory is required, so it is best to
+only save information that will be used.
+
+If the {\vt ChdEstFlatMemoryUse} function will be called from the new
+CHD, the per-cell totals {\it must} be specified (value 3 or 4) or the
+estimate will be wildly inaccurate.
+
+The CHD refers to physical information only.  On error, a null string
+is returned, and an error message may be available with the {\vt
+GetError} function.
+
+%------------------------------------
+% 012111
+\index{WriteCellHierDigest function}
+\item{(int) \vt WriteCellHierDigest({\it chd\_name\/}, {\it filename\/},
+ {\it incl\_geom\/}, {\it no\_compr\/})}\\
+This function will write a disk file representation of the Cell
+Hierarchy Digest (CHD) associated with the access name given as the
+first argument, into the file whose name is given as the second
+argument.  Subsequently, the file can be read with {\vt
+ReadCellHierDigest} to recreate the CHD.  The file has no other
+use and the format is not documented.
+
+The CHD (and thus the file) contains offsets onto the target archive,
+as well as the archive location.  There is no checksum or other
+protection currently, so it is up to the user to make sure that the
+target archive is not moved or modified while the CHD is
+potentially or actually in use.
+
+If the boolean argument {\it incl\_geom} is true, and the CHD has a
+linked CGD (as from {\vt ChdLinkCgd}), then geometry records will be
+written to the file as well.  When the file is read, a new CGD will be
+created and linked to the new CHD.  Presently, the linked CGD must
+have memory or file type, as described for {\vt OpenCellGeomDigest}.
+
+The boolean argument {\it no\_compr}, if true, will skip use of
+compression of the CHD records.  This is unnecessary and not
+recommended, unless compatibility with {\Xic} releases earlier than
+3.2.17, which did not support compression, is needed.
+
+The function returns 1 if the file was written successfully, 0
+otherwise, with an error message likely available from {\vt GetError}.
+
+%------------------------------------
+% 012211
+\index{ReadCellHierDigest function}
+\item{(string) \vt ReadCellHierDigest({\it filename\/}, {\it cgd\_type\/})}\\
+This function returns an access name to a new cell Hierarchy Digest
+(CHD) created from the file whose name is passed as an argument.  The
+file must have been created with {\vt WriteCellHierDigest}, or with
+the {\cb Save} button in the {\cb Cell Hierarchy Digests} panel.
+
+If the file was written with geometry records included, a new Cell
+Geometry Digest (CGD) may also be created (with an internally
+generated access name), and linked to the new CHD.  If the integer
+argument {\it cgd\_type} is 0, a ``memory'' CGD will be created, which
+has the compressed geometry data stored in memory.  If {\it cgd\_type}
+is 1, a ``file'' CGD will be created, which will use offsets to obtain
+geometry from the CHD file when needed.  If {\it cgd\_type} is any
+other value, or the file does not contain geometry records, no CGD
+will be produced.
+
+On error, a null string is returned, with an error message probably
+available from {\vt GetError}.
+
+%------------------------------------
+% 100108
+\index{ChdList function}
+\item{(stringlist\_handle) \vt ChdList()}\\
+This function returns a handle to a list of access strings to Cell
+Hierarchy Digests that are currently in memory.  The function never
+fails, though the handle may reference an empty list.
+
+%------------------------------------
+% 100108
+\index{ChdChangeName function}
+\item{(int) \vt ChdChangeName({\it old\_chd\_name\/},
+  {\it new\_chd\_name\/})}\\
+This function allows the user to change the access name of an existing
+Cell Hierarchy Digest (CHD) to a user-supplied name.  The new name
+must not already be in use by another CHD.
+
+The first argument is the access name of an existing CHD, the second
+argument is the new access name, with which the CHD will subsequently
+be accessed.  This name can be any text string, but can not be null.
+
+The function returns 1 on success, 0 otherwise, with an error message
+likely available from {\vt GetError}.
+
+%------------------------------------
+% 100108
+\index{ChdIsValid function}
+\item{(int) \vt ChdIdValid({\it chd\_name\/})}\\
+This function returns one if the string argument is an access name of
+a Cell Hierarchy Digest currently in memory, zero otherwise.
+
+%------------------------------------
+% 100108
+\index{ChdDestroy function}
+\item{(int) \vt ChdDestroy({\it chd\_name\/})}\\
+If the string argument is an access name of a Cell Hierarchy Digest
+(CHD) currently in memory, the CHD will be destroyed and its memory
+freed.  One is returned on success, zero otherwise, with an error
+message likely available with {\vt GetError}.
+
+%------------------------------------
+% 021912
+\label{ChdInfo}
+\index{ChdInfo function}
+\item{(string) \vt ChdInfo({\it chd\_name\/}, {\vt handle\_or\_filename\/},
+ {\it flags\/})}\\
+This function provides information about the archive file represented
+by the Cell Hierarchy Digest (CHD) whose access name is given as the
+first argument.  If the second argument is a string giving the name of
+a file, output will go to that file.  If the second argument is a
+handle returned from the {\vt Open} function or similar (opened for
+writing), output goes to the handle stream.  In either case, the
+return value is a null string.  If the second argument is a scalar 0,
+the output will be in the form of a string which is returned.
+
+The third argument is an integer or string which determines the type
+of information to return.  If an integer, the bits are flags that
+control the possible data fields and printing modes.  The string form
+is a space or comma-separated list of text tokens (from the list
+below, case insensitive) or hex integers.  The hex numbers or
+equivalent values for the text tokens are or'ed together to form the
+flags integer.
+  
+If this argument is 0, all flags except for {\vt allcells}, {\vt
+instances}, {\vt flags}, {\vt instcnts}, and {\vt instcntsp} are
+implied.  Thus, the sometimes very lengthly cells/instances listing
+is skipped by default.  To obtain all available information, pass
+{\vt -1} or {\vt all} as the flags value.
+
+\begin{tabular}{|l|l|l|} \hline
+\bf Keyword & \bf Value & \bf Description\\ \hline
+\vt filename & \vt 0x1 & File name.\\ \hline
+\vt filetype & \vt 0x2 & File type (``{\vt CIF}'', ``{\vt CGX}'',
+  ``{\vt GDSII}'', or ``{\vt OASIS}'').\\ \hline
+\vt unit & \vt 0x4 & File unit in meters (e.g., GDSII M-UNIT).\\ \hline
+\vt alias & \vt 0x8 & Applied cell name aliasing modes.\\ \hline
+
+\vt reccounts & \vt 0x10 & Table of record type counts (file format
+  dependent).\\ \hline
+\vt objcounts & \vt 0x20 & Table of object counts.\\ \hline
+\vt depthcnts & \vt 0x40 & Tabulate the number of cell instances at each
+  hierarchy level.\\ \hline
+\vt estsize & \vt 0x80 & Print estimated memory needed to read file
+  into {\Xic}.\\ \hline
+
+\vt estchdsize & \vt 0x100 & Print size of data structure used to
+  provide info.\\ \hline
+\vt layers & \vt 0x200 & List of layer names found, as for {\vt ChdLayers}
+  function.\\ \hline
+\vt unresolved & \vt 0x400 & List any cells that are referenced
+  but not defined in the file.\\ \hline
+\vt topcells & \vt 0x800 & Top-level cells.\\ \hline
+
+\vt allcells & \vt 0x1000 & All cells.\\ \hline
+\vt offsort & \vt 0x2000 & Sort cells by offset in archive file.\\ \hline
+\vt offset & \vt 0x4000 & Print offsets of cell definitions in archive
+  file.\\ \hline
+\vt instances & \vt 0x8000 & List instances with cells.\\ \hline
+
+\vt bbs & \vt 0x10000 & List bounding boxes with cells, and attributes
+  with instances.\\ \hline
+\vt flags & \vt 0x20000 & Unused.\\ \hline
+\vt instcnts & \vt 0x40000 & Count cell instances and report totals.\\ \hline
+\vt instcntsp & \vt 0x80000 & Count cell instances and report totals per
+  master.\\ \hline
+
+\vt all & \vt -1 & Set all flags.\\ \hline
+\end{tabular}
+
+The information provided by these flags is more fully described below.
+
+\begin{description}
+\item{\vt filename}\\
+Print the name of the archive file for which the information
+applies.
+
+\item{\vt filetype}\\
+Print a string giving the format of the archive file:  one of ``{\vt
+CIF}'', ``{\vt CGX}'', ``{\vt GDSII}'', or ``{\vt OASIS}''.
+
+\item{\vt unit}\\
+This is a file parameter giving the value of one unit in meters.  In
+GDSII files, this is obtained from the M-UNIT record.  The value is
+typically 1e-9, which means that a coordinate value of 1000
+corresponds to one micron.
+
+\item{\vt alias}\\
+Print a string giving the cell name aliasing modes that were in
+effect when the CHD was created.
+
+\item{\vt reccounts}\\
+Print a table of the counts for record types found in the archive.
+This is format-dependent.
+
+\item{\vt objcounts}\\
+Print a table of object counts found in the archive file.  The table
+contains the following keywords, each followed by a number.
+
+\begin{tabular}{|l|l|} \hline
+\bf Keyword & \bf Description\\ \hline
+\vt Records & Total record count\\ \hline
+\vt Cells & Number of cell definitions\\ \hline
+\vt Boxes & Number of rectangles\\ \hline
+\vt Polygons & Number of polygons\\ \hline
+\vt Wires & Number of wire paths\\ \hline
+\vt Avg Verts & Average vertex count per poly or wire\\ \hline
+\vt Labels & Number of (non-physical) labels\\ \hline
+\vt Srefs & Number of non-arrayed instances\\ \hline
+\vt Arefs & Number of arrayed instances\\ \hline
+\end{tabular}
+
+If the per-layer counts option was set when the CHD was created,
+additional lines will display the object counts as above, broken out
+per-layer.
+
+\item{\vt depthcnts}\\
+A table of the number of cell instantiations at each hierarchy level
+is printed, for each top-level cell found in the file.  The count for
+depth 0 is 1 (the top-level cell), the count at depth 1 is the number
+of subcells of the top-level cell, depth 2 is the number of subcells
+of these subcells, etc.  Arrays are expanded, with each element
+counting as an instance placement.  A total is printed, the same
+value that would be obtained from the {\vt instcnts} flag.
+
+\item{\vt estsize}\\
+This flag will enable printing of the estimated memory required to
+read the entire file into {\Xic}.  The system must be able to provide
+at least this much memory for a read to succeed.
+
+\item{\vt estchdsize}\\
+Print an estimate of the memory required by the present CHD.
+
+By default, a compression mechanism is used to reduce the data storage
+needed for instance lists.  The {\et NoCompressContext} variable, if
+set, will turn off use of compression.  If compression is used, the
+{\vt extcxsize} field will include compression statistics.  The
+``ratio'' is the space actually used to the space used if not
+compressed.
+
+\item{\vt layers}\\
+Print a list of the layer names encountered in the archive, as for the
+{\vt ChdLayers} function.
+
+\item{\vt unresolved}\\
+This will list cells that are referenced but not defined in the file. 
+These will also be listed if {\vt allcells} is given.  A valid archive
+file will not contain unresolved references.
+
+\item{\vt topcells}\\
+List the top-level cells, i.e., the cells in the file that are not
+used as a subcell by another cell in the file.  If {\vt allcells} is
+also given, only the names are listed, otherwise the cells are listed
+including the {\vt offset}, {\vt instances}, {\vt bbs}, and {\vt
+flags} fields if these flags are set.  The list will be sorted as per
+{\vt offsort}.
+
+\item{\vt allcells}\\
+All cells found in the file are listed by name, including the {\vt
+offset}, {\vt instances}, {\vt bbs}, and {\vt flags} fields if these
+flags are also given.  The list will be sorted as per {\vt offsort}.
+\end{description}
+
+The following flags apply only if at least one of {\vt topcells} or
+{\vt allcells} is given.
+
+\begin{description}
+\item{\vt offsort}\\
+If this flag is set, the cells will be listed in ascending order of
+the file offset, i.e., in the order in which the cell definitions
+appear in the archive file.  If not set, cells are listed
+alphabetically.
+
+\item{\vt offset}\\
+When set, the cell name is followed by the offset of the cell
+definition record in the archive file.  This is given as a decimal
+number enclosed in square brackets.
+
+\item{\vt instances}\\
+For each cell, the subcells used in the cell are listed.  The subcell
+names are indented and listed below the cell name.
+
+\item{\vt bbs}\\
+For each cell the bounding box is shown, in L,B R,T form.  For
+subcells, the position, transformation, and array parameters are
+shown.  Coordinates are given in microns.  The subcell
+transformation and array parameters are represented by a
+concatenation of the following tokens, which follow the subcell
+reference position.  These are similar to the transformation
+tokens found in CIF, and have the same meanings.
+
+\begin{tabular}{ll}
+\vt MY & Mirror about the x-axis.\\
+{\vt R}{\it i\/},{\it j\/} & Rotate by an angle given by the vector
+  {\it i\/},{\it j\/}.\\
+{\vt M}{\it mag} & Magnify by {\it mag\/}.\\
+{\vt A}{\it nx\/},{\it ny\/},{\it dx\/},{\it dy\/} & Specifies
+  an array, {\it nx} x {\it ny} with spacings {\it dx},
+  {\it dy\/}.\\
+\end{tabular}
+
+Note:  for technical reasons, the cell bounding boxes in CHDs do
+{\it not} include empty cells, unlike the bounding boxes computed
+in the main database, which will include the placement location
+points.
+
+\item{\vt flags}\\
+This is currently unused and ignored.
+
+\item{\vt instcnts}\\
+Print the total number of cell instantiations found in the hierarchy. 
+Arrays are expanded, i.e., each element of an array counts as an
+instance placement.
+
+\item{\vt instcntsp}\\
+Similar to {\vt instcnts}, but print the total instantiations for
+each master cell.
+
+\item{\vt all}\\
+This enables all flags.
+\end{description}
+
+On error, a null string is returned, with an error message likely
+available from {\vt GetError}.
+
+This function is similar to the {\cb !fileinfo} command and to the
+{\vt FileInfo} script function.
+
+%------------------------------------
+% 100108
+\index{ChdFileName function}
+\item{(string) \vt ChdFileName({\it chd\_name\/})}\\
+This function returns a string containing the full pathname of the
+file associated with the Cell Hierarchy Digest (CHD) whose access name
+was given in the argument.  A null string is returned on error, with
+an error message likely available from {\vt GetError}.
+
+%------------------------------------
+% 100108
+\index{ChdFileType function}
+\item{(string) \vt ChdFileType({\it chd\_name\/})}\\
+This function returns a string containing the file format of the
+archive file associated with the Cell Hierarchy Digest (CHD) whose
+access name was given in the argument.  A null string is returned on
+error, with an error message likely available from {\vt GetError}. 
+Other possible returns are ``{\vt CIF}'', ``{\vt GDSII}'', ``{\vt
+CGX}'', and ``{\vt OASIS}''.
+
+%------------------------------------
+% 100108
+\index{ChdTopCells function}
+\item{(stringlist\_handle) \vt ChdTopCells({\it chd\_name\/})}\\
+This function returns a handle to a list of strings that contain the
+top-level cell names in the Cell Hierarchy Digest (CHD) whose access
+name was given in the argument (physical cells only).  The top-level
+cells are those not used as a subcell by another cell in the CHD.  A
+scalar zero is returned on error, with an error message likely
+available from {\vt GetError}.
+
+%------------------------------------
+% 022209
+\index{ChdListCells function}
+\item{(stringlist\_handle) \vt ChdListCells({\it chd\_name\/},
+ {\it cellname\/}, {\it mode\/}, {\it all\/})}\\
+This function returns a handle to a list of cellnames from among those
+found in the CHD, whose access name is given as the first argument. 
+There are two basic modes, depending on whether the boolean argument
+{\it all} is true or not.
+
+If {\it all} is true, the {\it cellname} argument is ignored, and the
+list will consist of all cells found in the CHD.  If the integer {\it
+mode} argument is 0, all physical cell names are listed.  If {\it
+mode} is 1, all electrical cell names will be returned.  If any other
+value, the listing will contain all physical and electrical cell
+names, with no duplicates.
+
+If {\it all} is false, the listing will contain the names of all cells
+under the hierarchy of the cell named in the {\it cellname} argument
+(including {\it cellname}).  If {\it cellname} is 0, empty, or null,
+the default cell for the CHD is assumed, i.e., the cell which has been
+configured, or the first top-level cell found.  The {\it mode}
+argument is 0 for physical cells, nonzero for electrical cells (there
+is no merging of lists in this case).
+
+On error, a scalar 0 is returned, and a message may be available
+from {\vt GetError}.
+
+%------------------------------------
+% 100108
+\index{ChdLayers function}
+\item{(stringlist\_handle) \vt ChdLayers({\it chd\_name\/})}\\
+This function returns a handle to a list of strings that contain the
+names of layers used in the file represented by the Cell Hierarchy
+Digest whose access name is passed as the argument (physical cells
+only).  For file formats that use a layer/datatype, the names are
+four-byte hex integers, where the left two bytes are the zero-padded
+hex value of the layer number, and the right two bytes are the
+zero-padded value of the datatype number.  This applies for
+GDSII/OASIS files that follow the standard convention that layer and
+datatype numbers are 0--255.  If either number is larger than 255, the
+layer ``name'' will consist of eight hex bytes, the left four for
+layer number, the right four for datatype.
+
+The layers listing is available only if the CHD was created with info
+available, i.e., {\vt OpenCellHierDigest} was called with the {\it
+info\_saved} argument set to a value other than 0.
+
+Each unique combination or layer name is listed.  A scalar zero is
+returned on error, in which case an error message may be available
+from {\vt GetError}.
+
+%------------------------------------
+% 041010
+\index{ChdInfoMode function}
+\item{(int) \vt ChdInfoMode({\it chd\_name\/})}\\
+This function returns the saved info mode of the Cell Hierarchy Digest
+whose access name is passed as the argument.  This is the {\it
+info\_saved} value passed to {\vt OpenCellHierDigest}.  The values
+are:
+
+\begin{tabular}{ll}
+0 & no information is saved.\\
+1 & only total object counts are saved.\\
+2 & object totals are saved per layer.\\
+3 & object totals are saved per cell.\\
+4 & objects counts are saved per cell and per layer.\\
+\end{tabular}
+
+If the CHD name is not resolved, the return value is -1, with an error
+message available from {\vt GetError}.
+
+%------------------------------------
+% 041010
+\index{ChdInfoLayers function}
+\item{(stringlist\_handle) \vt ChdInfoLayers({\it chd\_name\/},
+ {\it cellname\/})}\\
+This is identical to the {\vt ChdLayers} function when the {\it
+cellname} is 0, null, or empty.  If the CHD was created with {\vt
+OpenCellHierDigest} with the {\it info\_saved} argument set to 4
+(per-cell and per-layer info saved), then a {\it cellname} string can
+be passed.  In this case, the return is a handle to a list of layers
+used in the named cell.  A scalar 0 is returned on error, with an
+error message probably available from {\vt GetError}.
+
+%------------------------------------
+% 041010
+\index{ChdInfoCells function}
+\item{(stringlist\_handle) \vt ChdInfoCells({\it chd\_name\/})}\\
+If the CHD whose access name is given as the argument was created with
+{\vt OpenCellHierDigest} with the {\it info\_saved} argument set to 3
+(per-cell data saved) or 4 (per-cell and per-layer data saved), then
+this function will return a handle to a list of cell names from the
+source file.  On error, a scalar 0 is returned, with an error message
+probably available from {\vt GetError}.
+
+%------------------------------------
+% 041010
+\index{ChdInfoCounts function}
+\item{(int) \vt ChdInfoCounts({\it chd\_name\/}, {\it cellname\/},
+  {\it layername\/}, {\it array\/})}\\
+This function will return object count statistics in the {\it
+array\/}, which must have size 4 or larger.  The counts are obtained
+when the CHD, whose access name is given as the first argument, was
+created.  The types of counts available depend on the {\it
+info\_saved} value passed to {\vt OpenCellHierDigest} when the CHD was
+created.
+
+The array is filled in as follows:
+
+\begin{tabular}{ll}
+{\it array\/}[0] & Box count.\\
+{\it array\/}[1] & Polygon count.\\
+{\it array\/}[2] & Wire count.\\
+{\it array\/}[3] & Vertex count (polygons plus wires).\\
+\end{tabular}
+
+The following counts are available for the various {\it info\_saved}
+modes.
+
+\begin{description}
+\item{\it info\_saved} = 0\\
+No information is available.
+
+\item{\it info\_saved} = 1\\
+Both {\it cellname} and {\it layername} arguments are ignored, the
+return provides file totals.
+
+\item{\it info\_saved} = 2\\
+The {\it cellname} argument is ignored.  If {\it layername} is 0,
+null, or empty, the return provides file totals.  Otherwise, the
+return provides totals for {\it layername}, if found.
+
+\item{\it info\_saved} = 3\\
+The {\it layername} argument is ignored.  If {\it cellname} is 0,
+null, or empty, the return represents file totals.  Otherwise, the
+return provides totals for {\it cellname}, if found.
+
+\item{\it info\_saved} = 4\\
+If both arguments are 0, null, or empty, the return represents file
+totals.  If {\it cellname} is 0, null, or empty, the return represents
+totals for the layer given.  If {\it layername} is 0, null, or empty,
+the return provides totals for the cell name given.  If both names are
+given, the return provides totals for the given layer in the given
+cell.
+\end{description}
+
+If a cell or layer is not found, or data are not available for some
+reason, or an error occurs, the return value is 0, and an error
+message may be available from {\vt GetError}.  Otherwise, the return
+value is 1, and the array is filled in.
+
+%------------------------------------
+% 100108
+\index{ChdCellBB function}
+\index{NoReadLabels variable}
+\item{(int) \vt ChdCellBB({\it chd\_name\/}, {\it cellname\/}, {\it array\/})}\\
+This returns the bounding box of the named cell.  The {\it cellname}
+is a string giving the name of a physical cell found in the Cell
+Hierarchy Digest (CHD) whose access name is given in the first
+argument.
+
+The {\it cellname}, if nonzero, must be the cell name after any
+aliasing that was in force when the CHD was created.  If {\it
+cellname} is passed 0, the default cell for the CHD is understood. 
+This is a cell name configured into the CHD, or the first top-level
+cell found in the archive file.
+
+The values are returned in the {\it array}, which must have size 4 or
+larger.  the order is l,b,r,t.  One is returned on success, zero
+otherwise, with an error message likely available from {\vt GetError}.
+
+The cell bounding boxes for geometry are computed as the file is read,
+so that if the {\et NoReadLabels} variable is set during the read,
+i.e., when {\vt OpenCellHierDigest} is called, text labels will not
+contribute to the bounding box computation.
+
+%------------------------------------
+% 062209
+\index{ChdSetDefCellName function}
+\item{(int) \vt ChdSetDefCellName({\it chd\_name\/}, {\it cellname\/})}\\
+This will set or unset the configuration of a default cell namein the
+Cell Hierarchy Digest whose access name is given in the first
+argument.
+
+If the {\it cellname} argument in not 0 or null, it must be a cell
+name after any aliasing that was in force when the CHD was created,
+that exists in the CHD.  This will set the default cell name for the
+CHD which will be used subsequently by the CHD whenever a cell name is
+not otherwise specified.  The current default cell name is returned
+from the {\vt ChdDefCellName} function.  If {\it cellname} is 0 or
+null, the default cell name is unconfigured.  In this case, the CHD
+will use the first top-level cell found (lowest offset on the archive
+file).  A top-level cell is one that is not used as a subcell by any
+other cell in the CHD.
+
+One is returned on success, zero otherwise, with an error message
+likely available with {\vt GetError}.
+
+%------------------------------------
+% 062209
+\index{ChdDefCellName function}
+\item{(string) \vt ChdDefCellName({\it chd\_name\/})}\\
+This will return the default cell name of the Cell Hierarchy Digest
+whose access name is given in the argument.  This will be the cell
+name configured (with {\vt ChdSetDefCellName}), or if no cell name is
+configured the return will be the name of the first top-level cell
+found (lowest offset on the archive file).  A top-level cell is one
+that is not used as a subcell by any other cell in the CHD.
+
+On error, a null string is returned, with an error message likely
+available from {\vt GetError}.
+
+%------------------------------------
+% 012111
+\index{ChdLoadGeometry function}
+\item{(int) \vt ChdLoadGeometry({\it chd\_name\/})}\\
+This function will read the geometry from the original layout file
+from the Cell Hierarchy Digest (CHD) whose access name is given in the
+argument into a new Cell Geometry Digest (CGD) in memory, and
+configures the CHD to link to the new CGD for use when reading.  The
+new CGD is given an internally-generated access name, and will store
+all geometry data in memory.  The new CGD will be destroyed when
+unlinked. 
+
+This is a convenience function, one can explicitly create a CGD   
+(with {\vt OpenCellGeomDigest}) and link it to the CHD (with   
+{\vt ChdLinkCgd}) if extended features are needed.   
+
+See the table in \ref{features} for the features that apply during a
+call to this function.
+
+The return value is 1 on success, 0 otherwise, with an error message
+likely available from {\vt GetError}.
+
+%------------------------------------
+% 012111
+\index{ChdLinkCgd function}
+\item{(int) \vt ChdLinkCgd({\it chd\_name\/}, {\it cgd\_name\/})}\\
+This function links or unlinks a Cell Geometry Digest (CGD) whose
+access name is given as the second argument, to the Cell Hierarchy
+Digest (CHD) whose access name is given as the first argument.  With a
+CGD linked, when the CHD is used to access geometry data, the data
+will be obtained from the CGD, if it exists in the CGD, and from the
+original layout file if not provided by the CGD.  The CGD is a
+``geometry cache'' which resides in memory.
+
+If the {\it cgd\_name} is null or empty (0 can be passed for this
+argument) any CGD linked to the CHD will be unlinked.  If the CGD was
+created specifically to link with the CHD, such as with {\vt
+ChdLoadGeometry}, it will be freed from memory, otherwise it will be
+retained.
+
+This function returns 1 on success, 0 otherwise with an error message
+likely available from {\vt GetError}.
+
+%------------------------------------
+% 100108
+\index{ChdGetGeomName function}
+\item{(string) \vt ChdGetGeomName({\it chd\_name\/})}\\
+The string argument is an access name for a Cell Hierarchy Digest
+(CHD) in memory.  If the CHD exists and has an associated Cell
+Geometry Digest (CGD) linked (e.g., {\vt ChdLoadGeometry} was called),
+this function returns the access name of the CGD.  If the CHD is not
+found or not configured with a CGD, a null string is returned.
+
+%------------------------------------
+% 012111
+\index{ChdClearGeometry function}
+\item{(int) \vt ChdClearGeometry({\it chd\_name\/})}\\
+This function will clear the link to the Cell Geometry Digest within
+the Cell Hierarchy Digest.  If a CGD was linked, and it was created
+explicitly for linking into the CHD as in {\vt ChdLoadGeometry}, the CGD
+will be freed, otherwise it will be retained.  The return value is 1
+if the CHD was found, 0 otherwise, with a message available from {\vt
+GetError}.
+
+This function is identical to {\vt ChdLinkCgd} with a null second
+argument.
+
+%------------------------------------
+% 040409
+\index{ChdSetSkipFlag function}
+\item{(int) \vt ChdSetSkipFlag({\it chd\_name\/}, {\it cellname\/},
+   {\it skip\/})}\\
+This will set/unset the skip flag in the Cell Hierarchy Digest (CHD)
+whose access name is given in the first argument for the cell named in
+{\it cellname} (physical only).
+
+The {\it cellname}, if nonzero, must be the cell name after any
+aliasing that was in force when the CHD was created.  If {\it
+cellname} is passed 0, the default cell for the CHD is understood. 
+This is a cell name configured into the CHD, or the first top-level
+cell found in the archive file.
+
+With the skip flag set, the cell is ignored in the CHD, i.e., the cell
+and its instances will not be included in output or when reading into
+memory when the CHD is used to access layout data.  The last argument
+is a boolean value:  0 to unset the skip flag, nonzero to set it.  The
+return value is 1 if a flag was altered, 0 otherwise, with an error
+message likely available from {\vt GetError}.
+
+%------------------------------------
+% 040409
+\index{ChdClearSkipFlags function}
+\item{(int) \vt ChdClearSkipFlags({\it chd\_name\/})}\\
+This will clear the skip flags for all cells in the Cell Hierarchy
+Digest whose access name is given in the argument.  The skip flags are
+set with {\vt SetSkipFlag}.  The return value is 1 on success, 0
+otherwise, with an error message likely available with {\vt GetError}.
+
+%------------------------------------
+% 022209
+\index{ChdCompare function}
+\item{(int) \vt ChdCompare({\it chd\_name1\/}, {\it cname1\/},
+ {\vt chd\_name2\/}, {\it cname2\/}, {\it layer\_list\/}, {\it skip\_layers\/},
+ {\it maxdiffs\/},\newline
+ {\it obj\_types\/}, {\it geometric\/}, {\it array\/})}\\
+This will compare the contents of two cells, somewhat similar to the
+{\cb !compare} command and the {\cb Compare Layouts} operation in the
+{\cb Convert Menu}.  However, only one cell pair is compared, taking
+account only of features within the cells.  The {\vt ChdCompareFlat}
+function is similar, but flattens geometry before comparison.
+
+When comparing subcells, arrays will be expanded into individual
+instances before comparison, avoiding false differences between
+arrayed and unarrayed equivalents.  The returned handles (if any)
+contain differences, as lists of object copies.  Properties are
+ignored.
+
+The arguments are:
+\begin{description}
+\item{\it chd\_name1}\\
+Access name of a Cell Hierarchy Digest (CHD) in memory.
+
+\item{\it cname1}\\
+Name of cell in {\it chd\_name1} to compare, if null (0 passed) the
+default cell in {\it chd\_name1} is used.
+
+\item{\it chd\_name2}\\
+If not null or empty (one can pass 0 for this argument), the name of
+another CHD.
+
+\item{\it cname2}\\
+Name of cell in the second CHD, or in memory, to compare.  If null, or
+0 is passed, and a second CHD was specified, the second CHD's default
+cell is understood.  Otherwise, the name will be assumed the same as
+{\it cname1\/}.
+
+\item{\it layer\_list}\\
+String of space-separated layer names, or zero which implies all
+layers.
+
+\item{\it skip\_layers}\\
+If this boolean value is nonzero and a {\it layer\_list} was given,
+the layers in the list will be skipped.  Otherwise, only the layers in
+the list will be compared (all layers if {\it layer\_list} is passed
+zero).
+
+\item{\it maxdiffs}\\
+The function will return after recording this many differences.  If 0
+or negative, there is no limit.
+
+\item{\it obj\_types}\\
+String consisting of the layers {\vt c,b,p,w,l}, which determines
+objects to consider (subcells, boxes, polygons, wires, and labels), or
+zero.  If zero, ``{\vt cbpw}'' is the default, i.e., labels are
+ignored.  If the geometric argument is nonzero, all but '{\vt c}' will
+be ignored, and boxes, polygons, and wires will be compared.
+
+\item{\it geometric}\\
+If this boolean value is nonzero, a geometric comparison will be
+performed, otherwise objects are compared directly.
+
+\item{\it array}\\
+This is a two-element or larger array, or zero.  If an array is
+passed, upon return the elements are handles to lists of box, polygon,
+and wire object copies (labels and subcells are not returned):  {\it
+array\/}[0] contains a list of objects in handle1 and not in handle2,
+and {\it array\/}[1] contains objects in handle2 and not in handle1. 
+The {\vt H} function must be used on the array elements to access the
+handles.  If the argument is passed zero, no object lists are
+returned.
+\end{description}
+
+The cells for the current mode (electrical or physical) are compared. 
+The scalar return can take the following values:
+
+\begin{tabular}{ll}
+-1 & An error occurred, with a message possibly available
+      from the {\vt GetError} function.\\
+0 & Successful comparison, no differences found.\\
+1 & Successful comparison, differences found.\\
+2 & The cell was not found in {\it chd\_name1\/}.\\
+3 & The cell was not found in {\it chd\_name2\/}.\\
+4 & The cell was not found in either source.\\
+\end{tabular}
+
+%------------------------------------
+% 022209
+\index{ChdCompareFlat function}
+\item{(int) \vt ChdCompareFlat({\it chd\_name1\/}, {\it cname1\/},
+ {\vt chd\_name2\/}, {\it cname2\/}, {\it layer\_list\/}, {\it skip\_layers\/},
+ \newline
+ {\it maxdiffs\/}, {\it area\/}, {\it coarse\_mult\/}, {\it find\_grid\/},
+ {\it array\/})}\\
+This will compare the contents of two hierarchies, using a flat
+geometry model similar to the flat options of the {\cb !compare}
+command and the {\cb Compare Layouts} operation in the {\cb Convert
+Menu}.  The {\vt ChdCompare} function is similar, but does not
+flatten.
+
+The returned handles (if any) contain the differences, as lists of
+objects.  Properties are ignored.
+
+The arguments are:
+\begin{description}
+\item{\it chd\_name1}\\
+Access name of a Cell Hierarchy Digest (CHD) in memory.
+
+\item{\it cname1}\\
+Name of cell in {\it chd\_name1} to compare, if null (0 passed) the
+default cell in {\it chd\_name1} is used.
+
+\item{\it chd\_name2}\\
+Access name of another CHD in memory.  This argument can not be null
+as in {\vt ChdCompare}, flat comparison to memory cells is
+unavailable.
+
+\item{\it cname2}\\
+Name of cell in the second CHD to compare.  If null, or 0 is passed,
+the second CHD's default cell is understood.
+
+\item{\it layer\_list}\\
+String of space-separated layer names, or zero which implies all
+layers.
+
+\item{\it skip\_layers}\\
+If this boolean value is nonzero and a {\it layer\_list} was given,
+the layers in the list will be skipped.  Otherwise, only the layers in
+the list will be compared (all layers if {\it layer\_list} is passed
+zero).
+
+\item{\it maxdiffs}\\
+The function will return after recording this many differences.  If 0
+or negative, there is no limit.
+
+\item{\it area}\\
+This argument can be an array of size 4 or larger, or 0.  If an array,
+it contains a rectangle description in order L,B,R,T in microns, which
+specifies the area to compare.  If 0 is passed, the area compared will
+contain the two hierarchies entirely.
+
+\item{\it coarse\_mult}\\
+The comparison is performed in the manner described for the {\vt
+ChdIterateOverRegion} function, using a fine grid and a coarse grid. 
+This argument specifies the size of the coarse grid in multiples of
+the fine grid size.  All of the geometry needed for a coarse grid cell
+is brought into memory at once, so this size should be consistent with
+memory availability and layout feature density.  Values of 1--100 are
+accepted for this argument, with 20 a reasonable initial choice.
+
+\item{\it fine\_grid}\\
+Comparison is made within a fine grid cell.  The optimum fine grid
+size depends on factors including layout feature density and memory
+availability.  Larger sizes usually run faster, but may require
+excessive memory.  The value is given in microns, with the acceptable
+range being 1.0 -- 100.0 microns.  A reasonable initial choice is
+20.0, but experimentation can often yield better performance.
+
+\item{\it array}\\
+This is a two-element or larger array, or zero.  If an array is
+passed, upon return the elements are handles to lists of box, polygon,
+and wire object copies (labels and subcells are not returned):  {\it
+array\/}[0] contains a list of objects in handle1 and not in handle2,
+and {\it array\/}[1] contains objects in handle2 and not in handle1. 
+The {\vt H} function must be used on the array elements to access the
+handles.  If the argument is passed zero, no object lists are
+returned.
+\end{description}
+
+The cells for the physical mode are compared, it is not possible to
+compare electrical cells in flat mode.  The return value is an
+integer, -1 on error (with a message likely available from {\vt
+GetError}), 0 if no differences were seen, or positive giving the
+number of differences seen.
+
+%------------------------------------
+% 062209
+\index{ChdEdit function}
+\item{(int) \vt ChdEdit({\it chd\_name\/}, {\it scale\/}, {\it cellname\/})}\\
+This will read the given cell and its descendents into memory and open
+the cell for editing, similar to the {\vt Edit} function, however the
+layout data will be accessed through the Cell Hierarchy Digest whose
+access name is given in the first argument.  The return value takes
+the same values as the {\vt Edit} function return.
+
+See the table in \ref{features} for the features that apply during a
+call to this function.
+
+The {\it scale} will multiply all coordinates in cells opened, and
+can be in the range 0.001 -- 1000.0.
+
+The {\it cellname}, if nonzero, must be the cell name after any
+aliasing that was in force when the CHD was created.  If {\it
+cellname} is passed 0, the default cell for the CHD is understood. 
+This is a cell name configured into the CHD, or the first top-level
+cell found in the archive file.
+
+%------------------------------------
+% 062209
+\index{ChdOpenFlat function}
+\item{(int) \vt ChdOpenFlat({\it chd\_name\/}, {\it scale\/}, {\it cellname\/},
+ {\it array\/}, {\it clip\/})}\\
+This will read the cell named in the {\it cellname} string and its
+subcells into memory, creating a flat cell with the same name.  The
+Cell Hierarchy Digest (CHD) whose access name is given in the first
+argument is used to obtain the layout data.
+
+See the table in \ref{features} for the features that apply during a
+call to this function.  Text labels are ignored.
+
+The {\it cellname}, if nonzero, must be the cell name after any
+aliasing that was in force when the CHD was created.  If {\it
+cellname} is passed 0, the default cell for the CHD is understood. 
+This is a cell name configured into the CHD, or the first top-level
+cell found in the archive file.
+
+If the cell already exists in memory, it will be overwritten.
+
+The {\it scale} will multiply all coordinates read, and can be in the
+range 0.001 -- 1000.0.
+
+If the {\it array} argument is passed 0, no windowing will be used. 
+Otherwise the array should have four components which specify a
+rectangle, in microns, in the coordinates of {\it cellname}.  The
+values are
+
+\begin{tabular}{ll}
+{\it array\/}{\vt [0]} & X left\\
+{\it array\/}{\vt [1]} & Y bottom\\
+{\it array\/}{\vt [2]} & X right\\
+{\it array\/}{\vt [3]} & Y top\\
+\end{tabular}
+
+If an array is given, only the objects and subcells needed to render
+the window will be read.
+
+If the boolean value {\it clip} is nonzero and an array is given,
+objects will be clipped to the window.  Otherwise no clipping is done.
+
+Before calling {\vt ChdOpenFlat}, the memory use can be estimated by
+calling the {\vt ChdEstFlatMemoryUse} function.  An overall
+transformation can be set with {\vt ChdSetFlatReadTransform}, in which
+case the area given applies in the ``root'' coordinates.
+
+The return value is 1 on success, 0 on error, or -1 if an interrupt
+was received.  In the case of an error return, an error message may be
+available through {\vt GetError}.
+
+%------------------------------------
+% 100108
+\index{ChdSetFlatReadTransform function}
+\item{(real) \vt ChdSetFlatReadTransform({\it tfstring\/}, {\it x\/},
+ {\it y\/})}\\
+This rather arcane function will set up a transformation which will be
+used during calls to the following functions:
+\begin{quote} \vt
+ChdOpenFlat\\
+ChdWriteSplit\\
+ChdGetZlist\\
+ChdOpenOdb\\
+ChdOpenZdb\\
+ChdOpenZbdb
+\end{quote}
+
+The transform will be applied to all of the objects read through the
+CHD with these functions.  Why might this function be used?  Consider
+the following:  suppose we have a CHD describing a cell hierarchy, the
+top-level cell of which is to be instantiated under another cell we'll
+call ``root'', with a given transformation.  We would like to consider
+the objects from the CHD from the perspective of the ``root'' cell. 
+This function would be called to set the transformation, then one of
+the flat read functions would be called and the returned objects
+accumulated.  The returned objects will have coordinates relative to
+the ``root'' cell, rather than relative to the top-level cell of the
+CHD.
+
+The {\it tfstring} describes the rotation and mirroring part of the
+transformation.  It is either one of the special tokens to be
+described, or a sequence of the following tokens:
+
+\begin{description}
+\item{\vt MX}\\
+ Flip the X axis.
+\item{\vt MY}\\
+ Flip the Y axis.
+\item{\vt R}{\it nnn}\\
+ Rotate by {\it nnn} degrees.  The {\it nnn} must be one of 0, 45, 90,
+ 135, 180, 225, 270, 315.
+\end{description}
+
+White space can appear between tokens.  The operations are performed
+in order.  Note that, e.g., ``{\vt MXR90}'' is very different from
+``{\vt R90MX}''.
+
+Alternatively, the {\it tfstring} can contain a single ``Lef/Def''
+token as listed below.  The second column is the equivalent string
+using the syntax previously described.
+
+\begin{quote}
+\begin{tabular}{ll}
+\vt N & null or empty or {\vt R0}\\
+\vt S & \vt R180\\
+\vt W & \vt R90\\
+\vt E & \vt R270\\
+\vt FN & \vt MX\\
+\vt FS & \vt MY\\
+\vt FW & \vt MYR90\\
+\vt FE & \vt MXR90\\
+\end{tabular}
+\end{quote}
+
+The {\it x} and {\it y} are the translation part of the
+transformation.  These are coordinates, given in microns.
+
+If {\it tfstring} is null or empty, no rotations or mirroring will be
+used.
+
+The function returns 1 on success, 0 if the {\it tfstring} contains an
+error.
+
+%------------------------------------
+% 100108
+\index{ChdEstFlatMemoryUse function}
+\item{(real) \vt ChdEstFlatMemoryUse({\it chd\_name\/}, {\vt cellname\/},
+ {\it array\/}, {\it counts\_array\/})}\\
+This function will return an estimate of the memory required to
+perform a {\vt ChdOpenFlat} call.  The first argument is the access
+name of an existing Cell Hierarchy Digest that was created with
+per-cell object counts saved (e.g., a call to {\vt OpenCellHierDigest}
+with the {\it info\_saved} argument set to 3 or 4).
+
+The {\it cellname}, if nonzero, must be the cell name after any
+aliasing that was in force when the CHD was created.  If {\it
+cellname} is passed 0, the default cell for the CHD is understood. 
+This is a cell name configured into the CHD, or the first top-level
+cell found in the archive file.
+
+The third argument is an array of size four or larger that contains
+the rectangular area as passed to the {\vt ChdOpenFlat} call.  The
+components are
+\begin{quote}
+\begin{tabular}{ll}
+{\it array\/}[0] & X left\\
+{\it array\/}[1] & Y bottom\\
+{\it array\/}[2] & X right\\
+{\it array\/}[3] & Y top\\
+\end{tabular}
+\end{quote}
+This argument can also be zero to indicate that the full area of the
+top level cell is to be considered.
+ 
+The final argument is also an array of size four or larger, or zero. 
+If an array is passed, and the function succeeds, the components are
+filled with the following values:
+\begin{quote}
+\begin{tabular}{ll}
+{\it counts\_array\/}[0] & estimated total box count\\
+{\it counts\_array\/}[1] & estimated total polygon count\\
+{\it counts\_array\/}[2] & estimated total wire count\\
+{\it counts\_array\/}[3] & estimated total vertex count\\
+\end{tabular}
+\end{quote}
+These are counts of objects that would be saved in the top-level cell
+during the {\vt ChdOpenFlat} call.  These are estimates, based on area
+normalization, and do not include any clipping or merging.  The vertex
+count is an estimate of the total number of polygon and wire vertices.
+
+The return value is an estimate, in megabytes, of the incremental
+memory required to perform the {\vt ChdOpenFlat} call.  This does not
+include normal overhead.
+
+%------------------------------------
+% 022916
+\index{ChdWrite function}
+\item{(int) \vt ChdWrite({\it chd\_name\/}, {\it scale\/}, {\it cellname\/},
+ {\it array\/}, {\it clip\/}, {\it all\/}, {\it flatten\/},
+ {\it ecf\_level\/}, {\it outfile\/})}\\
+This will write the cell named in the {\it cellname} string to the
+output file given in {\it outfile}, using the Cell Hierarchy Digest
+whose access name is given in the first argument to obtain layout
+data.
+
+If the {\it outfile} is null or empty, the geometry will be
+``written'' as cells in the main database, hierarchically if {\it all}
+is true.  This allows windowing to be applied when converting a
+hierarchy, which will attempt to convert only objects and cells needed
+to render the window area.  This has the potential to hopelessly
+scramble your in-memory design data so be careful.
+
+See the table in \ref{features} for the features that apply during a
+call to this function.
+
+The {\it cellname}, if nonzero, must be the cell name after any
+aliasing that was in force when the CHD was created.  If {\it
+cellname} is passed 0, the default cell for the CHD is understood. 
+This is a cell name configured into the CHD, or the first top-level
+cell found in the archive file.
+
+If the boolean argument {\it all} is nonzero, the hierarchy under the
+cell is written, otherwise only the named cell is written.  If the
+{\it outfile} is null or empty, native cell files will be created in
+the current directory.  If the {\it outfile} is the name of an
+existing directory, native cell files will be created in that
+directory.  Otherwise, the extension of the {\it outfile} determines
+the file type:
+
+\begin{tabular}{ll}
+CGX   & \vt .cgx\\
+CIF   & \vt .cif\\
+GDSII & \vt .gds, .str, .strm, .stream\\
+OASIS & \vt .oas\\
+\end{tabular}
+
+Only these extensions are recognized, however CGX and GDSII allow
+an additional {\vt .gz} which will imply compression.
+
+The {\it scale} will multiply all coordinates read, and can be in
+the range 0.001 -- 1000.0.
+
+If the {\it array} argument is passed 0, no windowing will be used. 
+Otherwise the array should have four components which specify a
+rectangle, in microns, in the coordinates of {\it cellname}.  The
+values are
+
+\begin{tabular}{ll}
+{\it array\/}{\vt [0]} & X left\\
+{\it array\/}{\vt [1]} & Y bottom\\
+{\it array\/}{\vt [2]} & X right\\
+{\it array\/}{\vt [3]} & Y top\\
+\end{tabular}
+
+If an array is given, only the objects and subcells needed to render
+the window will be written.
+
+If the boolean value {\it clip} is nonzero and an array is given,
+objects will be clipped to the window.  Otherwise no clipping is done.
+
+If the boolean value {\it all} is nonzero, the hierarchy under {\it
+cellname} is written, otherwise not.  If windowing is applied, this
+applies only to {\it cellname}, and not subcells.
+
+If the boolean variable {\it flatten} is nonzero, the objects in the
+hierarchy under {\it cellname} will be written into {\it cellname},
+i.e., flattened.  The {\it all} argument is ignored in this case. 
+Otherwise, no flattening is done.
+
+The {\it ecf\_level} is an integer 0--3 which sets the empty cell
+filtering level, as described for the {\cb Format Conversion} panel in
+\ref{ecfilt}.  The values are
+
+\begin{tabular}{ll}
+0 & No empty cell filtering.\\
+1 & Apply pre- and post-filtering.\\
+2 & Apply pre-filtering only.\\
+3 & Apply post-filtering only.\\
+\end{tabular}
+
+The return value is 1 on success, 0 on error, or -1 if an interrupt
+was received.  In the case of an error return, an error message may be
+available through {\vt GetError}.
+
+%------------------------------------
+% 022916
+\index{ChdWriteSplit function}
+\item{(int) \vt ChdWriteSplit({\it chd\_name\/}, {\it cellname\/},
+ {\it basename\/}, {\it array\/}, {\it regions\_or\_gridsize\/},\\
+ {\it numregions\_or\_bloatval\/}, {\it maxdepth\/}, {\it scale\/},
+ {\it flags\/})}\\
+This function will read the geometry data through the a Cell Hierarchy
+Digest (CHD) whose name is given as the first argument, into a
+collection of files representing rectangular regions of the top-level
+cell.  Each output file contains only the cells and geometry necessary
+to represent the region.  The regions can be specified as a list of
+rectangles, or as a grid.
+
+See the table in \ref{features} for the features that apply during a
+call to this function.
+
+\begin{description}
+\item{\it cellname}\\
+The {\it cellname\/}, if nonzero, must be the cell name after any
+aliasing that was in force when the CHD was created.  If {\it
+cellname} is passed 0, the default cell for the CHD is understood. 
+This is a cell name configured into the CHD, or the first top-level
+cell found in the archive file.
+
+\item{\it basename}\\
+The {\it basename} is a cell path name in the form
+\begin{quote}
+    [/{\it path\/}/{\it to\/}/]{\it basename\/}.{\it ext\/},
+\end{quote}
+where the extension {\it ext} gives the type of file to create.
+One of the following extensions must be provided:
+\begin{quote}
+\begin{tabular}{ll}
+CGX output & \vt .cgx\\
+CIF output & \vt .cif\\
+GDSII output & \vt .gds, .str, .strm, .stream\\
+OASIS output & \vt .oas, .oasis\\
+\end{tabular}
+\end{quote}
+
+A ``{\vt .gz}'' second extension is allowed following CGX and GDSII
+extensions in which case the files will be compressed using the {\vt
+gzip} format.
+
+When writing a list of regions, the output files will be named in the
+form {\it basename\_N\/}.{\it ext}, where the .{\it ext} is the
+extension supplied, and {\it N} is a 0--based index of the region,
+ordered as given.  When writing a grid, the output files will be named
+in the form {\it basename\_X\_Y\/}.{\it ext\/}, where the .{\it ext}
+is the extension supplied, and {\it X\/},{\it Y} are integer indices
+representing the grid cell (origin is the lower-left corner).  If a
+directory path is prepended to the {\it basename\/}, the files will be
+found in that directory (which must exist, it will not be created).
+
+\item{\it array}\\
+The {\it array} argument can be 0, or the name of an array of size
+four or larger that contains a rectangle specification, in microns, in
+order L,B,R,T.  If given, the rectangle should intersect the bounding
+box of the top-level cell ({\it cellname\/}).  Only cells and geometry
+within this area will be written to output.  If 0 is passed, the
+entire bounding box of the top cell is understood.
+
+When writing grid files, the origin of the grid, before bloating, is
+at the lower-left corner of the area to be output.
+
+\item{\it regions\_or\_gridsize}\\
+This argument can be an array, or a scalar value.  If an array, the
+array consists of one or more rectangular area specifications, in
+order L,B,R,T in microns.  These are the regions that will be written
+to output files.
+
+If this argument is a number, it represents the size of a square grid
+cell, in microns.
+
+\item{\it bloatval}\\
+If an array was passed as the previous argument, then this argument is
+an integer giving the number of regions in the array to be written. 
+The size of the array is at least four times the number of regions.
+
+If instead a grid value was given in the previous argument, then
+this argument provides a bloating value.  The grid cells will be
+bloated by this value (in microns) if the value is nonzero.  A
+positive value pushes out the grid cell edges by the value given, a
+negative value does the reverse.
+
+\item{\it maxdepth}\\
+This integer value applies only when flattening, and sets the maximum
+hierarchy depth for include in output.  If 0, only objects in the
+top-level cell will be included,
+
+\item{\it scale}\\
+This is a scale factor which will be applied to all output.  The {\it
+gridsize\/}, {\it bloatval\/}, and {\it array} coordinates are the
+sizes found in output, and are independent of the scale factor.  The
+valid range is 0.001 -- 1000.0.
+
+\item{\it flags}\\
+This argument is a {\bf string} consisting of specific letters,
+the presence of which sets one of several available modes.  These are
+\begin{quote}
+\begin{tabular}{ll}
+\vt p & parallel\\
+\vt f & flatten\\
+\vt c & clip\\
+{\vt n}[{\it N\/}] & empty cell filtering\\
+\vt m & map names\\
+\end{tabular}
+\end{quote}
+
+The character recognition is case-insensitive.  A null or empty string
+indicates no flags set.
+
+\begin{description}
+\item{\vt p}\\
+If {\vt p} is given, a parallel writing algorithm is used.  Otherwise,
+the output files are generated in sequence.  The files should be
+identical from either writing mode.  The parallel mode may be a little
+faster, but requires more internal memory.  When writing in parallel,
+the user may encounter system limitations on the number of file
+descriptors open simultaneously.
+
+\item{\vt f}\\
+If {\vt f} is given, the output will be flattened.  When flattening,
+an overall transformation can be set with {\vt
+ChdSetFlatReadTransform}, in which case the given area description
+would apply in the ``root'' coordinates.
+
+If not given, the output files will be hierarchical, but only the
+subcells needed to render the grid cell area, each containing only
+the geometry needed, will be written.
+
+\item{\vt c}\\
+If {\vt c} is given, objects will be clipped at the grid cell
+boundaries.  This also applies to objects in subcells, when not
+flattening.
+
+\item{\vt n}[{\it N\/}]\\
+The `{\vt n}' can optionally be followed by an integer 0--3.  If no
+integer follows, `3' is understood.  This sets the empty cell
+filtering level as described for the {\cb Format Conversion} panel in
+\ref{ecfilt}.  The values are
+
+\begin{tabular}{ll}
+0 & No empty cell filtering (no operation).\\
+1 & Apply pre- and post-filtering.\\
+2 & Apply pre-filtering only.\\
+3 & Apply post-filtering only.\\
+\end{tabular}
+
+\item{\vt m}\\
+If {\vt m} is given, and {\vt f} is also given (flattening), the
+top-level cell names in the output files will be modified so as to be
+unique in the collection.  A suffix ``\_{\it N\/}'' is added to the
+cell name, where {\it N} is a grid cell or region index.  The index is
+0 for the lower-left grid cell, and is incremented in the sweep order
+left to right, bottom to top.  If writing regions, the index is
+0--based, in the order of the regions given.  Furthermore, a native
+cell file is written, named ``{\it basename\/}\_root'', which calls
+each of the output files.  Loading this file will load the entire
+output collection, memory limits permitting.
+\end{description}
+\end{description}
+
+The function returns 1 on success, 0 otherwise, with an error message
+likely available from {\vt GetError}.
+
+
+%------------------------------------
+% 100408
+\index{ChdCreateReferenceCell function}
+\item{(int) \vt ChdCreateReferenceCell({\it chd\_name\/}, {\it cellname\/})}\\
+This function will create a reference cell (see \ref{refcell}) in
+memory.  A reference cell is a special cell that references a cell
+hierarchy in an archive file, but does not have its own content. 
+Reference cells can be instantiated during editing like any other
+cell, but their content is not visible.  When a reference cell is
+written to disk as part of a cell hierarchy, the hierarchy of the
+reference cell is extracted from its source and streamed into the
+output.
+
+The first argument is a string giving the name of a Cell Hierarchy
+Digest (CHD) already in memory.  The second argument is the name of a
+cell in the CHD, which must include aliasing if aliasing was applied
+when the CHD was created.  This will also be the name of the reference
+cell.  A cell with this name should not already exist in current
+symbol table.
+
+Although the CHD is required for reference cell creation, it is not
+required when the reference cell is written, but will be used if
+present.  The archive file associated with the CHD should not be moved
+or altered before the reference cell is written to disk.
+
+A value 0 is returned on error, with a message probably available from
+{\vt GetError}.  The value 1 is returned on success.
+
+%------------------------------------
+% 100408
+\index{ChdLoadCell function}
+\item{(int) \vt ChdLoadCell({\it chd\_name\/}, {\it cellname\/})}\\
+This function will load a cell into the main editing database, and
+subcells of the cell will be loaded as reference cells (see
+\ref{refcell}).  This allows the cell to be edited, without loading
+the hierarchy into memory.  When written to disk as part of a
+hierarchy, the cell hierarchies of the reference cells will be
+extracted from the input source and streamed to output.
+
+The first argument is a string giving the name of a Cell Hierarchy
+Digest (CHD) already in memory.  The second argument is the name of a
+cell in the CHD, which must include aliasing if aliasing was applied
+when the CHD was created.  This cell will be read into memory.  Any
+subcells used by the cell will be created in memory as reference
+cells, which a special cells which have no content but point to a
+source for their content.
+
+Although the CHD is required for reference cell creation, it is not
+required when the reference cell is written, but will be used if
+present.  The archive file associated with the CHD should not be
+moved or altered before the reference cell is written to disk.
+
+A value 0 is returned on error, with a message probably available from
+{\vt GetError}.  The value 1 is returned on success.
+
+%------------------------------------
+% 030113
+\index{ChdIterateOverRegion function}
+\item{\parbox[t]{6in}{(int) \vt ChdIterateOverRegion({\it chd\_name\/},
+ {\it cellname\/}, {\it funcname\/}, {\it array\/}, {\it coarse\_mult\/},
+ {\it fine\_grid\/},\\
+ \hspace*{1.5cm}{\it bloat\_val})}}\\
+This function is an interface to a system which creates a logical
+rectangular grid over a cell hierarchy, then iterates over the
+partitions in the grid, performing some action on the logically flattened
+geometry.
+
+A Cell Hierarchy Digest (CHD) is used to obtain the flattened
+geometry, with or without the assistance of a Cell Geometry Digest
+(CGD).  There are actually two levels of gridding:  the coarse grid,
+and the fine grid.  The area of interest is first logically
+partitioned into the coarse grid.  For each cell of the coarse grid, a
+``ZBDB'' special database (see \ref{specdb}) is created, using the
+fine grid.  For example, one might choose 400x400 microns for the
+coarse grid, and 20x20 microns for the fine grid.  Thus, geometry
+access is in 400x400 ``chunks''.  The geometry is extracted,
+flattened, and split into separate trapezoid lists for each fine grid
+area, for each layer.
+
+As each fine grid cell is visited, a user-supplied script function is
+called.  The operations performed are completely up to the user, and
+the framework is intended to be as flexible as possible.  As an
+example, one might extract geometric parameters such as density,
+minimum line width and spacing, for use by a process analysis tool. 
+Scalar parameters can be conveniently saved in spatial parameter
+tables (SPTs, see \ref{spt}).
+
+The first argument is the access name of a CHD in memory.  The second
+argument is the top-level cell from the CHD, or if passed 0, the CHD's
+default cell will be used.
+
+The third argument is the name of a user-supplied script function
+which will implement the user's calculations.  The function should
+already be in memory before {\vt ChdIterateOverRegion} is called. 
+This function is described in more detail below.
+
+The {\it array} argument can be 0, in which case the area of interest
+is the entire top-level cell.  Otherwise, the argument should be an
+array of size four or larger containing the rectangular area of
+interest, in order L,B,R,T in microns.  The coarse and find grid
+origin is at the lower left corner of the area of interest.
+
+The {\it fine\_grid} argument is the size of the fine grid (which is
+square) in microns.  The {\it coarse\_mult} is an integer representing
+the size of the coarse grid, in {\it fine\_grid} quanta.
+
+The {\it bloat\_val} argument specifies an amount, in microns, that
+the grid cells (both coarse and fine) should be expanded when
+returning geometry.  Geometry is clipped to the bloated grid.  Thus,
+it is possible to have some overlap in the geometry returned from
+adjacent grid cells.  This value can be negative, in which case grid
+cells will effectively shrink.
+
+The callback function has the following prototype.
+\begin{quote}
+(int) {\vt callback}({\it db\_name\/}, {\it j\/}, {\it i\/},
+{\it spt\_x\/}, {\it spt\_y\/}, {\it data}, {\it cell\_name}, {\it chd\_name})
+\end{quote}
+The function definition must start with the {\it db\_name} and include
+the arguments in the order shown, but unused arguments to the right of
+the last needed argument can be omitted.
+
+\begin{description}
+\item{\it db\_name} (string)\\
+The access name of the ZBDB database containing geometry.
+
+\item{\it j} (integer)\\
+The X index of the current fine grid cell.
+
+\item{\it i} (integer)\\
+The Y index of the current fine grid cell.
+
+\item{\it spt\_x} (real)\\
+The X coordinate value in microns of the current grid cell in a spatial
+parameter table:\\
+{\it coarse\_grid\_cell\_left} + {\it j\/}*{\it fine\_grid\_size} +
+ {\it fine\_grid\_size\/}{\vt /2}
+
+\item{\it spt\_y} (real)\\
+The Y coordinate value in microns of the current grid cell in a spatial
+parameter table:\\
+{\it coarse\_grid\_cell\_bottom} + {\it i\/}*{\it fine\_grid\_size} +
+ {\it fine\_grid\_size}{\vt /2}
+
+\item{\it data} (real array)\\
+An array containing miscellaneous parameters, described below).
+
+\item{\it cell\_name} (string)\\
+The name of the top-level cell.
+
+\item{\it chd\_name} (string)\\
+The access name of the CHD.
+\end{description}
+
+The {\it data} argument is an array that contains the following
+parameters.
+
+\begin{tabular}{ll}
+\bf index & \bf description\\
+0 & The spatial parameter table column size.\\
+1 & The spatial parameter table row size.\\
+2 & The fine grid period in microns.\\
+3 & The coarse grid period in microns.\\
+4 & The amount of grid cell expansion in microns.\\
+5 & Area of interest left in microns.\\
+6 & Area of interest bottom in microns.\\
+7 & Area of interest right in microns.\\
+8 & Area of interest top in microns.\\
+9 & Coarse grid cell left in microns.\\
+10 & Coarse grid cell bottom in microns.\\
+11 & Coarse grid cell right in microns.\\
+12 & Coarse grid cell top in microns.\\
+13 & Fine grid cell left in microns.\\
+14 & Fine grid cell bottom in microns.\\
+15 & Fine grid cell right in microns.\\
+16 & Fine grid cell top in microns.\\
+\end{tabular}
+
+The trapezoid data for the grid cells can be accessed, from within the
+callback function, with the {\vt GetZlistZbdb} function.
+\begin{quote}
+{\vt GetZlistZbdb}({\it db\_name\/}, {\it layer\_lname\/}, {\it j\/},
+{\it i\/})
+\end{quote}
+
+Example:\\
+Here is a function that simply prints out the fine grid indices, and
+the number of trapezoids in the grid location on a layer named ``{\vt
+M1}''.
+\begin{quote}\vt
+function myfunc(dbname, j, i, x, y, prms)\\
+\hspace*{2em}zlist = GetZlistZbdb(dbname, "M1", j, i)\\
+\hspace*{2em}Print("Location", j, i, "contains", Zlength(zlist),
+ "zoids on M1")\\
+endfunc
+\end{quote}
+
+If the function returns a nonzero value, the operation will abort.
+If there is no explicit return statement, the return value is 0.
+\begin{quote}
+{\vt if (}{\it some error\/}{\vt )}\\
+\hspace*{2em}{\vt return 1}\\
+{\vt end}
+\end{quote}
+
+If all goes well, {\vt ChdIterateOverRegion} returns 1, otherwise 0 is
+returned, with an error message possibly available from {\vt
+GetError}.
+
+This function is intended for OEM users, customization is possible. 
+Contact Whiteley Research for more information.
+
+%------------------------------------
+% 030113
+\index{ChdWriteDensityMaps function}
+\item{(int) \vt ChdWriteDensityMaps({\it chd\_name\/}, {\it cellname\/},
+ {\it array\/}, {\it coarse\_mult\/}, {\it fine\_grid\/}, {\it bloat\/},
+ {\it save})}\\
+This function uses the same framework as {\vt ChdIterateOverRegion},
+but is hard-coded to extract density values only.  The {\it
+chd\_name\/}, {\it cellname\/}, {\it array\/}, {\it coarse\_mult\/},
+and {\it fine\_grid} arguments are as described for that function.
+
+When called, the function will iterate over the given area, and
+compute the fraction of dark area for each layer in a fine grid cell,
+saving the values in a spatial parameter table (SPT, see \ref{spt}). 
+The access names of these SPTs are in the form {\it cellname\/}.{\it
+layername\/}, where {\it cellname} is the name of the top-level cell
+being processed.  The {\it layername} is the name of the layer,
+possibly in hex format as used elsewhere.
+
+If the boolean {\it save} argument is nonzero, the SPTs will be
+retained in memory after the function returns.  Otherwise, the SPTs
+will be dumped to files in the current directory, and destroyed.  The
+file names are the same as the SPT names, with a ``{\vt .spt}''
+extension added.  These files can be read with {\vt ReadSPtable}, and
+are in the format described for that function, with the ``reference
+coordinates'' the central points of the fine grid cells.
+
+If all goes well, {\vt ChdWriteDensityMaps} returns 1, otherwise 0 is
+returned, with an error message possibly available from {\vt
+GetError}.
+
+\end{description}
 
 !!SEEALSO
 funcs:cvrt
@@ -3900,6 +6152,328 @@ Cell Geometry Digest
     window (standard output).  The handle is freed.  This may be
     useful for debugging.
     </dl>
+!!LATEX funcs:cvrt:cgd scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 012111
+\index{OpenCellGeomDigest function}
+\item{(string) \vt OpenCellGeomDigest({\it idname\/}, {\it string\/},
+  {\it type\/})}\\
+This function returns an access name to a new Cell Geometry Digest
+(CGD) which is created in memory.  A CGD is a data structure that
+provides access to cell geometry saved in compact form, and does not
+use the main cell database.  The CGD refers to physical data only. 
+The new CGD will be listed in the {\cb Cell Geometry Digests} panel,
+and the access name is used by other functions to access the CGD.
+
+See the table in \ref{features} for the features that apply during a
+call to this function.  In particular, the names of cells saved in the
+CGD reflect any aliasing that was in force at the time the CGD was
+created.
+
+The first argument is a specified access name (which will be returned
+on success).  This name can not be in use, meaning that the name can
+not access an existing CGD which is currently linked to a CHD.  If
+there is a name match to an unlinked CGD, the new CGD will replace the
+old (which is destroyed).  This argument can be passed 0 or an empty
+string.  If a null or empty string is passed, a new access name will
+be generated and assigned.
+
+The third argument is an integer 0--2 which specifies the type of CGD
+to create.  The second ({\it string\/}) argument depends on what type
+of CGD is being created.
+
+\begin{description}
+\item{Type 0 (actually, {\it type} not 1 or 2)}\\
+This will create a ``memory'' CGD, where all geometry data will be
+stored in memory, in highly-compressed form.  This provides the most
+efficient access, but very large databases may exceed memory
+limitations.
+
+In this mode, the {\it string} argument can be one of the following:
+\begin{enumerate}
+\item{A layout (archive) file.  The file will be read and the
+geometry extracted.}
+\item{The access name of a Cell Hierarchy Digest (CHD) in memory.
+The CHD will be used to read the geometry from the file it
+references.}
+\item{A saved CHD file.  The file will be read, and a new CHD will
+be created in memory.  This CHD will be used to read the geometry
+from the file referenced.}
+\item{A saved CGD file name.  The file will be read into an
+in-memory CGD.}
+\end{enumerate}
+
+Files are opened from the library search path, if a full path is
+not provided.
+
+\item{Type 1}\\
+This will create a ``file'' CGD, where geometry data are stored in a
+CGD file on disk, and geometry is retrieved when needed via saved
+file offsets.  This uses less memory, but is not quite as fast as
+saving geometry data in memory.  It is generally much faster than
+reading geometry from the original layout file since 1) the data
+are highly compressed, and 2) the objects are pre-sorted by layer.
+
+In this mode, the {\it string} is a path to a saved CGD file, or to a
+saved CHD file containing geometry records.  The in-memory CGD will
+access this file.  The file is opened from the library search path, if
+a full path is not provided.
+
+\item{Type 2}\\
+This will create a stub CGD which obtains geometry information from a
+remote host which is running {\Xic} in server mode.  The server must
+have a CGD in memory, from which data are obtained.
+
+In this mode, the {\it string} must be in the format
+\begin{quote}
+{\it hostname\/}[{\vt :}{\it port\/}]{\vt /}{\it idname}
+\end{quote}
+
+The [...] indicates ``optional'' and is not literal.  The
+{\it hostname} is the network name of the machine running the server. 
+If the server is using a non-default port number, the same port number
+should be provided after the host name, separated by a colon. 
+Following the hostname or port is the access name on the server of the
+CGD to access, separated by a forward slash.  The entire string should
+contain no white space.
+\end{description}
+
+On error, a null string is returned, and an error message may be
+available with the {\vt GetError} function.
+
+%------------------------------------
+% 030209
+\index{NewCellGeomDigest function}
+\item{(string) \vt NewCellGeomDigest()}\\
+This function creates a new, empty Cell Geometry Digest, and returns
+the access name.  The {\vt CgdAddCells} function can be used to add
+cell geometry.
+
+%------------------------------------
+% 012111
+\index{WriteCellGeomDigest function}
+\item{(int) \vt WriteCellGeomDigest({\it cgd\_name\/}, {\it filename\/})}\\
+This function will write a disk file representation of the Cell
+Geometry Digest (CGD) associated with the access name given as the
+first argument, into the file whose name is given as the second
+argument.  Subsequently, the file can be read with {\vt
+OpenCellGeomDigest} to recreate the CGD.  The file has no other
+use and the format is not documented.
+
+The function returns 1 if the file was written successfully, 0
+otherwise, with an error message likely available from {\vt GetError}.
+
+%------------------------------------
+% 100108
+\index{CgdList function}
+\item{(stringlist\_handle) \vt CgdList()}\\
+This function returns a handle to a list of access strings to Cell
+Geometry Digests that are currently in memory.  The function never
+fails, though the handle may reference an empty list.
+
+%------------------------------------
+% 100108
+\index{CgdChangeName function}
+\item{(int) \vt CgdChangeName({\it old\_cgd\_name\/},
+ {\it new\_cgd\_name\/})}\\
+This function allows the user to change the access name of an existing
+Cell Geometry Digest (CGD) to a user-supplied name.  The new name must
+not already be in use by another CGD.
+
+The first argument is the access name of an existing CGD, the second
+argument is the new access name, with which the CGD will subsequently
+be accessed.  This name can be any text string, but can not be null.
+
+The function returns 1 on success, 0 otherwise, with an error message
+likely available from {\vt GetError}.
+
+%------------------------------------
+% 100108
+\index{CgdIsValid function}
+\item{(int) \vt CgdIsValid({\it cgd\_name\/})}\\
+This function returns one if the string argument is an access name of
+a Cell Geometry Digest currently in memory, zero otherwise.
+
+%------------------------------------
+% 012111
+\index{CgdDestroy function}
+\item{(int) \vt CgdDestroy({\it cgd\_name\/})}\\
+The string argument is the access name of a Cell Geometry Digest (CGD)
+currently in memory.  If the CGD is not currently linked to a Cell
+Hierarchy Digest (CHD), then the CGD will be destroyed and its memory
+freed.  One is returned on success, zero otherwise, with an error
+message likely available with {\vt GetError}.
+
+%------------------------------------
+% 030209
+\index{CgdIsValidCell function}
+\item{(int) \vt CgdIsValidCell({\it cgd\_name\/}, {\it cellname\/})}\\
+This function will return 1 if a Cell Geometry Digest (CGD) with an
+access name given as the first argument exists and contains data for
+the cell whose name is given as the second argument.  Otherwise, 0 is
+returned.
+
+%------------------------------------
+% 030209
+\index{CgdIsValidLayer function}
+\item{(int) \vt CgdIsValidLayer({\it cgd\_name\/}, {\it cellname\/},
+ {\it layername\/})}\\
+This function returns 1 if the {\it cgd\_name} is an access name of a
+Cell Geometry Digest (CGD) in memory, which contains a cell {\it
+cellname} that has data for layer {\it layername}.  Otherwise, 0 is
+returned.
+
+%------------------------------------
+% 012111
+\index{CgdRemoveCell function}
+\item{(int) \vt CgdRemoveCell({\it cgd\_name\/}, {\it cellname\/})}\\
+This function will remove and destroy the data for the cell {\it
+cellname} from the Cell Geometry Digest (CGD) with access name {\it
+cgd\_name\/}.  This applies to all CGD types, as described for {\vt
+OpenCellGeomDigest}.  If the CGD is accessing geometry from a remote
+server, the cell data are removed from the server.
+
+The names of cells that have been removed are retained, and can be
+checked with {\vt CgdIsCellRemoved}.
+
+If the CGD is found and it contains {\it cellname\/}, the cell data
+are destroyed and the function returns 1.  Otherwise, 0 is returned,
+with an error message available from {\vt GetError}.
+
+%------------------------------------
+% 012111
+\index{CgdIsCellRemoved function}
+\item{(int) \vt CgdIsCellRemoved({\it cgd\_name\/}, {\it cellname\/})}\\
+This function returns 1 if a CGD is found with access name as given in
+{\it cgd\_name}, and the {\it cellname} is the name of a cell that has
+been removed from the CGD, for example with {\vt CgdRemoveCell}. 
+Otherwise, the return value is 0.
+
+%------------------------------------
+% 012111
+\index{CgdRemoveLayer function}
+\item{(int) \vt CgdRemoveLayer({\it cgd\_name\/}, {\it cellname\/},
+ {\it layername\/})}\\
+If the Cell Geometry Digest (CGD) exists, and contains data for a cell
+{\it cellname} that contains data for {\it layername\/}, the {\it
+layername} data will be deleted from the {\it cellname} record, and
+the function returns 1.  Otherwise, 0 is returned, with an error
+message likely available from {\vt GetError}.
+
+This applies to memory and file type CGDs, as described for {\vt
+OpenCellGeomDigest}.  The data, if found, are freed, and (unlike {\vt
+CgdRemoveCell}) no record of removed layers is retained.  This
+actually reduces memory use only for memory type CGDs.
+
+%------------------------------------
+% 012111
+\index{CgdAddCells function}
+\item{(int) \vt CgdAddCells({\it cgd\_name\/}, {\it chd\_name\/},
+ {\it cells\_list\/})}\\
+This function will add a list of cells to the Cell Geometry Digest
+(CGD) whose access name is given as the first argument.  The cells
+will be read using the Cell Hierarchy Digest (CHD) whose access name
+is given as the second argument.
+
+This, and the {\vt CgdRemoveCell} function can be used to implement a
+cache for cell data.  When a CHD is used for access, and a CGD has
+been linked to the CHD, the CHD will read geometry information for
+cells in the CGD from the CGD, and cells not found in the CGD will be
+read from the layout file.  Thus, if memory is tight, one can put only
+the heavily-used cells into the CGD, instead of all cells.
+
+If the CGD already contains data for a cell to add, the data will be
+overwritten with the new cell data.
+    
+For the {\it cells\_list} argument, one can pass either a handle to a
+list of strings that contain cell names, or a string containing
+space-separated cell names.  If a cell named in the list is not found
+in the CHD, it will be silently ignored.
+
+This applies to memory and file type CGDs, as described for {\vt
+OpenCellGeomDigest}.  The geometry records are saved in memory,
+whether or not the CGD is file type.  Individual records set the
+access method, so it is possible to have mixed file access and memory
+access records in the same CGD.
+
+On success, 1 is returned.  If an error occurs, 0 is returned, and a
+message may be available from {\vt GetError}.
+
+%------------------------------------
+% 100108
+\index{CgdContents function}
+\item{(stringlist\_handle) \vt CgdContents({\it cgd\_name\/},
+ {\it cellname\/}, {\it layername\/})}\\
+This function returns content listings from the Cell Geometry Digest
+(CGD) whose access name is given in the first argument.  The remaining
+string arguments give the cell name and layer name to query.  Either
+or both of these arguments can be null (passed 0).
+
+If the {\it cellname} is null, a handle to a list if strings giving
+the cell names in the CGD is returned.  otherwise, the {\it cellname}
+must be a cell name from the CGD.
+
+If {\it layername} is null, the return value is handle to a list of
+layer name strings for layers used in {\it cellname}.  If {\it
+layername} is not null, it should be one of the layer names contained
+in the {\it cellname}.
+
+The return value when both {\it cellname} and {\it layername} are
+non-null is a handle to a list of two strings.  The first string gives
+the integer number of bytes of compressed geometry for the cell/layer. 
+The second string gives the size of the geometry string after
+decompression.  The compressed size can be 0, in which case
+compression was not used as the block is too small for compression to
+be effective.
+
+If the arguments are unresolved, the return value is a scalar 0.
+
+%------------------------------------
+% 100108
+\index{CgdOpenGeomStream function}
+\item{(gs\_handle) \vt CgdOpenGeomStream({\it cgd\_name\/},
+ {\it cellname\/}, {\it layername\/})}\\
+This function creates a handle to an iterator for decompressing the
+geometry in a Cell Geometry Digest (CGD).  The first argument is the
+access name of the CGD.  The second argument is the name of one of the
+cells contained in the CGD.  The third argument is the name of a layer
+used by the cell.  The cells and layers in the CGD can be listed with
+{\vt CgdContents}.
+
+The return value is a handle to an incremental reader, loaded with the
+compressed geometry for the cell and layer.  This can be passed to
+{\vt GsReadObject} to obtain the geometrical objects.
+
+The {\vt Close} function can be used to destroy the reader.  It will
+be closed automatically if\newline
+{\vt GsReadObject} iterates through all objects contained in the
+stream.
+
+A scalar 0 is returned if the arguments are not resolved.
+
+%------------------------------------
+% 100108
+\index{GsReadObject function}
+\item{(object\_handle) \vt GsReadObject({\it gs\_handle\/})}\\
+This function takes the handle created with {\vt CgdOpenGeomStream}
+and returns an object handle which points to a single object.  A
+different object will be returned with each call until all objects
+have been returned, at which time the geometry stream handle is
+closed.  Further calls will return a scalar 0.
+
+The {\vt ConvertReply} function can also return a handle for use by
+this function.
+
+%------------------------------------
+% 100108
+\index{GsDumpOasisText function}
+\item{(int) \vt GsDumpOasisText({\it gs\_handle\/})}\\
+This function will dump the geometry stream in OASIS ASCII text
+representation to the console window (standard output).  The handle is
+freed.  This may be useful for debugging.
+
+\end{description}
 
 !!SEEALSO
 funcs:cvrt
@@ -4164,6 +6738,210 @@ Assembly Stream
     success, zero otherwise with an error message probably available
     through <a href="GetError"><tt>GetError</tt></a>.
     </dl>
+!!LATEX funcs:cvrt:asm scrfuncs.tex
+% 033009
+These functions implement a functionality similar to the {\cb
+!assemble} command.
+
+\begin{description}
+%------------------------------------
+% 033009
+\index{StreamOpen function}
+\item{(stream\_handle) \vt StreamOpen({\it outfile})}\\
+Open an assembly stream to the file {\it outfile}.  The file format
+that will be used is obtained from the extension of the name given,
+which must be one of
+
+\begin{tabular}{ll}
+CGX   & \vt .cgx\\
+CIF   & \vt .cif\\
+GDSII & \vt .gds, .str, .strm, .stream\\
+OASIS & \vt .oas\\
+\end{tabular}
+
+If successful, a handle to the stream control structure is returned,
+which can be passed to other functions which require this data type. 
+A scalar zero is returned on error.  The returned handle is used to
+implement processing of archive data similar to the {\cb !assemble}
+command.
+
+%------------------------------------
+% 100108
+\index{StreamTopCell function}
+\item{(int) \vt StreamTopCell({\it stream\_handle}, {\it cellname\/})}\\
+Define the name of a top-level cell that will be created in the output
+stream.  At most one definition is possible in a stream.  If
+successful 1 is returned, otherwise 0 is returned.
+ 
+%------------------------------------
+% 033009
+\index{StreamSource function}
+\item{(int) \vt StreamSource({\it stream\_handle}, {\it file\_or\_chd\/},
+  {\it scale\/}, {\it layer\_filter\/}, {\it name\_change\/})}\\
+This function will add a source specification to a stream.  The
+specification can refer to either an archive file, or to a Cell
+Hierarchy Digest (CHD).  Upon successful return, the source will be
+queued for writing to the stream (initiated with {\vt StreamRun}). 
+Arguments set various modes and conditions that will apply during the
+write.
+
+This function specifies the equivalent of a Source Block as described
+for the {\cb !assemble} command.  The {\vt StreamInstance} function is
+used to add ``Placement Blocks''.
+
+\begin{description}
+\item{\it stream\_handle}\\
+Handle to the stream object.
+
+\item{\it file\_or\_chd}\\
+This argument can be either a string giving a path to an archive
+file, or the access name of a Cell Hierarchy Digest in memory.
+
+\item{\it scale}\\
+This is a scaling factor which applies only when streaming the entire
+file, which will occur if no instances are specified for the source
+with the {\vt StreamInstance} function.  It is ignored if an
+instance is specified.  When used, all coordinates read from the
+source file will be multiplied by the factor, which can be in the
+range 0.001 -- 1000.0.
+
+\item{\it layer\_filter}\\
+This is a switch integer that enables or disables use of the layer
+filtering and aliasing capability.  If 0, no layer filtering or
+aliasing will be done.  If nonzero, layer filtering and aliasing will
+be be performed when reading from the source, according to the present
+values of the variables listed below.  These values are saved, so that
+the variables can subsequently change.
+\begin{quote} \vt
+LayerList\\
+UseLayerList\\
+LayerAlias\\
+UseLayerAlias
+\end{quote}
+
+If needed, these variables should be set to the desired values before
+calling this function, then reset to the previous values after the
+call.  This can be done with the {\vt Get} and {\vt Set} functions.
+
+\item{name\_change}\\
+This is a switch integer that enables or disables use of the Cell Name
+Mapping capability.  If 0, no cell name changes are done, except that
+if a name clash is detected, a new name will be supplied, similar to
+the auto-aliasing feature.  If nonzero, cell name mapping will be
+performed when the source is read according to the present values of
+the variables listed below.  These values are saved, so that the
+variables can subsequently change.
+\begin{quote} \vt
+InCellNamePrefix\\
+InCellNameSuffix\\
+InToLower\\
+InToUpper
+\end{quote}
+
+If needed, these variables should be set to the desired values before
+calling this function, then reset to the previous values after the
+call.  This can be done with the {\vt Get} and {\vt Set} functions.
+\end{description}
+
+The function returns one on success, zero otherwise with an error
+message probably available through {\vt GetError}.
+
+%------------------------------------
+% 022916
+\index{StreamInstance function}
+\item{(int) \vt StreamInstance({\it stream\_handle}, {\it cellname\/},
+  {\it x\/}, {\it y\/}, {\it my\/}, {\it rot\/}, {\it magn\/},
+  {\it scale\/}, {\it no\_hier\/},\newline
+  {\it ecf\_level\/}, {\it flatten\/}, {\it array\/}, {\it clip\/})}\\
+This function will add a placement name to the most recently added
+source file (using {\vt StreamSource}).  A source must have been
+specified before this function can be called successfully.  This
+function specifies the equivalent of a Placement Block as described
+for the {\cb !assemble} command.
+
+The {\it cellname} must match the name of a cell found in the source,
+including any aliasing in effect.  There are two consequences of
+calling this function:  the named cell and possibly its subcell
+hierarchy will be written to output, and if a top cell was specified
+(with {\vt StreamTopCell}), an instance of the named cell will be
+placed in the top cell.  The placement is governed by the {\it x\/},
+{\it y\/}, {\it my\/}, {\it ang\/}, and {\it magn\/} arguments, which
+are ignored if there is no top cell.
+
+The {\it x\/},{\it y} are the translation coordinates of the cell
+origin.  The {\it my} is a flag indicating Y-reflection before
+rotation.  The {\it ang} is the rotation angle, in degrees, and must
+be a multiple of 45 degrees.  The {\it magn} is the magnification
+factor for the placement.  These apply to the instantiation only, and
+have no effect on the cell definitions.
+
+The remaining arguments affect the cell definitions that are created
+in the output file.
+
+\begin{description}
+\item{\it scale}\\
+This is a scale factor by which all coordinates are scaled in cell
+definition output, and is a real number in the range 0.001 -- 1000.0. 
+This is different from the {\it magn} factor, which applies only to
+the instance placement.
+
+\item{\it no\_hier}\\
+This is a boolean value that when nonzero indicates that only the
+named cell, and not its hierarchy, is written to output.  This can
+cause the output file to have unresolved references.
+
+\item{\it ecf\_level}\\
+This is an integer 0--3 which specifies the empty cell filtering level
+as described for the {\cb Format Conversion} panel in \ref{ecfilt}. 
+The values are
+
+\begin{tabular}{ll}
+0 & No empty cell filtering.\\
+1 & Apply pre- and post-filtering.\\
+2 & Apply pre-filtering only.\\
+3 & Apply post-filtering only.\\
+\end{tabular}
+
+\item{\it flatten}\\
+If the boolean variable {\it flatten} is nonzero, the objects in the
+hierarchy under {\it cellname} will be created in {\it cellname\/},
+thus only one cell, containing all geometry, will be written.
+
+\item{\it array}\\
+If the {\it array} argument is passed 0, no windowing will be used. 
+Otherwise the {\it array} should have four components which specify a
+rectangle, in microns, in the coordinates of {\it cellname\/}.  The
+values are
+
+\begin{tabular}{ll}
+{\it array\/}{\vt [0]} & X left\\
+{\it array\/}{\vt [1]} & Y bottom\\
+{\it array\/}{\vt [2]} & X right\\
+{\it array\/}{\vt [3]} & Y top\\
+\end{tabular}
+
+If an {\it array} is given, only the objects and subcells needed to
+render the window will be written.
+
+\item{\it clip}\\
+If the boolean value {\it clip} is nonzero and an {\it array} is
+given, objects will be clipped to the window.  Otherwise no clipping
+is done.
+\end{description}
+
+The function returns one on success, zero otherwise with an error
+message probably available through {\vt GetError}.
+
+%------------------------------------
+% 100108
+\index{StreamRun function}
+\item{(int) \vt StreamRun({\it stream\_handle})}\\
+This function will initiate the writing from the sources previously
+specified with {\vt SteamSource} into the output file.  The real work
+is done here.  The function returns one on success, zero otherwise
+with an error message probably available through {\vt GetError}.
+
+\end{description}
 
 !!SEEALSO
 funcs:cvrt

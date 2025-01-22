@@ -1,4 +1,8 @@
-% WRspice Manual file: commands.tex
+% -----------------------------------------------------------------------------
+% WRspice Manual
+% (C) Copyright 2025, Whiteley Research Inc., Sunnyvale CA
+% commands.tex.in
+% -----------------------------------------------------------------------------
 
 \chapter{{\WRspice} Commands}
 \label{commands}

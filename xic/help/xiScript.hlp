@@ -413,6 +413,307 @@ Macro Preprocessor
     <i>ENDIF</i><br>
     <i>ENDIF</i><br>
     </blockquote>
+!!LATEX macro language.tex
+As part of the scripting language support, a macro preprocessor
+package is provided, which is used by {\Xic} when reading various
+types of input.  This input includes scripts, library and menu (``{\vt
+.scm}'') files, and the technology file.  This section describes the
+common features of this macro processing system.
+
+A macro is a text token that usually references another piece of text. 
+When lines of text are ``macro expanded'', the tokens that are
+recognized as macro names are removed, and replaced by the text
+associated with the macro name.  This is done recursively, as the
+replacement text may itself contain macro names.
+
+In other cases, macros can be used to identify blocks of text to be
+discarded when a file is being read.  The macro system applies
+conditional testing based on the existence of a defined macro name, or
+whether a macro name is set to a certain value, and marks blocks of
+text for inclusion or exclusion accordingly.
+
+This section will describe the common functionality of the macro
+preprocessor, and will be referred to in the sections describing the
+format of the various types of input.  Not all features are used in
+all cases, and the exact keyword names (but not the functionality)
+will vary for different input types.  For example, the keyword which
+defines a macro is ``{\vt \#define}'' in scripts, but ``{\vt Define}''
+may be used in other types of file.
+
+\subsection{Predefined Macros}
+\index{predefined macros}
+\index{macros!predefined}
+
+The macro preprocessor defines several macro names that are common to
+all instances of the preprocessor and apply in all cases where the
+preprocessor is in use.  These names are the same in all cases, they
+do not differ with different file types.  The predefined macro names
+can not be undefined or set to a different value, attempts to do so
+will trigger an error.  These are the following:
+
+\begin{description}
+\item{\vt RELEASE}\\
+First implemented: release 3.0.5\\
+The macro name {\vt RELEASE} is predefined to the release number code. 
+The release number code is a five digit integer {\it xyzz\/}0,
+corresponding to release {\it x.y.z}.  The {\it x} (always 3) and {\it
+y} are one digit fields, {\it zz} is a two-digit field, 0 padded.  The
+trailing 0 is a historical anachronism.  For example, for release
+3.2.5, the macro is predefined to ``{\vt 32050}''.
+
+\item{\vt GENERATION}\\
+First implemented: release 4.1.10\\
+This is set to the generation part of the release triplet, which is
+``4'' for the current generation 4.
+
+\item{\vt MAJOR}\\
+First implemented: release 4.1.10\\
+This is set to the middle number of the release triplet, for 
+example for release 4.1.10, {\vt MAJOR} is set to ``1''.
+
+\item{\vt MINOR}\\
+First implemented: release 4.1.10\\
+This is set to the rightmost number or the release triplet, for
+example for release 4.1.10, {\vt MINOR} is set to ``10''.
+
+\item{\vt OSNAME}\\
+First implemented: release 4.2.12\\
+This is set to the distribution name of the program, for example
+``{\vt LinuxCentos7}''.
+
+\item{\vt OSTYPE}\\
+First implemented: release 3.2.19\\
+This macro name is set to one of the following words, depending on the
+operating system target of the running program.  Note that this is
+determined at compile time, so is static in the program binary, and
+may not be the ``real'' operating system if running under an emulator. 
+For example, a Linux binary running under FreeBSD would still indicate
+``{\vt Linux}''.
+
+\begin{tabular}{ll}
+\bf Distribution Target & \bf Keyword\\
+Any Linux & ``{\vt Linux}''\\
+Windows & ``{\vt Windows}''\\
+FreeBSD & ``{\vt UNIX}''\\
+Any Apple & ``{\vt OSX}''\\
+\end{tabular}
+
+\item{\vt OSBITS}\\
+First implemented: release 3.2.19\\
+This macro is set to either ``{\vt 32}'' or ``{\vt 64}'', depending on
+whether the program was compiled for 32- or 64-bit memory addresses. 
+This is determined at compile time, so that a 32-bit binary running on
+a 64-bit operating system would indicate ``{\vt 32}''.
+
+\item{\vt XTROOT}\\
+First implemented: release 3.2.19\\
+This macro is defined to be the system xictools installation location
+path as assumed by the running program.  It reflects the status of
+environment variables or other means of defining this path, and will
+revert to a default.  This directory is typically ``{\vt
+/usr/local/xictools}'' in non-Windows programs.  The Windows
+path is similar but may include a drive specifier and use back instead
+of forward slash separators.
+
+\item{\vt PROGROOT}\\
+First implemented: release 3.3.1\\
+This macro is defined to be the system installation location path for
+the running program as assumed by the running program.  It reflects
+the status of environment variables or other means of defining this
+path, and will revert to a default.  For example, this directory is
+typically\linebreak[4] ``{\vt /usr/local/xictools/xic}'' for the
+{\Xic} program, in non-Windows programs.  The Windows path is similar
+but may include a drive specifier and use back instead of forward
+slash separators.
+
+\item{product name}\\
+First implemented: release 3.0.5\\
+In releases prior to 4.0.9, exactly one of the macro names ``{\vt
+Xic}'', ``{\vt XicII}'', or ``{\vt Xiv}'' would be defined, depending
+upon which of the programs was being run.  The name is not defined to
+any text, but one can test whether or not a given name is defined.  In
+release 4.0.9 and later, the separate {\XicII} and {\Xiv} programs
+were discontinued, but the functionality lives on as feature sets of
+{\Xic}.  The {\vt Xic} symbol is always defined when running {\Xic}
+for any feature set, and is therefor rather useless but provides some
+backward compatibility.
+
+This macro has the property that instances of the macro are not
+replaced (with an empty string) when macro-expanding, i.e., macro
+substitution is inhibited (4.2.12 and later).
+ 
+\item{feature set name}\\
+First implemented:  release 4.0.9\\
+The macro ``{\vt FEATURESET}'' will be defined to one of three
+strings, depending upon the feature set running.  If all features are
+enabled, the string is {\vt "FULL"}.  If the {\XicII} (EDITOR)
+permission set is running, the string is {\vt "EDITOR"}.  If the
+{\Xiv} (VIEWER) feature set is running, the string is {\vt "VIEWER"}. 
+The macro can be tested with forms similar to
+\begin{quote}\vt
+If FEATURESET == "FULL"\\
+...\\
+Endif
+\end{quote}
+
+\item{technology name}\\
+First implemented: release 3.2.18\\
+If the technology file uses the {\vt Technology} keyword to define a
+name for the technology, that name will be predefined as a macro
+name.  The name is not defined to any text, but one may test whether
+or not a given name is defined.
+
+This macro has the property that instances of the macro are not
+replaced (with an empty string) when macro-expanding, i.e., macro
+substitution is inhibited (4.2.12 and later).
+\end{description}
+
+These macros are always available, and additional predefined macros
+may be available in the various contexts, which are documented
+elsewhere.
+
+\begin{description}
+\item{technology definitions}\\
+First implemented: release 4.3.10\\
+In addition to above, if the technology file uses the {\vt Technology}
+keyword to define a name for the technology, the predefined macro
+``{\vt TECHNOLOGY}'' is set to that name.  Furthermore, if the {\vt
+Vendoor} keyword is used to define a name, the ``{\vt VENDOR}''
+predefined macro is set to the name.  Similarly, {\vt Process} can be
+used to assign a name to the predefined ``{\vt PROCESS}'' macro.
+\end{description}
+
+\subsection{Generic Macro Keywords}
+\index{macros!generic keywords}
+
+The following keywords may vary between different contexts where the
+macro processor is used.  The actual keywords are programmable within
+the macro preprocessor system, so as to better match the syntax of the
+file format to which the preprocessor is being applied.  Here, we will
+use italicized generic names for these keywords, but the
+correspondence to actual keyword names (given in the documentation for
+the specific file formats) should be obvious.  The square brackets
+indicate ``optional''.
+
+\begin{description}
+\item\parbox[b]{4in}{\rr
+{\it DEFINE} [{\vt eval}] {\it token}\\
+{\it DEFINE} [{\vt eval}] {\it token}({\it arg\/},
+  {\it arg\/}1, ..., {\it arg\/}n) [{\it text\_containing\_args}]\\
+}\\
+The macro name {\it token} may use alphanumeric characters and
+underscores, and must start with an alpha or underscore character. 
+The name is optionally immediately followed by an argument list in
+parentheses.  The arguments are arbitrary alphanumeric plus underscore
+tokens that start with an alpha or underscore and are separated by
+commas.  This is the same syntax used in the C language preprocessor
+for {\vt \#define} lines.  The remainder of the line is the
+substitution string.
+
+If the optional ``{\vt eval}'' keyword is not included, the
+replacement text, if any, will replace the macro in lines of text
+being macro expanded.
+
+If ``{\vt eval}'' is included (this is verbatim but case-insensitive),
+the replacement text is assumed to be executable as a single line
+script.  The script will be executed, and the result (or return value)
+will be converted to a text string (if necessary) and taken as the
+replacement text.
+
+\item{\it IF expression}\\
+The {\it expression} is a constant expression which can contain macros
+previously defined with {\it DEFINE}, predefines, and functions from
+the script library files or otherwise available in memory.  The {\it
+expression} is evaluated numerically, and if the result is nonzero (as
+an integer), the block that follows until the corresponding {\it ELSE}
+or {\it ENDIF} is read.  If the result is 0 (as an integer), the block
+of lines that follow is skipped.
+
+\item{\it IFDEF token}\\
+If {\it token} has been defined, either with {\it DEFINE} or as a
+predefined macro, reading resumes at the following line.  Otherwise,
+reading resumes at the line following the next {\it ELSE} or {\it
+ENDIF\/}.
+
+\item{\it IFNDEF token}\\
+If {\it token} has not been defined, reading resumes at the
+following line.  Otherwise, reading resumes at the line following
+the next {\it ELSE} or {\it ENDIF\/}.
+
+\item{\it ELSE}
+Used in conjunction with {\it IF}, {\it IFDEF} and {\it IFNDEF\/}.
+
+\item{\it ENDIF}\\
+Used to terminate an {\it IF}, {\it IFDEF}, {\it IFNDEF\/}, or
+{\it ELSE} block.
+\end{description}
+
+In various contexts, other special keywords may be recognized.
+These are described elsewhere.
+
+{\bf Examples:}
+
+The examples below illustrate some simple constructs that improve
+portability of input files, using the predefined macros and generic
+keywords.  In real input, the actual keywords appropriate for the type
+of file should be used.
+
+The {\it IF} keyword, and product name and {\vt RELEASE} predefines,
+were implemented in release 3.0.5, so use is not compatible with older
+releases.  Nevertheless, files can be made portably version dependent
+through use of {\it IFDEF} and/or {\it IFNDEF\/}.
+
+\begin{quote}
+{\it IFNDEF} {\vt RELEASE}\\
+\# old release\\
+{\it text\/}...\\
+{\it ELSE}\\
+{\it IF} {\vt RELEASE == 30050}\\
+\# release xic-3.0.5\\
+{\it text\/}...\\
+{\it ELSE}\\
+\# a later release\\
+{\it text\/}...\\
+{\it ENDIF}\\
+{\it ENDIF}\\
+\end{quote}
+
+Often, it is necessary to know what operating system is being used. 
+Usually, there are really only two categories:  Windows, and
+everything else.
+
+\begin{quote}
+{\it IF} {\vt OSTYPE == "Windows"}\\
+\# running Windows\\
+{\it text\/}...\\
+{\it ELSE}\\
+\# not running Windows\\
+{\it text\/}...\\
+{\it ENDIF}\\
+\end{quote}
+
+It may be necessary to disable certain setup if not running the full
+{\Xic} feature set, for example, if the same file is used for
+different {\Xic} feature sets.
+
+\begin{quote}
+{\it IF} {\vt FEATURESET == "FULL"}\\
+\# running Xic\\
+{\it text\/}...\\
+{\it ELSE}\\
+{\it IF} {\vt FEATURESET == "EDITOR"}\\
+\# running XicII\\
+{\it text\/}...\\
+{\it ELSE}\\
+{\it IF} {\vt FEATURESET == "VIEWER"}\\
+\# running Xiv\\
+{\it text\/}...\\
+{\it ELSE}\\
+\# impossible!\\
+{\it ENDIF}\\
+{\it ENDIF}\\
+{\it ENDIF}\\
+\end{quote}
 
 !! 110815
 !!KEYWORD
@@ -1218,6 +1519,657 @@ xicscript
     <p>
     If passed to the <tt>Print</tt> family of functions, the layer
     expression string will be printed.
+!!LATEX xicscript language.tex
+{\Xic} supports a scripting language and user-definable commands
+(scripts).  These commands can be associated with buttons in the {\cb
+User Menu}.  Scripts may also be used in ``script labels'', which are
+labels placed in a drawing which execute the script when clicked on. 
+Scripts are also used in user-defined design rules, and are the basis
+for the protocol used in the {\Xic} server mode.  Scripts are also
+integral to the native parameterized cell capability.  A library of
+several hundred built-in functions callable from scripts provide
+control over virtually all of the program capabilities.
+
+In addition to the native scripting capability, {\Xic} provides a
+plug-in interface to the popular open-source Python and Tcl/Tk
+scripting languages. 
+
+The scripting capability can be used to provide commands that quickly
+generate complex geometry for microwave integrated circuits, for
+example.  Another application is to produce simple, often-needed
+geometry such as vias or device structures.  This powerful capability
+provides the user with the tools to automate many tasks.
+
+Script files are created using a text editor, perhaps most
+conveniently from within the debugger built into {\Xic}, which is
+accessible from the {\cb Debugger} button in the {\cb User Menu}. 
+Scripts can be executed within the debugging environment, which offers
+single stepping, breakpoints, and other features.  The language is
+rather generic and somewhat reminiscent of the C programming language.
+
+\section{The Scripting Language}
+
+A script consists of command lines, each containing one or more
+syntactically complete statements.  Lines may be continued by adding a
+backslash character at the end of the line, which ``hides'' the return
+character.  Parentheses are used as delimiters to enforce execution
+order, and to enclose arguments to functions.  Arrays of up to three
+dimensions are supported, with the array indices separated by commas
+and enclosed in square brackets.  Array names are taken as addresses,
+and may be passed to functions, and used in arithmetic expressions. 
+There are no address or pointer operators, however a pointer mechanism
+does exist.
+
+If a line begins with the pound sign `{\vt \#}' the line will be
+ignored by the parser, unless the line contains a ``preprocessor''
+directive, described in \ref{preproc}.  Preprocessor directives can be
+used to comment out blocks of lines.  The character sequence `{\vt
+//}' at the start of a line also indicates a comment.
+
+There is one ``special case'' comment, which must be the first
+non-blank line of a script file to have relevance:
+
+\begin{quote}
+{\vt \#menulabel} {\it label}
+\end{quote}
+
+The {\it label} is a word or quoted phrase, which will appear on the
+button in the top level of the {\it User Menu} which executes the
+script.  Otherwise, like any comment, the line is ignored.
+
+Each line of a script generally contains one statement or clause, the
+entirety of which should be contained in the same logical line. 
+Physical lines can be continued with a backslash character to form a
+single logical line.  If the last character on a line is the backslash
+({\vt "{$\backslash$}"}) character, the line that follows will be
+logically appended, replacing the backslash.
+
+The parser will parse the opening clause of a line, and if there is
+additional text, the parser will continue reading, until all text on
+the line has been processed.  Thus, a single line can actually contain
+multiple statements.  Each statement can be terminated with a
+semicolon ({\vt ";"}) to explicitly terminate the statement.  Almost
+always, this is optional, however there may be rare cases where
+explicit termination is needed to force the parser into a correct
+interpretation.  The end-of-line will also act as a statement
+terminator, which is why a statement must appear in a single logical
+line.
+
+With a couple of exceptions, an entire script can be given on a single line. 
+This is not recommended, as line-numbered error messages would not
+mean much, and the debugger would be useless, however this facilitates
+creating complicated macros with the ``{\vt \#define}'' preprocessor
+directive, which must always expand to a single line.
+
+The two exceptions are:
+\begin{enumerate}
+\item{Comments and preprocessor directives start with `\#' and
+continue to the end of the current line.  Preprocessor directives must
+be given at the start of a line, though comments can appear in a line
+where a new statement could appear.  It is not possible to include
+(unrelated) command text after a comment or preprocessor directive in
+a line.}
+
+\item{The declaration lists that follow the {\vt static} and {\vt
+global} keywords must be terminated with a semicolon if a different
+construct (including a comment) is to appear on the same line
+following the {\vt static} or {\vt global} construct.}
+\end{enumerate}
+
+Scripts can interact with forms in HTML documents so that the form can
+be used as input for {\Xic} scripts.  This is often more convenient
+than issuing a sequence of prompts to the user for input.  The forms
+interface makes use of the HTML viewer used with the help system.
+
+There is an expanding library of internal functions which can be
+called from scripts, described in \ref{iffuncs}.  The parser also
+supports user-defined functions.
+
+Identifiers (function and variable names) must start with an
+alphabetic character or underscore, and can contain digits. 
+Characters other than alphanumerics and underscore are generally not
+accepted in identifiers and will cause syntax errors.  Identifiers are
+case-sensitive. 
+
+\section{Error Reporting}
+\index{scripts!error reporting}
+
+Compile and run-time error messages go to the standard error channel. 
+That means, in interactive graphical mode, that the messages will
+appear in the terminal window from which {\Xic} was launched.  Under
+Microsoft Windows, if {\Xic} is started from an icon or the {\cb
+Start} menu, a terminal window will be created.  This window is
+usually hidden behind the main graphics window, so one should make
+this window visible when developing scripts.  The same applies to the
+terminal window under Unix/Linux.
+
+\section{Data Types}
+\index{scripts!data types}
+
+\index{scripts!variable types}
+Variables may be one of several different types.  The types that
+are currently implemented are listed below.
+\begin{description}
+\item{no type}\\
+Before a variable receives an assignment, it has no type, but behaves
+in all respects as a string with a value of the variable name.
+\item{string}\\
+The string type contains text data.
+\item{scalar}\\
+Scalars are real numbers that are stored internally in
+double-precision floating point format.  Conversion to integer values,
+such as for array subscription, is performed automatically where
+needed.
+\item{array}\\
+The array type contains a 1--3 dimensional array of numerical values.
+\item{complex}\\
+The complex type contains real and imaginary double precision
+floating-point scalar values.  Most math functions and operators
+accept complex values, and return complex values if passed a complex
+value.
+\item{handle}\\
+The handle type contains a reference to a complex data object.  There
+are a number of different object types that can be referenced by
+handles.
+\item{zoidlist}\\
+Zoidlists contain a list of trapezoids that define spatial regions.
+\item{layer\_expr}\\
+This variable type contains a parse tree for a ``layer expression''
+(see \ref{layerexp}).  A layer expression is a logical expression
+involving layer names.
+\end{description}
+
+The type of a variable is determined by its assignment, or in the case
+of arrays, by declaration.  Once a type is assigned, it is generally
+an error to assign a different type.  Exceptions are the undefining of
+array pointers (to be discussed), the promotion of scalars to handles
+when a handle is assigned to a scalar, and use of the {\vt delete}
+operator to unassign a variable and free its contents.
+
+Variables that are referenced before assignment, or after being
+operated on by {\vt delete}, behave as strings with a string value
+set to the variable name.  For example, if an unassigned variable is
+passed to one of the print functions the name of that variable will be
+printed.
+
+Type identification of a literal is by context.  A quoted quantity is
+always taken to be a string, e.g., {\vt "2.345"} is a string.  Quote
+marks can be included in strings by preceding them with a backslash. 
+A number in integer, floating, or exponential format is always taken
+as a scalar.
+
+\subsection{Scalars}
+\index{scripts!scalars}
+
+\index{scripts!hex constants}
+\index{scripts!char constants}
+Scalar variables do not need to be declared, and are type assigned
+when an assignment is first made.  Any unquoted number representation
+in integer, floating point, or exponential notation is taken as a
+scalar constant.  Character constants enclosed in single quotes (as in
+C) are accepted, with the value being the ASCII character code.  There
+is a {\vt ToChar} function which converts ASCII codes to a string
+representation for printing.  Also accepted are hexadecimal integer
+constants in the form
+\begin{quote}
+{\vt 0x}{\it hex\_number}
+\end{quote}
+ For example, {\vt 0x0}, {\vt 0x2a}, and {\vt 0xffff003b} are all
+valid constants.
+
+In addition to the standard floating-point formats, numbers can be
+represented using SPICE multiplier suffixes.  These are alphabetic
+characters and sequences shown in the table below, which appear
+immediately following a fixed-point number or integer.  The suffix is
+case-insensitive.  For example, the following tokens all represent the
+same number:  {\vt 1000}, {\vt 1e3}, {\vt 1k}.  Likewise:  {\vt
+0.0001234}, {\vt 1.234e-4}, {\vt 123.4u}.
+
+\begin{tabular}{|l|l|l|} \hline
+\bf suffix & \bf multiplier & \bf name\\ \hline\hline
+\vt a & \vt 1e-18 & \vt atto\\ \hline
+\vt f & \vt 1e-15 & \vt femto\\ \hline
+\vt p & \vt 1e-12 & \vt pico\\ \hline
+\vt n & \vt 1e-9 & \vt nano\\ \hline
+\vt u & \vt 1e-6 & \vt micro\\ \hline
+\vt m & \vt 1e-3 & \vt milli\\ \hline
+\vt mil & \vt 25.4 & \vt mil\\ \hline
+\vt k & \vt 1e3 & \vt kilo\\ \hline
+\vt meg & \vt 1e6 & \vt mega\\ \hline
+\vt g & \vt 1e9 & \vt giga\\ \hline
+\vt t & \vt 1e12 & \vt tera\\ \hline
+\end{tabular}
+
+\subsection{Strings}
+\index{scripts!strings}
+
+String variables do not need to be declared, and are type assigned
+when an assignment is first made.  Double quote marks are used to
+delimit literal strings, and are strictly necessary if the string
+contains spaces or other non-alphanumeric characters.
+
+Whenever a string is defined as a literal in a script or from the {\cb
+Monitor} panel in the {\cb Script Debugger}, it is filtered through a
+function which converts the following escape codes into the actual
+character value.  The escape codes recognized, from ANSI C Standard
+X3J11, are
+
+\begin{tabular}{ll}\\
+$\backslash${\vt a} & bell\\
+$\backslash${\vt b} & backspace\\
+$\backslash${\vt f} & form-feed\\
+$\backslash${\vt n} & new-line\\
+$\backslash${\vt r} & carriage return\\
+$\backslash${\vt t} & tab\\
+$\backslash${\vt v} & vertical tab\\
+$\backslash${\vt '} & single quote\\
+$\backslash${\vt "} & double quote\\
+$\backslash\backslash$ & backslash\\
+\end{tabular}
+
+In addition, forms like ``$\backslash${\it num}'' are interpreted as
+an 8-bit character with ASCII value the 1, 2, or 3--digit octal
+number {\it num}.
+
+When a subscript is applied to a string, the index applies to the
+string with escapes substituted, e.g., ``$\backslash${\vt n}'' counts
+as one character.  When a string is printed to the {\cb Monitor}
+panel, the reverse filtering is performed.
+
+A special case is the null string, which can be produced by many of
+the interface functions, usually to signal end-of-input or an error.  A
+null string has no storage.  Null strings are not accepted by some
+functions, so return values from these functions should be tested.
+
+For example:
+
+\begin{quote}
+\begin{verbatim}
+retstr = Get(blather)
+if (retstr == NULL)     # NULL is an alias for 0
+#    the string is null
+end
+if (retstr == "")
+#    the string is empty
+end
+\end{verbatim}
+\end{quote}
+
+This example above also illustrates the overloading of ``{\vt ==}''
+for strings.
+
+The notation can be even simpler:
+\begin{quote}
+\begin{verbatim}
+if (retstr)
+#    the string is not null (but may be empty)
+else
+#    the string is null
+end
+\end{verbatim}
+\end{quote}
+
+\index{scripts!string subscripts}
+The {\vt []} notation can be used to address individual characters in
+strings.  Also, {\vt {\it string1\/} = {\it string2\/} + {\it
+number\/}} is accepted, yielding a string pointing at the {\it
+number\/}'th character of {\it string2\/}.  However, it is a fatal
+error if {\it number} is negative, so it is not possible to point
+backwards into a string.  Also, if the {\it number} exceeds the text
+length of the string, a fatal error is generated.  A fatal error is an
+error which will terminate script execution.
+
+Strings are not copied in assignment, so if multiple variables
+point to the same string, they will all see any modifications to
+the string.  For example:
+\begin{quote}
+\begin{verbatim}
+s1 = "a string"
+s2 = s1 + 2
+Print(s2)        # prints "string"
+s1[4] = ' '
+Print(s2)        # prints "st ing"
+Print(s1)        # prints "a st ing"
+\end{verbatim}
+\end{quote}
+
+The {\vt Strdup} function can be used to make an independent copy of
+an existing string.
+
+\subsection{Arrays}
+\label{arrayvars}
+\index{scripts!arrays}
+
+{\Xic} provides arrays with up to three dimensions.  The indices are
+specified as comma-separated expressions enclosed in square brackets
+which follow the variable name, as in {\vt x[c,d]} for a two
+dimensional array.  The higher dimensions appear to the right, so that
+{\vt c} in the example is the ``inner'' index.
+
+\subsubsection{Declaring and Defining Arrays}
+
+Arrays must be declared either by initial assignment, or by a line
+consisting of the array name followed by square-bracketed indices
+representing the maximum index in each dimension.  In each case, the
+number of comma-separated indices sets the dimensionality of the
+array.  In the initial declaration, the indices must be integers and
+not expressions.  Indices are 0-based.
+
+Examples
+\begin{quote}\vt
+x[2, 4]\\
+\# This defines an array x: five blocks of three values\\
+\\
+x[2, 4] = {\it some\_expression}\\
+\# This likewise defines the array, and additionally sets\\
+\# the highest index to the result of an expression
+\end{quote}
+
+Note that the numbers in the declaration are {\it not} sizes, but
+maximum values.  This is different than C.  Once an array has been
+defined, subsequent use allows expressions as the index values.
+
+\subsubsection{Initialization}
+
+We have seen that array elements can be initialized individually by
+assignment.  It is also possible to initialize all or part of an array
+as a block, using the syntax below: 
+
+\begin{quote}
+{\it array\/}{\vt [}{\it index\/}[,...]{\vt ]} = {\vt [}{\it a}, {\it b},
+ {\it c}, ... {\vt ]}
+\end{quote}
+
+The left side represents a starting address, in the format of an array
+element reference.  The outer square brackets are explicit, the inner
+square brackets represent optional higher dimension indices and are
+not explicit.  The square brackets on the right side are explicit, and
+entries are separated by commas and optional white space.  One can use
+backslash-continuation to break a long initializer into multiple
+physical (but not logical) lines.  The values from the right side are
+placed in the array starting at the indicated address, in the natural
+order of array scalar access.  The array size is expanded when
+necessary.  The line also serves to declare the array.
+
+The {\it a}, {\it b}, {\it c}, ...  can be expressions, or most
+commonly simple numbers.
+
+Example:    
+\begin{quote}\vt
+ary[0] = [1, 2, 3, 4]
+\end{quote}
+
+This declares and creates a size 4 array named {\vt ary}, with
+components 1, 2, 3, 4.  This is equivalent to the lines
+\begin{quote}\vt
+ary[0] = 1\\
+ary[1] = 2\\
+ary[2] = 3\\
+ary[3] = 4
+\end{quote}
+
+\subsubsection{Dynamic Resizing}
+
+In an assignment, if an index is given that is ``too large'', the
+array will be reconfigured so that the new data point will be
+included.  The existing data in the array will remain.
+
+Example
+\begin{quote}\vt
+x[2, 4]\\
+x[3, 0] = 2\\
+\# The array is now sized as if declared with "x[3,4]"
+\end{quote}
+
+After the assignment, the maximum index for each dimension will be the
+larger of the previous index and the assigning index.
+
+When assigning values to an array, dimensional indices that are
+omitted are taken as zero, though at least one value must be supplied.
+
+Example
+\begin{quote}\vt
+x[2, 4]\\
+x[1] = 3\\
+\# This is equivalent to x[1,0] = 3
+\end{quote}
+
+This treatment of missing indices only applies in assignment, and {\it
+not} in general references, as will be seen below.
+
+There is one important restriction on dynamic resizing:  arrays that
+have pointer variables pointing at them can not be resized, and arrays
+can not be resized through a pointer.  Pointers are described below.
+
+The {\vt GetDims} function can be used to obtain the current
+dimensions of an array.
+
+\subsubsection{Pointers}
+
+A pointer to an array is a variable which points to the data of an
+array, and behaves as an array itself but does not contain its own
+data.  Pointers can point to the array itself, or to a sub-array of an
+array with multiple dimensions, or to an offset into the data of a
+single dimensional array. 
+ 
+The simplest case is a direct assignment to an array.
+\begin{quote}\vt
+x[2, 4]\\
+y = x
+\end{quote}
+
+In this case, the data (held in {\vt x}) can be accessed through {\vt
+y} or {\vt x} equivalently.  In this special case, {\vt y} is an
+alias, and the array can be dynamically resized through {\vt y} or
+{\vt x}.
+
+A more interesting case is provided through use of the overloaded
+`{\vt +}' operator.  For example
+\begin{quote}\vt
+x[2, 4]\\
+y = x + 1
+\end{quote}
+
+In this construct, the offset is into the highest dimension of {\vt
+x}, and the return value is the sub-array found at this offset.  In
+the example, {\vt y} is a ``[2]'' which is located at the address of
+{\vt x[0,1]}, i.e., {\vt y[0] = x[0, 1]}, {\vt y[1] = x[1, 1]}, {\vt
+y[2] = x[2, 1]}.
+
+If {\vt x} is a single dimensional array, {\vt y} would also be a
+single dimensional array, but accessing the data through the offset. 
+For example
+\begin{quote}\vt
+x[32]\\
+y = x + 10
+\end{quote}
+
+Then {\vt y[0] = x[10]}, {\vt y[1] = x[11]}, etc.
+
+In general references, but {\it not} assignments, supplying a smaller
+number of dimensions to an array will return a sub-array.  For
+example,
+\begin{quote}\vt
+x[2, 4]\\
+y = x[1]
+\end{quote}
+
+This is equivalent to ``{\vt y = x + 1}'', and {\vt y} will point to a
+``[2]'' at the location of {\vt x[0,1]}.
+
+\begin{quote}\vt
+x[2,4,5]\\
+y = x[2]\\
+z = x[3,4]
+\end{quote}
+
+The variable {\vt y} is a ``[2,4]'' located at {\vt x[0,0,2]}.  The
+variable {\vt z} is a ``[2]'' located at {\vt x[0,3,4]}.
+
+When a pointer is defined, a reference count is incremented in the
+pointed-to array.  When this reference count is nonzero, the array can
+not be resized through the dynamic resizing mechanism.  The pointers
+to an array must be reassigned or undefined to allow resizing of the
+array.  Pointers can be reassigned simply by changing them to point to
+a different array.  This can be done arbitrarily.
+\begin{quote}\vt
+x[2, 4]\\
+y[32]\\
+z = x + 1\\
+\# can't resize x here\\
+z = y\\
+\# now ok to resize x
+\end{quote}
+
+One can undefine a pointer by setting it to 0.  Once this is done, the
+pointer variable has no type, and can actually be reused as another
+type of variable.  It is {\it not} an integer unless it is assigned to
+an integer.  The same effect may be obtained by applying the {\vt
+delete} operator.
+\begin{quote}\vt
+x[2, 4]\\
+y = x + 1\\
+\# can't resize x here\\
+y = 0\\
+\# now ok to resize x\\
+Print(y)\\
+\# will give "y", y has no type and acts like a string\\
+y = 0\\
+Print(y)\\
+\# will give "0", y is now an integer
+\end{quote}
+
+In our initial case,
+\begin{quote}\vt
+x[2, 4]\\
+y = x
+\end{quote}
+where the pointer is simply a reference to the array, {\vt y} is not
+strictly speaking a pointer, but rather an alias.  In particular, this
+has no limitation on resizing.  The array data can be resized through
+{\vt y} or {\vt x}.  Thus, arrays can be resized from within function
+calls if the reference to the array itself is passed to the function,
+and not a pointer (with an offset).
+
+\subsection{Complex}
+
+Support for complex numbers is provided via the complex data type. 
+The basic math operators and functions accept complex numbers,
+possibly intermixed with scalar values, and will produce a complex
+result when given a complex operand when appropriate.  Generally, a
+complex number can be passed to a function expecting a real number,
+and the real part of the complex number will be used.  Similarly, a
+scalar passed to a function expecting a complex number will be
+accepted as a complex value with zero imaginary part.
+
+Presently, functions will not produce a complex result unless passed a
+complex argument.  For example, the {\vt sqrt} function, if passed a
+negative scalar, will return a scalar zero.  If passed a complex
+number with negative real part and zero imaginary part, the return
+will be the complex square root value as one would expect.
+
+Complex numbers can be created with the {\vt cmplx} initializer
+function, which takes as arguments two scalar values that initialize
+the real and imaginary part.  There are special functions that return
+as scalars the real and imaginary values, magnitude, and phase of a
+complex operand.  The {\vt Print} function and similar will print a
+complex value as a comma-separated pair of numbers enclosed in
+parentheses.
+
+\subsection{Handles}
+
+Several of the interface functions return ``handles'', which are
+variables which contain a reference to a complex data object.  The
+handles are in turn passed to other functions which operate on the
+referenced data object.  If an active handle is passed to the {\vt
+Print} family of functions, a string giving the type of handle will be
+printed.
+
+When done with a handle, it should be closed (with the {\vt Close}
+function) to free the memory used by the data object.  The same effect
+is obtained by applying the {\vt delete} operator to the handle.  When
+iterating over a list-type of handle, the handle will be closed
+automatically when iteration is complete.
+
+There are many different types of data object that can be accessed
+with a handle, some examples being:
+\begin{quote}
+    string lists\\
+    database objects\\
+    file descriptors\\
+    properties
+\end{quote}
+With a few exceptions, notably the file descriptor, a handle generally
+points to a list of objects, such as the currently selected objects,
+that can be iterated through.  Once the iteration is complete, the
+handle is automatically closed, and further references will not reference an
+object.
+
+See the section on math operators (\ref{mathops}) for a discussion of
+the operations available on handles.
+
+The {\vt HandleContent} function can be called on any handle, and will
+return the number of objects that can be referenced through the
+handle.  Zero is returned when the handle has iterated to completion. 
+This function is useful in loops which contain iterations over
+handles.
+
+If a handle still contains references but it is no longer needed, the
+{\vt Close} function should be called on the handle, or the {\vt
+delete} operator applied to the handle, to free internal resources.
+
+\subsection{Zoidlists}
+
+A ``zoidlist'' is a list of trapezoids, which represents a set of
+spatial regions.  Like handles, zoidlists are created by certain
+functions, for use in other functions.
+
+As in layer expressions, the logical operators can be applied to
+zoidlists, with the result being a new zoidlist representing the
+geometric result of the operation.  Available operations include
+intersection (and), union (or), inversion, and clipping.  See the
+section on math operators (\ref{mathops}) for a discussion of the
+operations available on zoidlists.
+
+There is a current ``reference'' zoidlist which represents the
+``background''.  If not explicitly set (with the {\vt SetZref}
+function), this is taken as the boundary of the current cell.  The
+reference is used in operations such as inversion and exclusive-or
+where the size of the background must be assumed.  Note that this
+background can be an arbitrary shape.
+
+In binary operators with zoidlists, if one of the operands is an
+integer, 0 represents an empty list, and nonzero represents the
+reference list.
+
+If a zoidlist is given to one of the {\vt Print} family of functions,
+the coordinates are printed, one trapezoid per line, in order
+x-lower-left, x-lower-right, y-lower, x-upper-left, x-upper-right,
+y-upper.
+
+Zoidlists can be assigned from other zoidlists, in which case a copy
+is made internally.  If the assigned-to zoidlist already contained a
+list, that list is freed from memory.
+
+\subsection{Lexpers}
+
+The layer\_expr variable contains a parsed layer expression.  A layer
+expression is an expression consisting of layer names and logical
+operators.  A layer expression is evaluated within a certain region,
+representing part of a physical layout, and returns the regions where
+the layer expression is ``true''.
+
+A layer\_expr is a piece of compiled code that can execute very
+quickly.  Functions that accept a layer\_expr argument will generally
+also accept a string containing the layer expression, and will compile
+the string before use.  If an expression is to be used multiple times,
+if is far more efficient to pass a layer\_expr variable.
+
+These variables can not be assigned, and no operators can be applied. 
+They can be passed to functions only.
+
+If passed to the {\vt Print} family of functions, the layer
+expression string will be printed.
 
 !!SUBTOPICS
 scr:constants
@@ -1486,6 +2438,207 @@ Math Operators
     background can be an arbitrary shape.  In binary operators with
     zoidlists, if one of the operands is a scalar, 0 represents an
     empty list, and nonzero represents the reference list.
+!!LATEX mathops language.tex
+The following mathematical operations are supported:
+
+\begin{tabular}{|l|l|p{9.5cm}|} \hline
+Symbol & Arity & Description\\ \hline\hline
+$+$ & binary & addition\\ \hline
+$-$ & unary & negation\\ \hline
+$-$ & binary & subtraction\\ \hline
+$++$ & unary & pre- and post-increment\\ \hline
+$--$ & unary & pre- and post-decrement\\ \hline
+$*$ & binary & multiplication\\ \hline
+$/$ & binary & division\\ \hline
+$\%$ & binary & remainder, e.g., $5 \% 3 = 2$\\ \hline
+$\symbol{94}$ & binary & power, x $\symbol{94}$ y $=$ x to power y\\ \hline
+\vt $\&$ , and & binary & and, value is 1 if both operands
+                           are nonzero\\ \hline
+\vt $|$ , or & binary & or, value is 1 if either operand is
+                           nonzero\\ \hline
+\vt $!$ , \symbol{126} , not & unary & not, value is 1/0 if operand is
+                           zero/nonzero\\ \hline
+\vt $>$ , gt & binary & greater than, value is 1 if left
+                           operand is greater than the right\\ \hline
+\vt $>=$ , ge & binary & greater or equal, value is 1 if left
+                           operand is greater or equal to the right\\ \hline
+\vt $<$ , lt & binary & less than, value is 1 if the left
+                           operand is less than the right\\ \hline
+\vt $<=$ , le & binary & less or equal, value is 1 if the left
+                           operand is less than or equal to the right\\ \hline
+\vt $!=$ , ne , $<>$ , $><$ &
+                 binary & not equal, value is 1 if the left
+                           operand is not equal to the right\\  \hline
+\et $==$ , eq & binary & equal, value is 1 if the left operand
+                           is equal to the right\\ \hline
+\vt $=$ & binary & the left operand takes the value of the
+                           right, and the value is that of the right
+                           operand.  The type of the left operand
+                           becomes that of the right.\\ \hline
+\end{tabular}
+
+The operator-equivalent keywords ({\vt gt}, {\vt lt}, {\vt ge}, {\vt
+le}, {\vt ne}, {\vt eq}, {\vt or}, {\vt and}, {\vt not}) are
+recognized without case sensitivitty.
+
+A variable type is determined by its first assignment, of by
+declaration for arrays.  It is generally an error to attempt to
+redefine a variable to a different type, though if a scalar is
+assigned from a handle, the scalar type is promoted to handle type.
+
+Note that all operators, including assignment, return a value.  Thus,
+expressions like {\vt $3*(x > y)$} make sense (the value is 0 or 3). 
+Binary truth is indicated by a nonzero value.
+
+The increment/decrement operators ({\vt ++/--}) behave as in the C
+language.  That is
+\begin{quote}
+$y = x++$  is equivalent to $y = x; x = x + 1$\\
+$y = x--$  is equivalent to $y = x; x = x - 1$\\
+$y = ++x$  is equivalent to $x = x + 1; y = x$\\
+$y = x--$  is equivalent to $x = x - 1; y = x$
+\end{quote}
+
+All of these operations apply to scalar or complex values.  If complex
+and scalar values are mixed, scalar operands are promoted to complex
+with zero imaginary value.  If a complex operand is given, the result
+is also complex, except for comparison and logical operators, and
+modulus, which always return scalar values.  Comparison operators are
+applied to both real and imaginary parts, and both must separately
+satisfy the relation.  Increment and decrement operations apply only
+to the real part of a complex value.  In logical operations, a
+complex value is ``false'' if both the real and imaginary parts are 0.
+
+\subsection{Operator Overloading}
+
+In general, the operators apply only to numerical variables.  However,
+some of these operators can be used with particular variable types, in
+which case a function, relevant to that variable, is invoked.  In most
+cases, this is equivalent to invoking an actual function call from the
+user interface.  If a non-numeric variable is supplied to an operator
+for which no overload exists, the script will generally abort with an
+error.
+
+\subsubsection{String Overloads}
+
+The operators $==$, $!=$, $>$, $>=$, $<$, $<=$ have been overloaded
+for strings.  If the two operands are strings, the C {\vt strcmp}
+function is invoked to compare the two strings.  If either string is
+null, it is treated as if it has a lexically minimal value.  Either
+operand can be a scalar 0, which is treated as a null string.  Thus,
+forms like {\vt if (string == 0)} can be used to test for a null
+string.  Null strings, which have no storage, are produced be some
+script functions.  These are different from empty strings, produced
+for example by {\vt string = ""}, which contain an invisible string
+termination character.
+
+The $+$ operator has been overloaded for strings to perform
+concatenation, similar to the {\vt Strcat} library function.  The
+expression {\vt s3 = s1 + s2} is equivalent to {\vt s3 = Strcat(s1,
+s2)}.
+
+The $+$ and $-$ operators can be applied where the first argument is a
+string and the second argument is a scalar, and vice-versa in the case
+of $+$.  The result of the operation is a pointer into the string,
+which behaves as a string with the first character at the offset given
+by the scalar.  An error is generated if the offset is negative, or is
+beyond the end of the string.
+
+The $-$ operator can be applied where both operands are strings.  The
+result is a scalar variable representing the difference between the
+memory addresses of the two strings.  This is only useful if both
+operands are references to the same string.
+
+The {\vt !} operator can be applied to strings.  The construct is
+true only if the string variable contains a null string.
+
+\subsubsection{Array Overloads}
+
+Pointer arithmetic is discussed in the section describing
+array variables (\ref{arrayvars}).
+
+\subsubsection{Handle Overloads}
+
+Handles can be used in conditional and logical expressions using the
+and ($\&$), or ($\|$), and not ($!$) operators.  If the handle is
+non-empty, it is ``true'', otherwise it is ``false''.  This can be
+used as a far more efficient loop termination test than a call to {\vt
+HandleContent}.
+
+The relational operators have been overloaded for handles.  The
+behavior for handles is the same as for scalars, with the handle index
+being used in the comparison.  This is not expected to be useful,
+except perhaps for file descriptor handles.
+
+The $+$ operator is overloaded to perform concatenation, equivalent to
+a call to the {\vt HandleCat} function.  The syntax is
+\begin{quote}
+{\vt [h1 =] h2 + h3}
+\end{quote}
+
+This applies only to handles that contain a list of data items.  Both
+{\vt h2} and {\vt h3} must contain lists of the same type of data. 
+The list in {\vt h3} is copied and pasted on the end of {\vt h2}.  If
+a left hand side is given, it will be assigned the {\vt h2} handle
+value and be equivalent to {\vt h2}.  Most of the time, this is not
+needed.
+
+The increment operator $++$ is overloaded to perform iteration,
+equivalent to a call to {\vt HandleNext} or similar functions.  The
+postfix and prefix forms are equivalent.  The return value is simply a
+copy of the handle, so again use in an assignment is unlikely to be
+needed often.
+
+Without overloading, code to iterate over a list handle would appear
+as
+
+\begin{verbatim}
+h = func_returning_list_handle()
+while (HandleContent(h) != 0)
+    (do something)
+    HandleNext(h)
+done
+\end{verbatim}
+
+Making use of overloading, the same loop could take the following
+form:
+
+\begin{verbatim}
+h = func_returning_list_handle()
+while (h)
+    (do something)
+    h++
+done
+\end{verbatim}
+
+\subsubsection{Zoidlist Overloads}
+
+The math and logical operators are overloaded for zoidlists as follows:
+
+\begin{tabular}{|l|l|} \hline
+$+$, {\vt |}  & union\\ \hline
+$-$           & and-not\\ \hline
+$*$, {\vt \&} & intersection\\ \hline
+$\symbol{94}$ & exclusive or\\ \hline
+{\vt !}       & inverse\\ \hline
+\end{tabular}
+
+The result of the operation is a new zoidlist, with neither of the
+operands affected.
+
+To test for an empty zoidlist, the {\vt ==} and {\vt !=} comparisons
+to the value 0 can be applied.  Note that ``{\vt if (!zlist)}'' is an
+incorrect test for an empty zoidlist; it will invert the list and
+return true if the inverted list is not empty.
+
+There is a current ``reference'' zoidlist which represents the
+``background''.  If not explicitly set (with the {\vt SetZref}
+function), this is taken as the boundary of the current cell.  The
+reference is used in operations such as inversion and exclusive-or
+where the size of the background must be assumed.  Note that this
+background can be an arbitrary shape.  In binary operators with
+zoidlists, if one of the operands is a scalar, 0 represents an empty
+list, and nonzero represents the reference list.
 
 !!SEEALSO
 xicscript
@@ -1833,6 +2986,301 @@ Control Structures
     &#32;   label error
     &#32;   Print("error occurred")
     </tt></pre>
+!!LATEX scr:control language.tex
+As in C, logical ``true'' is indicated by a nonzero value.  The
+following control statements are accepted.
+
+\subsection{\vt delete}
+
+\begin{quote}
+{\vt delete} $[${\it variable\/}$]$
+\end{quote}
+
+Although not strictly a ``control'' keyword, the {\vt delete} operator
+is handled at the control-block level.  The operator will return the
+variable to its undefined state, as if before any assignment, and free
+the contents.  After the {\vt delete} operator is applied, the
+variable can be assigned to any data type.
+
+Using the {\vt delete} operator on an array will remove the array
+characteristics, so in general the variable can not subsequently be
+used as an array, except by assigning the variable to another array. 
+The {\vt FreeArray} function can be used to clear the data while still
+preserving the variable as an array, so that values can still be
+directly assigned at indices.
+
+The delete operator applied to a handle will close the handle, as if
+the {\vt Close} function was called.  However, the handle will become
+an undefined variable after {\vt delete}, rather than a scalar 0.
+
+There are two reasons why this operator exists.  The user may wish to
+delete unused variables that contain large data blocks to conserve
+memory.  Also, the {\vt ConvertReply} function can return a variable
+of any type, thus we must have an undefined variable to take the
+return, which is impossible in a loop without use of the {\vt delete}
+operator.
+
+The {\vt delete} operator will generally delete the contents, however
+for arrays and strings, if the variable has an alias, the content will
+be retained in the alias, and all pointers or substrings remain valid. 
+If the array or string variable has no alias, any associated pointers
+or substrings will also be reinitialized, and the underlying data will
+be freed from memory.  Deleting a pointer or substring variable causes
+that variable to be undefined, but does not affect the pointed-to
+data.
+
+\subsection{\vt return}
+
+\begin{quote}
+{\vt return} $[${\it expression\/}$]$
+\end{quote}
+
+If the {\vt return} keyword is encountered in the main part of a
+script, execution of the script terminates at that point, and the
+value returned from any following {\it expression} is saved.  This
+return value is available as a return from the {\vt Exec} function, if
+that command was used to execute the script.  In general, the return
+value is ignored.
+
+If used in a function (see \ref{functions}), the function returns
+immediately with the value of the {\it expression}, if given.
+
+\subsection{\vt if, elif, else}
+
+\index{scripts!if elif else end}
+\index{scripts!elif}
+\begin{quote}
+{\vt if} {\it expression1}\\
+\hspace*{2em}{\it statements1}\\
+{\vt elif} {\it expression2}\\
+\hspace*{2em}{\it statements2}\\
+...\\
+{\vt elif} {\it expressionN}\\
+\hspace*{2em}{\it statementsN}\\
+{\vt else}\\
+\hspace*{2em}{\it statements}\\
+{\vt end}
+\end{quote}
+
+If {\it expression1\/} evaluates nonzero, {\it statements1\/} will be
+executed, otherwise if {\it expression2} evaluates nonzero, {\it
+statements2} will be executed, and so on.  If none of the expressions
+evaluate nonzero, {\it statements} following {\vt else} will be
+executed.  The only parts that are mandatory are {\vt if}, {\it
+expression1}, and {\vt end}, all other clauses are optional.
+
+Note that {\vt elif} is {\it not} the same as ``{\vt else if}''.  The
+following two blocks are equivalent:
+
+\begin{quote}
+\begin{verbatim}
+# example using "elif"
+if (a == 1)
+    Print(1)
+elif (a == 2)
+    Print(2)
+else
+    Print("?");
+end
+
+# example using "else if"
+if (a == 1)
+    Print(1)
+else
+    if (a == 2)
+        Print(2)
+    else
+        Print("?")
+    end
+end
+\end{verbatim}
+\end{quote}
+
+In particular, a common error is the following:
+
+\begin{quote}
+\begin{verbatim}
+if (a == 1)
+    Print(1)
+else if (a == 2)
+    Print(2)
+else
+    Print("?")
+end
+\end{verbatim}
+\end{quote}
+
+This is missing an ``{\vt end}'' statement (see the second form
+above).
+
+\subsection{ternary conditional}
+\index{ternary conditional operator}
+
+\begin{quote}
+{\it a} {\vt ?} {\it b} {\vt :} {\it c}
+\end{quote}
+ 
+The ternary conditional operation, familiar from the C programming
+language, is supported.  In this construct, the `{\vt ?}' and `{\vt
+:}' are literal, the {\it a\/}, {\it b\/}, and {\it c} are
+expressions.  If {\it a} evaluates as {\vt true}, then {\it b} is
+evaluated and the construct returns its result.  Otherwise, {\it c} is
+evaluated and the construct returns that result.  Hence, the form
+ 
+\begin{quote}\vt
+x = a ? b : c
+\end{quote}
+ 
+is equivalent to
+ 
+\begin{quote}\vt
+\begin{verbatim}
+if (a)
+    x = b
+else
+    x = c
+end
+\end{verbatim}
+\end{quote}
+ 
+The ``{\vt true}'' condition depends on the type of variable
+represented by {\it a}, as for the {\vt if} operator.  For example,
+the following are {\vt true}:
+
+\begin{itemize}
+\item{A nonzero numeric value.  This includes the result of a
+conditional expression when the condition is satisfied.}
+
+\item{An active handle.}
+
+\item{A non-empty zoidlist (a layer expression is evaluated to obtain
+a zoidlist).}
+
+\item{A non-null string.}
+\end{itemize}
+
+\subsection{\vt repeat}
+
+\index{scripts!repeat}
+\begin{quote}
+{\vt repeat} {\it expression}\\
+\hspace*{2em}{\it statements}\\
+{\vt end}
+\end{quote}
+
+Execute {\it statements\/} {\it n} times, where {\it n\/} is the
+integer result of evaluating {\it expression}.  The {\it expression}
+is evaluated once only when the block is entered, and the integer
+value computed is used as the loop counter.  The value is tested for
+zero, which will terminate the loop, and is decremented after each
+pass.  A negative value will produce an error and the script will
+terminate.
+
+\subsection{\vt while}
+
+\index{scripts!while}
+\begin{quote}
+{\vt while} {\it expression}\\
+\hspace*{2em}{\it statements}\\
+{\vt end}
+\end{quote}
+
+On each pass through the loop, if {\it expression\/} evaluates nonzero,
+execute {\it statements\/}, otherwise exit the loop.
+
+\subsection{\vt dowhile}
+
+\index{scripts!dowhile}
+\begin{quote}
+{\vt dowhile} {\it  expression}\\
+\hspace*{2em}{\it statements}\\
+{\vt end}
+\end{quote}
+  
+On each pass through the loop, execute {\it statements\/}, then
+evaluate {\it expression\/}.  If {\it expression\/} evaluates to zero,
+exit the loop.
+
+\subsection{\vt break}
+
+\index{scripts!break}
+\begin{quote}
+\noindent
+{\vt break} $[${\it n\/}$]$
+\end{quote}
+
+In a loop, the {\vt break} statement will exit the loop.  If an
+integer {\it n\/} is given, control reaches the bottom of the {\it n\/}'th
+enclosing loop.
+
+\begin{quote}
+Example:
+\begin{verbatim}
+while x <= 100
+  while y <= 50
+    while z <= 20
+       statements
+       if (x + y + z == 10)
+           break 2
+       end
+    end
+  end
+# break will jump here
+end
+\end{verbatim}
+\end{quote}
+
+\subsection{\vt continue}
+
+\index{scripts!continue}
+\begin{quote}
+{\vt continue} $[${\it n\/}$]$
+\end{quote}
+
+In a loop, {\vt continue} causes the loop to be reentered from the top.  If
+an integer {\it n\/} is given, the {\it n\/}'th enclosing loop is
+reentered. 
+
+\begin{quote}
+Example:
+\begin{verbatim}
+while x <= 100
+  # continue will jump here
+  while y <= 50
+    while z <= 20
+       statements
+       if (x + y + z == 10)
+           continue 2
+       end
+    end
+  end
+end
+\end{verbatim}
+\end{quote}
+
+\subsection{\vt goto, label}
+
+\index{scripts!goto label}
+\begin{quote}
+{\vt goto} {\it name}\\
+{\vt label} {\it name}
+\end{quote}
+
+Execution can jump to an arbitrary location in a routine with the {\vt goto}
+statement.  Execution resumes at the statement following the
+associated {\vt label}.
+
+\begin{quote}
+Example:\\
+\\
+{\it statements}\\
+{\vt if (z != 0)}\\
+\hspace*{2em}{\vt goto error}\\
+{\vt end}\\
+{\it statements\/} ...\\
+{\vt label error}\\
+{\vt Print("error occurred")}
+\end{quote}
 
 !!SEEALSO
 xicscript
@@ -1907,10 +3355,67 @@ Preprocessor
     substitution text, which replaces the macro reference.  The macro
     reference is recognized as a text token, i.e., it must be
     surrounded by punctuation or white space.
+!!LATEX scr:preproc language.tex
+The script parser interprets C-like ``preprocessor'' keywords.   
+Unlike C, there is only a single pass through the text, so
+``preprocessor'' is a misnomer.
+
+The script preprocessor utilizes the generic macro preprocessor (see
+\ref{macro}) used in various places within {\Xic}.  In the present
+context, the keywords start with the comment `{\vt \#}' character.
+
+In addition to the predefined macros of the generic macro
+preprocessor, the following predefined macro is used in scripts.
+
+\begin{description}
+\item{\vt THIS\_SCRIPT}\\
+For any script which is read from a file (not counting the technology
+file) the token {\vt THIS\_SCRIPT} is effectively defined to be the
+name of the script (for scripts launched from the {\cb User Menu}) or
+a path to the file.  Thus, in the script, the token {\vt THIS\_SCRIPT}
+is replaced by the file or script name.  For example, to print the
+script name in the console window, one could add a line
+\begin{quote} \vt
+Print("The name of this script is THIS\_SCRIPT")
+\end{quote}
+\end{description}
+
+The following ``preprocessor'' keywords are understood in scripts. 
+These pretty much follow the C/C++ standards and behave similarly, and
+correspond to the generalized keywords described for the macro
+preprocessor.  These are:
+
+\begin{tabular}{ll}
+\bf Keyword & \bf Function\\
+{\vt \#define} & Define a macro.\\
+{\vt \#if} & Conditional evaluated test.\\
+{\vt \#ifdef} & Conditional definition test.\\
+{\vt \#ifndef} & Conditional non-definition test.\\
+{\vt \#else} & Conditional else clause.\\
+{\vt \#endif} & Conditional end clause.\\
+\end{tabular}
+
+In addition, the following keyword, which has no counterpart in the
+generic macro preprocessor, is recognized in scripts:
+
+\begin{description}
+\item{\vt \#macro}\\
+\index{scripts!\#macro}
+The {\vt \#macro} directive, which has no counterpart in C, is assumed
+to be followed by macro statements in the format used in the {\vt
+.xicmacros} file, followed by {\vt \#end} or {\vt \#endif}.  If the
+{\vt \#macro} sequence appears in a script file, the macro is defined
+at that point.
+\end{description}
+
+Throughout the script, each line is macro expanded.  The actual
+arguments replace the formal arguments (if any) in the substitution
+text, which replaces the macro reference.  The macro is recognized as
+a text token, i.e., it must be surrounded by punctuation or white
+space.
 
 !!SEEALSO
 xicscript
-
 
 !!REDIRECT cmplx        scr:mathfuncs
 !!REDIRECT real         scr:mathfuncs
@@ -2117,6 +3622,150 @@ Math Functions
     See the <i>WRspice</i> <a href="mathfuncs">functions</a> for
     appropriate descriptions of the functions that appear in
     <i>WRspice</i> expressions.
+!!LATEX scr:mathfuncs language.tex
+\index{cmplx function}
+\index{real function}
+\index{imag function}
+\index{mag function}
+\index{ang function}
+
+The following functions apply to complex numbers.
+
+\begin{tabular}{|l|l|} \hline
+Name                   &    Returns\\ \hline\hline
+\vt cmplx({\it x\/}, {\it i\/})    &    Return a complex number\\ \hline
+\vt real({\it c\/})    &    Return real part of a complex number\\ \hline
+\vt imag({\it c\/})    &    Return imaginary part of a complex number\\ \hline
+\vt mag({\it c\/})     &    Return the magnitude of a complex number\\ \hline
+\vt ang({\it c\/})     &    Return the phase of a complex number\\ \hline
+\end{tabular}
+
+The {\vt cmplx} function is used to initialize a complex number
+through assignment, for example
+\begin{quote}\vt
+cx = cmplx(1.0, 0.5)
+\end{quote}
+creates a complex number {\vt cx} with value {\vt (1.0 + j0.5)}.  The
+other functions take a complex number as an argument, and return a
+scalar result.
+
+\index{abs function}
+\index{acos function}
+\index{acosh function}
+\index{asin function}
+\index{asinh function}
+\index{atan function}
+\index{atan2 function}
+\index{atanh function}
+\index{cbrt function}
+\index{ceil function}
+\index{cos function}
+\index{cosh function}
+\index{erf function}
+\index{erfc function}
+\index{exp function}
+\index{floor function}
+\index{gauss function}
+\index{int function}
+\index{j0 function}
+\index{j1 function}
+\index{jn function}
+\index{ln function}
+\index{log function}
+\index{log10 function}
+\index{max function}
+\index{min function}
+\index{pow function}
+\index{random function}
+\index{rint function}
+\index{seed function}
+\index{sgn function}
+\index{sin function}
+\index{sinh function}
+\index{sqrt function}
+\index{tan function}
+\index{tanh function}
+\index{y0 function}
+\index{y1 function}
+\index{yn function}
+
+The following math functions are defined internally, and all take
+scalar or complex arguments.
+
+\begin{tabular}{|l|l|} \hline
+Name                  &    Returns\\ \hline\hline
+\vt abs({\it x\/})    &    absolute value or magnitude of {\it x}\\ \hline
+\vt acos({\it x\/})   &    arc-cosine of {\it x}\\ \hline
+\vt acosh({\it x\/})  &    arc-hyperbolic cosine of {\it x}\\ \hline
+\vt asin({\it x\/})   &    arc-sine of {\it x}\\ \hline
+\vt asinh({\it x\/})  &    arc-hyperbolic sine of {\it x}\\ \hline
+\vt atan({\it x\/})   &    arc-tangent of {\it x}\\ \hline
+\vt atan2({\it x\/}, {\vt y\/}) & arc tangent of {\it x\/}, {\it y}\\ \hline
+\vt atanh({\it x\/})  &    arc-hyperbolic tangent of {\it x}\\ \hline
+\vt cbrt({\it x\/})   &    cube root of {\it x}\\ \hline
+\vt ceil({\it x\/})   &    smallest integer $>=$ {\it x}\\ \hline
+\vt cos({\it x\/})    &    cosine of {\it x}\\ \hline
+\vt cosh({\it x\/})   &    hyperbolic cosine of {\it x}\\ \hline
+\vt erf({\it x\/})    &    error function of {\it x}\\ \hline
+\vt erfc({\it x\/})   &    complementary error function of {\it x}\\ \hline
+\vt exp({\it x\/})    &    e to the {\it x} power\\ \hline
+\vt floor({\it x\/})  &    largest integer $<=$ {\it x}\\ \hline
+\vt gauss()           &    gaussian random number\\ \hline
+\vt int({\it x\/})    &    truncated integer value of {\it x}\\ \hline
+\vt j0({\it x\/})     &    Bessel function order 0 of {\it x}\\ \hline
+\vt j1({\it x\/})     &    Bessel function order 1 of {\it x}\\ \hline
+\vt jn({\it x\/}, {\it n\/}) & Bessel function order n of {\it x}\\ \hline
+\vt ln({\it x\/})     &    natural logarithm of {\it x}\\ \hline
+\vt log({\it x\/})    &    natural logarithm of {\it x}, see below\\ \hline
+\vt log10({\it x\/})  &    base 10 logarithm of {\it x}\\ \hline
+\vt max({\it x\/}, {\it y\/}) & largest of {\it x\/}, {\it y}\\ \hline
+\vt min({\it x\/}, {\it y\/}) & smallest of {\it x\/}, {\it y}\\ \hline
+\vt pow({\it x\/}, {\it y\/}) & {\it x\/} to the {\it y} power\\ \hline
+\vt random()          &    random value in $[0,1)$\\ \hline
+\vt rint({\it x\/})   &    integer nearest to {\it x}\\ \hline
+\vt seed({\it x\/})   &    seed random number generator\\ \hline
+\vt sgn({\it x\/})    &    $+1, 0, -1$ if $x > 0, x = 0, x < 0$\\ \hline
+\vt sin({\it x\/})    &    sine of {\it x}\\ \hline
+\vt sinh({\it x\/})   &    hyperbolic sine of {\it x}\\ \hline
+\vt sqrt({\it x\/})   &    square root of {\it x}\\ \hline
+\vt tan({\it x\/})    &    tangent of {\it x}\\ \hline
+\vt tanh({\it x\/})   &    hyperbolic tangent of {\it x}\\ \hline
+\vt y0({\it x\/})     &    Neumann function order 0 of {\it x}\\ \hline
+\vt y1({\it x\/})     &    Neumann function order 1 of {\it x}\\ \hline
+\vt yn({\it x\/}, {\it n\/}) & Neumann function order n of {\it x}\\ \hline
+\end{tabular}
+
+Most of these functions, when given complex arguments, will compute a
+complex result.  The {\vt atan2}, {\vt seed}, Bessel, Neuman, and
+error functions ignore any imaginary parts and compute a real value
+only.  The {\vt ceil}, {\vt floor}, {\vt int}, {\vt rint}, and {\vt
+sgn} functions apply the operation to real and imaginary parts of
+complex arguments.  The {\vt min} and {\vt max} functions generate a
+complex result containing the operations applied to the real and
+imaginary parts of the arguments, if at least one argument is complex. 
+The functions listed that take no arguments return scalar values.
+
+With scalar arguments, these functions behave as the corresponding
+functions in the C library, though the random number functions are
+specialized to {\Xic}.  The {\vt seed} function applies a seed value
+to the random number generators.  This can be used to ensure that
+successive runs using random numbers choose different values.  The
+seed value given is converted to an integer before use.  The {\vt
+random} function returns a random value in the range $[0--1)$.  The
+numbers generated have a uniform distribution.  The {\vt gauss}
+function returns Gaussian random numbers with zero mean and unit
+deviation.
+
+\index{LogIsLog10 variable}
+{\bf Note regarding the log function}\\
+In {\Xic} releases prior to 3.2.23, the {\vt log} function returned
+the base-10 logarithm.  This definition was changed in 3.2.23, and
+the {\vt log10} function added, for consistency with programming
+languages, {\WRspice}, and most other software.  This will require
+users to update legacy scripts that use the {\vt log} function to
+call {\vt log10} instead.  However, there is a {\et LogIsLog10}
+variable that can be set to revert {\vt log} to base-10.  This can be
+used temporarily, but is not recommended for the long-term.
 
 !!SEEALSO
 xicscript
@@ -2212,6 +3861,77 @@ User-Defined Functions
     <p>
     It is presently not possible to single-step through a function in
     the <a href="xic:debug"><b>Script Debugger</b></a>.
+!!LATEX scr:functions language.tex
+In scripts, user-defined functions are supported.  The function must
+be defined before it is called.
+
+A function definition starts with the keyword {\vt function}, followed
+by the function name and argument list.  The keyword {\vt endfunc}
+terminates the definition.  These blocks can appear anywhere between
+statements in a script file, however they must appear before any calls
+to the function.  Once a function has been parsed, it is added to an
+internal database, where a compiled representation is retained.  If
+the same function is parsed again, the in-memory representation is
+updated.  There is a mechanism for automatically loading libraries
+(see \ref{scriptintro}) of script functions at program startup.  Use
+of this mechanism avoids the overhead of repeatedly parsing function
+definitions that are found in script files.
+
+The function is called just like a built-in function.  Scalar
+variables are passed by value, other types are passed to the function
+by reference.  Variables defined within a function are automatic by
+default.
+
+Functions can return a value.  In a function, the construct
+\begin{quote}\vt
+return [{\it expression\/}]
+\end{quote}
+can be used to terminate execution, and the value of the {\it
+expression} is returned by the function.  The value returned can be
+of any type.  If the return value is a local string, the string will
+be copied.  If the return value is a pointer to an array, the array
+must have been passed as an argument or have been declared {\vt
+static} or {\vt global} (see \ref{static}).
+
+The example below illustrates how variables are passed, and the
+scope for changes.  Strings and arrays can not be redefined in a
+function, but elements can be changed.  Arrays are used to pass
+results back to the calling function.
+
+Example:
+
+\begin{quote}
+\begin{verbatim}
+function myfunc(a, b, c)
+Print(a, b, c)
+endfunc
+
+function examp(a, b, c)
+# a is a constant, can be redefined within the scope of examp
+a = 2
+# b is a string, it is an error to redefine, but can be altered, in
+# which case the string is altered in the calling function as well
+#b = "b string"   (this produces an error)
+b[2] = 'x'
+# c is an array, it is an error to redefine, but elements can be
+# changed, in which case this is reflected to all users of the array
+# c[3]  (redefinition, this is an error)
+c[1] = 1.234
+myfunc(a, b, c)
+endfunc
+
+Print("this is a test")
+x = 1
+y = "a string"
+z[2]
+myfunc(x, y, z)
+examp(x, y, z)
+myfunc(x, y, z)
+\end{verbatim}
+\end{quote}
+
+It is presently not possible to single-step through a function in
+the {\cb Script Debugger}.
 
 !!SEEALSO
 xicscript
@@ -2263,6 +3983,48 @@ The exec Keyword - Immediate Execution
     </blockquote>
     The <tt>tmppath</tt> variable will be set first, and is used to
     reset the <b>ScriptPath</b> as a final operation.
+!!LATEX scr:exec language.tex
+Script execution is a two-step process:  first, the text of the script
+is parsed, and executable data structures are created internally, and
+second, the execution is performed.  Consider the following script:
+
+\begin{quote}
+{\vt Set("ScriptPath", "}{\it /path/to/library\_dir\/}{\vt ")}\\
+{\it some\_library\_function\/}{\vt ()}
+\end{quote}
+
+Naively, the first line will set the script path to the directory
+containing the {\vt library} (see \ref{scriptintro}) file, and the
+second line will execute a function from the library.  However, this
+will not run, since the library function must be resolved before the
+parser can process the function call.  Somehow, we must ensure that
+the {\vt Set} line is executed before the following line is parsed.
+
+The {\vt exec} keyword will perform this trick.  When an {\vt exec}
+keyword is encountered, the remainder of the line (or to the next
+semicolon) is parsed and executed immediately, and is {\it not} added
+to the parse tree for scheduled execution with the other lines.  Thus,
+the example above should be
+
+\begin{quote}
+{\vt exec Set("ScriptPath", "}{\it /path/to/library\_dir\/}{\vt ")}\\
+{\it some\_library\_function\/}{\vt ()}
+\end{quote}
+
+Multiple {\vt exec} lines are executed in order of appearance. 
+Variables can be used and set, but remember that this will be done
+before any manipulation from the normal script lines.  For example,
+the {\et ScriptPath} switch can be hidden:
+
+\begin{quote}
+{\vt exec tmppath = GetPath("ScriptPath")}\\
+{\vt exec Set("ScriptPath", "}{\it /path/to/library\_dir\/}{\vt ")}\\
+{\it some\_library\_function\/}{\vt ()}\\
+{\vt Set("ScriptPath", tmppath)}
+\end{quote}
+
+The {\vt tmppath} variable will be set first, and is used to reset the
+{\et ScriptPath} as a final operation.
 
 !!SEEALSO
 xicscript
@@ -2377,6 +4139,101 @@ Static and Global Variables
     such as a <a href="scr:library"><tt>library</tt></a> file, and a
     global variable is declared and used in the function that is not
     also declared in the main procedure, an error results.
+!!LATEX scr:global language.tex
+Variables defined in script functions are automatic by default.  The
+term ``automatic'' means that every call of the function provides a
+fresh set of variables.  A static variable, on the other hand, retains
+its contents between calls, and the same variable storage is used in
+all calls to the function.  One can explicitly assign a variable in a
+function to be static using the {\vt static} keyword.  This construct
+should appear only in functions (not the main procedure), and {\it
+must} appear ahead of all other executable statements.  The syntax is
+
+\begin{quote}
+{\vt static {\it var1} [= {\it val\/}] {\it var2}} ...
+\end{quote}
+
+The terms can be separated by white space and/or commas.  The {\it
+var1}, etc., are variables used in the function that are to have
+static storage.  They can optionally be initialized by including an
+assignment.  If an assignment is used, the right hand side should
+consist of constants and variables that have already been assigned,
+meaning that they appear to the left in the present line or in a
+previous {\vt static} line (there can be more than one).  Array
+variables should have an initial dimensionality/size specification
+consisting of comma-separated integers enclosed in square brackets. 
+Each such integer represents the maximum index for the dimension, with
+the lowest dimension listed to the left.  This is the standard syntax
+for array declaration.
+
+Example:
+\begin{quote}\vt
+function myfunc(a, b, c)\\
+static callcnt = 0\\
+...\\
+callcnt = callcnt + 1\\
+Print("myfunc has been called", callcnt, "times")\\
+endfunc\\
+\end{quote}
+
+\index{global variables}
+\index{global keyword}
+There is also provision for global variables.  Global variables are
+variables whose scope extends to all functions where the variables
+have been declared, including the main procedure.  These are useful
+for data items that are accessed frequently throughout a script
+application.
+
+The {\vt global} keyword is used to declare global variables.  The
+syntax is identical to that for the {\vt static} keyword, and
+similarly the declaration must appear at the top of a function and the
+main procedure.  There can be more than one {\vt global} line.
+\begin{quote}
+{\vt global} {\it var1} $[=$ {\it value\/}$]$ {\it var2} ...
+\end{quote}
+
+In functions, the list following the keyword can not contain
+assignments or array subscripting.  As with {\vt static} declarations,
+{\vt global} declarations must appear at the top of the function body. 
+There can be multiple {\vt global} lines, and these can be freely
+mixed with {\vt static} lines.  Global variables are not accessible
+unless declared.
+
+A global variable must be declared in each function where it is to be
+accessed, and in the main procedure.  Assignments and array
+initialization can be applied in the declarations in the main
+procedure only.  It is an error to declare a global with assignment
+more than once, or to declare with an assignment in a function.  Like
+other variables, if a global variable is not initialized in a
+declaration, the first assignment will define the variable type. 
+Global array variables must be initialized with the maximum initial
+indices in each dimension, comma separated, enclosed in square
+brackets in the main function, but indices should {\it not} appear in
+the declarations in functions.
+
+Example:
+
+\begin{verbatim}
+function myfunc()
+    global gvar
+    Print(gvar)
+    gvar = gvar + 1
+endfunc
+
+global gvar = 1
+myfunc()
+Print(gvar)
+# output is:
+# 1
+# 2
+\end{verbatim}
+
+Global variables declared in functions create links to the global
+variable of the same name declared in the main procedure.  If the
+function is defined in a separate file from the main procedure, such
+as a {\vt library} file, and a global variable is declared and used in
+the function that is not also declared in the main procedure, an error
+results.
 
 !!SEEALSO
 xicscript
@@ -2424,7 +4281,30 @@ Predefined Constants
     the database resolution, which is the value of the <a
     href="DatabaseResolution"><b>DatabaseResolution</b></a> variable
     if set, or the default of 1000.
+!!LATEX scr:constants language.tex
+\index{scripts!predefined constants}
+\index{NULL}
+\index{INFINITY}
+The following constants are recognized by name:\\
+\begin{tabular}{ll}\\
+\vt e        &  Natural log base\\
+\vt pi       &  3.14159...\\
+\vt PI       &  3.14159...\\
+\vt NULL     &  0\\
+\vt INFINITY &  Maximum extent of object coordinate field\\
+\vt TRUE     &  1\\
+\vt FALSE    &  0\\
+\vt EOF      &  -1\\
+\vt CHARGE   &  1.60217646e-19\\
+\vt CTOK     &  273.15\\
+\vt BOLTZ    &  1.3806226e-23\\
+\vt ROOT2    &  square root of 2\\
+\end{tabular}
 
+The value of {\vt INFINITY} is the internally assumed absolute limit
+for valid coordinates, in microns.  This is 1e9 divided by the
+database resolution, which is the value of the {\et
+DatabaseResolution} variable if set, or the default of 1000.
 
 !!SEEALSO
 xicscript
@@ -2895,6 +4775,405 @@ HTML Forms and Scripts
 
     <p>
     This is typical boilerplate for a form-entry script.
+!!LATEX scr:forms language.tex
+HTML forms can be used as input devices for scripts.  A form may
+provide a more convenient interface than a sequence of {\vt Ask}{\it
+XXX\/} functions, and arbitrary text and links into the help system
+can also be provided in the form text.
+
+\subsection{Introduction to HTML Forms}
+
+Those interested in learning about forms in HTML should obtain a
+book on the subject.  A decent book on writing HTML documents is
+\begin{quote}
+\underline{HTML for the World Wide Web}, Elizabeth Castro,
+Peachpit Press, Berkeley CA 1989, isbn 0-201-69696-7.
+\end{quote}
+Below is a quick summary of the form-related tags.
+
+An HTML form is a collection of input objects such as toggle buttons,
+text areas, and menus which allow the user to provide input.  Within
+the form is a {\cb submit} button, which when pressed causes a
+predefined action to occur.  In HTML, the form is usually processed by
+the web page server (through a cgi script).  In {\Xic}, the form may
+instead be processed by an {\Xic} script.
+
+A form starts with a tag in the format
+\begin{quote}
+{\vt <form method="post" action="{\it some text\/}">}
+\end{quote}
+
+All but ``{\it some text}'' should be copied verbatim.  In {\Xic}, the
+``{\it some text}'' is of the form
+\begin{quote}
+``{\vt action\_local\_xic} {\it script\_path}''.
+\end{quote}
+The quotes are required, and {\vt action\_local\_xic} should be copied
+verbatim.  The second word is the name of an {\Xic} script file.  The
+``{\vt .scr}'' extension is optional, and if a directory path is not
+given, the script should exist in the script search path.  Often, {\it
+script\_path} is the predefined macro {\vt THIS\_SCRIPT}, which is
+replaced by the name of or path to the present script.
+
+The opening {\vt <form ...>} tag is followed by the contents of
+the form itself, which can consist of formatted text, and references
+to the following objects.
+
+Every object is given a unique name.  This name is used to access the
+data in the script.  Each button object will also have a value, which
+is a string token passed to identify a choice, i.e., which button of a
+group is selected.  This may be different than the label on the
+button.  In the tags, constructs like {\vt name="{\it name}"} indicate
+the keyword {\vt name}, followed by an `{\vt =}' with no surrounding
+space, which is followed by a quoted text string.
+
+\begin{description}
+\item{Text Boxes}\\
+These are one-line entry areas.  The tag format is
+\begin{quote}
+{\vt <input type="text" name="{\it name\/}" {\it options\/}>}
+\end{quote}
+The {\it options} (which are not required), can be:
+\begin{description}
+\item{\tt size="{\it n\/}"}\\
+The {\it n} is an integer that sets the field width in characters.
+\item{\vt maxlength="{\it n\/}"}\\
+The {\it n} is an integer which limits the length of input text.
+\item{\vt value="{\it some text\/}"}\\
+This indicates the text that will initially appear.
+\end{description}
+
+Example:
+\begin{quote}
+{\vt Enter username: <input type="text" name="usertext">}
+\end{quote}
+\end{description}
+
+In this and other similar elements that take a ``{\vt value="}{\it
+string\/}{\vt "}'' clause, note that this will fail if {\it string}
+contains quote (`{\vt "}') characters.  However, HTML `{\vt \&}'
+escapes are expanded in the string, so quote characters can be
+replaced with ``{\vt \&quot;}'' to include quotation in the string.
+
+\begin{description}
+\item{Password Boxes}\\
+These are text boxes, except that characters are printed as
+`*' for security.  The format is similar to text boxes:
+\begin{quote}
+{\tt <input type="password" name="{\it name\/}" {\it options\/}>}
+\end{quote}
+The {\it options} are the same as for text boxes.
+
+Example:
+\begin{quote}
+{\vt Enter password: <input type="password" name="passwd">}
+\end{quote}
+
+\item{Radio Buttons}\\
+These are groups of buttons, one and only one of which is always
+selected.  The tag format is
+\begin{quote}
+{\vt <input type="radio" name="{\it name\/}"
+    value="{\it value1\/}" {\it option\/}>{\it text}}\\
+{\vt <input type="radio" name="{\it name\/}"
+    value="{\it value2\/}" {\it option\/}>{\it text}}\\
+...\\
+\end{quote}
+
+Each radio button in the group has a line of the form above.  The only
+{\it option} is ``{\vt checked}'' which can appear in only one line,
+and indicates which button is initially pressed (default is the first
+button listed).  Each button should have the same {\vt name}, and a
+different {\vt value}.  The text that follows the tag appears next to
+the button, and is usually but not necessarily the same as the value.
+
+Example:
+\begin{quote}
+{\vt <input type="radio" name="radioset" value="1">1}\\
+{\vt <input type="radio" name="radioset" value="2" checked>2}\\
+{\vt <input type="radio" name="radioset" value="3">3}
+\end{quote}
+
+\item{Check Boxes}\\
+These are toggle buttons.  The tag format is
+\begin{quote}
+{\vt <input type="checkbox" name="{\it name\/}"
+    value="{\it value\/}" {\it option\/}>{\it text}}
+\end{quote}
+
+The only option is ``{\vt checked}'' which indicates that the button
+is initially pressed.  The text following the tag appears next to the
+button, and is usually but not necessarily the same as the value.
+
+Example:
+\begin{quote}
+{\vt <input type="checkbox" name="check1" value="check1">check1}\\
+{\vt <input type="checkbox" name="check2" value="check2" checked>check2}
+\end{quote}
+
+\item{Text Blocks}\\
+These are multi-line text input areas.  The tag format is
+\begin{quote}
+{\vt <textarea name="{\it name\/}" {\it options\/}>{\it default
+    text\/}</textarea>}
+\end{quote}
+
+The options are
+\begin{description}
+\item{\vt rows="{\it n\/}"}\\
+The {\it n} is an integer that sets the height to n characters.
+\item{\vt cols="{\it n\/}"}\\
+The {\it n} is an integer that sets the width to n characters.
+\end{description}
+
+The {\it default text\/}, if any, will appear in the text area
+initially.
+
+Example:
+\begin{quote}
+{\vt Type in your message:<br>}\\
+{\vt <textarea name="message" rows="12" cols="40">Dear sirs,}\\
+{\vt </textarea>}
+\end{quote}
+
+\item{Option Menu}\\
+This is a menu of selections, shown as a button containing the
+current selection.  Pressing the button produces a drop-down menu
+of choices.  the tag format is
+\begin{quote}
+{\vt <select name="{\it name\/}" size="1">}\\
+{\vt <option value="{\it value1\/}" {\it option\/}>{\it text}}\\
+{\vt <option value="{\it value2\/}"
+  {\it option\/}>{\it text}}\\
+...\\
+{\vt </select>}
+\end{quote}
+
+There is one {\vt <option ...>} tag per menu entry.  The text
+following the {\vt <option ...>} tag will appear in the menu.  The
+only option is ``{\vt selected}'' which can be given on only one line
+and indicates which item is initially selected (the default is the
+first item listed).
+
+Example:
+\begin{quote}
+{\vt <select name="opmenu" size="1">}\\
+{\vt <option value="choose1">choose1}\\
+{\vt <option value="choose2">choose2}\\
+{\vt <option value="choose3">choose3}\\
+{\vt <option value="choose4" selected>choose4}\\
+{\vt </select>}
+\end{quote}
+
+\item{Selection Menu}\\
+This type of menu has multiple lines, which can be selected by
+clicking.  The menu may be scrollable.  The tag format is
+\begin{quote}
+{\vt <select name="{\it name\/}" size="{\it n\/}" {\it option\/}>}\\
+{\vt <option value="{\it value1\/}" {\it option\/}>{\it text}}\\
+{\vt <option value="{\it value2\/}" {\it option\/}>{\it text}}\\
+...\\
+{\vt </select>}
+\end{quote}
+
+The size in the {\vt <select ...>} tag is an integer greater than
+1, which indicates the number of lines visible.  If this is less than
+the number of {\vt <option ...>} lines that follow, the menu will
+be scrollable.  The option that can appear in the {\vt <select
+...>} tag is ``{\vt multiple}'' which if given allows multiple lines
+to be selected, otherwise only a single entry can be selected.
+
+Example:
+\begin{quote}
+{\vt <select name="menu" size="2">}\\
+{\vt <option value="choose1">choose1}\\
+{\vt <option value="choose2">choose2}\\
+{\vt <option value="choose3">choose3}\\
+{\vt <option value="choose4">choose4}\\
+{\vt </select>}
+\end{quote}
+
+\item{File Selection}\\
+This is a text area with a {\cb browse} button.  When the {\cb browse}
+button is pressed, the {\cb File Selection} panel appears, and the
+{\cb Ok} button of the {\cb File Selection} panel will transfer the
+selected file name to the form text area.  The format of the tag is
+\begin{quote}
+{\vt <input type="file" name="{\it name\/}" {\it option\/}>}
+\end{quote}
+The only option is {\vt size="{\it n\/}"} to set the width in
+characters of the text area.
+\end{description}
+
+Example:
+\begin{quote}
+{\vt <input type="file" name="filesel" size="64">}
+\end{quote}
+
+Each form must have a {\cb submit} button.  A {\cb reset} button,
+which resets all objects to their initial state, is generally useful.
+
+\begin{description}
+\item{Submit Button}\\
+This is a button which initiates action on the form.  This button is
+required if any action is to be taken on the form data.  The tag
+format is
+\begin{quote}
+{\vt <input type="submit" {\it option\/}>}
+\end{quote}
+The only option is {\vt value="{\it message\/}"}, where the {\it
+message} is the text that actually appears on the button, which is
+``Submit'' if no value is specified.
+
+Example:
+\begin{quote}
+{\vt <input type="submit" value="Done">}
+\end{quote}
+
+\item{Reset Button}\\
+This button resets each component of the form to the initial
+state.  The tag format is
+\begin{quote}
+{\vt <input type="reset" {\it option\/}>}
+\end{quote}
+The only option is {\vt value="{\it message\/}"}, where the
+{\it message} is the text that actually appears in the button,
+and is ``Reset'' if no value is specified.
+
+Example:
+\begin{quote}
+{\vt <input type="reset">}
+\end{quote}
+\end{description}
+
+The form items can be intermixed with text, images, or other HTML
+formatting and objects.  To terminate a form definition, one must
+supply the tag
+\begin{quote}
+{\vt </form>}
+\end{quote}
+
+Below is the ``{\vt spform.html}'' file which is used with the {\cb
+spiralform} demonstration script, as an example.
+
+\begin{verbatim}
+<h2>Forms Demo -- Generate a Spiral</h2>
+This page demonstrates the use of HTML forms as input devices for
+<i>Xic</i> <a href="xicscript">scripts</a>.  Press the <b>Submit</b>
+button when ready.  The spiral will be attached to the pointer, and
+can be placed by clicking in a drawing window.
+
+<p>
+<form method="post" action="action_local_xic spiralform">
+
+Choose the number of turns in the spiral
+<select name="opmenu" size="1">
+<option value="1">1
+<option value="2">2
+<option value="3">3
+<option value="4">4
+<option value="5">5
+<option value="6">6
+<option value="7">7
+<option value="8">8
+<option value="9">9
+</select>
+
+<p>
+Enter the path width: <input type="text" name="pwidth" value="4"><br>
+Enter the starting radius: <input type="text" name="rad1" value="20"><br>
+Enter the pitch: <input type="text" name="pitch" value="10"><br>
+
+<p>
+Select the number of edges per turn:
+<input type="radio" name="radioset" value="10" checked>10
+<input type="radio" name="radioset" value="20">20
+<input type="radio" name="radioset" value="40">40
+
+<p>
+<input type="submit">
+<input type="reset">
+</form>
+\end{verbatim}
+
+\index{scripts!forms interface}
+\subsection{Interfacing Forms to {\Xic} Scripts}
+
+If a form has an action which is in the format ``{\vt
+action\_local\_xic} {\it scriptname}'' then, when the {\cb submit}
+button is pressed, the script in {\it scriptname} will be called, with
+the following:
+
+\begin{itemize}
+\item The preprocessor variable SUBMIT is defined.
+\item A string-type variable is created for each active form
+element.  The variable name is that of the {\vt name} field in
+the form element tag (so these must be unique).  The value of the
+variable is from the {\vt value} tag of the selected button, or
+the text of a text-entry object.  The variable is defined only if
+the text object had text, or if a check button was pressed.
+\end{itemize}
+
+Within the script, one must supply the following logic:
+
+\begin{itemize}
+\item Determine if the SUBMIT preprocessor variable is defined.  If
+yes, than the script was called by a form, otherwise the script was
+called by a button in the {\cb User Menu}.  Note that this enables
+the script to initiate showing the form, as will be seen in the
+example below.
+\item For each variable, the script must identify if the variable
+was set, i.e., a text entry had text, and possibly convert the
+text to a numeric value.  The input should also be sanity checked
+at this point.
+\end{itemize}
+
+Below are the first few lines of an example script which could
+interface to the example form given above.  When the script is
+selected in the {\cb User Menu}, it will display the help window
+containing its input form.  When the {\cb submit} button of the form
+is pressed, the script will be called again, and the data processed.
+
+\begin{verbatim}
+#ifndef SUBMIT
+# SUBMIT is not defined, so we are being called from the User Menu
+# pop-up our input form in the HTML viewer and exit
+TextCmd("help spform.html")
+Exit()
+#endif
+
+# We are being called from the form (SUBMIT is defined)
+# First check the option menu return.  The entries are digits, which must
+# be converted from text strings to real values
+#
+if Defined(opmenu)
+    num = ToReal(opmenu)
+else
+# This should never fail, since the option menu always has a selection
+    ShowPrompt("number of turns unknown")
+    Exit()
+end
+
+# Next check the return from a text entry object.  Exit if the variable
+# is undefined (text input empty), or the result is a bad numeric value
+#
+if Defined(pwidth)
+    width = ToReal(pwidth)
+    if (width < 0)
+        ShowPrompt("Bad input (< 0) for width: ", width)
+        Exit()
+    end
+ 
+    ShowPrompt("width unknown")
+    Exit()
+end
+
+(check other input variables)
+(perform calculations/operations)
+Exit
+\end{verbatim}
+
+This is typical boilerplate for a form-entry script.
 
 !!SEEALSO
 xicscript

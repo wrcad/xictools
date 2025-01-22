@@ -103,3 +103,4 @@ manual/xicmanual.log
 manual/xicmanual.toc
 manual/xicmanual.tex
 manual/xicmanual
+manual/*.tex

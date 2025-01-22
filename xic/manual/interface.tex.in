@@ -1,0 +1,515 @@
+% -----------------------------------------------------------------------------
+% Xic Manual
+% (C) Copyright 2025, Whiteley Research Inc., Sunnyvale CA
+% interface.tex.in
+% -----------------------------------------------------------------------------
+
+% -----------------------------------------------------------------------------
+\chapter{Graphical Interface, Commands and Operations}
+\index{screen layout}
+
+% xic:commands 032413
+<<xic:commands xiMain.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Prompt Line}
+\index{prompt line}
+
+% promptline 022316
+<<promptline xiMain.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Keypress Buffer}
+\index{keypress buffer}
+
+% keyspresd 032513
+<<keyspresd xiMain.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Quoting}
+
+% quoting 102208
+<<quoting xiMain.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Menu Selection and Accelerators}
+\index{toolbar menus}
+
+% accelerator 011014
+<<accelerator xiMain.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Keyboard Input}
+\index{keyboard}
+\index{keyboard!buffer}
+\index{keyboard!Ctrl-u}
+\index{keyboard!Backspace}
+\index{keyboard!ForwardSlash}
+
+% keyboard 082710
+<<keyboard xiMain.hlp>>
+
+\index{keyboard!?}
+\index{help escape}
+
+% keyquest 012016
+<<keyquest xiMain.hlp>>
+
+\index{keyboard!Esc}
+\index{aborting commands}
+
+% keyescape 012016
+<<keyescape xiMain.hlp>>
+
+\index{keyboard!Tab}
+\index{keyboard!Shift-Tab}
+\index{undo}
+\index{redo}
+
+% keytab 072808
+<<keytab xiMain.hlp>>
+
+\index{keyboard!Delete}
+\index{object deletion}
+
+% keydelet 072808
+<<keydelet xiMain.hlp>>
+
+\index{keyboard!ForwardSlash}
+% keyfwdsl 082024
+<<keyfwdsl xiMain.hlp>>
+
+\index{keyboard!arrow keys}
+\index{panning}
+
+% keyarrow 020715
+<<keyarrow xiMain.hlp>>
+
+\index{keyboard!numeric +}
+\index{keyboard!numeric -}
+\index{zooming}
+
+% key+- 072808
+<<key+- xiMain.hlp>>
+
+\index{keyboard!Home}
+\index{view}
+
+% keyhome 072808
+<<keyhome xiMain.hlp>>
+
+\index{keyboard!Page Up}
+\index{keyboard!Page Down}
+\index{view}
+
+% keypage 072808
+<<keypage xiMain.hlp>>
+
+% keybang (first para) 022504
+\index{keyboard!"!}
+The command line interface through the prompt area provides an
+interface to operating system commands, as well as to a number of
+internal commands which are often rather specialized and not
+associated with a menu button.  Each of these commands starts with an
+exclamation point (`{\kb !}'), and may be entered when no other
+command is active, or inside of many commands.  These key presses are
+not recorded in the ``keys'' area below the side menu.  If the command
+entered matches one of the internal commands, that command is
+executed.  Otherwise, an operating system shell and associated window
+is produced to execute the command, with the exclamation mark
+stripped.  If the `{\kb !}' is followed immediately by {\kb Enter}, an
+interactive subshell window is brought up.  See Chapter \ref{bangcmds}
+for a listing of the `{\kb !}' commands.
+
+\index{keyboard!function keys}
+
+% keyfunc 072808
+<<keyfunc xiMain.hlp>>
+
+% not in help
+There are several control characters (characters entered while holding
+the {\kb Ctrl} key) which perform operations in {\Xic}.  These are
+hard coded, and are in addition to any accelerators listed in the
+drop-down menus from the main toolbar.  These are also in addition to
+accelerators from pop-up windows that have accelerators in their
+menus.  These control keys supersede a menu accelerator using the
+same key.
+
+\begin{description}
+\index{keyboard!Ctrl-a}
+\index{selections!associated labels}
+\item{\kb Ctrl-a}\\
+
+% keyctrla 013113
+<<keyctrla xiMain.hlp>>
+
+\index{keyboard!Ctrl-c}
+\index{keyboard!interrupt}
+\item{\kb Ctrl-c}\\
+
+% keyctrlc 010715
+<<keyctrlc xiMain.hlp>>
+
+\index{keyboard!Ctrl-e}
+\index{keyboard!coordinate entry}
+\item{\kb Ctrl-e}\\
+
+% keyctrle 072808
+<<keyctrle xiMain.hlp>>
+
+\index{keyboard!Ctrl-g}
+\index{grid}
+\item{\kb Ctrl-g}\\
+
+% keyctrlg 101312
+<<keyctrlg xiMain.hlp>>
+
+\index{keyboard!Ctrl-k}
+\item{\kb Ctrl-k}\\
+
+% keyctrlk 102208
+<<keyctrlk xiMain.hlp>>
+
+\index{keyboard!Ctrl-n}
+\index{view!save}
+\item{\kb Ctrl-n}\\
+
+% keyctrln 072808
+<<keyctrln xiMain.hlp>>
+
+\index{keyboard!Ctrl-p}
+\index{selections!associated labels}
+\item{\kb Ctrl-p}\\
+
+% keyctrlp 072808
+<<keyctrlp xiMain.hlp>>
+
+\index{keyboard!Ctrl-r}
+\index{redraw screen}
+\item{\kb Ctrl-r}\\
+
+% keyctrlr 072808
+<<keyctrlr xiMain.hlp>>
+
+\index{keyboard!Ctrl-u}
+\index{keyboard!clear buffer}
+\item{\kb Ctrl-u}\\
+
+% keyctrlu 102208
+<<keyctrlu xiMain.hlp>>
+
+\index{keyboard!Ctrl-v}
+\index{version}
+\item{\kb Ctrl-v}\\
+
+% keyctrlv 072808
+<<keyctrlv xiMain.hlp>>
+
+\index{keyboard!Ctrl-x}
+\index{expand}
+\item{\kb Ctrl-x}\\
+
+% keyctrlx 072808
+<<keyctrlx xiMain.hlp>>
+
+\index{keyboard!Ctrl-z}
+\index{iconic}
+\item{\kb Ctrl-z}\\
+
+% keyctrlz 072808
+<<keyctrlz xiMain.hlp>>
+
+\end{description}
+
+% -----------------------------------------------------------------------------
+% not in help
+\index{keyboard!Shift}
+\index{keyboard!Ctrl}
+Finally, the {\kb Shift} and {\kb Ctrl} keys are often used in
+conjunction with the pointer buttons to initiate new operations or
+modify current operations.  The sections describing the commands will
+provide examples.
+
+% -----------------------------------------------------------------------------
+\section{Pointing Device}
+\label{buttons}
+\index{buttons}
+
+% mouse 012214
+<<mouse xiMain.hlp>>
+
+\index{button 1}
+\index{point operation}
+
+% button1 010818
+<<button1 xiMain.hlp>>
+
+\subsection{Button 2 Operations}
+\index{button 2}
+\index{panning}
+
+% button2 060109
+<<button2 xiMain.hlp>>
+
+\subsection{Button 3 Operations}
+\index{button 3}
+\index{zooming}
+
+% button3 022215
+<<button3 xiMain.hlp>>
+
+\subsection{Button 4}
+
+% noopbutton 020715
+<<noopbutton xiMain.hlp>>
+
+\subsection{Mouse Wheel}
+
+% mousewheel 020715
+<<mousewheel xiMain.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb WR} Button: Email Client}
+\index{mail client}
+\index{WR button}
+\label{wrbutton}
+
+% xic:mail 101515
+<<xic:mail xiMain.hlp>>
+
+% mailclient 010914
+<<mailclient TextEditor.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Top Button Menu}
+\index{top button menu}
+\label{topbuttons}
+
+% topbuttons 020615
+<<topbuttons xiMain.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb lsrch} Button and Entry: Find Layer and Set Current}
+\index{lsrch button}
+\label{lsrch}
+
+% xic:lsrch 100312
+<<xic:lsrch xiMain.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb ltvis} Button: Show/Hide Layer Table}
+\index{ltvis button}
+
+% xic:ltvis 100312
+<<xic:ltvis xiMain.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The lpal Button: Show/Hide Layer Palette}
+
+% xic:lpal 022916
+<<xic:lpal xiMain.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb setcl} Button: Set Current Layer from Clicked-On Object}
+
+% xic:setcl 062313
+<<xic:setcl xiMain.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb selcp} Button: Show/Hide Selection Control Panel}
+\label{selcontrol}
+
+% xic:selcp 100412
+<<xic:selcp xiMain.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb desel} button: Deselect Objects}
+\index{deselect objects}
+\index{desel button}
+
+% xic:desel 101212
+<<xic:desel xiMain.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb rdraw} button: Redraw Windows}
+\index{redraw windows}
+\index{redraw button}
+
+% xic:rdraw 020615
+<<xic:rdraw xiMain.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{Coordinates Display}
+\index{coordinate readout area}
+
+% coordline 101212
+<<coordline xiMain.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Main Drawing Window}
+\index{drawing window}
+
+% mainwindow 021812
+<<mainwindow xiMain.hlp>>
+
+\index{drag and drop}
+
+% dragdrop 020715
+<<dragdrop xiMain.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{{\Xic} Layers}
+
+% layers 032017
+<<layers xiLayers.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Layer Table}
+\index{layer table}
+
+% layertab 022215
+<<layertab xiLayers.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Status Display}
+\index{status area}
+
+% statusline 012016
+<<statusline xiMain.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Text Entry Windows}
+\index{text entry windows}
+
+% textentry 040913
+<<textentry TextEditor.hlp>>
+
+\subsection{Single-Line Text Entry}
+
+% onelineentry 040913
+<<onelineentry TextEditor.hlp>>
+
+\subsection{The Text Editor}
+\label{textedit}
+\index{text editor}
+
+% xeditor 040913
+<<xeditor TextEditor.hlp>>
+
+
+
+% clipboard 040913
+\subsection{Selections and Clipboards}
+\label{clipboard}
+ 
+Under Unix/Linux, there are two similar data transfer registers:  the
+``primary selection'', and the ``clipboard''.  both correspond to
+system-wide registers, which can accommodate one data item (usually a
+text string) each.  When text is selected in any window, usually by
+dragging over the text with button 1 held down, that text is
+automatically copied into the primary selection register.  The primary
+selection can be ``pasted'' into other windows that are accepting text
+entry.
+
+The clipboard, on the other hand, is generally set and used only by
+the GTK text-entry widgets.  This includes the single-line entry used
+in many places, and the multi-line text window used in the text editor
+(see \ref{textedit}), file browser, and some other places including
+error reporting and info windows.  From these windows, there are key
+bindings that cut (erase) or copy selected text to the clipboard, or
+paste clipboard text into the window.  The cut/paste functions are
+only available if text in the window is editable, copy is always
+available.
+
+Under Windows there is a single ``Windows clipboard'' which is a
+system-wide data-transfer register that can accommodate a single data
+item (usually a string).  This can be used to pass data between
+windows.  In use, the Windows clipboard is somewhat like the
+Unix/Linux clipboard.
+ 
+Text in most text display windows can be selected by dragging with
+button 1 held down, however the selected text is not automatically
+added to the Windows clipboard.  On must initiate a {\cb cut} or {\cb
+copy} operation in the window to actually save the selected text to
+the Windows clipboard.  The ``copy to clipboard'' accelerator
+{\kb Ctrl-c} is available from most windows that present highlighted
+or selected text.  Note that there is no indication when text is
+copied to the clipboard, the selected text in all windows is
+unaffected, i.e., it won't change color or disappear.  The user must
+remember which text was most recently copied to the Windows clipboard.
+
+Clicking with button 2 will paste the primary selection into the line
+at the click location, if the window text is editable.
+
+Clicking with button 3 will will bring up a context menu.  From the
+menu, the user can select editing operations.
+
+The GTK interface hides the details of the underlying selection
+mechanisms, creating a consistent interface under Windows or
+Uniix/Linux.  There is one important difference, however:  in Windows,
+the primary selection applies only to the program containing the
+selection.  In Unix/Linux, the primary selection applies to the entire
+desktop,
+
+
+% textkeybind 010914
+\subsection{GTK Text Input Key Bindings}
+\label{textkeybind}
+
+The following table provides the key bindings for editable text entry
+areas in GTK-2.  However, be advised that these bindings are
+programmable, and may be augmented or changed by installation of a
+local theme.
+
+\begin{longtable}{lp{4in}}\\
+\multicolumn{2}{l}{\bf GTK Text-Entry Key Bindings}\vspace{1.5ex}\\
+\kb Ctrl-a & Select all text\\
+\kb Ctrl-c & Copy selected text to clipboard\\
+\kb Ctrl-v & Paste clipboard at cursor\\
+\kb Ctrl-x & Cut selection to clipboard\\
+\kb Home & Move cursor to beginning of line\\
+\kb End & Move cursor to end of line\\
+\kb Left & Move cursor left one character\\
+\kb Ctrl-Left & Move cursor left one word\\
+\kb Right & Move cursor right one character\\
+\kb Ctrl-Right & Move cursor right one word\\
+\kb Backspace & Delete previous character\\
+\kb Ctrl-Backspace & Delete previous word\\
+\kb Clear & Delete current line\\
+\kb Shift-Insert & Paste clipboard at cursor\\
+\kb Ctrl-Insert & Copy selected text to clipboard\\
+\kb Delete & Delete next character\\
+\kb Shift-Delete & Cut selected text to clipboard\\
+\kb Ctrl-Delete & Delete next word\\
+\end{longtable}
+
+Clicking with button 1 will move the cursor to that location.  Double
+clicking will select the clicked-on word.  Triple clicking will select
+the entire line.  Button 1 is also used to select text by dragging the
+pointer over the text to select.
+
+Clicking with button 2 will paste the primary selection into the line
+at the click location, if the window text is editable.
+
+Clicking with button 3 will will bring up a context menu.  From the
+menu, the user can select editing operations.
+
+These operations are basically the same in Windows and Unix/Linux,
+with one important difference:  in Windows, the primary selection
+applies only to the program containing the selection.  In Unix/Linux,
+the primary selection applies to the entire desktop, like the
+clipboard.
+
+\index{unicode}
+Special characters can be entered using the Unicode escape {\kb
+Ctrl-u}.  The sequence starts by pressing {\kb Ctrl-u}, then entering
+hex digits representing the character code, and is terminated with a
+space character or {\kb Enter}.  The Unicode coding can be obtained
+from tables provided on the internet, or from applications such as
+KCharSelect which is part of the KDE desktop.  These are generally
+expressed as ``{\vt U + xxxx}'' where the {\vt xxxx} is a hex number. 
+It is the hex number that should be entered following {\kb Ctrl-u}. 
+For example, the code for ${\pi}$ (pi) is {\vt 03c0}.  Note that
+special characters can also be selected and copied, or in some cases
+dragged and dropped, from another window.
+

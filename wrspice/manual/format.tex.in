@@ -1,4 +1,8 @@
-% WRspice Manual file: format.tex
+% -----------------------------------------------------------------------------
+% WRspice Manual
+% (C) Copyright 2025, Whiteley Research Inc., Sunnyvale CA
+% format.tex.in
+% -----------------------------------------------------------------------------
 
 \chapter{{\WRspice} Input Format}
 

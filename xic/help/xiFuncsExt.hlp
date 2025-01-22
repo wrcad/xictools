@@ -524,7 +524,7 @@ Menu Commands
     The final argument, if not null or empty, contains a
     space-separated list of physical format names, each of which must
     match a <tt>PnetFormat</tt> name in the <a
-    href="xic:fmtlib">format library</a> file, or option names from
+    href="ext:fmtlib">format library</a> file, or option names from
     the table above.  The names that contain white space should be
     double-quoted.
 
@@ -593,7 +593,7 @@ Menu Commands
     The final argument, if not null or empty, contains a
     space-separated list of electrical format names, each of which
     must match an <tt>EnetFormat</tt> name in the <a
-    href="xic:fmtlib">format library</a> file, or option names from
+    href="ext:fmtlib">format library</a> file, or option names from
     the table above.  The names that contain white space should be
     double quoted.
 
@@ -743,6 +743,233 @@ Menu Commands
     copies, or the list may be empty if the group has no physical
     objects.
     </dl>
+!!LATEX funcs:ext:menu scrfuncs.tex
+The functions in this section provide an interface to the extraction
+system.  This interface is by no means complete, but it allows many
+common operations to be performed and allows traversal and information
+retrieval.
+
+\begin{description}
+%------------------------------------
+% 061516
+\index{DumpPhysNetlist function}
+\item{(int) \vt DumpPhysNetlist({\it filename}, {\it depth},
+ {\it modestring\/}, {\it names\/})}\\
+This function dumps a netlist file extracted from the physical part of
+the database, much like the {\cb Dump Phys Netlist} command in the
+{\cb Extract Menu}.  The {\it filename} argument is a file name which
+will receive the output.  If null or empty, the file will be the base
+name of the current cell with ``{\vt .physnet}'' appended.  The {\it
+depth} argument specifies the depth of the hierarchy to process.  If
+an integer, 0 represents the current cell only, 1 includes the first
+level subcells, etc.  A negative integer specifies to process the
+entire hierarchy.  This argument can also be a string beginning with
+the letter `{\vt a}', which will process all levels of the hierarchy.
+
+The third argument is a string, consisting of characters from the
+table below, which set the mode of the command.  These are analogous
+to the check boxes that appear with the {\cb Dump Phys Netlist}
+command.  If a character does not appear in the string, that option is
+turned off.  If it appears in lower case, the option is turned on, and
+if it appears in upper case, the option will be set by the present
+value of the corresponding {\cb !set} variable.  The characters can
+appear in any order.
+
+\begin{tabular}{|l|l|l|} \hline
+{\kb character} & {\kb option} & {\kb corresponding variable}\\ \hline
+{\vt n} & {\cb net} & {\et PnetNet}\\ \hline
+{\vt d} & {\cb devs} & {\et PnetDevs}\\ \hline
+{\vt s} & {\cb spice} & {\et PnetSpice}\\ \hline
+{\vt b} & {\cb list bottom-up} & {\et PnetBottomUp}\\ \hline
+{\vt g} & {\cb show geometry} & {\et PnetShowGeometry}\\ \hline
+{\vt c} & {\cb include wire cap} & {\et PnetIncludeWireCap}\\ \hline
+{\vt a} & {\cb list all cells} & {\et PnetListAll}\\ \hline
+{\vt l} & {\cb ignore labels} & {\et PnetNoLabels}\\ \hline
+\end{tabular}
+
+The final argument, if not null or empty, contains a space-separated
+list of physical format names, each of which must match a {\vt
+PnetFormat} name in the format library file, or option names from the
+table above.  The names that contain white space should be
+double-quoted.
+
+For each cell, a field in the output is generated for each format
+choice implicit in the {\it modestring} or given in the {\it names\/}. 
+In most cases, only one format is probably wanted.  The option text in
+the table above can also be included in the {\it names\/}, which is
+equivalent to giving the corresponding lower-case letter in the {\it
+modestring\/}.  The {\it modestring} setting will have precedence if
+there is a conflict.  If both the {\it modestring} and the {\it names}
+string are empty or null, an effective mode string consisting of all
+of the upper-case option letters is used.
+
+Example:  print a SPICE file
+\begin{quote}
+{\vt DumpPhysNetlist("myfile.cir", "a", "s", 0)}\\
+or\\
+{\vt DumpPhysNetlist("myfile.cir", "a", 0, "spice")}
+\end{quote}
+
+If the function succeeds, 1 is returned, otherwise 0 is returned.
+
+%------------------------------------
+% 061516
+\index{DumpElecNetlist function}
+\item{(int) \vt DumpElecNetlist({\it filename}, {\it depth},
+ {\it modestring\/}, {\it names\/})}\\
+This function dumps a netlist file extracted from the electrical part
+of the database, much like the {\cb Dump Elec Netlist} command in the
+{\cb Extract Menu}.  The {\it filename} argument is a file name which
+will receive the output.  If null or empty, the file will be the base
+name of the current cell with ``{\vt .elecnet}'' appended.  The {\it
+depth} argument specifies the depth of the hierarchy to process.  If
+an integer, 0 represents the current cell only, 1 includes the first
+level subcells, etc.  A negative integer specifies to process the
+entire hierarchy.  This argument can also be a string beginning with
+the letter `{\vt a}', which will process all levels of the hierarchy.
+
+The third argument is a string, consisting of characters from the
+table below, which set the mode of the command.  These are analogous
+to the check boxes that appear with the {\cb Dump Elec Netlist}
+command.  If a character does not appear in the string, that option is
+turned off.  If it appears in lower case, the option is turned on, and
+if it appears in upper case, the option will be set by the present
+value of the corresponding {\cb !set} variable.  The characters can
+appear in any order.
+
+\begin{tabular}{|l|l|l|} \hline
+{\kb character} & {\kb option} & {\kb corresponding variable}\\ \hline
+{\vt n} & {\cb net} & {\et EnetNet}\\ \hline
+{\vt s} & {\cb spice} & {\et EnetSpice}\\ \hline
+{\vt b} & {\cb list bottom-up} & {\et EnetBottomUp}\\ \hline
+\end{tabular}
+
+The final argument, if not null or empty, contains a space-separated
+list of electrical format names, each of which must match an {\vt
+EnetFormat} name in the format library file, or option names from the
+table above.  The names that contain white space should be double
+quoted.
+
+For each cell, a field in the output is generated for each format
+choice implicit in the {\it modestring} or given in the {\it names}. 
+In most cases, only one format is probably wanted.  The option text in
+the table above can also be included in the {\it names}, which is
+equivalent to giving the corresponding lower-case letter in the {\it
+modestring\/}.  The {\it modestring} setting will have precedence if
+there is a conflict.  If both the {\it modestring} and the {\it names}
+string are empty or null, an effective mode string consisting of all
+of the upper-case option letters is used.
+
+If the function succeeds, 1 is returned, otherwise 0 is returned.
+
+%------------------------------------
+% 030204
+\index{SourceSpice function}
+\item{(int) \vt SourceSpice({\it filename}, {\it modestring\/})}\\
+This function will parse a SPICE file, adding to or updating the
+electrical part of the database with the devices and subcircuits
+found.  This is equivalent to the {\cb Source SPICE} command in the
+{\cb Extract Menu}.  The first argument is a path to the SPICE file to
+process.
+
+The final argument is a string, consisting of characters from the
+table below, which set the mode of the command.  These are analogous
+to the check boxes that appear with the {\cb Source SPICE} command. 
+If a character does not appear in the string, that option is turned
+off.  If it appears in lower case, the option is turned on, and if it
+appears in upper case, the option will be set by the present value of
+the corresponding {\cb !set} variable.  The characters can appear in
+any order.  If the string is empty or null, all options will be set by
+the corresponding variables.
+
+\begin{tabular}{|l|l|l|} \hline
+{\kb character} & {\kb option} & {\kb corresponding variable}\\ \hline
+{\vt a} & {\cb all devs} & {\et SourceAllDevs}\\ \hline
+{\vt r} & {\cb create} & {\et SourceCreate}\\ \hline
+{\vt l} & {\cb clear} & {\et SourceClear}\\ \hline
+\end{tabular}
+
+If the operation succeeds, 1 is returned, otherwise 0 is returned.
+
+%------------------------------------
+% 113009
+\index{ExtractAndSet function}
+\item{(int) \vt ExtractAndSet({\it depth}, {\it modestring\/})}\\
+This function performs extraction on the physical part of the
+database, updating the electrical part.  This is equivalent to the
+{\cb Source Physical} command in the {\cb Extract Menu}.  The first
+argument indicates the depth of the hierarchy to process.  This can be
+an integer:  0 means process the current cell only, 1 means process
+the current cell plus the subcells, etc., and a negative integer sets
+the depth to process the entire hierarchy.  This argument can also be
+a string starting with `{\vt a}' such as ``{\vt a}'' or ``{\vt all}''
+which indicates to process the entire hierarchy.
+
+The final argument is a string, consisting of characters from the
+table below, which set the mode of the command.  These are analogous
+to the check boxes that appear with the {\cb Source Physical} command. 
+If a character does not appear in the string, that option is turned
+off.  If it appears in lower case, the option is turned on, and if it
+appears in upper case, the option will be set by the present value of
+the corresponding {\cb !set} variable.  The characters can appear in
+any order.  If the string is empty or null, all options will be set by
+the corresponding variables.
+
+\begin{tabular}{|l|l|l|} \hline
+{\kb character} & {\kb option} & {\kb corresponding variable}\\ \hline
+{\vt a} & {\cb all devs} & {\et NoExsetAllDevs}\\ \hline
+{\vt r} & {\cb create} & {\et NoExsetCreate}\\ \hline
+{\vt l} & {\cb clear} & {\et ExsetClear}\\ \hline
+{\vt c} & {\cb include wire cap} & {\et ExsetIncludeWireCap}\\ \hline
+{\vt n} & {\cb ignore labels} & {\et ExsetNoLabels}\\ \hline
+\end{tabular}
+
+If the operation succeeds, 1 is returned, otherwise 0 is returned. 
+This function does not redraw the windows.
+
+%------------------------------------
+% 051809
+\index{FindPath function}
+\item{(object\_handle) \vt FindPath({\it x\/}, {\it y\/}, {\it depth},
+ {\it use\_extract\/})}\\
+This function returns a handle to a list of copies of physical
+conducting objects in a wire net.  The {\it x},{\it y} point (microns,
+in the physical part of the current cell) should intersect a
+conducting object, and the list will consist of this object plus
+connected objects.  The {\it depth} argument is an integer or a string
+beginning with ``{\vt a}'' (for "all") which gives the hierarchy
+search depth.  Only objects in cells to this depth will be considered
+for addition to the list (0 means objects in the current cell only). 
+If the boolean value {\it use\_extract} is nonzero, the main
+extraction functions will be used to determine the connectivity.  If
+the value is zero, the connectivity is established through geometry. 
+This is similar to the {\cb Select Path} and {\cb "Quick" Path} modes
+available in the {\cb Path Selection Control} panel.
+
+The return value is a handle to a list of object copies, or 0 if
+no objects are found.
+
+%------------------------------------
+% 052409
+\index{FindPathOfGroup function}
+\item{(object\_handle) \vt FindPathOfGroup({\it groupnum\/}, {\it depth})}\\
+This function returns a handle to a list of copies of physical
+conducting objects in the group number from the current cell given, to
+the given depth.  The depth argument is an integer or a string
+beginning with ``{\vt a}'' (for ``{\vt all}'') which gives the
+hierarchy search depth.  Only objects in cells to this depth will be
+considered for addition to the list (0 means objects in the current
+cell only).
+
+The function will fail (halt the script) on a major error.  If the
+group number is out of range, or a ``minor'' error occurs, the
+function will return a scalar 0, and an error message should be
+available from {\vt GetError}.
+
+Otherwise, the return value is a handle to a list of object copies, or
+the list may be empty if the group has no physical objects.
+
+\end{description}
 
 !!SEEALSO
 funcs:ext
@@ -1148,6 +1375,331 @@ Terminals
     As for most of these functions, the first argument can also be a
     handle to the corresponding physical terminal.
     </dl>
+!!LATEX funcs:ext:term scrfuncs.tex
+Here, a ``terminal'' refers to a {\et node} property of an electrical
+device or circuit.  Both masters and instances have such properties,
+though their internal structure differs a bit.  A ``terminal\_handle''
+is a handle to a list of terminals, that can be passed to functions
+that provide information about or operate on node properties.
+
+In the next section, we introduce ``physical terminals'', which are
+different objects.  A physical terminal is a data structure that
+stores information about the physical aspects of a terminal, including
+its location in the layout, an object that it may be bound to, and the
+associated layer.  If a schematic has a layout and has been
+associated, then each terminal (node property) has a pointer to the
+corresponding physical terminal, and vice-versa.  Thus, in general
+either object can be used to reference data.  In fact, in most of the
+functions in this section and the next, the "handle" argument can be a
+handle to either a node property or physical terminal.
+
+However, cells that are electrical-only will not have physical
+terminals, and similarly, a layout without a corresponding schematic
+will lack node properties.  In these cases, only the existing object
+type can be used.
+
+\begin{description}
+%------------------------------------
+% 041113
+\index{ListTerminals function}
+\item{(terminal\_handle) \vt ListTerminals()}\\
+Return a handle containing a list of the connection terminals of the
+current cell.  These correspond to the normal contact terminals as
+would be defined with the {\cb subct} command, as represented by {\et
+node} properties of the electrical cell view.  On success, a handle is
+returned containing the terminal list.  If there are no terminals
+defined or some other error occurs, a scalar 0 is returned.
+
+%------------------------------------
+% 041113
+\index{FindTerminal function}
+\item{(terminal\_handle) \vt FindTerminal({\it name\/}, {\it index\/},
+ {\it use\_e\/}, {\it xe\/}, {\it ye\/}, {\it use\_p\/}, {\it xp\/},
+ {\it yp\/})}\\
+This function will return a handle referencing a single terminal, if
+one can be found among the current cell contact terminals that matches
+the arguments.  The arguments specify parameters, any of which can be
+ignored.  The non-ignored parameters must all match.
+
+The {\it name} can be a string that will match an applied terminal
+name (not a default name generated by {\Xic}).  The argument will be
+ignored if a scalar 0 or null or empty string is passed.
+
+The {\it index} is the terminal order index, or -1 if the parameter is
+to be ignored.  This is the number that is shown within the terminal
+box in the {\cb subct} command.
+
+If {\it use\_e} is a nonzero value, the next two arguments are taken
+as a location in the electrical drawing.  These are specified in
+fictitious ``microns'' which represent 1000 internal units.  These are
+the numbers displayed in the coordinate readout area while a schematic
+is being edited.  A location match will depend of whether the
+electrical cell is symbolic or not.  If symbolic, a location match to
+any of the placement locations will count as a match (terminals can
+have more than one ``hot spot'' in the symbolic display).  If {\it
+use\_e} is 0, the two arguments that follow are ignored and can be any
+numeric values.
+
+Similarly, if {\it use\_p} is nonzero, the next two arguments
+represent a coordinate in the layout, given in (real) microns.  If a
+physical terminal is placed at the given location, a match will be
+indicated.  If {\it use\_p} is zero, the two arguments that follow are
+ignored, and can be set to any numeric values.
+
+The arguments should provide at least one matchable parameter. 
+Internally, the list of terminals is scanned, and the first matching
+terminal found is returned, referenced by a handle.  If no terminals
+match, a scalar zero is returned.
+
+%------------------------------------
+% 041113
+\index{CreateTerminal function}
+\item{(terminal\_handle) \vt CreateTerminal({\it name\/}, {\it x\/}, {\it y\/},
+ {\it termtype\/})}\\
+This function will create a new terminal in the schematic of the
+current cell.  If a {\it name} string is passed, the terminal will be
+given that name.  If this argument is a scalar 0 or a null or empty
+string, the terminal will not have an assigned name but will use an
+internally generated name.  The terminal will be placed at the
+location indicated by the {\it x} and {\it y} arguments, which are in
+fictitious ``microns'' representing 1000 database units.  These are
+the same coordinates as displayed in the coordinate readout while a
+schematic is being edited.
+
+The {\it termtype} argument can be a scalar integer or a keyword, from
+the list below.  This will assign a type to the terminal.  The type is
+not used by {\Xic}, but this facility may be useful to the user.
+
+\begin{quote}
+\begin{tabular}{ll}
+0 & {\vt input}\\
+1 & {\vt output}\\
+2 & {\vt inout}\\
+3 & {\vt tristate}\\
+4 & {\vt clock}\\
+5 & {\vt outclock}\\
+6 & {\vt supply}\\
+7 & {\vt outsupply}\\
+8 & {\vt ground}\\
+\end{tabular}
+\end{quote}
+
+Keyword matching is case-insensitive.  If the argument is not
+recognized, and the default ``{\vt input}'' will be used.
+
+The function returns a handle that references the new terminal on
+success, or a scalar zero otherwise.
+
+%------------------------------------
+% 041213
+\index{DestroyTerminal function}
+\item{(int) \vt DestroyTerminal({\it thandle\/})}\\
+This function will destroy the terminal referenced by the passed
+handle, and will close the handle.  This destroys the terminal, which
+is actually a {\et node} property of the electrical current cell, and
+the linkage into the physical layout, if any.  If a terminal was
+destroyed, value one is returned, or zero on error.
+
+%------------------------------------
+% 060716
+\index{GetTerminalName function}
+\item{(string) \vt GetTerminalName({\it thandle\/})}\\
+Return a string containing the name of the terminal or physical
+terminal referenced by the handle passed as an argument.  Both objects
+have name fields that track.  However, if no name was assigned, for a
+terminal a default name generated by {\Xic} is returned, whereas the
+return from a physical terminal will be null.
+
+%------------------------------------
+% 060716
+\index{SetTerminalName function}
+\item{(int) \vt SetTerminalName({\it thandle\/}, {\it name\/})}\\
+The first argument is a handle that references a terminal or physical
+terminal.  The second argument is a string which gives a name to
+apply.  It can also be a scalar 0, or if null or empty any existing
+assigned name will be removed.  Both terminals and physical terminals
+have names that track, this will change both, when both objects exist. 
+The return value is one on success, zero if error.
+
+%------------------------------------
+% 060716
+\index{GetTerminalType function}
+\item{(int) \vt GetTerminalType({\it thandle\/})}\\
+Return a type code for the terminal referenced by the handle passed as
+an argument, which can also be a handle to the corresponding physical
+terminal.  A non-negative return represents success.  The code
+represents the terminal type set by the user.  The terminal type is
+not used by {\Xic}, but is available for user applications.  The
+defined types are listed below.  The default is type 0.
+
+\begin{quote}
+\begin{tabular}{ll}
+0 & {\vt input}\\
+1 & {\vt output}\\
+2 & {\vt inout}\\
+3 & {\vt tristate}\\
+4 & {\vt clock}\\
+5 & {\vt outclock}\\
+6 & {\vt supply}\\
+7 & {\vt outsupply}\\
+8 & {\vt ground}\\
+\end{tabular}
+\end{quote}
+
+%------------------------------------
+% 060716
+\index{SetTerminalType function}
+\item{(int) \vt SetTerminalType({\it thandle\/}, {\it termtype\/})}\\
+This function will apply a terminal type to the terminal referenced by
+the handle passed as the first argument, which can also be a handle to
+the corresponding physical terminal.  The second argument is either an
+integer, or a string keyword, from the list below.
+
+\begin{quote}
+\begin{tabular}{ll}
+0 & {\vt input}\\
+1 & {\vt output}\\
+2 & {\vt inout}\\
+3 & {\vt tristate}\\
+4 & {\vt clock}\\
+5 & {\vt outclock}\\
+6 & {\vt supply}\\
+7 & {\vt outsupply}\\
+8 & {\vt ground}\\
+\end{tabular}
+\end{quote}
+
+The function returns one if the type is set successfully, zero
+otherwise.
+
+%------------------------------------
+% 060716
+\index{GetTerminalFlags function}
+\item{(int) \vt GetTerminalFlags({\it thandle\/})}\\
+Return the flags for the terminal referenced by the handle passed as
+an argument, which can also be a handle to the corresponding physical
+terminal.  The return value is an integer with bits representing flags
+as listed in the table below.  On error, the return value is -1.
+
+\begin{description}
+\item{{\vt -x1} ({\vt BYNAME})}\\
+The terminal makes connections in the schematic by name rather   
+than by location.   
+\item{{\vt 0x2} ({\vt VIRTUAL})}\\
+No longer used, reserved.
+\item{{\vt 0x4} ({\vt FIXED})}\\
+The physical terminal has been placed by the user, and {\Xic}
+should never move it.   
+\item{{\vt 0x8} ({\vt SCINVIS})}\\
+The electrical terminal will not be shown in schematics.   
+\item{{\vt 0x10} ({\vt SYINVIS})}\\
+The electrical terminal will not be shown in the symbol.   
+\item{{\vt 0x100} ({\vt UNINIT})}\\
+The terminal is not initialized (internal).
+\item{{\vt 0x200} ({\vt LOCSET})}\\
+The physical terminal location has not been set (internal).   
+\item{{\vt 0x400} ({\vt POINTS})}\\
+Set when the terminal has multiple hot-spots.
+\item{{\vt 0x800} ({\vt NOPHYS})}\\
+Set if the terminal has no physical implementation, such as a
+temperature node.  Such terminals have no physical terminals.
+\end{description}
+
+%------------------------------------
+% 060716
+\index{SetTerminalFlags function}
+\item{(int) \vt SetTerminalFlags({\it thandle\/}, {\it flags\/})}\\
+This will set the first five flags listed for {\vt GetTerminalFlags}
+in the terminal referenced by the first argument, which can also be a
+handle to the corresponding physical terminal.  All but the five least
+significant bits in the {\it flags} integer are ignored.  The bits
+that are set will set the corresponding flag in the terminal, unset
+bits are ignored.  The value one is returned on success, zero
+otherwise.
+
+%------------------------------------
+% 060716
+\index{UnsetTerminalFlags function}
+\item{(int) \vt UnsetTerminalFlags({\it thandle\/}, {\it flags\/})}\\
+This will unset the first five flags listed for {\vt GetTerminalFlags}
+in the terminal referenced by the first argument, which can also be a
+handle to the corresponding physical terminal.  All but the five least
+significant bits in the {\it flags} integer are ignored.  The bits
+that are set will unset the corresponding flag in the terminal, unset
+bits are ignored.  The value one is returned on success, zero
+otherwise.
+
+%------------------------------------
+% 060716
+\index{GetElecTerminalLoc function}
+\item{(int) \vt GetElecTerminalLoc({\it thandle\/}, {\it index\/},
+ {\it array\/})}\\
+This will return terminal locations in the electrical schematic, of
+the terminal referenced by the first argument.  This argument can also
+be a handle to the corresponding physical terminal.  The return is
+dependent on whether the electrical cell is symbolic or not.  Values
+for {\it x} and {\it y} are returned in the {\it array}, which must
+have size two or larger.  The returned values are in fictitions
+``microns'' that correspond to 1000 database units.  This is the same
+coordinate system indicated by the coordinate readout when editing a
+schematic.
+
+If the electrical cell is not symbolic, the integer {\it index}
+argument must be zero, and the terminal location in the schematic is
+returned.
+
+If the electrical cell is symbolic, there can be arbitrarily many
+``copies'' of the terminal, representing multiple ``hot spots'' where
+the terminal can make connections.  The {\it index} argument is a
+0-based index for these locations.  To get all of the locations, one
+should call this function repeatedly while incrementing the index from
+zero.  A return value of zero indicates that the index is out of range
+(or some error occurred).  A return value of one indicates success,
+with the array containing the location.
+
+%------------------------------------
+% 060716
+\index{SetElecTerminalLoc function}
+\item{(int) \vt SetElecTerminalLoc({\it thandle\/}, {\it x\/}, {\it y\/})}\\
+This function specifies a location for the terminal referenced by the
+first argument, for use in electrical mode.  The {\it x} and {\it y}
+are coordinates in fictitions ``microns'' which are 1000 database
+units.  This is the same coordinate system used in the coordinate
+readout when editing a schematic.  As for most of these functions, the
+first argument can also be a handle to the corresponding physical
+terminal.
+  
+The function behaves differently depending on whether the electrical
+current cell is symbolic or not.  If the electrical current cell not
+symbolic, the passed coordinates set the terminal location within the
+schematic.  Otherwise, in symbolic mode, there can be arbitrarily many
+locations set.  The function will add the passed location to the list
+of locations for the terminal, if it is not already using the
+location.
+
+The function returns one on success, zero otherwise.
+
+%------------------------------------
+% 060716
+\index{ClearElecTerminalLoc function}
+\item{(int) \vt ClearElecTerminalLoc({\it thandle\/}, {\it x\/}, {\it y\/})}\\
+This function applies only when the electric current cell is in
+symbolic mode.  When true, a terminal may be displayed in arbitrarily
+many locations, representing different possible connection points. 
+The {\it x} and {\it y} are coordinates in fictitions ``microns''
+which are 1000 database units.  This is the same coordinate system
+used in the coordinate readout when editing a schematic.  If the
+coordinates match a hot spot of the terminal, that location is
+deleted.
+
+It is not possible to delete the last location, there is always at
+least one active location.  Calling this function when the electrical
+current cell is not symbolic has no effect.  The function returns one
+on success, zero if error.
+
+As for most of these functions, the first argument can also be a
+handle to the corresponding physical terminal.
+\end{description}
 
 !!SEEALSO
 funcs:ext
@@ -1336,7 +1888,6 @@ Physical Terminals
     </dl>
     <hr>
 
-
     <!-- 061016 -->
     <a name="GetPhysTerminalGroup"></a>
     <dl>
@@ -1365,6 +1916,171 @@ Physical Terminals
     have an associated object, in which case they are "virtual".  An
     empty handle (scalar 0) is returned in this case.
     </dl>
+!!LATEX funcs:ext:pterm scrfuncs.tex
+As noted in the description in the previous section, physical
+terminals are a separate data structure that save layout information
+about the terminal, such as effective location, the layer attached to,
+or an object attached to.  When a schematic exists and has been
+associated, the physical terminal and the electrical node property are
+linked, so access to one automatically provides access to the other. 
+Thus, most of the the functions in this section that access physical
+terminals will also take a handle to a regular terminal equivalently,
+as did the functions in the previous section.  However, if one data
+type does not exist, for the function to succeed, the exissting data
+type must be passed, and it must contain the data to be accessed.
+
+Physical terminals that correspond to cell connection points are
+stored with the physical data, and are therefor potentially available
+when there is no schematic.  Most commonly, however, they are created
+upon reading the electrical data for a cell.
+
+\begin{description}
+% 060716
+\index{ListPhysTerminals function}
+\item{(physterm\_handle) \vt ListPhysTerminals()}\\
+This returns a handle to a list of physical terminal structures that
+correspond to the cell connection points, as obtained from the
+physical part of the current cell.
+
+%------------------------------------
+% 061016
+\index{FindPhysTerminal function}
+\item{(physterm\_handle) \vt FindPhysTerminal({\it name\/},
+ {\it use\_p\/}, {\it xp\/}, {\it yp\/})}\\
+This attempts to find a physical terminal structure by name or
+location.  If a name is given, i.e., the argument is not null or 0,
+then it will match the name of the terminal returned.  If the boolean
+{\it use\_p} is nonzero (true), then the coordinates {\it xp} and {\it
+yp\/}, given in microns, will match the placement location of the
+returned terminal.  If both name and coordinates are given, both must
+match.
+
+An empty handle (scalar 0) is returned if there is no matching
+physical terminal found.
+
+%------------------------------------
+% 041113
+\index{CreatePhysTerminal function}
+\item{(int) \vt CreatePhysTerminal({\it thandle\/}, {\it x\/}, {\it y\/},
+ {\it layer\/})}\\
+As created, (electrical) terminals do not contain the data structures
+necessary for a corresponding terminal in the physical layout.  This
+is fine as-is, if the user is intending to only work with a schematic,
+or if the terminal does not have an actual physical counterpart. 
+However, in general one must create the physical terminal.
+
+This function will create a new physical terminal, if one of the same
+name does not currently exist.  The first argument can be a handle to
+a terminal (electrical node) or a string giving a name.  In the first
+case, the new physical terminal is created, given the name of the
+electrical terminal, and the linkage established.  In the second case,
+which does not require the existance of the electrical schematic, the
+physical terminal is created under the given name, and saved in the
+physical data.  It will be linked to corresponding electrical data
+during association, when possible.
+
+The {\it x} and {\it y} give the initial terminal location in the
+layout in microns.  The layer argument can be scalar 0, which is
+ignored, or the name of a layer.  The layer must have the {\et
+Routing} keyword applied.  If given, this will set the layer hint for
+the new terminal.
+
+The return value is 1 on success, 0 otherwise.  It is not an error if
+the physical terminal already exists, the function will return 1 and
+perform no other operation in that case.
+
+%------------------------------------
+% 061016
+\index{HasPhysTerminal function}
+\item{(int) \vt HasPhysTerminal({\it thandle\/})}\\
+This function returns 1 if the (electrical) terminal referenced by the
+handle argument has a physical terminal link, 0 if no link has been
+assigned.  On error, a value -1 is returned.
+
+%------------------------------------
+% 061016
+\index{DestroyPhysTerminal function}
+\item{(int) \vt DestroyPhysTerminal({\it thandle\/})}\\
+This will unlink and destroy the physical terminal data structure that
+maintains the terminal linkage into the physical layout, if any.  The
+argument can be a handle to the corresponding electrical terminal, or
+to the physical terminal itself.  In the latter case, the passed
+handle will be closed.  The electrical terminal (if any) will still be
+valid, as will its handle if that was passed.  The function returns
+one on success, zero if an error occurs.
+
+%------------------------------------
+% 061016
+\index{GetPhysTerminalLoc function}
+\item{(int) \vt GetPhysTerminalLoc({\it thandle\/}, {\it array\/})}\\
+Return the layout location for the physical terminal referenced by the
+handle passed as an argument.  The first argument can alternatively be
+a handle to the corresponding electrical terminal.  The second
+argument is an array of size two or larger which will receive the x-y
+coordinate, in microns.  The function returns one on success, zero
+otherwise.
+
+%------------------------------------
+% 061016
+\index{SetPhysTerminalLoc function}
+\item{(int) \vt SetPhysTerminalLoc({\it thandle\/}, {\it x\/}, {\it y\/})}\\
+Set the location of the physical terminal referenced by the first
+argument to the layout coordinate given, in microns.  The first
+argument can also be a handle to the corresponding electrical
+terminal.  Generally, physical terminal locations are set by {\Xic},
+using extraction results.  However, this may fail, requiring that the
+user provide a location for one or more terminals.  Terminals that
+have been placed by the user (using this function) will by default
+remain fixed in the location.  The function returns one on success,
+zero if an error occurs.
+
+%------------------------------------
+% 061016
+\index{GetPhysTerminalLayer function}
+\item{(string) \vt GetPhysTerminalLayer({\it thandle\/})}\\
+Return a string containing the layer name for the physical terminal
+referenced by the handle passed as an argument.  A handle to the
+corresponding electrical terminal is also accepted.  Non-virtual
+physical terminals are associated with an object on a {\et Routing}
+layer.  A null string is returned if there is no associated layer.
+
+%------------------------------------
+% 060716
+\index{SetPhysTerminalLayer function}
+\item{(int) \vt SetPhysTerminalLayer({\it thandle\/}, {\it layer\/})}\\
+This function will set the associated layer hint on the physical
+terminal referenced by the handle passed as the first argument.  A
+handle to the corresponding electrical terminal is also accepted.  If
+the second argument is the name of a physical layer which has the {\et
+Routing} keyword set, the terminal hint layer will be set to that
+layer.  If the second argument is a scalar 0, or a null or empty
+string, any existing hint layer will be removed.  The function returns
+one on success, zero otherwise.
+
+%------------------------------------
+% 061016
+\index{GetPhysTerminalGroup function}
+\item{(int) \vt GetPhysTerminalGroup({\it thandle\/})}\\
+This function will return the conductor group number to which the
+physical terminal referenced by the argument is assigned.  A handle to
+the corresponding electrical terminal is also accepted.  The group
+assignment is made during extraction and association.  The return
+value is a non-negative integer on success, or -1 if
+extraction/association has not been run (or been reverted), or -2 if
+some error occurred.
+
+%------------------------------------
+% 061016
+\index{GetPhysTerminalObject function}
+\item{(object\_handle) \vt GetPhysTerminalObject({\it thandle\/})}\\
+Return a handle to a physical object that is associated with the
+physical terminal referenced by the handle passed as an argument.  A
+handle to the coresponding electrical terminal is also accepted. 
+Physical terminals are associated with underlying conducting objects
+as part of the connectivity algorithm.  Not all terminals have an
+associated object, in which case they are ``virtual".  An empty handle
+(scalar 0) is returned in this case.
+\end{description}
 
 !!SEEALSO
 funcs:ext
@@ -1619,6 +2335,194 @@ Physical Conductor Groups
     from the physical cell that are associated with the group number
     given.
     </dl>
+!!LATEX funcs:ext:group scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 030204
+\index{Group function}
+\item{(int) \vt Group()}\\
+This function will run the grouping and device extraction algorithm on
+the current physical cell.  The grouping algorithm identifies the wire
+nets.  The returned value is the number of groups used, or 0 if an
+error occurs.  The group index extends from 0 through the number
+returned minus one.  Group 0 is the ground group, if a ground plane
+layer has been defined.
+
+%------------------------------------
+% 030204
+\index{GetNumberGroups function}
+\item{(int) \vt GetNumberGroups()}\\
+This returns the number of conductor groups allocated by the
+extraction process in the physical part of the current cell.  The
+group index passed to other functions should be less than this value.
+
+%------------------------------------
+% 030204
+\index{GetGroupBB function}
+\item{(int) \vt GetGroupBB({\it group}, {\it array\/})}\\
+This function returns the bounding box of the conductor group whose
+index is passed as the first argument.  The coordinates, in microns
+relative to the current physical cell origin, are returned in the
+{\it array}, which must have size 4 or larger.  If the function
+succeeds, 1 is returned, otherwise 0 is returned.  The saved order is
+L, B, R, T.
+
+%------------------------------------
+% 030204
+\index{GetGroupNode function}
+\item{(int) \vt GetGroupNode({\it group\/})}\\
+This function returns the node number from the electrical database
+which corresponds to the physical group index passed as the argument. 
+If the association failed, -1 is returned.
+
+%------------------------------------
+% 030204
+\index{GetGroupName function}
+\item{(string) \vt GetGroupName({\it group\/})}\\
+This will return a string containing a name for the group whose number
+is passed as the argument.  The name is the name of a formal terminal
+attached to the group, or the net name if no formal terminal.  If the
+group has no name, a null string is returned.
+
+%------------------------------------
+% 030204
+\index{GetGroupNetName function}
+\item{(string) \vt GetGroupNetName({\it group\/})}\\
+This will return a string containing the net name for the group whose
+number is passed as the argument.  If the group has no net name, a
+null string is returned.
+
+%------------------------------------
+% 030204
+\index{GetGroupCapacitance}
+\item{(real) \vt GetGroupCapacitance({\it group\/})}\\
+This will return the capacitance assigned to the group whose index is
+passed as the argument.  If no capacitance has been assigned.  0 is
+returned.
+
+%------------------------------------
+% 061016
+\index{CountGroupObjects function}
+\item{(int) \vt CountGroupObjects({\it group\/})}\\
+Return the number of physical objects that implement the group.  If
+there is an error, such as the argument being out of range, -1 is
+returned.
+
+%------------------------------------
+% 070516
+\index{ListGroupObjects function}
+\item{(object\_handle) \vt ListGroupObjects({\it group\/})}\\
+This function returns a handle to the list of objects associated with
+the current physical cell which constitute the group, as found by the
+extraction system.  These may or may not correspond to actual objects
+in the cell.  For example, the objects returned have been processed by
+the {\vt Conductor Exclude} directive, so would possibly be clipped
+versions of the original objects.  Additionally, objects from
+wire-only subcells and vias that have been logically flattened during
+extraction will be included.  Objects from flattened via instances
+will mave the {\vt MergeCreated} ({\vt 0x1}) flag set, which can be
+tested with {\vt GetObjectFlags}.  This allows the caller to filter
+out redundant metal if standard vias are used, in addition to the
+objects, to represent the net.
+
+The argument is the group number.  The returned objects are copies, so
+can not be modified or selected.  If an error occurs, 0 is returned.
+
+%------------------------------------
+% 070516
+\index{CountGroupVias function}
+\item{(int) \vt CountGroupVias({\it group\/})}\\
+Return the number of via instances used to implement the group, from
+the extraction system.  This is the number of vias that would be
+returned by {\vt ListGroupVias} (below).  If there is an error, such
+as the group number argument being out of range, -1 is returned.
+
+%------------------------------------
+% 070516
+\index{ListGroupVias function}
+\item{(object\_handle) \vt ListGroupVias({\it group\/})}\\
+This function returns a handle to the list of via instances associated
+with the current physical cell which are used in the group, as
+obtained from the extraction system.  This may include vias that were
+``promoted'' due to the logical flattening of wire-only subcells
+during extraction.  Vias in such cells are treated as if they reside
+in their parent cells, recursively.
+
+The argument is the group number.  The via instances are copies, so
+can not be modified or selected.  If an error occurs, 0 is returned.
+
+%------------------------------------
+% 061016
+\index{CountGroupDevContacts function}
+\item{(int) \vt CountGroupDevContacts({\it group\/})}\\
+This function returns a count of the number of device contacts which
+are assigned to the conductor group whose index is passed as the
+argument.  If an error occurs, -1 is returned.
+
+%------------------------------------
+% 030204
+\index{ListGroupDevContacts function}
+\item{(dev\_contact\_handle) \vt ListGroupDevContacts({\it group\/})}\\
+This function returns a handle to the list of device contacts which
+are assigned to the conductor group whose index is passed as the
+argument.  If an error occurs, 0 is returned.
+
+%------------------------------------
+% 061016
+\index{CountGroupSubcContacts function}
+\item{(int) \vt CountGroupSubcContacts({\it group\/})}\\
+This function returns a count of subcircuit contacts associated with
+the group index passed as the argument.  If an error occurs, -1 is
+returned.
+
+%------------------------------------
+% 030204
+\index{ListGroupSubcContacts function}
+\item{(subc\_contact\_handle) \vt ListGroupSubcContacts({\it group\/})}\\
+This function returns a handle to a list of subcircuit contacts
+associated with the group index passed as the argument.  If an error
+occurs, 0 is returned.
+
+%------------------------------------
+% 061016
+\index{CountGroupTerminals function}
+\item{(int) \vt CountGroupTerminals({\it group\/})}\\
+Return a count of cell connection terminals associated with the group
+number passed as an argument.  If an error occurs, -1 is returned.
+
+%------------------------------------
+% 061016
+\index{ListGroupTerminals function}
+\item{(terminal\_handle) \vt ListGroupTerminals({\it group\/})}\\
+This will return a handle to a list of formal terminals associated
+with the group number passed as an argument.  If an error occurs, 0 is
+returned.  If the group contains no formal terminals, the list will be
+empty.
+
+%------------------------------------
+% 061016
+\index{ListGroupTerminalNames function}
+\item{(stringlist\_handle) \vt ListGroupTerminalNames({\it group\/})}\\
+This function returns a list of names of the cell connection terminals
+assigned to the conductor group whose index is passed as the argument. 
+If an error occurs, 0 is returned.  If the group contains no cell
+connection terminals, the list will be empty.
+
+%------------------------------------
+% 061016
+\index{CountGroupPhysTerminals function}
+\item{(int) \vt CountGroupPhysTerminals({\it group\/})}\\
+Return a count of the physical terminal descriptors from the
+physical cell that are associated with the group number given.
+
+%------------------------------------
+% 061016
+\index{ListGroupPhysTerminals function}
+\item{(physterm\_handle) \vt ListGroupPhysTerminals({\it group\/})}\\
+Return a handle to a list of the physical terminal descriptors from
+the physical cell that are associated with the group number given.
+
+\end{description}
 
 !!SEEALSO
 funcs:ext
@@ -1835,6 +2739,173 @@ Physical Devices
     unique in the containing cell.  On error, -1 is returned.  A valid
     index is 0 or larger.
     </dl>
+!!LATEX funcs:ext:pdev scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 070809
+\index{ListPhysDevs function}
+\item{(device\_handle) \vt ListPhysDevs({\it name}, {\it pref}, {\it indices},
+  {\it area\_array\/})}\\
+This function returns a handle to a list of devices extracted from the
+physical part of the current cell.  The first two arguments are
+strings which match the {\vt Name} and {\vt Prefix} fields from the
+technology file Device block of the device to list.  Either or both of
+these arguments can be null or empty, in which case no devices are
+excluded by the comparison, i.e., such values act as wildcards.
+
+The third argument is a string providing a list of device indices, or
+ranges of indices, to allow.  These are integers that are unique to
+each instance of a device type in a cell.  If this argument is null or
+empty, all indices will be returned.  Each token in the string is an
+integer (e.g., ``2''), or range of integers (e.g., ``1-4''), using the
+hyphen (minus sign) to separate the minimum and maximum index to
+include.  The tokens are separated by white space and/or commas.  For
+example, ``1,3-5,7,9-12''.
+
+The final argument, if not 0, is an array of size four or larger
+containing rectangle coordinates, in microns, in order L,B,R,T.  If 0
+is passed for this argument, the entire cell is searched for devices. 
+Otherwise, only the area provided will be searched.
+
+On success, a handle is returned, otherwise 0 is returned.  The handle
+can be used in the functions that take a device handle as an argument. 
+This is {\it not} an object handle.  The returned device handle can be
+manipulated with the generic handle functions, and like other handles
+should be iterated through or explicitly closed when no longer needed.
+
+%------------------------------------
+% 030204
+\index{GetPdevName function}
+\item{(string) \vt GetPdevName({\it device\_handle\/})}\\
+This function returns a string containing the name of the device
+referenced by the handle.  The name string is composed of the {\vt
+Name} field for the device (from the {\et Device Block}), followed by
+an underscore, followed by the device index number.  If the handle is
+defunct or some other error occurs, a null string is returned.
+
+%------------------------------------
+% 030204
+\index{GetPdevIndex function}
+\item{(int) \vt GetPdevIndex({\it device\_handle\/})}\\
+This function returns the index of the device referenced by the handle
+passed as an argument.  The index is an integer which is unique among
+the devices of a given type.  If the handle is defunct or an error
+occurs, -1 is returned.
+
+%------------------------------------
+% 030204
+\index{GetPdevDual function}
+\item{(object\_handle) \vt GetPdevDual({\it device\_handle\/})}\\
+This function returns an object handle which references the dual
+device in the electrical database to the physical device referenced by
+the argument.  If association failed for the device, 0 is returned. 
+The dual device is a subcell obtained from the device library.
+
+%------------------------------------
+% 030204
+\index{GetPdevBB function}
+\item{(int) \vt GetPdevBB({\it device\_handle}, {\it array\/})}\\
+This function obtains the bounding box of the device referenced by the
+first argument.  The coordinates, in microns using the origin of the
+current physical cell, are returned in the {\it array}, which must
+have size 4 or larger.  If the function succeeds, 1 is returned,
+otherwise the returned value is 0.  The saved order is L, B, R, T.
+
+%------------------------------------
+% 030204
+\index{GetPdevMeasure function}
+\item{(real) \vt GetPdevMeasure({\it device\_handle}, {\it mname\/})}\\
+This function returns a device parameter corresponding to a {\vt
+Measure} line given in the Device block for the device referenced by
+the first argument.  The second argument is a string giving the name
+from a {\vt Measure} line.  The returned value is the measured
+parameter, or 0 if there was an error.
+
+%------------------------------------
+% 030204
+\index{ListPdevMeasures function}
+\item{(stringlist\_handle) \vt ListPdevMeasures({\it device\_handle\/})}\\
+This function returns a string list handle corresponding to a list of
+the names associated with {\vt Measure} lines in the Device block for
+the device referenced by the handle.  These are the names that can be
+passed to {\vt GetPdevMeasure} to perform the measurement.  If an error
+occurs, 0 is returned.
+
+%------------------------------------
+% 030204
+\index{ListPdevContacts function}
+\item{(dev\_contact\_handle) \vt ListPdevContacts({\it device\_handle\/})}\\
+This function returns a handle to a list of contact descriptors for
+the device referenced by the argument.  The returned handle can be
+passed to the functions below to obtain information about the device
+contacts.  If there is an error, 0 is returned.  The returned handle
+can be manipulated with the generic handle functions, and like other
+handles should be iterated through or closed explicitly when no longer
+needed.
+
+%------------------------------------
+% 030204
+\index{GetPdevContactName function}
+\item{(string) \vt GetPdevContactName({\it dev\_contact\_handle\/})}\\
+This function returns the name string of the contact referenced by the
+argument.  Contact names are assigned in the Device block for the
+device containing the contact.  If an error occurs, a null string is
+returned.
+
+%------------------------------------
+% 030204
+\index{GetPdevContactBB function}
+\item{(int) \vt GetPdevContactBB({\it dev\_contact\_handle}, {\it array\/})}\\
+This function returns the bounding box of the contact referenced by
+the first argument.  The coordinates, in microns relative to the
+origin of the physical current cell, are returned in the {\it array},
+which must have size 4 or larger.  If the operation is successful, 1
+is returned, otherwise 0 is returned.
+
+%------------------------------------
+% 030204
+\index{GetPdevContactGroup function}
+\item{(int) \vt GetPdevContactGroup({\it dev\_contact\_handle\/})}\\
+This function returns the conductor group index to which the contact
+referenced by the argument is assigned.  If there is an error, -1 is
+returned.
+
+%------------------------------------
+% 030204
+\index{GetPdevContactLayer function}
+\item{(string) \vt GetPdevContactLayer({\it dev\_contact\_handle\/})}\\
+This function returns the name string of the layer to which the
+contact referenced by the argument is assigned.  All contacts are
+assigned to layers which have the {\et Conductor} attribute.  If there
+is an error, a null string is returned.
+
+%------------------------------------
+% 030204
+\index{GetPdevContactDev function}
+\item{(device\_handle) \vt GetPdevContactDev({\it dev\_contact\_handle\/})}\\
+This function returns a handle to the device containing the contact
+referenced by the argument.  If an error occurs, 0 is returned.  The
+returned handle should be closed (for example, with the {\vt Close}
+function) when no longer needed.
+
+%------------------------------------
+% 030204
+\index{GetPdevContactDevName function}
+\item{(string) \vt GetPdevContactDevName({\it dev\_contact\_handle\/})}\\
+This function returns the name of the device containing the contact
+referenced by the argument.  A null string is returned on error.
+
+%------------------------------------
+% 030204
+\index{GetPdevContactDevIndex function}
+\item{(int) \vt GetPdevContactDevIndex({\it dev\_contact\_handle\/})}\\
+This returns the index number of the device to which the contact,
+referenced by the passed handle, is associated.  Each device of a
+given type has an index number assigned, which is unique in the
+containing cell.  On error, -1 is returned.  A valid index is 0 or
+larger.
+
+\end{description}
 
 !!SEEALSO
 funcs:ext
@@ -2114,6 +3185,226 @@ Physical Subcircuits
     returned on error.
     </dl>
     <hr>
+!!LATEX funcs:ext:subc scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 030204
+\index{ListPhysSubckts function}
+\item{(subckt\_handle) \vt ListPhysSubckts({\it name}, {\it index},
+  {\it l}, {\it b}, {\it r}, {\it t\/})}\\
+This function returns a handle to a list of subcircuits from the
+physical part of the current cell.  Subcircuits are subcells which
+contain devices or sub-subcells that contain devices.  Subcells that
+contain only wire are typically not saved internally as subcircuits. 
+The first argument is a string name which will match the returned
+subcircuits.  If this argument is null or empty, then this test will
+not exclude any subcircuits to be returned.  The second argument is
+the index number of the subcircuit to be returned.  If the value is
+-1, subcells with any index will be returned.  The remaining four
+values define a rectangular area, given in microns relative to the
+current physical cell origin, where subcircuits will be searched for. 
+If all four values are 0, the entire cell will be searched.  The
+returned handle references subcircuits, and is distinct from device
+handles and object handles.  The handle can be passed to the generic
+handle functions, and like other handles should be iterated through or
+closed when no longer needed.  The function returns 0 if an error
+occurs.
+
+%------------------------------------
+% 030204
+\index{GetPscName function}
+\item{(string) \vt GetPscName({\it subckt\_handle\/})}\\
+This function returns the cell name corresponding to the subcircuit
+referenced by the handle.  if an error occurs, a null string is
+returned.
+
+%------------------------------------
+% 061116
+\index{GetPscIndex function}
+\item{(int) \vt GetPscIndex({\it subckt\_handle\/})}\\
+This function returns the index of the subcircuit referenced by the
+argument.  The index is a zero-based sequence for each subcircuit
+master.  If an error occurs, -1 is returned.
+
+%------------------------------------
+% 061116
+\index{GetPscIdNum function}
+\item{(int) \vt GetPscIdNum({\it subckt\_handle\/})}\\
+This function returns the ID number of the subcircuit referenced by
+the argument.  The ID number is unique among all instances in the
+parent cell.  If an error occurs, -1 is returned.
+
+%------------------------------------
+% 061116
+\index{GetPscInstName function}
+\item{(string) \vt GetPscInstName({\it subckt\_handle\/})}\\
+This function returns an instance name corresponding to the subcircuit
+instance referenced by the handle.  This is the cell name, followed by
+an underscore, followed by the index number.  if an error occurs, a
+null string is returned.
+
+%------------------------------------
+% 030204
+\index{GetPscDual function}
+\item{(object\_handle) \vt GetPscDual({\it subckt\_handle\/})}\\
+This function returns an object handle which references the subcell in
+the electrical database which is the dual of the physical subcircuit
+referenced by the argument.  If the association fails, 0 is returned.
+
+%------------------------------------
+% 030204
+\index{GetPscBB function}
+\item{(int) \vt GetPscBB({\it subckt\_handle}, {\it array})}\\
+This function returns the bounding box of the subcircuit referenced by
+the first argument.  The coordinates, in microns relative to the
+origin of the current physical cell, are returned in the array, which
+must have size 4 or larger.  If the operation succeeds, 1 is returned,
+otherwise 0 is returned.
+
+%------------------------------------
+% 061116
+\index{GetPscLoc function}
+\item{(int) \vt GetPscLoc({\it subckt\_handle}, {\it array})}\\
+This returns the instance placement location, in microns, in the array
+passed as a second argument.  The array must have size two or larger. 
+On success, the function returns 1, and the array location 0 will
+contain the X value, and the 1 location will contain the Y value. 
+Zero is returned on error, with the array values undefined.
+
+%------------------------------------
+% 061116
+\index{GetPscTransform function}
+\item{(int) \vt GetPscTransform({\it subckt\_handle}, {\it type\/},
+  {\it array})}\\
+This function returns a string describing the instance orientation. 
+There are presently three format types, specified by the second
+argument.  If this argument is zero, then the {\Xic} transformation
+string is returned.  This is the same CIF-like encoding as used for
+the current transformation in the status line of {\Xic}.  In this case
+the third argument is ignored and can be zero.
+
+If the second argument is one, the return will be a Cadence DEF
+orientation code.  In addition, if an array of size two or larger is
+passed as a third argument, the values will be filled in with the X
+and Y origin correction values implied by the transformation.  In a
+DEF transformation, the lower left corner position of the bounding box
+is invariant, implying that there is an additional translation after
+rotation/mirroring to enforce this.  Pass 0 for this argument if these
+values aren't needed.
+
+In DEF, there is no support for 45, 135, 225, and 315 rotations, a
+null string is returned in these cases.  Magnification is ignored.
+
+If the second argument is any other value, the OpenAccess strings are
+returned, otherwise all is as for DEF.
+
+The following table lists equivalent orientation codes for DEF,
+OpenAccess, and {\Xic}.  The {\bf Origin} column indicates the
+position of the original lower-left corner after the operation.
+
+\begin{quote}
+\begin{tabular}{llll}
+LEF/DEF & OpenAccess & {\Xic} & Origin\\
+N  & R0   & R0     & LL\\
+W  & R90  & R90    & LR\\
+S  & R180 & R180   & UR\\
+E  & R270 & R270   & UL\\
+FN & MY   & MX     & LR\\
+FW & MX90 & R270MY & LL\\
+FS & MX   & MY     & UL\\
+FE & MY90 & R90MX  & UR\\
+\end{tabular}
+\end{quote}
+
+%------------------------------------
+% 030204
+\index{ListPscContacts function}
+\item{(subc\_contact\_handle) \vt ListPscContacts({\it subckt\_handle})}\\
+This function returns a handle to a list of subcircuit contacts
+associated with the subcircuit referenced by the handle.  The returned
+handle is a distinct type, in particular subcircuit contacts are
+different from device contacts.  The return handle can be used with
+the functions which query information about subcircuit contacts, or
+with the generic handle functions.  If an error occurs, this function
+returns 0.
+
+%------------------------------------
+% 030204
+\index{IsPscContactIgnorable function}
+\item{(int) \vt IsPscContactIgnorable({\it subc\_contact\_handle\/})}\\
+If the subcircuit associated with the contact referenced from the
+argument is flattened or ignored, return 1.  Otherwise 0 is returned. 
+When 1 is returned, the contact can usually be skipped in listings.
+
+%------------------------------------
+% 030204
+\index{GetPscContactName function}
+\item{(string) \vt GetPscContactName({\it subc\_contact\_handle\/})}\\
+This function returns a name string, if available, from the subcircuit
+contact referenced by the argument.  If the subcircuit does not
+provide a name, the returned string will be a number giving the
+subcircuit group contacted.  A null string is returned on error.
+
+%------------------------------------
+% 030204
+\index{GetPscContactGroup function}
+\item{(int) \vt GetPscContactGroup({\it subckt\_contact\_handle})}\\
+This function returns the group index in the current cell
+corresponding to the subcircuit contact referenced by the argument. 
+If an error occurs, this function returns -1.
+
+%------------------------------------
+% 030204
+\index{GetPscContactSubcGroup function}
+\item{(int) \vt GetPscContactSubcGroup({\it subckt\_contact\_handle})}\\
+This function returns the group index in the subcircuit associated
+with the subcircuit contact referenced by the argument.  On error, the
+function returns -1.
+
+%------------------------------------
+% 030204
+\index{GetPscContactSubc function}
+\item{(subckt\_handle) \vt GetPscContactSubc({\it subckt\_contact\_handle})}\\
+This function returns a handle to the subcircuit which is associated
+with the subcircuit contact referenced by the argument.  On error, the
+function return 0.
+
+%------------------------------------
+% 030204
+\index{GetPscContactSubcName function}
+\item{(string) \vt GetPscContactSubcName({\it subc\_contact\_handle\/})}\\
+This function returns a string containing the name of the subcircuit
+associated with the contact referenced by the argument.  A null string
+is returned on error.
+
+%------------------------------------
+% 030204
+\index{GetPscContactSubcIndex function}
+\item{(int) \vt GetPscContactSubcIndex({\it subc\_contact\_handle\/})}\\
+This function returns the index of the subcircuit associated with the
+contact referenced by the argument.  Each subcircuit of a given kind
+has an index number that is unique in the containing cell.  On error,
+-1 is returned.  Valid index values are 0 and larger.
+
+%------------------------------------
+% 061116
+\index{GetPscContactSubcIdNum function}
+\item{(int) \vt GetPscContactSubcIdNum({\it subc\_contact\_handle\/})}\\
+This function returns the ID number of the subcircuit associated with
+the contact referenced by the argument.  Each subcircuit has an ID
+number that is unique in the containing cell.  On error, -1 is
+returned.  Valid index values are 0 and larger.
+
+%------------------------------------
+% 061116
+\index{GetPscContactSubcInstName function}
+\item{(string) \vt GetPscContactSubcInstName({\it subc\_contact\_handle\/})}\\
+This function returns a string containing an instance name of the
+subcircuit associated with the contact referenced by the argument. 
+The instance name consists of the cell name followed by an underscore,
+which is followed by the index.  A null string is returned on error.
+
+\end{description}
 
 !!SEEALSO
 funcs:ext
@@ -2187,6 +3478,60 @@ Electrical Devices
     the device library corresponding to the given device name.  If an
     error occurs, 0 is returned.
     </dl>
+!!LATEX funcs:ext:edev scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 030204
+\index{ListElecDevs function}
+\item{(stringlist\_handle) \vt ListElecDevs({\it regex\/})}\\
+This function returns a handle to a list of strings containing device
+names from the electrical database.  The names correspond to devices
+used in the current circuit.  The argument is a regular expression
+used to filter the device names.  If the argument is null or empty,
+all devices are listed.  This function returns 0 on error.
+
+%------------------------------------
+% 030204
+\index{SetEdevProperty function}
+\item{(int) \vt SetEdevProperty({\it devname}, {\it prpty}, {\it string\/})}\\
+This function is used to set property values of electrical devices and
+mutual inductors.  It is equivalent to the {\vt Set} command, or the
+keyboard {\cb !set} command, with the {\vt \@}{\it devname}.{\it
+prpty} syntax.  The first argument is the name of a device in the
+current circuit.  This is the value of a {\et name} property for some
+device.  The second argument is a string giving the property type to
+set or modify.  The possible strings are prefixes of ``{\vt name}'',
+``{\vt model}'', ``{\vt value}'', ``{\vt param}'', ``{\vt other}'',
+and ``{\vt nophys}''.  The single character string "{\vt n}" implies
+{\et name}, and (additionally) "{\vt y}" implies {\et nophys}.  If the
+string is unrecognized, the property type defaults to {\et other}.  If
+the device is a mutual inductor, only the {\et name} and {\et value}
+properties can be applied.  The final argument is a string containing
+the body of the property.  If the string is null or empty, the
+property is removed (or reset to the default in the case of the {\et
+name} property).  The function returns 1 on success, 0 otherwise.
+
+%------------------------------------
+% 030204
+\index{GetEdevProperty function}
+\item{(string) \vt GetEdevProperty({\it devname}, {\it prpty\/})}\\
+This function returns a string containing the text of the specified
+property for the given device.  The two arguments have the same format
+and interpretation as the first two arguments of {\vt
+SetEdevProperty}, i.e., the device name and property name.  The return
+value is a string containing the text for that property.  If the
+device or property does not exist or some other error occurs, a null
+string is returned.
+
+%------------------------------------
+% 030204
+\index{GetEdevObj function}
+\item{(object\_handle) \vt GetEdevObj({\it devname\/})}\\
+This function returns a handle to the electrical subcell from the
+device library corresponding to the given device name.  If an error
+occurs, 0 is returned.
+
+\end{description}
 
 !!SEEALSO
 funcs:ext
@@ -2317,6 +3662,108 @@ Resistance/Inductance Extraction
     The return value is always 1.  The function will fail (terminating
     the script) if an error is encountered.
     </dl>
+!!LATEX funcs:ext:extrl scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 052609
+\index{extractRL function}
+\item{(int) \vt ExtractRL({\it conductor\_zoidlist\/}, {\it layername\/},
+ {\it r\_or\_l\/}, {\it array\/}, {\it term\/}, ...)}\\
+This will use the square-counting system to estimate the resistance or
+inductance of a conducting object with respect to two or more
+terminals.  The first argument is a trapezoid list representing a
+single conducting area, on the layer given in the second argument. 
+The layer keywords set electrical parameters used in the estimation.
+
+\begin{description}
+\item{For Resistance:}\\
+  The {\et Rsh} layer keyword gives the ohms-per-square of the
+  material.  If not set, the value is computed from {\et Rho} or {\et
+  Sigma} and {\et Thickness} if these are set.  If these keywords are
+  also not given, a value of 1.0 is assumed.
+
+\item{For Inductance:}\\
+  The {\vt Tline} keyword supplies the appropriate parameters.  In
+  this case, the material is assumed to be over a ground plane covered
+  by dielectric.
+\end{description}
+
+The third argument is a boolean which if nonzero indicates inductance
+estimation, and zero indicates resistance estimation.
+
+The fourth argument is an array which will hold the return values,
+which will be resized if necessary.  The zeroth component of the array
+gives the number of returned values, which are returned in the rest of
+the array.  If there are two terminals, the number of returned values
+is 1.  For more than two terminals, the number of returned values is
+{\it n\/}{\vt *}({\it n\/}--1)/2, where {\it n} is the number of
+terminals.  The values are the effective two-terminal decomposition
+for terminals {\it i\/},{\it j} ({\it i} {\vt !=} {\it j\/}) in the
+order, e.g., for {\it n} = 4; 01, 02, 03, 12, 13, 23.
+
+The following arguments are trapezoid lists representing the
+terminals.  Arguments that are not trapezoid lists will be ignored. 
+There must be at least two terminals passed.  Terminal areas should be
+spatially disjoint, and in the computation, the terminal areas are
+clipped by the conductor area.  Terminals are assigned numbers in
+left-to-right order.
+
+The algorithm is most efficient if all coordinates are on some grid. 
+This provide for efficient tiling of the structure.
+
+Structures that require a very large number of tiles may require
+excessive time and memory to compute, and/or suffer from a loss of
+accuracy.  The approximate threshold is $10^5$ tiling squares. 
+Non-Manhattan shapes have strict internal limiting of tile count. 
+Manhattan structures can require an arbitrarily large number of tiles,
+thus the potential for resource overuse.
+
+The return value is always 1.  The function will fail (terminating the
+script) if an error is encountered.
+
+%------------------------------------
+% 052409
+\index{extractNetResistance function}
+\item{(int) \vt ExtractNetResistance({\it net\_handle\/},
+ {\it spicefile\/}, {\it array\/}, {\it term\/}, ...)}\\
+This function will extract resistance of a conductor net, taking into
+account multiple conducting layers connected by vias.  The resistance
+decomposition of each conducting object and its vias and/or terminals
+is computed using the algorithm used by the {\vt ExtractRL} function. 
+The resistance of the connected network is then computed, with respect
+to the terminals specified.
+
+The first argument is a handle to a list of objects as returned from
+{\vt FindPath} or {\vt FindPathOfGroup}.
+
+The second argument is a string giving a file name, which will contain
+a generated SPICE listing representing the extracted resistor network. 
+In the SPICE file, each terminal and each via are assigned node
+numbers.  A comment indicates the range of numbers used for terminals. 
+If this argument is 0 (NULL) or an empty string, no SPICE file is
+written.
+
+The third argument is an array which will hold the return values,
+which will be resized if necessary.  The zeroth component of the array
+gives the number of returned values, which are returned in the rest of
+the array.  If there are two terminals, the number of returned values
+is 1.  For more than two terminals, the number of returned values is
+{\it n\/}{\vt *}({\it n\/}--1)/2, where {\it n} is the number of
+terminals.  The values are the effective two-terminal decomposition
+for terminals {\it i\/},{\it j} ({\it i} {\vt !=} {\it j\/}) in the
+order, e.g., for {\it n} = 4; 01, 02, 03, 12, 13, 23.
+
+The following arguments are trapezoid lists representing the
+terminals.  Arguments that are not trapezoid lists will be ignored. 
+There must be at least two terminals passed.  Terminal areas should be
+spatially disjoint, and in the computation, the terminal areas are
+clipped by the conductor area.  Terminals are assigned numbers in
+left-to-right order.
+
+The return value is always 1.  The function will fail (terminating the
+script) if an error is encountered.
+
+\end{description}
 
 !!SEEALSO
 funcs:ext

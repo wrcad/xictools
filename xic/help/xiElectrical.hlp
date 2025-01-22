@@ -1233,4 +1233,1058 @@ Electrical Schematic Editing
     representations by performing layout vs.  schematic (LVS) testing. 
     This is one of the functions which can be found in the <a
     href="xic:extmenu"><b>Extract Menu</b></a>.
+!!LATEX elecedit using.tex
+The electical mode of {\Xic} allows a schematic representation of the
+cell to be entered.  This electrical representation is used to
+generate a SPICE file for simulation purposes, by {\WRspice} or
+another simulator.  The electrical representation can be generated or
+updated from the physical layout, if extraction has been properly set
+up, and can be compared with the physical representation to identify
+wiring errors.
+
+\index{cell hierarchy}
+The electrical representation of a hierarchy of cells follows the same
+hierarchy as the physical cells, for the most part.  Physical cells
+that contain wire only, i.e., no devices or subcircuits, generally do
+not have an electrical-mode counterpart.  Such cells are effectively
+flattened into their parents in the electrical representation.  The
+physical implementation of devices can include structure from
+subcells.  In this case, the electrical implementation of the device
+is in the electrical cell corresponding to the top-level physical cell
+containing the device geometry.
+
+One does not need a physical representation in order to use electrical
+mode.  In this case, {\Xic} is used exclusively as a schematic capture
+front-end for {\WRspice} or another SPICE-compatible simulator.
+
+This section will focus on the mechanics of schematic entry and
+simulation using {\WRspice}.  The chapter on extraction (\ref{chpext})
+will provide detail on how the electrical and physical data can be
+made to interact.
+
+To produce a schematic cell, one follows this basic outline:
+\begin{enumerate}
+\item{Devices from the device menu or some other source are placed at
+  various locations in the drawing.  Also, subcircuits from the user's
+  library are similarly added to the drawing.}
+
+\item{The devices and subcircuits are wired together.}
+
+\item{Properties are given to the devices, which designate component
+  values, models referenced, or other information.}
+
+\item{If the cell is to be used as a subcircuit in another schematic,
+  connection points are added, and possibly a symbolic representation
+  defined.}
+
+\item{A SPICE file representing the present hierarchy can be generated
+  at this point, or, if the circuit is top-level (not used as a
+  subcircuit) interactive simulation using {\WRspice} is possible.}
+\end{enumerate}
+
+The following sections will describe these steps in more detail.
+
+A prerequisite for using electrical mode is basic knowledge of the
+SPICE syntax and SPICE file format.  One does not need to be an
+expert, but a certain proficiency is assumed for such steps as
+property setting.  It is recommended that users unfamiliar with SPICE
+skim the {\WRspice} manual or other reference.
+
+% 040316
+\subsection{Placement of Devices and Subcircuits}
+\index{device placement}
+
+{\Xic} is distributed with a representative device library, which is
+contained in a file named {\vt device.lib} found in the installation
+startup directory.  This contains most if not all of the devices
+supported by {\WRspice}, however it may be necessary to customize this
+file to the user's unique requirements.  The format of this file is
+described in the appendix.  The devices found in the device library
+file are those listed in the device menu, which is available while in
+electrical mode.
+
+%\ifoa
+Devices can also be supplied in cell files, or from an OpenAccess
+database.  For example, it is feasible to use devices from the {\vt
+analogLib} library from a Virtuoso installation, or from a foundry
+design kit.
+%\fi
+
+\index{device menu}
+{\Xic} usually starts in physical mode, though if given the {\et -E}
+option on the command line {\Xic} will start in electrical mode.  To
+switch from physical to electrical mode, press the {\cb Electrical}
+button in the {\cb View Menu}.  {\Xic} will reconfigure the side menu,
+and display the schematic for the current cell (if any).  Pressing the
+{\cb devs} button in the side menu will bring up a device menu which
+extends across the top of the main {\Xic} window.  There are two
+styles of device menu available.  The default menu consists of an
+array of lettered buttons.  Pressing button 1 while the pointer is
+over one of these buttons will cause a drop-down menu to appear, which
+consists of more buttons containing device names.  The first letter of
+these devices is that on the original button.  A device can be
+selected by releasing button 1 while the pointer is over the desired
+button.
+
+A second device menu style consists of panels containing the names and
+schematic symbols of the various devices with perhaps a button with a
+right-pointing arrow, if the selections do not entirely fit on-screen. 
+Clicking on the arrow button will show the devices which did not fit
+in the initial menu.  This menu has the disadvantage of occupying a
+lot of screen space, but it may be easier for new users.
+
+Both menu styles contain a button that switches to the other style of
+menu.  The present style will be used until changed by the user.  The
+style used is completely arbitrary, and simply a user-preference.
+
+Clicking on one of the device panels in the pictorial menu, or
+releasing button 1 on a selection in the pull-down menu will attach
+the schematic symbol to the mouse pointer.  Then clicking in the
+drawing window will leave instances of that device at those locations. 
+Press {\kb Esc} to exit this mode.  This is the means by which devices
+are added to the circuit.  New devices can also be produced by using a
+copy operation (a button 1 operation, or explicitly using the {\cb
+Copy} command in the {\cb Modify Menu}) from an existing device in the
+circuit.
+
+\index{subcircuit placement}
+\index{Place button}
+The user may have already designed one or more circuits using {\Xic},
+which are then available for use as subcircuits in the present
+schematic.  The details of how to create a ``true'' subcircuit will be
+presented shortly; for now, assume that such cells already exist. 
+Subcircuits are called and placed with the {\cb place} command in the
+side menu, in the same manner as subcells in physical mode. 
+After pressing the {\cb place} button, the {\cb Cell Placement
+Control} pop-up will appear, which allows the user to select a cell to
+place from cells that have been placed previously, or to enter a new
+cell name to place.  The cell name can be dragged from the {\cb File
+Selection} panel or from the List pop-ups in the {\cb File Menu}.  In
+addition, the {\cb List} pop-ups contain a {\cb Place} button which
+will also set the name of the current ``master'' cell to be placed,
+and pop up the {\cb Cell Placement Control} pop-up if it is not
+already visible.  When the {\cb Place} button in the {\cb Cell
+Placement Control} pop-up is active, the current ``master'' will be
+``attached'' to the mouse pointer, and instances will be placed at
+locations where the user clicks with mouse button 1 in the drawing. 
+The placement mode can be exited by pressing the {\kb Esc} key, or by
+unsetting the {\cb Place} button in the {\cb Cell Placement Control
+pop-up}.
+
+Once devices and subcircuits have been placed in the drawing, they can
+be moved and copied as for physical cells.  Not all of the
+transformations of physical mode are available, however, from the {\cb
+xform} command in the side menu.  Specifically, rotations are limited
+to multiples of 90 degrees, and there is no magnification capability.
+
+% 062113
+\subsection{Semiconductor Devices}
+\index{devices}
+\index{mos devices}
+
+The device menu contains symbols for the semiconductor devices
+supported by {\WRspice}.  These include diodes, bipolar and junction
+field-effect transistors, MESFETs, and MOSFETs.
+
+\begin{tabular}{ll}\\
+\cb Device &     \cb Description\\
+\et dio & junction diode\\
+\et npn & npn bipolar transistor\\
+\et pnp & pnp bipolar transistor\\
+\et njf & n-channel junction field-effect transistor\\
+\et pjf & p-channel junction field-effect transistor\\
+\et nmes & n-MESFET\\
+\et pmes & p-MESFET\\
+\et nmos & n-MOSFET (3-terminal)\\
+\et pmos & p-MOSFET (3-terminal)\\
+\et nmos1 & n-MOSFET (4-terminal)\\
+\et pmos1 & p-MOSFET (4-terminal)\\
+\end{tabular}
+
+Unlike simple devices such as resistors and capacitors, which are
+fully specified by a value, these devices almost always require a
+model.  The model is specified with a {\et model} property, which is
+applied to the device in the same way that a {\et value} property is
+applied to a simple device.
+
+In order for {\Xic} to include the model in the SPICE file, the model
+must be available to {\Xic}.  Device models are provided to {\Xic}
+through a file read by {\Xic} when the program starts.  When {\Xic}
+starts, it traverses the library search path, looking for model files. 
+A model file is 1) a file usually named ``{\vt model.lib}'', in which
+case the first such file is read, or 2) any file found in a
+subdirectory usually named ``{\vt models}'' of a directory in the
+search path.  The names assumed (``{\vt model.lib}'' and ``{\vt
+models}'') can be changed in the technology file.
+
+The files that contain the models consist of the {\vt .model} lines
+for SPICE.  These blocks are placed one after another, with no order
+assumed.
+
+\index{model library file}
+Perhaps the simplest way to add a model to {\Xic} is through the {\vt
+model.lib} file.  A skeletal {\vt model.lib} file is provided with
+{\Xic}, in the startup directory.  Models added to this file will be
+available to all users.  If a copy of the {\vt model.lib} file is
+placed in the current directory, (which is always searched first) then
+that file will be used instead.  The first {\vt model.lib} file found
+in the library search path will be used.  This allows users to access
+their own custom {\vt model.lib} file.
+
+If large numbers of models are to be added, it may be more convenient
+to add a ``{\vt models}'' subdirectory to one of the directories in
+the library search path.  One may add a directory to the search path
+for this purpose.  In the models subdirectory, add the files
+containing the SPICE models.  The file names are unimportant, and all
+files found in the subdirectory will be searched.
+
+Each model block starts with
+\begin{quote}
+{\vt .model} {\it modname modtype} ....
+\end{quote}
+
+The {\it modname} is an arbitrary word which designates the model, and
+this should be unique among all of the models {\Xic} will find along
+the library search path.  The {\it modtype} is the SPICE name for the
+model for a given device, as specified in the {\WRspice}
+documentation.  The remaining text consists of parameter value
+assignments as per the documentation.  The {\it modname} should be
+used in a {\et model} property of the devices that are to use the
+model.
+
+\index{mos substrate bias}
+There are two different MOS device types:  the {\et nmos1}/{\et pmos1}
+devices contain stubs for all four nodes (gate, drain, source, and
+bulk).  The {\et nmos}/{\et pmos} devices automatically connect the
+bulk node to global nodes named NSUB and PSUB, respectively.  Most of
+the time, it is more convenient to use the {\et nmos}/{\et pmos}
+devices to avoid having to make explicit contact to the substrate
+nodes in the circuit, however one {\it must} remember to bias the NSUB
+and PSUB nodes.  To do this:
+
+\begin{description}
+\item{If there is one or more {\et nmos} devices in the circuit:}\\
+\begin{enumerate}
+\item{Add a voltage source to the schematic.}
+\item{Place a ground terminal on the negative terminal of the
+    voltage source.}
+\item{Place a {\et tbar} terminal device on the positive terminal of
+    the voltage source.}
+\item{Select the `tbar' label of this terminal device.}
+\item{Press the {\cb label} button (side menu), and change the name from
+    ``tbar'' to ``NSUB''.}
+\item{Add a {\et value} property to the voltage source to set the
+    substrate voltage.  This procedure is described below.}
+\end{enumerate}
+\item{If there is one or more {\et pmos} devices in the circuit:}\\
+Follow the same procedure above, however use ``PSUB'' as the name
+    for the {\et tbar} device.
+\end{description}
+
+This will provide a dc bias voltage to the common connection of all of
+the {\et nmos} and {\et pmos} bulk nodes in the circuit.  The value of
+NSUB is usually equal to the most negative supply voltage in the
+circuit, and the value of PSUB is usually equal to the most positive
+voltage in the circuit.
+
+% 062113
+\subsection{Wiring Devices and Subcircuits}
+\index{connecting devices}
+
+Once the devices and subcircuits have been placed, wires can be added
+to make connections between them.  This is not typically a two-step
+process, as most users build a schematic by mixing placement and wiring
+operations.
+
+First, it should be stressed that connections do not always require
+wires, and in particular it is often most convenient to make
+connections between devices by abutment.  Devices and subcircuits have
+specific local coordinates where a connection is possible.  In a
+device, these are typically at the end of the wire stubs shown as part
+of the device symbol.  In subcircuits, these are the terminal
+locations defined by the designer of the subcell, and can be made
+visible with the {\cb terms} button in the side menu.  When moving or
+placing a device, or creating a wire, visual feedback is provided when
+the mouse pointer is over a possible connection point.  Connections
+can only occur at the connection points.  The {\cb Connection Dots}
+button in the {\cb Attributes Menu} can be used to draw a dot at all
+connection locations.
+
+\index{gnd device}
+\index{tbar device}
+The devices in the device menu should mostly be familiar to users of
+SPICE.  There are special terminal ``devices'' that can be used
+instead of wires to provide interconnections.  These are the ``{\et
+gnd}'', ``{\et tbar}'' and equivalent terminals.  In the first case,
+the symbol is of a ground connection, and it provides exactly that. 
+At least one point of every circuit must be grounded, or the SPICE
+simulation may fail.  The {\et tbar} terminal is more general purpose. 
+As it is, this terminal will tie all locations attached to such
+terminals together.  This is a convenient way of distributing a power
+net, for example.  If the name label of the {\et tbar} device is
+changed, then all locations attached to terminals with this name will
+form a {\it different} network.  The easiest way to change the name is
+to click on the ``tbar'' label of an existing {\et tbar} device (thus
+selecting the label), then press the {\cb label} button in the side
+menu.  The user will be prompted for a new string.  Once the new
+string has been entered, the label will be updated, and the terminal
+can be copied to other locations to from the network.
+
+\index{SCED layer}
+\index{wire connections}
+Remaining connections are made with the {\cb wires} button in the side
+menu, which has an icon that looks like a sideways L.  Before
+generating wires for connections, the user should make sure that the
+current layer is the ``SCED'' layer.  Wires on this layer are
+electrically active.  Wires created on other layers are for decoration
+purposes only, unless the {\et WireActive} flag is set for the layer.
+
+Wires are used to connect the devices together by clicking on the
+vertex locations of the wires.  The vertices must be on the contact
+points of devices and subcircuits, i.e., the ends of the connecting
+wire stubs of the devices, and the terminal locations of subcircuits. 
+These vertices are created automatically in horizontal or vertical
+wire segments which cross over contact points.
+
+One of the problems that some new users encounter is that contact is
+not made due to improper placement of wires in relation to device
+contact points.  To reiterate the previous discussion, only the ends
+of the wire stubs of devices are ``active'', and these must physically
+coincide with a wire vertex.  Although a vertex will generally be
+created if necessary in an intersecting wire, new users should form
+the habit of explicitly creating a vertex, by clicking on the contact
+point while creating the wire,
+
+\index{chlyr button}
+In electrical mode, the first layer in the layer table is a layer
+named ``SCED''.  This is an active wiring layer, and by default only
+this layer can be used for electrically significant wires.  The layer
+named ``SPTX'' is also active, in that labels on this layer are
+included in the SPICE text generated for the cell.  Other layers are
+used for visual purposes only (such as color-coding the displayed
+property labels), or for temporary ``storage'' of parts of the circuit
+not in use.  The {\cb Chg Layer} button in the {\cb Edit Menu} is used
+to change the layer of objects.
+
+\index{electrical layers}
+The additional layers can be used for anything, but serve the
+following purposes:
+
+\begin{quote}
+\begin{tabular}{ll}
+\sc SCED & active wiring layer\\
+\sc SPTX & active label layer\\
+\sc NAME & device/subcircuit {\et name} property labels\\
+\sc MODL & device {\et model} property labels\\
+\sc VALU & device {\et value} property labels\\
+\sc PARM & device/subcircuit {\et param} property labels\\
+\sc NODE & terminal label\\
+\sc ETC1 & general purpose\\
+\sc ETC2 & general purpose\\
+\end{tabular}
+\end{quote}
+
+\index{Connection Dots button}
+\index{vertex editor}
+The {\cb Connection Dots} button can be used to show dots at
+connection points.  New users often appreciate the feedback provided
+by the {\cb Connection Dots} button that a connection has been made. 
+One has a choice of whether dots appear at every connection, or only
+at those likely to be ambiguous.  When a wire is created, if it runs
+over a device terminal or a vertex of another wire while horizontal or
+vertical, a vertex is generated, which implies a connection.  Two
+wires crossing do not connect, unless a vertex existed in one of the
+wires at the crossing point.  Sometimes, is is desirable to remove a
+connection, or to enforce a connection of two crossing wires.  This
+can be accomplished with the vertex editor available with the {\cb
+wires} button.  First, select the wire by clicking on it.  After
+pressing the {\cb wires} button, each vertex of the wire will be shown
+with a small box.  Clicking on a vertex box will select that vertex,
+and allow the vertex to be dragged to a new location or deleted.  In
+either case, the connection to an underlying vertex or device terminal
+will be broken.  To add a vertex, click on the selected wire at the
+point where the vertex is to be added.  A new vertex box will appear. 
+If there is an underlying device terminal or wire vertex, a connection
+will have been established.  If two wires cross with neither wire
+having a vertex at the crossing point, adding a vertex to one of the
+wires will automatically add a corresponding vertex to the second wire
+if the second wire is horizontal or vertical at the crossing point.
+
+% 030715
+\subsection{Adding Properties to Devices}
+\index{device properties}
+
+\index{properties!adding}
+\index{prpty button}
+\index{Property Editor}
+Once the devices have been placed, device properties can be assigned. 
+This is the method by which {\Xic} knows the values, models, and other
+characteristics of the devices.  Device properties are initially added
+with the {\cb Property Editor} brought up by the {\cb Properties}
+button in the {\cb Edit Menu}.  The {\cb Property Editor} contains a
+text window showing the properties of a selected device, if any.  The
+features and capabilities of the {\cb Property Editor} are rather
+complicated, and are described fully in the section of this manual
+(\ref{prptybut}) describing the {\cb Properties} command in the {\cb
+Edit Menu}.  This section will describe some of the basic operations.
+
+At this point there are four properties of interest:  {\et devref},
+{\et value}, {\et model}, and {\et param}.  The purpose of the {\et
+devref} property is to hold the name of a device whose current is to
+be referenced.  This is used by the current-controlled sources and
+switch devices only.  The {\et value} and {\et model} are just
+different names for the same underlying text field, thus a device
+should not be assigned both a {\et value} and a {\et model} property. 
+The {\et param} property will hold text for initial condition and
+parameter assignment.
+
+The string for a device, which will be generated in SPICE output, has
+the generic form
+
+\begin{quote}
+  {\it device\_name node\_list} [{\it dev\_ref\/}] {\it model\_or\_value}
+  [{\it parameters\/}]
+\end{quote}
+
+The current-controlled dependent sources and switch require a 
+{\et devref} property.  This should not be used in other devices.
+Every device should have a {\et model} or {\et value} assigned.  The
+parameter ({\et param} property) is optional, but may be needed for
+certain devices for particular types of simulation.  It is also used
+to provide parameter values, such as the width or length of a MOSFET. 
+This is where knowledge of the SPICE syntax is necessary, in order to
+know what parameters are required for a given device.
+
+For simple devices such as resistors, only a {\et value} property is
+generally required.  To apply a {\et value} property, with the {\cb
+Property Editor} visible, click on the device to receive the
+property.  The editor will list any existing properties, and the
+selected device will be highlighted.  From the {\cb Add} menu of the
+{\cb Property Editor}, press the {\cb Value} button, and enter the
+value on the prompt line, followed by {\kb Enter}.  A label showing
+the new value will appear next to the selected device.
+
+The ``value'' can be just about any string, so it is important that
+this input have relevance to SPICE.  The format of the numerical
+entries is as recognized by SPICE, in MKS units.  One common error is
+to leave off the units, e.g., entering ``{\vt 50}'' for the value of a
+capacitor when the correct entry should be ``{\vt 50fF}''.  Of course,
+``{\vt 50e-15}'' would suffice as well in this case.
+
+The {\cb Global} button on the {\cb Property Editor} can be used to
+set the properties of several devices at once.  The {\cb Edit} button
+can be used to edit an existing property.  Once a property has been
+assigned to a device, copies of the device will contain the same
+property, thus it may be preferable to assign properties in part early
+in the placement step, and generate copies of similar devices rather
+than placing new instances.
+
+Once a property has been assigned, it can be changed with the label
+editor, thus the {\cb Property Editor} needs to be invoked only for
+the initial assignment.  To change the value of any editable property,
+select the label displaying that value (you can select properties in
+multiple devices).  Then, press the {\cb label} button in the side
+menu.  This will prompt for a new value, and when given, all of the
+selected labels will be updated with the new value, and the underlying
+properties will have been changed.
+
+% 010914
+\subsection{Creating Subcircuits}
+\index{subcircuit creation}
+
+\index{subcircuit terminals}
+In order for a cell to be a valid subcircuit, i.e., electrically
+active when placed into another cell, one or more contact terminal
+locations must be defined.  This is accomplished with the {\cb subct}
+button in the side menu.  When this button is pressed, the user may
+click on contact points within the circuit to define contact
+locations.  Only valid contact points can be selected, i.e., the point
+must fall on a wire vertex, or a contact point of a device or
+subcircuit.  When a valid point is clicked on, a boxed digit will
+appear at the location, and a pop-up window will appear allowing the
+user to set the name and other properties of the terminal.  If no name
+is given, {\Xic} will use a default name.
+
+Clicking on an existing terminal will start a move operation on the
+terminal, attaching its outline to the mouse pointer.  Pressing the
+{\kb Delete} key at this point will delete the terminal.  Clicking on
+a terminal with the {\kb Shift} key held, or double-clicking, will
+bring up the terminal editing window for the terminal, allowing
+modification of its properties.
+
+The {\cb terms} button in the side menu, when on, will display the
+terminal locations, as well as the terminal locations of subcells in
+the drawing.
+
+Subcells will most often have terminals defined, which are the
+connections points to the cell.  It is possible, though, that a
+subcell will have no terminals, if connection is made via global nets. 
+Imagine a subcell containing only a capacitor, which is connected to
+global nets {\vt vdd!} and ground.  Adding an instance of the cell is
+equivalent to adding a decoupling capacitor.
+
+It is possible, after an instance of a cell has been placed, to use
+the {\cb Push} command to push into the new cell, and define
+additional subcircuit contacts, and pop back to the parent cell.
+
+\index{symbolic representation}
+\index{symbl button}
+In some cases, it is preferable that the subcell be displayed as a
+symbol, rather than a schematic, when expanded.  For example, if the
+subcell represents an AND gate, and there are many instances of the
+subcell, the drawing of the parent cell will appear much neater if the
+AND gate cell is represented by an AND symbol rather than  its full
+schematic.  One can define such a representation with the {\cb symbl}
+button in the side menu.
+
+On pressing the {\cb symbl} button for a cell without a previous
+symbolic representation defined, the schematic will disappear, and the
+screen will be blank.  One is free to use the objects from the {\cb
+shapes} menu, wires, and labels, on any of the layers, to construct a
+symbol which will be displayed for that cell.  When the new drawing is
+complete, the {\cb subct} button should be pressed again.  This will
+make the contact point indicators visible, however they will be in
+arbitrary locations.  The user should move the terminals to where they
+belong in the symbolic representation, by dragging them with the left
+mouse button.  Unlike in the normal schematic representation, the
+terminals can be placed anywhere.  It is possible to copy terminals by
+holding {\kb Shift} during the ``move'', so that the symbol may have
+multiple connection points for the same terminal.
+
+New terminals can be added, or terminals deleted, only by returning to
+schematic mode, and similarly the schematic can be edited only by
+returning to schematic mode.  The display status of the cell is set by
+the status of the {\cb symbl} button when it was saved to disk, or
+last edited if it is still in memory.
+
+% 062113
+\subsection{Node and Device Naming}
+\index{node naming}
+
+\index{name property}
+{\Xic} will assign names and node numbers to the device, subcircuits
+and nodes in the circuit, by default.  These will be unique numbers
+for each type of device and for each node.  One problem, however, is
+that these numbers will change when the circuit topology is changed. 
+Often, the SPICE output may be used by another application, that may
+need to access circuit node voltages, for example, in a predictable
+way.  Thus, {\Xic} has provision for assigning an immutable name to
+wire nets, and to devices and subcircuits.
+
+By default, device names are assigned by {\Xic} as the device key
+letter followed by an integer that {\Xic} generates.  This can be
+overridden by assigning a {\et name} property to the device.  The
+procedure is identical to assigning the properties that we have
+discussed previously.  The {\cb Name} button in the {\cb Add} menu of
+the {\cb Property Editor} is used.  Although the string that is
+entered as the name property can be anything, there are some very
+important constraints for correct SPICE output.
+
+\begin{enumerate}
+\item{The first letter of the name must be the same (case insensitive)
+  as the default name.  This is the `key' that identifies the type of
+  device in SPICE.}
+
+\item{The name should be a single word containing alpha-numeric
+  characters only.}
+
+\item{The name should be unique in the circuit.}
+\end{enumerate}
+
+Although {\Xic} provides flexibility in assigning this property, SPICE
+simulations will fail unless these constraints are observed.  Once the
+name property is assigned to a device, that name, rather than the
+default, will be used to reference the device.  The name will appear
+in a label next to the device on-screen.  As we have previously seen,
+the name can be modified subsequently with the label editor.
+
+The procedure for assignment of names to subcircuits is identical. 
+The `key' letter for subcircuits is `{\vt X}'.
+
+\index{node mapping editor}
+The node mapping editor, which appears when the {\cb nodmp} button in
+the side menu is pressed, is used to assign names to nodes.  A
+``node'' is SPICE terminology for a collection of one or more device
+and subcircuit terminals that are connected together.  Each node is
+given a unique number by {\Xic}, which is used as the node ``name'' in
+SPICE output.  The node mapping editor allows the node to have an
+assigned name, which will be used instead.
+
+\index{nodmp button}
+Full information on the node mapping editor can be found in the
+section describing the {\cb nodmp} command (\ref{nodmp}).  Here, we
+will briefly outline its use.  The left panel of the node mapping
+editor contains a list of the circuit nodes, with the left column
+containing the internal number, and the right column containing the
+assigned name, if any.  Selecting an entry in this list will cause the
+device terminals for that node to be listed in the right panel, and
+these will be highlighted in the schematic.  Pressing the {\cb Rename}
+button will prompt the user for a name for that node.  This can be any
+word consisting of alpha-numeric characters.  This word will be used
+in SPICE output to designate the node, rather than the number.
+
+% 062113
+\subsection{Connectivity Overview}
+\label{connect}
+\index{connections}
+
+Thus far we have described the basic methodology for producing a
+schematic.  Armed with this information, users can quickly produce
+schematics of simple circuits.  However, a lot has been skipped over,
+including the use of multi-conductor nets and vectorized instances. 
+This section will review the basic connectivity concepts, and
+introduce these new topics.
+
+Devices and subcircuits generally have ``pins'' which are hot-spots in
+the drawing where connection can occur.  These hot spots may or may
+not be marked in the device or subcircuit symbol or schematic.  In any
+case, pressing the {\cb terms} button in the electrical side menu will
+cause the display of terminal symbols at these locations.
+
+The current cell will have its own terminal locations, if any have
+been defined with the {\cb subct} command in the side menu.  These
+will be the connections points to instances of the current cell.
+
+Establishing connectivity in the schematic involves logically grouping
+the device, subcircuit, and cell terminals that should be connected. 
+Each such group is termed a ``net''.  There are a number of ways to
+define this grouping.
+
+\begin{enumerate}
+\item{Most commonly, a wire is placed by the user using the {\cb wire}
+command in the side menu.  To establish connectivity, a vertex of the
+wire must be at a connector hot-spot.  If the {\cb dots} display is
+enabled, a dot may be shown at the connection points.}
+
+\item{Connection points whose hot-spots are placed at the same
+location will be connected.}
+\end{enumerate}
+
+These two methods illustrate connection by location.  It is also
+possible to use connection by name.  For this, one must use named
+nets.  Looking ahead just a bit, it is possible for a net to be scalar
+(single conductor) or multi-conductor.  The type of net is described
+by the name, which is interpreted as a ``net expression'', which is a
+syntax which allows detailed definition of the conductors in the net.
+
+There are several ways by which a net can acquire a name.
+\begin{enumerate}
+\item{Nets connected to named cell terminals will have the same name
+as the cell terminal, but only if the terminal has an applied name. 
+Names can be given to cell terminals with the {\cb subct} command in
+the side menu.}
+
+\item{A scalar (single conductor) net can be assigned a name with the
+{\cb Node (Net) Name Mapping} panel brought up with the {\cb nodmp}
+button in the side menu.  This name has priority over the ``candidate
+names'' applied with wire labels or terminal devices.}
+
+\item{A candidate net name will be supplied by associated labels of
+wires in the net.  A label is given to a wire through the
+    following procedure.
+
+\begin{itemize}
+\item{In electrical mode, select a single wire, which shall receive a
+name.}
+
+\item{Press the {\cb label} button in the side menu.}
+
+\item{Type the label text in the prompt line, and press the {\kb
+Enter} key.}
+
+\item{The label is ghost-drawn and attached to the mouse pointer. 
+Resize or rotate the label if desired, and click in the drawing near
+the selected wire to place the label.  This completes the operation.}
+\end{itemize} }
+
+\item{A candidate net name can also be supplied by placing a terminal
+device from the device library in contact with the net.  The device
+library provides several terminal styles.  Each has a label that can
+be edited to apply a net name.  Once placed, the label can be
+selected, the {\cb label} button pressed, and new label text entered.}
+\end{enumerate}
+
+A scalar net may have multiple ``candidate names'', and each can be
+used to establish connections by name.  However, the single name
+chosen to represent the net in netlist output will be the name that
+comes first in alphabetical order.
+
+Nets that otherwise appear disjoint but have a common name are
+actually connected.  This illustrates connect by name.  In fact, it is
+possible to draw perfectly good schematics without using wires, by
+using terminal devices only.  The schematics produced by {\Xic} from
+SPICE files or physical extraction use this approach.
+
+{\Xic} supports multi-conductor wire nets in schematics, using a
+syntax and methodology that should be familiar to users of Cadence
+Virtuoso.  The net name uses a syntax which describes the net. 
+Unnamed nets will assume the characteristics of connected terminals. 
+
+There are three types of net.
+\begin{description}
+\item{Scalar nets}\\
+Single-conductor ``scalar'' nets provide the basic connectivity
+description in a schematic, and are the only electrical nets that may
+have a counterpart in the physical layout.
+
+A scalar net name consists of a simple name, or an indexed vector
+name, in a format to be described.
+
+\index{vector nets}
+\item{Vector nets}\\
+A vector net contains multiple conductors, accessible as indices in a
+range, with a common base name.  A name specifying a vector net may
+have the form
+\begin{quote}
+{\it basename\/}{\vt [}{\it start\/}{\vt :}{\it end\/}{\vt ]}
+\end{quote}
+
+The {\it start} and {\it end} are non-negative integers.  The two
+colon-separated numbers provides a range of subscripts which identify
+the individual conductors, or ``bits'', of the net.
+
+For example, the vector net ``{\vt foo[3:0]}'' consists of four
+conductors, in order ``{\vt foo[3]}'', ``{\vt foo[2]}'', ``{\vt
+foo[1]}'', and ``{\vt foo[0]}''.  Note that the range values can be
+ascending or descending.
+
+In {\Xic}, the square brackets can be replaced by {\vt <...>} or {\vt
+\{...\}}.  That is, for subscripting in {\Xic}, square brackets, curly
+brackets, and angle brackets are equivalent.  This documentation will
+use square brackets.
+
+Vector nets differ fundamentally from scalar nets in {\Xic} in that
+they simply reference scalar nets.  The scalar nets actually provide
+the electrical connections, and the correspondence between layout and
+schematic.  The vector and multi conductor nets in general simply
+provide an organizational framework for the scalar nets.
+
+In particular, this requires that each ``bit'' of a vector net have an
+existing scalar net of the same name.  In the example above, for the
+vector net {\vt foo[3:0]} to be valid, the individual scalar nets {\vt
+foo[3]} etc.  must exist.
+
+\index{bundle nets}
+\item{Bundle nets}\\
+A bundle net is a net of nets.  Its name is a net expression
+consisting of comma-separated names of scalar and vector nets.  Some
+examples would be
+\begin{quote}
+{\vt a,data[0:7],addr[2]}\\
+{\vt b0,b1,b2}
+\end{quote}
+
+These are simple cases of a net expression which describes the
+conductor sequence of a general net.  Net expressions and vector
+expressions may be familiar from Cadence Virtuoso, and in fact the
+same operations and syntax are supported.
+\end{description}
+
+% 062313
+\subsection{Net and Vector Expressions}
+\label{netex}
+\index{net expression}
+
+The name of a net is parsed as an expression using a set of rules to
+be described.  The result of this interpretation is that each
+conductor (``bit'') of the net has a well-defined name, which is
+associated by name with all other nets in the cell with bits of a
+matching name.
+
+We say ``matching'' rather than ``the same'' as {\Xic} will ignore the
+different subscripting characters.  In {\Xic}, square, curly, and
+angle brackets are accepted for subscripting, thus the forms {\vt
+foo<2>}, {\vt foo[2]}, and {\vt foo\{2\}} are equivalent ane can be
+freely intermixed in the design.
+
+A net expression consists of one or more comma-separated
+{\it terms\/}.
+\begin{quote}
+{\it net expression} = {\it term\/}[{\vt ,}{\it term\/}]...
+\end{quote}
+
+A {\it term} has the general form
+\begin{quote}
+{\it subterm} = {\it name\/}[{\it vector expression}]\\
+{\it multiplier} = {\vt [*}{\it N\/}{\vt ]}, or\\
+{\it multiplier} = {\it N\/}{\vt *}\\
+{\it term} = [{\it multiplier\/}]{\it subterm\/}, or\\
+{\it term} = [{\it multiplier\/}]{\vt (}{\it term\/}[{\vt ,}{\it term\/}]...{\vt )}
+\end{quote}
+
+The basic element of a {\it term} is a {\it subterm\/}, which consists
+of a name optionally followed by a {\it vector expression\/}.  The
+{\it name} is an alphanumeric text name.  The {\it vector expression}
+represents subscripting to be described.
+
+An optional {\it multiplier} can prefix the {\it term\/}.  This is an
+integer {\it N\/}, and a literal asterisk, in one of the forms shown. 
+Here, the literal square brackets can be replaced by curly brackets or
+angle brackets equivalently.  Both forms of the multiplier prefix are
+equivalent.  The effect of the multiplier is to repeat what follows
+{\it N} times.
+
+The second form of the {\it term} allows for a list of {\it terms\/},
+separated by commas and enclosed in parentheses.  The commas and
+parentheses are literal.  This allows the multiplier to cause
+repetition of the group of terms.
+
+The multiplier provides a shorthand way to express repetitions, but is
+not required.  Below are some examples and equivalences.
+\begin{quote}
+{\vt 3*A} = {\vt A,A,A}\\
+{\vt 2*(A,B)} = {\vt A,B,A,B}\\
+{\vt 2*(A,2*B)} = {\vt A,B,B,A,B,B}
+\end{quote}
+
+In each case, the shorthand on the left is equivalent to the ordering
+on the right.  The {\vt A} and {\vt B} are scalar conductor names. 
+The third line above, for example, describes a six-conductor net with
+the net bits connected to either net {\vt A} or {\vt B} in the order
+shown.
+
+\index{vector expression}
+A {\it vector expression} represents a sequence on integers, each
+representing a conductor index.
+\begin{quote}
+{\it bit} = {\it N}\\
+{\it range} = {\it N\/}{\vt :}{\it M\/}[{\vt :}{\it S\/}]\\
+{\it postmult} = {\vt *}{\it N}\\
+{\it vector expression} = {\vt [}{\it bit\/}$|${\it range\/}[{\it postmult\/}][{\vt ,}...]{\vt ]}\\
+{\it vector expression} = {\vt [}{\vt (}{\it vector expression\/}[{\vt ,}...]{\vt )}[{\it postmult\/}][{\vt ,}...]{\vt ]}
+\end{quote}
+
+Again, where literal square brackets are shown, curly brackets and
+angle brackets are equivalent in {\Xic}.  The elemental decomposition
+of a vector expression is a comma-separated list of non-negative
+integers.  A {\it bit} constitutes one such integer.  A {\it range} is
+specified by two or three colon-separated non-negative integers.  In
+the simplest and most common form, the range consists of two integers
+and represents the two integers and all intermediate integers, in
+order.  If a third integer is given, this represents the increment. 
+The number sequence consists of the start value, and multiples of the
+increment, terminating at the final value that would not fall outside
+of the range.  Note that the increment is always a positive value,
+whether the range values are decreasing or increasing.  Below are some
+examples.
+
+\begin{quote}
+{\vt [3:0]} = {\vt [3,2,1,0]}\\
+{\vt [3:0:2]} = {\vt [3,1]}\\
+{\vt [1:4]} = {\vt [1,2,3,4]}\\
+{\vt [1:4:4]} = {\vt [1]}
+\end{quote}
+
+Either can be followed by a {\it postmult} multiplier, which causes
+each element of the sequence to repeat.
+\begin{quote}
+{\vt [0*2]} = {\vt [0,0]}\\
+{\vt [3:0*2]} = {\vt [3,3,2,2,1,1,0,0]}\\
+{\vt [1:4:4*2]} = {\vt [1,1]}
+\end{quote}
+
+The final form illustrates use of literal parentheses and commas to
+associate a list of vector expressions to a post-multiplier.  The
+entire list will be repeated.  The parentheses can be nested to
+arbitrary depth.
+
+\begin{quote}
+{\vt [(1,3:5)*3]} = {\vt [1,3,4,5,1,3,4,5,1,3,4,5]}\\
+{\vt [(1,(2,3*2)*2,4:6)*2]} = {\vt [1,2,3,3,2,3,3,4,5,6,1,2,3,3,2,3,3,4,5,6]}
+\end{quote}
+
+% 062113
+\subsection{Vectored Instances}
+\label{vecinst}
+\index{vectored instance}
+
+Device and subcell instances can be scalar or vectorized.  By giving
+an instance a {\et range} property with the {\cb Property Editor} from
+the {\cb Edit Menu}, the instance will become vectored.  The single
+schematic representation in the drawing of a vectored instance
+actually corresponds to multiple ``bit'' instances.  This can greatly
+clarify schematics with repeated circuit blocks.
+
+The connections to a vectored instance are all multi-conductor nets
+(assuming that the array range contains more than one element).
+
+% 062113
+\subsection{Connection Rules}
+\index{connection rules}
+
+The following rules are applied when connecting by location.
+
+\begin{enumerate}
+\item{Any named scalar net can connect to any other named (or unnamed)
+scalar net.  A scalar net can have any number of associated names,
+each of which is a valid target for connect by name.}
+
+\item{If a scalar net connects to a non-scalar net, the scalar bit
+will connect to each bit of the non-scalar net.}
+
+\item{A net connecting to a vectored instance terminal must have a
+width equal to one of the following:
+
+\begin{itemize}
+\item{The total connection width, given by the pin width multiplied by
+the vector instance width.  For example, suppose that the instance is
+arrayed {\vt [0:3]} and the pin is {\vt A[0:1]}.  Suppose that the
+connecting net is {\vt net[7:0]}.  Then, all is well as the widths
+match, and connections will be as shown.
+
+\begin{quote}
+{\vt net[7]} = {\vt X[0]A[0]}\\
+{\vt net[6]} = {\vt X[0]A[1]}\\
+{\vt net[5]} = {\vt X[1]A[0]}\\
+{\vt net[4]} = {\vt X[1]A[1]}\\
+{\vt net[3]} = {\vt X[2]A[0]}\\
+{\vt net[2]} = {\vt X[2]A[1]}\\
+{\vt net[1]} = {\vt X[3]A[0]}\\
+{\vt net[0]} = {\vt X[3]A[1]}
+\end{quote}
+
+If the widths do not match, a warning will be issued.  {\Xic} will
+connect what it can, in an order like that above, but some bits will
+remain unconnected.}
+
+\item{The pin width.  In this case, a virtual multiplier prefix is
+applied to the net.  For the example above, but with {\vt net[1:0]}
+that matches the width of {\vt A[0:1]}, the connections would be
+
+\begin{quote}
+{\vt net[1]} = {\vt X[0]A[0]}, {\vt X[1]A[0]}, {\vt X[2]A[0]}, {\vt X[3]A[0]}\\
+{\vt net[0]} = {\vt X[0]A[1]}, {\vt X[1]A[1]}, {\vt X[2]A[1]}, {\vt X[3]A[1]}
+\end{quote} }
+
+\item{The width is one (scalar net).  In this case, all of the
+instance pin bits would connect to the same scalar net.}
+\end{itemize} }
+
+\item{Named multi-contact nets cannot connect to incompatible nets. 
+Two named nets are ``compatible'' if one is a ``tap'' of the other. 
+This will be described in the next section.  Violations generate an
+error message and no connection is made.}
+\end{enumerate}
+
+% 062113
+\subsection{Tap Wires}
+\index{tap wires}
+
+The concept of tap wires may be familiar from Cadence Virtuoso. 
+Tap wires are fully supported in {\Xic}.
+
+A wire is considered to be a ``tap'' of another wire if every bit in
+the first wire is included in the second.  Note that they may have
+very different bit order.
+
+If a wire is a tap for another, then the two wires are allowed to
+connect.  Note, however, that the visual connection may serve no real
+purpose, as the bits are already connected by name.  However, the
+visible indication of connectivity may make the schematic more
+readable.  The tap wire will allow connection to a subset of the
+conductors in the wire being tapped.
+
+An interesting special case is when the wire being tapped is a pure
+vector.  In this case (only), the tap wire label need not include a
+name, but only a vector expression.  Also in this case, a connection
+is required.  Then, the tap wire will obtain the name from the wire
+being tapped.
+
+For example, suppose that we have a net {\vt data[0:3]}, and we want
+to connect {\vt data[0]} to a scalar instance pin {\vt A}.  If we
+connect the {\vt A} pin directly to the {\vt data[0:3]} wire, all four
+bits of the wire would be connected to {\vt A}, which is not what we
+want.  Instead, create a new wire, connected to the original wire and
+to {\vt A}.  Give the new wire a label ``{\vt [0]}''.  This becomes a
+tap wire, connecting {\vt data[0]} to {\vt A}.
+
+% 062113
+\subsection{Generating Output and Running Simulations}
+\index{SPICE output}
+
+\index{deck button}
+\index{spice analysis}
+\index{run button}
+Once the device properties have been entered, the user can export the
+circuit for further analysis.  The {\cb deck} command in the side menu
+can be used to produce a SPICE file of the current hierarchy.  If the
+{\WRspice} program is accessible, the {\cb run} command in the side
+menu can be used to initiate analysis.  The user will be prompted for
+a SPICE analysis string, and the simulation will run.  A small window
+will appear that will inform the user when the analysis is complete.
+
+\index{plot button}
+After {\WRspice} analysis, circuit variables may be plotted.  The {\cb
+plot} command in the side menu allows the user to click on circuit
+nodes to plot.  After each click, the corresponding node is added to
+the string shown on the prompt line.  This string can be edited
+manually in the usual way, if necessary.  Pressing {\kb Enter} will
+terminate the string, and the plot will be displayed on-screen.  The
+{\cb iplot} button works similarly to the {\cb plot} button, though
+the plot will be generated dynamically during simulation on subsequent
+runs.  Plotting is available only through the {\WRspice} program.
+
+\index{properties!changing}
+\index{label button}
+Once properties have been entered, they are easy to alter without the
+use of the {\cb Properties} command.  The {\cb label} button in the
+side menu is used primarily to add annotation to the drawing. 
+However, if a label is selected before pressing the {\cb label}
+button, the existing label can be edited, rather than a new label
+created.  If the selected label is one of those created for a
+property, then that property can be altered merely by editing the
+label.  Thus, to change a property of a device, click on the label to
+select it.  Then, after pressing the {\cb label} button, enter the new
+text.  The circuit can then be re-simulated with the altered
+parameters.
+
+\index{hypertext}
+One feature of {\Xic} is the use of hypertext.  This is most evident
+when using the {\cb plot} command.  When the user clicks on a circuit
+node, the name of that node is entered, in color, on the prompt line.
+Note that when using the arrow keys to move the prompt text cursor
+across a node name, the cursor widens to underline the name, and the
+name otherwise behaves as a single character.  The name shown is a
+link to the internal database, and has the property that if the node
+number assigned to that contact point changes (it may, if the circuit is
+modified, as it is by default randomly assigned) the string will
+automatically be updated to the new node number.
+
+When creating a label, clicking on a connection point in the drawing,
+for example, will enter a hypertext link to the node into the label. 
+The label will always display the correct node number or name for the
+node.  This is the means by which node labels should be added to the
+drawing.
+
+\index{spicetext label}
+The same feature can be used to set up specialized spice output. 
+Suppose one wishes to use the {\cb save} command in SPICE.  A
+``spicetext'' label can be created, where the nodes to be included in
+the save are inserted in the label by clicking on the drawing.  When a
+SPICE file is produced, the contents of the ``spicetext'' labels is
+added to the deck.  The resulting save command will always save the
+clicked-on nodes, whether of not the actual internally generated
+number changes.
+
+The ``spicetext'' label is simply a label where the first word is
+``spicetext'' or ``spicetext{\it N}'' where {\it N} is an integer. 
+These labels have the property that any text following the
+``spicetext'' keyword is added to the SPICE output verbatim.  The
+optional integer that follows ``spicetext'' determines the order of
+appearance of the lines, where no integer is equivalent to 0.  This is
+the mechanism for placing arbitrary text into the SPICE output.
+
+This has been a brief introduction to the use of {\Xic} in electrical
+mode.  There are numerous commands and features, and many of the
+commands mentioned have not been fully described.  The easiest way to
+learn {\Xic} is to use it.  After switching to electrical mode, press
+the {\cb Help} button in the {\cb Help Menu}.  Pressing any button
+will bring up a description of that command.  Press {\kb Esc} to exit
+help mode.
+
+If a cell has both a physical layout and electrical schematic, there
+is provision for verifying consistency of the two representations by
+performing layout vs. schematic (LVS) testing.  This is one of the
+functions which can be found in the {\cb Extract Menu}, and the process
+is described in Chapter \ref{chpext}.
 

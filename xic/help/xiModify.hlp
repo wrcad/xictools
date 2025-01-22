@@ -69,6 +69,29 @@ Modify Menu
       <td><b>Layer Change Mode</b></td> <td>Set layer change mode for
       move/copy</td></tr>
     </table>
+!!LATEX xic:modifymenu modifymenu.tex
+The {\cb Modify Menu} contains commands which alter the current
+design, supplemental to the side menu.  Most of these commands have
+keyboard or mouse motion shortcuts, so an experienced user may not
+often use this menu.
+
+The table below summarizes the commands that appear in the {\cb Modify
+Menu}, including the internal command name and the command function.
+
+\begin{tabular}{|l|l|l|l|} \hline
+\multicolumn{4}{|c|}{\kb Modify Menu}\\ \hline
+\kb Label & \kb Name & \kb Pop-up & \kb Function\\ \hline\hline
+\et Undo & \vt undo & none & Undo last operation\\ \hline
+\et Redo & \vt redo & none & Redo last undo\\ \hline
+\et Delete & \vt delet & none & Delete objects\\ \hline
+\et Erase Under & \vt eundr & none & Erase under objects\\ \hline
+\et Move & \vt move & none & Move objects\\ \hline
+\et Copy & \vt copy & none & Copy objects\\ \hline
+\et Stretch & \vt strch & none & Stretch objects\\ \hline
+\et Change Layer & \vt chlyr & none & Move object to new layer\\ \hline
+\et Set Layer Chg Mode & \vt mclcg & {\cb Layer Change Mode} &
+ Set layer change mode for move/copy\\ \hline
+\end{tabular}
 
 !!SEEALSO
 xic:commands
@@ -101,6 +124,23 @@ Undo
     <p>
     When <i>Xic</i> is waiting for text input to the prompt line, the
     <b>Undo</b> and <b>Redo</b> commands are disabled.
+!!LATEX xic:undo modifymenu.tex
+The {\cb Undo} button in the {\cb Modify Menu} reverses the operations
+performed in the current cell.  These operations can be undone as long
+as the present cell is the current cell.  Undone operations can be
+redone with the {\cb Redo} command.  Pressing the {\kb Tab} key has
+the same effect as clicking on the {\cb Undo} button, and {\kb
+Shift-Tab} is equivalent to {\cb Redo}.
+
+\index{undo!list length}
+By default, the last 25 operations can be undone.  This can be changed
+with the variable {\et UndoListLength}, which can be set to a
+non-negative integer with the {\cb !set} command.  This sets the
+number of operations that are remembered.  If set to zero, the list
+length is unlimited.
+
+When {\it Xic} is waiting for text input to the prompt line, the {\cb
+Undo} and {\cb Redo} commands are disabled.
 
 !!SEEALSO
 xic:modifymenu
@@ -125,6 +165,16 @@ Redo
     <p>
     When <i>Xic</i> is waiting for text input to the prompt line, the
     <b>Undo</b> and <b>Redo</b> commands are disabled.
+!!LATEX xic:redo modifymenu.tex
+The {\cb Redo} button in the {\cb Modify Menu} will redo the last
+undone operation performed with {\cb Undo}.  This can also be
+accomplished by holding the {\kb Shift} key and pressing the {\kb Tab}
+key.  Each undone operation is added to an internal list for possible
+redo.  This list is cleared after any database-modifying operation
+which is not an undo.
+
+When {\Xic} is waiting for text input to the prompt line, the {\cb
+Undo} and {\cb Redo} commands are disabled.
 
 !!SEEALSO
 xic:modifymenu
@@ -141,6 +191,10 @@ Delete
     The <b>Delete</b> button in the <b>Modify Menu</b> may be used to
     delete the selected objects.  This is redundant, as selected
     objects can be deleted by pressing the <b>Delete</b> key.
+!!LATEX xic:delet modifymenu.tex
+The {\cb Delete} button in the {\cb Modify Menu} may be used to delete
+the selected objects.  This is redundant, as selected objects can be
+deleted by pressing the {\kb Delete} key.
 
 !!SEEALSO
 xic:modifymenu
@@ -159,6 +213,15 @@ Erase Under
     the task is simple.  One would create the disk on some arbitrary
     layer where the hole is desired, select it, press <b>Erase
     Under</b>, then the <b>Delete</b> key to erase the disk object.
+!!LATEX xic:eundr modifymenu.tex
+The {\cb Erase Under} button in the {\cb Modify Menu} will erase the
+intersection area of non-selected objects with selected objects.  The
+selected objects are not affected.  This allows non-Manhattan holes to
+be cut in dark areas, for example.  Suppose one needs a circular hole
+in a ground plane.  Using this command, the task is simple.  One would
+create the disk on some arbitrary layer where the hole is desired,
+select it, press {\cb Erase Under}, then the {\kb Delete} key to erase
+the disk object.
 
 !!SEEALSO
 xic:modifymenu
@@ -265,6 +328,81 @@ Move
     <p>
     Move operations can be also performed through the command line
     interface with the <a href="!mo"><b>!mo</b></a> command.
+!!LATEX xic:move modifymenu.tex
+The {\cb Move} button in the {\cb Modify Menu} is used to move
+objects.  This command is redundant, as objects can be moved with a
+basic button 1 operation.  If objects are previously selected, the
+group will be moved.  If no object has been selected, the user is
+requested to select an object to move.  Responding to the prompts, the
+user points to a reference point, then to a destination point, using
+either hold and drag, or two clicks.  If either the {\kb Shift} or
+{\kb Ctrl} key is held, the angle of translation is constrained to
+multiples of 45 degrees.  The object is moved such that the reference
+point falls on the destination point.  The orientation is altered
+according to the current transformation.
+
+When the {\cb Move} command is at the state where objects are
+selected, and the next button press would initiate the move operation,
+if either of the {\kb Backspace} or {\kb Delete} keys is pressed, the
+command will revert the state back to selecting objects.  Then, other
+objects can be selected or selected objects deselected, and the
+command is ready to go again.  This can be repeated, to build up the
+set of selections needed.
+
+At any time, pressing the {\cb Deselect} button to the left of the
+coordinate readout will revert the command state to the level where
+objects may be selected to move.
+
+The current transform is saved in Register 0 then cleared after every
+move operation.  Pressing the {\kb Forward Slash} key will swap the
+current and saved transforms, allowing the last-used transform to be
+retrieved.  The current transform is saved and cleared when
+{\cb Deselect} is pressed, and cleared when the {\cb Move} command
+exits.
+
+The undo and redo operations (the {\kb Tab} and {\kb Shift-Tab}
+keypreses and {\cb Undo}/{\cb Redo} in the {\cb Modify Menu}) will
+cycle the command state forward and backward when the command is
+active.  Thus, the last command operation, such as initiating the
+move by clicking, can be undone and restarted, or redone if
+necessary.  If all command operations are undone, additional undo
+operations will undo previous commands, as when the undo operation is
+performed outside of a command.  The redo operation will reverse the
+effect, however when any new modifying operation is started, the redo
+list is cleared.  Thus, for example, if one undoes a box creation,
+then starts a move operation, the ``redo'' capability of the box
+creation will be lost.
+
+The substructure of cell instances being moved is highlighted to the
+depth shown in the main window.  This facilitates alignment with other
+objects.  One can change the display depth to reveal more or less of
+the substructure.
+
+While in a move operation in physical mode, while the objects are
+ghost-drawn and attached to the pointer, pressing {\kb Enter} causes
+the reference point to shift to the lower left corner of the bounding
+box containing the objects being moved.  Pressing {\kb Enter} will
+cycle the reference point through the corners of the bounding box, and
+back to the original reference location.  Note that this allows
+objects that have somehow gotten off grid to be returned to the grid.
+
+It is possible to change the layer of objects during a move operation. 
+During the time that objects are ghost drawn and attached to the mouse
+pointer, if the current layer is changed, the objects that are
+attached can be placed on the new layer.  Subcells are not affected. 
+
+How this is applied depends on the setting of the {\et
+LayerChangeMode} variable, or equivalently the settings of the {\cb
+Layer Change Mode} pop-up from the {\cb Set Layer Chg Mode} button
+in the {\cb Modify Menu}.  The three possible modes are to ignore the
+layer change, to map objects on the old current layer to the new
+current layer, or to place all objects on the new current layer.  If
+the current layer is set back to the previous layer before clicking to
+locate the new objects, no layers will change.  Note that layer change
+is only possible for ``click-click'' mode and not ``press-drag''.
+
+Move operations can be also performed through the command line
+interface with the {\cb !mo} command.
 
 !!SEEALSO
 xic:copy
@@ -452,6 +590,147 @@ Copy
     <li>Click on a selected object in the sub-window, and drag or click
      again to copy the selected objects into the main window.
     </ol>
+!!LATEX xic:copy modifymenu.tex
+The {\cb Copy} button in the {\cb Modify Menu} is used to copy
+objects.  In its simplest form, this command is redundant, as copies
+of an object can be made with basic button 1 operations.  However,
+this command has an important and useful feature not available with
+the basic mouse operations:  it is possible to copy objects from cells
+other than the one being edited.
+
+Initially, the user is prompted for a replication count.  This can be
+any positive integer.  When the copy is performed, the replication
+specifies the number of copies made, with the translation incremented
+for each new copy.  Thus, this facilitates creating many
+equally-spaced structures.
+
+If objects are previously selected, the group will be copied to new
+locations.  If no objects have been selected, the user is asked to
+select objects to copy.
+
+Responding to the prompts, the user first clicks on a reference point,
+then to a destination, using a hold and drag, or two clicks.  If
+either the {\kb Shift} or {\kb Ctrl} key is held, the angle of
+translation is constrained to multiples of 45 degrees.  The copy is
+produced such that the reference point falls on the destination point. 
+The orientation of the copied object is altered according to the
+current transformation.  Multiple copies are made by simply clicking
+on additional destinations.
+
+When the {\cb Copy} command is at the state where objects are
+selected, and the next button press would initiate the copy operation,
+if either of the {\kb Backspace} or {\kb Delete} keys is pressed, the
+command will revert the state back to selecting objects.  Then, other
+objects can be selected or selected objects deselected, and the
+command is ready to go again.  This can be repeated, to build up the
+set of selections needed.
+
+Ordinarily, if a sub-window is displaying a cell other than the
+current cell being edited, it is not possible to select objects in
+that sub-window.  However, while the {\cb Copy} command is active, if
+the sub-window has the same electrical/physical mode as the current
+cell, selections are allowed in the foreign sub-window.
+
+Selections in a foreign window can be ``picked up'' just like objects
+selected in the main window.  Outlines of the selected objects will be
+attached to the mouse pointer.  They can be copied into the main
+window or a sub-window displaying the current editing cell by dragging
+or clicking twice.
+
+Objects can be selected in various sub-windows and the main window
+simultaneously.  Selections in sub-windows showing the current cell
+are in all respects equivalent to the main window.  Use of the {\kb
+Backspace} or {\kb Delete} key method above is necessary to obtain
+selections in both the main window (and equivalent sub-windows), and
+sub-windows showing other cells.  When the copy in initiated, only
+the objects from the cell in the clicked-in window (when objects are
+picked up) will participate in the copy operation.
+
+Once objects have been picked up, whether copies have been placed or
+not, pressing either of the {\kb Backspace} or {\kb Delete} keys will
+revert the command state to the level before the objects were picked
+up.  The user can then click in another window to pick up that
+window's selected objects, or in the same window to pick up the
+previous objects but with a different reference location.
+
+At any time, pressing the {\cb Deselect} button to the left of the
+coordinate readout will revert the command state to the level where
+objects may be selected to copy (in any mode-compatible window).
+
+The current transform is saved in Register 0 after each copy is placed.
+Pressing the {\cb Forward Slash} key will swap the current and saved
+transforms, allowing the last-used transform to be retrieved.  The
+current transform is saved and cleared when {\cb Deselect} is pressed,
+and cleared when the {\cb Copy} command exits.
+
+The undo and redo operations (the {\kb Tab} and {\kb Shift-Tab}
+keypreses and {\cb Undo}/{\cb Redo} in the {\cb Modify Menu}) will
+cycle the command state forward and backward when the command is
+active.  Thus, the last command operation, such as initiating the
+copy by clicking, can be undone and restarted, or redone if
+necessary.  If all command operations are undone, additional undo
+operations will undo previous commands, as when the undo operation is
+performed outside of a command.  The redo operation will reverse the
+effect, however when any new modifying operation is started, the redo
+list is cleared.  Thus, for example, if one undoes a box creation,
+then starts a copy operation, the ``redo'' capability of the box
+creation will be lost.
+
+The substructure of cell instances being copied is highlighted to the
+depth shown in the main window.  This facilitates alignment with other
+objects.  One can change the display depth to reveal more or less of
+the substructure.
+
+The replication count feature is not available when copying objects
+from a foreign window, since the reference point is from another cell
+and is unlikely to be valid in the current cell.  One copy of each
+selected object is created, at the click location or where dragging
+terminated, ignoring the replication count.
+
+While in a copy operation in physical mode, while the objects are
+ghost-drawn and attached to the pointer, pressing {\kb Enter} causes
+the reference point to shift to the lower left corner of the bounding
+box containing the objects being copied.  Pressing {\kb Enter} will
+cycle the reference point through the corners of the bounding box, and
+back to the original reference location.
+
+It is possible to change the layer of objects during a copy operation. 
+During the time that objects are ghost drawn and attached to the mouse
+pointer, if the current layer is changed, the objects that are
+attached can be placed on the new layer.  Subcells are not affected. 
+
+How this is applied depends on the setting of the {\et
+LayerChangeMode} variable, or equivalently the settings of the {\cb
+Layer Change Mode} pop-up from the {\cb Set Layer Chg Mode} button
+in the {\cb Modify Menu}.  The three possible modes are to ignore the
+layer change, to map objects on the old current layer to the new
+current layer, or to place all objects on the new current layer.  If
+the current layer is set back to the previous layer before clicking to
+locate the new objects, no layers will change.  Note that layer change
+is only possible for ``click-click'' mode and not ``press-drag''.
+
+When the {\cb Copy} command terminates, any selected objects in
+foreign sub-windows are deselected.
+
+Copy operations can be also performed through the command line
+interface with the {\cb !co} command.
+
+{\bf Example}:\\
+Suppose that you are editing cell B, and you would like to add a     
+set of complicated polygons that you have already created in cell A.
+
+\begin{enumerate}
+\item{Use the {\cb Viewport} command in the {\cb View Menu} to bring up
+a sub-window.}
+\item{Use the {\cb Load New} command in the sub-window {\cb View} menu
+to display cell A.}
+\item{Deselect any selected objects and instances.}
+\item{Press the {\cb Copy} button in the main window {\cb Modify Menu},
+and press {\kb Enter} at the ``Replication count'' prompt.}
+\item{Select the desired objects in the sub-window.}
+\item{Click on a selected object in the sub-window, and drag or click
+again to copy the selected objects into the main window.}
+\end{enumerate}
 
 !!SEEALSO
 xic:modifymenu
@@ -574,6 +853,96 @@ Stretch
     If a wire end vertex is stretched to be coincident with the end
     vertex of another wire on the same layer with the same width, the
     wires will be merged, but only if the second wire is not selected.
+!!LATEX xic:strch modifymenu.tex
+The {\cb Stretch} button in the {\cb Modify Menu} operates on
+polygons, wires, boxes, and labels.  It enables moving of polygon and
+wire vertices, and box and label bounding box corners and sides.  This
+command is somewhat redundant, as stretching operations can be
+initiated with basic button 1 manipulation, however the ability to
+select specific vertices to stretch is available only in the menu
+version of the command.
+
+If no geometry has been selected, the user is asked to select objects
+to stretch.  Otherwise, the stretch will be applied to currently
+selected objects.
+
+After objects have been selected, specific vertices can be selected in
+boxes, polygons, and wires.  The selection of vertices, which is
+available only in the menu version of the command, is accomplished by
+holding the {\kb Shift} key, and clicking over a vertex, or dragging
+over one or more vertices.  This operation can be repeated.  Selecting
+a vertex a second time will deselect it.  When a vertex is selected it
+is marked with a small highlighting box.  When there are selected
+vertices, all selected vertices can be moved by clicking twice or
+dragging.  The selected vertices will be translated according to the
+button-down location and the button up location, or the next
+button-down location if the pointer didn't move.  While the
+translation is in progress, the new borders are ghost-drawn.  While
+moving vertices, holding the {\kb Shift} key will enable or disable
+constraining the translation angle to multiples of 45 degrees.  If the
+{\cb Constrain angles to 45 degree multiples} check box in the {\cb
+Editing Setup} panel from the {\cb Edit Menu} is checked, {\kb Shift}
+will disable the constraint, otherwise the constraint will be enabled. 
+The {\kb Shift} key must be up when the button-down occurs which
+starts the translation operation, and can be pressed before the
+operation is completed to alter the constraint.
+
+If a box is selected in the {\cb Stretch} command, and one or more
+vertices of the box are selected by holding {\kb Shift}, the vertices
+can be moved as for a polygon, and the box is converted to a polygon.
+
+If no vertices are selected, the stretch operation applies to the
+nearest vertex of selected wires or polygons, or the nearest corner of
+a box.  In this mode, boxes are stretched in a mode which preserves
+their rectangular shape.  The user clicks on or drags to the new
+location, and the stretch is performed.  If there are several objects
+selected, then the vertex closest to where the user points is taken as
+the reference vertex.  This vertex is translated to the new location. 
+In each of the other objects, the same transformation is applied to
+the vertex closest to the reference vertex.  Thus, a group of wires,
+for example, can all be extended at once.  During the operation, the
+{\kb Shift} key and the {\cb Constrain angles to 45 degree multiples}
+check box in the {\cb Editing Setup} panel can be used to constrain
+the stretch angle as described above.
+
+When the {\cb Stretch} command is at the state where objects are
+selected, and the next button press would initiate the stretch
+operation or select a vertex, if either of the {\kb Backspace} or {\kb
+Delete} keys is pressed, the command will revert the state back to
+selecting objects.  Then, other objects can be selected or selected
+objects deselected, and the command is ready to go again.  This can be
+repeated, to build up the set of selections needed. 
+
+At any time, pressing the {\cb Deselect} button to the left of the
+coordinate readout will revert the command state to the level where
+objects may be selected to stretch.
+
+The undo and redo operations (the {\kb Tab} and {\kb Shift-Tab}
+keypreses and {\cb Undo}/{\cb Redo} in the {\cb Modify Menu}) will
+cycle the command state forward and backward when the command is
+active.  Thus, the last command operation, such as initiating the
+stretch by clicking, can be undone and restarted, or redone if
+necessary.  If all command operations are undone, additional undo
+operations will undo previous commands, as when the undo operation is
+performed outside of a command.  The redo operation will reverse the
+effect, however when any new modifying operation is started, the redo
+list is cleared.  Thus, for example, if one undoes a box creation,
+then starts a stretch operation, the ``redo'' capability of the box
+creation will be lost.
+
+The stretch operation works differently on Manhattan polygons than
+polygons containing nonorthogonal angles.  For non-Manhattan polygons,
+a single vertex is moved, all others remain fixed.  The stretch
+operation on Manhattan polygons is similar to the operation as applied
+to boxes, i.e., the corner and adjacent vertices are changed so as to
+keep the polygon Manhattan.  A single vertex can be stretched
+arbitrarily either by selecting the vertex in the {\cb Edit Menu} {\cb
+Stretch} command, or by using the vertex editor in the {\cb polyg}
+command.
+
+If a wire end vertex is stretched to be coincident with the end vertex
+of another wire on the same layer with the same width, the wires will
+be merged, but only if the second wire is not selected.
 
 !!SEEALSO
 xic:modifymenu
@@ -591,6 +960,11 @@ Change Layer
     the user to change the layer of the selected objects.  All
     selected objects are moved to the current layer.  Objects must be
     selected before this command button is pressed.
+!!LATEX xic:chlyr modifymenu.tex
+The {\cb Change Layer} button in the {\cb Modify Menu} allows the user to
+change the layer of the selected objects.  All selected objects will
+be moved to the current layer.  Objects must be selected before this
+command button is pressed.
 
 !!SEEALSO
 button1
@@ -648,6 +1022,40 @@ Set Layer Chg Mode
     being moved or copied.  If set to anything else, including to
     nothing (i.e., as a boolean) then only objects on the previous
     current layer will be changed to the new layer.
+!!LATEX xic:mclcg modifymenu.tex
+This button brings up a panel which sets the layer change mode that
+applies to all move and copy operations, and to the {\cb spin} command
+in the physical side menu.  In these commands, when objects being
+moved or copied are ghost drawn as attached to the mouse pointer, it
+is possible to change the current layer.  The operation is then
+completed by clicking at the new location in a drawing window.
+ 
+The {\cb Layer Change Mode} pop-up contains three ``radio'' buttons,
+which determine the response to the mid-command layer change.
+
+\begin{description}
+\item{\cb Don't allow layer change}\\
+The layer change is simply ignored as it relates to the move/copy
+operation in progress.  This is the default.
+
+\item{\cb Allow layer change for objects on current layer}\\
+Any of the objects being moved/copied that are on the previous current
+layer will be moved or copied to the new current layer.  Other objects
+are moved/copied normally.
+
+\item{\cb Allow layer change for all objects}\\
+All objects will be moved or copied to the new layer.
+\end{description}
+
+The pop-up sets and tracks the state of the {\et LayerChangeMode}
+variable.
+
+This is a tri-state variable.  If not set, there will be no layer
+change in these commands.  If set to the string ``{\vt all}'' (case
+insensitive), then a layer change will apply to all objects being
+moved or copied.  If set to anything else, including to nothing (i.e.,
+as a boolean) then only objects on the previous current layer will be
+changed to the new layer.
 
 !!SEEALSO
 button1

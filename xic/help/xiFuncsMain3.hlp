@@ -1099,6 +1099,361 @@ Grid and Edge Snapping
     snapping allow wire-path flag which is the default in the <a
     href="xic:ruler"><b>Rulers</b></a> command.
     </dl>
+!!LATEX funcs:main3:snap scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 101412
+\index{SetMfgGrid function}
+\item{(int) \vt SetMfgGrid({\it mfg\_grid\/})}\\
+This will set the manufacturing grid to the value of the argument,
+provided that the value is in the range 0.0 -- 100.0 microns.  When
+the manufacturing grid is nonzero, the snap grid is constrained to
+integer multiples of the manufacturing grid.  The function returns 1
+if the argument is in range, in which case the value is accepted, 0
+otherwise.
+
+%------------------------------------
+% 101412
+\index{GetMfgGrid function}
+\item{(real) \vt GetMfgGrid()}\\
+This function returns the value of the manufacturing grid.  When
+nonzero, the snap grid is constrained to integer multiples of the
+manufacturing grid.
+
+%------------------------------------
+% 101412
+\index{SetGrid function}
+\item{(int) \vt SetGrid({\it interval\/}, {\it snap},  {\it win\/})}\\
+This function sets the grid parameters for the window indicated by the
+third argument, which is 0 for the main window or 1--4 for the
+sub-windows.  The interval argument sets snap grid spacing, in
+microns.  This value can be zero, in which case the present value is
+retained.
+
+The snap value is an integer in the range of -10 to 10.  If positive,
+the number provides the number of snap grid intervals between fine
+grid lines.  If negative, the absolute value is the number of fine
+grid lines displayed per snap grid interval.  If zero, the present
+setting is retained.
+ 
+For electrical mode windows, the snap points must be on multiples of
+one micron.  If not, this function returns 0 and the grid is
+unchanged.  The function also returns 0 if the window argument does
+not correspond to an existing window.  The return is 1 if the
+operation succeeds.
+
+The function does not redraw the window.  The {\vt Redraw()} function
+can be called to redraw the window if necessary.
+
+%------------------------------------
+% 101412
+\index{GetGridInterval function}
+\item{(real) \vt GetGridInterval({\it win\/})}\\
+This function returns the fine grid interval in microns for the grid
+in the window indicated by the argument, which is 0 for the main
+window or 1--4 for the sub-windows.  The function returns 0 if the
+argument does not correspond to an existing window.
+
+%------------------------------------
+% 101412
+\index{GetSnapInterval function}
+\item{(real) \vt GetSnapInterval({\it win\/})}\\
+This function returns the snap grid interval in microns for the grid
+in the window indicated by the argument, which is 0 for the main
+window or 1--4 for the sub-windows.  The function returns 0 if the
+argument does not correspond to an existing window.
+
+%------------------------------------
+% 101412
+\index{GetGridSnap function}
+\item{(int) \vt GetGridSnap({\it win\/})}\\
+This function returns the snap number for the grid in the window
+specified by the argument, which is 0 for the main window or 1--4 for
+the sub-windows.  The snap number determines the number of snap grid
+intervals between fine grid lines if positive, or fine grid lines per
+snap interval if negative.  The function returns 0 if the argument
+does not correspond to an existing window.
+
+%------------------------------------
+% 121508
+\index{ClipToGrid function}
+\item{(int) \vt ClipToGrid({\it coord}, {\it win\/})}\\
+The first argument to this function is a coordinate in microns.  The
+return value is the coordinate, in microns, snapped to the nearest
+snap point of the grid of the window given in the second argument. 
+The second argument is 0 for the main window, or 1--4 for the
+sub-windows.  The function fails if the window argument does not
+correspond to an existing window.
+
+Note that this function must be called twice for an x,y coordinate
+pair.  This function ignores the edge-snapping modes, only taking into
+account the grid resolution and snap values.
+
+%------------------------------------
+% 012815
+\index{SetEdgeSnappingMode function}
+\item{(int) \vt SetEdgeSnappingMode({\it win}, {\it mode\/})}\\
+Change the edge snapping mode in a drawing window.  The first argument
+is an integer representing the drawing window:  0 for the main window,
+and 1--4 for subwindows.  The change will apply only to that window,
+though changes in the main window will apply to new sub-windows.  The
+second argument is an integer in the range 0--2.  The effects are
+
+\begin{quote}
+\begin{tabular}{ll}
+0 & No edge snapping.\\
+1 & Edge snapping is enabled in some commands.\\
+2 & Edge snapping is always enabled.\\
+\end{tabular}
+\end{quote}
+ 
+The return value is 1 if the window edge snapping was updated, 0
+otherwise. 
+ 
+%------------------------------------
+% 012815
+\index{SetEdgeOffGrid function}
+\item{(int) \vt SetEdgeOffGrid({\it win}, {\it off\_grid\/})}\\
+This will enable snapping to off-grid locations when edge snapping is
+enabled, in the given window.  The first argument is an integer
+representing the drawing window:  0 for the main window, and 1--4 for
+subwindows.  The second argument is a boolean which will allow
+off-grid snapping when true.  The return value is 1 if the window
+parameter was updated, 0 otherwise.
+
+%------------------------------------
+% 012815
+\index{SetEdgeNonManh function}
+\item{(int) \vt SetEdgeNonManh({\it win}, {\it non\_manh\/})}\\
+This will enable snapping to non-Manhattan edges when edge snapping is
+enabled, in the given window.  The first argument is an integer
+representing the drawing window:  0 for the main window, and 1--4 for
+subwindows.  The second argument is a boolean which will allow
+snapping to non-Manhattan edges when true.  The return value is 1 if
+the window parameter was updated, 0 otherwise.
+
+%------------------------------------
+% 012815
+\index{SetEdgeWireEdge function}
+\item{(int) \vt SetEdgeWireEdge({\it win}, {\it wire\_edge\/})}\\
+This will enable snapping to wire edges when edge snapping is enabled,
+in the given window.  The first argument is an integer representing
+the drawing window:  0 for the main window, and 1--4 for subwindows. 
+The second argument is a boolean which will allow snapping to wire
+edges when true.  The return value is 1 if the window parameter was
+updated, 0 otherwise.
+
+%------------------------------------
+% 012815
+\index{SetEdgeWirePath function}
+\item{(int) \vt SetEdgeWirePath({\it win}, {\it wire\_path\/})}\\
+This will enable snapping to the wire path when edge snapping is
+enabled, in the given window.  The path is the set of line segments
+that invisibly run along the center of the displayed wire, which,
+along with the wire width and end style, actually defines the wire. 
+The first argument is an integer representing the drawing window:  0
+for the main window, and 1--4 for subwindows.  The second argument is
+a boolean which will allow snapping to the wire path when true.  The
+return value is 1 if the window parameter was updated, 0 otherwise.
+
+%------------------------------------
+% 012815
+\index{GetEdgeSnappingMode function}
+\item{(int) \vt GetEdgeSnappingMode({\it win})}\\
+This function returns the edge snapping mode in effect for the given
+window.  The argument is an integer representing the drawing window: 
+0 for the main window, and 1--4 for subwindows.  The return value is
+-1 if the window is not found, 0-2 otherwise.
+
+\begin{quote}
+\begin{tabular}{ll}
+0 & No edge snapping.\\
+1 & Edge snapping is enabled in some commands.\\
+2 & Edge snapping is always enabled.\\
+\end{tabular}
+\end{quote}
+
+%------------------------------------
+% 012815
+\index{GetEdgeOffGrid function}
+\item{(int) \vt GetEdgeOffGrid({\it win})}\\
+This returns the setting of the allow off-grid edge snapping flag for
+the given window.  The argument is an integer representing the drawing
+window:  0 for the main window, and 1-4 for subwindows.  The return
+value is -1 if the window is not found, 0 or 1 otherwise tracking the
+state of the flag.
+
+%------------------------------------
+% 012815
+\index{GetEdgeNonManh function}
+\item{(int) \vt GetEdgeNonManh({\it win})}\\
+This returns the setting of the allow non-Manhattan edge snapping flag
+for the given window.  The argument is an integer representing the
+drawing window:  0 for the main window, and 1--4 for subwindows.  The
+return value is -1 if the window is not found, 0 or 1 otherwise
+tracking the state of the flag.
+
+%------------------------------------
+% 012815
+\index{GetEdgeWireEdge function}
+\item{(int) \vt GetEdgeWireEdge({\it win})}\\
+This returns the setting of the allow wire-edge edge snapping flag for
+the given window.  The argument is an integer representing the drawing
+window:  0 for the main window, and 1--4 for subwindows.  The return
+value is -1 if the window is not found, 0 or 1 otherwise tracking the
+state of the flag.
+
+%------------------------------------
+% 012815
+\index{GetEdgeWirePath function}
+\item{(int) \vt GetEdgeWirePath({\it win})}\\
+This returns the setting of the allow wire-path edge snapping flag for
+the given window.  The argument is an integer representing the drawing
+window:  0 for the main window, and 1--4 for subwindows.  The return
+value is -1 if the window is not found, 0 or 1 otherwise tracking the
+state of the flag.
+
+%------------------------------------
+% 012815
+\index{SetRulerSnapToGrid function}
+\item{(int) \vt SetRulerSnapToGrid({\it snap})}\\
+This function sets the snap-to-grid behavior when creating rulers in
+the {\cb Rulers} command.  When set, the mouse cursor will snap to
+grid locations, otherwise not.  In either case the cursor may snap to
+object edges if edge snapping is enabled.  If the {\cb Rulers} command
+is active the mode will change immediately, otherwise the new mode
+will apply when the command becomes active.  The return value is 0 or
+1 representing the previous flag value.
+
+%------------------------------------
+% 012815
+\index{SetRulerEdgeSnappingMode function}
+\item{(int) \vt SetRulerEdgeSnappingMode({\it mode})}\\
+This sets the edge snapping mode which is applied during the {\cb
+Rulers} command.  This command has its own default edge snapping
+state.  This function changes only the initial state when the command
+starts, and will have no effect in a running command (use {\vt
+SetEdgeSnappingMode} to alter the current setting).  The argument is
+an integer 0--2.
+
+\begin{quote}
+\begin{tabular}{ll}
+0 & No edge snapping.\\
+1 & Edge snapping is enabled in some commands.\\
+2 & Edge snapping is always enabled.\\
+\end{tabular}
+\end{quote}
+
+The function returns -1 if the argument is out of range, or 0--2
+representing the previous state otherwise.
+
+%------------------------------------
+% 012815
+\index{SetRulerEdgeOffGrid function}
+\item{(int) \vt SetRulerEdgeOffGrid({\it off\_grid})}\\
+This sets the edge snapping allow off-grid flag which is applied
+during the {\cb Rulers} command.  This command has its own default
+edge snapping state.  This function changes only the initial state
+when the command starts, and will have no effect in a running command
+(use {\vt SetEdgeOffGrid} to alter the current setting).  The argument
+is a boolean value which enables the flag when true.
+
+The return value is 0 or 1 representing the previous flag state.
+
+%------------------------------------
+% 012815
+\index{SetRulerEdgeNonManh function}
+\item{(int) \vt SetRulerEdgeNonManh({\it non\_manh})}\\
+This sets the edge snapping allow non-Manhattan flag which is applied
+during the {\cb Rulers} command.  This command has its own default
+edge snapping state.  This function changes only the initial state
+when the command starts, and will have no effect in a running command
+(use {\vt SetEdgeNonManh} to alter the current setting).  The argument
+is a boolean value which enables the flag when true.
+
+The return value is 0 or 1 representing the previous flag state.
+
+%------------------------------------
+% 012815
+\index{SetRulerEdgeWireEdge function}
+\item{(int) \vt SetRulerEdgeWireEdge({\it wire\_edge})}\\
+This sets the edge snapping allow wire-edge flag which is applied
+during the {\cb Rulers} command.  This command has its own default
+edge snapping state.  This function changes only the initial state
+when the command starts, and will have no effect in a running command
+(use {\vt SetEdgeWireEdge} to alter the current setting).  The
+argument is a boolean value which enables the flag when true.
+
+The return value is 0 or 1 representing the previous flag state.
+
+%------------------------------------
+% 012815
+\index{SetRulerEdgeWirePath function}
+\item{(int) \vt SetRulerEdgeWirePath({\it wire\_path})}\\
+This sets the edge snapping allow wire-path flag which is applied
+during the {\cb Rulers} command.  This command has its own default
+edge snapping state.  This function changes only the initial state
+when the command starts, and will have no effect in a running command
+(use {\vt SetEdgeWirePath} to alter the current setting).  The
+argument is a boolean value which enables the flag when true.
+
+The return value is 0 or 1 representing the previous flag state.
+
+%------------------------------------
+% 012815
+\index{GetRulerSnapToGrid function}
+\item{(int) \vt GetRulerSnapToGrid()}\\
+This returns the present default snap-to-grid state used during the
+{\cb Rulers} command.  The values are 0 or 1 depending on the state.
+
+%------------------------------------
+% 012815
+\index{GetRulerEdgeSnappingMode function}
+\item{(int) \vt GetRulerEdgeSnappingMode()}\\
+The return value is an integer 0-2 representing the default edge
+snapping mode to use during the {\cb Rulers} command.
+
+\begin{quote}
+\begin{tabular}{ll}
+0 & No edge snapping.\\
+1 & Edge snapping is enabled in some commands.\\
+2 & Edge snapping is always enabled.\\
+\end{tabular}
+\end{quote}
+
+%------------------------------------
+% 012815
+\index{GetRulerEdgeOffGrid function}
+\item{(int) \vt GetRulerEdgeOffGrid()}\\
+The return value is 0 or 1 depending on the setting of the edge
+snapping allow off-grid flag which is the default in the {\cb Rulers}
+command.
+
+%------------------------------------
+% 012815
+\index{GetRulerEdgeNonManh function}
+\item{(int) \vt GetRulerNonManh()}\\
+The return value is 0 or 1 depending on the setting of the edge
+snapping allow non-Manhattan flag which is the default in the {\cb
+Rulers} command.
+
+%------------------------------------
+% 012815
+\index{GetRulerEdgeWireEdge function}
+\item{(int) \vt GetRulerEdgeWireEdge()}\\
+The return value is 0 or 1 depending on the setting of the edge
+snapping allow wire-edge flag which is the default in the {\cb Rulers}
+command.
+
+%------------------------------------
+% 012815
+\index{GetRulerEdgeWirePath function}
+\item{(int) \vt GetRulerEdgeWirePath()}\\
+The return value is 0 or 1 depending on the setting of the edge
+snapping allow wire-path flag which is the default in the {\cb Rulers}
+command.
+
+\end{description}
 
 !!SEEALSO
 funcs:main3
@@ -1310,6 +1665,173 @@ Grid Presentation
     not exist.  The change will not be visible until the window is
     redrawn (one can call <a href="Redraw"><tt>Redraw()</tt></a>).
     </dl>
+!!LATEX funcs:main3:grid scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 030204
+\index{ShowGrid function}
+\item{(int) \vt ShowGrid({\it on\/}, {\it win\/})}\\
+This function sets whether or not the grid is shown in a window.  If
+the first argument is nonzero, the grid will be shown, otherwise the
+grid will not be shown.  The second argument is an integer
+representing the drawing window:  0 for the main window, and 1--4 for
+sub-windows.  The change will not be visible until the window is
+redrawn (one can call {\vt Redraw}).  If success, 1 is returned, or 0
+is returned if the window does not exist.
+
+%------------------------------------
+% 030204
+\index{ShowAxes function}
+\item{(int) \vt ShowAxes({\it style\/}, {\it win\/})}\\
+This function sets the axes presentation style in physical mode
+windows.  The first argument is an integer 0--2, where 0 suppresses
+drawing of axes, 1 indicates plain axes, and 2 (or anything else)
+indicates axes with a box at the origin.  The second argument is an
+integer representing the drawing window:  0 for the main window, 1--4
+for sub-windows.  Axes are never shown in electrical mode windows.  On
+success, 1 is returned.  If the window does not exist or is not
+showing a physical view, 0 is returned.  The change will not be
+visible until the window is redrawn (one can call {\vt Redraw}).
+
+%------------------------------------
+% 030204
+\index{SetGridStyle function}
+\item{(int) \vt SetGridStyle({\it style}, {\it win\/})}\\
+This function sets the line style used for grid rendering.  The first
+argument is an integer mask that defines the on-off pattern.  The
+pattern starts at the most significant `1' bit and continues through
+the least significant bit, and repeats.  Set bits are rendered as the
+visible part of the pattern.  If the style is 0, a dot is shown at
+each grid point.  Passing -1 will give continuous lines.  The second
+argument is an integer representing the drawing window:  0 for the
+main window, 1--4 for sub-windows.  The function returns 1 on success, 0
+if the window does not exist.  The change will not be visible until
+the window is redrawn (one can call {\vt Redraw}).
+
+%------------------------------------
+% 030204
+\index{GetGridStyle function}
+\item{(int) \vt GetGridStyle({\it win\/})}\\
+This function returns the line style mask used for rendering the grid
+in the given window.  The mask has the interpretation described in the
+description of {\vt SetGridStyle}.  The argument is an integer
+representing the window:  0 for the main window, and 1--4 for
+sub-windows.  If the window does not exist, 0 is returned.
+
+%------------------------------------
+% 071110
+\index{SetGridCrossSize function}
+\item{(int) \vt SetGridCrossSize({\it xsize}, {\it win\/})}\\
+This applies only to grids with style 0 (dot grid).  The {\it xsize}
+is an integer 0--6 which indicates the number of pixels to draw in the
+four compass directions around the central pixel.  Thus, for nonzero
+values, the ``dot'' is rendered as a small cross.  The second argument
+is an integer representing the drawing window:  0 for the main window,
+1--4 for subwindows.  The function returns 1 on success, 0 if the
+window does not exist or the style is nonzero.  The change will not be
+visible until the window is redrawn (one can call {\vt Redraw}).
+
+%------------------------------------
+% 071110
+\index{GetGridCrossSize function}
+\item{(int) \vt GetGridCrossSize({\it win\/})}\\
+This returns an integer 0--6, which will be nonzero only for grid
+style 0 (dot grid), and if the ``dots'' are being rendered as small
+crosses via a call to {\vt SetGridCrossSize} or otherwise.  The
+argument is an integer representing the window:  0 for the main
+window, and 1--4 for subwindows.  If the window does not exist, 0 is
+returned.
+
+%------------------------------------
+% 030204
+\index{SetGridOnTop function}
+\item{(int) \vt SetGridOnTop({\it ontop}, {\it win\/})}\\
+This function sets whether the grid is shown above or below rendered
+objects.  If the first argument is nonzero, the grid will be shown
+above rendered objects.  The second argument is an integer
+representing the drawing window:  0 for the main window and 1--4 for
+sub-windows.  The function returns 1 on success, 0 if the window does
+not exist.  The change will not be visible until the window is redrawn
+(one can call {\vt Redraw}).
+
+%------------------------------------
+% 030204
+\index{GetGridOnTop function}
+\item{(int) \vt GetGridOnTop({\it win\/})}\\
+This function returns 1 is the grid is shown on top of objects.  The
+argument is an integer representing the drawing window:  0 for the
+main window and 1--4 for sub-windows.  If the grid is shown below
+rendered objects, 0 is returned.  If the window does not exist, -1 is
+returned.
+
+%------------------------------------
+% 101412
+\index{SetGridCoarseMult function}
+\item{(int) \vt SetGridCoarseMult({\it mult\/}, {\it win\/})}\\
+This sets the number of fine grid lines per coarse grid line.  The
+first argument is an integer 1--50 that provides this multiple (it is
+clipped to this range).  If 1, the coarse grid color is used for all
+grid lines.  The second argument represents the drawing window whose
+grid is being changed, 0 for the main drawing window, and 1--4 for
+sub-windows.  The change will not be visible until the window is
+redrawn (one can call {\vt Redraw()}).
+
+The return value is 1 on success, 0 if the window does not exist.
+
+%------------------------------------
+% 101412
+\index{GetGridCoarseMult function}
+\item{(int) \vt GetGridCoarseMult({\it win\/})}\\
+This returns the number of fine grid lines per coarse grid interval,
+as being used in the drawing window indicated by the argument.  The
+argument is 0 for the main drawing window, 1--4 for sub-windows.  If
+the window does not exist, zero is returned.
+
+%------------------------------------
+% 101412
+\index{SaveGrid function}
+\item{(int) \vt SaveGrid({\it regnum\/}, {\it win\/})}\\
+This will save a grid parameter set to a register.  The first argument
+is a register index value 0--7.  Register 0 is used internally for the
+``last'' value whenever grid parameters are changed, so is probably
+not a good choice unless this behavior is expected.  These are the
+same registers as used with the {\cb Grid Setup} panel, and are
+associated with the {\vt PhysGridReg} and {\vt ElecGridReg} keyword
+families in the technology file.
+
+The second argument represents the drawing window whose grid
+parameters are to be saved.  The value is 0 for the main drawing
+window, and 1--4 for sub-windows.  Note that separate registers exist
+for electrical and physical mode, so register numbers can be reused in
+the two modes.
+
+The return value is 1 on success, 0 if the indicated window does not
+exist, or the register value is out of range.
+
+%------------------------------------
+% 101412
+\index{RecallGrid function}
+\item{(int) \vt RecallGrid({\it regnum\/}, {\it win\/})}\\
+This will recall a grid parameter set from a register, and update the
+grid of a drawing window.  The first argument is a register index
+value 0--7.  Register 0 is used internally for the ``last'' value
+whenever grid parameters are changed, so is probably not a good choice
+unless this behavior is expected.  These are the same registers as
+used with the {\cb Grid Setup} panel, and are associated with the {\vt
+PhysGridReg} and {\vt ElecGridReg} keyword families in the technology
+file.
+
+The second argument represents the drawing window whose grid
+parameters are to be saved.  The value is 0 for the main drawing
+window, and 1--4 for sub-windows.  Note that separate registers exist
+for electrical and physical mode, so register numbers can be reused in
+the two modes.
+
+The return value is 1 on success, 0 if the indicated window does not
+exist.  The change will not be visible until the window is redrawn
+(one can call {\vt Redraw()}).
+
+\end{description}
 
 !!SEEALSO
 funcs:main3
@@ -1434,6 +1956,94 @@ Current Layer
     always 1.
     </dl>
     <hr>
+!!LATEX funcs:main3:curlyr scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 101312
+\index{GetCurLayer function}
+\item{(string) \vt GetCurLayer()}\\
+This function returns a string containing the name of the current
+layer.  If no current layer is defined, a null string is returned.
+
+%------------------------------------
+% 101312
+\index{GetCurLayerIndex function}
+\item{(int) \vt GetCurLayerIndex()}\\
+This function returns the 1-based index of the current layer in the
+layer table.  If no current layer is defined, 0 is returned.
+
+%------------------------------------
+% 030115
+\index{SetCurLayer function}
+\item{(int) \vt SetCurLayer({\it stdlyr\/})}\\
+This function sets the current layer as indicated by the standard
+layer argument.  The return value is the 1-based index of the previous
+current layer in the layer table, or 0 if there was no current layer. 
+This return can be passed as the argument to revert to the previous
+current layer.
+
+%------------------------------------
+% 030115
+\index{SetCurLayerFast function}
+\item{(int) \vt SetCurLayerFast({\it stdlyr\/})}\\
+This is like {\vt GetCurLayer}, but there is no visible update, i.e.,
+the layer table indication, and the current layer shown in various
+pop-ups, is unchanged.  This is for speed when drawing.  When drawing
+is finished, this should be called with the original current layer, or
+{\vt SetCurLayer} should be called with some layer.  The return value
+is the 1-based index of the previous current layer in the layer table,
+or 0 if there was no current layer.  This return can be passed as the
+argument to revert to the previous current layer. 
+
+%------------------------------------
+% 030115
+\index{NewCurLayer function}
+\item{(int) \vt NewCurLayer({\it stdlyr\/})}\\
+If the standard layer argument matches an existing layer, the current
+layer is set to that layer.  Otherwise, a new layer is created, if
+possible, and the current layer is set to the new layer.  The function
+will fail if it is not possible to create a new layer, for example if
+the name is not a valid layer name.
+
+If the name is not in the {\it layer\/}{\vt :}{\it purpose} form, any
+new layer created will use the default ``{\vt drawing}'' purpose.
+
+The return value is the 1-based index of the previous current layer in
+the layer table, or 0 if there was no current layer.  This return can
+be passed as the argument to revert to the previous current layer.
+
+%------------------------------------
+% 101312
+\index{GetCurLayerAlias function}
+\item{(string) \vt GetCurLayerAlias()}\\
+This function is deprecated, see {\vt GetLayerAlias}.  Return the
+alias name of the current layer, or a null string if there is no
+alias.
+
+%------------------------------------
+% 101312
+\index{SetCurLayerAlias function}
+\item{(int) \vt SetCurLayerAlias({\it alias\/})}\\
+This function is deprecated, see {\vt SetLayerAlias}.  Set the alias
+name of the current layer.  Returns 1 on success, 0 otherwise
+(possibly indicating a name clash).
+
+%------------------------------------
+% 101312
+\index{GetCurLayerDescr function}
+\item{(string) \vt GetCurLayerDescr()}\\
+This function is deprecated, see {\vt GetLayerDescr}.  Return the
+description string of the current layer.  This will be null if no
+description has been set.
+
+%------------------------------------
+% 101312
+\index{SetCurLayerDescr function}
+\item{(int) \vt SetCurLayerDescr({\it descr\/})}\\
+This function is deprecated, see {\vt SetLayerDescr}.  Set the
+description string of the current layer.  The return value is always
+1.
+\end{description}
 
 !!SEEALSO
 funcs:main3
@@ -1595,6 +2205,126 @@ Layer Table
     register data.
     </dl>
     <hr>
+!!LATEX funcs:main3:ltab scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 101312
+\index{LayersUsed function}
+\item{(int) \vt LayersUsed()}\\
+This returns a count of the layers in the layer table for the current
+display mode.
+
+%------------------------------------
+% 101312
+\index{AddLayer function}
+\item{(int) \vt AddLayer({\it name\/}, {\it index\/})}\\
+This adds the named layer to the layer table, in the position
+specified by the integer second argument.  If the second argument is
+negative, the new layer will be added at the end, above all existing
+layers.  If the index is 0, the new layer will be positioned at the
+index of the current layer, and the current layer and those above
+moved up.  Otherwise, the index is a 1-based index into the layer
+table, where the new layer will be inserted.  The layer at that index
+and those above will be moved up.
+
+The name can match the name of an existing layer that has been
+removed from the layer table.  It can also be a unique new name,
+and a new layer will be created.  If the name matches an existing
+layer in the table, a new layer will also be created, but with an
+internally generated name.
+
+The function will return 0 if it is not possible to create a new
+layer, for example if the name is not a valid layer name.  On
+success 1 is returned.
+
+If the name is not in the {\it layer\/}{\vt :}{\it purpose} form, any
+new layer created will use the default ``{\vt drawing}'' purpose.
+
+%------------------------------------
+% 101312
+\index{RemoveLayer function}
+\item{(int) \vt RemoveLayer({\it stdlyr]/})}\\
+This removes the layer indicated by the standard layer argument from
+the layer table if found.  This returns 1 if the layer is found and
+removed, 0 otherwise.
+
+%------------------------------------
+% 101312
+\index{RenameLayer function}
+\item{(int) \vt RenameLayer({\it oldname\/}, {\it newname\/})}\\
+The {\it oldname} is a standard layer argument.  The {\it newname} is
+a string providing a new layer/purpose name in the {\it layer\/}[{\vt
+:}{\it purpose\/}] form.  If no purpose field is given, the default
+``{\vt drawing}'' purpose is assumed.  This renames the layer
+specified in {\it oldname} to {\it newname\/}.  The renamed layer will
+have any alias name removed.
+
+This fails if {\it oldname} is unresolved or {\it newname} is null,
+and returns 0 on error, with an error message available from {\vt
+GetError}.
+
+%------------------------------------
+% 101312
+\index{LayerHandle function}
+\item{(stringlist\_handle) \vt LayerHandle({\it down\/})}\\
+This function returns a handle to a list of the layer names from the
+layer table.  If the argument is 0, the list is in ascending order. 
+If the argument is nonzero, the list is in descending order.  The
+layers used in the current display mode are listed.
+
+%------------------------------------
+% 101312
+\index{GenLayers function}
+\item{(string) \vt GenLayers({\it stringlist\_handle\/})}\\
+This function returns a string containing a layer name from the layer
+table.  The argument is the handle returned by {\vt LayerHandle}.  A
+different layer is returned for each call.  The null string is
+returned after all layers have been cycled through.  This is
+equivalent to {\vt ListNext}.
+
+%------------------------------------
+% 101312
+\index{GetLayerPalette function}
+\item{(stringlist\_handle) \vt GetLayerPalette({\it regnum})}\\
+The argument is an integer 0--7 corresponding to a layer palette
+register, as used with the {\cb Layer Palette} panel, and associated
+with the {\vt PhysLayerPalette} and {\vt ElecLayerPalette} technology
+file keyword families.  The return value is a stringlist handle, where
+the strings are the names of layers saved in the indexed palette
+register corresponding to the display mode of the main drawing window.
+
+If the palette register is empty, or the argument is out of range, a
+scalar 0 is returned.
+
+The register with index 0 is used internally to save the last {\cb
+Layer Palette} user area before it pops down.  Thus, this index should
+not be used unless this behavior is expected.
+
+%------------------------------------
+% 101312
+\index{SetLayerPalette function}
+\item{(int) \vt SetLayerPalette({\it list\/}, {\it regnum\/})}\\
+The second argument is an integer 0--7 corresponding to a layer
+palette register, as used with the {\cb Layer Palette} panel, and
+associated with the {\vt PhysLayerPalette} and {\vt ElecLayerPalette}
+technology file keyword families.
+
+The first argument provides a list of layers, or null, to be saved
+in the indexed palette register corresponding to the display mode
+of the main drawing window.  If the argument is a scalar 0, or a
+null string, the palette register will be cleared.  Otherwise this
+argument can be a string consisting of space-separated layer
+names, or a stringlist handle, where the strings are layer names.
+The handle is unaffected by this function call.
+
+The function returns 1 on success, 0 if the register index is out
+of range.  The call will fail (halt the script) if a bad argument
+is passed.
+
+There is no checking of the validity of the string saved as palette
+register data.
+
+\end{description}
 
 !!SEEALSO
 funcs:main3
@@ -1657,6 +2387,51 @@ Layer Database
     string is returned.
     </dl>
     <hr>
+!!LATEX funcs:main3:ldb scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 032017
+\index{GetLayerNum function}
+\item{(int) \vt GetLayerNum({\it name\/})}\\
+Return the component layer number given the component layer name. 
+This is the {\it layer} part of the general {\it layer\/}[{\vt :}{\it
+purpose\/}] layer name used in {\Xic}.  Each such name has a
+corresponding number in the database.  If the name is not found, the
+return value is -1, which is reserved and is not a valid component
+layer number.
+
+%------------------------------------
+% 032017
+\index{GetLayerName function}
+\item{(string) \vt GetLayerName({\it num\/})}\\
+Return the component layer name given the component layer number.  If
+there is no name associated with the number, a null string is
+returned.
+
+%------------------------------------
+% 101312
+\index{IsPurposeDefined function}
+\item{(int) \vt IsPurposeDefined({\it name\/})}\\
+This returns 1 if the name matches a known purpose, 0 otherwise.
+
+%------------------------------------
+% 101312
+\index{GetPurposeNum function}
+\item{(int) \vt GetPurposeNum({\vt name\/})}\\
+This will return a purpose number associated with the name.  If the
+name is not recognized, is null or empty, or matches ``{\vt drawing}''
+without case sensitivity, -1 is returned.  This is the {\vt drawing}
+purpose number.
+
+%------------------------------------
+% 101312
+\index{GetPurposeName function}
+\item{(string) \vt GetPurposeName({\it num\/})}\\
+Return a string giving the purpose name corresponding to the passed
+purpose number.  If the purpose number is not recognized, or is the
+{\vt drawing} purpose value of -1, a null string is returned.
+
+\end{description}
 
 !!SEEALSO
 funcs:main3
@@ -2012,6 +2787,264 @@ Layers
     function returns 0 if the layer name can't be resolved, or the
     data type is out of range.  The value 1 is returned on success.
     </dl>
+!!LATEX funcs:main3:layer scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 032017
+\index{GetLayerLayerNum function}
+\item{(int) \vt GetLayerLayerNum({\it stdlyr\/})}\\
+Return the component layer number associated with the layer indicated
+by the standard layer argument.
+
+%------------------------------------
+% 032017
+\index{GetLayerPurposeNum function}
+\item{(int) \vt GetLayerPurposeNum({\it stdlyr\/})}\\
+Return the purpose number associated with the layer indicated by the
+standard layer argument.
+
+%------------------------------------
+% 101312
+\index{GetLayerAlias function}
+\item{(string) \vt GetLayerAlias({\it stdlyr\/})}\\
+This function returns a string containing the alias name of the layer
+indicated by the standard layer argument.  The string will be null if
+no alias is set.
+
+%------------------------------------
+% 101312
+\index{SetLayerAlias function}
+\item{(int) \vt SetLayerAlias({\it stdlyr\/}, {\it alias\/})}\\
+This function sets the alias name of the layer indicated by the
+standard layer first argument to the string given as the second
+argument, as for the {\vt LppName} technology file keyword.  The alias
+name is an optional secondary name for a layer/purpose pair.  Most if
+not all functions that take a layer name argument will also accept an
+alias name.
+
+The alias name will hide other layers if there is a name clash.  This
+can be used for layer remapping, but the user must be careful with
+this.  Layer name comparisons are case-insensitive.
+
+Unlike the normal layer names, the alias name can have arbitrary
+punctuation, embedded white space, etc.  However, leading and trailing
+white space is removed, and if the resulting string is empty or null,
+the existing alias name (if any) will be removed.
+
+The function returns 1 if the alias name is applied to the layer, 0 if
+an error occurs.  It is not possible to set the same name on more than
+one layer.
+
+%------------------------------------
+% 120114
+\index{GetLayerDescr function}
+\item{(string) \vt GetLayerDescr({\it stdlyr\/})}\\
+This function returns a string containing the description of the layer
+indicated by the argument, which is a standard layer argument or
+derived layer name string.  If no description has been set, a null
+string is returned.
+
+%------------------------------------
+% 120114
+\index{SetLayerDescr function}
+\item{(int) \vt SetLayerDescr({\it stdlyr\/}, {\it descr\/})}\\
+This function sets the description of the layer indicated by the first
+argument, which is a standard layer argument or a derived layer name
+string, to the string given as the second argument.  The description
+is an optional text string associated with the layer.  The function
+always returns 1.
+
+%------------------------------------
+% 101312
+\index{IsLayerDefined function}
+\item{(int) \vt IsLayerDefined({\it name\/})}\\
+The string argument contains a layer name.  This can be the standard
+{\it layer\/}[{\vt :}{\it purpose\/}] form, or can be an alias name. 
+This function returns 1 if the argument can be resolved as the name of
+a layer in the layer table, in the current (electrical/physical) mode. 
+If the layer can't be resolved, 0 is returned.  The function will fail
+fatally if the argument is null or empty.
+
+%------------------------------------
+% 120114
+\index{IsLayerVisible function}
+\item{(int) \vt IsLayerVisible({\it stdlyr\/})}\\
+The function returns 1 if the layer indicated by the argument, which
+is a standard layer argument or a derived layer name string, is
+currently visible (i.e., the visibility flag is set), 0 otherwise.  If
+the layer is derived, the return is the flag status, derived layers
+are never actually visible.
+
+%------------------------------------
+% 120114
+\index{SetLayerVisible function}
+\item{(int) \vt SetLayerVisible({\it stdlyr\/}, {\it visible\/})}\\
+This will set the visibility of the layer indicated in the first
+argument, which is a standard layer argument or a derived layer name
+string.  The layer will be visible if the boolean second argument is
+nonzero, invisible otherwise.  The previous visibility status is
+returned.  If the layer is derived, the flag status is set, however
+derived layers are never visible.
+
+%------------------------------------
+% 120114
+\index{IsLayerSelectable function}
+\item{(int) \vt IsLayerSelectable({\it stdlyr\/})}\\
+The function returns 1 if the layer indicated by the argument, which
+is a standard layer argument or a derived layer name string.  is
+currently selectable (i.e., the selectability flag is set), 0
+otherwise.
+
+%------------------------------------
+% 120114
+\index{SetLayerSelectable function}
+\item{(int) \vt SetLayerSelectable({\it stdlyr\/}, {\it selectable\/})}\\
+This will set the selectability of the layer indicated in the first
+argument, which is a standard layer argument or a derived layer name
+string.  The layer will be selectable if the boolean second argument
+is nonzero, not selectable otherwise.  The previous selectability
+status is returned.
+
+%------------------------------------
+% 120114
+\index{IsLayerSymbolic function}
+\item{(int) \vt IsLayerSymbolic({\it stdlyr\/})}\\
+The function returns 1 if the layer indicated by the argument, which
+is a standard layer argument or a derived layer name string, is
+currently symbolic (i.e., the {\vt Symbolic} attribute is set), 0
+otherwise.
+
+%------------------------------------
+% 120114
+\index{SetLayerSymbolic function}
+\item{(int) \vt SetLayerSymbolic({\it stdlyr\/}, {\it symbolic\/})}\\
+This will set the {\vt Symbolic} attribute of the layer indicated in
+the first argument, which is a standard layer argument or a derived
+layer name string.  The layer will be symbolic if the boolean second
+argument is nonzero, not symbolic otherwise.  The previous symbolic
+status is returned.
+
+%------------------------------------
+% 120114
+\index{IsLayerNoMerge function}
+\item{(int) \vt IsLayerNoMerge({\it stdlyr\/})}\\
+The function returns 1 if the {\vt NoMerge} attribute is set in the
+layer indicated by the argument, which is a standard layer argument or
+a derived layer name string, 0 otherwise.
+
+%------------------------------------
+% 120114
+\index{SetLayerNoMerge function}
+\item{(int) \vt SetLayerNoMerge({\it stdlyr\/}, {\it nomerge\/})}\\
+This will set the {\vt NoMerge} attribute of the layer indicated in
+the first argument, which is a standard layer argument or a derived
+layer name string.  The layer will be given the {\vt NoMerge}
+attribute if the boolean second argument is nonzero, or the attribute
+will be removed if present otherwise.  The previous {\vt NoMerge}
+status is returned.
+
+%------------------------------------
+% 120114
+\index{GetLayerMinDimension function}
+\item{(real) \vt GetLayerMinDimension({\it stdlyr\/})}\\
+The return value is the {\vt MinWidth} design rule value in microns
+for the layer indicated by the argument, which is a standard layer
+argument or a derived layer name string.  If there is no {\vt
+MinWidth} rule, or the DRC package is not available, 0 is returned.
+
+%------------------------------------
+% 120114
+\index{GetLayerWireWidth function}
+\item{(real) \vt GetLayerWireWidth({\it stdlyr\/})}\\
+The function returns the default wire width for the layer indicated by
+the argument, which is a standard layer argument or a derived layer
+name string.
+
+%------------------------------------
+% 120114
+\index{AddLayerGdsOutMap function}
+\item{(int) \vt AddLayerGdsOutMap({\it stdlyr\/}, {\it layer\_num\/},
+  {\it datatype\/})}\\
+This function will add a mapping from the layer in the first argument
+(a standard layer argument or a derived layer name string) to the given
+GDSII layer number and data type.  The layer number and data type are
+integers which define the layer in the GDSII world.  When a GDSII file
+is written, the present layer will appear on the given layer number
+and data type in the GDSII file.  It is possible to have multiple
+mappings of the layer, in which case the geometry from the named layer
+will appear on each layer number/data type given.
+
+The function returns 1 on success, or 0 if the layer number or
+data type number is out of range.  The acceptable range for the
+layer number and data type is [0 -- 65535].
+
+%------------------------------------
+% 120114
+\index{RemoveLayerGdsOutMap function}
+\item{(int) \vt RemoveLayerGdsOutMap({\it stdlyr\/}, {\it layer\_num\/},
+  {\it datatype\/})}\\
+This function will remove a GDSII output layer mapping for the layer
+indicated in the first argument (a standard layer argument or a
+derived layer name string).  The mapping may have been applied in the
+technology file, with the {\cb Tech Parameter Editor} panel from the
+{\cb Attributes Menu}, or by calling the {\vt AddLayerGdsOutMap}
+function.  The mappings removed match the given layer number and data
+type integers provided.  These are in the range [-1 -- 65535], where
+the value '-1' indicates a wild-card which will match all layer
+numbers or data types.
+
+The return value is -1 if the layer number or data type is out of
+range.  Otherwise, the return value is the number of mappings
+removed.
+
+%------------------------------------
+% 120114
+\index{AddLayerGdsInMap function}
+\item{(int) \vt AddLayerGdsInMap({\it stdlyr\/}, {\it string\/})}\\
+This function adds a GDSII input mapping record to the layer whose
+name is indicated in the first argument (a standard layer argument or
+a derived layer name string).  The second argument is a string listing
+the layer numbers and data types which will map to the named layer, in
+the same syntax as used in the technology file.  This is ``{\it l1
+l2-l3} ..., {\it d1 d2-d3} ...", where there are two comma separated
+fields.  The left field consists of individual layer numbers and/or
+ranges of layer numbers, similarly the right field consists of
+individual data types and/or ranges of data types.  Each field can
+have an arbitrary number of space-separated terms.  For each layer
+listed or in a range, all of the data types listed or in a range will
+map to the named layer.  There can be multiple input mappings applied
+to the named layer.
+
+The function returns 0 if there was a syntax error.  The function
+returns 1 if the mapping is successfully added.
+
+%------------------------------------
+% 120114
+\index{ClearLayerGdsInMap function}
+\item{(int) \vt ClearLayerGdsInMap({\it stdlyr\/})}\\
+This function deletes all of the GDSII input mappings applied to the
+layer indicated in the argument, which is a standard layer argument or
+a derived layer name string.  These mappings may have been applied
+through the technology file, added with the {\cb Tech Parameter
+Editor} from the {\cb Attributes Menu}, or added with the {\vt
+AddLayerGdsInMap} function.  This function returns 0 if the layer name
+does not exist in the symbol table for the current display mode
+(physical or electrical).  Otherwise, the return value is the number
+of mapping records deleted.
+
+%------------------------------------
+% 120114
+\index{SetLayerNoDRCdatatype function}
+\item{(int) \vt SetLayerNoDRCdatatype({\it stdlyr\/}, {\it datatype\/})}\\
+This function assigns a data type to be used for objects with the DRC
+skip flag set.  The first argument is a standard layer argument
+indicating a physical layer or a derived layer name string.  The
+second argument is the data type in the range [0 -- 65535], or -1.  If
+-1 is given, any previously defined data type is cleared.  The
+function returns 0 if the layer name can't be resolved, or the data
+type is out of range.  The value 1 is returned on success.
+
+\end{description}
 
 !!SEEALSO
 funcs:main3
@@ -2329,6 +3362,223 @@ Layers - Extraction Support
     href="stdlyr">standard layer</a> argument or a <a
     href="drvlayer">derived layer</a> name string.
     </dl>
+!!LATEX funcs:main3:layerex scrfuncs.tex
+% 120114
+These functions mainly support the extraction system, but are
+maintained in the main program and are therefor accepted in feature
+sets where the extraction system is disabled.
+
+Many of the layer-related functions take a ``standard layer
+argument''.  This can be an integer index number into the layer table,
+where the index is 1-based, and values less than 1 return the current
+layer.  The argument can also be a string, giving a layer name in {\it
+layer\/}[{\vt :}{\it purpose\/}] form, or an alias name.  If the
+string is null or empty, the current layer is returned.
+
+\begin{description}
+%------------------------------------
+% 120114
+\index{SetLayerExKeyword function}
+\item{(string) \vt SetLayerExKeyword({\it stdlyr\/}, {\it string\/})}\\
+The first argument is a standard layer argument indicating a physical
+layer, or a derived layer name string.  The {\it string} argument is
+an extraction keyword and associated text, as would appear in a layer
+block in the technology file.  The specification will be applied to
+the layer, overriding existing settings and possibly causing
+incompatible or redundant existing keywords to be deleted.  This is
+similar to the editing functions of the {\cb Tech Parameter Editor}
+from the {\cb Attributes Menu}, when using the {\cb Extract} or {\cb
+Physical} pages.
+
+The return is a status or error string, which may be null.
+  
+The following keywords can be specified:
+\begin{quote}\vt
+    Conductor\\
+    Routing\\
+    GroundPlane\\
+    GroundPlaneDark\\
+    GroundPlaneClear\\
+    TermDefault\\
+    Contact\\
+    Via\\
+    Dielectric\\
+    DarkField\\
+    Thickness\\
+    Rho\\
+    Sigma\\
+    Rsh\\
+    EpsRel\\
+    Capacitance\\
+    Lambda\\
+    Tline\\
+    Antenna
+\end{quote}
+
+%------------------------------------
+% 120114
+\index{SetCurLayerExKeyword function}
+\item{(string) \vt SetCurLayerExKeyword({\it string\/})}\\
+This is similar to {\vt SetLayerExKeyword}, but applies to the current
+layer.  This function is deprecated and not recommended for use in new
+scripts.
+
+%------------------------------------
+% 120114
+\index{RemoveLayerExKeyword function}
+\item{(int) \vt RemoveLayerExKeyword({\it stdlyr\/}, {\it keyword\/})}\\
+The first argument is a standard layer argument indicating a physical
+layer, or a derived layer name string.  This will remove the
+specification for the extract keyword given in the argument from the
+layer.  The argument must be one of the extraction keywords, i.e.,
+those listed for {\vt SetCurLayerExKeyword}.  The return value is 1 if
+a specification was removed, 0 otherwise.
+
+%------------------------------------
+% 120114
+\index{RemoveCurLayerExKeyword function}
+\item{(int) \vt RemoveCurLayerExKeyword({\it keyword\/})}\\
+This is similar to {\vt RemoveLayerExKeyword} but applies to the
+current layer.  This function is deprecated and not recommended for
+use in new scripts.
+
+%------------------------------------
+% 120114
+\index{IsLayerConductor function}
+\item{(int) \vt IsLayerConductor({\it stdlyr\/})}\\
+The function returns 1 if the {\et Conductor} keyword is given or
+implied for the layer indicated by the argument, which is a standard
+layer argument or a derived layer name string, 0 otherwise.
+
+%------------------------------------
+% 120114
+\index{IsLayerRouting function}
+\item{(int) \vt IsLayerRouting({\it stdlyr\/})}\\
+The function returns 1 if the {\et Routing} keyword is given for the
+layer indicated by the argument, which is astandard layer argument or
+a derived layer name string, 0 otherwise.
+
+%------------------------------------
+% 120114
+\index{IsLayerGround function}
+\item{(int) \vt IsLayerGround({\it stdlyr\/})}\\
+The function returns 1 if one of the {\et GroundPlane} keywords was
+given for the layer indicated by the argument, which is a standard
+layer argument or a derived layer name string, 0 otherwise.
+
+%------------------------------------
+% 120114
+\index{IsLayerContact function}
+\item{(int) \vt IsLayerContact({\it stdlyr\/})}\\
+The function returns 1 if the {\et Contact} keyword is given for the
+layer indicated by the argument, which is a standard layer argument or
+a derived layer name string, 0 otherwise.
+
+%------------------------------------
+% 120114
+\index{IsLayerVia function}
+\item{(int) \vt IsLayerVia({\it stdlyr\/})}\\
+The function returns 1 if the {\et Via} keyword is given for the layer
+indicated by the argument, which is a standard layer argument or a
+derived layer name string, 0 otherwise.
+
+%------------------------------------
+% 011621
+\index{IsLayerViaCut function}
+\item{(int) \vt IsLayerViaCut({\it stdlyr\/})}\\
+The function returns 1 if the {\et ViaCut} keyword is given
+for the layer indicated by the argument, which is a standard
+layer argument or a derived layer name string, 0 otherwise.
+
+%------------------------------------
+% 120114
+\index{IsLayerDielectric function}
+\item{(int) \vt IsLayerDielectric({\it stdlyr\/})}\\
+The function returns 1 if the {\et Dielectric} keyword is given for
+the layer indicated by the argument, which is a standard layer
+argument or a derived layer name string, 0 otherwise.
+
+%------------------------------------
+% 120114
+\index{IsLayerDarkField function}
+\item{(int) \vt IsLayerDarkField({\it stdlyr\/})}\\
+The function returns 1 if the {\et DarkField} keyword is given or
+implied for the layer indicated by the argument, which is a standard
+layer argument or a derived layer name string, 0 otherwise.
+
+%------------------------------------
+% 120114
+\index{GetLayerThickness function}
+\item{(real) \vt GetLayerThickness({\it stdlyr\/})}\\
+The function returns the value of the {\et Thickness} parameter given
+for the layer indicated by the argument, which is a standard layer
+argument or a derived layer name string.
+
+%------------------------------------
+% 120114
+\index{GetLayerRho function}
+\item{(real) \vt GetLayerRho({\it stdlyr\/})}\\
+The function returns the resistivity in ohm-meters of the layer
+indicated by the argument, which is a standard layer argument or a
+derived layer name string, as given by the {\vt Rho} or {\vt Sigma}
+parameters, if given.  If neither of these is given, and {\vt Rsh} and
+{\vt Thickness} are given, the return value will be {\vt Rsh}*{\vt
+Thickness}.
+
+%------------------------------------
+% 120114
+\index{GetLayerResis function}
+\item{(real) \vt GetLayerResis({\it stdlyr\/})}\\
+The function returns the sheet resistance for the layer indicated
+by the argument, which is a standard layer argument or a derived layer
+name string.  This will be the value of the {\vt Rsh} parameter, if
+given, or the values of {\vt Rho}/{\vt Thickness}, if {\vt Rho} or
+{\vt Sigma} and {\vt Thickness} are given, or 0 if no value is
+available.
+
+%------------------------------------
+% 011621
+\index{GetLayerTau function}
+\item{(real) \vt GetLayerTau({\it stdlyr\/})}\\
+The function returns the Drude relaxation time for the layer
+indicated by the argument, which is a standard layer argument
+or a derived layer name string.  This will be the value of the
+{\et Tau} parameter if given to the layer, 0 otherwise.
+
+%------------------------------------
+% 120114
+\index{GetLayerEps function}
+\item{(real) \vt GetLayerEps({\it stdlyr\/})}\\
+The function returns the relative dielectric constant for the layer
+indicated by the argument, which is a standard layer argument or
+derived layer name string, as given by the {\et EpsRel} parameter if
+applied.
+
+%------------------------------------
+% 120114
+\index{GetLayerCap function}
+\item{(real) \vt GetLayerCap({\it stdlyr\/})}\\
+The function returns the per-area capacitance for the layer indicated
+by the argument, which is a standard layer argument or a derived layer
+name string.
+
+%------------------------------------
+% 120114
+\index{GetLayerCapPerim function}
+\item{(real) \vt GetLayerCapPerim({\it stdlyr\/})}\\
+The function returns the per-perimeter capacitance for the layer
+indicated by the argument, which is a standard layer argument or a
+derived layer name string.
+
+%------------------------------------
+% 120114
+\index{GetLayerLambda function}
+\item{(real) \vt GetLayerLambda({\it stdlyr\/})}\\
+The function returns the value of the {\et Lambda} parameter for the
+layer indicated by the argument, which is a standard layer argument or
+a derived layer name string.
+
+\end{description}
 
 !!SEEALSO
 funcs:main3
@@ -2457,6 +3707,104 @@ Selections
     <dt><b>(int) <tt>Deselect</tt>()</b>
     <dd><br>This function unselects all selected objects.
     </dl>
+!!LATEX funcs:main3:sel scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 100412
+\index{SetLayerSpecific function}
+\item{(int) \vt SetLayerSpecific({\it state\/})}\\
+If the boolean state value is nonzero, all layers except for the
+current layer will become unselectable.  Otherwise, all layers will be
+set to their default selectability state.  The return value is always
+1.
+
+%------------------------------------
+% 052409
+\index{SetLayerSearchUp function}
+\item{(int) \vt SetLayerSearchUp({\it state\/})}\\
+This function will set layer-search-up selection mode (see
+\ref{selcontrol}) if the argument is nonzero, or normal mode
+otherwise.  The return value is 1 or 0 representing the previous
+layer-search-up mode status.
+
+%------------------------------------
+% 030204
+\index{SetSelectMode function}
+\item{(string) \vt SetSelectMode({\it ptr\_mode\/}, {\it area\_mode\/},
+  {\it sel\_mode\/})}\\
+This function allows the various selection modes to be set.  These are
+the same modes that can be set with the {\cb Selection Control Panel}
+provided by the {\cb layer} button.  If an input value is given as -1,
+that particular parameter will be unchanged.  Otherwise, the possible
+values are
+
+\begin{tabular}{|l|l|l|} \hline
+\it ptr\_mode & \it area\_mode & \it sel\_mode\\ \hline
+0 Normal & 0 Normal   & 0 Normal\\ \hline
+1 Select & 1 Enclosed & 1 Toggle\\ \hline
+2 Modify & 2 All      & 2 Add\\ \hline
+         &            & 3 Remove\\ \hline
+\end{tabular}
+
+The return value is a string, where the first three characters are the
+previous values of {\it ptr\_mode}, {\it area\_mode}, and {\it
+sel\_mode} as {\it integers}, not ASCII characters.
+
+%------------------------------------
+% 052409
+\index{SetSelectTypes function}
+\item{(int) \vt SetSelectTypes({\it string\/})}\\
+This function allows setting of the object types that can be selected. 
+This provides the default selection types, but does not apply to
+functions that provide an explicit argument for selection types.
+  
+The string argument consists of a sequence of characters whose
+presence indicates that the corresponding object type is selectable. 
+These are:
+
+\begin{quote}
+\begin{tabular}{ll}
+\vt c & cell instances\\
+\vt b & boxes\\
+\vt p & polygons\\
+\vt w & wires\\
+\vt l & labels\\
+\end{tabular}
+\end{quote}
+
+Other characters are ignored.  If the string is null, empty, or
+contains none of the listed characters, all objects are enabled, as if
+the string ``{\vt cbpwl}'' was entered.
+  
+This function always returns 1.
+
+%------------------------------------
+% 030204
+\index{Select function}
+\item{(int) \vt Select({\it left\/}, {\it bottom\/}, {\it right\/},
+ {\it top\/}, {\it types\/})}\\
+This function performs a selection operation in the rectangle defined
+by the first four arguments (given in microns).  The fifth argument is
+a string whose characters serve to enable selection of a given type of
+object:  `{\vt b}' for boxes, `{\vt p}' for polygons, `{\vt w}' for
+wires, `{\vt l}' for labels, and `{\vt c}' for instances.  If this
+string is empty or null, then all objects will be selected.  Any
+matching object that touches or overlaps the selection box will have
+its selection status toggled.  For example,
+\begin{quote}
+  {\vt Select(-INFINITY, -INFINITY, INFINITY, INFINITY, "c")}
+\end{quote}
+will select all subcells.
+
+For more complex selections based on object types, etc., the {\vt
+TextCmd} function can be used to call the {\cb !select} command.
+
+% 030204
+\index{Deselect function}
+\item{(int) \vt Deselect()}\\
+This function deselects all selected objects.
+
+\end{description}
 
 !!SEEALSO
 funcs:main3
@@ -2627,6 +3975,143 @@ Pseudo-Flat Generator
     objects from within the cell will be returned if <i>depth</i> is
     nonzero.
     </dl>
+!!LATEX funcs:main3:pfgen scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 030204
+\index{FlatObjList function}
+\item{(object\_handle) \vt FlatObjList({\it l\/}, {\it b\/}, {\it r\/},
+   {\it t\/}, {\it depth\/})}\\
+This function provides access to the ``pseudo-flat'' object access
+functions that are part of internal DRC routines in {\Xic}.  This
+enables cycling through objects in the database without regard to the
+cell hierarchy.  The first four arguments are the coordinates in
+microns of the bounding box to search in.  The {\it depth} is the
+search depth, which can be an integer 0 or larger which sets the
+maximum depth to search (0 means search the current cell only, 1 means
+search the current cell plus the subcells, etc., and a negative
+integer sets the depth to search the entire hierarchy).  This argument
+can also be a string starting with `{\vt a}' such as ``{\vt a}'' or
+``{\vt all}'' which indicates to search the entire hierarchy.
+
+The return value is a list of box, polygon, and wire objects found in
+the given region on the current layer.  Label and subcell objects are
+never returned.  If {\it depth} is 0, the actual object pointers are
+returned in the list, and all of the object manipulation functions are
+available.  Otherwise, the list references copies of the actual
+objects, transformed to the coordinate space of the current cell.
+
+The copies of the objects can use substantial memory if the list is
+very long.  The {\vt FlatObjGen} function provides another access
+interface that can use less memory.
+
+%------------------------------------
+% 030204
+\index{FlatObjGen function}
+\item{(handle) \vt FlatObjGen({\it l\/}, {\it b\/}, {\it r\/},
+   {\it t\/}, {\it depth\/})}\\
+This function provides access to the ``pseudo-flat'' object access
+functions that are part of internal DRC routines in {\Xic}.  This
+enables cycling through objects in the database without regard to the
+cell hierarchy.  The first four arguments are the coordinates in
+microns of the bounding box to search in.  The {\it depth} is the
+search depth, which can be an integer 0 or larger which sets the
+maximum depth to search (0 means search the current cell only, 1 means
+search the current cell plus the subcells, etc., and a negative
+integer sets the depth to search the entire hierarchy).  This argument
+can also be a string starting with `{\vt a}' such as ``{\vt a}'' or
+``{\vt all}'' which indicates to search the entire hierarchy.
+
+Similar to {\vt FlatObjList}, objects on the current layer are
+returned, but through an intermediate handle rather than through a
+list, which can require significant memory.  This function returns a
+special handle which is passed to the {\vt FlatGenNext} function to
+actually retrieve the objects.  Although this handle can be passed to
+the generic handle functions, most of these functions will have no
+effect.  {\vt HandleContent} will return 1, or 0 if the handle is
+exhausted.  {\vt HandleNext} will advance to the next object without
+saving the object.  The other functions will return 0 and do nothing. 
+The {\vt Close} function should be called to delete the handle unless
+the handle is iterated to completion with {\vt FlatGenNext} or {\vt
+HandleNext}.
+
+If {\it depth} is 0, the object pointers returned from {\vt
+FlatGenNext} represent the actual object, and all object manipulation
+functions are available.  Otherwise, transformed copies of the actual
+objects are returned, and there are restrictions on the operations
+that can be performed (see \ref{objmanh}).
+
+%------------------------------------
+% 030204
+\index{FlatObjGenLayers function}
+\item{(handle) \vt FlatObjGenLayers({\it l\/}, {\it b\/}, {\it r\/},
+   {\it t\/}, {\it depth}, {\it layers\/})}\\
+This function is very similar to {\vt FlatObjGen}, however it returns
+objects from layers named in the {\it layers} string.  If the string
+is null or empty, objects on all layers will be returned.  Otherwise,
+the string is a space separated list of layer names.  The names are
+expected to match layers in the current display mode.  Names that do
+not match any layer are silently ignored, though the function fails if
+no layer can be recognized.
+
+%------------------------------------
+% 030204
+\index{FlatGenNext function}
+\item{(object\_handle) \vt FlatGenNext({\it handle\/})}\\
+This takes as an argument the handle returned from {\vt FlatObjGen} or
+{\vt FlatObjGenLayers}, and returns an object handle which contains a
+single object returned from the generator.  If the {\it depth}
+argument passed to these functions was nonzero, the objects are
+transformed copies.  The returned handles should be closed after use
+by calling {\vt Close}, or by calling an iterating function such as
+{\vt HandleNext} or {\vt ObjectNext}.
+
+A new handle is returned for each call of this function, until no
+further objects are available in which case this function returns 0,
+and the handle passed as the argument will be closed.
+
+%------------------------------------
+% 030204
+\index{FlatGenCount function}
+\item{(int) \vt FlatGenCount({\it handle\/})}\\
+This function returns the number of objects that can be generated with
+the generator handle passed, which must be returned from {\vt
+FlatObjGen} or {\vt FlatObjGenLayers}.  Generator handles do not cache
+an internal list of objects, so that the number of objects is unknown,
+which is why {\vt HandleContent} returns 1 for generator handles. 
+This function duplicates the generator context and iterates through
+the loop, counting returned objects.  This can be an expensive
+operation.
+
+%------------------------------------
+% 030204
+\index{FlatOverlapList function}
+\item{(object\_handle) \vt FlatOverlapList({\it object\_handle},
+  {\it touch\_ok}, {\it depth}, {\it layers\/})}\\
+This function returns a handle to a list of objects that touch or
+overlap the object referenced by the {\it object\_handle} argument. 
+If {\it touch\_ok} is nonzero, objects that touch but have zero
+overlap area will be included; if {\it touch\_ok} is zero these
+objects will be skipped.  The {\it depth} is the search depth, which
+can be an integer which sets the maximum depth to search (0 means
+search the current cell only, 1 means search the current cell plus the
+subcells, etc., and a negative integer sets the depth to search the
+entire hierarchy).  This argument can also be a string starting with
+`{\vt a}' such as ``{\vt a}'' or ``{\vt all}'' which indicates to
+search the entire hierarchy.  If {\it depth} is not 0, the objects
+returned are transformed copies, otherwise the actual objects are
+returned.  The {\it layer} argument is a string containing
+space-separated layer names of the layers to search for objects.  If
+this is empty or null, all layers will be searched.  The function
+fails if the handle argument is not a handle to an object list.  The
+return value is a handle to a list of objects, or 0 if no overlapping
+or touching objects are found.
+
+Only boxes, polygons, and wires are returned.  The reference object
+can be any object.  If the reference object is a subcell, objects from
+within the cell will be returned if {\it depth} is nonzero.
+
+\end{description}
 
 !!SEEALSO
 funcs:main3
@@ -2773,6 +4258,123 @@ Geometry Measurement
     overlap.  If touchok is 0, objects must overlap (have nonzero
     intersection area) for 1 to be returned.
     </dl>
+!!LATEX funcs:main3:meas scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 030204
+\index{Distance function}
+\item{(real) \vt Distance({\it x\/}, {\it y\/}, {\it x1\/}, {\it y1\/})}\\
+This function computes the distance between two points, given in
+microns, returning the distance between the points in microns.
+
+%------------------------------------
+% 030204
+\index{MinDistPointToSeg function}
+\item{(real) \vt MinDistPointToSeg({\it x\/}, {\it y\/}, {\it x1\/},
+ {\it y1\/}, {\it x2\/}, {\it y2\/}, {\it aret\/})}\\
+This function computes the shortest distance from {\it x,y} to the
+line segment defined by the next four arguments.  The {\it aret} is an
+array of size at least 4, used for returned coordinates.  If no return
+is needed, this argument can be set to 0.  Upon return of a value
+greater than 0, the first two values in {\it aret} are {\it x} and
+{\it y}, the next two values are the point on the segment closest to
+{\it x,y}.  All values are in microns.
+
+%------------------------------------
+% 030204
+\index{MinDistPointToObj function}
+\item{(real) \vt MinDistPointToObj({\it x\/}, {\it y\/},
+ {\it object\_handle\/}, {\it aret\/})}\\
+This function computes the minimum distance from the point {\it x,y}
+to the boundary of the object given by the handle.  The {\it aret} is
+an array of size at least 4 for return coordinates.  If the return is
+not needed, this argument can be given as 0.  Upon return of a value
+greater than 0, the first two values of aret will be {\it x} and {\it
+y}, the next two values will be the point on the boundary of the
+object closest to {\it x,y}.  The function returns 0 if {\it x,y}
+touch or are enclosed in the object.  The function will fail if the
+handle is not a reference to an object list.  If there is an internal
+error, -1 is returned.  All coordinates are in microns.
+
+%------------------------------------
+% 030204
+\index{MinDistSegToObj function}
+\item{(real) \vt MinDistSegToObj({\it x1\/}, {\it y1\/}, {\it x2\/},
+ {\it y2\/}, {\it object\_handle\/}, {\it aret\/})}\\
+This function computes the minimum distance from the line segment
+defined by the first four arguments to the boundary of the object
+given by the handle.  The {\it aret} is an array of size at least 4
+for return coordinates.  If the return is not needed, this argument
+can be given as 0.  Upon return of a value greater than 0, the first
+two values of {\it aret} will be the point on the line segment nearest
+the object, the next two values will be the point on the boundary of
+the object nearest to the line segment.  The function returns 0 if the
+line segment touches or overlaps the object.  The function will fail
+if the handle is not a reference to an object list.  If there is an
+internal error, -1 is returned.  All coordinates are in microns.
+
+%------------------------------------
+% 030204
+\index{MinDistObjToObj function}
+\item{(real) \vt MinDistObjToObj({\it object\_handle1\/},
+ {\it object\_handle2\/}, {\it aret\/})}\\
+This function computes the minimum distance between the two objects
+referenced by the handles.  The {\it aret} is an array of size at
+least 4 for return coordinates.  If the return is not needed, this
+argument can be given as 0.  Upon return of a value greater than 0,
+the first two values of {\it aret} will be the point on the boundary
+of the first object nearest the second object, the next two values
+will be the point on the boundary of the second object nearest to the
+first object.  The function returns 0 if the objects touch or overlap. 
+The function will fail if either handle is not a reference to an
+object list.  If there is an internal error, -1 is returned.  All
+coordinates are in microns.
+
+%------------------------------------
+% 030204
+\index{MaxDistPointToObj function}
+\item{(real) \vt MaxDistPointToObj({\it x\/}, {\it y\/},
+ {\it object\_handle\/}, {\it aret\/})}\\
+This function finds the vertex of the object referenced by the handle
+farthest from the point {\it x,y} and returns this distance.  The {\it
+aret} is an array of size at least 4 for return coordinates.  If the
+return is not needed, this argument can be given as 0.  Upon return of
+a value greater than 0, the first two values of aret will be {\it x}
+and {\it y}, the next two values will be the vertex of the object
+farthest from {\it x,y\/}.  The function will fail if the handle is
+not a reference to an object list.  If there is an internal error, -1
+is returned.  All coordinates are in microns.
+
+%------------------------------------
+% 030204
+\index{MaxDistObjToObj function}
+\item{(real) \vt MaxDistObjToObj({\it object\_handle1\/},
+ {\it object\_handle2\/}, {\it aret\/})}\\
+This function finds the pair of vertices, one from each object, that
+are farthest apart.  Both handles can be the same.  The {\it aret} is
+an array of size at least 4 for return coordinates.  If the return is
+not needed, this argument can be given as 0.  Upon return of a value
+greater than 0, the first two values of {\it aret} will be the vertex
+from the first object, the next two values will be the vertex from the
+second object.  The function will fail if either handle is not a
+reference to an object list.  If there is an internal error, -1 is
+returned.  All coordinates are in microns.
+
+%------------------------------------
+% 030204
+\index{Intersect function}
+\item{(int) \vt Intersect({\it object\_handle1\/},
+ {\it object\_handle2\/}, {\it touchok\/})}\\
+This function determines whether the two objects referenced by the
+handles touch or overlap.  The return value is 1 if the objects touch
+or overlap, 0 if the objects do not touch or overlap, or -1 if either
+handle points to an empty list or some other error occurred.  The
+function fails if either handle is not a reference to an object list. 
+If the {\it touchok} argument is nonzero, 1 will be returned if the
+objects touch but do not overlap.  If touchok is 0, objects must
+overlap (have nonzero intersection area) for 1 to be returned.
+
+\end{description}
 
 !!SEEALSO
 funcs:main3

@@ -249,6 +249,190 @@ xicpaths
     subroutines used by other scripts.  Whenever the script path is
     changed, a <a href="xic:hash">rehash</a> is performed, i.e., the
     <a href="xic:usermenu"><b>User Menu</b></a> is rebuilt.
+!!LATEX xicpaths startup.tex
+There are four search paths used by {\Xic}.  Search paths are lists of
+directories, which are searched in left-to-right order for files of a
+particular type.  In addition to search paths, {\Xic} provides a
+``redirect file'' mechanism for finding files, which supplements the
+search path.  If a specific file is being sought, the first file with
+matching name is used.  The format used for search path strings can be
+one of two forms:
+
+\begin{description}
+\item{{\bf Unix-shell style:}\hspace{5mm}
+  {\vt ( directory{\it 1} directory{\it 2} ...  directory{\it N} )}}\\
+The tokens are separated by white space.  If white space appears in a
+directory entry, that entry should be single or double quoted.  The
+entire path should be enclosed in parentheses.  Space between the
+parentheses and directory names is optional.
+
+Examples:
+\begin{quote}
+{\vt ( ~. )}\\
+{\vt ( /usr/local/bin "/Program Files/xic/stuff" \symbol{126}/work )}
+\end{quote}
+
+This format is the same in Windows and Unix releases, however in
+Windows, back and forward slashes are equivalent, and the drive
+specifier can appear in the entries.
+
+\item{{\bf Traditional search path:}\hspace{5mm}
+  {\vt directory{\it 1\/}:directory{\it 2\/}:...:directory{\it N}}}\\
+The entries are separated by a special character, which is a colon
+`{\vt :}' in Unix/Linux, and a semicolon `{\vt ;}' in Windows.  There
+should be no white space that is not part of a file/directory name. 
+An entry should be single or double quoted if it contains the
+separation character.  In the examples here, a colon is used, which in
+Windows must be converted to a semicolon.  The separation character is
+optional at the front or end of the path, unless it is needed to
+delimit white space that is part of an entry.
+
+Examples:
+\begin{quote}
+{\vt .}\\
+{\vt /usr/local/bin:/Program Files/xic/stuff:\symbol{126}/work}
+\end{quote}
+\end{description}
+
+In earlier {\Xic} releases, parsing was fairly loose, and in
+particular hybrids of the two formats would be accepted.  This is not
+true in the present release, due to support for white space in path
+entries.  The format used in a path string must be consistent.
+
+The following special symbols are recognized in entries:\\
+\begin{tabular}{|l|p{3.5in}|} \hline
+\vt . & The current directory\\ \hline
+\vt .. & The parent directory of the current directory\\ \hline
+\vt \symbol{126}  & The user's home directory (Unix) or the content of the
+    {\et HOME} environment variable (Windows)\\ \hline
+\vt \symbol{126}joe & The home directory of user {\vt joe} (Unix only, no
+   substitution in Windows)\\ \hline
+\end{tabular}
+
+\index{cell data path}
+\index{paths!cell data}
+The four paths are the design data path, the library path, the help
+path, and the script path.  The design data path is used to locate
+design data files, consisting of native cell, archive, and library
+files.  The library path is used to locate the technology file, device
+and model libraries, and various other configuration files.  The help
+path contains files for the help system, and the script path contains
+executable scripts and libraries which appear as commands in the {\cb
+User Menu}.
+
+These paths can be set in the technology file, the {\vt .xicinit} or
+{\vt .xicstart} initialization files, or by use of environment
+variables, or with the {\cb !set} command.  A specification in the
+{\vt .xicinit} will override specification in the environment, which
+is in turn superseded by a specification in the technology file, and
+the {\vt .xicstart} file supersedes the technology file.  Once {\Xic}
+is running, the {\cb !set} command can be used to set or examine the
+search paths.  Similar commands exist in the script interpreter
+interface function library.
+
+\index{design data path!updating}
+\index{paths!design data!updating}
+In addition, the design data path is augmented with any path preceding
+a native cell file to open in the {\cb Open} command.  By default, the
+path is added to the beginning of the present design data path.  For
+example, suppose a design hierarchy exists in the directory {\vt
+/usr/work}.  If the user enters {\vt /usr/work/maincell} in response
+to the prompt which appears after pressing the {\cb Open} button, then
+the file {\et maincell} is opened for editing, and the directory {\vt
+/usr/work} is added to the front of the design data path.  Once the
+design data path is updated, the cells in that path can be accessed by
+their base file name only.  The treatment of any path which is given
+with a native cell to open in the {\cb Open} command can be altered
+with the {\et NoReadExclusive} and {\et AddToBack} variables.
+
+The use of paths facilitates user customization of {\Xic}, particularly
+when the directories used in the system installation are not writable
+by the user.  By installing a different search path, the user can
+augment or substitute for the system default files and libraries.
+
+Below are the environment variable names and internal defaults:
+\index{environment!XIC\_SYM\_PATH}
+\index{environment!XIC\_HLP\_PATH}
+\index{environment!XIC\_LIB\_PATH}
+\index{environment!XIC\_SCR\_PATH}
+
+\begin{description}
+\item{Design Data Path}\\
+\begin{tabular}{ll}
+variable: & {\et Path}\\
+environment: & {\et XIC\_SYM\_PATH}\\
+default: & {\vt ( ~. )}
+\end{tabular}
+\item{Library Path}\\
+\begin{tabular}{ll}
+variable: & {\et LibPath}\\
+environment: & {\et XIC\_LIB\_PATH}\\
+default: & {\vt ( ~. /usr/local/xictools/xic/startup )}
+\end{tabular}
+\item{HelpPath}\\
+\begin{tabular}{ll}
+variable: & {\et HlpPath}\\
+environment: & {\et XIC\_HLP\_PATH}\\
+default: & {\vt ( /usr/local/xictools/xic/help )}
+\end{tabular}
+\item{ScriptPath}\\
+\begin{tabular}{ll}
+variable: & {\et ScriptPath}\\
+environment: & {\et XIC\_SCR\_PATH}\\
+default: & {\vt ( /usr/local/xictools/xic/scripts )}
+\end{tabular}
+\end{description}
+
+If the {\et XT\_PREFIX} environment variable is set, its value will be
+taken instead of ``{\vt /usr/local}'' in the defaults.
+
+The ``variable'' field in the table above provides the name of the
+variable, which can be altered with the {\cb !set} command to set the
+path.  Unlike other variables, these are always defined and cannot be
+unset.  The same name is also used as a keyword in the technology
+file.
+
+Files containing cell data, whether {\Xic} native, GDSII, or some
+other format, are expected to be found in a directory along the design
+data search path.  The first file found matching the name requested is
+opened.  Normally, it is desirable to include the current directory
+`.' in the design data path, otherwise files located in the current
+directory will not be found.
+
+\index{library path}
+\index{paths!library}
+The technology file, {\vt device.lib} file, {\vt model.lib} file and
+other model files are found along the library path.
+
+The search behavior of the library path is slightly different from the
+other paths, in that an attempt is made to open a file in the current
+directory before looking through the search directories.  Thus, the
+current directory `.' is always logically at the head of the library
+path.  There is no problem if `.' is also explicitly defined in the
+path.  A consequence is that startup files that exist in the current
+directory will {\it always} have precedence over files located in
+other directories.
+
+\index{help path}
+\index{help mode! path}
+\index{paths!help}
+Each directory in the help path is expected to contain help database
+files.  These files use names with an extension ``{\vt .hlp}''.  The
+directories may also contain graphics files used by the help system. 
+Changing this path allows the user to provide their own help files for
+the custom functions (scripts) which appear in the {\cb User Menu},
+for example, or to add information topics, such as about local design
+rules, to the database.
+
+\index{script path}
+\index{paths!script}
+The scripts and related files are found along the script path.  Only
+files which have the extension ``{\vt .scr}'' are taken as scripts. 
+The directories in this path may also contain script menus, with
+extension ``{\vt .scm}'', and files named ``{\vt library}'' which
+contain subroutines used by other scripts.  Whenever the script path
+is changed, a {\cb rehash} is performed, i.e., the {\cb User Menu} is
+rebuilt.
 
 !!SEEALSO
 fileformats
@@ -300,6 +484,44 @@ Redirect Files
     the <b>File Menu</b> will list files found through the redirect
     files on separate pages for each redirected directory, just as
     for the directories contained in the search path.
+!!LATEX xt_redirect startup.tex
+Redirect files are an adjunct to the search path mechanism used by
+{\Xic} for finding files.  Redirect files are files created by the
+user, that tell {\Xic} about additional locations to search for input
+files.
+
+Redirect files {\bf must} be named ``{\vt xt\_redirect}'', and are
+text files with the following format and properties:
+
+\begin{itemize}
+\item{Lines that start with `{\vt \#}' or contain only white space
+  are ignored.}
+\item{Each line otherwise contains one or more directory paths,
+  separated by white space.  If a directory path contains white
+  space or other special characters, it should be double-quoted
+  (i.e., as {\vt "..."}).}
+\item{Multiple directories can be provided on a single line, or in
+  different lines.}
+\item{Paths that are not rooted are taken as relative to the
+  directory containing the redirect file.}
+\item{Paths that do not point to an existing directory are silently
+  ignored.}
+\end{itemize}
+
+When searching a directory, the directories found in a redirect file
+are also searched, in order, after the current directory.  The search
+is recursive, so that arbitrarily deep hierarchies can be searched via
+the redirect file mechanism.
+
+With redirect files, only the top directory of a hierarchy needs to be
+included in the search path (or given explicitly).  This can be very
+convenient for organizing collections of native cell files, for
+example.
+
+The {\cb Path Files Listing} panel from the {\cb File Menu} will list
+files found through the redirect files on separate pages for each
+redirected directory, just as for the directories contained in the
+search path.
 
 !!SEEALSO
 fileformats

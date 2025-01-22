@@ -1,0 +1,549 @@
+----------------------------------------------------------------------------
+% Xic Manual
+% (C) Copyright 2025, Whiteley Research Inc., Sunnyvale CA
+% sidemenu.tex.in
+% -----------------------------------------------------------------------------
+
+% -----------------------------------------------------------------------------
+\chapter{The Side Menu:  Geometry Creation}
+\label{sidemenu}
+\index{side menu}
+
+% sidemenu 020715
+<<sidemenu xiCommands.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb arc} Button: Create Arcs}
+\index{arc button}
+\index{object creation!arcs}
+\epsfbox{images/arc.eps}
+
+% xic:arc 120615
+<<xic:arc xiCommands.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb box} Button: Create Rectangles}
+\index{box button}
+\index{object creation!boxes}
+\epsfbox{images/box.eps}
+
+% xic:box 012715
+<<xic:box xiCommands.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb break} Button: Cut Objects}
+\index{break button}
+\index{object breaking}
+\epsfbox{images/break.eps}
+
+% xic:break 012815
+<<xic:break xiCommands.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb deck} Button:  Save SPICE File}
+\index{deck button}
+\index{SPICE deck creation}
+\epsfbox{images/deck.eps}
+
+% xic:deck 062313
+<<xic:deck xiCommands.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb devs} Button: Device Menu}
+\label{devmenu}
+\index{devs button}
+\index{device menu}
+\index{PictorialDevs variable}
+\epsfbox{images/devs.eps}
+
+% xic:devs 082024
+<<xic:devs xiCommands.hlp>>
+
+
+% -----------------------------------------------------------------------------
+% not in help
+\subsection{Terminal Devices}
+
+The following are not ``real'' devices, though they appear in the
+device menu and can be placed in a drawing.  Their purpose is to
+establish connectivity.
+
+% -----------------------------------------------------------------------------
+\subsubsection{Ground Device}
+\index{gnd device}
+
+% dev:gnd 042611
+<<dev:gnd xiDevToolbar.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsubsection{Alternative Ground Device}
+\index{gnde device}
+
+% dev:gnde 042611
+<<dev:gnde xiDevToolbar.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsubsection{Terminal Device}
+\label{devtbar}
+\index{tbar device}
+
+% dev:tbar 062013
+<<dev:tbar xiDevToolbar.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsubsection{Bus Terminal Device}
+\index{tbus device}
+
+% dev:tbus 062013
+<<dev:tbus xiDevToolbar.hlp>>
+
+% -----------------------------------------------------------------------------
+% not in help
+\subsection{SPICE Devices}
+
+These devices correspond to element lines in SPICE output.  In general,
+they reflect the generic SPICE syntax.
+
+% -----------------------------------------------------------------------------
+\subsubsection{Resistor Device}
+\index{res device}
+
+% dev:res 062908
+<<dev:res xiDevToolbar.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsubsection{Capacitor Device}
+\index{cap device}
+
+% dev:cap 062908
+<<dev:cap xiDevToolbar.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsubsection{Inductor Device}
+\index{ind device}
+
+% dev:ind 062908
+<<dev:ind xiDevToolbar.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsubsection{Mutual Inductor}
+\index{mut device}
+\index{mutual inductors}
+
+% dev:mut 062908
+<<dev:mut xiDevToolbar.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsubsection{Current Source}
+\index{isrc device}
+
+% dev:isrc 062908
+<<dev:isrc xiDevToolbar.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsubsection{Voltage Source}
+\index{vsrc device}
+
+% dev:vsrc 042611
+<<dev:vsrc xiDevToolbar.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsubsection{Current Meter}
+\index{vp device}
+
+% dev:vp 042611
+<<dev:vp xiDevToolbar.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsubsection{Junction Diode}
+\index{dio device}
+
+% dev:dio 062908
+<<dev:dio xiDevToolbar.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsubsection{Josephson Junction}
+\index{jj device}
+
+% dev:jj 062908
+<<dev:jj xiDevToolbar.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsubsection{NPN Bipolar Transistor}
+\index{npn device}
+
+% dev:npn 062908
+<<dev:npn xiDevToolbar.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsubsection{PNP Bipolar Transistor}
+\index{pnp device}
+
+% dev:pnp 062908
+<<dev:pnp xiDevToolbar.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsubsection{N-Channel Junction FET}
+\index{njf device}
+
+% dev:njf 062908
+<<dev:njf xiDevToolbar.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsubsection{P-Channel Junction FET}
+\index{pjf device}
+
+% dev:pjf 062908
+<<dev:pjf xiDevToolbar.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsubsection{N-Channel MOSFET, 4 Nodes}
+\index{nmos1 device}
+
+% dev:nmos1 062908
+<<dev:nmos1 xiDevToolbar.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsubsection{P-Channel MOSFET, 4 Nodes}
+\index{pmos1 device}
+
+% dev:pmos1 062908
+<<dev:pmos1 xiDevToolbar.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsubsection{N-Channel MOSFET, 3 Nodes}
+\index{nmos device}
+
+% dev:nmos 042611
+<<dev:nmos xiDevToolbar.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsubsection{P-Channel MOSFET, 3 Nodes}
+\index{pmos device}
+
+% dev:pmos 042611
+<<dev:pmos xiDevToolbar.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsubsection{N-Channel MESFET}
+\index{nmes device}
+
+% dev:nmes 062908
+<<dev:nmes xiDevToolbar.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsubsection{P-Channel MESFET}
+\index{pmes device}
+
+% dev:pmes 062908
+<<dev:pmes xiDevToolbar.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsubsection{Transmission Line}
+\index{tra device}
+
+% dev:tra 062908
+<<dev:tra xiDevToolbar.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsubsection{Transmission Line (LTRA compatibility)}
+\index{ltra device}
+
+% dev:ltra 062908
+<<dev:ltra xiDevToolbar.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsubsection{Uniform RC Line}
+\index{urc device}
+
+% dev:urc 062908
+<<dev:urc xiDevToolbar.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsubsection{Voltage-Controlled Current Source}
+\index{vccs device}
+
+% dev:vccs 062908
+<<dev:vccs xiDevToolbar.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsubsection{Voltage-Controlled Voltage Source}
+\index{vcvs device}
+
+% dev:vcvs 062908
+<<dev:vcvs xiDevToolbar.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsubsection{Current-Controlled Current Source}
+\index{cccs device}
+
+% dev:cccs 030415
+<<dev:cccs xiDevToolbar.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsubsection{Current-Controlled Voltage Source}
+\index{ccvs device}
+
+% dev:ccvs 030415
+<<dev:ccvs xiDevToolbar.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsubsection{Voltage-Controlled Switch}
+\index{sw device}
+
+% dev:sw 062908
+<<dev:sw xiDevToolbar.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsubsection{Current-Controlled Switch}
+\index{csw device}
+
+% dev:csw 030415
+<<dev:csw xiDevToolbar.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsubsection{Example Opamp Macro}
+\index{opamp device}
+
+% dev:opamp 062908
+<<dev:opamp xiDevToolbar.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb donut} Button: Create Donut Object}
+\index{donut button}
+\index{object creation!donut}
+\epsfbox{images/donut.eps}
+
+% xic:donut 100916
+<<xic:donut xiCommands.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb erase} Button: Erase or Yank Geometry}
+\index{erase button}
+\index{object erasing}
+\epsfbox{images/erase.eps}
+
+% xic:erase 012715
+<<xic:erase xiCommands.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb iplot} Button: Interactive Analysis Plotting}
+\index{iplot button}
+\index{interactive plotting}
+\epsfbox{images/iplot.eps}
+
+% xic:iplot 101810
+<<xic:iplot xiCommands.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb label} Button: Create/Edit Labels}
+\label{labelbut}
+\index{label button}
+\index{object creation!labels}
+\index{keyboard!arrow keys}
+\epsfbox{images/label.eps}
+
+% xic:label 022619
+<<xic:label xiCommands.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb logo} Button: Create Physical Text}
+\index{logo button}
+\index{physical text}
+\index{MinWidth and logo text}
+\epsfbox{images/logo.eps}
+
+% xic:logo 052311
+<<xic:logo xiCommands.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb nodmp} Button: Node (Net) Name Assignments}
+\label{nodmp}
+\index{node mapping}
+\index{nodmp button}
+\epsfbox{images/nodmp.eps}
+
+% xic:nodmp 061913
+<<xic:nodmp xiCommands.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Place} Button: Cell Placement Control Panel}
+\index{Place button}
+\index{Cell Placement Control panel}
+\index{cell placement}
+\index{place cells}
+\epsfbox{images/place.eps}
+
+% xic:place 082024
+<<xic:place xiCommands.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb plot} Button: Generate SPICE Plot}
+\index{plot button}
+\index{SPICE plots}
+\index{hypertext}
+\epsfbox{images/plot.eps}
+
+% xic:plot 022316
+<<xic:plot xiCommands.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb polyg} Button: Create/Edit Polygons}
+\index{polyg button}
+\index{object creation!polygons}
+\epsfbox{images/polyg.eps}
+
+% xic:polyg 092717
+<<xic:polyg xiCommands.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb put} Button: Extract From Yank Buffer}
+\index{put button}
+\index{unerase}
+\index{yank/put}
+\epsfbox{images/put.eps}
+
+% xic:put 062908
+<<xic:put xiCommands.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb round} Button: Create Disk Object}
+\index{round button}
+\index{object creation!disks and ellipses}
+\epsfbox{images/round.eps}
+
+% xic:round 100916
+<<xic:round xiCommands.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb run} Button: Run SPICE Analysis}
+\index{run button}
+\index{running SPICE}
+\index{loading rawfiles}
+\index{running SPICE!output to file}
+\epsfbox{images/run.eps}
+
+% xic:run 042411
+<<xic:run xiCommands.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb shapes} Button: Add Predefined Features}
+\index{shapes button}
+\index{shapes templates}
+\index{object creation!shapes templates}
+\epsfbox{images/shapes.eps}
+
+% xic:shapes 111908
+<<xic:shapes xiCommands.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb sides} Button: Set Rounded Granularity}
+\index{sides button}
+\index{round figure sides}
+\epsfbox{images/sides.eps}
+
+% xic:sides 021615
+<<xic:sides xiCommands.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb spcmd} Button: Execute {\WRspice} Command}
+\index{spcmd button}
+\index{SPICE command}
+\index{WRspice command}
+\epsfbox{images/spcmd.eps}
+
+% xic:spcmd 110213
+<<xic:spcmd xiCommands.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\WRspice} Interface Control Panel}
+\index{WRspice interface control panel}
+
+% xic:spif 110213
+<<xic:spif xiCommands.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb spin} Button: Rotate Objects}
+\index{spin button}
+\index{object rotation}
+\epsfbox{images/spin.eps}
+
+% xic:spin 012815
+<<xic:spin xiCommands.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb style} Button: Set/Change Wire Style}
+\index{style button}
+\index{wire width setting}
+\index{wire end style setting}
+\epsfbox{images/style.eps}
+
+% xic:style 100412
+<<xic:style xiCommands.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb subct} Button: Set Subcircuit Connections}
+\label{subct}
+\index{subct button}
+\index{subcircuit terminals}
+\epsfbox{images/subct.eps}
+
+% xic:subct 110713
+<<xic:subct xiCommands.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Terminal Edit} Pop-Up:  Editing Terminals}
+\label{termedit}
+\index{Terminal Edit panel}
+
+% xic:edtrm 110713
+<<xic:edtrm xiCommands.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb symbl} Button: Symbolic Representation}
+\label{symbolic}
+\index{symbl button}
+\index{symbolic mode}
+\epsfbox{images/symbl.eps}
+
+% xic:symbl 021912
+<<xic:symbl xiCommands.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb terms} Button: Show Subcircuit Connections}
+\index{terms button}
+\index{show terminals}
+\epsfbox{images/terms.eps}
+
+% xic:terms 013113
+<<xic:terms xiCommands.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb wire} Button: Create/Edit Wires}
+\index{wire button}
+\index{object creation!wires}
+\epsfbox{images/wire.eps}
+
+% xic:wire 092717
+<<xic:wire xiCommands.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb xform} Button: Current Transform Panel}
+\index{xform button}
+\index{current transform}
+\label{curxform}
+\epsfbox{images/xform.eps}
+
+% xic:xform 020815
+<<xic:xform xiCommands.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb xor} Button: Exclusive-OR Objects}
+\index{xor button}
+\index{inverting polarity}
+\index{object polarity inversion}
+\epsfbox{images/xor.eps}
+
+% xic:xor 012715
+<<xic:xor xiCommands.hlp>>
+

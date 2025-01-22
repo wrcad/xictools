@@ -1,0 +1,138 @@
+% -----------------------------------------------------------------------------
+% Xic Manual
+% (C) Copyright 2025, Whiteley Research Inc., Sunnyvale CA
+% pcells.tex.in
+% -----------------------------------------------------------------------------
+
+% -----------------------------------------------------------------------------
+\chapter{Parameterized Cells and Vias}
+
+% -----------------------------------------------------------------------------
+\index{parameterized cells}
+\index{template cells}
+\section{Parameterized Cells}
+\label{pcells}
+
+% xic:pcells 032017
+<<xic:pcells xiParamCells.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Parameter Constraints}
+\label{constraints}
+\index{parameter constraints}
+
+% constraint 102214
+<<constraint xiParamCells.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Parameters Panel:  Set PCell Parameters}
+\label{pcparams}
+\index{Parameters panel}
+\index{parameter entry}
+
+% xic:pcparams 020615
+<<xic:pcparams xiParamCells.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{PCell Stretch Handles}
+\label{pcstretch}
+\index{stretch handles}
+\index{grip}
+
+% pc_stretch 111919
+<<pc_stretch xiParamCells.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{PCell Abutment}
+\label{pcabut}
+\index{abutment}
+\index{auto-abutment}
+
+% pc_abut 102614
+<<pc_abut xiParamCells.hlp>>
+
+%\ifoa
+% -----------------------------------------------------------------------------
+\section{Synopsys (Ciranova) PyCell Studio}
+\label{ciranova}
+\index{Ciranova}
+\index{Synopsys}
+\index{PyCell}
+
+% pycell 022513
+<<pycell xiParamCells.hlp>>
+%\fi
+
+% -----------------------------------------------------------------------------
+\section{Cadence$^{TM}$ Compatibility}
+\label{cdscompat}
+\index{Cadence compatibility}
+
+% cdscompat 032117
+<<cdscompat xiCadence.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The Lisp Parser}
+\label{lisp}
+\index{Lisp parser}
+\index{Lisp language}
+
+% lisp 032117
+<<lisp xiCadence.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\vt ReadDRF} keyword}
+\index{ReadDRF keyword}
+
+% ReadDRF 021913
+<<ReadDRF xiCadence.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\vt ReadCdsTech} keyword}
+\index{ReadCdsTech keyword}
+
+% ReadCdsTech 062016
+<<ReadCdsTech xiCadence.hlp>>
+
+%\ifoa
+% -----------------------------------------------------------------------------
+\subsection{The {\vt ReadOaTech} keyword}
+\index{ReadOaTech keyword}
+
+% ReadOaTech 032117
+<<ReadOaTech xiCadence.hlp>>
+%\fi
+
+% -----------------------------------------------------------------------------
+\subsection{The {\vt ReadCdsLmap} keyword}
+\index{ReadCdsLmap keyword}
+
+% ReadCdsLmap 021913
+<<ReadCdsLmap xiCadence.hlp>>
+
+%\ifoa
+% -----------------------------------------------------------------------------
+\subsection{Connecting to Cadence Installations}
+\index{Cadence connection}
+
+% cdsconnect 022416
+<<cdsconnect xiCadence.hlp>>
+%\fi
+
+%\ifoa
+% -----------------------------------------------------------------------------
+\subsection{Importing a Design from Virtuoso}
+\index{Cadence importation}
+
+% cdsimport 022816
+<<cdsimport xiCadence.hlp>>
+%\fi
+
+% -----------------------------------------------------------------------------
+\section{Standard Vias}
+\label{stdvia}
+\index{standard via}
+
+% stdvia 022816
+<<stdvia xiParamCells.hlp>>
+

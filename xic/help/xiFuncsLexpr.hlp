@@ -1123,6 +1123,629 @@ Trapezoid Lists and Layer Expressions
     of the entire hierarchy.  Otherwise, only objects in
     <i>cellname</i> are processed.
     </dl>
+!!LATEX funcs:lexpr:zoid scrfuncs.tex
+For the functions described below, a ``zoidlist'' argument can
+actually have the following data types:
+
+\begin{tabular}{|l|p{4in}|} \hline
+zoidlist & Obviously\\ \hline
+integer zero & Implies an empty zoidlist\\ \hline
+integer nonzero & Implies the reference zoidlist\\ \hline
+string & The string is parsed as a layer expression,
+  which is evaluated, and the result used\\ \hline
+layer\_expr & evaluate layer expression, use result\\ \hline
+\end{tabular}
+
+\begin{description}
+%------------------------------------
+% 010509
+\index{SetZref function}
+\item{(int) \vt SetZref({\it arg\/})}\\
+This function sets the reference zoidlist.  The reference zoidlist
+represents the current ``background'' needed by some functions and
+operators which manipulate zoidlists.  For example, when a zoidlist is
+polarity inverted, the reference zoidlist specifies the boundary of
+the inversion, i.e., the inverse of an empty zoidlist would be the
+reference zoidlist.
+
+The reference zoidlist can be set from various types of object passed
+as the {\it arg}.  This can be a zoidlist, or an object handle, or an
+array of size 4 or larger, which contains rectangle coordinates in
+microns in order left, bottom, right, top.  The argument can also be
+the constant 0, in which case the reference zoid list will be the
+boundary of the physical current cell, or a large ``infinity'' box if
+there is no current cell.  This is the default if no reference zoid
+list is given.
+
+This function will return 1 and fails only if the argument is not
+an appropriate type.
+
+%------------------------------------
+% 103104
+\index{GetZref function}
+\item{(zoidlist) \vt GetZref()}\\
+This function returns the current reference zoidlist, which will be
+empty if no reference area has been set with {\vt SetZref} or
+otherwise.
+
+%------------------------------------
+% 010509
+\index{GetZrefBB function}
+\item{(int) \vt GetZrefBB({\it array\/})}\\
+This will return the bounding box of the reference zoidlist, as
+returned from {\vt GetZref}.  If the reference zoidlist is empty, the
+bounding box of the current cell is returned.  The coordinates are in
+microns, in order left, bottom, right, top.  On success, the function
+returns 1.  If there is no reference zoidlist or current cell, 0 is
+returned.
+
+%------------------------------------
+% 010509
+\index{AdvanceZref function}
+\item{(int) \vt AdvanceZref({\vt clear\/}, {\it array\/})}\\
+This function allows iteration over a given area by establishing a
+grid over the area and incrementally setting the reference area (see
+{\vt SetZref}) to elements of the grid.  The grid is aligned from the
+lower-left corner of the given area and iteration advances right and
+up.  The reference area is set to the intersection of the grid element
+area and the given area.  The size of the square grid elements is
+given by the {\et PartitionSize} variable, or defaults to 100 microns
+if this variable is not set.
+
+The second argument is an array of size 4 or larger, or 0.  If 0, the
+given area is taken to be the bounding box of the current cell. 
+Otherwise, the array elements define the given rectangular area, in
+microns, in order left, bottom, right, top.
+
+With the boolean first argument set to zero, the function will set the
+reference area to the first (lower left) or next grid element
+intersection area and return 1.  The function will return zero when it
+advances past the last grid element that overlaps the given area, at
+which time the reference area is returned to the default value.  Thus,
+this function can be used in a loop to limit the computation area for
+each iteration, for large cells that would be inefficient to process
+in one step.
+ 
+If the first argument is nonzero, the internal state is cleared.  This
+should be called if the iteration is not complete and one wishes to
+start a new loop.
+
+%------------------------------------
+% 103104
+\index{Zhead function}
+\item{(zoidlist) \vt Zhead({\it zoidlist\/})}\\
+This function will remove the first trapezoid from the passed
+trapezoid list, and return it as a new list.  If the passed list is
+empty, the returned list will be empty.  If the passed list contains a
+single trapezoid, it will become empty.
+
+%------------------------------------
+% 103104
+\index{Zvalues function}
+\item{(int) \vt Zvalues({\it zoidlist\/}, {\it array\/})}\\
+This function will return the coordinates of the first trapezoid in
+the list in the array, which must have size 6 or larger.  The order of
+the values is
+
+\begin{tabular}{ll}
+0 & x lower-left\\
+1 & x lower-right\\
+2 & y lower\\
+3 & x upper-left\\
+4 & x upper-right\\
+5 & y upper\\
+\end{tabular}
+
+On success, 1 is returned.  If the passed trapezoid list is empty,
+the return value is 0 and the array is untouched.
+
+%------------------------------------
+% 103104
+\index{Zlength function}
+\item{(int) \vt Zlength({\it zoidlist\/})}\\
+This function returns the number of trapezoids contained in the list
+passed as an argument.
+
+%------------------------------------
+% 032405
+\index{Zarea function}
+\item{(int) \vt Zarea({\it zoidlist\/})}\\
+This function returns the total area of the trapezoids contained in
+the list passed as an argument, in square microns.  This does not
+account for overlapping trapezoids, call {\vt GeomOr} first if
+overlapping trapezoids are present (lists returned from the script
+functions have already been clipped/merged unless otherwise noted).
+
+%------------------------------------
+% 071915
+\index{GetZlist function}
+\item{(zoidlist) \vt GetZlist({\it layersrc}, {\it depth\/})}\\
+This function returns a zoidlist from the layer source given in
+the first argument, which is a string in the form
+\begin{quote}
+{\it lname}[{\vt .}{\it stname\/}][{\vt .}{\it cellname\/}]
+\end{quote}
+Any of {\it lname}, {\it stname}, {\it cname} can be 
+double-quoted, which must be true if the token contains the 
+separation char `{\vt .}'.  The {\it stname} is the name of a
+symbol table, the {\it cname} is tha name of a cell found in the   
+symbol table.  If there are only two fields, the second field is
+{\it cname}, and the current symbol table is understood.  If no     
+{\it cname} is given, the current cell is understood.
+
+The returned list is clipped to the current reference area (see {\vt
+SetZref}).  The second argument is the hierarchy depth to search,
+which can be a non-negative integer or a string starting with `{\vt
+a}' to indicate ``{\vt all}''.  If not called in physical mode, an
+empty list is returned.
+
+The layer specification can also be given in the form
+\begin{quote}
+{\it lname\/}{\vt .@}{\it dbname}
+\end{quote}
+where {\it dbname} is the name of a saved database.  Operation will be
+similar to the {\vt GetZlistDb} script function.
+
+%------------------------------------
+% 111709
+\index{GetSqZlist function}
+\item{(zoidlist) \vt GetSqZlist({\it layername})}\\
+This function returns a trapezoid list derived from objects in the
+selection queue on the layer whose name is passed as the argument. 
+Labels are ignored, as are subcells unless the layer name is the
+special name ``\$\$'', in which case the subcell bounding boxes are
+returned.
+
+This function can be called successfully only in physical mode.
+
+%------------------------------------
+% 072606
+\index{TransformZ function}
+\item{(zoidlist) \vt TransformZ({\it zoidlist\/}, {\it refx\/},
+  {\it refy\/}, {\it newx\/}, {\it newy\/})}\\
+Return a transformed copy of the passed trapezoid list.  The transform
+should have been set previously with {\vt SetTransform} or equivalent. 
+The original list is not touched and can be closed if no longer
+needed.  The function internally converts each input trapezoid to a
+polygon, applies the transformation to the polygon coordinates, then
+decomposes the polygons into a new trapezoid list, which is returned.
+ 
+The remaining arguments are ``reference'' and ``new'' coordinates,
+which provide for translations.  The reference point is the point
+about which rotations and mirroring are performed, and is translated
+to the new location, if different.
+
+%------------------------------------
+% 100408
+\index{BloatZ function}
+\item{(zoidlist) \vt BloatZ({\it dimen}, {\it zoidlist\/}, {\it mode\/})}\\
+This function returns a new zoidlist which is a bloated version of the
+zoidlist passed as an argument (similar to the {\cb !bloat} command). 
+Edges will be pushed outward or pulled inward by {\it dimen} (positive
+values push outward).  The {\it dimen} is given in microns.
+
+The third argument is an integer that specifies the algorithm to use
+for bloating.  Giving zero specifies the default algorithm.  See the
+description of the {\cb !bloat} command (\ref{bloatcmd}) for
+documentation of the algorithms available. 
+
+%------------------------------------
+% 010715
+\index{ExtentZ function}
+\item{(zoidlist) \vt ExtentZ({\it zoidlist\/})}\\
+This will return a zoidlist with at most one component:  a rectangle
+giving the bounding box of the list given as an argument.  If the
+passed list is null, the return is a null list.
+
+%------------------------------------
+% 100408
+\index{EdgesZ function}
+\item{(zoidlist) \vt EdgesZ({\it dimen}, {\it zoidlist\/}, {\it mode\/})}\\
+This returns a list of zoids that in some way describe edges in the
+zoid list passed.  The {\it dimen} is given in microns.
+
+The {\it mode} is an integer which specifies the algorithm to use to
+define the edges.  The values 0--3 are equivalent to the {\vt BloatZ}
+function returning edges only, with the four corner fill-in modes.
+
+\begin{description}
+\item{\bf mode 0}\\
+Provides an edge template as from the {\vt BloatZ} function with
+corner fill-in mode 0 (rounded corners).
+
+\item{\bf mode 1}\\
+Provides an edge template as from the {\vt BloatZ} function with
+corner fill-in mode 1 (flat corners).
+
+\item{\bf mode 2}\\
+Provides an edge template as from the {\vt BloatZ} function with
+corner fill-in mode 2 (projected corners).
+
+\item{\bf mode 3}\\
+Provides an edge template as from the {\vt BloatZ} function with
+corner fill-in mode 3 (no corner fill).
+
+\item{\bf mode 4}\\
+The zoid list is logically merged into distinct polygons, and a
+``halo'' extending outside of the polygon by width {\it dimen}
+(positive value taken) is constructed.  The trapezoids describing the
+halo are returned.
+
+\item{\bf mode 5}\\
+The zoid list is logically merged into distinct polygons, and a wire
+object is constructed using each polygon vertex list.  The wire width
+is twice the {\it dimen} value passed.  The trapezoid list
+representing the wire area is returned.  This may fail and give
+strange shapes if the dimensions of a polygon are smaller than half
+the wire width.
+
+\item{\bf mode 6}\\
+For each zoid in the {\it zoidlist} argument, a new zoid is
+constructed from each edge that covers the area within +/- {\it dimen}
+normal to the edge.  The list of new zoids is returned.
+\end{description}
+
+%------------------------------------
+% 100408
+\index{ManhattanizeZ function}
+\item{(zoidlist) \vt ManhattanizeZ({\it dimen}, {\it zoidlist\/},
+  {\it mode\/})}\\
+This function returns a new zoidlist which is a Manhattan
+approximation of the zoidlist passed as an argument (similar to the
+{\cb !manh} command).  The first argument is the minimum rectangle
+width or height in microns used to approximate non-Manhattan pieces. 
+The third argument is a boolean which specifies which of the two
+algorithms to employ.  These algorithms are described with the {\cb
+!manh} command, though in this function there is no reassembly into
+polygons.
+
+All of the returned trapezoids are rectangles.  The function will fail
+if the argument is smaller than 0.01.
+
+%------------------------------------
+% 091306
+\index{RepartitionZ function}
+\item{(zoidlist) \vt RepartitionZ({\it zoidlist\/})}\\
+This is a rather obscure function that conditions a list of trapezoids
+so that the area covered will be constructed with trapezoids that are
+as long (horizontally) as possible.  Logically, this is what would
+happen if the initial trapezoid list was converted to distinct
+polygons, then split back into trapezoids.
+
+%------------------------------------
+% 030204
+\index{BoxZ function}
+\item{(zoidlist) \vt BoxZ({\it l}, {\it b}, {\it r}, {\it t\/})}\\
+This function returns a zoidlist containing a single trapezoid which
+represents the box given in the arguments.  The given coordinates are
+in microns.  This function never fails.
+
+%------------------------------------
+% 030204
+\index{ZoidZ function}
+\item{(zoidlist) \vt ZoidZ({\it xll}, {\it xlr}, {\it yl},
+ {\it xul}, {\it xur}, {\it yu\/})}\\
+This function returns a zoidlist containing a single horizontal
+trapezoid which represents the horizontal trapezoid given in the
+arguments.  The six numbers must represent a non-degenerate figure or
+the function will fail.  The given coordinates are in microns.
+
+%------------------------------------
+% 030204
+\index{ObjectZ function}
+\item{(zoidlist) \vt ObjectZ({\it object\_handle} {\it all\/})}\\
+This function returns a zoidlist which is generated by fracturing the
+outlines of the objects in the {\it object\_handle}.  If {\it all} is
+0, only the first object in the list is used.  If {\it all} is
+nonzero, all objects in the list are used.  This function will fail if
+the first argument is not a handle to an object list.
+
+%------------------------------------
+% 030204
+\index{ParseLayerExpr function}
+\item{(layer\_expr) \vt ParseLayerExpr({\it string\/})}\\
+This function returns a variable which contains a parse tree for a
+layer expression contained in the string passed as an argument.  The
+resulting variable is used to rapidly evaluate the layer expression. 
+The return value can not be assigned or otherwise manipulated, and can
+only be passed to functions that expect this variable type.  The
+function will fail on a parse error in the layer expression.
+
+%------------------------------------
+% 030204
+\index{EvalLayerExpr function}
+\item{(zoidlist) \vt EvalLayerExpr({\it layer\_expr}, {\it zoidlist},
+  {\it depth}, {\it isclear\/})}\\
+This function evaluates the layer expression passed as the first
+argument.  The first argument can be a string containing the layer
+expression, or a return from {\vt ParseLayerExpr}.  If the
+second argument is nonzero, it is taken as a reference zoidlist.  If
+0, the current reference zoidlist (as set with {\vt SetZref}) will be
+used.  The third argument is the depth into the cell hierarchy to
+process.  This can be an integer, with 0 representing the current cell
+only, or a string starting with `{\vt a}' to indicate use of all
+levels of the hierarchy.  If {\it isclear} is 0, the returned zoidlist
+will represent all areas within the reference where the layer
+expression is ``true''.  if {\it isclear} is nonzero, the complement
+regions will be returned.  The function will fail on a parse or
+evaluation error.
+
+%------------------------------------
+% 071415
+\index{TestCoverageFull function}
+\item{(int) \vt TestCoverageFull({\it layer\_expr}, {\it zoidlist},
+  {\it minsize\/})}\\
+This function will return an integer value indicating the coverage of
+the layer expression given in the first argument over the regions
+described in the second argument.  The first argument can be a string
+containing a layer expression, or a return from {\vt
+ParseLayerExpression}.  If the second argument is 0, the current
+reference zoidlist as set with {\vt SetZref} is assumed.  This
+defaults to tha area of the current cell.
+
+The third argument is an integer which gives the minimum dimension in
+internal units of trapezoids which will be considered in the result. 
+Sub-dimensional trapezoids are ignored.  This minimizes false-positive
+tests due to ``slivers'' caused by clipping errors in non-Manhattan
+geometry.  If the geomentry is known to be Manhattan, 0 can be used. 
+If 45's only, 2 is recommended, otherwise 4.  Negative values are
+taken as zero.
+
+The function tests each dark-area trapezoid from the layer expression
+against the reference zoid list.  It will return immediately on the
+first such zoid that is not fully covered by the reference zoid list.
+
+The return value is 0 if there was only one trapezoid from the layer
+expression, and it did not overlap the reference zoid list. 
+Otherwise, if all layer expression trapezoids were covered by the
+reference zoid list, 2 is returned, or 1 if not.  Note that 1 will be
+returned if there is no intersection and more than one layer
+expression trapezoid.  Use {\vt TestCoveragePartial} to fully
+distinguish the not-full case.  The present function is most efficient
+for determining when the layer expression dark area is or is not fully
+covered.
+
+%------------------------------------
+% 071415
+\index{TestCoveragePartial function}
+\item{(int) \vt TestCoveragePartial({\it layer\_expr}, {\it zoidlist},
+  {\it minsize\/})}\\
+This function will return an integer value indicating the coverage of
+the layer expression given in the first argument over the regions
+described in the second argument.  The first argument can be a string
+containing a layer expression, or a return from {\vt
+ParseLayerExpression}.  If the second argument is 0, the current
+reference zoidlist as set with {\vt SetZref} is assumed.  This
+defaults to tha area of the current cell.
+
+The third argument is an integer which gives the minimum dimension in
+internal units of trapezoids which will be considered in the result. 
+Sub-dimensional trapezoids are ignored.  This minimizes false-positive
+tests due to ``slivers'' caused by clipping errors in non-Manhattan
+geometry.  If the geomentry is known to be Manhattan, 0 can be used. 
+If 45's only, 2 is recommended, otherwise 4.  Negative values are
+taken as zero.
+
+The function tests each dark-area trapezoid from the layer expression
+against the reference zoid list.  It will return immediately on the
+first such zoid that is partially covered by the reference zoid list,
+of after finding both a fully covered zoid and a fully uncovered zoid.
+
+The return value is 0 if there is no dark area from the layer
+expression that intersects the reference zoid list, 2 if the layer
+expression dark area falls entirely in the reference zoid list, and 1
+if coverage is partial.  This test is a bit expensive but provides
+definitive results,
+
+%------------------------------------
+% 071415
+\index{TestCoverageNone function}
+\item{(int) \vt TestCoverageNone({\it layer\_expr}, {\it zoidlist},
+  {\it minsize\/})}\\
+This function will return an integer value indicating the coverage of
+the layer expression given in the first argument over the regions
+described in the second argument.  The first argument can be a string
+containing a layer expression, or a return from {\vt
+ParseLayerExpression}.  If the second argument is 0, the current
+reference zoidlist as set with {\vt SetZref} is assumed.  This
+defaults to tha area of the current cell.
+
+The third argument is an integer which gives the minimum dimension in
+internal units of trapezoids which will be considered in the result. 
+Sub-dimensional trapezoids are ignored.  This minimizes false-positive
+tests due to ``slivers'' caused by clipping errors in non-Manhattan
+geometry.  If the geomentry is known to be Manhattan, 0 can be used. 
+If 45's only, 2 is recommended, otherwise 4.  Negative values are
+taken as zero.
+
+The function tests each dark-area trapezoid from the layer expression
+against the reference zoid list.  It will return immediately on the
+first such zoid that is not completely uncovered by the reference zoid
+list.
+
+The return value is 0 if there is no dark area from the layer
+expression that intersects the reference zoid list, 1 otherwise. 
+This test is most efficient when determining whether or not the layer
+expression dark area intersects the reference list.
+
+%------------------------------------
+% 071415
+\index{TestCoverage function}
+\item{(int) \vt TestCoverage({\it layer\_expr}, {\it zoidlist},
+  {\it testfull\/})}\\
+This function is deprecated and should not be used in new scripts. 
+The {\vt TestCoverageFull}, {\vt TestCoveragePartial}, and {\vt
+TestCoverageNone} functions are replacements.
+
+When the boolean {\it testfull} is true, this function is identical to
+{\vt TestCoveragePartial} with a {\it minsize} value of 4.  When {\it
+testfull} is false, this function is equivalent to {\vt
+TestCoverageNone} again with a {\it minsize} of 4.
+
+%------------------------------------
+% 030204
+\index{ZtoObjects function}
+\item{(object\_handle) \vt ZtoObjects({\it zoidlist},
+  {\it lname}, {\it join}, {\it to\_dbase\/})}\\
+This function will create a list of objects from a zoidlist.  The
+objects will be created on the layer whose name is given in the second
+argument, which will be created if it does not already exist.  If this
+argument is 0, the current layer will be used.  If the {\it join}
+argument is nonzero, the objects created will comprise a minimal set
+of polygons that enclose all of the trapezoids.  If the {\it join}
+argument is 0, the objects will be have the same geometry as the
+individual trapezoids.  If the {\it to\_dbase} argument is nonzero, the
+new objects will be added to the database.  Otherwise, the new objects
+will be ``copies'' that can be manipulated with other functions that
+accept object copies, but they will not appear in the database.  The
+function will fail if not called in physical mode, or the layer could
+not be created.
+
+%------------------------------------
+% 030204
+\index{ZtoTempLayer function}
+\item{(int) \vt ZtoTempLayer({\it longname}, {\it zoidlist},
+  {\it join\/})}\\
+This function creates a temporary layer using {\it longname}, and adds
+the content of the {\it zoidlist} to the new layer, in the current
+cell.  If the temporary layer for {\it longname} exists, it will be
+used, with existing geometry untouched.  If {\it join} is nonzero, the
+zoidlist will be added as a minimal set of polygons, otherwise each
+zoid will be added as a box or polygon.  The function returns 1 on
+success, 0 otherwise.  This works in physical mode only.
+
+%------------------------------------
+% 030204
+\index{ClearTempLayer function}
+\item{(int) \vt ClearTempLayer({\it longname\/})}\\
+This function will clear all of the objects in the current cell from
+the given layer, without saving them in the undo list.  If successful,
+1 is returned, otherwise 0 is returned.  This works in physical mode
+only.
+
+%------------------------------------
+% 121708
+\index{ZtoFile function}
+\item{(int) \vt ZtoFile({\it filename\/}, {\it zoidlist\/}, {\it ascii\/})}\\
+Save the zoidlist in a file, whose name is given in the first
+argument.  The zoidlist can be recovered with {\vt ZfromFile}.
+
+There are two file formats available.  If the boolean argument {\it
+ascii} is nonzero, a human-readable ASCII text file is produced.  Each
+line contains the six numbers that describe a trapezoid, using the
+following C-style format string:
+\begin{quote} \vt
+"yl=\%d yu=\%d ll=\%d ul=\%d lr=\%d ur=\%d"
+\end{quote}
+The numbers are integer values in internal units (usually 1000 units
+per micron).
+
+If the {\it ascii} argument is zero, the file is in OASIS format,
+using a single dummy cell (named ``zoidlist'') and layer (``0100''),
+and uses only TRAPEZOID and CTRAPEZOID geometry records.  The OASIS
+representation is more compact and is the appropriate choice for very
+large trapezoid collections.
+
+The function returns 1 if successful, 0 otherwise.
+
+%------------------------------------
+% 103104
+\index{ZfromFile function}
+\item{(zoidlist) \vt ZfromFile({\it filename\/})}\\
+Read the file, which was produced by {\vt ZtoFile}, and return the
+list of trapezoids it contains.  If an error occurs in reading or an
+interrupt is received, this function will fail (halting the script). 
+Otherwise a zoidlist will always be returned, but the list may be
+empty.
+
+%------------------------------------
+% 012711
+\index{ReadZfile function}
+\item{(int) \vt ReadZfile({\it filename\/})}\\
+This will read a trapezoid list file whose name is specified as the
+required string argument.  This is an ASCII file consisting of two
+types of lines:
+
+\begin{enumerate}
+\item{Trapezoid lines, in the ASCII format used by {\vt ZfromFile} and
+produced by {\vt ZtoFile}, i.e., in the format:
+\begin{quote}
+\vt yl=\%d yu=\%d ll=\%d ul=\%d lr=\%d ur=\%d
+\end{quote}
+}
+
+\item{Layer designation lines in the form:
+\begin{quote}
+{\vt L} {\it layer\_name}
+\end{quote}
+The {\it layer\_name} should be an {\Xic}-style name for a 
+layer, the layer will be created if it does not exist.
+}
+\end{enumerate}
+
+When a layer designation line is encountered, the trapezoids that have
+been read since the file start or last layer designator are written
+into the current cell on the specified layer.  Thus, each block of
+trapezoid lines must be followed by a layer designation line for the
+trapezoids to be recognized. 
+
+However, if the file contains no layer designation lines, all   
+trapezoids will be added to the current cell on the current layer.  
+
+Lines that are not recognized as one of these two forms are ignored.
+
+This function always returns 1.  The function will fail if the file
+can not be opened.
+
+%------------------------------------
+% 082809
+\index{ChdGetZlist function}
+\item{(zoidlist) \vt ChdGetZlist({\it chd\_name\/}, {\it cellname\/},
+{\it scale\/}, {\it array\/}, {\it clip\/}, {\it all\/})}\\
+This function will create and return a trapezoid list created from
+objects read through the Cell Hierarchy Digest (CHD) whose access name
+is given in the first argument.
+
+See the table in \ref{features} for the features that apply during a
+call to this function.  An overall transformation can be set with {\vt
+ChdSetFlatReadTransform}, in which case the area given applies in the
+``root'' coordinates.
+
+The {\it cellname}, if nonzero, must be the cell name after any
+aliasing that was in force when the CHD was created.  If {\it
+cellname} is passed 0, the default cell for the CHD is understood. 
+This is a cell name configured into the CHD, or the first top-level
+cell found in the archive file.
+
+The {\it scale} factor will be applied to all coordinates.  The
+accepted range is 0.001 -- 1000.0.
+
+If the {\it array} argument is passed 0, no windowing will be used. 
+Otherwise the array should have four components which specify a
+rectangle, in microns, in the coordinates of {\it cellname}.  The
+values are
+
+\begin{tabular}{ll}
+{\it array\/}{\vt [0]} & X left\\
+{\it array\/}{\vt [1]} & Y bottom\\
+{\it array\/}{\vt [2]} & X right\\
+{\it array\/}{\vt [3]} & Y top\\
+\end{tabular}
+
+If an array is given, only the objects and subcells needed to render
+the window will be processed.
+
+If the boolean value {\it clip} is nonzero and an array is given,
+trapezoids will be clipped to the window.  Otherwise no clipping is
+done.
+
+If the boolean variable {\it all} is nonzero, the objects in the
+hierarchy under {\it cellname} will be transformed and added to the
+trapezoid list, i.e., the list will be a flat representation of the
+entire hierarchy.  Otherwise, only objects in {\it cellname} are
+processed.
+
+\end{description}
 
 !!SEEALSO
 funcs:lexpr
@@ -1219,6 +1842,79 @@ Operations
     exclusive-or of the two lists, i.e., the areas covered by either
     list but not both.
     </dl>
+!!LATEX funcs:lexpr:oper scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 110213
+\index{Filt function}
+\item{(zoidlist) \vt Filt({\it zoids}, {\it lexpr\/})}\\
+This function is rather specialized.  First, the trapezoids passed by
+the handle in the first argument are separated into groups of
+mutually-connected trapezoids.  Each group is like a wire net.  We
+throw out the groups that do not intersect with nonzero area the dark
+area implied by the layer expression second argument.  The return
+value is a handle to a list of the trapezoids that remain.
+
+%------------------------------------
+% 030204
+\index{GeomAnd function}
+\item{(zoidlist) \vt GeomAnd({\it zoids1} [, {\it zoids2\/}])}\\
+This function takes either one or two arguments, each of which is
+taken as a zoidlist after possible conversion as described in the text
+for this section.  If one argument is given, the return is a zoidlist
+consisting of the intersection regions between zoids in the argument
+list.  If two arguments are given, the return is a list of
+intersecting regions between the two argument lists.
+
+%------------------------------------
+% 030204
+\index{GeomAndNot function}
+\item{(zoidlist) \vt GeomAndNot({\it zoids1}, {\it zoids2\/})}\\
+This function takes two arguments, each of which is taken as a
+zoidlist after possible conversion as described in the text for this
+section.  The return is a list of regions covered by the first list
+that are not covered by the second.
+
+%------------------------------------
+% 030204
+\index{GeomCat function}
+\item{(zoidlist) \vt GeomCat({\it zoids1} [, ...])}\\
+This function takes one or more arguments, each of which is taken as a
+zoidlist after possible conversion as described in the text for this
+section.  The return is a list of all regions from each of the
+arguments.  There is no attempt to clip or merge the returned list.
+
+%------------------------------------
+% 030204
+\index{GeomNot function}
+\item{(zoidlist) \vt GeomNot({\it zoids\/})}\\
+This function takes one argument, which is taken as a zoidlist after
+possible conversion as described in the text for this section.  The
+return is a list of zoids representing the areas of the reference area
+not covered by the argument list.
+
+%------------------------------------
+% 030204
+\index{GeomOr function}
+\item{(zoidlist) \vt GeomOr({\it zoids1}, ...)}\\
+This function takes one or more arguments, each of which is taken as a
+zoidlist after possible conversion as described in the text for this
+section.  The return is a list of all regions from each of the
+arguments, merged and clipped so that no elements overlap.
+
+%------------------------------------
+% 030204
+\index{GeomXor}
+\item{(zoidlist) \vt GeomXor({\it zoids1} [, {\it zoids2\/}])}\\
+This function takes one or two arguments, each of which is taken as a
+zoidlist after possible conversion as described in the text for this
+section.  If one argument is given, the return is a list of areas
+where one and only one zoid from the argument has coverage (note that
+this is not exclusive-or, in spite of the function name).  If two
+arguments are given, the return is the exclusive-or of the two lists,
+i.e., the areas covered by either list but not both.
+
+\end{description}
 
 !!SEEALSO
 funcs:lexpr
@@ -1374,6 +2070,127 @@ Spatial Parameter Tables
     if <i>x</i>,<i>y</i> is out of range, or some other error occurs. 
     The function fails (halts execution) if the table can't be found.
     </dl>
+!!LATEX funcs:lexpr:spt scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 100508
+\index{ReadSPtable function}
+\item{(int) \vt ReadSPtable({\it filename\/})}\\
+This function reads a specification file for a spatial parameter
+table.  A spatial parameter table is a two dimensional array of
+floating point values, which can be accessed via x-y coordinate pairs. 
+The user can define any number of such tables, each of which is given
+a unique identifying keyword.  Tables remain defined until explicitly
+destroyed, or until {\vt ClearAll} is called.
+
+The tables are input through a file, which uses the following format:
+
+\begin{quote}
+{\it keyword X DX NX Y DY NY}\\
+{\it X Y value}\\
+{\vt ...}
+\end{quote}
+
+Blank lines and lines that begin with punctuation are ignored.
+There is one ``header'' line with the following entries:
+
+\begin{description}
+\item{\it keyword}\\
+Arbitrary word for identification.  An existing database with the same
+identifier will be replaced.
+\item{\it X}\\
+Reference coordinate in microns.
+\item{\it DX}\\
+Grid spacing in X direction, in microns, must be $>$ 0.
+\item{\it NX}\\
+Number of grid cells in X direction, must be $>$ 0.
+\item{\it Y}\\
+Reference coordinate in microns.
+\item{\it DY}\\
+Grid spacing in Y direction, in microns, must be $>$ 0.
+\item{\it NY}\\
+Number of grid cells in Y direction, must be $>$ 0.
+\end{description}
+
+The header line is followed by data lines that supply a value to the
+cells.  The {\it X\/},{\it Y} given in microns specifies the cell.  A
+second access to a cell will simply overwrite the data value for that
+cell.  Unwritten cells will have a zero value.
+
+The function returns 1 on success, 0 otherwise with an error message
+available from the {\vt GetError} function.
+
+%------------------------------------
+% 100508
+\index{NewSPtable function}
+\item{(int) \vt NewSPtable({\it name\/}, {\it x0\/}, {\it dx\/}, {\it nx\/},
+  {\it y0\/}, {\it dy\/}, {\it ny\/})}\\
+This will create a new, empty spatial parameter table in memory,
+replacing any existing table with the same name.  The first argument
+is a string giving a short name for the table.  The table origin is at
+{\it x0\/}, {\it y0} (in microns).  The unit cell size is given by
+{\it dx\/}, {\it dy\/} in microns, and the number of cells along x and
+y is {\it nx\/}, {\it ny\/}.
+
+The function returns 1 on success, 0 otherwise, with a message
+available from {\vt GetError}.
+
+%------------------------------------
+% 100508
+\index{WriteSPtable function}
+\item{(int) \vt WriteSPtable({\it name\/})}\\
+This will write the named spatial parameter table to a file.  The
+return value is 1 on success, 0 otherwise, with an error message
+available from {\vt GetError}.
+
+%------------------------------------
+% 060905
+\index{ClearSPtable function}
+\item{(int) \vt ClearSPtable({\it name\/})}\\
+This will destroy the spatial parameter table whose keyword matches
+the string given.  If a numeric 0 ({\vt NULL}) or a null string is
+passed, all spatial parameter tables will be destroyed.  The return
+value is the number of tables destroyed.
+
+%------------------------------------
+% 010509
+\index{FindSPtable function}
+\item{(int) \vt FindSPtable({\it name\/}, {\it array\/})}\\
+This function returns 1 if a spatial parameter table with the given
+name exists in memory, 0 otherwise.  The {\it array} is an array of
+size 6 or larger, or the constant 0.  If an array name is passed, and
+the named table exists, the array is filled in with the following
+table parameters:
+
+\begin{tabular}{ll}
+{\it array\/}{\vt [0]} & origin x in microns\\
+{\it array\/}{\vt [1]} & x spacing in microns\\
+{\it array\/}{\vt [2]} & row size\\
+{\it array\/}{\vt [3]} & origin y in microns\\
+{\it array\/}{\vt [4]} & y spacing in microns\\
+{\it array\/}{\vt [5]} & column size\\
+\end{tabular}
+
+%------------------------------------
+% 100508
+\index{GetSPdata function}
+\item{(real) \vt GetSPdata({\it name\/}, {\it x\/}, {\it y\/})}\\
+This function returns the value from the spatial parameter table keyed
+by {\it name\/}, at coordinate {\it x\/},{\it y} given in microns.  If
+{\it x\/},{\it y} is out of range, 0 is returned.  The function fails
+(halts execution) if the table can't be found.
+
+%------------------------------------
+% 100508
+\index{SetSPdata function}
+\item{(int) \vt SetSPdata({\it name\/}, {\it x\/}, {\it y\/}, {\it value\/})}\\
+This function will set the data cell corresponding to {\it x\/},{\it
+y} (in microns) of the named spatial parameter table to the {\it
+value\/}.  The return value is 1 if successful, 0 if {\it x\/},{\it y}
+is out of range, or some other error occurs.  The function fails
+(halts execution) if the table can't be found.
+
+\end{description}
 
 !!SEEALSO
 funcs:lexpr
@@ -1643,10 +2460,213 @@ Polymorphic Flat Database
     value is the window number of the new window (1-4) or -1 if an
     error occurred.
     </dl>
+!!LATEX funcs:lexpr:db scrfuncs.tex
+% 100508
+There functions are related to creating and using ``special''
+databases.  A special database is a spatially sorted container for
+objects or trapezoids (not cell instances or cells), with varying
+internal formats.  The following script functions expose this
+functionality.
+
+\begin{description}
+%------------------------------------
+% 082809
+\index{CxOpenOdb function}
+\item{(int) \vt ChdOpenOdb({\it chd\_name\/}, {\it scale\/}, {\it cellname\/},
+  {\it array\/}, {\it clip\/}, {\it dbname})}\\
+This function will create a ``special database'' of the objects read
+through the Cell Hierarchy Digest (CHD) whose access name is passed as
+the first argument.
+
+See the table in \ref{features} for the features that apply during a
+call to this function.  An overall transformation can be set with {\vt
+ChdSetFlatReadTransform}, in which case the area given applies in the
+``root'' coordinates.
+
+The {\it scale} factor will be applied to all coordinates.  The
+accepted range is 0.001 -- 1000.0.
+
+The {\it cellname}, if nonzero, must be the cell name after any
+aliasing that was in force when the CHD was created.  If {\it
+cellname} is passed 0, the default cell for the CHD is understood. 
+This is a cell name configured into the CHD, or the first top-level
+cell found in the archive file.
+
+The {\it array}, if not 0, is an array of
+four values or larger giving a rectangular area of {\it cellname} to
+read.  The values are in microns, in order L,B,R,T.  If zero, the
+entire cell bounding box is understood.  If the boolean value {\it
+clip} is nonzero, objects will be clipped to the array, if given.  The
+{\it dbname} is a string which names the database.  This can be any
+short name string.  The database can be retrieved or cleared using
+this name.
+
+The return value is 1 on success, 0 otherwise, with an error message
+likely available from {\vt GetError}.
+
+%------------------------------------
+% 082809
+\index{CxOpenZdb function}
+\index{ZDB database}
+\item{(int) \vt ChdOpenZdb({\it chd\_name\/}, {\it scale\/}, {\it cellname\/},
+  {\it array\/}, {\it clip\/}, {\it dbname})}\\
+This function will create a ``special database'' of the trapezoid
+representations of objects read through the Cell Hierarchy Digest
+(CHD) whose access name is passed as the first argument.
+
+See the table in \ref{features} for the features that apply during a
+call to this function.  An overall transformation can be set with {\vt
+ChdSetFlatReadTransform}, in which case the area given applies in the
+``root'' coordinates.
+
+The {\it scale} factor will be applied to all coordinates.  The
+accepted range is 0.001 -- 1000.0.
+
+The {\it cellname}, if nonzero, must be the cell name after any
+aliasing that was in force when the CHD was created.  If {\it
+cellname} is passed 0, the default cell for the CHD is understood. 
+This is a cell name configured into the CHD, or the first top-level
+cell found in the archive file.
+
+The {\it array}, if not 0, is an array of four values or larger giving
+a rectangular area of {\it cellname} to read.  The values are in
+microns, in order L,B,R,T.  If zero, the entire cell bounding box is
+understood.  If the boolean value {\it clip} is nonzero, trapezoids
+will be clipped to the array, if given.  The {\it dbname} is a string
+which names the database.  This can be any short name string.  The
+database can be retrieved or cleared using this name.
+
+The return value is 1 on success, 0 otherwise, with an error message
+likely available from {\vt GetError}.
+
+%------------------------------------
+% 082809
+\index{CxOpenZbdb function}
+\index{ZBDB database}
+\item{(int) \vt ChdOpenZbdb({\it chd\_name\/}, {\it scale\/}, {\it cellname\/},
+  {\it array\/}, {\it dbname}, {\it dx\/}, {\it dy\/},
+  {\it bx\/}, {\it by\/})}\\
+This function will create a ``special database'' of the trapezoid
+representations of objects read through the Cell Hierarchy Digest
+(CHD) whose access name is passed as the first argument.  This will
+open a database similar to {\vt ChdOpenZdb}, however the trapezoids
+will be saved in binned lists. 
+
+See the table in \ref{features} for the features that apply during a
+call to this function.  An overall transformation can be set with {\vt
+ChdSetFlatReadTransform}, in which case the area given applies in the
+``root'' coordinates.
+
+The {\it scale} factor will be applied to all coordinates.  The
+accepted range is 0.001 -- 1000.0.
+
+The {\it cellname}, if nonzero, must be the cell name after any
+aliasing that was in force when the CHD was created.  If {\it
+cellname} is passed 0, the default cell for the CHD is understood. 
+This is a cell name configured into the CHD, or the first top-level
+cell found in the archive file.
+
+The {\it array}, if not 0, is an array of four values or larger giving
+a rectangular area of {\it cellname} to read.  The values are in
+microns, in order L,B,R,T.  If zero, the entire cell bounding box is
+understood.  The {\it dbname} is a string which names the database. 
+This can be any short name string.  The database can be retrieved or
+cleared using this name.
+
+The {\it dx\/}, {\it dy} are the grid spacing values for the bins, in
+microns.  These values must be positive.  The {\it bx\/}, {\it by} are
+non-negative overlap bloat values for the bins.  The actual bins are
+bloated by these values in the x and y directions.  The trapezoids
+will be clipped to the bins.
+
+The return value is 1 on success, 0 otherwise, with an error message
+likely available from {\vt GetError}.
+
+%------------------------------------
+% 100508
+\index{GetObjectsOdb function}
+\item{(object\_handle) \vt GetObjectsOdb({\it dbname\/}, {\it layer\_list\/},
+  {\it array\/})}\\
+This returns a handle to a list of objects, extracted from a named
+database created with {\vt ChdOpenOdb}.  The first argument is a
+database name string as given to {\vt ChdOpenOdb}.  This function will
+work only with databases produced by that function.
+
+The second argument is a string containing a space-separated list of
+layer names, or 0.  Objects for each of the given layers will be
+obtained.  Objects on the same layer will be grouped together, with
+groups ordered as in the {\it layer\_list}.  If this argument is 0,
+all layers will be used, ordered bottom-up as in the layer table.
+
+The third argument is an array, as passed to {\vt ChdOpenOdb}, or 0. 
+If 0, all objects for the specified layers in the database will be
+retrieved.  Otherwise, only those objects with bounding boxes that
+overlap the array rectangle with nonzero area will be retrieved.  The
+objects retrieved are copies of the database objects, which are not
+affected.
+
+%------------------------------------
+% 010509
+\index{ListLayersDb function}
+\item{(stringlist\_handle) \vt ListLayersDb({\it dbname\/})}\\
+This function returns a handle to a list of layer name strings, naming
+the layers used in the database.  It applies to all of the database
+types.  On error, a scalar 0 is returned.
+
+%------------------------------------
+% 071915
+\index{GetZlistDb function}
+\item{(zoidlist) \vt GetZlistDb({\it dbname\/}, {\it layer\_name\/},
+  {\it zoidlist\/})}\\
+This returns a zoidlist associated with a layer, extracted from a
+named database created with {\vt ChdOpenOdb}, {\vt ChdOpenZdb}, or {\vt
+ChdOpenZbdb}.  The first argument is a database name string as given to
+{\vt ChdOpenOdb} or equivalent.  The second argument is the associated
+layer name.
+
+The third argument is the reference trapezoid list.  If the database
+was opened with {\vt ChdOpenOdb} or {\vt ChdOpenZdb}, the returned
+zoidlist will be clipped to the reference list.  If the database was
+opened with {\vt ChdOpenZbdb}, the trapezoids for the bin containing the
+center of the first trapezoid in the reference list will be returned. 
+In all cases, the returned trapezoids are copies, the database is not
+affected.
+
+See also the {\vt GetZlist} function, which can work similarly.
+
+%------------------------------------
+% 010509
+\index{GetZlistZbdb function}
+\item{(zoidlist) \vt GetZlistZbdb({\it dbname\/}, {\it layer\_name\/},
+  {\it nx\/}, {\it ny\/})}\\
+Return the zoidlist for the given bin and layer.  This applies only to
+databases opened with {\vt ChdOpenZbdb}.  The 0,0 bin is in the lower left
+corner.
+
+%------------------------------------
+% 100508
+\index{DestroyDb function}
+\item{(int) \vt DestroyDb({\it dbname\/})}\\
+This function will free and clear the special database named in the
+argument.  This is the database name as given to {\vt ChdOpenOdb} or
+equivalent.  If the argument is 0, then all special databases will be
+freed and cleared.  This function always returns 1.
+
+%------------------------------------
+% 100408
+\index{ShowDb function}
+\item{(int) \vt ShowDb({\it dbname\/}, {\it array\/})}\\
+This function will pop up a window displaying the area given in the
+array of the special database named in {\it dbname}.  The array
+argument is in the same format as passed to {\vt ChdOpenOdb} or
+equivalent.  If passed 0, the bounding box containing all objects in
+the database is understood.  The return value is the window number of
+the new window (1--4) or -1 if an error occurred.
+
+\end{description}
 
 !!SEEALSO
 funcs:lexpr
-
 
 !!KEYWORD
 funcs:lexpr:ntab
@@ -1773,6 +2793,97 @@ Named String Tables
     This function returns a handle to a list of the strings saved in
     the hash table whose name is supplied as the first argument.
     </dl>
+!!LATEX funcs:lexpr:ntab scrfuncs.tex
+% 020109
+This interface provides general purpose string hash tables.  The hash
+tables are useful for saving and retrieving a string-keyed integer
+value, and for detecting or preventing the occurrence of duplicate
+strings in a list.  The hash tables are persistent until explicitly
+freed, i.e., they remain in memory after a script completes (if not
+destroyed), and can be invoked by subsequent scripts.  Each hash table
+is accessed by an arbitrary user-supplied name, and there is no limit
+on the number of tables that can be created.
+
+\begin{description}
+%------------------------------------
+% 020109
+\index{FindNameTable function}
+\item{(int) \vt FindNameTable({\it tabname\/}, {\it create\/})}\\
+This function will create or verify the existence of a named string
+hash table.  The named tables are available for use in scripts, for
+associating a string with an integer and for efficiently ensuring
+uniqueness in a collection of strings.  The named tables persist until
+explicitly destroyed.
+
+The {\it tabname} is an arbitrary name token used to access a named
+hash table.  This function returns 1 if the named hash table exists, 0
+otherwise.  If the boolean argument {\it create} is nonzero, if the
+named table does not exist, it will be created, and 1 returned.
+
+%------------------------------------
+% 020109
+\index{RemoveNameTable function}
+\item{(int) \vt RemoveNameTable({\it tabname\/})}\\
+This function will destroy a named hash table, as created with {\vt
+FindNameTable} in create mode.  It the table exists, it will be
+destroyed, and 1 is returned.  If the given name does not match an
+existing table, 0 is returned.
+
+%------------------------------------
+% 020109
+\index{ListNameTables function}
+\item{(stringlist\_handle) \vt ListNameTables()}\\
+This function returns a handle to a list of names of named hash tables
+currently in memory.
+
+%------------------------------------
+% 020109
+\index{ClearNameTables function}
+\item{(int) \vt ClearNameTables()}\\
+This functions destroys all named hash tables in memory.
+
+%------------------------------------
+% 020109
+\index{AddNameToTable function}
+\item{(int) \vt AddNameToTable({\it tabname\/}, {\it name\/}, {\it value\/})}\\
+This will add a string and associated integer to a named hash table. 
+The hash table whose name is given as the first argument must exist in
+memory, as created with {\vt FindNameTable} in create mode.  The {\it
+name} can be any non-null and non-empty string.  The {\it value} can
+be any integer, however, the value -1 is reserved for internal use as
+a ``not in table'' indication.
+
+If {\it name} is inserted into the table, 1 is returned.  If {\it
+name} already exists in the table, or the table does not exist, 0 is
+returned.  The {\it value} is ignored if the {\it name} already exists
+in the table, the existing value is not updated.
+
+%------------------------------------
+% 020109
+\index{RemoveNameFromTable function}
+\item{(int) \vt RemoveNameFromTable({\it tabname\/}, {\it name\/})}\\
+This will remove the {\it name} string from the named hash table whose
+name is given as the first argument.  If the {\it name} string is
+found and removed, 1 is returned.  Otherwise, 0 is returned.
+
+%------------------------------------
+% 020109
+\index{FindNameInTable function}
+\item{(int) \vt FindNameInTable({\it tabname\/}, {\it name\/})}\\
+This function will return the data value saved with the {\it name}
+string in the table whose name is given as the first argument.  If the
+table is not found, or the {\it name} string is not found, -1 is
+returned.  Otherwise the returned value is that supplied to {\vt
+AddNameToTable} for the {\it name} string.  Note that it is a bad
+idea to use -1 as a data value.
+
+%------------------------------------
+% 020109
+\index{ListNamesInTable function}
+\item{(stringlist\_handle) \vt ListNamesInTable({\it tabname\/})}\\
+This function returns a handle to a list of the strings saved in the
+hash table whose name is supplied as the first argument.
+\end{description}
 
 !!SEEALSO
 funcs:lexpr

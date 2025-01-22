@@ -57,6 +57,26 @@ Help Menu
       <td><tt>dblog</tt></td> <td><b>Logging Options</b></td>
       <td>Set logging and debugging options</td></tr>
     </table>
+!!LATEX xic:helpmenu helpmenu.tex
+The commands in the {\cb Help Menu} provide documentation and help to
+{\Xic} users.
+
+The commands found in the {\cb Help Menu} are summarized in the table
+below.  The table provides the internal name for the command, and
+a brief description.
+
+\begin{tabular}{|l|l|l|l|} \hline
+\multicolumn{4}{|c|}{\kb Help Menu}\\ \hline
+\kb Label & \kb Name & \kb Pop-up & \kb Function\\ \hline\hline
+\et Help & \vt help & \cb Help Viewer & Show help, enter help mode\\ \hline
+\et Multi-Window & \vt multw & none & Set multi-window help mode\\ \hline
+\et About & \vt about & \cb About Panel & Show version info\\ \hline
+\et Release Notes & \vt notes & \cb Text Editor & Show release notes\\ \hline
+\et Log Files & \vt logs & \cb File Selection & Provide access to log files\\
+\et Logging & \vt dblog & \cb Logging Options & Set logging and debugging
+  options\\
+ \hline
+\end{tabular}
 
 !!SEEALSO
 xic:commands
@@ -78,6 +98,12 @@ Multi-Window
     <p>
     This menu item tracks the state of the <a
     href="HelpMultiWin"><b>HelpMultiWin</b></a> variable.
+!!LATEX xic:multw helpmenu.tex
+When the {\cb Multi-Window Mode} button in the {\cb Help Menu} is set,
+in help mode, clicking on a menu item or screen object will pop up a
+new help window, rather than reusing a single existing window.
+
+This menu item tracks the state of the {\et HelpMultiWin} variable.
 
 !!SEEALSO
 xic:helpmenu
@@ -97,6 +123,11 @@ About
     information.  This window also appears when the key sequence
     <b>Ctrl-v</b> is entered, with the pointer in a drawing window.
     <br clear=all>
+!!LATEX xic:about helpmenu.tex
+The {\cb About} button in the {\cb Help Menu} brings up a text window
+which provides the {\Xic} revision number and legal information.  This
+window also appears when the key sequence {\kb Ctrl-v} is entered,
+with the pointer in a drawing window.
 
 !!SEEALSO
 xic:helpmenu
@@ -128,6 +159,23 @@ Release Notes
     Also, they serve as supplements to the manual between paintings. 
     By policy, all updated information contained in the release note
     is incorporated into the help database for a given release.
+!!LATEX xic:notes helpmenu.tex
+The {\cb Release Notes} button in the {\cb Help Menu} brings up a text
+browser window loaded with the release notes for the current {\Xic}
+release.
+
+The release notes are installed by default in the directory {\vt
+/usr/local/xictools/xic/docs}, and {\Xic} searches this
+directory for the notes.  {\Xic} can be directed to look in a
+different directory in two ways.  First, the environment variable {\et
+XIC\_DOCS\_DIR} can be set to the directory to search.  Second, the
+variable {\et DocsDir} can be set (with the {\cb !set} command) to the
+directory to search.  The release notes describe bugs fixed and new
+features added to {\Xic}, and should be read after a new release is
+installed.  Also, they serve as supplements to the manual between
+printings.  By policy, all updated information contained in the
+release note is incorporated into the help database for a given
+release.
 
 !!SEEALSO
 xic:env
@@ -155,6 +203,18 @@ Log Files
     files, the files must be copied to a safe place.  If <i>Xic</i>
     terminates unexpectedly, the directory is retained, and therefor
     the files are available for post-mortem debugging.
+!!LATEX xic:logs helpmenu.tex
+The {\cb Log Files} button in the {\cb Help Menu} brings up the {\cb
+File Selection} panel pointing at the directory containing the log
+files.  "Opening" one of the entries will bring up the {\cb File
+Browser} loaded with the selected file.
+
+The log files are kept in a temporary directory which is created when
+{\Xic} is started.  On normal exit, this directory is deleted, so if
+the user wishes to retain one or more of the log files, the files must
+be copied to a safe place.  If {\Xic} terminates unexpectedly, the
+directory is retained, and therefor the files are available for
+post-mortem debugging.
 
 !!SEEALSO
 xic:helpmenu
@@ -196,6 +256,29 @@ Logging
     <p>
     This panel can also be brought up with the (undocumented)
     <b>!debug</b> command.
+!!LATEX xic:dblog helpmenu.tex
+This {\cb Logging} button in the {\cb Help Menu} brings up the {\cb
+Logging Options} panel, from which various logging and debugging
+options can be set.  Probably, there is not much here that would be of
+interest to most users.  Some users may find this useful for
+diagnosing problems, however.
+
+The top half of the panel contains a number of check boxes, each with
+a description.  Checking these boxes enables a debugging mode for the
+described subsystem or feature.  This may involve additional
+consistency testing and messages.  By default, these messages will go
+to the console window, unless a path to a file is entered into the
+{\cb Message file} entry area, in which case messages will be saved in
+that file.
+ 
+The bottom half of the panel enables logging output from the indicated
+subsystems, into the file whose name is given.  These files will be
+created in the log files area, which is a temporary directory that is
+removed on normal program exit.  The files in the log files area can
+be accessed with the {\cb Log Files} button in the {\cb Help Menu}.
+ 
+This panel can also be brought up with the (undocumented) {\cb !debug}
+command.
 
 !!SEEALSO
 xic:helpmenu

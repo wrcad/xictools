@@ -249,6 +249,159 @@ Side Menu Commands
      <td><a href="xic:iplot"><b>iplot</b></td>
      <td>Set dynamic plotting</td></tr>
     </table>
+!!LATEX sidemenu sidemenu.tex
+{\Xic} has a ``side'' menu of buttons, typically displayed along the
+left edge of the application main window, next to the layer table. 
+This menu contains buttons specific to editing, and is shown only when
+editing is enabled (meaning that it never appears in the {\Xiv}
+feature set).  The content of the menu differs between electrical and
+physical modes.
+
+If the environment variable {\et XIC\_MENU\_RIGHT} is set when {\Xic}
+starts, the menu and layer table will be placed along the right edge
+of the main application window.  This might be more convenient for
+left-handed users.  If the {\et XIC\_HORIZ\_BUTTONS} environment
+variable is set, the ``side'' menu buttons will instead be arrayed
+horizontally across the top of the main application window, above the
+top button menu.
+
+This section describes in detail the commands available in the side
+menu in physical and electrical modes.  These include commands for
+geometry creation and other frequently used operations.
+
+Again, the side menu is only visible when cell editing is possible.
+
+Side menu commands are executed by clicking with button 1 on the
+buttons.  Typing the first few letters of the command name while
+pointing in a drawing window will also initiate a side menu command. 
+The characters typed are displayed in the key press buffer area to the
+left of the prompt line in the main window, or in the upper-right
+corner of sub-window pop-ups.  Commands can be exited by selecting the
+same or another command in most cases, or by pressing the {\kb Esc}
+key.
+
+\index{current transform}
+In the command descriptions, reference if often made to the ``current
+transform''.  This is a rotation, reflection, and magnification
+specification for moved or copied objects, and for newly created
+subcells.  The current transform is set with the pop-up produced by
+the {\cb xform} button in the side.
+
+Reference is also made to ``selected'' objects.  Objects are selected
+by clicking the left mouse button (button 1) while pointing at the
+object, or by pressing and holding button 1 so that the object is
+enclosed in the rectangle formed with the press and release locations. 
+Selecting a second time will deselect the objects, and all selected
+objects can be deselected with the {\cb desel} button in the top
+button menu.  Selected objects are displayed with a blinking
+highlighted border.  Objects can also be selected with the {\cb
+!select} command typed in the prompt area.
+
+Reference is made to various commands that start with an exclamation
+point ``{\cb !}'' such as ``{\cb !set}''.  These commands can be
+entered from the keyboard.  Since most of these commands are used
+infrequently, they are not assigned command buttons.  The most
+important of these commands is probably {\cb !set}, since this allows
+certain variables to be set which control the behavior of some side
+menu commands.  These ``{\cb !}'' commands are described in chapter
+\ref{bangcmds}.
+
+The tables below summarize the command buttons provided in the side
+menus in physical and electrical mode.  Note that the side menu is
+different between physical and electrical modes, and that the
+operation of some commands which appear in both may differ slightly. 
+These differences are noted in the descriptions.  In the text, side
+menu commands are referenced by their internal names, since the
+command buttons contain an icon and not a label.
+
+The side menu is not available in the {\Xiv} feature set, and is
+invisible when certain modes are in effect, such as in CHD display
+mode, where editing is not allowed.
+
+\begin{table}
+\begin{center}
+\begin{tabular}{|l|l|l|} \hline
+\multicolumn{3}{|c|}{\kb Physical Side Menu} \\[0.5ex] \hline
+\et Icon & \et Name & \et Function\\ \hline
+\fbox{\epsfbox{images/xform.eps}} & \rb{\vt xform} &
+  \rb{Set current transform}\\ \hline
+\fbox{\epsfbox{images/place.eps}} & \rb{\vt place} &
+  \rb{Place subcells}\\ \hline
+\fbox{\epsfbox{images/label.eps}} & \rb{\vt label} &
+  \rb{Create/edit labels}\\ \hline
+\fbox{\epsfbox{images/logo.eps}}  & \rb{\vt logo}  &
+  \rb{Create text object}\\ \hline
+\fbox{\epsfbox{images/box.eps}}   & \rb{\vt box}   &
+  \rb{Create rectangles}\\ \hline
+\fbox{\epsfbox{images/polyg.eps}} & \rb{\vt polyg} &
+  \rb{Create polygons}\\ \hline
+\fbox{\epsfbox{images/wire.eps}}  & \rb{\vt wire}  &
+  \rb{Create wires}\\ \hline
+\fbox{\epsfbox{images/style.eps}} & \rb{\parbox{1cm}{\vt 
+ style\linebreak{\rm menu}}} & \rb{Set wire style}\\ \hline
+\fbox{\epsfbox{images/round.eps}} & \rb{\vt round} &
+  \rb{Create disk objects}\\ \hline
+\fbox{\epsfbox{images/donut.eps}} & \rb{\vt donut} &
+  \rb{Create disk with hole}\\ \hline
+\fbox{\epsfbox{images/arc.eps}}   & \rb{\vt arc}   &
+  \rb{Create arcs}\\ \hline
+\fbox{\epsfbox{images/sides.eps}} & \rb{\vt sides} &
+  \rb{Set rounded granularity}\\ \hline
+\fbox{\epsfbox{images/xor.eps}}   & \rb{\vt xor}   &
+  \rb{Exclusive-OR objects}\\ \hline
+\fbox{\epsfbox{images/break.eps}} & \rb{\vt break} &
+  \rb{Cut objects}\\ \hline
+\fbox{\epsfbox{images/erase.eps}} & \rb{\vt erase} &
+  \rb{Erase geometry}\\ \hline
+\fbox{\epsfbox{images/put.eps}}   & \rb{\vt put}   &
+  \rb{Paste from yank buffer}\\ \hline
+\fbox{\epsfbox{images/spin.eps}}  & \rb{\vt spin}  &
+  \rb{Rotate objects}\\ \hline
+\end{tabular}
+\begin{tabular}{|l|l|l|} \hline
+\multicolumn{3}{|c|}{\kb Electrical Side Menu} \\[0.5ex] \hline
+\et Icon & \et Name & \et Function\\ \hline
+\fbox{\epsfbox{images/xform.eps}} & \rb{\vt xform} &
+  \rb{Set current transform}\\ \hline
+\fbox{\epsfbox{images/place.eps}} & \rb{\vt place} &
+  \rb{Place subcells}\\ \hline
+\fbox{\epsfbox{images/devs.eps}}  & \rb{\vt devs}  &
+  \rb{Show device menu}\\ \hline
+\fbox{\epsfbox{images/shapes.eps}} & \rb{\parbox{1cm}{\vt
+  shapes\linebreak{\rm menu}}} & \rb{Create outline object}\\ \hline
+\fbox{\epsfbox{images/wire.eps}}  & \rb{\vt wire}  &
+ \rb{Create wires}\\ \hline
+\fbox{\epsfbox{images/label.eps}} & \rb{\vt label} &
+ \rb{Create/edit labels}\\ \hline
+\fbox{\epsfbox{images/erase.eps}} & \rb{\vt erase} &
+ \rb{Erase geometry}\\ \hline
+\fbox{\epsfbox{images/break.eps}} & \rb{\vt break} &
+ \rb{Cut objects}\\ \hline
+\fbox{\epsfbox{images/symbl.eps}} & \rb{\vt symbl} &
+ \rb{Set symbolic mode}\\ \hline
+\fbox{\epsfbox{images/nodmp.eps}} & \rb{\vt nodmp} &
+ \rb{Name wire nets}\\ \hline
+\fbox{\epsfbox{images/subct.eps}} & \rb{\vt subct} &
+ \rb{Set subcircuit contacts}\\ \hline
+\fbox{\epsfbox{images/terms.eps}} & \rb{\vt terms} &
+  \rb{Show terminals}\\ \hline
+\fbox{\epsfbox{images/spcmd.eps}} & \rb{\vt spcmd}  &
+  \rb{Execute {\WRspice} command}\\ \hline
+\fbox{\epsfbox{images/run.eps}}   & \rb{\vt run}   &
+  \rb{Run {\WRspice}}\\ \hline
+\fbox{\epsfbox{images/deck.eps}}  & \rb{\vt deck}  &
+  \rb{Save SPICE file}\\ \hline
+\fbox{\epsfbox{images/plot.eps}}  & \rb{\vt plot}  &
+  \rb{Plot SPICE results}\\ \hline
+\fbox{\epsfbox{images/iplot.eps}} & \rb{\vt iplot} &
+  \rb{Set dynamic plotting}\\ \hline
+\end{tabular}
+\end{center}
+\caption{\label{sidetab}Commands found in the side menu in physical
+and electrical modes.}
+\end{table}
+
+\newpage
 
 !!SEEALSO
 xic:commands
@@ -342,6 +495,73 @@ The arc Button: Create Arcs
     manner.  Prompts can be obtained for the start and end angles
     separately.  The angle should be entered in degrees.  Zero degress
     points along the X axis, and positive angles advance clockwise.
+!!LATEX xic:arc sidemenu.tex
+The {\cb arc} command button allows the user to create arcs on the
+current layer.  The {\cb sides} button, or the {\cb Sides} entry in
+the {\cb shapes} menu in electrical mode, can be used to reset the
+number of segments used to represent the circle containing the arc. 
+Press button 1 first to define the center.  Subsequent presses, (or
+drag releases) define the inner and outer radii, the arc start angle,
+and the arc terminal angle.  In physical mode, if the arc path width
+is set to zero, a round disk is created, as with the {\cb round}
+button.  If the angle given is 360 degrees, then the created figure is
+identical to that produced by the {\cb donut} button.  In electrical
+mode, the arc function is entered through the {\cb arc} entry in the
+menu brought up with the {\cb shapes} button.  In this case, the arc
+path has no width, so that the inner and outer radii are equal and not
+separately definable.  Arcs have no electrical significance, but can
+be used for illustrative purposes.
+
+While the command is active in physical mode, the cursor will snap to
+horizontal or vertical edges of existing objects in the layout if the
+edge is on-grid, when within a small distance.  When snapped, a small
+dotted highlight box is displayed.  This makes it much easier to
+create abutting objects when the grid snap spacing is very fine
+compared with the display scaling.  This feature can be controlled
+from the {\cb Edge Snapping} group in the {\cb Snapping} page of the
+{\cb Grid Setup} panel.
+
+In electrical mode, an arc is actually a wire, and as such should not
+be used on the SCED layer.  If the current layer is the SCED layer,
+the arc will be created using the ETC2 layer, otherwise the arc will
+be created on the current layer.  Although there is no error, arc
+vertices on the SCED layer are considered in the connectivity
+establishment, leading to inefficiency.  If the user insists on the
+arc being on the SCED layer, the {\cb Change Layer} command in the
+{\cb Modify Menu} can be used to move it to that layer.
+
+If the user presses and holds the {\kb Shift} key after the center
+location is defined, and before the perimeter is defined by either
+lifting button 1 or pressing a second time, the current radius is held
+for x or y.  The pointer location of the {\kb Shift} press defines
+whether x is held (pointer closer to the center y) or y is held
+(pointer closer to the center x).  This allows elliptical arcs to be
+generated.  This similarly applies when defining the outer radii, so
+that the inner and outer surfaces can have different elliptical aspect
+ratios, though the outer radius must be larger than the inner radius
+at all angles.
+
+The {\kb Ctrl} key also provides useful constraints.  Pressing and
+holding the {\kb Ctrl} key when defining the radii produces a radius
+defined by the pointer position projected on to the x or y axis
+(whichever is closer) defined from the center.  Otherwise, off-axis
+snap points are allowed, which may lead to an unexpected radius on a
+fine grid.  When defining the angles of arcs with the {\kb Ctrl} key
+pressed, the angle is constrained to multiples of 45 degrees. 
+Ordinarily, the arc angle snaps to the nearest snap point.
+
+When the command is expecting a mouse button press to define a radius,
+the value as defined by the mouse pointer (in microns) is printed in
+the lower left corner of the drawing window, or the X and Y values are
+printed if different.  Pressing {\kb Enter} will cause prompting for
+the value(s), in microns.  If one number is given, a circular radius
+is accepted, however one can enter two numbers separated by space to
+set the X and Y radii separately.
+
+Similarly, the angles are displayed, and can be entered in this
+manner.  Prompts can be obtained for the start and end angles
+separately.  The angle should be entered in degrees.  Zero degress
+points along the X axis, and positive angles advance clockwise.
 
 !!SEEALSO
 sidemenu
@@ -428,6 +648,64 @@ The box Button: Create Rectangles
     side menu to switch commands.  If <b>Esc</b> is pressed, or a
     non-participating command is entered, the anchor point will be
     lost.
+!!LATEX xic:box sidemenu.tex
+The {\cb box} command button allows creation of boxes (rectangles) on
+the currently selected layer.  The box can be defined by either
+clicking button 1 on two diagonal corners, or by pressing button 1 to
+define the first corner, dragging, then releasing button 1 to define
+the second corner.  The outline of the box is ghost-drawn during
+creation.  The new box will be merged with or clipped to existing
+boxes on the same layer, unless this feature has been suppressed.
+
+While the command is active in physical mode, the cursor will snap to
+horizontal or vertical edges of existing objects in the layout if the
+edge is on-grid, when within two pixels.  When snapped, a small dotted
+highlight box is displayed.  This makes it much easier to create
+abutting objects when the grid snap spacing is very fine compared with
+the display scaling.  This feature can be controlled from the {\cb
+Edge Snapping} group in the {\cb Snapping} page of the {\cb Grid
+Setup} panel.
+
+In physical mode, boxes can also be created from the {\cb Show/Select
+Devices} panel from the {\cb Device Selections} button in the {\cb
+Extract Menu}.  The {\cb Enable Measure Box} button provides a means
+of creating boxes of a specific size to match electrical requirements,
+for example to create rectangular resistor bodies for a given
+resistance.  Boxes can be created whether or not the electrical layer
+parameters are used or present.
+
+In physical mode while the {\cb box} command is active, holding down
+the {\kb Ctrl} key while clicking on a subcell will paint the area of
+the subcell with the current layer.
+
+In electrical mode, the box command is available by selecting the {\cb
+box} function in the {\cb shapes} menu.  If the current layer is the
+SCED layer, the box will be created using the ETC2 layer, otherwise
+the box will be created on the current layer.  It is best to avoid use
+of the SCED layer for other than active wires, for efficiency reasons,
+though it is not an error.  The {\cb Change Layer} command in the {\cb
+Modify Menu} can be used to change the layer of existing objects to
+the SCED layer, if necessary.  The outline style and fill will be
+those of the rendering layer.  Boxes have no electrical significance,
+but can be used for illustrative purposes.
+
+The {\cb box}, {\cb erase}, and {\cb xor} commands participate in a
+protocol that is handy on occasion.
+
+Suppose that you want to erase an area, and you have zoomed in and
+clicked to define the anchor, then zoomed out or panned and clicked to
+finish the operation.  Oops, the {\cb box} command was active, not
+{\cb erase}.  One can press {\kb Tab} to undo the unwanted new box,
+then press the {\cb erase} button, and the {\cb erase} command will
+have the same anchor point and will be showing the ghost box, so
+clicking once will finish the erase operation.
+
+The anchor point is remembered, when switching directly between these
+three commands, and the command being exited is in the state where the
+anchor point is defined, and the ghost box is being displayed.  One
+needs to press the command button in the side menu to switch commands. 
+If {\kb Esc} is pressed, or a non-participating command is entered,
+the anchor point will be lost.
 
 !!SEEALSO
 noopbutton
@@ -498,6 +776,53 @@ The break Button: Cut Objects
     the redo list is cleared.  Thus, for example, if one undoes a box
     creation, then starts a break operation, the "redo" capability
     of the box creation will be lost.
+!!LATEX xic:break sidemenu.tex
+The {\cb break} button is used to divide objects along a horizontal or
+vertical line.  The command operates on boxes, polygons, and wires. 
+If one or more of those objects was previously selected, the break
+command will operate on those selections.  Otherwise, the user is
+asked to select objects to break.  The user is then asked to click to
+divide the selected objects along the break line, which is attached to
+the pointer and ghost-drawn.  The orientation of the break line is
+either horizontal or vertical, which can be toggled by pressing either
+the {\cb /} (forward slash) or {\kb $\backslash$} (backslash) keys
+when the break line is visible.  The {\cb break} command is useful
+when one wants to relocate or create a subcell from pieces of an
+existing design.
+
+While the command is active in physical mode, the cursor will snap to
+horizontal or vertical edges of existing objects in the layout if the
+edge is on-grid, when within two pixels.  When snapped, a small dotted
+highlight box is displayed.  This makes it much easier to create
+abutting objects when the grid snap spacing is very fine compared with
+the display scaling.  This feature can be controlled from the {\cb
+Edge Snapping} group in the {\cb Snapping} page of the {\cb Grid
+Setup} panel.
+
+When the {\cb break} command is at the state where objects are
+selected, and the next button press would initiate the break
+operation, if either of the {\kb Backspace} or {\kb Delete} keys is
+pressed, the command will revert the state back to selecting objects. 
+Then, other objects can be selected or selected objects deselected,
+and the command is ready to go again.  This can be repeated, to build
+up the set of selections needed.
+
+At any time, pressing the {\cb Deselect} button to the left of the
+coordinate readout will revert the command state to the level where
+objects may be selected to break.
+
+The undo and redo operations (the {\kb Tab} and {\kb Shift-Tab}
+keypreses and {\cb Undo}/{\cb Redo} in the {\cb Modify Menu}) will
+cycle the command state forward and backward when the command is
+active.  Thus, the last command operation, such as initiating the
+break by clicking, can be undone and restarted, or redone if
+necessary.  If all command operations are undone, additional undo
+operations will undo previous commands, as when the undo operation is
+performed outside of a command.  The redo operation will reverse the
+effect, however when any new modifying operation is started, the redo
+list is cleared.  Thus, for example, if one undoes a box creation,
+then starts a break operation, the ``redo'' capability of the box
+creation will be lost.
 
 !!SEEALSO
 sidemenu
@@ -557,6 +882,45 @@ The deck Button: Save SPICE File
     is set (with the <a href="!set"><b>!set</b></a> command), then a
     warning will be issued if nodes are found with only one
     connection.
+!!LATEX xic:deck sidemenu.tex
+The {\cb deck} command, available only in electrical mode, creates a
+SPICE file of the current circuit hierarchy.  The file name is
+prompted for, as is an analysis string.  If an analysis string is
+given, it will be included in the SPICE file after prepending a `.',
+unless it happens to start with ``run'', in which case it is ignored. 
+If a plot string has been created with the {\cb plot} command, it will
+also be included as a {\vt .plot} line. 
+
+Unless the variable {\et SpiceListAll} is set (with the {\cb !set}
+command), only devices and subcircuits that are ``connected'' will be
+included in the SPICE file.  A device or subcircuit is connected if
+any of the following is true:
+\begin{itemize}
+\item{The subcircuit has a global node.}
+\item{The device or subcircuit has two or more non-ground
+connections.}
+\item{The device or subcircuit has one non-ground connection and one
+or more grounds.}
+\item{The device or subcircuit has one non-ground connection and no
+opens.}
+\item{The subcircuit has a non-ground connection.}
+\end{itemize}
+
+Note that it is possible for a subcircuit to have no connections on
+the {\vt .subckt} line, if it contains a global node.  For example,
+the subcircuit might consist of a decoupling capacitor to ground, from
+a global power supply node (e.g., ``{\vt vdd!}'').
+
+Node names will be assigned according to the node name mapping (see
+ \ref{nodmp} currently in force.
+
+After the new file is created, the user is given the option of viewing
+it in a {\cb File Browser} window.
+
+\index{CheckSolitary variable}
+If the variable {\et CheckSolitary} is set (with the {\cb !set}
+command) then a warning will be issued if nodes are found with only
+one connection.
 
 !!SEEALSO
 sidemenu
@@ -748,6 +1112,112 @@ The devs Button: Device Menu
       <td><tt>gray80</tt></td></tr>
     </table>
     </blockquote>
+!!LATEX xic:devs sidemenu.tex
+The {\cb devs} button appears only in electrical mode, and pressing
+this button will toggle the display of the device selection menu.
+
+There are three styles of the device menu.  The default style contains
+a menu bar with four entries:  {\cb Devices}, {\cb Sources}, {\cb
+Macros}, and {\cb Terminals}.  Each brings up a sub-menu containing
+names of library ``devices'', that fall into each category.
+
+The second menu style is similar, but the menu bar contains the first
+letter of the device name (not the SPICE key).
+
+In either of these styles, pressing and holding button 1 while the
+pointer is over one of the menu bar buttons will pop up a menu of
+device names.  Moving the pointer down the menu will highlight the
+entry under the pointer.  A selection can be made by releasing the
+button.
+
+The third style is the pictorial menu, which displays the schematic
+symbol of each available device, in alphabetical order.  Clicking on
+one of the device images will establish the selection.
+
+Each menu style contains a button from which the style can be cycled.
+
+After a selection is made, the device symbol will be ghost-drawn and
+attached to the pointer, and the device will be placed at positions
+where the user clicks in the drawing windows.  The device is
+positioned such that the reference terminal is located at the point
+where the user clicked.  Devices are placed according to the current
+transform, which is defined from the pop-up produced by the {\cb
+xform} button in the side menu.
+
+When the menu becomes active, the current transform is cleared.  The
+current transform is saved in Register 0 and cleared when switching
+between devices to place or upon pressing the {\cb Desel} button.
+Pressing the {\kb Forward Slash} button swaps the current and saved
+transforms.
+
+The devices available and other details depend upon the definitions in
+the device library file.  By default, this file is named ``{\vt
+device.lib}'', and is located in the installation startup directory,
+but this can be superseded by a custom file of the same name which is
+found in the library search path ahead of the default file.
+
+The present device menu style tracks, and is tracked by, the {\et
+DevMenuStyle} variable.  This variable can be set (with the {\cb !set}
+command) to an integer 0--2.  If 0 or unset, the categorized layout is
+used.  If 1, the alphabetized variation is used, and 2 specifies the
+pictorial menu.  This variable tracks the style of the menu, and
+resets the style when set.
+
+The following table lists the devices found in the device library file
+supplied with {\Xic}.
+
+\begin{tabular}{|l|l|}\hline
+\bf Name  & \bf Description\\ \hline
+\multicolumn{2}{|c|}{Contact Devices}\\ \hline
+\et gnd & Ground Contact\\ \hline
+\et gnde & Alternative Ground Contact\\ \hline
+\et tbar & Contact Terminal\\ \hline\hline
+\et tblk & Alternative Contact Terminal\\ \hline\hline
+\et tbus & Bus Contact Terminal\\ \hline\hline
+\multicolumn{2}{|c|}{SPICE Devices}\\ \hline
+\et res & Resistor\\ \hline
+\et cap & Capacitor\\ \hline
+\et ind & Inductor\\ \hline
+\et mut & Mutual Inductor\\ \hline
+\et isrc & Current Source\\ \hline
+\et vsrc & Voltage Source\\ \hline
+\et dio & Junction Diode\\ \hline
+\et jj & Josephson Junction\\ \hline
+\et npn & NPN Bipolar Transistor\\ \hline
+\et pnp & PNP Bipolar Transistor\\ \hline
+\et njf & N-Channel Junction FET\\ \hline
+\et pjf & P-Channel Junction FET\\ \hline
+\et nmos1 & N-Channel MOSFET, 4 Nodes\\ \hline
+\et pmos1 & P-Channel MOSFET, 4 Nodes\\ \hline
+\et nmos & N-Channel MOSFET, 3 Nodes\\ \hline
+\et pmos & P-Channel MOSFET, 3 Nodes\\ \hline
+\et nmes & N-Channel MESFET\\ \hline
+\et pmes & P-Channel MESFET\\ \hline
+\et tra & Transmission Line\\ \hline
+\et ltra & Transmission Line (LTRA Compatible)\\ \hline
+\et urc & Uniform RC Line\\ \hline
+\et vccs & Voltage-Controlled Current Source\\ \hline
+\et vcvs & Voltage-Controlled Voltage Source\\ \hline
+\et cccs & Current-Controlled Current Source\\ \hline
+\et ccvs & Current-Controlled Voltage Source\\ \hline
+\et sw & Voltage-Controlled Switch\\ \hline
+\et csw & Current-Controlled Switch\\ \hline
+\multicolumn{2}{|c|}{Misc.}\\ \hline
+\et opamp & Example Macro\\ \hline
+\et vp & Current Meter\\ \hline
+\end{tabular}
+
+The colors used in the pictorial device menu can be changed by setting
+the Special GUI Colors (see \ref{attrcolor}) listed below.  This can
+be done in the technology file, or with the {\cb !setcolor} command.
+
+\begin{tabular}{|l|l|l|} \hline
+\bf variable & \bf purpose  & \bf default\\ \hline
+\vt GUIcolorDvBg & background & \vt gray90\\ \hline
+\vt GUIcolorDvFg & foreground & \vt black\\ \hline
+\vt GUIcolorDvHl & highlight & \vt blue\\ \hline
+\vt GUIcolorDvSl & selection & \vt gray80\\ \hline
+\end{tabular}
 
 !!SEEALSO
 sidemenu
@@ -821,6 +1291,58 @@ The donut Button: Create Donut Object
     spots or smaller; the regular algorithm is used otherwise.  An
     object with this preconditioning applied should translate exactly
     to the e-beam grid.
+!!LATEX xic:donut sidemenu.tex
+The {\cb donut} button appears only in physical mode.  It is used to
+create a ring-like polygon.  The number of segments used to
+approximate a circle can be altered with the {\cb sides} command.
+
+If the user presses and holds the {\kb Shift} key after the center
+location is defined, and before the perimeter is defined by either
+lifting button 1 or pressing a second time, the current radius is held
+for x or y.  The location of the {\kb Shift} press defines whether x
+is held (pointer closer to the center y) or y is held (pointer closer
+to the center x).  This allows elliptical donuts to be generated. 
+This similarly applies when defining the outer radii, so that the
+inner and outer surfaces can have different elliptical aspect ratios,
+though the outer radius must be larger than the inner radius at all
+angles. 
+
+The {\kb Ctrl} key also provides useful constraints.  Pressing and
+holding the {\kb Ctrl} key when defining the radii produces a radius
+defined by the pointer position projected on to the x or y axis
+(whichever is closer) defined from the center.  Otherwise, off-axis
+snap points are allowed, which may lead to an unexpected radius on a
+fine grid.
+
+When the command is expecting a mouse button press to define a radius,
+the value as defined by the mouse pointer (in microns) is printed in
+the lower left corner of the drawing window, or the X and Y values are
+printed if different.  Pressing {\kb Enter} will cause prompting for
+the value(s), in microns.  If one number is given, a circular radius
+is accepted, however one can enter two numbers separated by space to
+set the X and Y radii separately.
+
+While the command is active in physical mode, the cursor will snap to
+horizontal or vertical edges of existing objects in the layout if the
+edge is on-grid, when within two pixels.  When snapped, a small dotted
+highlight box is displayed.  This makes it much easier to create
+abutting objects when the grid snap spacing is very fine compared with
+the display scaling.  This feature can be controlled from the {\cb
+Edge Snapping} group in the {\cb Snapping} page of the {\cb Grid
+Setup} panel.
+
+\index{SpotSize variable}
+If the {\et SpotSize} variable is set to a positive value, or the {\vt
+MfgGrid} has been given a positive value in the technology file, tiny
+round and donut figures are constructed somewhat differently.  the
+figure is constructed somewhat differently.  Objects created with the
+{\cb round} and {\cb donut} buttons will be constructed so that all
+vertices are placed at the center of a spot, and a minimum number of
+vertices will be used.  The {\cb sides} number is ignored.  This
+applies only to figures with minimum radius 50 spots or smaller; the
+regular algorithm is used otherwise.  An object with this
+preconditioning applied should translate exactly to the e-beam grid. 
+See \ref{spotsize} for more information.
 
 !!SEEALSO
 sidemenu
@@ -916,6 +1438,72 @@ The erase Button: Erase or Yank Geometry
     side menu to switch commands.  If <b>Esc</b> is pressed, or a
     non-participating command is entered, the anchor point will be
     lost.
+!!LATEX xic:erase sidemenu.tex
+Rectangular regions of polygons, boxes, and wires can be erased or
+``yanked'' with the {\cb erase} button.  The user clicks twice or
+presses and drags to define the diagonal of the region to be erased. 
+Selected objects are not erased.  Wires maintain a constant width, and
+are cut at the points where the midpoint crosses the boundary of the
+erased area.
+
+In physical mode, if the {\kb Shift} key is held during the operation
+termination (click or button release), there is no erasure, however
+the pieces that would have been erased are ``yanked'', i.e., added to
+the yank buffer.  The pieces are also added to the yank buffer when
+actually erased.  The yank buffer chain has a depth of five, meaning
+that the contents of the last five yanks/erasures are available for
+placement with the {\cb put} command.
+
+Geometry in ``foreign'' windows can be yanked.  These are
+physical-mode sub-windows showing a different cell than the current
+cell being edited (as showing in the main window).  The foreign window
+is never erased (i.e., holding {\kb Shift} is not necessary), but the
+structure that would be erased is added to the yank buffer.  Thus, one
+can quickly copy a rectangular area of geometry from another cell into
+the current cell, by yanking with {\cb erase} and placing with the
+{\cb put} command (below {\cb erase} in the side menu).
+
+The {\cb SpaceBar} toggles ``clip mode''.  When clip mode is active,
+for objects that overlap the rectangle defined with the mouse, instead
+of erasing the interior of the rectangle as in the normal case, the
+material outside of the rectangle will be erased instead.  The
+overlapping objects will be clipped to the rectangle.  This applies
+whether erasing or yanking, again the yank buffer will acquire the
+pieces that would (or actually do) disappear in an erase operation.
+
+When the {\kb Ctrl} key is held before the box is defined, clicking on
+a subcell will cause the subcell's bounding box to be used as the
+rectangle.  Thus, objects can be easily clipped to or around the
+subcell boundary.  This applies when yanking as well.  The standard
+erase is the inverse of the subcell paint operation in the {\cb box}
+command.
+
+While the command is active in physical mode, the cursor will snap to
+horizontal or vertical edges of existing objects in the layout if the
+edge is on-grid, when within two pixels.  When snapped, a small dotted
+highlight box is displayed.  This makes it much easier to create
+abutting objects when the grid snap spacing is very fine compared with
+the display scaling.  This feature can be controlled from the {\cb
+Edge Snapping} group in the {\cb Snapping} page of the {\cb Grid
+Setup} panel.
+
+The {\cb box}, {\cb erase}, and {\cb xor} commands participate in a
+protocol that is handy on occasion.
+
+Suppose that you want to erase an area, and you have zoomed in and
+clicked to define the anchor, then zoomed out or panned and clicked to
+finish the operation.  Oops, the {\cb box} command was active, not
+{\cb erase}.  One can press {\kb Tab} to undo the unwanted new box,
+then press the {\cb erase} button, and the {\cb erase} command will
+have the same anchor point and will be showing the ghost box, so
+clicking once will finish the erase operation.
+
+The anchor point is remembered, when switching directly between these
+three commands, and the command being exited is in the state where the
+anchor point is defined, and the ghost box is being displayed.  One
+needs to press the command button in the side menu to switch commands. 
+If {\kb Esc} is pressed, or a non-participating command is entered,
+the anchor point will be lost.
 
 !!SEEALSO
 sidemenu
@@ -962,6 +1550,31 @@ The iplot Button: Interactive Analysis Plotting
     <p>
     The command text and mark locations are saved with the cell data
     when written to disk, thus the <b>iplot</b> command is persistent.
+!!LATEX xic:iplot sidemenu.tex
+The {\cb iplot} command, available in electrical mode, is useful only
+if the {\WRspice} program is available.  Operation is similar to the
+{\cb plot} button, whereby a command string is generated through
+selection of nodes and branches with the pointer.  The command line
+can be edited in the usual way to generate, for example, functions of
+the plot variables.  Pressing the {\kb Enter} key saves the command. 
+When the {\cb iplot} button is active and a command has been saved,
+the plot is generated dynamically while a simulation, initiated with
+the {\cb run} command, is in progress.
+
+The {\cb S} and {\cb R} buttons, to the left of the prompt area, can be
+used to save and restore prompt line text in a set of internal registers.
+
+Pressing the {\cb iplot} button a second time will turn off the
+interactive plotting.  Pressing {\cb iplot} and then {\kb Enter} will
+turn the interactive plotting back on.  Of course, the trace points
+and plotting command can be modified before pressing {\kb Enter}.  In
+particular, if all prompt line text is deleted, pressing {\kb Enter}
+will delete the internally saved command string, and turn interactive
+plotting off.  Pressing the {\cb iplot} button again will take as
+default text the string from the {\cb plot} command, if any.
+
+The command text and mark locations are saved with the cell data
+when written to disk, thus the {\cb iplot} command is persistent.
 
 !!SEEALSO
 sidemenu
@@ -1453,6 +2066,385 @@ The label Button: Create/Edit Labels
     will be updated upon startup if a file named "<tt>xic_font</tt>"
     is found along the library <a href="xicpaths"><b>search
     path</b></a>, which contains alternative character specifications.
+!!LATEX xic:label sidemenu.tex
+The {\cb label} button is used to create or modify a text label. 
+Labels are abstract annotation objects which do not appear in physical
+output.  For physical text, use the {\cb logo} command button.
+
+\index{label editing}
+If a label is selected before pressing the {\cb label} button, then
+the selected label can be edited.  Multiple labels can be selected,
+and each will receive the new label text.  If more than one label is
+being changed, the command exits after the new text is entered on the
+prompt line, i.e., after {\kb Enter} is pressed to terminate text
+entry.
+
+If only one label is being changed, on pressing {\cb Enter} the new
+text is ``attached'' to the mouse pointer, as for a new label.  In
+this state, the text size, orientation, and justification can be
+changed as will be described below.  The user can either click in a
+drawing window to place the label at the click location (effectively
+moving the selected label), or press {\kb Enter} to update the
+selected label at the existing location.
+
+This is the recommended way to change the size of a label:  select it,
+press the {\cb label} button, press {\kb Enter} to keep the same text,
+adjust the size with the arrow keys, then press {\kb Enter} again to
+update the label.  This keeps the label in a standard size and aspect
+ratio which will match other labels.  This would not be the case if
+the {\cb Stretch} command or operation was used instead.
+
+If no label was initially selected, after the label text has been
+entered, the label will appear ghost-drawn, attached to the mouse
+pointer.  The text will be rotated or mirrored according to the
+current transform, as set from the pop-up provided by the {\cb xform}
+button in the side menu.  Instances of the label are placed where the
+user clicks in a drawing window.
+
+Label text in entered in the prompt line.  While editing, if the user
+clicks on an existing label in a drawing widow which is contained in
+the current cell, the text of that label will be inserted at the
+prompt line cursor.  Hypertext entries (see ref{hypertext}) in the
+label will be preserved.  If the existing label is a ``long text''
+label (described below), the long text attribute will be lost, unless
+the prompt line is empty before clicking on the label.  Particularly
+in electrical mode, clicking on other objects in a drawing window will
+insert text at the cursor position, as will be described.  Pressing
+{\kb Enter} terminates the label text and will allow placement of
+copies of the new label.
+
+The size and justification of the label can be adjusted with the arrow
+keys, before it is placed.  The arrow keys have the following effect: 
+
+\begin{tabular}{ll}
+\kb Up & enlarge by 2\\
+\kb Right & enlarge by 10\%\\
+\kb Down & reduce by 2\\
+\kb Left & reduce by 10\%\\
+\end{tabular}
+
+The initial size of a label is determined by the present default label
+height, and the magnification of the current drawing window.  The
+default label height is 1.0 microns, which can be reset by setting the
+{\et LabelDefHeight} variable to a different value.  The default
+height is the smallest size available through scaling with the arrow
+keys.  Generally, {\Xic} functions that create new labels will use the
+default label height.  The default height of one micron is too large
+for modern semiconductor processes, so one should redefine {\et
+LabelDefHeight} in the technology file to a more suitable value,
+typically the minimum feature size.
+
+By default, the label is anchored at the lower left corner, though
+this justification can be changed by holding the {\kb Shift} key while
+pressing the arrow keys.  The {\kb Left} and {\kb Right} arrows cycle
+through left, center, and right justification.  The {\kb Up} and {\kb
+Down} arrow keys cycle through bottom, center, and top justification. 
+Finally, holding the {\kb Ctrl} key while pressing the arrow keys will
+change the current rotation angle.  The arrow keys implicitly cycle
+through the angle choices, with {\kb Up} and {\kb Right} cycling in
+the opposite sense from {\kb Down} and {\kb Left}.
+
+Labels are scalable, and can be stretched with the {\cb Stretch}
+button in the {\cb Edit Menu} or with button 1 operations.
+
+Newlines can be embedded in the label text by pressing {\kb
+Shift-Enter}.  The displayed label will contain line breaks at those
+points.  The justification applies to the block, and line-by-line
+within the block.
+
+Labels are shown in legible orientation (i.e., left to right or down
+to up) by default, independent of the actual transformation.  If the
+{\cb Label True Orient} button in the {\cb Main Window} sub-menu of
+the {\cb Attributes Menu} or the sub-window {\cb Attributes} menu
+is set accordingly, labels will be shown in their actual orientation.
+
+Pressing the {\kb Delete} key after the label text has been entered
+will repeat prompting for new label text.  Labels have fixed size as
+compared with layout geometry.
+
+\subsection{Device Property Labels}
+
+Labels are created internally for device properties in electrical
+mode.  These labels can be moved, deleted, and edited just as
+user-supplied labels.  Once deleted, though, such labels can not be
+recreated except by recreating the device, or by using the {\cb
+!regen} command.  The underlying property is not deleted, it simply
+is not displayed in a label.
+
+These labels can be ``hidden'' by clicking on the label text with
+button 1 with the {\kb Shift} key held.  This replaces the label text
+with a small box icon.  Shift-clicking the icon will redisplay the
+text.  This can be useful when long labels obscure other features. 
+See \ref{labelsize} for more information.
+
+Labels can be edited by selecting the label before pressing the {\cb
+label} button.  If the label was generated for a property in
+electrical mode, the underlying property is also changed.  This is a
+quick way to modify device properties, without invoking the {\cb
+Properties} command button in the {\cb Edit Menu}.
+
+\index{wire label}
+\index{net name label}
+\subsection{Wire Net Name Labels}
+
+Similar to the property labels, electrical wires that participate in
+schematic connectivity can have a bound label that provides a name for
+the net containing the wire.
+
+Unlike the device labels, wire net labels are created by the user.  If
+the {\cb label} command is started with a single selected wire on an
+electrically-active layer, the label created will be bound to that
+wire.  Thus, to create a label for a wire, select the wire, press the
+{\cb label} button in the side menu, and create the label.  These
+labels can exist on any layer.
+
+Once created, these labels can be edited in the same manner as
+property labels, i.e., select the label and enter the label command by
+pressing the side menu {\cb label} button.
+
+\subsection{Ctrl-a and Ctrl-p}
+
+In electrical mode, outside of any command, pressing {\kb Ctrl-a} will
+cause the associated labels of any selected device or wire to also
+become selected.  If labels are selected, then pressing {\kb Ctrl-a}
+will cause their associated device or wire to also become selected. 
+The associated labels can be deselected by pressing {\kb Ctrl-p}. 
+This is useful for determining which labels are associated with a
+given device or wire, and {\it vice-versa}.
+
+\subsection{Spicetext Labels}
+\label{spicetext}
+\index{spicetext label}
+
+In electrical mode, for efficiency reasons it is best not to use the
+SCED layer for labels.  If the current layer is the SCED layer, a new
+label will instead be created using the ETC1 layer.  If for some
+reason a label is required on the SCED layer, the {\cb Change Layer}
+command in the {\cb Modify Menu} can be used to move an existing label
+to the SCED layer.
+
+In electrical mode, labels can be used to enter arbitrary text into
+the SPICE output.  There are two methods to achieve this.  In
+addition, the {\et SpiceInclude} variable can be used to add a file
+inclusion to the SPICE output.
+
+If an electrical layer named ``SPTX'' exists, labels on this layer
+will be included, verbatim, as separate lines in SPICE output, unless
+the label is a ``spicetext'' label (below).  These labels are sorted
+by position, top-to-bottom and left-to-right in output, and are placed
+ahead of the spicetext labels.  A label on the SPTX layer in the
+format of a spicetext label will be output as a spicetext label.
+
+If the first word of the label is of the form
+\begin{quote}\vt
+spicetext{\it N}
+\end{quote}
+the label is a ``spicetext'' label, and the text which follows will be
+entered verbatim as a separate line in the SPICE output.  The
+spicetext labels can appear on any layer.  The integer {\it N\/},
+which is optional, is a sorting parameter.  If there are multiple
+labels containing SPICE text, they will be sorted by {\it N\/} before
+being added to the SPICE output.  Smaller {\it N\/} will appear
+earlier in the listing, with omitted {\it N\/} corresponding to a
+value of zero.  The {\vt spicetext\/} lines are written as a
+contiguous block in the listing.
+
+Any text which can be interpreted by the SPICE simulator in use can be
+added using these methods, but erroneous syntax will of course cause
+errors as the SPICE text is sourced.
+
+\subsection{``Long Text'' Capability}
+\label{longtext}
+\index{long text labels}
+
+When editing or creating unbound labels, or labels for physical or
+certain electrical properties ({\et value}, {\et param}, and {\et
+other}), there is provision for entering a block of text that will not
+be visible in the layout or schematic.  This avoids cluttering the
+screen with labels containing large blocks of text.  Rather, a
+symbolic form will be shown instead of the full text.
+
+This same capability applies when adding or editing properties from
+the {\cb Property Editor} provided by the {\cb Properties} button in
+the {\cb Edit Menu}.
+
+This capability is useful for properties which require a large block
+of text, such as a long PWL statement in a {\et value} property for
+SPICE.  It is not possible to edit a large text block in the prompt
+area, and if displayed would cause the screen to be obscured or
+cluttered.  The full text is added to SPICE output, however, and is
+available as the property value in functions that query the value.
+
+It is also useful for the {\vt spicetext} labels, so that a block of
+text can be inserted into SPICE output, rather than one line. 
+Remember that the text entered into the window must begin with ``{\vt
+spicetext}'' and an optional integer, for the text to appear in SPICE
+output.
+
+When entering a label where this ``long text'' capability applies, a
+small ``{\cb L}'' button will appear to the left of the prompt line,
+and this will be active when the text cursor is in the leftmost
+column.  Pressing this button will set the internal flag for ``long
+text'', and open the text editor window for the text.  Any text that
+was previously entered in the prompt line will be added to the text
+editor window, or, if the label was already in long text mode, the
+existing text will be shown in the editor.
+
+If preexisting text was present on the prompt line when the {\cb L}
+button was pressed, that text will be loaded into the text editor, but
+any hypertext entries will be converted to plain text.  The long text
+blocks do not support the hypertext feature.
+
+Pressing {\kb Ctrl-t} has the same effect as pressing the {\cb L}
+button when the button is visible and active.
+
+From the editor window, one can edit the block of text, then press
+{\cb Save} in the editor's {\cb File} menu to complete the operation,
+or {\cb Quit} to abort.  The on-screen label will simply say ``{\vt
+[text]}'' for a normal ``long text'' property or non-associated label,
+or have the standard form for a script label (described below);
+
+The long text labels can be edited with the label editor, as can
+normal labels, by selecting the label before pressing the {\cb label}
+button.  The prompt line will display ``{\vt [text]}'' as a hypertext
+entry.  Pressing {\kb Enter} or the {\cb L} button will bring up the
+text editor loaded with the text associated with the label, allowing
+editing.
+
+To convert a long text label to a normal label, instead of bringing up
+the text editor, the hypertext ``{\vt [text]}'' entry can be deleted
+in the prompt line.  Deleting the entry will place as much of the text
+block as possible on the prompt line, and delete the text block and
+the association of the label or property as a long text object.
+
+\subsection{Script Labels}
+\index{script labels}
+
+{\Xic} provides the ability to embed a script or script reference in a
+label, which is executed when the user clicks on the label.  These are
+created like any other label, but have the form
+
+!!PROTECT
+\begin{quote}\vt
+!!script [name={\it word\/}] [path={\it path\/}] [{\it script text}...]
+\end{quote}
+!!UNPROTECT
+
+The leading token in the label must be ``{\vt !!script}'' to indicate
+that the label text is executable.  This is followed by zero or more
+keyword/value pairs as shown, followed by the script text that will be
+executed.  The keywords and values must be separated by `=' with no
+space.  The value is a single token, which should be double-quoted if
+it contains white space.  These are optional.
+
+The keywords have the following interpretations.
+\begin{description}
+\item{\vt name={\it some\_word}}\\
+The script label is rendered on-screen as {\it some\_word} surrounded
+by a box.  If no name is given, the word ``{\vt script}''" is shown.
+
+\item{\vt path={\it some\_path}}\\
+If this is given, then the script to be executed is given by {\it
+some\_path} and any executable statements in the label are ignored. 
+The {\it some\_path} can be an absolute path to a script file, or can
+be the name of a script file expected to be found in the script search
+path.
+\end{description}
+
+Any remaining text is executed as script commands, if {\vt path} is
+not given.  For short scripts, semicolons can be used as command
+terminators in a single line.  Otherwise, a text editor can be invoked
+on the label string by pressing the ``L'' (long text) button when
+creating the label.
+
+Clicking on a script label will execute the script, and not select the
+label as with normal labels.  To select a script label, hold {\kb
+Shift} while clicking on the label, or drag over the label (area
+select).  If a script label is selected, it will not execute when
+clicked on, but rather be deselected.
+
+For example, suppose that a user has a large layout, with a small
+section that the user often needs to zoom into.  The user can create a
+script label to perform the zoom operation.  After zooming in, one can
+note the position and estimate the width of the drawing window.  Then,
+one would create a label such as
+\begin{quote} \vt
+  !!script name=zoom Window({\it x\/}, {\it y\/}, {\it width\/}, GetWindow())
+\end{quote}
+and place it somewhere convenient.  The {\it x\/}, {\it y\/}, and {\it
+width} above of course represent the actual values (in microns). 
+Clicking on the label will always zoom to this area.
+
+\subsection{Label Size Issues}
+\label{labelsize}
+
+In electrical mode, property text labels can be displayed or
+``hidden''.  If a label is hidden, the text is not displayed, only a
+small box at the text reference point is shown.
+
+Labels with text size longer than a certain length will be shown as
+hidden by default.  Hidden labels can be made visible, and {\it
+vice-versa} by clicking on the label or small box with the {\kb Shift}
+key held.  The label text can also be shrunk (with the {\cb Stretch}
+command in the {\cb Modify Menu} or with button 1 operations) to make
+it visible.
+
+The label hidden status is persistent when the cell is saved in any
+format, however changing the display status does {\bf not} change the
+modified state of a cell, thus this can be done in IMMUTABLE cells.
+
+It should be noted that the ``real'' bounding box of the label, which
+is used to set the cell bounding box, is always the bounding box of
+the actual text.  The hidden display mode is only available for the
+labels that contain property strings in electrical mode.  Hidden
+labels can be selected only over the small box, and only the small box
+is highlighted.  However, when moving or stretching, the entire
+``real'' bounding box is highlighted.
+
+\index{LabelMaxLen variable}
+The size threshold can be changed with the {\cb Maximum displayed
+property label length} entry in the {\cb Window Attributes} panel from
+the {\cb Set Attributes} button in the {\cb Attributes Menu}. 
+Equivalently, the variable {\et LabelMaxLen} can be set to an
+integer greater than 6 with the {\cb !set} command.  The units are the
+width of a default-size character cell.  In releases prior to 2.5.66,
+the default length was 32 default character size cells.  In this and
+later releases, the value is 256 character cells.  The larger
+threshold makes the nondisplay of label text much less probable, as
+this feature has been confusing to users.
+
+Another way to obscure a long label is to convert it to a ``long
+text'' label.
+
+To ``hide'' a label using the ``long text'' feature:
+\begin{enumerate}
+\item{Select the label.}
+\item{Press the side menu {\cb label} button (with the black `T' icon).}
+\item{Press the gray {\cb L} button that appears to the left of
+ the prompt line.  This will cause the text editor to appear,
+ loaded with the label text.  If there is no {\cb L} button, then
+ the property can't use long text, which is true for properties
+ that are ``always'' short, such as for device and model names.}
+\item{In the text editor, press {\cb Save} in the {\cb File} menu.
+ The editor will disappear, and the label displayed on-screen will
+ have changed to ``{\vt [text]}''.}
+\end{enumerate}
+
+To convert back to a normal label:
+\begin{enumerate}
+\item{Select the long-text label (``{\vt [text]}'').}
+\item{Press the side menu {\cb label} button (with the black 'T' icon).}
+\item{With the cursor under ``{\vt [text]}'' on the prompt line, press
+ the {\kb Delete} key.  The full label text will appear on the prompt
+ line.}
+\item{Press {\kb Enter}.  The label will be shown normally.}
+\end{enumerate}
+
+Long property text labels can also be broken into multiple lines by
+adding embedded returns.  These are added with {\kb Shift-Enter} while
+the string is being edited.  Note that this generates newlines in the
+SPICE output, so that in most cases the extra lines should begin with
+the ``+'' continuation character.
 
 !!SEEALSO
 sidemenu
@@ -1644,6 +2636,149 @@ The logo Button: Create Physical Text
     path</a>, in which case they will override the internal
     definitions when producing vector-based characters in the
     <b>logo</b> command.
+!!LATEX xic:logo sidemenu.tex
+The {\cb logo} command allows the creation of physical text and images
+for labeling, identification, etc.  Operation is similar to the {\cb
+label} command, where the arrow keys alter text or image size, {\kb
+Shift}-arrow cycles through the justification choices, and {\kb
+Ctrl}-arrow cycles through the rotation angles.  By default, the text
+is implemented with rounded-end wires in the current layer, using a
+vector font.
+
+For rendering text, there are three font possibilities.  The default
+font is a vector font which constructs the characters using wire
+objects.  The Manhattan font is a built-in bitmap font from which the
+characters are constructed using Manhattan polygons.  The Manhattan
+font is fixed-pitch with an 8X16 map.  The ``pretty'' font is one of
+the system fonts, which similarly creates characters constructed as
+Manhattan polygons.  Logic is applied to extract the ``best''
+rendition from anti-aliased fonts, which do not have a precisely
+defined shape.  Some fonts may look better than others in this
+application.
+
+While in the {\cb logo} command and using the vector font, pressing
+the {\kb Ctrl-Shift}-arrow key combinations will adjust the path
+width; the {\kb Up} and {\kb Right} arrow keys increase the width,
+{\kb Down} and {\kb Left} arrows decrease the path width.
+
+The {\et LogoPathWidth} variable tracks the current path width
+setting.  The {\et LogoEndStyle} variable tracks the current end style
+setting.
+
+Instead of a text label, the {\cb logo} command can be used to place
+an image.  The image must be provided by a file in the XPM format. 
+This is a simple ASCII bitmap format, commonly used in conjunction
+with the X-windows system on Unix machines.  Other types of bitmap
+files can be converted to XPM format with widely available free
+software, such as the ImageMagick package.  Several XPM files are
+supplied in the help directory for {\Xic} (located by default in {\vt
+/usr/local/xictools/xic/help}), which illustrate the format.
+
+This feature is enabled in the {\cb logo} command by giving the path
+of an XPM file, which must have a ``{\vt .xpm}'' suffix, as the text
+string.  This will cause the image to be imported such that it can be
+scaled, transformed, and placed, just like a normal label.  The
+background color (the first color listed in the XPM file) is taken as
+transparent.  All other layers found in the XPM file are mapped to the
+current layer.  The image is rendered as a collection of Manhattan
+polygons.
+
+Unlike in releases 3.0.11 and earlier, there is no attempt to limit
+feature sizes according to design rules.  The minimum size of a
+character is set by the internal resolution, while the maximum size is
+about .4 X .7 cm.  Once the text is entered, the size and other
+attributes can be changed with the arrow keys, and the text is placed
+where the user clicks in the drawing with button 1.  The text can be
+reentered, i.e., a new label or image file defined, if the {\kb
+Delete} key is pressed.
+
+Alternatively, a fixed "pixel" size can be specified.  In this case,
+the arrow keys will pan the display window, and have no effect on the
+label or image size.
+
+The default operation is to apply the text or image feature directly
+in the current cell, where the user clicks.  It is also possible to
+create a subcell containing the text, which is instantiated at the
+clicked-on locations.  This may be more efficient if there are many
+copies of the same label.
+
+\index{NoDRC flag}
+Note that use of the vector font may produce design rule violations,
+which are pretty much inevitable due to the presence of acute angles
+in some characters.  Use of the other fonts, which are rendered using
+Manhattan polygons, can avoid design rule violations, if the ``pixel''
+size is larger than the MinWidth and MinSpace design rules for the
+layer.  When physical text (or an image) is placed with the {\cb logo}
+command, interactive design rule checking is suppressed.  The {\et
+NoDRC} flag can be set on the new label, or the NDRC layer can be
+used, to permanently suppress DRC.
+
+It is possible to change the font used for the {\cb logo} command. 
+The default font is set internally by {\Xic}, however individual
+characters or the whole font will be updated upon startup if a file
+named ``{\vt xic\_logofont}'' is found along the library search path,
+which contains alternative character specifications.
+
+\subsection{The Logo Font Setup Panel}
+\index{Logo FontSetup panel}
+
+While the {\cb logo} command is active, the {\cb Logo Font Setup}
+panel is visible, though this can be dismissed without leaving the
+{\cb logo} command.  The top of the panel provides three ``radio''
+buttons for selecting the font:  {\cb Vector}, {\cb Manhattan}, and
+{\cb Pretty}.  The {\et LogoAltFont} variable tracks the choice in
+these buttons.
+
+Below the {\cb Font} choice buttons is the {\cb Define ``pixel'' size}
+check box and numeric entry window.  When checked, the numeric entry
+area is enabled, and the value represents the size of a ``pixel'' used
+for rendering the label or image, in microns.  When checked, the arrow
+keys have no effect on label or image size, instead they revert to
+their normal function of panning the display window.  This feature is
+tied to the {\et LogoPixelSize} variable, which when set to a real
+number larger than 0 and less than or equal to 100.0 will define the
+``pixel'' size used in the {\cb logo} command.
+
+There are two option menus in the {\cb Logo Font Setup} panel which
+set the end style and path width assumed in the wires used for
+constructing characters with the vector font.  The user can set these
+according to personal preference.  Although rounded end paths may look
+better, they are somewhat less efficient in terms of storage and
+processing, and are not handled uniformly (or at all) in some CAD
+environments.  For example, rounded-end wires may be converted to
+square ends when written as OASIS data.
+
+The {\cb Select Pretty Font} button brings up the {\cb Font Selection}
+panel, allowing the user to select a system font for use as the
+``pretty'' font.  In the {\cb Font Selection} panel, the user can
+select a font, then press the {\cb Set Pretty Font} button to actually
+export the choice.  This will set the {\et LogoPrettyFont} variable.
+
+The {\cb Create cell for text} check box, when checked, sets a mode
+where new labels and images are instantiated as subcells rather than
+directly as geometrical objects.  In addition to generating a master
+cell in memory, a native cell file with the same name is written in
+the current directory.  The boolean variable {\et LogoToFile} tracks
+this state of this check box.
+
+The name of the file used for the label is internally generated, and
+is guaranteed to be unique in the current search path.  The name
+consists of the first 8 characters of the label, followed by an
+encoding of the various parameters related to the label.  For a given
+label, the uniqueness of the file name prevents recreating the same
+label file in a subsequent session.
+
+The {\cb Dump Vector Font} button will create a file containing the
+vector font (see \ref{vectorfont}) currently being used by the {\cb
+logo} command.  By default, the vector font uses the same character
+maps as the vector font used to render label text on-screen.  However,
+these maps can be overridden by definitions from a file.  The {\cb
+Dump Vector Font} button can be used to dump the current set of
+character maps to a file.  Character maps from this file can be
+modified and placed in a file named ``{\vt xic\_logofont}'' in the
+library search path, in which case they will override the internal
+definitions when producing vector-based characters in the {\cb logo}
+command.
 
 !!SEEALSO
 sidemenu
@@ -2043,6 +3178,319 @@ The nodmp Button: Node (Net) Name Assignments
     <b>nophys</b> properties.  Terminals from these devices and
     subcircuits will not be listed in the terminal listing window. 
     This mode is consistent with the usage by the extraction system.
+!!LATEX xic:nodmp sidemenu.tex
+The {\cb nodmp} button, which is available in the electrical mode side
+menu, will bring up the {\cb Node (Net) Name Mapping} panel which is
+used to display and alter the names used for ``nodes''
+(single-conductor wire nets) in the schematic, and in SPICE and other
+output.  This name may be internally generated, or may be derived from
+a terminal name, or may be assigned by the user.  This panel is also
+brought up by the {\cb Find Terminal} button in the {\cb Setup} page
+of the {\cb Extraction Setup} panel, which is obtained from the {\cb
+Setup} button in the {\cb Extract Menu}.
+
+First, to facilitate the discussion that follows, some terminology
+will be introduced.  See also the section on wire net naming in
+\ref{netex}.
+
+\begin{description}
+\item{scalar}\\
+Single-conductor wire nets, or ``nodes'' (from SPICE terminology) are
+referred to as ``scalar'' nets.  These are the actual circuit
+connections, which are compared in layout vs.  schematic (LVS)
+testing.  {\Xic} also allows multi-conductor (including
+single-conductor) ``vector'' and ``bundle'' nets.  These actually
+reference and organize the nodes, but do not provide actually
+connectivity, except through name matching.  The present {\cb Node
+(Net) Name Mapping} panel applies only to the scalar nets.
+
+\item{associated name}\\
+A scalar wire net, or ``node'' may have ``associated names''.  These
+names derive from named terminal devices which may be connected to the
+net, or from labeled wires which are connected to the net.  Both the
+terminal device and the labeled wire derive the net name from the text
+of an associated label.  The labels can be edited, which will change
+the text of the associated name.  A net may have any number of
+associated names.
+
+\item{cell terminal name}\\
+Every electrical contact point of a cell has a name.  This name was
+assigned when the cell terminal was created with the {\cb subct}
+command button in the side menu, or if no name was given a default
+name is used.
+
+It is also possible to name cell contact terminals from the {\cb Edit
+Terminals} command button in the {\cb Setup} page of the {\cb
+Extraction Setup} panel.  This panel is brought up with the {\cb
+Setup} button in the {\cb Extract Menu}.
+
+\item{global names}\\
+Certain names are registered within {\Xic} as ``global names'',
+and are kept in an internal string table.  These names are known
+at every level of the cell hierarchy.  There is always at least
+one global name defined, the ground node with name ``{\vt 0}''.
+
+Global names are easily created by the user, as any node name ending
+with an exclamation point (`{\vt !}') is taken as a global name.
+For example, ``{\vt vdd!}'' would be taken as a global name.
+
+Global node names are also set with the {\et DefaultNode} global
+properties, in the device library file.  They may be used as default
+nodes in some devices.  In particular, the ``three terminal'' {\cb
+nmos} and {\cb pmos} devices included in the default library make use
+of this feature, defining global node names ``{\vt NSUB}'' and ``{\vt
+PSUB}'' that connect to the device substrate.
+
+\item{assigned name}\\
+Names that are specified from the {\cb Node (Net) Name Mapping} panel
+using the {\cb Map Name} button will be referred to as ``assigned
+names''.
+\end{description}
+
+A wire net can clearly have a number of names associated with it.  The
+actual name for the node will be chosen according to the priorities
+listed below.
+
+\begin{enumerate}
+\item{If a net has an associated name that matches a global name, that
+global name is used, and this can not be overridden by the user.
+
+If two or more global names match associated names in the net, the
+name chosen will be the one earliest in ASCII lexicographic order. 
+This situation is unlikely and probably represents a topology error.}
+
+\item{If a net is given an assigned name, that name will be used.}
+
+\item{If a net contains a cell terminal, the cell terminal name will
+be used.  It is possible that more than one cell terminal is connected
+to the node, in which case the name chosen will be the one earliest in
+ASCII lexicographic order.}
+
+\item{If the net has an associated name, that name will be used.  It
+is possible that more than one associated name will be found, in which
+case the name chosen will be the one earliest in ASCII lexicographic
+order.}
+
+\item{The net will be given a name based on the internally-generated
+node number.}
+\end{enumerate}
+
+For names other than the internally generated node numbers, the name
+is predictable.  The internally generated numbers will change if the
+circuit is modified, or possibly for other reasons.  Thus, if netlist
+or SPICE output is to be used in another application, it may be
+important to assign names to nodes to be referenced by name.
+
+The {\cb Node (Net) Name Mapping} panel contains two text listing
+windows.  The left (node listing) window lists all of the nets in the
+current cell schematic.  An entry in the list can be selected by
+clicking on the text with the mouse.  When a net is selected in this
+list, the terminals to which the net connects are listed by name in
+the right (terminal listing) window.  Entries in the terminal listing
+can be selected as well by clicking on the text with the mouse.  In
+either window, the selected entry, if any, is highlighted. 
+
+There is a ``grip'' in the region separating the two text listings,
+which can be dragged horizontally to change the relative widths of the
+windows.
+
+The left column in the node listing contains the internal node
+numbers, which can change arbitrarily if the circuit is modified. 
+Entries in the second column are the mapped names, i.e., the names
+used in SPICE and netlist files.  If the second column entry is blank,
+no name could be found for the net, and {\Xic} will create a name from
+the node number for use in output.  The third column will contain the
+letter ``{\vt Y}'' if the node has a name assigned by the user, and/or
+a ``{\vt G}'' if the node name is that of a global node (including
+ground).  Both letters will appear if the user assigns a name that
+matches a global name, which includes any name that ends with an
+exclamation point.  The ``{\vt G}'' nodes without {\vt Y} can not be
+renamed by the user.
+
+When a node is selected in the left text window, the right text
+window lists terminals and other features that are found in the
+selected net.  This includes
+\begin{itemize}
+\item{Device and subcircuit instance terminals.}
+\item{Named terminal devices.  These start with a `{\vt T}' character,
+followed by a space, followed by the name from the terminal
+label.}
+\item{Named wires.  These start with `{\vt W}' followed by space and
+the name from the wire label.}
+\item{Cell contact terminal names.}
+\end{itemize}
+
+The names used for device terminals are a concatenation of the device
+name and the terminal names as supplied in the node properties in the
+device library file, if a name was given.  If no name was given, a
+default name is constructed as {\it devicename\/}\_{\it contactnum\/}. 
+That is, the device name, followed by an underscore, followed by an
+internal index number for contacts of that device.  The device name
+starts with a letter which is the SPICE key for that device type. 
+Subcircuits are similar, and the terminal names begin with `{\vt X}'.
+
+In the electrical schematic drawing, when a net is selected in the
+node listing window, wire objects that are included in the selected
+net are highlighted.  Each of the device and subcircuit instance
+terminals listed in the terminal listing area will have a small
+highlighting box drawn around its location.  If one of the terminals
+in the terminal listing is selected, that terminal will be displayed
+using highlighting.
+
+The panel will cooperate closely with the physical extraction system
+when the {\cb Use Extract} check box is checked.  This means that
+extraction/association will be performed as needed so that terminal
+locations are correctly defined in the physical layout as well.  In
+this case, a terminal selected in the terminal list will be shown in
+physical layout windows, as well as the schematic.  If the check box
+is not checked, extraction data will be used if present when showing
+the terminal in layouts, but there is no attempt to maintain currency. 
+The {\cb Node (Net) Name Mapping} panel is also available from the
+{\cb Find Terminal} button in the {\cb Extraction Setup} panel in both
+physical and electrical modes, in addition to the side-menu button in
+electrical mode.
+
+When an entry in the terminal listing window is selected, the {\cb
+Find} button, below the listing, is un-grayed.  Pressing the {\cb
+Find} button will bring up a sub-window displaying the current cell,
+with the selected terminal at the exact center of the display.  One
+can press the numeric keypad {\kb +} key repeatedly to zoom in to the
+terminal location, and the terminal will remain centered.  Further, if
+{\cb Use Extract} is set or the extraction state is current, the
+terminal will also be displayed and centered if the sub-window is
+changed to physical mode.
+
+When the {\cb Click-Select Mode} button is pressed, a command state is
+entered whereby clicking on a wire or contact point in a drawing
+window will select that net.  This works a bit differently depending
+on the state of the {\cb Use Extract} check box.  If the box is
+checked, the button will bring up the {\cb Path Selection Control}
+panel from the extraction system.  This allows selection of conducting
+paths in the layout windows by clicking on objects.  The corresponding
+net will be selected in the node listing window, with corresponding
+highlighting shown in schematic windows.  One can also click on wires
+and terminal locations in the schematic, and the clicked-on net will
+become selected.  The corresponding conductor group will be displayed
+highlighted in layout windows.
+
+With {\cb Use Extract} not checked, the {\cb Path Selection Control}
+panel will not appear, but clicking in schematic windows will have
+similar effect.  The system will once again use extraction data if
+available to map button presses in layout windows to a conductor group
+and back to the coresponding electrical net to be highlighted. 
+However, there is no highlighting of the physical conductor group.
+  
+In either case, the clicked-on node will be shown selected in the node
+listing window, and scrolled into view if necessary.  The terminal
+listing window will show the selected net details as usual.  {\cb
+Click-Select Mode} is exited if another command is started, or {\kb
+Esc} is pressed, or the {\cb Click-Select Mode} button is pressed
+again, or, with {\cb Use Extract} checked, the {\cb Path Selection
+Control} panel is retired by any means.
+
+The {\cb Deselect} button will deselect selections in the node listing
+window, and the corresponding highlighting in the drawing windows. 
+The terminal listing window becomes empty.
+
+It is also possible to search for nets and terminals by name using the
+controls just above the two listing windows.  The two ``radio''
+buttons select whether to search for node or terminal names.  One
+enters a ``regular expression'' into the text area.  The button to the
+left of the text entry initiates the search.  A matching net is
+selected as is the matching terminal if searching for terminals.  One
+can press the button again to move to the next and subsequent matches. 
+If there is no initial selection, perhaps because {\cb Deselect} was
+pressed, the search area starts at the top and extends toward the end
+of the listing.  If a net is selected, the search starts with the next
+item (terminal or net) after the selection end extends toward the end.
+
+The regular expression conforms to POSIX.1-2001 as an extended,
+case-ignored regular expression.  On a Linux system, ``{\vt man
+grep}'' provides a good overview of regular expression syntax and
+capability.  However, one probably doesn't need to know much more than
+
+\begin{enumerate}
+\item{A given string will match any name containing the string, case 
+insensitive.}
+\item{The carat (`{\vt \symbol{94}}') character matches the beginning of a 
+name.}
+\item{The dollar sign (`{\vt \$}') character matches the end of a 
+name.}
+\end{enumerate}
+
+If the third column in the node listing window is not `{\vt G}', then
+an overriding name for the selected node can be assigned with the {\cb
+Map Name} button, but only while in electrical mode.  To apply a name,
+select a node in the node listing area, then press the {\cb Map Name}
+button.  A new name will be prompted for in a pop-up window.  The name
+can be any text token (white space is not allowed), however it is up
+to the user to ensure that the name makes sense in the context of the
+output.  For example, for SPICE output, the node names must adhere to
+the rules for valid node names in SPICE.  After pressing {\cb Apply},
+the second column in the listing will be updated to show the new name,
+and the third column will show ``{\vt Y}''.  Again, this can only be
+done while in electrical mode, in physical mode the button remains
+grayed.
+
+The node naming can actually modify circuit topology, which can be a
+powerful feature or a curse.  If two nets share a name, they will be
+merged, and the left window will reflect this.  Thus, it is easy to
+make connections using node name mapping that are not obvious when
+looking at the schematic.  For this reason, if the user is about to
+apply a duplicate name, a confirmation pop-up will appear.  The user
+is given the choice to back out of the operation, or continue.
+
+The node name assignment works by association with a connection point
+in the net, equivalent to a hypertext reference.  This association
+persists if the object is moved, and is transferred to another device
+or wire if the object is deleted, if possible.  In some cases it may
+get lost, however, so an assigned name may have to be reentered after
+the circuit is edited.
+
+In electrical mode, an assigned name can be deleted by first selecting
+the node in the node listing area, then pressing the {\cb Unmap}
+button.  The {\cb Unmap} button is un-grayed only if the third column
+of the selected node shows ``{\vt Y}'' indicating that it has an
+assigned name.  On pressing the button, the name will revert to the
+default name.  This may effectively change circuit topology by undoing
+the net merging brought about through net name assignments.  Again,
+this operation is available only in electrical mode.
+
+The internal data structure representing node name mapping, and the
+listings, will be in one of two states.  Either devices and
+subcircuits with the {\et nophys} property will be included as normal
+devices and subcircuits, or these will be ignored.  In the latter
+case, if the {\et nophys} property has the ``shorted'' option, the
+terminals will be effectively shorted together, which will obviously
+change the node numbering.
+
+The current state is as set by the last function to generate the
+connectivity map.  Functions in the extraction system will always
+recognize the {\cb nophys} properties, and build the map excluding
+these devices but taking the ``shorted'' {\et nophys} devices as
+shorted.  Then, the schematic will correspond to the actual physical
+layout.  Functions in the side menu which generate a SPICE listing
+will ignore {\et nophys} properties and include all such devices in
+the net list.  This produces a schematic appropriate for SPICE
+simulation.
+
+The {\cb Use nophys} button is used to switch between these two
+representations, and the state of the button will be reset if another
+function changes the state.
+
+When the {\cb Use nophys} button is pressed, devices and subcircuits
+with the {\et nophys} property set will be {\it included} in the
+listings, just as ``normal'' devices.  Their terminals will be listed
+in the terminals listing window.  The {\et nophys} property is ignored
+in this case, as will be true when a listing is being prepared for
+SPICE output from functions in the side menu.
+
+When the {\cb Use nophys} button is not pressed, devices and
+subcircuits with the {\et nophys} property will be ignored in the
+listings, and the node numbering will respect the ``shorted'' {\et
+nophys} properties.  Terminals from these devices and subcircuits will
+not be listed in the terminal listing window.  This mode is consistent
+with the usage by the extraction system.
 
 !!SEEALSO
 sidemenu
@@ -2303,6 +3751,210 @@ Cell Placement Control
     the panel and the mouse button released, the behavior is as if the
     <b>New</b> button in the masters menu was pressed, and the file
     name will be loaded into the dialog window.
+!!LATEX xic:place sidemenu.tex
+The {\cb place} button in the side menu brings up the {\cb Cell
+Placement Control} panel which allows instances of cells (subcells) to
+be added to the current editing cell.
+
+When the {\cb Place} button in the panel or the {\cb place} button in
+the side menu is active (the two buttons show the same status), the
+current master can be instantiated at locations where the user clicks
+(``place mode'').  The bounding box of the cell is ghost-drawn and
+attached to the pointer.  The orientation and size of the instance are
+set by the current transform.  If the {\cb Cell Placement Control}
+panel is dismissed the place mode, if active, is exited.  The place
+mode can be exited with the {\kb Esc} key, or by pressing the {\cb
+Place} button (either one) a second time.  The panel is not popped
+down when place mode is exited.
+
+The substructure of cell instances being placed is highlighted to the
+depth shown in the main window.  This facilitates alignment with other
+objects.  One can change the display depth to reveal more or less of
+the substructure.
+
+From the {\cb Open} command in the {\cb File Menu}, if one holds down
+{\kb Shift} while selecting one of cells from the history list, the
+{\cb Cell Placement Control} panel will appear with that cell added as
+the current master.  This applies to cell names and not the ``{\cb
+new}'' entry.  This is a quick backdoor for instantiating cells
+recently edited.
+
+In electrical mode, when a connection point of a device or subcell is
+near another connection point, it will snap to that location and a
+small dotted box will be drawn around the point.  This facilitates
+placement of devices and subcircuits in the schematic.  While the {\kb
+Shift} or {\kb Ctrl} keys are held, this feature is disabled.
+
+\index{place panel!Use Array}
+\index{cell arrays}
+Cells can be placed individually, or as arrays in physical mode.  When
+the {\cb Use Array} button is active, cells will be placed as arrays,
+governed by the currently set array parameters.  The array parameters
+can be entered into the four text fields below, only when the {\cb Use
+Array} button is active.  Arrays are allowed in physical mode only. 
+If this button is not active, single cells are placed.
+
+The array replication factors Nx and Ny can be set to any value in the
+range of 1 through 32767.  The upper limit is set by the GDSII file
+format, and is enforced by {\Xic} to avoid portability problems.
+
+The spacing values Dx and Dy are edge to adjacent edge spacing, i.e.,
+when zero the elements will abut.  If Dx or Dy is given the negative
+cell width or height, so that all elements appear at the same
+location, the corresponding Nx or Ny is taken as 1.  Otherwise, there
+is no restriction on Dx or Dy except that very large (unphysical)
+values can cause integer overflow internally.
+
+The {\cb !array} command can be used to convert existing instances
+into arrays, and to modify the array parameters of existing arrays.
+
+In physical mode, the reference point of the cell, which is the point
+in the cell located at the pointer, can be set to either the cell's
+origin, or to one of the cell's corners.  A drop-down menu in the
+{\cb Cell Placement Control} panel indicates the present selection,
+and allows the user to make a new choice.  The nomenclature ``Upper
+Left'', etc., refers to the corner of the untransformed cell array
+bounding box.  When place mode is active, pressing the {\kb Enter} key
+repeatedly will cycle the reference point around the corners and back
+to the origin.
+
+In electrical mode, the cell reference point is always set to the
+location of the reference terminal, which is usually the first
+terminal defined.  If the cell has no terminals, the reference point
+can be cycled around the corners, as in physical mode, however for
+corners the reference point is snapped to the nearest grid location. 
+This should prevent device terminals from being located off-grid.  An
+electrical cell should always have terminals (assigned with the {\cb
+subct} command in the electrical side menu) if it is to be part of the
+circuit, and not some kind of decoration or annotation.
+
+When the {\cb Smash} button is active, is active, instances will be
+smashed into the parent where the user clicks, meaning that the cell
+content will be merged into the parent cell, rather than creating a
+new instance.  The flattening is one-level, so that any subcells of
+the cell being placed become subcells in the parent.
+
+\index{place panel!Replace}
+\index{replace cells}
+When the {\cb Replace} button is active, existing cells are replaced
+with the new master when clicked on.  and no cells are placed if the
+user clicks in the area outside of any subcells.  When a cell is
+replaced, the placement of the new cell is determined in physical mode
+by the setting of the reference selection
+drop-down menu.  For example, if this setting is ``Upper Right'', the new cell
+untransformed upper-right corner will be placed at the existing cell
+untransformed upper right corner.
+
+In electrical mode, the reference terminal (the first connection
+point) is always placed at the same location as the reference terminal
+of the replaced cell.  In either case, any currently active
+transformations are performed in addition to the transformations of
+the replaced cell on the new cell.
+
+Cells can be placed or replaced only when place mode is active, i.e.,
+when the {\cb Place} button in the {\cb Cell Placement Control} pop-up
+or the {\cb place} button in the side menu is active.
+
+When place mode becomes active, the current transform is cleared.  The
+current transform is saved in Register 0 and cleared when switching
+between cells to place or upon pressing the {\cb Desel} button.
+Pressing the {\kb Forward Slash} button swaps the current and saved
+transforms.
+
+\index{place panel!editing array parameters}
+If the {\cb Use Array} button is active when cells are being replaced,
+the replaced cell will take the array parameters from the {\cb Cell
+Placement Control} panel.  Otherwise, the array parameters are
+unchanged during replacement.  Note that it is possible to replace an
+instance with another instance of the same cell, but with different
+array parameters.  This is one way that array parameters can be
+``edited''.
+
+The {\cb Dismiss} button will retire the {\cb Cell Placement Control}
+panel, and exit place mode.
+
+The cell currently being placed, the ``master'', can be selected in
+several ways.  A list of masters is kept, and can be viewed with the
+menu button in the {\cb Cell Placement Control} panel.  Pressing and
+holding button 1 with the pointer on the menu button issues a
+drop-down menu, whose entries are highlighted as the pointer passes
+over them.  A selection is made by releasing button 1 over one of the
+selections.  Pressing the {\cb New} button in this menu brings up a
+dialog box which allows the user to enter a new master name.
+
+The pop-up list of cells will grow with each addition until a limit is
+reached, at which point new entries will replace the oldest one.  The
+{\cb New} item is always at the top of the list.  The list consists of
+the most recent masters specified, either with the {\cb New} button,
+or through the {\cb Place} button in the {\cb Cells Listing} or {\cb
+Files Listing} panels.
+
+\index{MasterMenuLength variable}
+The maximum number of masters saved in the menu can be specified with
+the {\cb Maximum menu length} entry area just below the menu.  The
+default is 25, which may not be suitable for some screen resolutions
+or window systems.  It is not very useful if the pull-down menu
+extends off-screen.  This entry tracks the value of the {\et
+MasterMenuLength} variable.  The variable can be set as an integer or
+cleared to change the value, which is equivalent to changing the
+integer entry in this panel.
+
+When a new entry is selected, a dialog pop-up appears for the new cell
+name.  If a selection can be found in the various panels that provide
+file or cell selection, that selection is pre-loaded into the dialog
+as a default.  Each of these sources is tested in order, and the first
+one that is visible and has a selection will yield the default cell
+name.
+
+\begin{itemize}
+\item{A selection in the {\cb File Selection} pop-up from the {\cb
+ File Select} button in the {\cb File Menu}.}
+\item{A selection in the {\cb Cells Listing} pop-up from the {\cb
+ Cells List} button in the {\cb Cell Menu}.}
+\item{A selection in the {\cb Files Listing} pop-up from the {\cb Files
+ List} button in the {\cb File Menu}, or its {\cb Content List}.}
+\item{A selection in the {\cb Content List} of the
+ {\cb Libraries} pop-up from the {\cb Libraries List} button
+ in the {\cb File Menu}.}
+\item{A selection in the {\cb Cell Hierarchy} pop-up from the {\cb
+ Show Tree} button in the {\cb Cell Menu} or from the {\cb Tree}
+ button in the {\cb Cells Listing} pop-up.}
+\item{A cell name that is selected in the {\cb Info} pop-up, from
+ the {\cb Info} button in either the {\cb View Menu} or the {\cb
+ Cells Listing} pop-up.}
+\item{The name of a selected subcell in the drawing window, the most
+ recently selected if there is more than one.}
+\end{itemize}
+
+The first time the {\cb Cell Placement Control} panel comes up, the
+user is prompted for the name of a cell, just as if the {\cb New} menu
+button was pressed.
+
+The name provided can be a file containing data in one of the
+supported archive formats, the name of an {\Xic} cell, or a library
+file.  If the name of an archive file is given, the name of the cell
+to open can follow the file name separated by space.  If no cell name
+is given, the top level cell (the one not used as a subcell by any
+other cells in the file) is the one opened for placement.  If there is
+more than one top level cell, the user is presented with a pop-up
+choice menu and asked to make a selection.  If the file is a library
+file, the second argument can be given, and it should be one of the
+reference names from the library, or the name of a cell defined in the
+library.  If no second name is given, a pop-up listing the library
+contents will appear, allowing the user to select a reference or cell.
+
+The given given string can also consist of the name of a Cell
+Hierarchy Digest (CHD) in memory, optionally followed by the name of a
+cell known within the CHD hierarchy.  If no cell name is provided, the
+cell name configured into the CHD is understood.  The string can also
+contain the name of a saved CHD file, with an optional following cell
+name.
+
+The {\cb Cell Placement Control} panel is sensitive as a drop
+receiver.  If a file name is dragged over the panel and the mouse
+button released, the behavior is as if the {\cb New} button in the
+masters menu was pressed, and the file name will be loaded into the
+dialog window.
 
 !!SEEALSO
 fileorg
@@ -2442,6 +4094,105 @@ The plot Button: Generate SPICE Plot
     The command text and mark locations are saved with the cell data
     when written to disk, thus the <b>plot</b> command string is
     persistent.
+!!LATEX xic:plot sidemenu.tex
+The {\cb plot} button, available only in electrical mode, gathers
+input for plotting via {\WRspice}.
+
+The prompt area displays the command string as it is being built. 
+Clicking on nodes or device ``hidden'' targets (usually indicated by a
+`$+$' symbol in the device schematic representation) will add
+hypertext entries to the command string, and will add a marker to the
+screen at the clicked-on location.  One can click anywhere on a wire,
+or on subcircuit and device connection points to select nodes. 
+Clicking on a marker will delete the marker, and the corresponding
+entry from the string.
+
+Some devices have ``hidden'' nodes for accessing internal variables
+for plotting, such as current through a voltage source or the phase of
+a Josephson junction.  By convention, these are indicated with a `$+$'
+mark in the symbol.  For many devices, this will access the current
+through the device.  The marker for a current has an orientation in
+the direction of positive current flow.  Ordinary node markers have no
+orientation, and access the node voltage.
+
+One can click on reference points to any depth in the hierarchy,
+though selection requires that the cell be showing as a schematic, and
+as expanded.  To make selections inside a subcircuit that is shown as
+a symbol, one can use proxy windows (see \ref{hyproxy}).  Holding down
+both the {\kb Shift} and {\kb Ctrl} keys, and clicking on a subcircuit
+instance, will bring up a sub-window displaying the master of the
+clicked-on instance in schematic form.  One can click on objects in
+this window in the normal way, and plot points will be added to the
+prompt line.
+
+Holding the {\kb Shift} key while clicking on a device of subcircuit
+not over any node or ``hidden'' location will enter the hypertext
+device or subcircuit name.  These are not often needed in plot command
+strings, and the requirement of holding down {\kb Shift} prevents
+unwanted returns.
+
+Markers can be deleted by clicking on them, or by deleting the
+corresponding hypertext in the prompt line.  Multiple markers can
+reference the same node, as long as they are spatially distinct.
+
+Existing marks can be dragged and dropped to a new location, which
+must also reference a node or reference point, as for the initial
+placement.  If dropped on an existing plot mark, the two marks will
+exchange locations, both as marks in the drawing window, and hypertext
+entries in the prompt line.
+
+The prompt line text is equivalent to the string given to the {\cb
+plot} command in {\WRspice}.  The string can be edited in the usual
+way.  The user can add text to combine the hypertext references into
+expressions involving other syntax elements known to {\WRspice}.  The
+registers available through the {\cb S} and {\cb R} buttons to the
+left of the prompt line can be used to save and restore plot command
+strings.
+
+The {\WRspice} parser can distinguish the expressions, however in some
+cases the user must intervene to force an expected result.  For
+example,
+\begin{quote}
+\vt v(1) -v(2)
+\end{quote}
+will be interpreted as {\vt (v(1)-v(2))}, i.e., the difference.  To
+force a unary minus interpretation, one can enclose the second token
+in double quotes or parentheses, i.e. {\vt v(1) "-v(2)"} will plot
+{\vt v(1)} and negative {\vt v(2)}.  Note that white space is not
+considered when interpreting the expression, and is required only to
+separate identifier names.
+
+One should refer to the {\WRspice} documentation for a complete
+description of the syntax accepted by the {\cb plot} command.  The
+command line can also contain keyword assignments which override
+defaults used when composing the plot.  It is also possible to produce
+X-Y plots by using the ``{\vt vs}'' keyword.  The expression following
+``{\vt vs}'' will be used as the X scale for the other expressions.
+
+The color used to render a plot reference mark in the schematic will
+be the same color used for the plot trace of the result to which the
+corresponding hypertext contributes (however, if the user has changed
+the plotting colors in {\WRspice} or {\Xic}, this may not be true). 
+The number (or letter) enclosed by the plot mark represents a count of
+the hypertext entries found in the prompt line, left to right,
+starting with 1.
+
+If {\Xic} detects a syntax error, one or more plot marks may be
+rendered with ``no'' color (actually the highlighting color is used). 
+This is also true for the marks used in the X-scale of an X-Y plot.
+
+The {\kb Enter} key terminates entry, and creates the plot if
+{\WRspice} is available, and the circuit has been simulated with the
+{\cb run} command.  In the {\cb deck} command, the string will be
+added to the SPICE listing, when generated, as a {\vt .plot} line.
+
+While the {\cb plot} command is active, it is possible to select text
+labels in the normal way, other selections are inhibited.  This
+allows labels to be selected and modified without having to
+explicitly terminate the {\cb plot} command first.
+
+The command text and mark locations are saved with the cell data when
+written to disk, thus the {\cb plot} command string is persistent.
 
 !!SEEALSO
 sidemenu
@@ -2631,6 +4382,146 @@ The polyg Button: Create/Edit Polygons
     polygons.  Is is not possible to convert polygons to wires (except
     via the <a href="xic:undo"><b>Undo</b></a> command if the polygon
     was originally a wire).
+!!LATEX xic:polyg sidemenu.tex
+The {\cb polyg} button is used to create and modify polygons.  In
+electrical mode, this functionality is available from the {\cb poly}
+menu selection brought up by the {\cb shapes} button.  A polygon is
+created by clicking the left mouse buton on each vertex location in
+sequence.  The vertices can be undone and redone with the {\kb Tab}
+key and {\kb Shift-Tab} combination, which are equivalent to the {\cb
+Undo} and {\cb Redo} commands.  Vertex entry is terminated, and a new
+polygon potentially created, by clicking on the initial point (marked
+with a cross), or double-clicking the last point, or by pressing the
+{\kb Enter} key.  At least three distinct vertices must have been
+defined, and the polygon must pass some ``normality'' tests, for
+successful object creation.
+
+The {\et PixelDelta} variable can be set to alter the value, in
+pixels, of the snap distance to the target when clicking to terminate. 
+By default, the snap distance is 3 pixels, so clicking within this
+distance of the initial point will terminate entry rather than add a
+new vertex.
+
+While the command is active in physical mode, the cursor will snap to
+horizontal or vertical edges of existing objects in the layout if the
+edge is on-grid, when within two pixels.  When snapped, a small dotted
+highlight box is displayed.  This makes it much easier to create
+abutting objects when the grid snap spacing is very fine compared with
+the display scaling.  This is also applied to the first vertex of
+polygons being created, facilitating point list termination.  This
+feature can be controlled from the {\cb Edge Snapping} group in the
+{\cb Snapping} page of the {\cb Grid Setup} panel.
+ 
+When adding vertices during polygon creation, the angle of each
+segment can be constrained to a multiple of 45 degrees with the {\cb
+Constrain angles to 45 degree multiples} check box in the {\cb Editing
+Setup} panel from the {\cb Edit Menu}, in conjunction with the {\kb
+Shift} and {\kb Ctrl} keys.  There are three modes:  call them
+``no45'' for no constraint, ``reg45'' for constraint to multiples of
+45 degrees with automatic generation of the segment from the end of
+the 45 section to the actual point, and ``simp45'' that does no
+automatic segment generation.  The ``reg45'' algorithm adds a 45
+degree segment plus possibly an additional Manhattan segment to
+connect the given point.  The ``simp45'' adds only the 45 degree
+segment.  The mode employed at a given time is given by the table
+below.  The {\et Constrain45} boolean variable tracks the state (set
+or not set) of the check box.
+
+\begin{tabular}{|l|l|l|} \hline
+\multicolumn{3}{|c|}{\kb Constrain45 not set}\\ \hline
+& {\kb Shift} up & {\kb Shift} pressed\\ \hline
+{\kb Ctrl} up & no45 & reg45\\ \hline
+{\kb Ctrl} pressed & simp45 & simp45\\ \hline\hline
+\multicolumn{3}{|c|}{\kb Constrain45 set}\\ \hline
+& {\kb Shift} up & {\kb Shift} pressed\\ \hline
+{\kb Ctrl} up & reg45 & no45\\ \hline
+{\kb Ctrl} pressed & simp45 & no45\\ \hline
+\end{tabular}
+
+In physical mode, a new polygon is tested for reentrancy and other
+problems, and a warning message is issued if a pathology is detected. 
+The new polygon is {\it not} removed from the database if such an
+error is detected.  It is up to the user to make appropriate changes.
+
+In electrical mode, if the current layer is the SCED layer, the
+polygon will be created using the ETC2 layer, otherwise the polygon
+will be created on the current layer.  It is best to avoid use of the
+SCED layer for other than active wires, for efficiency reasons, though
+it is not an error.  The {\cb Change Layer} command in the {\cb Modify
+Menu} can be used to change the layer of existing objects to the SCED
+layer, if necessary.  The outline style and fill will be those of the
+rendering layer.  Polygons have no electrical significance, but can be
+used for illustrative purposes. 
+
+\subsection{Polygon Vertex Editing}
+\index{polygon vertex editor}
+
+On entering the {\cb polyg} command, if a polygon is selected, a
+vertex editing mode is active on all selected polygons.  Each vertex
+of the selected object is marked with a small highlighting box. 
+Clicking on the edge of a selected polygon away from an existing
+vertex will create a new vertex, which can subsequently be moved.
+
+In order to operate on a vertex, it must be selected.  A vertex can be
+selected by clicking on it, or by dragging over it.  Any number of
+vertices can be selected.  After the selection operation, selected
+vertices are shown marked with a larger box, and unselected vertices
+are not marked.  Additional vertices can be selected, and existing
+selected vertices unselected, by holding the {\kb Shift} key while
+clicking or dragging over vertex locations.  Selecting a vertex a
+second time will deselect it.
+
+Selected vertices can be deleted by pressing the {\kb Delete} key. 
+This will succeed only if after vertex removal the object does not
+become degenerate.  In particular, one can not delete the object in
+this manner.
+
+The selected vertices can be moved by dragging or clicking twice.  The
+selected vertices will be translated according to the button-down
+location and the button up location, or the next button-down location
+if the pointer did not move.  While the translation is in progress,
+the new borders are ghost-drawn.
+
+All vertex operations can be undone and redone through use of the {\cb
+Undo} and {\cb Redo} commands.
+
+With vertices selected, pressing the {\kb Esc} or {\kb Backspace} keys
+will deselect the vertices and return to the state with all vertices
+marked.
+
+While in the {\cb polyg} command, with no object in the process of
+being created, it is possible to change the selected state of polygon
+objects, thus displaying the vertices and allowing vertex editing. 
+Pressing the {\kb Enter} key will cause the next button 1 operation to
+select (or deselect) polygon objects.  This can be repeated
+arbitrarily.  When one of these objects is selected, the vertices are
+marked, and vertex editing is possible.
+
+If the vertex editor is active, i.e., a selected polygon is shown with
+the vertices marked, clicking with the {\cb Ctrl} button pressed will
+start a new polygon, overriding the vertex editor.  This can be used
+to start a new polygon at a marked vertex location, for example. 
+Without {\cb Ctrl} pressed, the vertex editor would have precedence
+and would select the marked vertex instead of starting a new polygon.
+
+While moving vertices, holding the {\kb Shift} key will enable or
+disable constraining the translation angle to multiples of 45 degrees. 
+If the {\cb Constrain angles to 45 degree multiples} check box in the
+{\cb Editing Setup} panel from the {\cb Edit Menu} is checked, {\kb
+Shift} will disable the constraint, otherwise the constraint will be
+enabled.  The {\kb Shift} key must be up when the button-down occurs
+which starts the translation operation, and can be pressed before the
+operation is completed to alter the constraint.  These operations are
+similar to operations in the {\cb Stretch} command.
+
+\subsection{Wire to Polygon Conversion}
+\index{wires!convert to polygons}
+
+If any non-zero width wires are selected before the {\cb polyg}
+command is entered, the user is given the option of changing the
+database representation of these objects to polygons.  Is is not
+possible to convert polygons to wires (except via the {\cb Undo}
+command if the polygon was originally a wire).
 
 !!SEEALSO
 sidemenu
@@ -2655,6 +4546,15 @@ The put Button: Extract From Yank Buffer
     attached to the pointer.  Clicking will place the contents of the
     buffer at the location of the pointer.  The yank buffers can be
     cycled through with the arrow keys.
+!!LATEX xic:put sidemenu.tex
+The {\cb put} command allows the contents of the yank buffers to be
+added to the current cell.  This command is available in physical
+mode.  When parts of objects are erased with the {\cb erase} command,
+the erased pieces are added to a five-deep yank buffer queue.  When
+the {\cb put} button becomes active, the most recent deletion is ghost
+drawn and attached to the pointer.  Clicking will place the contents
+of the buffer at the location of the pointer.  The yank buffers can be
+cycled through with the arrow keys.
 
 !!SEEALSO
 sidemenu
@@ -2722,6 +4622,53 @@ The round Button: Create Disk Object
     spots or smaller; the regular algorithm is used otherwise.  An
     object with this preconditioning applied should translate exactly
     to the e-beam grid.
+!!LATEX xic:round sidemenu.tex
+The {\cb round} button, only available in physical mode, will create a
+disk polygon object.  The number of sides can be altered with the {\cb
+sides} command.  If the user presses and holds the {\kb Shift} key
+after the center location is defined, and before the perimeter is
+defined by either lifting button 1 or pressing a second time, the
+current radius is held for x or y.  The location of the shift press
+defines whether x is held (pointer closer to the center y) or y is
+held (pointer closer to the center x).  This allows elliptical objects
+to be generated.
+
+The {\kb Ctrl} key also provides useful constraints.  Pressing and
+holding the {\kb Ctrl} key when defining the radius produces a radius
+defined by the pointer position projected on to the {\et x} or {\et y}
+axis (whichever is closer) defined from the center.  Otherwise,
+off-axis snap points are allowed, which may lead to an unexpected
+radius on a fine grid.
+
+When the command is expecting a mouse button press to define a radius,
+the value as defined by the mouse pointer (in microns) is printed in
+the lower left corner of the drawing window, or the X and Y values are
+printed if different.  Pressing {\kb Enter} will cause prompting for
+the value(s), in microns.  If one number is given, a circular radius
+is accepted, however one can enter two numbers separated by space to
+set the X and Y radii separately.
+
+While the command is active in physical mode, the cursor will snap to
+horizontal or vertical edges of existing objects in the layout if the
+edge is on-grid, when within two pixels.  When snapped, a small dotted
+highlight box is displayed.  This makes it much easier to create
+abutting objects when the grid snap spacing is very fine compared with
+the display scaling.  This feature can be controlled from the {\cb
+Edge Snapping} group in the {\cb Snapping} page of the {\cb Grid
+Setup} panel.
+
+\index{SpotSize variable}
+If the {\et SpotSize} variable is set to a positive value, or the {\vt
+MfgGrid} has been given a positive value in the technology file, tiny
+round and donut figures are constructed somewhat differently.  the
+figure is constructed somewhat differently.  Objects created with the
+{\cb round} and {\cb donut} buttons will be constructed so that all
+vertices are placed at the center of a spot, and a minimum number of
+vertices will be used.  The {\cb sides} number is ignored.  This
+applies only to figures with minimum radius 50 spots or smaller; the
+regular algorithm is used otherwise.  An object with this
+preconditioning applied should translate exactly to the e-beam grid. 
+See \ref{spotsize} for more information.
 
 !!SEEALSO
 sidemenu
@@ -2894,6 +4841,132 @@ The run Button: Run SPICE Analysis
     <p>
     The <a href="!spcmd"><b>!spcmd</b></a> command can be used to give
     arbitrary commands to <i>WRspice</i>.
+!!LATEX xic:run sidemenu.tex
+The {\cb run} button, available only in electrical mode, will
+establish interprocess communication with the {\WRspice} program.  If
+a link can not be established, the {\cb run} command terminates with a
+message.  If connection is established, then a SPICE run of the
+circuit is performed.
+
+The user is first prompted for the {\WRspice} analysis command string
+to run.  This should be in a format understandable to {\WRspice} as an
+interactive-mode command.  During prompting, the last six unique
+analysis commands entered are available and can be cycled through with
+the up and down arrow keys.
+ 
+The first word in the analysis string is checked, and only words from
+the following list will be accepted:
+ 
+\begin{tabular}{llll}
+\vt ac    & \vt loop  & \vt run  & \vt tran\\
+\vt check & \vt noise & \vt send & \\
+\vt dc    & \vt op    & \vt sens & \\
+\vt disto & \vt pz    & \vt tf   & \\
+\end{tabular}
+
+The ``{\vt send}'' keyword is not a {\WRspice} command.  If given, the
+circuit will be sent to {\WRspice} and sourced, but no analysis is
+run.  Other commands can be sent to {\WRspice} with the {\cb spcmd}
+button.
+
+The link is established to the SPICE server ({\vt wrspiced} daemon)
+named in the {\et SPICE\_HOST} environment variable, or the {\et
+SpiceHost} ``!set'' variable (which overrides the environment).  If
+neither is set, {\Xic} will attempt to attach to {\WRspice} on the
+local machine.
+
+By default, the {\WRspice} toolbar is visible when a connection has
+been established.  This gives the user more control over {\WRspice} by
+providing access to the visual tools.  If the {\et NoSpiceTools}
+variable is set (with the {\cb !set} command), the toolbar will not be
+visible.
+
+During a simulation run, a small pop-up window appears, which contains
+a status message, and a {\cb Pause} button.  Pressing {\cb Pause} will
+pause the analysis.  It can be resumed by pressing the {\cb run}
+button again.  The analysis can also be paused by pressing {\kb
+Ctrl-c} in the controlling terminal (xterm) window.  A {\kb Ctrl-c}
+press over a drawing window goes to {\Xic}, where it stops redraws and
+other functions as usual.
+
+{\Xic} is notified when a run is paused from {\WRspice} (using the red
+X button in the toolbar), and will change state accordingly.  However,
+{\Xic} is {\it not} notified when a run is restarted from {\WRspice}
+(with the green triangle button in the toolbar), and will continue to
+assume that {\WRspice} is inactive.  In this case, commands from
+{\Xic} that communicate with {\WRspice} will pause any analysis in
+progress before executing.  The user will have to resume the analysis
+manually after the operation completes, either with the {\cb run}
+button or from the {\WRspice} toolbar.
+ 
+This affects the {\cb plot}, {\cb iplot}, and {\cb run} buttons, and
+the {\cb !spcmd} command.  When a run is started or resumed with the
+{\cb run} button in {\Xic}, these features are locked out, producing a
+``WRspice busy'' message, and the run in progress is not affected.
+
+The node connectivity is recomputed, if necessary, before the run.  If
+the variable {\et CheckSolitary} is set with the {\cb !set} command,
+then warnings are issued if nodes with only one connection are
+encountered.  A SPICE file is generated internally, and transmitted to
+{\WRspice} for evaluation.  Only devices and subcircuits that are
+``connected'' will be included in the SPICE file.  A device or
+subcircuit is connected if one of the following is true:
+\begin{itemize}
+\item{There are two or more non-ground connections.}
+\item{There is one non-ground connection and one or more grounds.}
+\item{There is one non-ground connection and no opens.}
+\item{There is one non-ground connection and the object is a subcircuit.}
+\end{itemize}
+
+\index{.spinclude directive}
+\index{.splib directive}
+As a final step before sending the circuit text to SPICE, {\Xic} will
+recursively expand all {\vt .include} and {\vt .lib} lines, replacing
+the {\vt .include} lines with the actual file text, and the {\vt .lib}
+lines with the indicated text block from the library.  This is to
+handle the case where {\WRspice} is located on a remote machine, and
+the user's files are on the local machine.  As in {\WRspice}, {\vt
+.inc} is a synonym for {\vt .include}, and the `{\vt h}' option (strip
+`\$' comments for HSPICE compatibility) is recognized.
+ 
+The {\vt .include} and {\vt .lib} lines are generally inserted into
+the SPICE text using the {\vt spicetext} label mechanism.  There may
+be occasions where the expansion of these lines by {\Xic} is
+undesirable, such as when the included file resides on the SPICE host,
+or one wishes to use the {\WRspice} {\vt sourcepath} variable to
+resolve the file.  To this end, the user can use the {\vt .spinclude}
+keyword rather than {\vt .include}, and {\vt .splib} rather than {\vt
+.lib}.  The {\vt .sp} directives use the same syntax as the normal
+keywords, however {\Xic} will not attempt to expand these directives,
+rather it changes the keyword to the normal directive (``{\vt
+.include}'' or ``{\vt .lib}'').  Thus, {\WRspice} will see and handle
+these inclusions.
+
+{\WRspice} release 2.2.60 and later recognize {\vt .spinclude} as a
+synonym for {\vt .include}.  This allows {\WRspice} to be able to
+directly source top-level cell files, where the SPICE listing may
+contain {\vt .spinclude} lines, without syntax errors.  {\WRspice}
+release 2.2.62-2 and later recognize {\vt .splib} as a synonym for
+{\vt .lib}, and is able to handle {\vt .lib} constructs sent from
+{\Xic}.
+
+Sometimes it may be desirable to place the output of a SPICE run
+initiated from {\Xic} into a rawfile, rather than saving the output
+internally.  To do this, use the {\vt spicetext} labels to add an
+analysis string, such as ``{\vt spicetext .tran 1p 1000p}'' (note that
+the `.' ahead of ``tran'' is necessary).  One can also add a save
+command using ``{\vt spicetext *\#save v(1) ...}'' to save only a
+subset of the circuit variables.  The ``{\vt *\#}'' means that the
+save is executed as a shell command, ``{\vt .save}'' is ignored since
+{\WRspice} is in interactive mode.  Then, for the analysis string from
+{\Xic}, use ``{\vt run} {\it filename\/}'',
+where {\it filename\/} is the name for the rawfile.  The run will be
+performed, but the output data will go to the file, so don't expect to
+see it with the {\cb plot} command.  If the {\it filename\/} is
+omitted, the run will be performed with internal storage as usual.
+
+The {\cb !spcmd} command can be used to give arbitrary commands to
+{\WRspice}.
 
 !!SEEALSO
 sidemenu
@@ -2982,6 +5055,67 @@ The shapes Button: Add Predefined Features, Shapes Menu
      rotations</tr></td>
     </table>
     </blockquote>
+!!LATEX xic:shapes sidemenu.tex
+The {\cb shapes} button appears in the electrical mode side menu. 
+Pressing this button provides a pull-down menu of different outlines
+that can be applied to drawings.  These outlines have no electrical
+significance, but can be used for illustrative purposes.  In
+particular, in symbolic mode, this facilitates creating symbol
+representations.  After a selection is made from the pull-down menu,
+the shape outline is ghost-drawn and attached to the pointer.  The
+object is placed at locations where the user clicks.
+
+\index{shape templates!box}
+\index{shape templates!poly}
+\index{shape templates!arc}
+\index{shape templates!dot}
+\index{shape templates!tri}
+\index{shape templates!ttri}
+\index{shape templates!and}
+\index{shape templates!or}
+The current choices in the pull-down menu are:
+
+\begin{tabular}{|l|p{4.5in}|} \hline
+{\cb box} & Create a box, like the physical mode {\cb box} command.\\ \hline
+{\cb poly} & Create a polygon, like the physical mode {\cb polyg} command.\\
+ \hline
+{\cb arc} & Create an arc, similar to the physical mode {\cb arc} command.\\
+ \hline
+{\cb dot} & Place a dot (an octagonal polygon).\\ \hline
+{\cb tri} & Place a triangle (buffer symbol).\\ \hline
+{\cb ttri} & Place a truncated triangle symbol.\\ \hline
+{\cb and} & Place an AND gate symbol.\\ \hline
+{\cb or} & Place an OR gate symbol.\\ \hline
+{\cb Sides} & Set the number of sides used to approximate rounded geometry,
+ similar to the {\cb sides} command in physical mode.\\ \hline
+\end{tabular}
+
+None of these shapes have significance electrically, and for
+efficiency is is best to avoid using the SCED layer for these objects. 
+In particular, arcs are actually wires, and arc vertices on the SCED
+layer are considered in the connectivity establishment.  If the
+current layer is SCED when one of these objects is created, the object
+is instead created on the ETC2 layer.  If the object must be on the
+SCED layer, the {\cb Change Layer} command in the {\cb Modify Menu}
+can be used to move it to that layer.
+
+The {\et dot}, {\et tri}, {\et ttri}, {\et and}, and {\et or} choices
+work a little differently from the others.  After selection, a ghost
+rendering of the shape is attached to the pointer, and the objects are
+placed where the user clicks.  The object can be modified with the
+arrow keys:
+
+\begin{tabular}{ll}
+\kb    Up          & expand by 2\\
+\kb    Right       & expand by 10\%\\
+\kb    Down        & shrink by 2\\
+\kb    Left        & shrink by 10\%\\
+\kb    Shift-Up    & stretch vertically 10\%\\
+\kb    Shift-Right & stretch horizontally 10\%\\
+\kb    Shift-Down  & shrink vertically 10\%\\
+\kb    Shift-Left  & shrink horizontally 10\%\\
+\kb    Ctrl-Arrows & cycle through 90 degree rotations\\
+\end{tabular}
 
 !! 021615
 !!KEYWORD
@@ -3019,6 +5153,25 @@ The sides Button: Set Rounded Granularity
     variable, which can be set from the <b>sides</b> entry in the
     menu presented by the <a href="xic:shapes"><b>shapes</b></a>
     button in the electrical side menu.
+!!LATEX xic:sides sidemenu.tex
+The {\cb sides} button, available in physical mode, allows the user to
+set the number of sides used to approximate rounded geometries. 
+Larger numbers give better resolution, but decrease efficiency.  The
+number provided is the sides for a full 360 degrees, arcs will use
+proportionally fewer. 
+
+The setting tracks the {\et RoundFlashSides} variable.  If the
+variable is not set, 32 sides will be used.  The acceptable range is
+8--256.
+
+The setting applies when new round objects are created with the {\cb
+round}, {\cb donut}, and {\cb arc} buttons in the physical side menu,
+or the equivalent script functions. 
+
+In electrical mode, the number of sides used has a separate setting
+using the {\et ElecRoundFlashSides} variable, which can be set from
+the {\cb sides} entry in the menu presented by the {\cb shapes} button
+in the electrical side menu.
 
 !!SEEALSO
 sidemenu
@@ -3064,6 +5217,32 @@ The spcmd Button: Execute <i>WRspice</i> Command
     <p>
     This operation is basically identical to the <a
     href="!spcmd"><b>!spcmd</b></a> command.
+!!LATEX xic:spcmd sidemenu.tex
+This will prompt the user, in the prompt area, for a command that will
+be sent to {\WRspice} for execution.  If the user simply presses {\kb
+Enter} without entering a command, or enters the command ``{\vt
+setup}'', the {\cb WRspice Interface Control Panel} will appear, from
+which the interface to {\WRspice} can be set up.  This panel is
+described in the next section.
+
+Otherwise, a stream to {\WRspice} will be established, if one is not
+already active, providing a means for running arbitrary {\WRspice}
+commands.  However, commands that cause {\WRspice} to prompt the user
+for additional input (such as {\vt setplot}) will not work properly,
+as the communication is one-way only and not interactive.  Text output
+goes to the console window.
+
+In addition to the {\WRspice} commands, the client-side directive
+\begin{quote}
+{\vt send} {\it filename}
+\end{quote}
+is available.  The {\it filename} is that of a local SPICE input file. 
+The file will have {\vt .include} and {\vt .lib} lines expanded
+locally, and {\vt .spinclude}, {\vt .splib} lines will be converted to
+``{\vt .include}'', ``{\vt .lib}'', as is done for decks created within
+{\Xic}.  The result will be sent to {\WRspice} and sourced.
+
+This operation is basically identical to the {\cb !spcmd} command.
 
 !! 110213
 !!KEYWORD
@@ -3254,6 +5433,146 @@ WRspice Interface Control Panel
     set to the current menu selection.  See the description of the
     variable for information about this setting.
     </dl>
+!!LATEX xic:spif sidemenu.tex
+This panel appears when the user presses the {\cb spcmd} button in the
+electrical side menu, and either gives no command at the prompt, or
+enters ``{\vt setup}''.  It provides entry areas for setting the
+variables which control the interprocess communication channel to the
+{\WRspice} circuit simulator, and other simulation settings.  Most
+users will probably never need to use this panel or set the associated
+variables as the defaults suffice in most installations.
+
+The {\cb WRspice Interface Control Panel} contains the following entry
+objects.
+
+\begin{description}
+\item{\cb List all devices and subcircuits}\\
+This check box corresponds to the {\et SpiceListAll} variable.  When
+checked, all devices and subcircuits in the schematic will be included
+in SPICE output.  Otherwise, only devices and subcircuits that are
+``connected'' will be included, as explained in the {\cb deck} and
+{\cb run} command descriptions.
+
+\item{\cb Check and report solitary connections}\\
+This check box corresponds to the {\et CheckSolitary} variable.  If
+checked, warning messages will be issued when electrical netlists are
+generated for nodes having only one connection.  This affects the {\cb
+run} and {\cb deck} commands, and the {\cb Dump Elec Netlist} command
+in the {\cb Extract Menu}.
+
+\item{\cb Don't show WRspice Tool Control panel}\\
+This check box corresponds to the {\et NoSpiceTools} variable.  When
+running {\WRspice} from {\Xic}, by default the {\WRspice} toolbar is
+shown, if {\WRspice} is running on the local machine.  This gives the
+user much greater flexibility and control over {\WRspice}.  If this
+check box is checked, {\it before} the connection to {\WRspice} is
+established, the toolbar will not be visible.
+
+This check box will also control toolbar visibility if the {\vt
+wrspiced} daemon is used.  However, this requires {\vt wrspiced}
+distributed with wrspice-3.0.7 or later.  {\bf If this variable is set
+with an earlier {\vt wrspiced} release, the {\WRspice} connection will
+not work!}
+
+\item{\cb Spice device prefix aliases}\\
+This group consists of a check box and a text entry area.  When the
+box is checked, the text in the entry area will be used to set the
+{\et SpiceAlias} variable.  This can be set to a string which will
+modify the printing of device names in SPICE output.  The aliasing
+operates on the first token of device lines.  The format of the string
+is
+\begin{quote}
+{\it prefix1\/}{\vt =}{\it newprefix1} {\it prefix2\/}{\vt =}{\it
+newprefix2} ...
+\end{quote}
+
+This will cause lines beginning with {\it prefix} to have {\it prefix}
+replaced with {\it newprefix}.  If the ``{\vt =}{\it newprefix\/}'' is
+omitted, that line will not be printed.  For example, to map all
+devices that begin with `B' to `J', and to suppress all `G' devices,
+the string is
+
+\begin{quote} \vt
+B=J G
+\end{quote}
+
+Note that there can be no space around the `{\vt =}'.  With the text
+entered and the box checked, the indicated mappings will be performed
+as SPICE text is produced.
+
+\item{\cb Remote WRspice server host name}\\
+This group consists of a check box and a text entry area.  When the
+box is checked, the {\et SpiceHost} variable is set to the text in the
+text area.
+
+The text should be the name of the host which maintains a server for
+remote {\WRspice} runs.  If set, this will override the value of the
+{\et SPICE\_HOST} environment variable.  The host name specified in
+the {\et SPICE\_HOST} environment variable and the {\et SpiceHost}
+{\cb !set} variable can have a suffix ``{\vt :}{\it portnum\/}'',
+i.e., a colon followed by a port number.  The port number is the port
+used by the {\vt wrspiced} program on the specified server, which
+defaults to 6114, the IANA registered port for this service.  If the
+server uses a non-standard port, and the {\vt wrspice/tcp} service has
+not been registered (usually in the {\vt /etc/services} file) on this
+port, the port number must be provided.
+
+\item{\cb Remote WRspice server host display name}\\
+This group consists of a check box and a text entry area.  When the
+box is checked, the {\et SpiceHostDisplay} variable is set to the text
+in the text area.
+
+This text can be set to the X display string to use on a remote host
+for running {\WRspice} through a {\vt wrspiced} daemon, from {\Xic} in
+electrical mode.  This is intended to facilitate use of {\vt ssh} X
+forwarding to take care of setting up permission for the remote host
+to draw on the local display.  See the description of the {\et
+piceHostDisplay} variable for complete details.
+
+\item{\cb Path to local WRspice executable}\\
+This group consists of a check box and a text entry area.  When the
+box is checked, the {\et SpiceProg} variable is set to the text in the
+text area.
+
+The text is the full path name of the {\WRspice} executable.  This is
+useful if there are multiple versions of {\WRspice} available, or the
+binary has been renamed, or is not located in the standard location. 
+If given, the value supersedes the values from environment variables
+or other variables (and corresponding entries) which also set a path
+to the SPICE executable.
+
+\item{\cb Path to local directory containing WRspice executable}\\
+This group consists of a check box and a text entry area.  When the
+box is checked, the {\et SpiceExecDir} variable is set to the text in
+the text area.
+
+The text is a path to the directory to search for the {\WRspice}
+executable.  If given, the value overrides the {\et SPICE\_EXEC\_DIR}
+environment variable.  The default search location is ``{\vt
+/usr/local/xictools/bin}'', or, if the {\et XT\_PREFIX} environment
+variable has been set, its value will replace ``{\vt /usr/local}''.
+
+\item{\cb Assumed WRspice program executable name}\\
+This group consists of a check box and a text entry area.  When the
+box is checked, the {\et SpiceExecName} variable is set to the text in
+the text area.
+
+The text will give the expected name of the {\WRspice} binary.  If
+given, the value overrides the {\et SPICE\_EXEC\_NAME} environment
+variable.  The default name is ``{\vt wrspice}''.
+
+\item{\cb Assumed WRspice subcircuit concatenation character}\\
+This group consists of a check box and a text entry area.  When the
+box is checked, the {\et SpiceSubcCatchar} variable is set to the text
+in the text area.  See the description of the variable for information
+about this setting.
+
+\item{\cb Assumed WRspice subcircuit expansion mode}\\
+This group consists of a check box and a menu.  When the box is
+checked, the {\et SpiceSubcCatmode} variable is set to the current
+menu selection.  See the description of the variable for information
+about this setting.
+\end{description}
 
 !! 012815
 !!KEYWORD
@@ -3362,6 +5681,84 @@ The spin Button: Rotate Objects
     vice-versa.  The rotation can be performed by clicking or
     dragging, however an angle can only be entered textually if the
     clicking mode is used.
+!!LATEX xic:spin sidemenu.tex
+The {\cb spin} button, available in physical mode, allows rotation of
+boxes, polygons, and wires by an arbitrary angle, and subcells and
+labels by multiples of 45 degrees.  If no objects are selected, the
+user is requested to select an object.  With the object selected, the
+user is asked to click on the origin of rotation.  The selected
+objects are ghost-drawn, and rotated about the reference point as the
+pointer moves.
+
+If the {\cb Constrain angles to 45 degree multiples} check box in the
+{\cb Editing Setup} panel from the {\cb Edit Menu} is checked, the
+angle will be constrained to multiples of 45 degrees.  Pressing the
+{\kb Shift} key will remove the constraint.  If the check box is not
+checked, holding the {\kb Shift} key will impose the constraint.  Thus
+the {\kb Shift} key inverts the effect of the check box.  However, if
+the selected objects include a subcell or label, the angle will always
+be constrained to multiples of 45 degrees.  The {\et Constrain45}
+variable tracks the state (set or unset) of the check box.
+
+During rotation, the angle is displayed in the lower left corner of
+the drawing window.  The readout defaults to degrees, pressing the
+`{\vt r}' key will switch to radians, and pressing the `{\vt d}' key
+will switch back to degrees.  Pressing the spacebar will toggle
+between radians and degrees.
+
+At this point, one can click to define the rotation angle, or an
+absolute angle can be entered on the prompt line.  To enter an angle,
+either press {\kb Enter} or click on the origin marker, then respond
+to the prompt with an angle in degrees.  In either case, the rotated
+boundaries of the selected objects are attached to the pointer, and
+new objects can be placed by clicking.  Ordinarily, the original
+objects will be deleted, however if the {\kb Shift} key is held while
+clicking, the original objects are retained.  Instead of clicking, one
+can press the {\kb Enter} key, which will simply rotate the selected
+objects around the reference point.
+
+When the {\cb spin} command is at the state where objects are
+selected, and the next button press would establish the rotation
+origin, if either of the {\kb Backspace} or {\kb Delete} keys is
+pressed, the command will revert the state back to selecting objects. 
+Then, other objects can be selected or selected objects deselected,
+and the command is ready to go again.  This can be repeated, to build
+up the set of selections needed.
+
+At any time, pressing the {\cb Deselect} button to the left of the
+coordinate readout will revert the command state to the level where
+objects may be selected to rotate.
+
+The undo and redo operations (the {\kb Tab} and {\kb Shift-Tab}
+keypreses and {\cb Undo}/{\cb Redo} in the {\cb Modify Menu}) will
+cycle the command state forward and backward when the command is
+active.  Thus, the last command operation, such as setting the angle
+by clicking, can be undone and restarted, or redone if necessary.  If
+all command operations are undone, additional undo operations will
+undo previous commands, as when the undo operation is performed
+outside of a command.  The redo operation will reverse the effect,
+however when any new modifying operation is started, the redo list is
+cleared.  Thus, for example, if one undoes a box creation, then starts
+a rotation operation, the ``redo'' capability of the box creation will
+be lost.
+
+It is possible to change the layer of rotated objects.  During the
+time that newly-rotated objects are ghost drawn and attached to the
+mouse pointer, if the current layer is changed, the objects that are
+attached can be placed on the new layer.  Subcells are not affected. 
+
+How this is applied depends on the setting of the {\et
+LayerChangeMode} variable, or equivalently the settings of the {\cb
+Layer Change Mode} pop-up from the {\cb Set Layer Chg Mode} button
+in the {\cb Modify Menu}.  The three possible modes are to ignore the
+layer change, to map objects on the old current layer to the new
+current layer, or to place all objects on the new current layer.  If
+the current layer is set back to the previous layer before clicking to
+locate the new objects, no layers will change.
+
+Note that this operation can change boxes to polygons and vice-versa. 
+The rotation can be performed by clicking or dragging, however an
+angle can only be entered textually if the clicking mode is used. 
 
 !!SEEALSO
 sidemenu
@@ -3403,6 +5800,30 @@ The style Button: Set/Change Wire Style
     the wire by half of the width beyond the terminating vertex.  The
     button icon changes to indicate the present wire end style with a
     small dot.
+!!LATEX xic:style sidemenu.tex
+The {\cb style} button, available in physical mode, pops up a menu of
+options for the presentation style of wires.  The {\cb Wire Width}
+choice sets the default width if no wires are selected, or changes the
+width of selected wires.  If there are wires selected, {\Xic} prompts
+for a new wire width for the selected wires, and the selected wires
+will have their widths altered.  The new width should not be less than
+the minimum width ({\et MinWidth} design rule) for the layers.
+
+If there are no applicable wires selected, the default wire width for
+the current layer is set, which is constrained to be greater or equal
+to the minimum width.  Wires subsequently created on the present layer
+will have the new width.
+
+The other choices set the default end style if no applicable wire is
+selected, or changes selected wires to the chosen end style if wires
+are selected.  All selections depend on layer-specific mode.  In
+layer-specific mode, only selected wires on the current layer are
+changed.  Otherwise, all selected wires are changed.
+
+The possible end styles are flush ends, extended rounded ends, and
+extended square ends.  The extended styles project the length of the
+wire by half of the width beyond the terminating vertex.  The button
+icon changes to indicate the present wire end style with a small dot.
 
 !!SEEALSO
 sidemenu
@@ -3746,6 +6167,252 @@ The subct Button: Set Subcircuit Connections
     pressing the <b>Delete</b> key.  The last remaining instance of a
     terminal can not be deleted in this way, one must go to the
     schematic to delete the terminal.
+!!LATEX xic:subct sidemenu.tex
+The {\cb subct} button, available in the electrical side menu, allows
+electrical connection terminals to be added to a circuit.  The
+terminals are points at which electrical connections are defined, as
+in the SPICE subcircuit definition.  Terminal definition is necessary
+if the circuit is to be used as a subcircuit in another circuit with
+connections to the instance (it is possible for a subcircuit to
+connect to global nets only (see \ref{nodmp}), in which case the
+master and instances would have no terminals).  The terminals are also
+used by the extraction system and can provide an initial association
+of a particular schematic net and physical conductor group. 
+
+Terminals can only be created in electrical mode.  Once created, a
+terminal's flags may be edited so as to enable a corresponding
+terminal location in the physical layout.  The extraction system will
+most often find suitable physical terminal locations automatically,
+however there are times when the user may need to place terminals
+manually, which can be done with the {\cb Edit Terminals} button in
+the {\cb Views and Operations} page of the {\cb Extraction Setup}
+panel from the {\cb Setup} button in the {\cb Extract Menu}, while in
+physical mode.  In electrical mode, this same button is equivalent to
+the {\cb subct} button in the side menu.
+
+Subsequent to creation with the present command, terminals can be made
+visible with the {\cb terms} button in the electrical side menu. 
+While in physical mode, the terminals will be visible in electrical
+windows when either the {\cb All Terminals} or {\cb Cell Terminals
+Only} check boxes in the {\cb Show} group in the {\cb Views and
+Operations} page of the {\cb Extraction Setup} panel is checked. 
+
+The terminals must be defined in the schematic representation of the
+cell, whether or not the cell will ultimately be symbolic (see
+\ref{symbolic}).  The terminals can be created and deleted only in the
+schematic.  Once created, they will be visible in the symbol view, but
+must be moved to the desired location by hand.  In the symbol view
+(only) each terminal can have arbitrarily many copies or itself at
+different locations, each one of which is an equivalent connection
+point for the subcircuit.  This facilitates, for example, tiling.  If
+an equivalent connection point appears on either side of the instance,
+then placing a row of these instances side-by-side will automatically
+connect this node to all of the instances.  This applies only to the
+symbolic representation.  In the schematic, each cell terminal has a
+single connection point.
+
+In {\Xic}, there are two types of cell contact terminals.
+
+\begin{description}
+\item{Scalar terminals}\\
+These are the ``normal'', single-contact terminals.  These terminals
+actually convey the connectivity information between the parent and
+subcell schematics, and are the only terminals that may have
+corresponding terminals in the physical layout.  A scalar terminal is
+associated with a {\et node} property, of a cell or cell instance.
+
+\item{Multi-contact ``bus'' terminals}\\
+These terminals reference the scalar terminals and provide a means for
+connecting a number of these terminals to a multi-conductor net in the
+schematic.  The use of multi-conductor nets and multi-contact
+terminals can greatly simplify a schematic visually.  Be advised that
+a multi-conductor terminal only references existing scalar terminals,
+which must exist.  These terminals are associated with a {\et bnode}
+property, of a cell or cell instance.
+\end{description}
+
+In the schematic, by default ordinary scalar terminals can only be
+located at connection points of the underlying geometry.  These are
+the vertices of electrically-active wires, and device or subcell
+connection points.  Clicking on such a point, if no terminal already
+exists at the point, will create a new scalar terminal at the
+location.  The {\cb Terminal Edit} panel will appear, which can be
+used to apply a name for the terminal and edit other terminal
+properties.  The new terminal will be shown highlighted to indicate
+that it is the target of the {\cb Terminal Edit} panel.
+
+\subsection{Virtual Terminals}
+\index{virtual terminals}
+
+If one holds the {\kb Ctrl} key while clicking anywhere except over
+another terminal, a scalar terminal will be placed, whether or not it
+is over a circuit connection point.  This is useful if the {\et
+BYNAME} flag is to be set for the terminal, which indicates that it
+will not connect by location, but by name matching only.  It is also
+useful for implementing ``virtual'' terminals which connect to
+nothing, but satisfy connectivity references in layout vs.  schematic
+testing, and for other purposes.
+
+Suppose one has a subcell with physical layout only that one wishes to
+include in a full design hierarchy.  It may not be convenient to
+create a schematic for the subcell, but it is desired that the
+connections to the subcell be included in the LVS checking of the
+overall design.  It is possible to assign ``virtual terminals'' to the
+subcell.  Virtual terminals are treated like ordinary terminals in
+connecting to instances of the subcell, but are ignored when creating
+netlists for the subcell itself.
+
+A virtual terminal is created in the {\cb subct} command by holding
+the {\kb Ctrl} key while clicking on locations in the electrical
+schematic (even if the schematic is empty).  They can be placed
+anywhere except on top of another terminal; location is not important. 
+Once created, they can be moved or deleted like ordinary terminals.
+
+Once placed, they will be considered in establishing the connectivity
+to instances of the cell, but will be ignored when establishing
+connections within the cell.  Thus the cell looks like a ``black box''
+with terminals.  Virtual terminals can be used along with ordinary
+terminals if only part of the internal circuit is to be visible from
+the outside.
+
+In SPICE netlists, virtual terminals will appear in the subcircuit
+connection list in {\vt .subckt} and call lines, but will not be
+connected in the {\vt .subckt} definition.  One can use a {\vt
+spicetext} label to add a {\vt .include} line to bring in a circuit
+definition from a file, for example, to satisfy the references. 
+
+In the graphical display, virtual terminals of the current cell are
+shown with a beer-barrel outline for differentiation from the standard
+terminals which are square.  The cell bounding box is expanded to
+contain all virtual terminal locations.  The center of a virtual
+terminal is a ``hot spot'' for hypertext node references, i.e.,
+clicking on the terminal center will add the associated node to the
+prompt line edit string in the {\cb plot} and {\cb iplot} commands and
+when creating labels or properties.
+
+\subsection{Multi-Contact Connectors}
+\index{bus connectors}
+\index{multi-contact connectors}
+
+If the {\kb Shift} key is held while clicking in the schematic,
+a new multi-contact terminal will be created.  A different version
+of the {\cb Terminal Edit} panel will appear, allowing the new terminal
+to be configured.
+
+Multi-contact terminals reference scalar terminals, and every
+referenced scalar terminal should exist.  The pop-up provides
+convenience functions for creating the ``bit'' terminals.  In some
+cases, these will be made invisible and not shown in either the
+schematic or symbol, yet they must exist as they provide a crucial
+data structure required for actual connectivity.
+
+Named and unnamed multi-conductor terminals identify their constituent
+bits quite differently.  If a terminal is named, the name is a net
+expression (see \ref{netex}) that unambiguously specifies the names of
+the scalar terminals.  These terminals are referenced by name, so
+ordering is unimportant.
+
+If a multi-conductor terminal is unnamed, it will at least have a
+default range of {\vt [0:0]}.  The terminal also has an index number
+that defaults to 0.  The bits are the scalar terminals with indices
+starting with the multi-conductor terminal index value, through the
+width of the multi-conductor range, contiguously and increasing.  In
+this case, terminal ordering is obviously quite important.
+
+See the {\cb Terminal Edit} panel description in \ref{termedit} for a
+complete discussion of the conrfiguration options for multi-contact
+terminals (and scalar terminals, too).
+
+\subsection{Terminal Ordering}
+\index{terminal order}
+
+By default, a newly-created scalar terminal will be given the largest
+index number, meaning that it will be the last terminal listed when
+the subcircuit is represented in SPICE or other netlisting output. 
+However, it is possible to insert new terminals at any point in the
+sequence.
+ 
+If the user types a number while the command is active, the number
+will appear in the keypress buffer area for the drawing window that
+has the keyboard focus.  If this number is within the range of
+existing terminal indices, then new terminals created from this window
+will be given this index, and existing terminals with this index or
+larger will have their indices incremented.
+ 
+Suppose for example that the cell contains five terminals, and one
+needs to add a sixth, and further the new terminal should be the
+fourth terminal in the sequence (index number 3).  While in the {\cb
+subct} command, one can type ``3'' and note that ``3'' appears in the
+keypress buffer area.  One can now click on a circuit location to
+create the new terminal, and note that the new terminal is given index
+3, the previous 3 is now 4, etc.  The backspace key can be used to
+clear the keypress buffer, or the next new terminal added will also be
+inserted as number 3.  Note that one can type ``0'' and leave this in
+place, so that all new terminals will be added to the front of the
+list rather than the back.
+
+The indexing and order can also be changed with the {\cb Terminal Edit}
+panel.
+
+For multi-contact terminals, the index parameter provides ordering
+information.  The terminal order assumed by {\Xic} is that a
+multi-contact terminal is ordered by its index, ahead of a scalar
+terminal with the same index.  If the multi-contact terminal is named,
+then the index number is arbitrary, however by convention {\Xic} will
+set the index to the index of the first (leftmost) bit.  If the
+terminal is unnamed, the index is also the index of the first bit, and
+in fact this identifies the first bit.
+
+\subsection{Terminal Naming and Editing}
+\index{terminal naming}
+
+If no name is given to a scalar terminal, {\Xic} will use a default
+name, which is an underscore followed by the internal index (the
+number shown in the marker).  Otherwise, a short descriptive name can
+be entered.  The name must follow the rules for a scalar net
+expression (see \ref{netex}), that is, it must be a simple text name,
+with or without a single index subscript.  A non-default name will be
+displayed next to the terminal marker (the default name is assumed if
+the entry is an underscore followed by one or two digits).
+
+Clicking on an existing terminal will select it, and begin a move
+operation.  A box will be ghost-drawn and attached to the mouse
+pointer.  If the terminal is scaler, it can be moved to a new location
+by clicking on a connection point not occupied by another terminal. 
+It can be moved to a non-contact point by holding {\kb Ctrl} while
+clicking, and the terminal becomes ``virtual''.  Multi-contact
+terminals can be moved to any location not already occupied by a
+terminal.
+
+While a terminal is selected, pressing the {\kb Delete} key will
+delete the terminal.  Pressing {\kb Backspace} or {\kb Esc} will
+deselect the terminal, aborting the move operation.
+
+If an existing terminal is clicked on with the {\kb Shift} key held
+down, or double-clicked on (including being ``moved'' to the same
+location), the {\cb Terminal Edit} panel will appear, allowing the
+user to edit the parameters for the terminal.
+
+From the {\cb Terminal Edit} panel, it is possible to make the
+terminal invisible.  This can be applied to terminals that do not
+participate in the visual connections, so clutter the display
+needlessly.  The {\kb PageUp} and {\kb PageDown} toggle the display of
+(otherwise) invisible terminals while the {\cb subct} command is
+active.  Invisible terminals can also be selected for editing with the
+{\cb Next} and {\cb Prev} buttons in the panel, which cycle through
+the terminals to edit by the index value.
+
+In symbolic mode, terminals can not be added or deleted, however they
+can be moved to new locations consistent with the symbolic
+representation.  Terminals can be moved by dragging, or by clicking on
+a terminal then clicking on the new location.  Terminals can be placed
+anywhere in the symbolic representation.  Further, if the {\kb Shift}
+key is held during the terminal placement, the original terminal mark
+is retained, i.e., a copy is made.  Any number of copies can be
+placed.  Copies can be deleted by clicking to select, then pressing
+the {\kb Delete} key.  The last remaining instance of a terminal can
+not be deleted in this way, one must go to the schematic to delete the
+terminal.
 
 !!SEEALSO
 sidemenu
@@ -4081,6 +6748,266 @@ The Terminal Edit Pop-Up
     <p>
     The remaining buttons operate as described for scalar terminal
     editing.
+!!LATEX xic:edtrm sidemenu.tex
+The {\cb Terminal Edit} pop-up appears when using the {\cb subct}
+button in the electrical side menu.  It also appears while in physical
+mode and using the {\cb Edit Terminals} button from the {\cb Setup}
+page of the {\cb Extraction Setup} panel, which is brought up with the
+{\cb Setup} button in the {\cb Extract Menu}.  In either case, it
+provides a means for editing various properties of a terminal,
+including its name.
+
+When the panel is visible, one of the terminals in the display is
+highlighted, and the controls in the panel represent the state for the
+highlighted terminal.  This is the ``target terminal'' which will be
+modified by the panel.
+
+The panel configures itself for either scalar or multi-contact
+terminals in electrical mode, depending on the target terminal.  In
+physical mode, only scalar terminals exist and not all parameters are
+editable, and the panel configures itself accordingly.  The panel will
+appear quite different in these three cases.
+
+The target terminal can be changed by {\kb Shift}-clicking or
+double-clicking over a different terminal.  It can also be changed
+with the {\cb Prev}, {\cb Next}, and {\cb To Index} buttons found in
+the panel.
+
+Every scalar terminal has a unique index number.  This is the number
+that is shown in the box which represents the terminal in the
+schematic.  This represents the order of the terminals in calls to
+instances of the current cell.  Bus terminals have an index number as
+well, which must be one of the scalar terminal indices.  The ordering
+of the multi-contact terminal is at the index, but {\it before} the
+scalar terminal with the same index.
+
+The {\cb Prev} button will cycle the target terminal to the one with
+index value one less than the current index, wrapping at zero.  The
+{\cb Next} button will cycle the target terminal in the opposite
+direction.  The {\cb To Index} button and numeric entry area can be
+used to change the target terminal to one with the specified index, of
+the same type (scalar or multi-contact terminal) as the present
+terminal. 
+
+No actual change is made unless or until the {\cb Apply} button is
+pressed.  Pressing {\cb Apply} will update the target terminal
+according to the entries in the panel.  Changes made can be undone and
+redone with the standard {\Xic} undo/redo operations.
+
+Pressing the {\cb Dismiss} button will retire the panel.
+
+\subsection{Electrical Scalar Terminal Editing}
+\index{editing terminals}
+
+At the top of the panel is a {\cb Terminal Index} numeric entry area. 
+This can be used to change the terminals index number, and therefor
+order in subcircuit references.  The renumbering is a two step
+process:
+
+\begin{enumerate}
+\item{The present terminal is removed, and the remaining terminals are
+renumbered, using unique and contiguous new index values (zero based).}
+
+\item{The terminal is reinserted at the given index.  The terminal
+that had that index and those larger will have their index values
+incremented.}
+\end{enumerate}
+
+Changing the index of a scalar terminal does {\cb not} update the
+multi-contact terminals!  The index values used in the bus terminals
+may require compensating changes.
+
+Just below is the {\cb Terminal Name} text entry area.  This will
+contain the name of the terminal, which can be edited by the user. 
+The entry can be empty, in which case {\Xic} will generate a name.
+
+The {\cb Has physical terminal} check box should be checked if the
+terminal will have a corresponding contact point in the physical
+layout.  Setting this check box will allocate the internal data
+structure needed to maintain the association.  In most cases, this
+will be required.  It is not required if, for example, the user at
+this point is only concerned with a schematic for simulations.  The
+terminal can be edited and this box checked at a later time, when the
+user is ready to add a layout.  The box is never checked for terminals
+used in the schematic for special purposes that are perhaps related to
+simulation, that have no ``real'' implementation in the layout.
+
+When the {\cb Has physical terminal} check box is checked, the {\cb
+Physical} group is un-grayed.  There are two controls in this group. 
+
+\begin{description}
+\item{\cb Layer Binding}\\
+The {\cb Layer Binding} menu provides a layer name that is a hint used
+by the extraction system when placing the physical terminal in the
+layout.  This is set by {\Xic} after extraction, and if correct should
+not be changed.  It is set by the user when a terminal is manually
+placed, to resolve ambiguity about which layer the terminal connects
+to.
+
+\index{FIXED terminal flag}
+\item{\cb Location locked by user placement}\\
+When a terminal is manually placed, the {\cb Location locked by user
+placement} check box will become checked.  This indicates that the
+{\et FIXED} flag is set in the terminal.  Terminals with this flag set
+will never be moved by {\Xic} during extraction/association. 
+\end{description}
+
+The location and layer must be correct or association will fail. 
+Although {\Xic} will automatically place terminals, at times this will
+fail and the user will have to place some terminals manually to obtain
+correct or complete association.
+
+Below the {\cb Physical} group are check boxes for setting some binary
+options.
+
+\begin{description}
+\index{BYNAME terminal flag}
+\item{\cb Set contact by name only}\\
+This check box, when checked, sets the {\et BYNAME} flag in the
+terminal which changes its interpretation in the schematic (it has no
+effect in physical mode).  Ordinarily, a terminal is placed on a
+``connection point'' of a wire net in the schematic (i.e., a vertex),
+or a device or subcircuit contact point.  Association of the terminal
+to that wire net is by location.  If there is no underlying connection
+point, and the terminal has an assigned name, {\Xic} will then attempt
+to add the terminal to an existing net with a matching name.  If this
+flag is set, then the initial attempt to connect the terminal by
+location will be skipped.  This is useful if the terminal is to be
+made invisible, to avoid accidental connections.  The scalar wire nets
+can be named with the {\cb Node (Net) Name Mapping} panel from the
+side menu (see \ref{nodmp}).
+
+\index{SCINVIS terminal flag}
+\item{\cb Set terminal invisible in schematic}\\
+This check box, when checked, sets the {\et SCINVIS} flag in the
+terminal which prevents the terminal from being displayed in
+schematics.  This is for terminals that are used only as bit
+connections for a multi-contact connector.  Recall that every bit in a
+multi-contact connector is a scalar connector, that must exist if a
+connection is to be established.  If connectivity is to be provided
+only via the multi-contact connector, the individual bits are visually
+superfluous and clutter the display.  However, they can be made
+invisible in the schematic with this flag.  They should probably also
+have the {\et BYNAME} flag set as well, so that they don't make an
+unintended connection by location.  The setting has no effect in
+physical mode.
+
+\index{SYINVIS terminal flag}
+\item{\cb Set terminal invisible in symbol}\\
+This check box controls the analogous {\et SYINVIS} flag, which when
+set causes the terminal to be invisible in the symbolic
+representation, if any.  This flag will almost always track the state
+of the {\et SCINVIS} flag, but this is not an absolute requirement. 
+It is possible for a schematic to use individual bits for connections,
+whereas the symbol uses a multi-contact terminal, or vice-versa.
+\end{description}
+
+\subsection{Physical Terminal Editing}
+
+In physical mode, the panel allows changes only within the {\cb
+Physical} group described above.  That is, the {\cb Layer Binding}
+choice and the {\cb Location locked by user placement} check box are
+the only editable entries.  These have the purpose and functionality
+as described above.  One must return to electrical mode to change
+other parameters.
+
+\subsection{Multi-Contact Connector Editing}
+
+When the target terminal is a multi-contact connector, the
+panel reconfigures itself to provide the appropriate entry areas. 
+
+At the top of the panel is a numeric {\cb Term Index} entry area. 
+Just below this are two text entry areas with labels {\cb Terminal
+Name} and {\cb Net Expression}.  A ``bundle'' terminal may have a
+separate simple text name, as well as its net expression.  If given,
+the simple text name will be used as a name for the terminal in
+instance placements of the cell.  The terminal in the instance will
+look like a pure vector terminal with the given name, and a range
+starting with zero and extending to the width of the bundle minus one.
+
+If the terminal does not represent a bundle, then internally there is
+only one name, which is the net expression.  This is obtained from the
+two entry areas, which should not conflict or an error will result. 
+Probably the best approach is to use the {\cb Net Expression} entry
+for the complete expression, and leave the {\cb Terminal Name} entry
+blank.  Alternatively, one could put a text name in the name entry,
+and the subscripting, without a name or with the same name, in the
+expression entry.
+
+It is legitimate to not provide a name, but to provide subscripting
+only.  In this case:
+
+\begin{enumerate}
+\item{The subscripting is ignored, except to determine the implied
+width (number of conductors).}
+
+\item{The connector maps the scalar terminal with index value equal to
+the {\cb Term Index} entry and terminals with successive indices, the
+total number of which will be equal to the connector width.  Thus,
+scalar terminal order and the {\cb Term Index} value are critical in
+this case.  It is up to the user to maintain consistency while
+editing, as indices may change.  Probably, though, there is no reason
+to use this approach, and not supply a terminal name.}
+\end{enumerate}
+
+If the terminal has a name, or has a bundle net expression, then the
+name of every scalar terminal ``bit'' is well defined.  These are
+found by name, so there is no order requirement, only an existence
+requirement.  Furthermore, the {\cb Term Index} entry has much less
+significance.  It is only used to assign an order for the terminal
+relative to other terminals.  Specifically, the terminal order is just
+ahead of the scalar terminal with the same index (multi-conductor
+terminal index values are required to be unique).  {\Xic} will
+initially assign the index as the index of the first scalar terminal
+referenced.  This can be changed if necessary.
+
+Below the three entry areas is a {\cb Delete} button, which will
+delete the terminal if pressed.  This, and all other operations, can
+be undone/redone with the standard {\Xic} {\kb Tab}/{\kb Shift-Tab}
+keys and equivalent operations in the {\cb Modify Menu}.
+
+There are two check boxes for terminal visibility in the schematic and
+symbol, as we saw for scalar terminals.  It is unlikely that the user
+would go to the trouble of implementing a multi-contact terminal and
+not have it visible, but it is possible.
+
+The {\cb Bus Term Bits} group provides some specialized functions for
+working with the scalar terminals referenced.  These can be applied
+only if the terminal has a name or is a bundle terminal.
+
+\begin{description}
+\item{\cb Check/Create Bits}\\
+This will create, at the end of the scalar terminal list, any scalar
+terminal referenced by the present terminal and not found.  Newly
+created scalar terminals whill have {\et BYNAME}, {\et SCINVIS}, and
+{\et SYINVIS} set, meaning that the terminals will be invisible and
+make contact by name only.  The new terminals are placed at the same
+location as the present terminal.  As they are invisible and they do
+not connect by location, there is no problem with this.  In one way or
+another, the scalar terminals referenced by a multi-conductor terminal
+must exist for connectivity to be established, even if they are
+invisible and never dealt with again after creation.  The {\cb
+Check/Create Bits} button makes the scalar terminal creation quick and
+easy.  Be aware, though, that it will probably still be necessary to
+edit these terminals to set the physical data.
+
+\item{\cb Reorder to Index}\\
+This will create missing scalar terminals as above, but in addition it
+will reorder the scalar terminals list so that the index values of the
+referenced terminals are contiguous and start with the {\cb Term
+Index} value.  All other considerations aside, this may be a ``nice''
+way to organize the terminals.  It is also potentially more efficient. 
+If the net expression does not duplicate any connection bits, an
+internal mapping step can be skipped as it becomes an identity, saving
+a little memory and time.  This is the same ordering used with
+``unnamed'' terminals.
+\end{description}
+
+The four buttons below allow setting of the visibility flags of all of
+the referenced scalar terminals.  It is unlikely that the flag states
+would vary between the bits.
+
+The remaining buttons operate as described for scalar terminal editing.
 
 !!SEEALSO
 xic:subct
@@ -4137,6 +7064,41 @@ The symbl Button: Symbolic Representation
     locations, in the generally more compact symbolic representation. 
     The actual locations of subcircuit connections is dependent upon
     the mode.
+!!LATEX xic:symbl sidemenu.tex
+The {\cb symbl} button, available in electrical mode, allows instances
+of a cell to be shown as a symbol, rather than as a schematic.  In the
+symbolic representation, the substructure of the cell is never shown,
+instead a simple figure representing the cell is displayed.  This can
+simplify complex schematics.
+
+When this button is active, the current cell is in symbolic mode.  It
+is not possible to add subcircuits or devices in this mode, but any
+geometry added will show as the symbolic representation.  If the cell
+is saved with this button active, then the cell and its instances will
+use the symbolic representation.
+
+However, it is possible to apply a property to individual instances
+of the cell to force the display of that instance non-symbolically
+(as a schematic).  This property can be applied with the {\cb
+Property Editor}.
+
+If the {\cb No Top Symbolic} button in the {\cb Main Window} sub-menu
+of the {\cb Attributes Menu}, or in the sub-window {\cb Attributes}
+menu, is set, the top cell will always display as a schematic in the
+window, whether or not the {\cb symbl} button is pressed.
+
+When a new cell is opened for editing, the {\cb symbl} button will become
+active and the symbolic representation shown if the cell was
+previously saved in symbolic mode.  Pressing the button a second time
+will revert to normal presentation.
+
+While in symbolic mode, subcircuit terminals can not be added, however
+existing terminals can be moved to new locations by dragging.  One
+should first place the terminals, with the {\cb subct} command, in
+normal mode.  After switching to symbolic mode, the terminals can be
+moved to new locations, in the generally more compact symbolic
+representation.  The actual locations of subcircuit connections is
+dependent upon the mode.
 
 !!SEEALSO
 sidemenu
@@ -4163,6 +7125,17 @@ The terms Button: Show Subcircuit Connections
     physical mode, when physical terminals are visible, electrical
     terminals will also be visible in electrical windows, as if the
     <b>terms</b> button was active.
+!!LATEX xic:terms sidemenu.tex
+When the {\cb terms} button is active, the electrical connection
+points of the subcircuits are shown.  These points are placed with the
+{\cb subct} command.  The {\cb terms} button is available in
+electrical mode only.  When active, the physical terminals will be
+shown in physical mode windows, as if the {\cb All Terminals} check
+box in the {\cb Setup} page of the {\cb Extraction Setup} panel was
+checked.  This panel is obtained from the {\cb Setup} button in the
+{\cb Extract Menu}.  Similarly, in physical mode, when physical
+terminals are visible, electrical terminals will also be visible in
+electrical windows, as if the {\cb terms} button was active.
 
 !!SEEALSO
 sidemenu
@@ -4400,6 +7373,188 @@ The wire Button: Create/Edit Wires
     nets, and providing the "taps" to access the net.  Complete
     information is provided in the <a href="elec:connect">Connectivity
     Overview</a> and the sections that follow.
+!!LATEX xic:wire sidemenu.tex
+The {\cb wire} button is used to create or modify wires.  A wire is
+created by clicking the left mouse button on each vertex location in
+sequence.  The vertices can be undone and redone with the {\kb Tab}
+key and {\kb Shift-Tab} combination, which are equivalent to the {\cb
+Undo} and {\cb Redo} commands.  Vertex entry is terminated, and a new
+wire created, by clicking a second time on the last point, or by
+pressing the {\kb Enter} key.
+
+The {\et PixelDelta} variable can be set to alter the value, in
+pixels, of the snap distance to the target when clicking to terminate. 
+By default, the snap distance is 3 pixels, so clicking within this
+distance of the last point will terminate entry rather than add a
+new vertex.
+
+In electrical mode, wires are used to connect devices into circuits. 
+Vertices are recognized as connecting points, and are created where
+the wire crosses a device or subcircuit terminal or a vertex of
+another wire.  The {\cb Connection Dots} button in the {\cb Attributes
+Menu} can be used to display connections.  The vertices can be edited
+to remove or reestablish connections.
+
+In electrical mode, entering the {\cb wire} command will switch the
+current layer to the SCED (active) layer.  The current layer can be
+changed if necessary, but without the reverting it was too easy to
+create wires on another layer, sometimes difficult to visually
+differentiate, that will not be electrically active in the schematic
+causing the circuit to not work.
+
+While the command is active in physical mode, the cursor will snap to
+horizontal or vertical edges of existing objects in the layout if the
+edge is on-grid, when within two pixels.  When snapped, a small dotted
+highlight box is displayed.  This makes it much easier to create
+abutting objects when the grid snap spacing is very fine compared with
+the display scaling.  This is also applied to the last vertex of wires
+being created, facilitating point list termination.  This feature can
+be controlled from the {\cb Edge Snapping} group in the {\cb Snapping}
+page of the {\cb Grid Setup} panel.
+
+When adding vertices during wire creation, the angle of each segment
+can be constrained to a multiple of 45 degrees with the {\cb Constrain
+angles to 45 degree multiples} check box in the {\cb Editing Setup}
+panel from the {\cb Edit Menu}, in conjunction with the {\kb Shift}
+and {\kb Ctrl} keys.  There are three modes:  call them ``no45'' for
+no constraint, ``reg45'' for constraint to multiples of 45 degrees
+with automatic generation of the segment from the end of the 45
+section to the actual point, and ``simp45'' that does no automatic
+segment generation.  The ``reg45'' algorithm adds a 45 degree segment
+plus possibly an additional Manhattan segment to connect the given
+point.  The ``simp45'' adds only the 45 degree segment.  The mode
+employed at a given time is given by the table below.  The {\et
+Constrain45} variable tracks the state (set or not set) of the check
+box.
+
+\begin{tabular}{|l|l|l|} \hline
+\multicolumn{3}{|c|}{\kb Constrain45 not set}\\ \hline
+& {\kb Shift} up & {\kb Shift} pressed\\ \hline
+{\kb Ctrl} up & no45 & reg45\\ \hline
+{\kb Ctrl} pressed & simp45 & simp45\\ \hline\hline
+\multicolumn{3}{|c|}{\kb Constrain45 set}\\ \hline
+& {\kb Shift} up & {\kb Shift} pressed\\ \hline
+{\kb Ctrl} up & reg45 & no45\\ \hline
+{\kb Ctrl} pressed & simp45 & no45\\ \hline
+\end{tabular}
+
+In physical mode, three end styles are available for nonzero width
+wires:  {\et Flush}, {\et Rounded}, and {\et Extended}.  The end style
+and the default width are set from the menu provided by the {\cb
+style} button.  The end style of selected wires can be changed from
+this menu, from within the {\cb wire} command or without.
+
+The width of wires on a particular layer, or the widths of existing
+wires, can be set of changed with the {\cb Wire Width} button in the
+menu brought up with the {\cb style} button.  Zero-width wires are
+accepted into the database if they contain more than one point.  In
+physical mode, they probably should not be used, and they will, of
+course, fail DRC tests.  They are allowed in the off chance that the
+user uses them for annotation purposes.  Such lines will be invisible,
+however, unless the layer pattern is outlined or solid.  In electrical
+cells, zero-width wires are commonly used for the connecting lines,
+and there is no question of their legality in electrical cells.  The
+width of selected wires can be changed with this menu command, from
+within the {\cb wire} command or without.
+
+If the first vertex of a wire being created falls on an end vertex of
+an existing wire on the same layer, the new wire will use the same
+width and end style as the existing wire, overriding the defaults. 
+The completed new wire will be merged with the existing wire, unless
+merging is disabled.  Merging can be controlled from the {\cb Editing
+Setup} panel from the {\cb Edit Menu}, and note also that the {\et
+NoMerge} layer attribute will prevent merging.
+
+Wires with a single vertex are acceptable if the width is nonzero and
+the end style is rounded or extended.  These are rendered as an
+octagon or box, respectively, centered on the vertex.
+
+Existing wires can be converted to polygons through selection and
+execution of the {\cb polyg} command.
+
+\subsection{Wire Vertex Editor}
+\index{wire vertex editor}
+
+On entering the {\cb wire} command, if a wire is selected, a vertex
+editing mode is active on all selected wires.  Each vertex of the
+selected object is marked with a small highlighting box.  Clicking on
+a selected wire away from an existing vertex will create a new vertex,
+which can subsequently be moved.
+
+In order to operate on a vertex, it must be selected.  A vertex can be
+selected by clicking on it, or by dragging over it.  Any number of
+vertices can be selected.  After the selection operation, selected
+vertices are shown marked with a larger box, and unselected vertices
+are not marked.  Additional vertices can be selected, and existing
+selected vertices unselected, by holding the {\kb Shift} key while
+clicking or dragging over vertex locations.  Selecting a vertex a
+second time will deselect it.
+
+Selected vertices can be deleted by pressing the {\kb Delete} key. 
+This will succeed only if after vertex removal the object does not
+become degenerate.  In particular, one can not delete the object in
+this manner.
+
+The selected vertices can be moved by dragging or clicking twice.  The
+selected vertices will be translated according to the button-down
+location and the button up location, or the next button-down location
+if the pointer did not move.  While the translation is in progress,
+the new borders are ghost-drawn.
+
+All vertex operations can be undone and redone through use of the {\cb
+Undo} and {\cb Redo} commands.
+
+With vertices selected, pressing the {\kb Esc} or {\kb Backspace} keys
+will deselect the vertices and return to the state with all vertices
+marked.
+
+While in the {\cb wire} command, with no object in the process of
+being created, it is possible to change the selected state of wire
+objects, thus displaying the vertices and allowing vertex editing. 
+Pressing the {\kb Enter} key will cause the next button 1 operation to
+select (or deselect) wire objects.  This can be repeated arbitrarily. 
+When one of these objects is selected, the vertices are marked, and
+vertex editing is possible.
+
+If the vertex editor is active, i.e., a selected wire is shown with
+the vertices marked, clicking with the {\cb Ctrl} button pressed will
+start a new wire, overriding the vertex editor.  This can be used to
+start a new wire at a marked vertex location, for example.  Without
+{\cb Ctrl} pressed, the vertex editor would have precedence and would
+select the marked vertex instead of starting a new wire.
+
+While moving vertices, holding the {\kb Shift} key will enable or
+disable constraining the translation angle to multiples of 45 degrees. 
+If the {\cb Constrain angles to 45 degree multiples} check box in the
+{\cb Editing Setup} panel from the {\cb Edit Menu} is checked, {\kb
+Shift} will disable the constraint, otherwise the constraint will be
+enabled.  The {\kb Shift} key must be up when the button-down occurs
+which starts the translation operation, and can be pressed before the
+operation is completed to alter the constraint.  These operations are
+similar to operations in the {\cb Stretch} command.
+
+\index{wire label}
+\index{net name label}
+\subsection{Associated Net Name Label}
+
+In electrical mode, wires that participate in schematic connectivity
+can have an associated text label.  The text provides a name for the
+net (node) that contains the wire, and is equivalent to the placement
+of a named terminal device (see \ref{devtbar}) at a vertex of the
+wire.
+
+To create and bind a label to a wire, first select the wire.  Then,
+press the {\cb label} button in the side menu.  Enter the text, and
+place the label in the normal way.  The text in the label will be
+taken as a candidate net name (see \ref{nodmp}) for the net containing
+the wire.
+
+Unlike unlabeled wires, a wire with a label will never be merged with
+adjacent wires.  Labeled wires play an important role in the
+connectivity of some schematics, by defining multi-conductor wire
+nets, and providing the ``taps'' to access the net.  Complete
+information is provided in the Connectivity Overview in \ref{connect}
+and the sections that follow.
 
 !!SEEALSO
 sidemenu
@@ -4534,6 +7689,94 @@ Current Transform
     register.  After a recall, the original parameters can be restored
     with the <b>Last Transform</b> button.
     </dl>
+!!LATEX xic:xform sidemenu.tex
+The {\cb xform} button in the side menu brings up the {\cb Current
+Transform} panel, which allows the current transform to be set.  The
+current transform is applied to newly-placed subcells, and to objects
+which are moved or copied.
+
+The transform that is applied to an instance of a cell is saved in an
+irreducible form in the database representation of the instance.  The
+irreducible form is an optional reflect-y ($y \rightarrow -y$),
+followed by an optional rotation, followed by the translation.  This
+maps directly to the format used in GDSII files.  However, the
+``current transform'' applies rotation {\it before} the reflection, so
+that on screen, a reflect-x, for example, will flip the object's x
+coordinates independent of any rotation angle, which is what users
+tend to expect.  The transform string printed on unexpanded instances
+and on the status line reflects this, i.e., forms like ``{\vt R45M}''
+imply a 45 degree rotation followed by a reflect-y (``{\vt M}'' always
+denotes reflect-y, reflect-x is equivalent to some other rotation and
+reflect-y combination).  However, the transformation shown in an {\cb
+Info} window will be reflect-y followed by a 315 degree rotation (in
+this example), since the internal representation performs the
+reflection before the rotation.
+
+If the current transform is set to something other than the default
+identity transform, the transform code is printed on the status line.
+
+The following buttons and input fields are available in the
+{\cb Current Transform} panel.
+
+\begin{description}
+\item{\cb Angle}\\
+This choice menu allows setting the rotation component of the current
+transform.  The menu allows a choice of rotations in increments of 90
+degrees in electrical mode or 45 degrees in physical mode.
+
+Pressing and holding the {\kb Ctrl} key and then pressing the left or
+right arrow keys cycles through the transformation angles, whether or
+not the {\cb Current Transform} panel is visible.  The right arrow
+increases the angle, the left arrow decreases the angle.
+
+\item{\cb Reflect X}\\
+Add a reflection of the x-axis to the current transform.  The
+X-reflection is toggled by the {\kb Ctrl-Down Arrow} key sequence,
+whether or not the {\cb Current Transform} panel is visible.
+
+\item{\cb Reflect Y}\\
+Add a reflection of the y-axis to the current transform.  The
+Y-reflection is toggled by the {\kb Ctrl-Up Arrow} key sequence,
+whether or not the {\cb Current Transform} panel is visible.
+
+\item{\cb Magnification}\\
+This entry field allows setting of the magnification component of the
+current transform.  Any number from 0.001 through 1000.0 can be
+entered.
+
+\item{\cb Identity Transform}\\
+This button will save the current parameters to internal storage, and
+reset these values to the default state (no transformation).  The
+saved state can be restored with the {\cb Last Transform} button.
+
+When the panel first appears, this button will have the keyboard focus
+if the current transform is not the identity transform.  The user can
+press {\kb Enter} to ``press'' the button.  This will cause the focus
+to switch to the {\cb Dismiss} button, so that another {\kb Enter}
+press will retire the panel.  Thus, one can very quickly restore the
+identity transform using the {\cb xform} button accelerator (``{\vt
+xf}'') followed by pressing the {\kb Enter} key twice.
+
+\item{\cb Last Transform}\\
+This button will restore the state of the current transform last saved
+with the {\cb Identity Transform} button, or one of the recall
+buttons.  If no state has been saved, the identity transform (the
+default) is set.  Note that there is separate storage for the current
+transform in electrical and physical modes.
+
+When the panel first appears, if the current transform is the identity
+transform, this button will have the keyboard focus.  In this case,
+the same key sequence as described above can be used to quickly restore
+the last transform.
+
+\item{Store and Recall}\\
+There are five internal registers for storage of transformation
+parameters.  Separate registers are used in electrical and physical
+modes.  Pressing these buttons will either save the current parameters
+to a register, or set the parameters from a register.  After a recall,
+the original parameters can be restored with the {\cb Last Transform}
+button.
+\end{description}
 
 !!SEEALSO
 xic:sidemenu
@@ -4597,6 +7840,43 @@ The xor Button: Exclusive-OR Objects
     side menu to switch commands.  If <b>Esc</b> is pressed, or a
     non-participating command is entered, the anchor point will be
     lost.
+!!LATEX xic:xor sidemenu.tex
+The {\cb xor} button facilitates inverting the polarity of layers, and
+is available only in physical mode.  The operation is similar to the
+{\cb box} command, however all previously existing boxes, polygons,
+and wires on the same layer which overlap the created box become holes
+in the new box.  Only boxes, polygons, and wires are inverted, other
+structures are covered.  When a wire is partially xor'ed, the part of
+the wire outside of the xor region becomes a polygon.  The {\cb
+!layer} command can also be used to invert layer polarity, and is
+recommended when an entire cell is to be inverted.
+
+While the command is active in physical mode, the cursor will snap to
+horizontal or vertical edges of existing objects in the layout if the
+edge is on-grid, when within two pixels.  When snapped, a small dotted
+highlight box is displayed.  This makes it much easier to create
+abutting objects when the grid snap spacing is very fine compared with
+the display scaling.  This feature can be controlled from the {\cb
+Edge Snapping} group in the {\cb Snapping} page of the {\cb Grid
+Setup} panel.
+
+The {\cb box}, {\cb erase}, and {\cb xor} commands participate in a
+protocol that is handy on occasion.
+
+Suppose that you want to erase an area, and you have zoomed in and
+clicked to define the anchor, then zoomed out or panned and clicked to
+finish the operation.  Oops, the {\cb box} command was active, not
+{\cb erase}.  One can press {\kb Tab} to undo the unwanted new box,
+then press the {\cb erase} button, and the {\cb erase} command will
+have the same anchor point and will be showing the ghost box, so
+clicking once will finish the erase operation.
+
+The anchor point is remembered, when switching directly between these
+three commands, and the command being exited is in the state where the
+anchor point is defined, and the ghost box is being displayed.  One
+needs to press the command button in the side menu to switch commands. 
+If {\kb Esc} is pressed, or a non-participating command is entered,
+the anchor point will be lost.
 
 !!SEEALSO
 sidemenu

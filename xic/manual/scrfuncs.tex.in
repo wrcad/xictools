@@ -1,0 +1,491 @@
+% -----------------------------------------------------------------------------
+% Xic Manual
+% (C) Copyright 2025, Whiteley Research Inc., Sunnyvale CA
+% scrfuncs.tex.in
+% -----------------------------------------------------------------------------
+
+% -----------------------------------------------------------------------------
+\chapter{Interface Functions}
+
+% scr:iffuncs 082408
+<<scr:iffuncs xiFuncs.hlp>>
+
+%------------------------------------------------------------------------------
+\section{Main Functions 1}
+\subsection{Current Cell}
+\label{iffuncs}
+
+%funcs:main1:curcell
+<<funcs:main1:curcell xiFuncsMain1.hlp>>
+
+\subsection{Cell Info}
+
+%funcs:main1:cell
+<<funcs:main1:cell xiFuncsMain1.hlp>>
+
+\subsection{Database}
+
+%funcs:main1:db
+<<funcs:main1:db xiFuncsMain1.hlp>>
+
+\subsection{Symbol Tables}
+
+%funcs:main1:stab
+<<funcs:main1:stab xiFuncsMain1.hlp>>
+
+\subsection{Display}
+
+%funcs:main1:dsp
+<<funcs:main1:dsp xiFuncsMain1.hlp>>
+
+\subsection{Exit}
+
+%funcs:main1:exit
+<<funcs:main1:exit xiFuncsMain1.hlp>>
+
+\subsection{Annotation}
+
+%funcs:main1:anno
+<<funcs:main1:anno xiFuncsMain1.hlp>>
+
+\subsection{Ghost Rendering}
+
+%funcs:main1:ghost
+<<funcs:main1:ghost xiFuncsMain1.hlp>>
+
+\subsection{Graphics}
+
+%funcs:main1:graphics
+<<funcs:main1:graphics xiFuncsMain1.hlp>>
+
+\subsection{Hard Copy}
+
+%funcs:main1:hcopy
+<<funcs:main1:hcopy xiFuncsMain1.hlp>>
+
+\subsection{Keyboard}
+
+%funcs:main1:keyb
+<<funcs:main1:keyb xiFuncsMain1.hlp>>
+
+\subsection{Libraries}
+
+%funcs:main1:libs
+<<funcs:main1:libs xiFuncsMain1.hlp>>
+
+%\ifoa
+\subsection{OpenAccess}
+
+%funcs:main1:oa
+<<funcs:main1:oa xiFuncsMain1.hlp>>
+%\fi
+
+\subsection{Mode}
+
+%funcs:main1:mode
+<<funcs:main1:mode xiFuncsMain1.hlp>>
+
+\subsection{Prompt Line}
+
+%funcs:main1:prompt
+<<funcs:main1:prompt xiFuncsMain1.hlp>>
+
+\subsection{Scripts}
+
+%funcs:main1:script
+<<funcs:main1:script xiFuncsMain1.hlp>>
+
+\subsection{Technology File}
+
+%funcs:main1:tech
+<<funcs:main1:tech xiFuncsMain1.hlp>>
+
+\subsection{Variables}
+
+%funcs:main1:var
+<<funcs:main1:var xiFuncsMain1.hlp>>
+
+\subsection{{\Xic} Version}
+
+%funcs:main1:version
+<<funcs:main1:version xiFuncsMain1.hlp>>
+
+
+%------------------------------------------------------------------------------
+\section{Main Functions 2}
+\subsection{Arrays}
+
+%funcs:main2:array
+<<funcs:main2:array xiFuncsMain2.hlp>>
+
+\subsection{Bitwise Logic}
+
+%funcs:main2:bit
+<<funcs:main2:bit xiFuncsMain2.hlp>>
+
+\subsection{Error Reporting}
+
+%funcs:main2:error
+<<funcs:main2:error xiFuncsMain2.hlp>>
+
+\subsection{Generic Handle Functions}
+
+%funcs:main2:handle
+<<funcs:main2:handle xiFuncsMain2.hlp>>
+
+\subsection{Memory Management}
+
+%funcs:main2:mem
+<<funcs:main2:mem xiFuncsMain2.hlp>>
+
+\subsection{Script Variables}
+
+%funcs:main2:scrv
+<<funcs:main2:scrv xiFuncsMain2.hlp>>
+
+\subsection{Path Manipulation and Query}
+
+%funcs:main2:path
+<<funcs:main2:path xiFuncsMain2.hlp>>
+
+\subsection{Regular Expressions}
+
+%funcs:main2:regex
+<<funcs:main2:regex xiFuncsMain2.hlp>>
+
+\subsection{String List Handles}
+
+%funcs:main2:shndl
+<<funcs:main2:shndl xiFuncsMain2.hlp>>
+
+\subsection{String Manipulation and Conversion}
+
+%funcs:main2:string
+<<funcs:main2:string xiFuncsMain2.hlp>>
+
+\subsection{Current Directory}
+
+%funcs:main2:cwd
+<<funcs:main2:cwd xiFuncsMain2.hlp>>
+
+\subsection{Date and Time}
+
+%funcs:main2:date
+<<funcs:main2:date xiFuncsMain2.hlp>>
+
+\subsection{File System Interface}
+
+%funcs:main2:file
+<<funcs:main2:file xiFuncsMain2.hlp>>
+
+\subsection{Socket and {\Xic} Client/Server Interface}
+
+%funcs:main2:skt
+<<funcs:main2:skt xiFuncsMain2.hlp>>
+
+\subsection{System Command Interface}
+
+%funcs:main2:sys
+<<funcs:main2:sys xiFuncsMain2.hlp>>
+
+\subsection{Menu Buttons}
+
+%funcs:main2:menu
+<<funcs:main2:menu xiFuncsMain2.hlp>>
+
+\subsection{Mouse Input}
+
+%funcs:main2:mouse
+<<funcs:main2:mouse xiFuncsMain2.hlp>>
+
+\subsection{Graphical Input}
+
+%funcs:main2:grin
+<<funcs:main2:grin xiFuncsMain2.hlp>>
+
+\subsection{Text Input}
+
+%funcs:main2:textin
+<<funcs:main2:textin xiFuncsMain2.hlp>>
+
+\subsection{Text Output}
+
+%funcs:main2:textout
+<<funcs:main2:textout xiFuncsMain2.hlp>>
+
+
+%------------------------------------------------------------------------------
+\section{Main Functions 3}
+
+% 101812
+Many of the layer-related functions take a ``standard layer
+argument''.  This can be an integer index number into the layer table,
+where the index is 1-based, and values less than 1 return the current
+layer.  The argument can also be a string, giving a layer name in {\it
+layer\/}[{\vt :}{\it purpose\/}] form, or an alias name.  If the
+string is null or empty, the current layer is returned.
+
+\subsection{Grid and Edge Snapping}
+
+%funcs:main3:snap
+<<funcs:main3:snap xiFuncsMain3.hlp>>
+
+\subsection{Grid Style}
+
+%funcs:main3:grid
+<<funcs:main3:grid xiFuncsMain3.hlp>>
+
+\subsection{Current Layer}
+
+%funcs:main3:curlyr
+<<funcs:main3:curlyr xiFuncsMain3.hlp>>
+
+\subsection{Layer Table}
+
+%funcs:main3:ltab
+<<funcs:main3:ltab xiFuncsMain3.hlp>>
+
+\subsection{Layer Database}
+
+%funcs:main3:ldb
+<<funcs:main3:ldb xiFuncsMain3.hlp>>
+
+\subsection{Layers}
+
+%funcs:main3:layer
+<<funcs:main3:layer xiFuncsMain3.hlp>>
+
+\subsection{Layers -- Extraction Support}
+
+%funcs:main3:layerex
+<<funcs:main3:layerex xiFuncsMain3.hlp>>
+
+\subsection{Selections}
+
+%funcs:main3:sel
+<<funcs:main3:sel xiFuncsMain3.hlp>>
+
+\subsection{Pseudo-Flat Generator}
+
+%funcs:main3:pfgen
+<<funcs:main3:pfgen xiFuncsMain3.hlp>>
+
+\subsection{Geometry Measurement}
+
+%funcs:main3:meas
+<<funcs:main3:meas xiFuncsMain3.hlp>>
+
+
+%------------------------------------------------------------------------------
+\section{Layout File Input/Output Functions}
+
+\subsection{Layer Conversion Aliasing}
+
+%funcs:cvrt:lalias
+<<funcs:cvrt:lalias xiFuncsCvrt.hlp>>
+
+\subsection{Cell Name Mapping}
+
+%funcs:cvrt:cnmap
+<<funcs:cvrt:cnmap xiFuncsCvrt.hlp>>
+
+\subsection{Cell Table}
+\label{celltab}
+
+%funcs:cvrt:ctab
+<<funcs:cvrt:ctab xiFuncsCvrt.hlp>>
+
+\subsection{Windowing and Flattening}
+
+%funcs:cvrt:wnd
+<<funcs:cvrt:wnd xiFuncsCvrt.hlp>>
+
+\subsection{Scale Factor}
+
+%funcs:cvrt:scale
+<<funcs:cvrt:scale xiFuncsCvrt.hlp>>
+
+\subsection{Export Flags}
+
+%funcs:cvrt:wrflg
+<<funcs:cvrt:wrflg xiFuncsCvrt.hlp>>
+
+\subsection{Import Flags}
+
+%funcs:cvrt:rdflg
+<<funcs:cvrt:rdflg xiFuncsCvrt.hlp>>
+
+\subsection{layout File Format Conversion}
+
+%funcs:cvrt:cvt
+<<funcs:cvrt:cvt xiFuncsCvrt.hlp>>
+
+\subsection{Export Layout File}
+
+%funcs:cvrt:exprt
+<<funcs:cvrt:exprt xiFuncsCvrt.hlp>>
+
+\subsection{Cell Hierarchy Digest}
+
+%funcs:cvrt:chd
+<<funcs:cvrt:chd xiFuncsCvrt.hlp>>
+
+\subsection{Cell Geometry Digest}
+
+%funcs:cvrt:cgd
+<<funcs:cvrt:cgd xiFuncsCvrt.hlp>>
+
+\subsection{Assembly Stream}
+
+%funcs:cvrt:asm
+<<funcs:cvrt:asm xiFuncsCvrt.hlp>>
+
+%------------------------------------------------------------------------------
+\section{Geometry Editing Functions 1}
+
+\subsection{General Editing}
+
+%funcs:geom1:gen
+<<funcs:geom1:gen xiFuncsGeom1.hlp>>
+
+\subsection{Current Transform}
+
+%funcs:geom1:xform
+<<funcs:geom1:xform xiFuncsGeom1.hlp>>
+
+\subsection{Derived Layers}
+\label{drvlyrfunc}
+
+%funcs:geom1:drvlyr
+<<funcs:geom1:drvlyr xiFuncsGeom1.hlp>>
+
+\subsection{Object Management by Handles}
+\label{objmanh}
+
+%funcs:geom1:objbh
+<<funcs:geom1:objbh xiFuncsGeom1.hlp>>
+
+%------------------------------------------------------------------------------
+\section{Geometry Editing Functions 2}
+\subsection{Cells, PCells, Vias, and Instance Placement}
+
+%funcs:geom2:cell
+<<funcs:geom2:cell xiFuncsGeom2.hlp>>
+
+\subsection{Clipping Functions}
+
+%funcs:geom2:clip
+<<funcs:geom2:clip xiFuncsGeom2.hlp>>
+
+\subsection{Other Object Management Functions}
+
+%funcs:geom2:obj
+<<funcs:geom2:obj xiFuncsGeom2.hlp>>
+
+\subsection{Property Management}
+
+%funcs:geom2:prp
+<<funcs:geom2:prp xiFuncsGeom2.hlp>>
+
+XXXXXXXX
+
+%------------------------------------------------------------------------------
+\section{Computational Geometry and Layer Expressions}
+
+\subsection{Trapezoid Lists and Layer Expressions}
+\label{zoidlistarg}
+
+%funcs:lexpr:zoid
+<<funcs:lexpr:zoid xiFuncsLexpr.hlp>>
+
+\subsection{Operations}
+
+%funcs:lexpr:oper
+<<funcs:lexpr:oper xiFuncsLexpr.hlp>>
+
+\subsection{Spatial Parameter Tables}
+\label{spt}
+
+%funcs:lexpr:spt
+<<funcs:lexpr:spt xiFuncsLexpr.hlp>>
+
+\subsection{Polymorphic Flat Database}
+\label{specdb}
+
+%funcs:lexpr:db
+<<funcs:lexpr:db xiFuncsLexpr.hlp>>
+
+\subsection{Named String Tables}
+\index{hash tables}
+\index{named string tables}
+
+%funcs:lexpr:ntab
+<<funcs:lexpr:ntab xiFuncsLexpr.hlp>>
+
+%------------------------------------------------------------------------------
+\section{Design Rule Checking Functions}
+\subsection{DRC}
+
+%funcs:drc:drc
+<<funcs:drc:drc xiFuncsDrc.hlp>>
+
+%------------------------------------------------------------------------------
+\section{Extraction Functions}
+\subsection{Menu Commands}
+
+%funcs:ext:menu
+<<funcs:ext:menu xiFuncsExt.hlp>>
+
+\subsection{Terminals}
+
+%funcs:ext:term
+<<funcs:ext:term xiFuncsExt.hlp>>
+
+\subsection{Physical Terminals}
+
+%funcs:ext:pterm
+<<funcs:ext:pterm xiFuncsExt.hlp>>
+
+\subsection{Physical Conductor Groups}
+
+%funcs:ext:group
+<<funcs:ext:group xiFuncsExt.hlp>>
+
+\subsection{Physical Devices}
+
+%funcs:ext:pdev
+<<funcs:ext:pdev xiFuncsExt.hlp>>
+
+\subsection{Physical Subcircuits}
+
+%funcs:ext:subc
+<<funcs:ext:subc xiFuncsExt.hlp>>
+
+\subsection{Electrical Devices}
+
+%funcs:ext:edev
+<<funcs:ext:edev xiFuncsExt.hlp>>
+
+\subsection{Resistance/Inductance Extraction}
+
+%funcs:ext:extrl
+<<funcs:ext:extrl xiFuncsExt.hlp>>
+
+%------------------------------------------------------------------------------
+\section{Schematic Editor Functions}
+
+\subsection{Output Generation}
+
+%funcs:sced:io
+<<funcs:sced:io xiFuncsSced.hlp>>
+
+\subsection{Electrical Nodes}
+
+%funcs:sced:nodes
+<<funcs:sced:nodes xiFuncsSced.hlp>>
+
+\subsection{Symbolic Mode}
+
+%funcs:sced:symbl
+<<funcs:sced:symbl xiFuncsSced.hlp>>
+

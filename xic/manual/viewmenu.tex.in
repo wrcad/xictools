@@ -1,0 +1,125 @@
+% -----------------------------------------------------------------------------
+% Xic Manual
+% (C) Copyright 2025, Whiteley Research Inc., Sunnyvale CA
+% viewmenu.tex.in
+% -----------------------------------------------------------------------------
+
+% -----------------------------------------------------------------------------
+\chapter{The View Menu: Alter Presentation}
+\index{View Menu}
+
+% xic:viewmenu 061608
+<<xic:viewmenu xiView.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb View} Button: Select Cell View}
+\index{View button}
+\index{view}
+
+% xic:view 061608
+<<xic:view xiView.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Physical} Button: Show Physical Mode}
+\index{Physical button}
+\index{physical mode!switch to}
+
+% xic:phys 062109
+<<xic:phys xiView.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Electrical} Button: Show Electrical Mode}
+\index{Electrical button}
+\index{mode switch}
+
+% xic:sced 062109
+<<xic:sced xiView.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Expand} Button: Expand Subcells}
+\index{Expand button}
+\index{expanded view}
+\label{expansion}
+
+% xic:expnd 011118
+<<xic:expnd xiView.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Zoom} Button: Zoom In/Out}
+\index{Zoom button}
+\index{zooming}
+
+% xic:zoom 032213
+<<xic:zoom xiView.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Viewport} Button: Create Sub-Window}
+\label{subwin}
+\index{Viewport button}
+\index{viewports}
+\index{sub-windows}
+
+% xic:vport 053110
+<<xic:vport xiView.hlp>>
+
+% xic:wdump 021410
+<<xic:wdump xiView.hlp>>
+
+% xic:lshow 061608
+<<xic:lshow xiView.hlp>>
+
+% xic:swap 061608
+<<xic:swap xiView.hlp>>
+
+% xic:load 102208
+<<xic:load xiView.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Peek} Button: Show Layer Composition}
+\index{Peek button}
+\index{PeekSleepMsec variable}
+
+% xic:peek 061608
+<<xic:peek xiView.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Three-Dimensional Layer Sequence Generator}
+\label{ldb3d}
+\index{layer sequence generator}
+
+% xic:ldb3d 102114
+<<xic:ldb3d xiView.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Cross Section} Button: Show Cross Section}
+\label{csect}
+\index{Cross Section button}
+
+% xic:csect 070314
+<<xic:csect xiView.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Rulers} Button: Create Rulers}
+\index{Rulers button}
+\index{show rulers}
+
+% xic:ruler 012815
+<<xic:ruler xiView.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Info} Button: Display Information About Objects}
+\index{Info button}
+\index{object info}
+\index{InfoInternal variable}
+
+% xic:info 100312
+<<xic:info xiView.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Allocation} Button: Show Memory Allocation}
+\index{Allocation button}
+\index{memory}
+
+% xic:alloc 061608
+<<xic:alloc xiView.hlp>>
+

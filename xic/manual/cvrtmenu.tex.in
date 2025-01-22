@@ -1,0 +1,137 @@
+ -----------------------------------------------------------------------------
+% Xic Manual
+% (C) Copyright 2025, Whiteley Research Inc., Sunnyvale CA
+% cvrtmenu.tex.in
+% -----------------------------------------------------------------------------
+
+% -----------------------------------------------------------------------------
+\chapter{The Convert Menu:  Data Input/Output, Format Conversion}
+\index{Convert Menu}
+\index{conversion, file format}
+
+% xic:cvrtmenu 022916
+<<xic:cvrtmenu xiConvert.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Cell Name Mapping}
+\label{cellname}
+\index{cell name mapping}
+\index{conversion, file format!cell names}
+
+% cellname 022916
+<<cellname xiConvert.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Cell Name Alias File}
+\label{aliasfile}
+\index{alias file}
+\index{cell name alias file}
+\index{conversion, file format!alias file}
+
+% aliasfile 060108
+<<aliasfile xiConvert.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Layer Names}
+\label{layername}
+\index{layer names}
+
+% layername 032017
+<<layername xiConvert.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Layer Filtering and Aliasing}
+\label{layerchange}
+\index{layer filtering}
+\index{layer aliasing}
+
+% layerchange 022916
+<<layerchange xiConvert.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{GDSII Layer Mapping}
+\label{gdslayer}
+\index{GDSII layer mapping}
+
+% gdslayer 022716
+<<gdslayer xiConvert.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Export Cell Data} Button: {\cb Export Control} Panel}
+\index{Export Cell Data button}
+
+% xic:exprt 040724
+<<xic:exprt xiConvert.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Advanced OASIS Export Parameters} Panel: Set\newline
+  OASIS Parameters}
+\label{oasadv}
+\index{Cell Table Listing panel}
+
+% xic:oasadv 022816
+<<xic:oasadv xiConvert.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Import Cell Data} Button: {\cb Import Control} Panel}
+\index{Import Cell Data button}
+\label{cvimport}
+
+% xic:imprt 020918
+<<xic:imprt xiConvert.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Windowing Control Module}
+
+% windowing 022916
+<<windowing xiConvert.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Format Conversion} Button: {\cb Format Conversion} Panel}
+\index{Format Conversion button}
+\index{Format Conversion}
+
+% xic:convt 022418
+<<xic:convt xiConvert.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{Generating ASCII Output from Layout Data}
+\index{ASCII text, from layout data}
+
+% asciitext 061308
+<<asciitext xiConvert.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Assemble} Button: {\cb Layout File Merge Tool} Panel}
+\index{Assemble button}
+
+% xic:assem 022916
+<<xic:assem xiConvert.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Compare Layouts} Button: Find Differences}
+\index{Compare Layouts button}
+
+% xic:diff 120110
+<<xic:diff xiConvert.hlp>>
+
+\subsection{Custom Property Filtering}
+\label{prpfilt}
+
+% xic:prpfilt  080410
+<<xic:prpfilt xiConvert.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Cut and Export} Button: Export Cell Region}
+\index{Cut and Export button}
+
+% xic:cut 022916
+<<xic:cut xiConvert.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Text Editor} Button: Edit Cell Text}
+\index{Text Editor button}
+
+% xic:txted 061308
+<<xic:txted xiConvert.hlp>>
+

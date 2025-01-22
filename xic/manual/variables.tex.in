@@ -1,0 +1,222 @@
+% -----------------------------------------------------------------------------
+% Xic Manual
+% (C) Copyright 2025, Whiteley Research Inc., Sunnyvale CA
+% variables.tex.in 
+% -----------------------------------------------------------------------------
+
+% -----------------------------------------------------------------------------
+\chapter{{\Xic} Variables}
+\label{variables}
+
+% set:variables 101212
+<<set:variables xiVariables.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Special Constructs}
+\index{variables!special constructs}
+
+% !set:special 021515
+<<!set:special xiVariables.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Startup}
+\index{variables!startup}
+
+% !set:startup 012014
+<<!set:startup xiVariables.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Paths and Directories}
+\label{pathvars}
+\index{variables!paths}
+
+% !set:paths 102008
+<<!set:paths xiVariables.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{General Visual}
+\index{variables!general visual}
+
+% !set:generalvis 100616
+<<!set:generalvis xiVariables.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Keyboard `!' Commands}
+\index{variables!`"!' commands}
+
+% !set:bangcmds 100616
+<<!set:bangcmds xiVariables.hlp>>
+
+%\ifoa
+% -----------------------------------------------------------------------------
+\section{OpenAccess Interface}
+\index{variables!OpenAccess}
+
+% !set:oa 021515
+<<!set:oa xiVariables.hlp>>
+%\fi
+
+% -----------------------------------------------------------------------------
+\section{Parameterized Cells}
+\index{variables!pcells}
+
+% !set:pcells 021515
+<<!set:pcells xiVariables.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Standard Vias}
+\index{variables!strandard vias}
+
+% !set:stdvia 031815
+<<!set:stdvia xiVariables.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Scripts}
+\index{variables!scripts}
+
+% !set:scripts 021515
+<<!set:scripts xiVariables.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Selections}
+\index{variables!selections}
+
+% !set:selections 021515
+<<!set:selections xiVariables.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Side Menu Commands}
+\index{variables!side menu commands}
+
+% !set:sidemenu 101016
+<<!set:sidemenu xiVariables.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{SPICE Interface}
+\label{spicevars}
+\index{variables!SPICE interface}
+
+% !set:spice 021515
+<<!set:spice xiVariables.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{File Menu --- Printing}
+\index{variables!printing}
+
+% !set:hardcopy 021515
+<<!set:hardcopy xiVariables.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Cell Menu Commands}
+\index{variables!Cell Menu commands}
+
+% !set:cell 021515
+<<!set:cell xiVariables.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Editing General}
+\index{variables!Editing General}
+
+% !set:editgen 021515
+<<!set:editgen xiVariables.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Edit/Modify Menu Commands}
+\index{variables!Edit Menu commands}
+
+% !set:edit 100616
+<<!set:edit xiVariables.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{View Menu Commands}
+\index{variables!View Menu commands}
+
+% !set:view 021515
+<<!set:view xiVariables.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Attribute Menu Commands}
+\index{variables!Attributes Menu commands}
+
+% !set:attri 101016
+<<!set:attri xiVariables.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Convert Menu --- General}
+
+% !set:cvgen 020918
+<<!set:cvgen xiVariables.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Convert Menu --- Input and ASCII Output}
+
+% !set:cvimport 020918
+<<!set:cvimport xiVariables.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Convert Menu --- Output}
+
+% !set:cvexport 081318
+<<!set:cvexport xiVariables.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Custom Property Filtering}
+\index{variables!property filtering}
+
+% !set:prpfilt 021515
+<<!set:prpfilt xiVariables.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Design Rule Checking}
+\label{drcvars}
+\index{variables!design rule checking}
+\index{variables!drc}
+
+% !set:drc 021615
+<<!set:drc xiVariables.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Extraction Tech}
+\index{variables!extraction tech}
+\label{extech}
+
+% !set:extech 021515
+<<!set:extech xiVariables.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Extraction General}
+\index{variables!extraction general}
+
+% !set:exgen 070214
+<<!set:exgen xiVariables.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Extraction Menu Commands}
+\index{variables!extraction menu commands}
+
+% !set:extrc 061408
+<<!set:extrc xiVariables.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Capacitance Extraction Interface}
+\label{fcvars}
+\index{variables!capacitance etraction}
+
+% !set:fc 071814
+<<!set:fc xiVariables.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Inductance/Resistance Extraction Interface}
+\label{fhvars}
+\index{variables!fasthenry}
+
+% !set:fh 111819
+<<!set:fh xiVariables.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Help System}
+\index{variables!help}
+
+% !set:help 021515
+<<!set:help xiVariables.hlp>>
+

@@ -1,0 +1,105 @@
+% -----------------------------------------------------------------------------
+% Xic Manual
+% (C) Copyright 2025, Whiteley Research Inc., Sunnyvale CA
+% startup.tex.in
+% -----------------------------------------------------------------------------
+
+% -----------------------------------------------------------------------------
+\chapter{{\Xic} Configuration and Startup}
+
+\section{Graphics Support}
+
+% xic:graphics 040824
+<<xic:graphics xiStartup.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Apple macOS Notes}
+
+% macos 091124
+<<macos xiStartup.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Microsoft Windows Notes}
+
+% mswindows 061124
+<<mswindows xiStartup.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Command Line Options}
+\index{command line}
+
+% xic:cmdline 052222
+<<xic:cmdline xiStartup.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{{\Xic} Environment Variables}
+\label{xicenv}
+\index{environment}
+
+% xic:env 081824
+<<xic:env xiStartup.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{{\Xic} Search Paths}
+\label{searchpaths}
+\index{paths}
+\index{search paths}
+
+% xicpaths 031611
+<<xicpaths xiPaths.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Redirect Files}
+\index{redirect files}
+\index{xt\_redirect file}
+
+% xt_redirect 031611
+<<xt_redirect xiPaths.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Initialization Files}
+\index{initialization files}
+
+% initfiles 102817
+<<initfiles xiStartup.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Log Files and Error Reporting}
+
+% logfiles 051115
+<<logfiles xiStartup.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Plug-Ins}
+\index{plug-ins}
+
+% plugins 012813
+<<plugins xiPlugins.hlp>>
+
+%\ifoa
+% -----------------------------------------------------------------------------
+\section{OpenAccess Support}
+\label{oaplugin}
+\index{OpenAccess}
+
+% oaplugin 040216
+<<oaplugin xiPlugins.hlp>>
+%\fi
+
+% -----------------------------------------------------------------------------
+\section{Python Support}
+\label{pyplugin}
+\index{Python}
+
+% pyplugin 032017
+<<pyplugin xiPlugins.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Tcl/Tk Support}
+\label{tcltk}
+\index{Tcl}
+\index{TK}
+
+% tclplugin 022713
+<<tclplugin xiPlugins.hlp>>
+

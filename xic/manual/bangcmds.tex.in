@@ -1,0 +1,1002 @@
+% -----------------------------------------------------------------------------
+% Xic Manual
+% (C) Copyright 2025, Whiteley Research Inc., Sunnyvale CA
+% bangcmds.tex.in
+% -----------------------------------------------------------------------------
+
+% -----------------------------------------------------------------------------
+\chapter{Keyboard `{\cb !}' Commands}
+\label{bangcmds}
+
+% keybang 102712
+<<keybang xiBangcmds.hlp>>
+
+
+\section{Compression}
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !gzip} Command: Compress Files}
+\index{"!gzip command}
+\index{file compression}
+
+% !gzip 053108
+<<!gzip xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !gunzip} Command: Uncompress Files}
+\index{"!gunzip command}
+
+% !gunzip 053108
+<<!gunzip xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !md5} Command: Print File Digest}
+\index{"!md5 command}
+
+% !md5 102214
+<<!md5 xiBangcmds.hlp>>
+
+
+\section{Create Output}
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !sa} Command: Save Modified Cells}
+\index{"!sa command}
+
+% !sa 102712
+<<!sa xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !sqdump} Command: Save Selections as Native Cell}
+\index{"!sqdump command}
+
+% !sqdump 053108
+<<!sqdump xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !assemble} Command: Merge Archives}
+\label{assemble}
+\index{"!assemble command}
+
+% !assemble 022916
+<<!assemble xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !splwrite} Command: Split an Archive}
+\index{"!splwrite command}
+\label{splwrite}
+
+% !splwrite 120310
+<<!splwrite xiBangcmds.hlp>>
+
+
+\section{Current Directory}
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !cd} Command: Change Directory}
+\index{"!cd command}
+\index{directory change}
+
+% !cd 053108
+<<!cd xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !pwd} Command: Print Directory}
+\index{"!pwd command}
+\index{current directory}
+
+% !pwd 053108
+<<!pwd xiBangcmds.hlp>>
+
+
+\section{Diagnostics}
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !time} Command: Show Elapsed Time}
+\index{"!time command}
+
+% !time 053108
+<<!time xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !timedbg} Command: Show Internal Run Times}
+\index{"!timedbg command}
+
+% !timedbg 080910
+<<!timedbg xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !xdepth} Command: Show Transform Depth}
+\index{"!xdepth command}
+
+% !xdepth 053108
+<<!xdepth xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !bincnt} Command: Database Object Allocation}
+\index{"!bincnt command}
+
+% !bincnt 053108
+<<!bincnt xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !netxp} Command: Check Net Expression}
+\index{"!netxp command}
+
+% !netxp 062313
+<<!netxp xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !pcdump} Command: Dump Parameterized Cell Data}
+\index{"!pcdump command}
+
+% !pcdump 102614
+<<!pcdump xiBangcmds.hlp>>
+
+
+\section{Design Rule Checking}
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !showz} Command: Show DRC Test Areas}
+\index{"!showz command}
+
+% !showz 053108
+<<!showz xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !errs} Command: Regenerate DRC Error Highlighting}
+\index{"!errs command}
+
+% !errs 091509
+<<!errs xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !errlayer} Command: Create Error Polygons}
+\index{"!errlayer command}
+
+% !errlayer 091509
+<<!errlayer xiBangcmds.hlp>>
+
+
+\section{Electrical}
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !calc} Command: Calculate Parameter Expression}
+\index{"!calc command}
+
+% !calc 030412
+<<!calc xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !check} Command: Database Consistency Check}
+\index{"!check command}
+\index{consistency check}
+
+% !check 110613
+<<!check xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !regen} Command: Regenerate Labels}
+\index{"!regen command}
+\index{consistency check!regeneration}
+
+% !regen 053108
+<<!regen xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !devkeys} Command: Print Device keys}
+\index{"!devkeys command}
+\index{device keys}
+
+% !devkeys 030415
+<<!devkeys xiBangcmds.hlp>>
+
+
+\section{Extraction}
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !antenna} Command: Check MOS Antenna Effect}
+\index{"!antenna command}
+
+% !antenna 051809
+<<!antenna xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !netext} Command: Batch Physical Net Extraction}
+\index{"!netext command}
+\index{netlist extraction}
+
+% !netext 021318
+<<!netext xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !addcells} Command: Add Missing Cells}
+\index{"!addcells command}
+
+% !addcells 020615
+<<!addcells xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !find} Command: Find Devices}
+\index{"!find command}
+
+% !find 070809
+<<!find xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !ptrms} Command: Default Terminal Locations}
+\index{"!ptrms command}
+
+% !ptrms 053108
+<<!ptrms xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !ushow} Command: Show Unassociated Elements}
+\index{"!ushow command}
+
+% !ushow 013013
+<<!ushow xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !fc} Command: Control Capacitance Extraction Interface}
+\index{"!fc command}
+
+% !fc 090714
+<<!fc xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !fh} Command: Control Inductance/Resistance Extraction
+ Interface}
+\index{"!fh command}
+
+% !fh 090714
+<<!fh xiBangcmds.hlp>>
+
+
+\section{Graphics}
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !setcolor} Command: Set Attribute Colors}
+\index{"!setcolor command}
+\index{resources}
+\index{colors}
+
+% !setcolor 053108
+<<!setcolor xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !display} Command: Export Rendering}
+\index{"!display command}
+
+% !display 053108
+<<!display xiBangcmds.hlp>>
+
+
+\section{Grid}
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !sg} Command: Save Grid in Register}
+\index{"!sg command}
+\index{grid}
+
+% !sg 043009
+<<!sg xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !rg} Command: Set Grid From Register}
+\index{"!rg command}
+\index{grid registers}
+
+% !rg 053108
+<<!rg xiBangcmds.hlp>>
+
+
+\section{Help}
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !help} Command: Help Interface}
+\index{"!help command}
+
+% !help 012016
+<<!help xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !helpfont} Command: Set Help Font}
+\index{"!helpfont command}
+
+% !helpfont 012016
+<<!helpfont xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !helpfixed} Command: Set Help Fixed Font}
+\index{"!helpfixed command}
+
+% !helpfixed 012016
+<<!helpfixed xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !helpreset} Command: Clear Help Cache}
+\index{"!helpreset command}
+
+% !helpreset 053108
+<<!helpreset xiBangcmds.hlp>>
+
+
+\section{Keyboard}
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !kmap} Command: Read Key Mapping File}
+\index{"!kmap command}
+
+% !kmap 053108
+<<!kmap xiBangcmds.hlp>>
+
+
+\section{Layers}
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !ltab} Command: Modify Layer Table}
+\index{"!ltab command}
+
+% !ltab 101212
+<<!ltab xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !ltsort} Command: Alphanumerically
+ Sort Layer Table}
+\index{"!ltsort command}
+
+% !ltsort 053108
+<<!ltsort xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !exlayers} Command: List layers by Applied Keywords}
+\index{"!exlayers command}
+
+% !exlayers 012016
+<<!exlayers xiBangcmds.hlp>>
+
+
+\section{Layout Editing}
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !array} Command: Manipulate Instance Arrays}
+\index{"!array command}
+
+% !array 012309
+<<!array xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !layer} Command: Generate Layers}
+\label{layercmd}
+\index{"!layer command}
+
+% !layer 101515
+<<!layer xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !mo} Command: Move Objects}
+\index{"!mo command}
+
+% !mo 100412
+<<!mo xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !co} Command: Copy Objects}
+\index{"!co command}
+
+% !co 100412
+<<!co xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !spin} Command: Rotate Objects}
+\index{"!spin command}
+
+% !spin 012815
+<<!spin xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !rename} Command: Rename Cells}
+\index{"!rename command}
+\index{renaming cells}
+
+% !rename 053108
+<<!rename xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !svq} Command: Save Selections in Register}
+\index{"!svq command}
+
+% !svq 012016
+<<!svq xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !rcq} Command: Recall Selections from Register}
+\index{"!rcq command}
+
+% !rcq 053108
+<<!rcq xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !box2poly} Command: Object Type Conversion}
+\index{"!box2poly command}
+
+% !box2poly 053108
+<<!box2poly xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !path2poly} Command: Outline to Polygon
+  Conversion}
+\index{"!path2poly command}
+
+% !path2poly 053108
+<<!path2poly xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !poly2path} Command: Polygon to Outline
+  Conversion}
+\index{"!poly2path command}
+
+% !poly2path 033009
+<<!poly2path xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !bloat} Command: Expand Objects}
+\label{bloatcmd}
+\index{"!bloat command}
+
+% !bloat 040316
+<<!bloat xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !join} Command: Join Touching Objects}
+\index{"!join command}
+\label{joincmd}
+
+% !join 070616
+<<!join xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !jw} Command: Join Wires}
+\index{"!jw command}
+
+% !jw 092717
+<<!jw xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !split} Command: Atomize Objects}
+\index{"!split command}
+
+% !split 121713
+<<!split xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !manh} Command: Convert to Manhattan Polygons}
+\index{"!manh command}
+
+% !manh 100412
+<<!manh xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !polyfix} Command: Fix Polygon}
+\index{"!polyfix command}
+
+% !polyfix 033009
+<<!polyfix xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !polyrev} Command: Reverse Polygon Winding}
+\index{"!polyrev command}
+
+% !polyrev 053108
+<<!polyrev xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !noacute} Command: Eliminate Acute Angles}
+\index{"!noacute command}
+
+% !noacute 053108
+<<!noacute xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !togrid} Command: Move To Grid}
+\index{"!togrid command}
+
+% !togrid 053108
+<<!togrid xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !tospot} Command: Modify for Spot Size}
+\index{"!tospot command}
+\index{spot size}
+
+% !tospot 100916
+<<!tospot xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !origin} Command: Move Cell Origin}
+\index{"!origin command}
+
+% !origin 053108
+<<!origin xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !import} Command: Import Cell Data}
+\index{"!import command}
+
+% !import 053108
+<<!import xiBangcmds.hlp>>
+
+
+\section{Layout Information}
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !fileinfo} Command: Show File Statistics}
+\label{fileinfo}
+\index{"!fileinfo command}
+
+% !fileinfo 041009
+<<!fileinfo xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !summary} Command: Print Hierarchy Info}
+\index{"!summary command}
+
+% !summary 060108
+<<!summary xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !compare} Command: Compare Hierarchies}
+\label{cellcomp}
+\index{"!compare command}
+
+% !compare 120110
+<<!compare xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !diffcells} Command: Create Cells from Comparisons}
+\index{"!diffcells command}
+
+% !diffcells 030909
+<<!diffcells xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !empties} Command: Check for Empty Cells}
+\index{"!empties command}
+
+% !empties 090914
+<<!empties xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !area} Command: Measure Layer Area}
+\index{"!area command}
+
+% !area 060108
+<<!area xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !perim} Command: Measure Object Perimeter}
+\index{"!perim command}
+
+% !perim 060108
+<<!perim xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !bb} Command: Print Bounding Box}
+\index{"!bb command}
+
+% !bb 060108
+<<!bb xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !checkgrid} Command: Mark Off-Grid Vertices}
+\index{"!checkgrid command}
+
+% !checkgrid 100412
+<<!checkgrid xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !checkover} Command: Report Subcell Overlap}
+\index{"!checkover command}
+
+% !checkover 060108
+<<!checkover xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !check45} Command: Select Non-45 Polys and/or Wires}
+\index{"!check45 command}
+
+% !check45 012016
+<<!check45 xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !dups} Command: Select Coincident Objects}
+\index{"!dups command}
+
+% !dups 060108
+<<!dups xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !wirecheck} Command: Check Wires}
+\index{"!wirecheck command}
+\label{wirecheck}
+
+% !wirecheck 101609
+<<!wirecheck xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !polycheck} Command: Check Polygons}
+\index{"!polycheck command}
+
+% !polycheck 033009
+<<!polycheck xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !polymanh} Command: Select Manhattan Polygons}
+\index{"!polymanh command}
+
+% !polymanh 100412
+<<!polymanh xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !poly45} Command: Select Non-45 Polygons}
+\index{"!poly45 command}
+
+% !poly45 012016
+<<!poly45 xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !polynum} Command: Number Vertices}
+\index{"!polynum command}
+
+% !polynum 060108
+<<!polynum xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !setflag} Command: Set Internal Cell Flags}
+\index{"!setflag command}
+
+% !setflag 111609
+<<!setflag xiBangcmds.hlp>>
+
+
+\section{Libraries and Databases}
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !mklib} Command: Create Library File}
+\index{"!mklib command}
+
+% !mklib 081318
+<<!mklib xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !lsdb} Command: List Special Databases}
+\index{"!lsdb command}
+
+% !lsdb 090809
+<<!lsdb xiBangcmds.hlp>>
+
+
+\section{Marks}
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !mark} Command: Create User Marks}
+\index{"!mark command}
+
+% !mark 120909
+<<!mark xiBangcmds.hlp>>
+
+
+\section{Memory Management}
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !clearall} Command: Clear All Memory}
+\index{"!clearall command}
+
+% !clearall 060108
+<<!clearall xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !vmem} Command: Windows Virtual Memory Info}
+\index{"!vmem command}
+
+% !vmem 060108
+<<!vmem xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !mmstats} Command: Show Memory Manager Statistics}
+\index{"!mmstats command}
+
+% !mmstats 060108
+<<!mmstats xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !mmclear} Command: Clear Recycle Free Lists}
+\index{"!mmclear command}
+
+% !mmclear 071815
+<<!mmclear xiBangcmds.hlp>>
+
+
+%\ifoa
+\section{OpenAccess Interface}
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !oaversion} Command: Print OpenAccess Release Number}
+\index{"!oaversion command}
+
+% !oaversion 012713
+<<!oaversion xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !oadebug} Command: Enable Logging}
+\index{"!oadebug command}
+
+% !oadebug 062313
+<<!oadebug xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !oanewlib} Command: Create New OpenAccess Library}
+\index{"!oanewlib command}
+
+% !oanewlib 012713
+<<!oanewlib xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !oabrand} Command: Permit Save from {\Xic} in OA Lib}
+\index{"!oabrand command}
+
+% !oabrand 022316
+<<!oabrand xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !oatech} Command: Query OA Technology Database}
+\index{"!oatech command}
+
+% !oatech 032017
+<<!oatech xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !oasave} Command: Save Cell to OA Library}
+\index{"!oasave command}
+
+% !oasave 030416
+<<!oasave xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !oaload} Command: Read Cell from OA Library}
+\index{"!oaload command}
+
+% !oaload 030416
+<<!oaload xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !oadelete} Command: Delete OpenAccess Object}
+\index{"!oadelete command}
+
+% !oadelete 012713
+<<!oadelete xiBangcmds.hlp>>
+
+
+%\fi
+\section{Parameterized Cells}
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !rmpcprops} Command: Remove PCell Properties}
+\index{"!rmpcprops command}
+
+% !rmpcprops 032017
+<<!rmpcprops xiBangcmds.hlp>>
+
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !preload} Command: Pre-Load PCell Sub-Masters}
+\index{"!preload command}
+
+% !preload 081318
+<<!preload xiBangcmds.hlp>>
+
+
+\section{Rulers}
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !dr} Command: Delete Rulers}
+\index{"!dr command}
+
+% !dr 012815
+<<!dr xiBangcmds.hlp>>
+
+
+\section{Scripts}
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !script} Command: Add Script}
+\index{"!script command}
+
+% !script 060108
+<<!script xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !rehash} Command: Rebuild User Menu}
+\index{"!rehash command}
+
+% !rehash 060108
+<<!rehash xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !exec} Command: Execute a Script}
+\index{"!exec command}
+
+% !exec 060108
+<<!exec xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !lisp} Command: Execute Lisp Script}
+\index{"!lisp command}
+\index{functions}
+
+% !lisp 062213
+<<!lisp xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !py} Command: Execute Python Script}
+\index{"!py command}
+\index{Python}
+
+% !py 021713
+<<!py xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !tcl} Command: Execute Tcl Script}
+\index{"!tcl command}
+\index{Tcl/Tk}
+
+% !tcl 021813
+<<!tcl xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !tk} Command: Execute Tcl/Tk Script}
+\index{"!tk command}
+\index{Tcl/Tk}
+
+% !tk 021813
+<<!tk xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !listfuncs} Command: List Saved Functions}
+\index{"!listfuncs command}
+\index{functions}
+
+% !listfuncs 060108
+<<!listfuncs xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !rmfunc} Command: Remove Saved Function}
+\index{"!rmfunc command}
+\index{functions}
+
+% !rmfunc 060108
+<<!rmfunc xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !mkscript} Command: Create Current Cell Script}
+\index{"!mkscript command}
+
+% !mkscript 030215
+<<!mkscript xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !ldshared} Command: Load Plug-In Script Library}
+\index{"!ldshared command}
+
+% !ldshared 072517
+<<!ldshared xiBangcmds.hlp>>
+
+
+\section{Selections}
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !select} Command: Select Objects}
+\index{"!select command}
+\index{selections!"!select command}
+
+% !select 092717
+<<!select xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !desel} Command: Deselect Objects}
+\index{"!desel command}
+
+% !desel 060108
+<<!desel xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !zs} Command: Zoom to Selected Objects}
+\index{"!zs command}
+
+% !zs 060108
+<<!zs xiBangcmds.hlp>>
+
+
+\section{Shell}
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !shell} Command: Pop Up Terminal Window}
+\label{shellcmd}
+\index{"!shell command}
+
+% !shell 022111
+<<!shell xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !ssh} Command: Connect to Remote System}
+\index{"!ssh command}
+
+% !ssh 022111
+<<!ssh xiBangcmds.hlp>>
+
+
+\section{Technology File}
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !attrvars} Command: List techfile attribute variables}
+\index{"!attrvars command}
+
+% !attrvars 021615
+<<!attrvars xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !dumpcds} Command: Create Virtuoso$^{TM}$ Startup Files}
+\index{"!dumpcds command}
+
+% !dumpcds 092717
+<<!dumpcds xiBangcmds.hlp>>
+
+
+\section{Update Release}
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !update} Command: Download/Install Update}
+\index{"!update command}
+
+% !update 102817
+<<!update xiBangcmds.hlp>>
+
+
+\section{Variables}
+\label{setcmd}
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !set} Command: Set Variables}
+\index{"!set command}
+\index{variables}
+\index{variables!setting}
+
+% !set 102114
+<<!set xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !unset} Command: Unset Variables}
+\index{"!unset command}
+\index{variables!unsetting}
+
+% !unset 060108
+<<!unset xiBangcmds.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !setdump} Command: Dump Variables}
+\index{"!setdump command}
+
+% !setdump 060108
+<<!setdump xiBangcmds.hlp>>
+
+
+\section{{\WRspice} Interface}
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb !spcmd} Command: Run {\WRspice} Command}
+\index{"!spcmd command}
+
+% !spcmd 020809
+<<!spcmd xiBangcmds.hlp>>
+

@@ -214,6 +214,1831 @@ Script Interface Functions
     <a href="funcs:router:mrouter">Maze Router Plug-In</a>
     </dl>
 !!ENDIF
+!!LATEX scr:iffuncs scrfuncs.tex
+There is a growing library of user interface functions which control
+various aspects of {\Xic} for use in scripts.
+
+Functions that manipulate objects in the database use a coordinate
+system based in microns (1 micron usually equals 1000 database units). 
+All coordinates are real values.
+
+There are two levels of run-time error reporting.  For serious errors,
+a message is emitted to the controlling terminal, and the script
+terminates.  Most interface functions will generate this type of error
+only in response to bad arguments, meaning usually arguments of the
+wrong type.  Less serious errors simply cause the function to return,
+returning a value that indicates that the operation was unsuccessful. 
+Many of the functions return 1 if successful, or 0 if not successful. 
+In some cases where a string is normally returned, a null string
+return indicates an error occurred.  It is up to the user to test the
+return values for success or failure.
+
+When the documentation specifies that a null string value is
+acceptable as a function argument, the value zero can be passed
+instead of a string variable.  The token {\vt NULL}, which is predefined
+as 0, can be used equivalently.
+
+The tables below list the collections of interface functions presently
+available, by category and sub-category.  Most of these functions
+return a value.  In the descriptions, if a value is returned, the
+type, in parentheses, is indicated ahead of the function name.
+
+\newcommand{\vr}{\tt\raggedright}
+
+The first group of main module functions:
+
+\begin{longtable}{|p{3.0in}|p{2.875in}|} \hline
+\multicolumn{2}{|l|}{\kb Main Functions 1}\\ \hline
+
+% 081318
+\multicolumn{2}{|c|}{\kb Current Cell}\\ \hline
+\vr Edit({\it name\/}, {\it symname\/}) & Edit cell\\ \hline
+\vr OpenCell({\it name\/}, {\it symname\/}, {\it curcell}) & Read file into
+  memory\\ \hline
+\vr TouchCell({\it cellname\/}, {\it curcell}) & Create cell in memory\\ \hline
+\vr RegisterSubMasters({\it archive\/}) & Pre-load pcell sub-masters to 
+  resolve as archive is read\\ \hline
+\vr Push({\it object\_handle\/}) & Make a subcell the current cell\\ \hline
+\vr PushElement({\it object\_handle\/}, {\it xind\/}, {\it yind\/}) & Make an
+  arrayed subcell element the current cell\\ \hline
+\vr Pop() & Make parent cell the current cell\\ \hline
+\vr NewCellName() & Return empty new cell name\\ \hline
+\vr CurCellName() & Return current cell name\\ \hline
+\vr TopCellName() & Return cell name at top of editing hierarchy\\ \hline
+\vr FileName() & Return file name for current cell\\ \hline
+\vr CurCellBB({\it array\/}) & Return current cell bounding box\\ \hline
+\vr SetCellFlag({\it cellname\/}, {\it flagname\/}, {\it set\/}) & Set the
+  state of a cell flag\\ \hline
+\vr GetCellFlag({\it cellname\/}, {\it flagname\/}) & Get cell flag
+  state\\ \hline
+\vr Save({\it newname\/}) & Save to disk\\ \hline
+\vr UpdateNative({\it dir\/}) & Save modified hierarchy cells as native\\
+  \hline
+
+% 022012
+\multicolumn{2}{|c|}{\kb Cell Info}\\ \hline
+\vr CellBB({\it cellname\/}, {\it array\/} [, {\it symbolic\/}]) &
+  Obtain cell bounding box\\ \hline
+\vr ListSubcells({\it cellname\/}, {\it depth\/}, {\it array\/},
+  {\it incl\_top\/}) & List subcells in area to depth\\ \hline
+\vr ListParents({\it cellname\/}) & List instantiating cells\\ \hline
+\vr InitGen() & Return handle to subcell name list\\ \hline
+\vr CellsHandle({\it cellname\/}, {\it depth\/}) & Return handle to subcell
+  name list\\ \hline
+\vr GenCells({\it handle\/}) & Return name from name list\\ \hline
+
+% 101208
+\multicolumn{2}{|c|}{\kb Database}\\ \hline
+\vr Clear({\it cellname\/}) & Delete cells from memory\\ \hline
+\vr ClearAll({\it clear\_tech\/}) & Delete all cells and reinitialize\\ \hline
+\vr IsCellInMem({\it cellname\/}) & Check if cell is in memory\\ \hline
+\vr IsFileInMem({\it filename\/}) & Check if cell from file is in memory\\
+ \hline
+\vr NumCellsInMem() & Count cells in memory\\ \hline
+\vr ListCellsInMem({\it options\_str\/}) & List names of cells in
+  memory\\ \hline
+\vr ListTopCellsInMem() & List names of top-level cells in memory\\ \hline
+\vr ListModCellsInMem() & List names of modified cells in memory\\ \hline
+\vr ListTopFilesInMem() & List source files of top-level cells in memory\\
+ \hline
+
+% 100408
+\multicolumn{2}{|c|}{\kb Symbol Tables}\\ \hline
+\vr SetSymbolTable({\it tabname\/}) & Switch to new or existing symbol
+  table\\ \hline
+\vr ClearSymbolTable({\it destroy\/}) & Clear or destroy current symbol
+  table\\ \hline
+\vr CurSymbolTable() & Return the name of the current symbol table\\ \hline
+
+% 100408
+\multicolumn{2}{|c|}{\kb Display}\\ \hline
+\vr Window({\it x\/}, {\it y\/}, {\it width\/}, {\it win\/}) & Set display
+  window view\\ \hline
+\vr GetWindow() & Return window containing pointer\\ \hline
+\vr GetWindowView({\it win\/}, {\it array\/}) & Return window view area
+  coordinates\\ \hline
+\vr GetWindowMode({\it win\/}) & Return window display mode\\ \hline
+\vr Expand({\it win\/}, {\it string\/}) & Set expansion status\\ \hline
+\vr Display({\it display\_string\/}, {\it win\_id\/}, {\it l\/}, {\it b\/},
+  {\it r\/}, {\it t\/}) & Exportable rendering service\\ \hline
+\vr FreezeDisplay({\it freeze\/}) & Turn off/on graphics screen updates\\
+  \hline
+\vr Redraw({\it win\/}) & Redraw the window\\ \hline
+
+% 100408
+\multicolumn{2}{|c|}{\kb Exit}\\ \hline
+\vr Exit() & Exit script\\ \hline
+\vr Halt() & Exit script\\ \hline
+
+% 120909
+\multicolumn{2}{|c|}{\kb Annotation}\\ \hline
+\vr AddMark({\it type\/}, {\it arguments\/} ...) & Show a user-specified mark\\
+  \hline
+\vr EraseMark({\it id\/}) & Erase a mark\\ \hline
+\vr DumpMarks({\it filename\/}) & Dump current cell marks to file\\ \hline
+\vr ReadMarks({\it filename\/}) & Read marks from file\\ \hline
+
+% 092915
+\multicolumn{2}{|c|}{\kb Ghost Rendering}\\ \hline
+\vr PushGhost({\it array\/}, {\it numpts\/}) & Register ghost-drawn polygon\\
+  \hline
+\vr PushGhostBox({\it left\/}, {\it bottom\/}, {\it right\/}, {\it top\/}) &
+  Register ghost-drawn box\\ \hline
+\vr PushGhostH({\it object\_handle\/}, {\it all\/}) & Register ghost-drawn
+   outlines\\ \hline
+\vr PopGhost() & Unregister ghost-drawn figure\\ \hline
+\vr ShowGhost({\it type\/}) & Show ghost-drawn figures\\ \hline
+
+% 022713
+\multicolumn{2}{|c|}{\kb Graphics}\\ \hline
+\vr GRopen({\it display\/}, {\it window\/}) & Open a graphics context\\ \hline
+\vr GRcheckError() & Return graphics error status\\ \hline
+\vr GRcreatePixmap({\it handle\/}, {\it width\/}, {\it height\/}) & Return a
+  new pixmap id\\ \hline
+\vr GRdestroyPixmap({\it handle\/}, {\it pixmap\/}) & Free pixmap\\ \hline
+\vr GRcopyDrawable({\it handle\/}, {\it dst\/}, {\it src\/}, {\it xs\/},
+  {\it ys\/}, {\it ws\/}, {\it hs\/}, {\it x\/}, {\it y\/}) & Copy area
+  between drawables\\ \hline
+\vr GRdraw({\it handle\/}, {\it l\/}, {\it b\/}, {\it r\/}, {\it t\/}) &
+  Render cell\\ \hline
+\vr GRgetDrawableSize({\it handle\/}, {\it drawable\/}, {\it array\/}) & Return
+  size of drawable\\ \hline
+\vr GRresetDrawable({\it handle\/}, {\it drawable\/}) & Switch drawable in
+  context\\ \hline
+\vr GRclear({\it handle\/}) & Clear window\\ \hline
+\vr GRpixel({\it handle\/}, {\it x\/}, {\it y\/}) & Draw pixel\\ \hline
+\vr GRpixels({\it handle\/}, {\it array}, {\it num\/}) & Draw pixels\\ \hline
+\vr GRline({\it handle\/}, {\it x1\/}, {\it y1\/}, {\it x2\/}, {\it y2\/}) &
+  Draw line\\ \hline
+\vr GRpolyLine({\it handle\/}, {\it array\/}, {\it num\/}) & Draw path\\ \hline
+\vr GRlines({\it handle\/}, {\it array\/}, {\it num\/}) & Draw lines\\ \hline
+\vr GRbox({\it handle\/}, {\it l\/}, {\it b\/}, {\it r\/}, {\it t\/}) & Draw
+  box\\ \hline
+\vr GRboxes({\it handle\/}, {\it array\/}, {\it num\/}) & Draw boxes\\ \hline
+\vr GRarc({\it handle\/}, {\it x0\/}, {\it y0\/}, {\it rx\/}, {\it ry\/},
+  {\it theta1\/}, {\it theta2\/}) & Draw arc\\ \hline
+\vr GRpolygon({\it handle\/}, {\it array\/}, {\it num\/}) & Draw polygon\\
+  \hline
+\vr GRtext({\it handle\/}, {\it text\/}, {\it x\/}, {\it y\/},
+  {\it flags\/}) & Draw text\\ \hline
+\vr GRtextExtent({\it handle\/}, {\it text\/}, {\it array\/}) & Return text
+  size\\ \hline
+\vr GRdefineColor({\it handle\/}, {\it red\/}, {\it green\/}, {\it blue\/}) &
+  Return color code\\ \hline
+\vr GRsetBackground({\it handle\/}, {\it pixel\/}) & Set default background
+  color\\ \hline
+\vr GRsetWindowBackground({\it handle\/}, {\it pixel\/}) & Set window background
+  color\\ \hline
+\vr GRsetColor({\it handle\/}, {\it pixel\/}) & Set foreground color\\ \hline
+\vr GRdefineLinestyle({\it handle\/}, {\it index\/}, {\it mask\/}) & Define a
+  line style\\ \hline
+\vr GRsetLinestyle({\it handle\/}, {\it index\/}) & Set current line style\\
+  \hline
+\vr GRdefineFillpattern({\it handle\/}, {\it index\/}, {\it nx\/}, {\it ny\/},
+  {\it array\_string\/}) & Define a fill pattern\\ \hline
+\vr GRsetFillpattern({\it handle\/}, {\it index\/}) & Set current fill pattern\\
+  \hline
+\vr GRupdate({\it handle\/}) & Update rendering\\ \hline
+\vr GRsetMode({\it handle\/}, {\it mode\/}) & Set drawing mode\\ \hline
+
+% 071110
+\multicolumn{2}{|c|}{\kb Hard Copy}\\ \hline
+\vr HClistDrivers() & Return list of available drivers\\ \hline
+\vr HCsetDriver({\it driver\/}) & Set current driver\\ \hline
+\vr HCgetDriver() & Return current driver name\\ \hline
+\vr HCsetResol({\it resol\/}) & Set current driver resolution\\ \hline
+\vr HCgetResol() & Return current driver resolution\\ \hline
+\vr HCgetResols({\it array\/}) & Return available driver resolutions\\ \hline
+\vr HCsetBestFit({\it best\_fit\/}) & Set ``best fit'' mode\\ \hline
+\vr HCgetBestFit() & Return ``best fit'' mode\\ \hline
+\vr HCsetLegend({\it legend\/}) & Set ``legend'' mode\\ \hline
+\vr HCgetLegend() & Return ``legend'' mode\\ \hline
+\vr HCsetLandscape({\it landscape\/}) & Set ``landscape'' mode\\ \hline
+\vr HCgetLandscape() & Return ``landscape'' mode\\ \hline
+\vr HCsetMetric({\it metric\/}) & Set ``metric'' mode\\ \hline
+\vr HCgetMetric() & Return ``metric'' mode\\ \hline
+\vr HCsetSize({\it x\/}, {\it y\/}, {\it w\/}, {\it h\/}) & Set rendering
+  area\\ \hline
+\vr HCgetSize({\it array\/}) & Return rendering area\\ \hline
+\vr HCshowAxes({\it style\/}) & Set axes display style\\ \hline
+\vr HCshowGrid({\it show\/}, {\it mode\/}) & Set grid displayed or not\\ \hline
+\vr HCsetGridInterval({\it spacing\/}, {\it mode\/}) & Set grid spacing\\
+  \hline
+\vr HCsetGridStyle({\it linemod\/}, {\it mode\/}) & Set grid line style\\
+  \hline
+\vr HCsetGridCrossSize({\it xsize\/}, {\it mode\/}) & Set grid ``dot'' cross
+  size\\ \hline
+\vr HCsetGridOnTop({\it on\_top\/}, {\it mode\/}) & Draw grid above or below
+ geometry\\ \hline
+\vr HCdump({\it l\/}, {\it b\/}, {\it r\/}, {\it t\/}, {\it filename\/},
+  {\it command\/}) & Generate output\\ \hline
+\vr HCerrorString() & Retrun error message\\ \hline
+\vr HClistPrinters() & List MS Windows printers\\ \hline
+\vr HCmedia({\it index\/}) & Set MS Windows page size\\ \hline
+
+% 011114
+\multicolumn{2}{|c|}{\kb Keyboard}\\ \hline
+\vr ReadMapfile({\it mapfile\/}) & Read a keyboard mapping file\\ \hline
+
+% 100408
+\multicolumn{2}{|c|}{\kb Libraries}\\ \hline
+\vr OpenLibrary({\it path\_name\/}) & Open a library file\\ \hline
+\vr CloseLibrary({\it path\_name\/}) & Close an open library\\ \hline
+
+%\ifoa
+% 030416
+\multicolumn{2}{|c|}{\kb OpenAccess}\\ \hline
+\vr OaVersion() & Get OpenAccess version string\\ \hline
+\vr OaIsLibrary({\it libname\/}) & Check if argument is a library\\ \hline
+\vr OaListLibraries() & Return list of libraries\\ \hline
+\vr OaListLibCells({\it libname\/}) & Return list of cells in library\\ \hline
+\vr OaListCellViews({\it libname\/}, {\it cellname\/}) & Return list of
+  views in cell\\ \hline
+\vr OaIsLibOpen({\it libname\/}) & Check if library is open\\ \hline
+\vr OaOpenLibrary({\it libname\/}) & Open an OpenAccess library\\ \hline
+\vr OaCloseLibrary({\it libname\/}) & Close an open OpenAccess library\\ \hline
+\vr OaIsOaCell({\it libname\/}, {\it open\_only\/}) & Check if cell can be
+  resolved\\ \hline
+\vr OaIsCellInLib({\it libname\/}, {\it cellname\/}) & Check if cell exists
+  in library\\ \hline
+\vr OaIsCellView({\it cellname\/}, {\it viewname\/}, {\it open\_only\/}) &
+  Check if view exists in cell\\ \hline
+\vr OaIsCellViewInLib({\it libname\/}, {\it cellname\/}, {\it viewname\/}) &
+  Check if view of cell exists in cell\\ \hline
+\vr OaCreateLibrary({\it libname\/}, {\it techlibname\/}) & Create new
+  library\\ \hline
+\vr OaBrandLibrary({\it libname\/}, {\it branded\/}) & Set or unset
+  writability from {\Xic}\\ \hline
+\vr OaIsLibBranded({\it libname\/}) & Check if library writable from
+  {\Xic}\\ \hline
+\vr OaDestroy({\it libname\/}, {\it cellname\/}, {\it viewname\/}) & Destroy
+  library, cell, or view\\ \hline
+\vr OaLoad({\it libname\/}, {\it cellname\/}) & Load cell into {\Xic}\\ \hline
+\vr OaReset() & Clear table of cells already loaded\\ \hline
+\vr OaSave({\it libname\/}, {\it allhier\/}) & Save current cell to
+  OpenAccess\\ \hline
+\vr OaAttachTech({\it libname\/}, {\it techlibname\/}) & Attach the
+  technology from another library\\ \hline
+\vr OaGetAttachedTech({\it libname\/}) & Return the name of attached
+  library\\ \hline
+\vr OaHasLocalTech({\it libname\/}) & Check if library has local tech
+  database\\ \hline
+\vr OaCreateLocalTech({\it libname\/}) & Create a local tech database in
+  library\\ \hline
+\vr OaDestroyTech({\it libname\/}, {\it unattach\_only\/}) & Destroy/remove
+  technology object\\ \hline
+%\fi
+
+% 100408
+\multicolumn{2}{|c|}{\kb Mode}\\ \hline
+\vr Mode({\it window\/}, {\it mode\/}) & Set physical or electrical mode\\ \hline
+\vr CurMode({\it window\/}) & Return current mode\\ \hline
+
+% 100408
+\multicolumn{2}{|c|}{\kb Prompt Line}\\ \hline
+\vr StuffText({\it string\/}) & Register text for future access\\ \hline
+\vr TextCmd({\it string\/}) & Execute a prompt line command\\ \hline
+\vr GetLastPrompt() & Return most recent prompt line message\\ \hline
+
+% 021913
+\multicolumn{2}{|c|}{\kb Scripts}\\ \hline
+\vr ListFunctions() & Return list of library file functions\\ \hline
+\vr Exec({\it script\/}) & Execute a script\\ \hline
+\vr SetKey({\it password\/}) & Set the current password for script
+  decryption\\ \hline
+\vr HasPython() & Return true if Python is available\\ \hline
+\vr RunPython({\it command\/}) & Run a Python script\\ \hline
+\vr RunPythonModFunc({\it module\/}, {\it function} [, {\it arg} ...]) &
+  Execute a Python module function\\ \hline
+\vr ResetPython() & Reset the Python interpreter\\ \hline
+\vr HasTcl() & Return true if Tcl is available\\ \hline
+\vr HasTk() & Return true if Tcl and Tk are available\\ \hline
+\vr RunTcl({\it command\/} [, {\it arg} ...]) & Run a Tcl/Tk script\\ \hline
+\vr ResetTcl() & Reset the Tcl/Tk interpreter\\ \hline
+\vr HasGlobalVariable({\it globvar\/}) & Test if global variable\\ \hline
+\vr GetGlobalVariable({\it globvar\/}) & Return value of global variable\\
+  \hline
+\vr GetGlobalVariable({\it globvar\/}, {\it value\/}) & Set value of global
+  variable\\ \hline
+
+% 021913
+\multicolumn{2}{|c|}{\kb Technology File}\\ \hline
+\vr GetTechName() & Return technology name\\ \hline
+\vr GetTechExt() & Return technology file extension\\ \hline
+\vr SetTechExt({\it extension\/}) & Define effective technology file
+  extension\\ \hline
+\vr TechParseLine({\it line\/}) & Parse text in technology file format\\ \hline
+\vr TechGetFkeyString({\it fkeynum\/}) & Return function key encoding
+  string\\ \hline
+\vr TechSetFkeyString({\it fkeynum\/}, {\it string\/}) & Set function key
+  encoding\\ \hline
+
+% 113009
+\multicolumn{2}{|c|}{\kb Variables}\\ \hline
+\vr Set({\it name\/}, {\it string\/}) & Set a variable\\ \hline
+\vr Unset({\it name\/}) & Unset a variable\\ \hline
+\vr PushSet({\it name\/}, {\it string\/}) & Set a variable, allow revert\\
+  \hline
+\vr PopSet({\it name\/}) & Revert {\vt PushSet}\\ \hline
+\vr SetExpand({\it string\/}, {\it use\_env\/}) & Perform variable
+  substitution\\ \hline
+\vr Get({\it name\/}) & Return variable contents\\ \hline
+\vr JoinLimits({\it flags\/}) & Set or remove join operation limits\\ \hline
+
+% 100408
+\multicolumn{2}{|c|}{\kb {\Xic} Version}\\ \hline
+\vr VersionString() & Return current {\it Xic} version\\ \hline
+\end{longtable}
+
+The second group of main module functions:
+
+\begin{longtable}{|p{3.0in}|p{2.875in}|} \hline
+\multicolumn{2}{|l|}{\kb Main Functions 2}\\ \hline
+
+% 100408
+\multicolumn{2}{|c|}{\kb Arrays}\\ \hline
+\vr ArrayDims({\it out\_array\/}, {\it array\/}) & Get array dimensions\\
+  \hline
+\vr ArrayDimension({\it out\_array\/}, {\it array\/}) & Get array dimensions\\
+ \hline
+\vr GetDims({\it array\/}, {\it out\_array\/}) & Get array dimensions\\ \hline
+\vr DupArray({\it dest\_array\/}, {\it src\_array\/}) & Copy an array\\ \hline
+\vr SortArray({\it array\/}, {\it size\/}, {\it descend\/}, {\it indices\/}) &
+  Sort array elements\\ \hline
+
+% 100408
+\multicolumn{2}{|c|}{\kb Bitwise Logic}\\ \hline
+\vr ShiftBits({\it bits\/}, {\it val\/}) & Shift bit field\\ \hline
+\vr AndBits({\it bits1\/}, {\it bits2\/}) & AND operation\\ \hline
+\vr OrBits({\it bits1\/}, {\it bits2\/}) & OR operation\\ \hline
+\vr XorBits({\it bits1\/}, {\it bits2\/}) & XOR operation\\ \hline
+\vr NotBits({\it bits\/}) & NOT operation\\ \hline
+
+% 101609
+\multicolumn{2}{|c|}{\kb Error Reporting}\\ \hline
+\vr GetError() & Return error message\\ \hline
+\vr AddError({\it string\/}) & Save error string\\ \hline
+\vr GetLogNumber() & Return current message index\\ \hline
+\vr GetLogMessage({\it message\_num\/}) & Return string for message index\\
+ \hline
+\vr AddLogMessage({\it string\/}, {\it error\/}) & Add message to log\\ \hline
+
+% 100408
+\multicolumn{2}{|c|}{\kb Generic Handle Functions}\\ \hline
+\vr NumHandles() & Returns the number of active handles\\ \hline
+\vr HandleContent({\it handle\/}) & Returns count of list items\\ \hline
+\vr HandleTruncate({\it handle\/}, {\it count\/}) & Truncate a list of items\\
+  \hline
+\vr HandleNext({\it handle\/}) & Advance list to next item\\ \hline
+\vr HandleDup({\it handle\/}) & Duplicate a handle and list\\ \hline
+\vr HandleDupNitems({\it handle\/}, {\it count\/}) & Duplicate a handle and
+  list, truncating list\\ \hline
+\vr H({\it scalar\/}) & Create temporary handle from scalar\\ \hline
+\vr HandleArray({\it handle\/}, {\it array\/}) & Write an array of handles to
+  list elements\\ \hline
+\vr HandleCat({\it handle1\/}, {\it handle2\/}) & Add {\it handle2} list to end
+  of {\it handle1} list\\ \hline
+\vr HandleReverse({\it handle\/}) & Reverse list order\\ \hline
+\vr HandlePurgeList({\it handle1\/}, {\it handle2\/}) & Remove from second list
+  items in first\\ \hline
+\vr Close({\it handle\/}) & Close a handle\\ \hline
+\vr CloseArray({\it array\/}, {\it size\/}) & Close an array of handles\\ \hline
+
+% 100408
+\multicolumn{2}{|c|}{\kb Memory Management}\\ \hline
+\vr FreeArray({\it array\/}) & Free memory used by array\\ \hline
+\vr CoreSize() & Return kilobytes used by program\\ \hline
+
+% 100408
+\multicolumn{2}{|c|}{\kb Script Variables}\\ \hline
+\vr Defined({\it variable\/}) & Check if variable is defined\\ \hline
+\vr TypeOf({\it variable\/}) & Return variable type\\ \hline
+
+% 100408
+\multicolumn{2}{|c|}{\kb Path Manipulation and Query}\\ \hline
+\vr PathToEnd({\it path\_name\/}, {\it dir\/}) & Modify search path\\ \hline
+\vr PathToFront({\it path\_name\/}, {\it dir\/}) & Modify search path\\ \hline
+\vr InPath({\it path\_name\/}, {\it dir\/}) & Check if directory is in search
+  path\\ \hline
+\vr RemovePath({\it path\_name\/}, {\it dir\/}) & Remove directory from the
+  search path\\ \hline
+
+% 100408
+\multicolumn{2}{|c|}{\kb Regular Expressions}\\ \hline
+\vr RegCompile({\it regex\/}, {\it case\_insens\/}) & Compile regular
+  expression\\ \hline
+\vr RegCompare({\it regex\_handle\/}, {\it string\/}, {\it array\/}) & Regular
+  expression evaluation\\ \hline
+\vr RegError({\it regex\_handle\/}) & Return error string\\ \hline
+
+% 100408
+\multicolumn{2}{|c|}{\kb String List Handles}\\ \hline
+\vr StringHandle({\it string\/}, {\it sepchars\/}) & Return handle to string
+  tokens\\ \hline
+\vr ListHandle({\it arglist\/}) & Return handle to string arguments\\ \hline
+\vr ListContent({\it stringlist\_handle\/}) & Return referenced string\\ \hline
+\vr ListReverse({\it stringlist\_handle\/}) & Reverse order of strings in
+  list\\ \hline
+\vr ListNext({\it stringlist\_handle\/}) & Return referenced string and advance
+  to next\\ \hline
+\vr ListAddFront({\it stringlist\_handle\/}, {\it string\/}) & Add string to
+  list\\ \hline
+\vr ListAddBack({\it stringlist\_handle\/}, {\it string\/}) & Add string to
+  list\\ \hline
+\vr ListAlphaSort({\it stringlist\_handle\/}) & Sort string list\\ \hline
+\vr ListUnique({\it stringlist\_handle\/}) & Remove duplicates from list\\
+  \hline
+\vr ListFormatCols({\it stringlist\_handle\/}, {\it columns\/}) & Format
+  strings into columns\\ \hline
+\vr ListConcat({\it stringlist\_handle\/}, {\it sepchars\/}) & Create single
+  string from list\\ \hline
+\vr ListIncluded({\it stringlist\_handle\/}, {\it string\/}) & Check if
+  string is in list\\ \hline
+
+% 102114
+\multicolumn{2}{|c|}{\kb String Manipulation and Conversion}\\ \hline
+\vr Strcat({\it string1\/}, {\it string2\/}) & String concatenation\\ \hline
+\vr Strcmp({\it string1\/}, {\it string2\/}) & String comparison\\ \hline
+\vr Strncmp({\it string1\/}, {\it string2}, {\it n\/}) & String comparison,
+  fixed length\\ \hline
+\vr Strcasecmp({\it string1\/}, {\it string2\/}) & String comparison, case
+  insensitive\\ \hline
+\vr Strncasecmp({\it string1\/}, {\it string2}, {\it n\/}) & String comparison,
+  case insensitive, fixed length\\ \hline
+\vr Strdup({\it string\/}) & String copy\\ \hline
+\vr Strtok({\it str\/}, {\it sep\/}) & String tokenization\\ \hline
+\vr Strchr({\it string\/}, {\it char\/}) & Return pointer to first instance
+  of character\\ \hline
+\vr Strrchr({\it string\/}, {\it char\/}) & Return pointer to last instance
+  of character\\ \hline
+\vr Strstr({\it string\/}, {\it substring\/}) & Return pointer to first
+  instance of substring\\ \hline
+\vr Strpath({\it string\/}) & Return pointer to filename in path\\ \hline
+\vr Strlen({\it string\/}) & Return length of string\\ \hline
+\vr Sizeof({\it arg\/}) & Return string length or array size\\ \hline
+\vr ToReal({\it string\/}) & Convert string to number\\ \hline
+\vr ToString({\it real\/}) & Convert number to string\\ \hline
+\vr ToStringA({\it real\/}, {\it digits\/}) & Convert number to string
+  using SPICE notation\\ \hline
+\vr ToFormat({\it format\/}, {\it arg\_list\/}) & Print variables according to
+  format string\\ \hline
+\vr ToChar({\it integer\/}) & Convert character constant to string
+  representation\\ \hline
+
+% 100408
+\multicolumn{2}{|c|}{\kb Current Directory}\\ \hline
+\vr Cwd({\it path\/}) & Set current directory\\ \hline
+\vr Pwd() & Return current directory\\ \hline
+
+% 020411
+\multicolumn{2}{|c|}{\kb Date and Time}\\ \hline
+\vr DateString() & Return the date/time\\ \hline
+\vr Time() & Return system-encoded time\\ \hline
+\vr MakeTime({\it array\/}, {\it gmt\/}) & Create system-encoded time
+  from values\\ \hline
+\vr TimeToString({\it time\/}, {\it gmt\/}) & Return string from
+  system-encoded time\\ \hline
+\vr TimeToVals({\it time\/}, {\it gmt\/}, {\it array\/}) & Parse
+  system-encoded time\\ \hline
+\vr MilliSec() & Return elapsed time in milliseconds\\ \hline
+\vr StartTiming({\it array\/}) & Initialize resource timing\\ \hline
+\vr StopTiming({\it array\/}) & Obtain resource times\\ \hline
+
+% 102214
+\multicolumn{2}{|c|}{\kb File System Interface}\\ \hline
+\vr Glob({\it pattern\/}) & Perform global expansion\\ \hline
+\vr Open({\it file\/}, {\it mode\/}) & Open a file for read/write\\ \hline
+\vr Popen({\it command\/}, {\it mode\/}) & Open a process for read/write\\
+  \hline
+\vr Sopen({\it host\/}, {\it port\/}) & Open a socket for read/write\\ \hline
+\vr ReadLine({\it maxlen}, {\it file\_handle\/}) & Read a line of text from a
+  file\\ \hline
+\vr ReadChar({\it file\_handle\/}) & Read a character from a file\\ \hline
+\vr WriteLine({\it string\/}, {\it file\_handle\/}) & Write a line of text to a
+  file\\ \hline
+\vr WriteChar({\it c\/}, {\it file\_handle\/}) & Write a character to a file\\
+  \hline
+\vr TempFile({\it prefix\/}) & Create a temporary file name\\ \hline
+\vr ListDirectory({\it path\/}, {\it filter\/}) & Return handle to list of
+  file names\\ \hline
+\vr MakeDir({\it path\/}) & Create directory tree\\ \hline
+\vr FileStat({\it path\/}, {\it array\/}) & Get file/directory
+  statistics\\ \hline
+\vr DeleteFile({\it path\/}) & Destroy file or empty directory\\ \hline
+\vr MoveFile({\it from\_path\/}, {\it to\_path\/}) & Move (rename) file\\
+  \hline
+\vr CopyFile({\it from\_path\/}, {\it to\_path\/}) & Copy file\\ \hline
+\vr CreateBak({\it path\/}) & Move file to backup\\ \hline
+\vr Md5Digest({\it path\/}) & Return file digest string\\ \hline
+
+% 100408
+\multicolumn{2}{|c|}{\kb Socket and {\Xic} Client/Server Interface}\\ \hline
+\vr ReadData({\it size\/}, {\it skt\_handle\/}) & Read data from a
+  socket\\ \hline
+\vr ReadReply({\it retcode\/}, {\it skt\_handle\/}) & Read a message from the
+  {\Xic} server\\ \hline
+\vr ConvertReply({\it message\/}, {\it retcode\/}) & Parse {\Xic} server
+  response\\ \hline
+\vr WriteMsg({\it string\/}, {\it skt\_handle\/}) & Write a message to a
+  socket\\ \hline
+
+% 100408
+\multicolumn{2}{|c|}{\kb System Command Interface}\\ \hline
+\vr Shell({\it command\/}) & Execute a shell command\\ \hline
+\vr System({\it command\/}) & Execute a shell command\\ \hline
+\vr GetPID({\it parent\/}) & Return process ID\\ \hline
+
+% 100408
+\multicolumn{2}{|c|}{\kb Menu Buttons}\\ \hline
+\vr SetButtonStatus({\it menu\/}, {\it button\/}, {\it set\/}) & Set button
+  toggle status\\ \hline
+\vr GetButtonStatus({\it menu\/}, {\it button\/}) & Return button toggle
+  status\\ \hline
+\vr PressButton({\it menu\/}, {\it button\/}) & Synthesize a button press\\
+  \hline
+\vr BtnDown({\it num\/}, {\it state\/}, {\it x\/}, {\it y\/}, {\it widget\/}) &
+  Synthesize a button press\\ \hline
+\vr BtnUp({\it num\/}, {\it state\/}, {\it x\/}, {\it y\/}, {\it widget\/}) &
+  Synthesize a button release\\ \hline
+\vr KeyDown({\it keysym\/}, {\it state\/}, {\it widget\/}) & Synthesize a key
+  press\\ \hline
+\vr KeyUp({\it keysym\/}, {\it state\/}, {\it widget\/}) & Synthesize a key
+  release\\ \hline
+
+% 110115
+\multicolumn{2}{|c|}{\kb Mouse Input}\\ \hline
+\vr Point({\it array\/}) & Wait for a mouse button press\\ \hline
+\vr Selection() & Wait for key press, allow selections\\ \hline
+
+% 020109
+\multicolumn{2}{|c|}{\kb Graphical Input}\\ \hline
+\vr PopUpInput({\it message\/}, {\it default\/}, {\it buttontext\/},
+  {\it multiline\/}) & Pop up text input dialog\\ \hline
+\vr PopUpAffirm({\it message\/}) & Pop up yes/no dialog\\ \hline
+\vr PopUpNumeric({\it message\/}, {\it initval\/}, {\it minval\/},
+  {\it maxval\/}, {\it delta\/}, {\it numdgt\/}) & Pop up numeric entry
+  dialog\\ \hline
+
+% 100408
+\multicolumn{2}{|c|}{\kb Text Input}\\ \hline
+\vr AskReal({\it prompt\/}, {\it default\/}) & Prompt for a number from prompt
+  line\\ \hline
+\vr AskString({\it prompt\/}, {\it default\/}) & Prompt for a string from prompt
+  line\\ \hline
+\vr AskConsoleReal({\it prompt\/}, {\it default\/}) & Prompt for a number from
+  console\\ \hline
+\vr AskConsoleString({\it prompt\/}, {\it default\/}) & Prompt for a string from
+  console\\ \hline
+\vr GetKey() & Wait for key press\\ \hline
+
+% 100408
+\multicolumn{2}{|c|}{\kb Text Output}\\ \hline
+\vr SepString({\it string\/}, {\it repeat\/}) & Create separation or
+  indentation string\\ \hline
+\vr ShowPrompt({\it arg\_list\/}) & Show arguments on prompt line\\ \hline
+\vr SetIndent({\it level\/}) & Set indentation level for printing\\ \hline
+\vr SetPrintLimits({\it num\_array\_elts\/}, {\it num\_zoids\/}) & Limit number
+  of array values and trapezoids printed\\ \hline
+\vr Print({\it arg\_list\/}) & Print arguments to console window\\ \hline
+\vr PrintLog({\it file\_handle\/}, {\it arg\_list\/}) & Print arguments to
+  file\\ \hline
+\vr PrintString({\it arg\_list\/}) & Print arguments to a string\\ \hline
+\vr PrintStringEsc({\it arg\_list\/}) & Print arguments to a string\\ \hline
+\vr Message({\it arg\_list\/}) & Print arguments to pop-up window\\ \hline
+\vr ErrorMsg({\it arg\_list\/}) & Print arguments to pop-up error window\\
+  \hline
+\vr TextWindow({\it fname\/}, {\it readonly\/}) & Show file in text editor\\
+  \hline
+\end{longtable}
+
+The third group of main module functions:
+
+\begin{longtable}{|p{3.0in}|p{2.875in}|} \hline
+\multicolumn{2}{|l|}{\kb Main Functions 3}\\ \hline
+
+% 012815
+\multicolumn{2}{|c|}{\kb Grid and Edge Snapping}\\ \hline
+\vr SetMfgGrid({\it mfg\_grid\/}) & Set the manufacturing grid\\ \hline
+\vr GetMfgGrid() & Return the manufacturing grid\\ \hline
+\vr SetGrid({\it interval\/}, {\it snap\/}, {\it win\/}) & Set grid parameters
+  for window\\ \hline
+\vr GetGridInterval({\it win\/}) & Return fine grid spacing\\ \hline
+\vr GetSnapInterval({\it win\/}) & Return the snap grid spacing\\ \hline
+\vr GetGridSnap({\it win\/}) & Return grid snap number\\ \hline
+\vr ClipToGrid({\it coord\/}, {\it win\/}) & Move coord to grid\\ \hline
+\vr SetEdgeSnappingMode({\it win\/}, {\it mode\/}) & Set edge snapping
+  scope for window\\ \hline
+\vr SetEdgeOffGrid({\it win\/}, {\it off\_grid\/}) & Enable off-grid edge
+  snapping in window\\ \hline
+\vr SetEdgeNonManh({\it win\/}, {\it non\_manh\/}) & Enable non-Manhattan
+  edge snapping in window\\ \hline
+\vr SetEdgeWireEdge({\it win\/}, {\it wire\_edge\/}) & Snap to wire edges
+  in window\\ \hline
+\vr SetEdgeWirePath({\it win\/}, {\it wire\_path\/}) & Snap to wire path
+  in window\\ \hline
+\vr GetEdgeSnappingMode({\it win\/}) & Return edge snapping mode for
+  windoiw\\ \hline
+\vr GetEdgeOffGrid({\it win\/}) & Return off-grid edge snapping flag
+  for window\\ \hline
+\vr GetEdgeNonManh({\it win\/}) & Return non-Manhattan edge snapping
+  flag for window\\ \hline
+\vr GetEdgeWireEdge({\it win\/}) & Return wire edge snapping flag for
+  window\\ \hline
+\vr GetEdgeWirePath({\it win\/}) & Return wire path snapping flag for
+  window\\ \hline
+\vr SetRulerSnapToGrid({\it snap\/}) & Set ruler command grid snapping
+  state\\ \hline
+\vr SetRulerEdgeSnappingMode({\it mode\/}) & Set ruler command edge
+  snapping mode\\ \hline
+\vr SetRulerEdgeOffGrid({\it off\_grid\/}) & Set ruler command edge
+  snapping off-grid state\\ \hline
+\vr SetRulerEdgeNonManh({\it non\_manh\/}) & Set ruler command edge
+  snapping non-Manhattan state\\ \hline
+\vr SetRulerEdgeWireEdge({\it wire\_edge\/}) & Set ruler command edge
+  snapping wire-edge state\\ \hline
+\vr SetRulerEdgeWirePath({\it wire\_path\/}) & Set ruler command edge
+  snapping wire-path state\\ \hline
+\vr GetRulerSnapToGrid() & Return ruler command grid snapping state\\ \hline
+\vr GetRulerEdgeSnappingMode() & Return ruler command edge snapping
+  mode\\ \hline
+\vr GetRulerEdgeOffGrid() & Return ruler command edge snapping off-grid
+  state\\ \hline
+\vr GetRulerEdgeNonManh() & Return ruler command edge snapping
+  non-Manhattan state\\ \hline
+\vr GetRulerEdgeWireEdge() & Return ruler command edge snapping wire-edge
+  state\\ \hline
+\vr GetRulerEdgeWirePath() & Return ruler command edge snapping wire-path
+  state\\ \hline
+
+% 012815
+\multicolumn{2}{|c|}{\kb Grid Style}\\ \hline
+\vr ShowGrid({\it on\/}, {\it win\/}) & Set grid visibility in window\\ \hline
+\vr ShowAxes({\it style\/}, {\it win\/}) & Set axes style in window\\ \hline
+\vr SetGridStyle({\it style\/}, {\it win\/}) & Set grid line style\\ \hline
+\vr GetGridStyle({\it win\/}) & Return grid line style\\ \hline
+\vr SetGridCrossSize({\it xsize\/}, {\it win\/}) & Set grid ``dot'' cross
+  size\\ \hline
+\vr GetGridCrossSize({\it win\/}) & Return grid ``dot'' cross size\\ \hline
+\vr SetGridOnTop({\it ontop\/}, {\it win\/}) & Set grid on top of geometry\\
+  \hline
+\vr GetGridOnTop({\it win\/}) & Return grid top/bottom status\\ \hline
+\vr SetGridCoarseMult({\it mult\/}, {\it win\/}) & Set coarse grid spacing
+  multiple\\ \hline
+\vr GetGridCoarseMult({\it win\/}) & Return coarse grid spacing
+  multiple\\ \hline
+\vr SaveGrid({\it regnum\/}, {\it win\/}) & Save grid parameters in
+  register\\ \hline
+\vr RecallGrid({\it regnum\/}, {\it win\/}) & Recall grid parameters from
+  register\\ \hline
+
+% 030115
+\multicolumn{2}{|c|}{\kb Current Layer}\\ \hline
+\vr GetCurLayer() & Return name of current layer\\ \hline
+\vr GetCurLayerIndex() & Return index of current layer\\ \hline
+\vr SetCurLayer({\it name\/}) & Set current layer, layer must exist\\ \hline
+\vr SetCurLayerFast({\it name\/}) & As SetCurLayer, but no screen update\\
+  \hline
+\vr NewCurLayer({\it name\/}) & Set current layer, create if necessary\\ \hline
+\vr GetCurLayerAlias() & Return alias name of current layer\\ \hline
+\vr SetCurLayerAlias({\it alias\/}) & Set alias name of current layer\\ \hline
+\vr GetCurLayerDescr() & Return description of current layer\\ \hline
+\vr SetCurLayerDescr({\it descr\/}) & Set description of current layer\\ \hline
+
+% 101412
+\multicolumn{2}{|c|}{\kb Layer Table}\\ \hline
+
+\vr LayersUsed() & Return number of layers in table\\ \hline
+\vr AddLayer({\it name\/}, {\it index\/}) & Add a new layer\\ \hline
+\vr RemoveLayer({\it stdlyr\/}) & Remove a layer\\ \hline
+\vr RenameLayer({\it oldname\/}, {\it newname\/}) & Give a new name to a
+  layer\\ \hline
+\vr LayerHandle({\it down\/}) & Return a handle to a list of layer
+  names\\ \hline
+\vr GenLayers({\it stringlist\_handle\/}) & Return a layer name and
+  advance list to next\\ \hline
+\vr GetLayerPalette({\it regnum}) & Return list of palette layers\\ \hline
+\vr SetLayerPalette({\it list\/}, {\it regnum\/}) & Save list of palette
+  layers\\ \hline
+
+% 032017
+\multicolumn{2}{|c|}{\kb Layer Database}\\ \hline
+
+\vr GetLayerNum({\it name\/}) & Return component layer number for
+  name\\ \hline
+\vr GetLayerName({\it num\/}) & Return component layer name for
+  number\\ \hline
+\vr IsPurposeDefined({\it name\/}) & Return true if name matches a
+  purpose\\ \hline
+\vr GetPurposeNum({\it name\/}) & Return purpose number for name\\ \hline
+\vr GetPurposeName({\it num\/}) & Return purpose name for number\\ \hline
+
+% 032017
+\multicolumn{2}{|c|}{\kb Layers}\\ \hline
+
+\vr GetLayerLayerNum({\it stdlyr\/}) & Return the component layer number
+  for layer\\ \hline
+\vr GetLayerPurposeNum({\it stdlyr\/}) & Return the purpose
+  number for layer\\ \hline
+\vr GetLayerAlias({\it stdlyr\/}) & Return the alias for layer\\ \hline
+\vr SetLayerAlias({\it stdlyr\/}, {\it alias\/}) & Set the alias for
+  layer\\ \hline
+\vr GetLayerDescr({\it stdlyr\/}) & Return the description for layer\\ \hline
+\vr SetLayerDescr({\it stdlyr\/}, {\it descr\/}) & Set the description for
+  layer\\ \hline
+\vr IsLayerDefined({\it lname\/}) & Return nonzero if layer exists with
+  given name\\ \hline
+\vr IsLayerVisible({\it stdlyr\/}) & Return true if layer is visible\\ \hline
+\vr SetLayerVisible({\it stdlyr\/}, {\it visible\/}) & Set layer visibility
+  flag\\ \hline
+\vr IsLayerSelectable({\it stdlyr\/}) & Return true if layer is
+  selectable\\ \hline
+\vr SetLayerSelectable({\it stdlyr\/}, {\it selectable\/}) & Set layer
+  selectability flag\\ \hline
+\vr IsLayerSymbolic({\it stdlyr\/}) & Return true if layer is symbolic\\ \hline
+\vr SetLayerSymbolic({\it stdlyr\/}, {\it symbolic\/}) & Set layer
+  symbolic flag\\ \hline
+\vr IsLayerNoMerge({\it stdlyr\/}) & Return true if layer has no\_merge
+  set\\ \hline
+\vr SetLayerNoMerge({\it stdlyr\/}, {\it nomerge\/}) & Set layer no\_merge
+  flag\\ \hline
+\vr GetLayerMinDimension({\it stdlyr\/}) & Return minimum dimension\\ \hline
+\vr GetLayerWireWidth({\it stdlyr\/}) & Return default wire width\\ \hline
+\vr AddLayerGdsOutMap({\it stdlyr\/}, {\it layer\_num\/}, {\it datatype\/}) &
+  Add GDSII output layer mapping\\ \hline
+\vr RemoveLayerGdsOutMap({\it stdlyr\/}, {\it layer\_num\/}, {\it datatype\/}) &
+  Remove GDSII output layer mapping\\ \hline
+\vr AddLayerGdsInMap({\it stdlyr\/}, {\it string\/}) & Add GDSII input layer
+  mapping\\ \hline
+\vr ClearLayerGdsInMap({\it stdlyr\/}) & Clear GDSII input layer
+  mapping\\ \hline
+\vr SetLayerNoDRCdatatype({\it stdlyr\/}, {\it datatype\/}) & Set GDSII
+  NoDRC datatype\\ \hline
+
+% 011621
+\multicolumn{2}{|c|}{\kb Layers -- Extraction Support}\\ \hline
+\vr SetLayerExKeyword({\it stdlyr\/}, {\it string\/}) & Set extraction
+  keyword/value of layer\\ \hline
+\vr SetCurLayerExKeyword({\it string\/}) & Set extraction keyword/value of
+  current layer\\ \hline
+\vr RemoveLayerExKeyword({\it stdlyr\/}, {\it keyword\/}) & Remove
+  extraction keyword spec from layer\\ \hline
+\vr RemoveCurLayerExKeyword({\it keyword\/}) & Remove extraction keyword spec
+  from current layer\\ \hline
+\vr IsLayerConductor({\it stdlyr\/}) & Return nonzero for Conductor\\ \hline
+\vr IsLayerRouting({\it stdlyr\/}) & Return nonzero for Routing\\ \hline
+\vr IsLayerGround({\it stdlyr\/}) & Return nonzero for GroundPlane\\ \hline
+\vr IsLayerContact({\it stdlyr\/}) & Return nonzero for Contact\\ \hline
+\vr IsLayerVia({\it stdlyr\/}) & Return nonzero for Via\\ \hline
+\vr IsLayerViaCut({\it stdlyr\/}) & Return nonzero for ViaCut\\ \hline
+\vr IsLayerDielectric({\it stdlyr\/}) & Return nonzero for Dielectric\\ \hline
+\vr IsLayerDarkField({\it stdlyr\/}) & Return nonzero for DarkField\\ \hline
+\vr GetLayerThickness({\it stdlyr\/}) & Return Thickness\\ \hline
+\vr GetLayerRho({\it stdlyr\/}) & Return resistivity\\ \hline
+\vr GetLayerResis({\it stdlyr\/}) & Return resistance per square\\ \hline
+\vr GetLayerTau({\it stdlyr\/}) & Return Drude relaxation time\\ \hline
+\vr GetLayerEps({\it stdlyr\/}) & Return dielectric constant\\ \hline
+\vr GetLayerCap({\it stdlyr\/}) & Return capacitance per area\\ \hline
+\vr GetLayerCapPerim({\it stdlyr\/}) & Return capacitance per length\\ \hline
+\vr GetLayerLambda({\it stdlyr\/}) & Return penetration depth\\ \hline
+
+% 100412
+\multicolumn{2}{|c|}{\kb Selections}\\ \hline
+\vr SetLayerSpecific({\it state\/}) & Restrict selectability to current
+  layer\\ \hline
+\vr SetLayerSearchUp({\it state\/}) & Set layer traversal direction\\ \hline
+\vr SetSelectMode({\it ptr\_mode\/}, {\it area\_mode\/}, {\it sel\_mode\/}) &
+  Set selection modes\\ \hline
+\vr SetSelectTypes({\it string\/}) & Set selectable object types\\ \hline
+\vr Select({\it left\/}, {\it bottom\/}, {\it right\/}, {\it top\/},
+  {\it types\/}) & Select objects\\ \hline
+\vr Deselect() & Deselect objects\\ \hline
+
+% 100408
+\multicolumn{2}{|c|}{\kb Pseudo-Flat Generator}\\ \hline
+\vr FlatObjList({\it l\/}, {\it b\/}, {\it r\/}, {\it t\/}, {\it depth\/}) &
+  Return list of object copies\\ \hline
+\vr FlatObjGen({\it l\/}, {\it b\/}, {\it r\/}, {\it t\/}, {\it depth\/}) &
+  Return handle to object generator\\ \hline
+\vr FlatObjGenLayers({\it l\/}, {\it b\/}, {\it r\/}, {\it t\/}, {\it depth\/},
+  {\it layers\/}) & Return handle to object generator\\ \hline
+\vr FlatGenNext({\it handle\/}) & Return handle to next object copy\\ \hline
+\vr FlatGenCount({\it handle\/}) & Count objects accessible by handle\\ \hline
+\vr FlatOverlapList({\it object\_handle\/}, {\it touch\_ok\/}, {\it depth\/},
+  {\it layers\/}) & Return handle to next object copy\\ \hline
+
+% 100408
+\multicolumn{2}{|c|}{\kb Geometry Measurement}\\ \hline
+\vr Distance({\it x\/}, {\it y\/}, {\it x1\/}, {\it y1\/}) & Measure distance
+  between points\\ \hline
+\vr MinDistPointToSeg({\it x\/}, {\it y\/}, {\it x1\/}, {\it y1\/}, {\it x2\/},
+  {\it y2\/}, {\it aret\/}) & Measure minimum distance between point and line
+  segment\\ \hline
+\vr MinDistPointToObj({\it x\/}, {\it y\/}, {\it object\_handle\/},
+  {\it aret\/}) & Measure minimum distance between point and object\\ \hline
+\vr MinDistSegToObj({\it x1\/}, {\it y1\/}, {\it x2\/}, {\it y2\/},
+  {\it object\_handle\/}, {\it aret\/}) & Measure minimum distance between line
+  segment and object\\ \hline
+\vr MinDistObjToObj({\it object\_handle1\/}, {\it object\_handle2\/},
+  {\it aret\/}) & Measure minimum distance between objects\\ \hline
+\vr MaxDistPointToObj({\it x\/}, {\it y\/}, {\it object\_handle\/},
+  {\it aret\/}) & Measure maximum distance from point to object\\ \hline
+\vr MaxDistObjToObj({\it object\_handle1\/}, {\it object\_handle2\/},
+  {\it aret\/}) & Measure maximum distance between objects\\ \hline
+\vr Intersect({\it object\_handle1\/}, {\it object\_handle2\/},
+  {\it touchok\/}) & Check if objects touch or overlap\\ \hline
+\end{longtable}
+
+Functions related to reading and writing of layout data:
+
+\begin{longtable}{|p{3.0in}|p{2.875in}|} \hline
+\multicolumn{2}{|l|}{\kb Layout File Input/Output Functions}\\ \hline
+
+% 101412
+\multicolumn{2}{|c|}{\kb Layer Conversion Aliasing}\\ \hline
+\vr ReadLayerCvAliases({\it handle\_or\_filename\/}) & Read file containing
+  layer conversion aliases\\ \hline
+\vr DumpLayerCvAliases({\it handle\_or\_filename\/}) & Dump file containing
+  layer conversion aliases\\ \hline
+\vr ClearLayerCvAliases() & Delete all layer conversion aliases\\ \hline
+\vr AddLayerCvAlias({\it lname\/}, {\it new\_lname\/}) & Add layer conversion
+  alias to table\\ \hline
+\vr RemoveLayerCvAlias({\it lname\/}) & Remove layer conversion alias from
+  table\\ \hline
+\vr GetLayerCvAlias({\it lname\/}) & Return conversion alias for layer
+  name\\ \hline
+
+% 100408
+\multicolumn{2}{|c|}{\kb Cell Name Mapping}\\ \hline
+\vr SetMapToLower({\it state\/}, {\it rw}) & Set cell name case conversion
+  \\ \hline
+\vr SetMapToUpper({\it state\/}, {\it rw}) & Set cell name case conversion
+  \\ \hline
+
+% 100408
+\multicolumn{2}{|c|}{\kb Cell Table}\\ \hline
+\vr CellTabAdd({\it cellname\/}, {\it expand}) & Add cell(s) to cell
+  table\\ \hline
+\vr CellTabCheck({\it cellname\/}) & Return true if name is in cell
+  table\\ \hline
+\vr CellTabRemove({\it cellname\/}) & Remove name from cell table\\ \hline
+\vr CellTabList({\it cellname\/}) & List names in cell table\\ \hline
+\vr CellTabClear({\it cellname\/}) & Clear all names from cell table\\ \hline
+
+% 120110
+\multicolumn{2}{|c|}{\kb Windowing and Flattening}\\ \hline
+\vr SetConvertFlags({\it use\_window\/}, {\it clip\/}, {\it flatten\/},
+  {\it ecf\_level\/}, {\it rw\/}) & Set modes for format translation or
+  output\\ \hline
+\vr SetConvertArea({\it l\/}, {\it b\/}, {\it r\/}, {\it t\/}, {\it rw}) & Set
+  filter/clipping area for translation or output\\ \hline
+
+% 100408
+\multicolumn{2}{|c|}{\kb Scale Factor}\\ \hline
+\vr SetConvertScale({\it scale\/}, {\it which}) & Set scale factor for
+  import/export\\ \hline
+
+% 100408
+\multicolumn{2}{|c|}{\kb Export Flags}\\ \hline
+\vr SetStripForExport({\it state\/}) & Set flag to write physical data only\\
+  \hline
+\vr SetSkipInvisLayers({\it code\/}) & Set code to skip invisible layers in
+  output\\ \hline
+
+% 100408
+\multicolumn{2}{|c|}{\kb Import Flags}\\ \hline
+\vr SetMergeInRead({\it state\/}) & Enable box and wire merging in input\\
+  \hline
+
+% 072710
+\multicolumn{2}{|c|}{\kb Layout File Format Conversion}\\ \hline
+\vr FromArchive({\it file\_or\_chd\/}, {\it destination\/}) &
+  Translate archive file to another format\\ \hline
+\vr FromTxt({\it text\_file\/}, {\it gds\_file\/}) & Create GDSII file from GDSII
+  text\\ \hline
+\vr FromNative({\it dir\_path\/}, {\it archive\_file\/}) &
+  Translate native cell files to archive\\ \hline
+
+% 071915
+\multicolumn{2}{|c|}{\kb Export Layout File}\\ \hline
+\vr SaveCellAsNative({\it cellname\/}, {\it directory\/}) & Write a native
+  cell file in the directory\\ \hline
+\vr Export({\it filepath\/}, {\it allcells\/}) & Write data to disk\\ \hline
+\vr ToXIC({\it destination\_dir\/}) & Write {\it Xic} files\\ \hline
+\vr ToCGX({\it cgx\_name\/}) & Write CGX file\\ \hline
+\vr ToCIF({\it cif\_name\/}) & Write CIF file\\ \hline
+\vr ToGDS({\it gds\_name\/}) & Write GDSII file\\ \hline
+\vr ToGdsLibrary({\it gds\_name\/}, {\it cellname\_list\/}) & Write GDSII
+  library file\\ \hline
+\vr ToOASIS({\it oas\_name\/}) & Write OASIS file\\ \hline
+\vr ToTxt({\it archive\_file\/}, {\it text\_file\/}, {\it cmdargs\/}) &
+  Write text-mode GDSII/CGX/OASIS file\\ \hline
+
+% 030113
+\multicolumn{2}{|c|}{\kb Cell Hierarchy Digest}\\ \hline
+\vr FileInfo({\it filename\/}, {\it handle\_or\_filename\/}, {\it flags\/}) &
+  Obtain info about archive file\\ \hline
+\vr OpebCellHierDigest({\it filename\/}, {\it info\_saved\/}) &
+  Create new CHD\\ \hline
+\vr WriteCellHierDigest({\it chd\_name\/}, {\it filename\/},
+  {\it incl\_geom\/}, {\it no\_compr\/}) & Write CHD to
+  file\\ \hline
+\vr ReadCellHierDigest({\it filename\/}, {\it cgd\_type\/}) & Obtain CHD
+  from file\\ \hline
+\vr ChdList() & Return a list of CHD access names\\ \hline
+\vr ChdChangeName({\it old\_chd\_name\/}, {\it new\_chd\_name\/})) & Change
+  the access name of a CHD\\ \hline
+\vr ChdIsValid({\it chd\_name\/}) & Return true if named CHD exists\\ \hline
+\vr ChdDestroy({\it chd\_name\/}) & Destroy the CHD\\ \hline
+\vr ChdInfo({\it chd\_name\/}, {\it handle\_or\_filename\/}, {\it flags\/}) &
+  Obtain CHD information\\ \hline
+\vr ChdFileName({\it chd\_name\/}) & Obtain archive file name\\ \hline
+\vr ChdFileType({\it chd\_name\/}) & Obtain archive file format\\ \hline
+\vr ChdTopCells({\it chd\_name\/}) & Obtain archive top-level cell
+  names\\ \hline
+\vr ChdListCells({\it chd\_name\/}, {\it cellname\/}, {\it mode\/},
+  {\it all}) & Obtain list of cell names\\ \hline
+\vr ChdLayers({\it chd\_name\/}) & Obtain layers used in archive\\ \hline
+\vr ChdInfoMode({\it chd\_name\/}) & Return saved info mode\\ \hline
+\vr ChdInfoLayers({\it chd\_name\/}, {\it cellname\/}) & Return saved layer
+  info\\ \hline
+\vr ChdInfoCells({\it chd\_name\/}) & Return saved cell names\\ \hline
+\vr ChdInfoCounts({\it chd\_name\/}) & Return saved statistics\\ \hline
+\vr ChdCellBB({\it chd\_name\/}, {\it cellname\/}, {\it array\/}) & Obtain
+  cell bounding box\\ \hline
+\vr ChdSetDefCellName({\it chd\_name\/}, {\it cellname\/}) &
+  Configure default cell name\\ \hline
+\vr ChdDefCellName({\it chd\_name\/}) & Obtain default cell name\\ \hline
+\vr ChdLoadGeometry({\it chd\_name\/}) & Create and link to a new Cell
+  Geometry Digest\\ \hline
+\vr ChdLinkCgd({\it chd\_name\/}, {\it cgd\_name\/}) & Link or unlink a
+  CGD to the CHD\\ \hline
+\vr ChdGetGeomName({\it chd\_name\/}) & Return name of attached Cell
+  Geometry Digest\\ \hline
+\vr ChdClearGeometry({\it chd\_name\/}) & Unlink attached Cell Geometry
+  Digest\\ \hline
+\vr ChdSetSkipFlag({\it chd\_name\/}, {\it cellname\/}, {\it skip\/}) & Set
+  or clear skip flag\\ \hline
+\vr ChdClearSkipFlags({\it chd\_name\/}) & Clear all skip flags\\ \hline
+\vr ChdCompare({\it chd\_name1\/}, {\it cname1\/}, {\it chd\_name2\/},
+  {\it cname2\/}, {\it layer\_list\/}, {\it skip\_layers\/}, {\it maxdiffs\/},
+  {\it obj\_types\/}, {\it geometric\/}, {\it array\/}) & Compare objects in
+  cells\\ \hline
+\vr ChdCompareFlat({\it chd\_name1\/}, {\it cname1\/}, {\it chd\_name2\/},
+  {\it cname2\/}, {\it layer\_list\/}, {\it skip\_layers\/}, {\it maxdiffs\/},
+  {\it area\/}, {\it coarse\_mult\/}, {\it find\_grid\/}, {\it array\/}) &
+  Compare objects in flat cell hierarchies\\ \hline
+\vr ChdEdit({\it chd\_name\/}, {\it scale\/}, {\it cellname\/}) & Open cell
+  for editing\\ \hline
+\vr ChdOpenFlat({\it chd\_name\/}, {\it scale\/}, {\it cellname\/},
+  {\it array\/}, {\it clip\/}) &
+  Read a flattened hierarchy into memory\\ \hline
+\vr ChdSetFlatReadTransform({\it tfstring\/}, {\it x\/}, {\it y\/}) & Set
+  a transform for flat reading\\ \hline
+\vr ChdEstFlatMemoryUse({\it chd\_name\/}, {\it cellname\/}, {\it array\/},
+  {\it counts\_array\/}) & Estimate memory required for flat read\\ \hline
+\vr ChdWrite({\it chd\_name\/}, {\it scale\/}, {\it cellname\/}, {\it array\/},
+  {\it clip\/}, {\it all\/}, {\it flatten\/}, {\it ecf\_level\/},
+  {\it outfile\/}) & Write cells to file\\ \hline
+\vr ChdWriteSplit({\it chd\_name\/}, {\it cellname\/}, {\it basename\/},
+  {\it array\/}, {\it regions\_or\_gridsize\/},
+  {\it numregions\_or\_bloatval\/}, {\it maxdepth\/},
+  {\it scale\/}, {\it flags}) &
+  Write to flat files\\ \hline
+\vr ChdCreateReferenceCell({\it chd\_name\/}, {\it cellname\/}) &
+  Create a reference cell in memory\\ \hline
+\vr ChdLoadCell({\it chd\_name\/}, {\it cellname\/}) &
+  Load cell in memory, reference subcells\\ \hline
+\vr ChdIterateOverRegion({\it chd\_name\/}, {\it cellname\/}, {\it funcname\/},
+  {\it array\/}, {\it coarse\_mult\/}, {\it fine\_grid\/},
+  {\it bloat\_val\/}) & Iterate over grid, call callback function\\ \hline
+\vr ChdWriteDensityMaps({\it chd\_name\/}, {\it cellname\/}, {\it array\/},
+  {\it coarse\_mult\/}, {\it fine\_grid\/}, {\it bloat}, {\it save\/}) &
+  Iterate over grid, compute density\\ \hline
+
+% 012111
+\multicolumn{2}{|c|}{\kb Cell Geometry Digest}\\ \hline
+\vr OpenCellGeomDigest({\it idname\/}, {\it string\/}, {\it type\/}) &
+  Create a new CGD\\ \hline
+\vr NewCellGeomDigest() & Create a new empty CGD\\ \hline
+\vr WriteCellGeomDigest({\it cgd\_name\/}, {\it filename\/}) & Write CGD
+  to file\\ \hline
+\vr CgdList() & Return a list of CGD access names\\ \hline
+\vr CgdChangeName({\it old\_cgd\_name\/}, {\it new\_cgd\_name\/}) & Change
+  the access name of a CGD\\ \hline
+\vr CgdIsValid({\it cgd\_name\/}) & Return true if named CGD exists\\ \hline
+\vr CgdDestroy({\it cgd\_name\/}) & Destroy the CGD\\ \hline
+\vr CgdIsValidCell({\it cgd\_name\/}, {\it cellname\/}) &
+  Return true if cell is found in CGD\\ \hline
+\vr CgdIsValidLayer({\it cgd\_name\/}, {\it cellname\/}, {\it layername\/}) &
+  Return true if cell containing layer is found in CGD\\ \hline
+\vr CgdRemoveCell({\it cgd\_name\/}, {\it cellname\/}) &
+  Remove a cell from the CGD\\ \hline
+\vr CgdIsCellRemoved({\it cgd\_name\/}, {\it cellname\/}) &
+  Return true if the cell was removed from the CGD\\ \hline
+\vr CgdRemoveLayer({\it cgd\_name\/}, {\it cellname\/}, {\it layername\/}) &
+  Remove layer data from a cell in the CGD\\ \hline
+\vr CgdAddCells({\it cgd\_name\/}, {\it chd\_name\/}, {\it cells\_list\/}) &
+  Add cells to the CGD\\ \hline
+\vr CgdContents({\it cgd\_name\/}, {\it cellname\/}, {\it layername\/}) &
+  List contents of CGD\\ \hline
+\vr CgdOpenGeomStream({\it cgd\_name\/}, {\it cellname\/}, {\it layername\/}) &
+  Open geometry stream from CGD\\ \hline
+\vr GsReadObject({\it gs\_handle\/}) & Read geometry from a geometry
+  stream\\ \hline
+\vr GsDumpOasisText({\it gs\_handle\/}) & Dump OASIS ASCII text representation
+  to console\\ \hline
+
+% 120110
+\multicolumn{2}{|l|}{\kb Assembly Stream}\\ \hline
+\vr StreamOpen({\it outfile\/}) & Open an assembly stream\\ \hline
+\vr StreamTopCell({\it stream\_handle\/}, {\it cellname\/}) & Define a
+  top-level cell in the stream\\ \hline
+\vr StreamSource({\it stream\_handle\/}, {\it file\_or\_chd\/},
+  {\it scale\/}, {\it layer\_filter\/}, {\it name\_change\/}) &
+  Register a source archive for streaming\\ \hline
+\vr StreamInstance({\it stream\_handle\/}, {\it cellname\/}, {\it x\/},
+  {\it y\/}, {\it my\/}, {\it rot\/}, {\it magn\/}, {\it scale\/},
+  {\it no\_hier\/}, {\it ecf\_level\/}, {\it flatten\/}, {\it array\/},
+  {\it clip\/}) & Add an instance conversion spec to a source\\ \hline
+\vr StreamRun({\it stream\_handle\/}) & Initiate streaming to output\\ \hline
+\end{longtable}
+
+First group of functions for geometry editing
+
+\begin{longtable}{|p{3.0in}|p{2.875in}|} \hline
+\multicolumn{2}{|l|}{\kb Geometry Editing Functions 1}\\ \hline
+
+% 032015
+\multicolumn{2}{|c|}{\kb General Editing}\\ \hline
+\vr ClearCell({\it undoable\/}, {\it layer\_list\/}) & Clear content of
+  current cell\\ \hline
+\vr Commit() & Finalize changes in database\\ \hline
+\vr Undo() & Undo last operation\\ \hline
+\vr Redo() & Redo last undone operation\\ \hline
+\vr SelectLast({\it types\/}) & Select most recent new object\\ \hline
+
+% 030115
+\multicolumn{2}{|c|}{\kb Current Transform}\\ \hline
+\vr SetTransform({\it angle\_or\_string\/}, {\it reflection\/},
+  {\it magnification\/}) & Set current transform\\ \hline
+\vr StoreTransform({\it register\/}) & Save current transform parameters\\
+  \hline
+\vr RecallTransform({\it register\/}) & Recall current transform parameters\\
+  \hline
+\vr GetTransformString() & Return acode string for the current transform\\
+  \hline
+\vr GetCurAngle() & Return current transform angle\\ \hline
+\vr GetCurMX() & Return current transform mirror-x\\ \hline
+\vr GetCurMY() & Return current transform mirror-y\\ \hline
+\vr GetCurMagn() & Return current transform magnification\\ \hline
+\vr UseTransform({\it enable\/}, {\it x\/}, {\it y\/}) & Enable use of current
+  transform\\ \hline
+
+% 032217
+\multicolumn{2}{|c|}{\kb Derived Layers}\\ \hline
+\vr AddDerivedLayer({\it lname\/}, {\it index\/}, {\it lexpr\/}) & Add a
+  derived layer definition\\ \hline
+\vr RemDerivedLayer({\it lname\/}) & Remove a derived layer definition\\
+  \hline
+\vr IsDerivedLayer({\it lname\/}) & True if name matches a derived layer
+  definition\\ \hline
+\vr GetDerivedLayerIndex({\it lname\/}) & Return the index of the specified
+  derived layer\\ \hline
+\vr GetDerivedLayerExpString({\it lname\/}) & Return the layer expression
+  string of the specified derived layer\\ \hline
+\vr GetDerivedLayerLexpr({\it lname\/}, {\it noexp\/}) & Return a layer
+  expression object for the specified derived layer\\ \hline
+\vr EvalDerivedLayers({\it list\/}, {\it array\/}) & Evaluate the list of
+  derived layers in an area\\ \hline
+\vr ClearDerivedLayers({\it list\/}) & Clear geometry of derived layers
+  in list\\ \hline
+
+% 070516
+\multicolumn{2}{|c|}{\kb Object Management by Handles}\\ \hline
+\vr ListElecInstances() & List electrical cell instances from current cell\\
+ \hline
+\vr ListPhysInstances() & List physical cell instances from current cell\\
+ \hline
+\vr SelectHandle() & Return handle to a list of selected objects\\ \hline
+\vr SelectHandleTypes({\it types\/}) & Return handle to a list of selected
+  objects of given types\\ \hline
+\vr AreaHandle({\it l\/}, {\it b\/}, {\it r\/}, {\it t\/}, {\it types\/}) &
+  Return handle to a list of objects in area\\ \hline
+\vr ObjectHandleDup({\it object\_handle\/}, {\it types\/}) & Duplicate handle
+  with given object types\\ \hline
+\vr ObjectHandlePurge({\it object\_handle\/}, {\it types\/}) & Remove from list
+  objects with given types\\ \hline
+\vr ObjectNext({\it object\_handle\/}) & Advance list to next object\\ \hline
+\vr MakeObjectCopy({\it numpts\/}, {\it array\/}) & Create a phony object
+  copy\\ \hline
+\vr ObjectString({\it object\_handle\/}) & Return CIF-like string for
+  object\\ \hline
+\vr ObjectCopyFromString({\it object\_handle\/}, {\it layer}) & Return new
+  object from CIF-like string\\ \hline
+\vr FilterObjects({\it object\_list\/}, {\it template\_list\/}, {\it all\/},
+  {\it touchok\/}, {\it remove\/}) & Select objects via template\\ \hline
+\vr CheckObjectsConnected({\it object\_handle\/}) & Return 1 if objects in
+  list form one group\\ \hline
+\vr CheckForHoles({\it object\_handle\/}, {\it all\/}) & Return 1 if object(s)
+  have ``holes''\\ \hline
+\vr FilterObjectsA({\it object\_list\/}, {\it array\/}, {\it array\_size\/},
+  {\it touchok\/}, {\it remove\/}) & Select objects via given polygon\\ \hline
+\vr BloatObjects({\it object\_handle\/}, {\it all\/}, {\it dimen\/},
+  {\it lname\/}, {\it mode\/}) & Create list of bloated objects\\ \hline
+\vr EdgeObjects({\it object\_handle\/}, {\it all\/}, {\it dimen\/},
+  {\it lname\/}, {\it mode\/}) & Create list of edge ``wire'' polygons\\ \hline
+\vr ManhattanizeObjects({\it object\_handle\/}, {\it all\/}, {\it dimen\/},
+  {\it lname\/}, {\it mode\/}) & Create list of Manhattanized objects\\ \hline
+\vr GroupObjects({\it object\_handle\/}, {\it array\/}) & Create connected
+ groups of objects\\ \hline
+\vr JoinObjects({\it object\_handle\/}, {\it lname\/}) & Join touching objects
+  in a list\\ \hline
+\vr SplitObjects({\it object\_handle\/}, {\it all\/}, {\it lname\/},
+  {\it vert\/}) & Split into trapezoids objects in a list\\ \hline
+\vr DeleteObjects({\it object\_handle\/}, {\it all\/}) & Delete objects\\
+  \hline
+\vr SelectObjects({\it object\_handle\/}, {\it all\/}) & Select objects\\
+  \hline
+\vr DeselectObjects({\it object\_handle\/}, {\it all\/}) & Deselect objects\\
+  \hline
+\vr MoveObjects({\it object\_handle\/}, {\it all\/}, {\it refx\/},
+  {\it refy\/}, {\it x\/}, {\it y\/}) & Move object(s)\\ \hline
+\vr MoveObjectsToLayer({\it object\_handle\/}, {\it all\/}, {\it refx\/},
+  {\it refy\/}, {\it x\/}, {\it y\/}, {\it oldlayer\/}, {\it newlayer\/}) &
+  Move object(s) with layer change\\ \hline
+\vr CopyObjects({\it object\_handle\/}, {\it all\/}, {\it refx\/},
+  {\it refy\/}, {\it x\/}, {\it y\/}, {\it repcnt\/}) & Copy object(s)\\ \hline
+\vr CopyObjectsToLayer({\it object\_handle\/}, {\it all\/}, {\it refx\/},
+  {\it refy\/}, {\it x\/}, {\it y\/}, {\it oldlayer\/}, {\it newlayer\/},
+  {\it repcnt\/}) & Copy object(s) with layer change\\ \hline
+\vr CopyObjectsH({\it object\_handle\/}, {\it all\/}, {\it refx\/},
+  {\it refy\/}, {\it x\/}, {\it y\/}, {\it oldlayer\/}, {\it newlayer\/},
+  {\it todb\/}) & Copy object(s) to handle\\ \hline
+\vr GetObjectType({\it object\_handle\/}) & Return the object's type code\\
+  \hline
+\vr GetObjectID({\it object\_handle\/}) & Return the object's id number\\
+  \hline
+\vr GetObjectArea({\it object\_handle\/}) & Return the object's area in 
+  square microns\\ \hline
+\vr GetObjectPerim({\it object\_handle\/}) & Return the object's perimeter
+  in microns\\ \hline
+\vr GetObjectCentroid({\it object\_handle\/}, {\it array\/}) & Compute the
+  object's centroid point\\ \hline
+\vr GetObjectBB({\it object\_handle\/}, {\it array\/}) & Return the object's
+  bounding box\\ \hline
+\vr SetObjectBB({\it object\_handle\/}, {\it array\/}) & Set the object's
+  bounding box, scale object\\ \hline
+\vr GetObjectListBB({\it object\_handle\/}, {\it array\/}) & Return the
+  bounding box of all objects in list\\ \hline
+\vr GetObjectXY({\it object\_handle\/}, {\it array\/}) & Return the object's
+  reference point\\ \hline
+\vr SetObjectXY({\it object\_handle\/}, {\it x\/}, {\it y\/}) & Set the
+  object's reference point\\ \hline
+\vr GetObjectLayer({\it object\_handle\/}) & Return the object's layer name\\
+  \hline
+\vr SetObjectLayer({\it object\_handle\/}, {\it layername\/}) & Set the object's
+  layer\\ \hline
+\vr GetObjectFlags({\it object\_handle\/}) & Return the object's flags\\ \hline
+\vr SetObjectNoDrcFlag({\it object\_handle\/}, {\it value\/}) & Set or unset
+ the {\vt NoDRC} object flag\\ \hline
+\vr SetObjectMark1Flag({\it object\_handle\/}, {\it value\/}) & Set or unset
+ the {\vt Mark1} object flag\\ \hline
+\vr SetObjectMark2Flag({\it object\_handle\/}, {\it value\/}) & Set or unset
+ the {\vt Mark2} object flag\\ \hline
+\vr GetObjectState({\it object\_handle\/}) & Return the object's state\\ \hline
+\vr GetObjectGroup({\it object\_handle\/}) & Return the object's conductor
+  group number\\ \hline
+\vr SetObjectGroup({\it object\_handle\/}, {\it group\_num\/}) & Set the
+  object's conductor group number\\ \hline
+\vr GetObjectCoords({\it object\_handle\/}, {\it array\/}) & Return the object's
+  coordinates\\ \hline
+\vr SetObjectCoords({\it object\_handle\/}, {\it array}, {\it size\/}) & Set the
+  object's coordinates\\ \hline
+\vr GetObjectMagn({\it object\_handle\/}) & Return the magnification of a
+  subcell\\ \hline
+\vr SetObjectMagn({\it object\_handle\/}, {\it magn\/}) & Set object's
+  magnification, rescale object\\ \hline
+\vr GetWireWidth({\it object\_handle\/}) & Return width of wire\\ \hline
+\vr SetWireWidth({\it object\_handle\/}, {\it width\/}) & Set width of wire\\
+  \hline
+\vr GetWireStyle({\it object\_handle\/}) & Return wire end style\\ \hline
+\vr SetWireStyle({\it object\_handle\/}, {\it code\/}) & Set wire end style\\
+  \hline
+\vr SetWireToPoly({\it object\_handle\/}) & Convert wire to polygon\\ \hline
+\vr GetWirePoly({\it object\_handle\/}, {\it array\/}) & Return wire bounding
+  polygon\\ \hline
+\vr GetLabelText({\it object\_handle\/}) & Return text of label\\ \hline
+\vr SetLabelText({\it object\_handle\/}, {\it text\/}) & Set text in label\\
+  \hline
+\vr GetLabelFlags({\it object\_handle\/}) & Return flags for label\\
+  \hline
+\vr SetLabelFlags({\it object\_handle\/}, {\it flags\/}) & Set flags for
+  label\\ \hline
+\vr GetInstanceArray({\it object\_handle\/}, {\it array\/}) & Return instance
+  array parameters\\ \hline
+\vr SetInstanceArray({\it object\_handle\/}, {\it array\/}) & Set instance array
+  parameters, resize array\\ \hline
+\vr GetInstanceXform({\it object\_handle\/}) & Return instance transformation
+  string\\ \hline
+\vr GetInstanceXformA({\it object\_handle\/}, {\it array\/}) & Return instance
+  transformation in array\\ \hline
+\vr SetInstanceXform({\it object\_handle\/}, {\it transform\/}) & Set instance
+  transformation from string\\ \hline
+\vr SetInstanceXformA({\it object\_handle\/}, {\it array\/}) & Set instance
+  transformation from array\\ \hline
+\vr GetInstanceMaster({\it object\_handle\/}) & Return name of instance
+  master cell\\ \hline
+\vr SetInstanceMaster({\it object\_handle\/}, {\it newname\/}) & Set instance
+  master, replace instance\\ \hline
+\vr GetInstanceName({\it object\_handle\/}) & Return name of instance\\ \hline
+\vr SetInstanceName({\it object\_handle\/}, {\it newname\/}) & Set instance
+  name property\\ \hline
+\vr GetInstanceAltName({\it object\_handle\/}) & Return alternate name of
+  instance\\ \hline
+\vr GetInstanceType({\it object\_handle\/}) & Return instance type code\\
+  \hline
+\vr GetInstanceIdNum({\it object\_handle\/}) & Return instance id number\\
+  \hline
+\vr GetInstanceAltIdNum({\it object\_handle\/}) & Return instance alternate
+  id number\\ \hline
+
+\end{longtable}
+
+Second group of functions for geometry editing
+
+\begin{longtable}{|p{3.0in}|p{2.875in}|} \hline
+\multicolumn{2}{|l|}{\kb Geometry Editing Functions 2}\\ \hline
+
+% 032115
+\multicolumn{2}{|c|}{\kb Cells, PCells, Vias, and Instance Placement}\\ \hline
+\vr CheckPCellParam({\it library\/}, {\it cell\/}, {\it view\/},
+  {\it pname\/}, {\it value\/}) & Validate a parameter value\\ \hline
+\vr CheckPCellParams({\it library\/}, {\it cell\/}, {\it view\/},
+  {\it params\/}) & Validate a parameter list\\ \hline
+\vr CreateCell({\it cellname\/}, [{\it orig\_x\/}, {\it orig\_y\/}]) &
+  Create new cell from selected objects\\ \hline
+\vr CopyCell({\it name\/}, {\it newname\/}) & Copy a cell\\ \hline
+\vr RenameCell({\it oldname\/}, {\it newname\/}) & Globally rename cell in
+  memory, fix references\\ \hline
+\vr DeleteEmpties({\it recurse\/}) & Delete empty cells\\ \hline
+\vr Place({\it cellname\/}, {\it x\/}, {\it y\/} [, {\it refpt\/},
+  {\it array\/}, {\it smash\/}, {\it usegui\/}, {\it tfstring\/}]) & Place
+  an instance\\ \hline
+\vr PlaceH({\it cellname\/}, {\it x\/}, {\it y\/} [, {\it refpt\/},
+  {\it array\/}, {\it smash\/}, {\it usegui\/}, {\it tfstring\/}]) & Place
+  an instance, return handle\\ \hline
+\vr PlaceSetArrayParams({\it nx\/}, {\it ny\/}, {\it dx\/}, {\it dy\/}) &
+  Set instrance arraying parameters\\ \hline
+\vr PlaceSetPCellParams({\it library\/}, {\it cell\/}, {\it view\/},
+  {\it params\/}) & Set pcell parameter string\\ \hline
+\vr Replace({\it cellname\/}, {\it add\_xform\/}, {\it array\/}) & Replace
+  an instance\\ \hline
+\vr OpenViaSubMaster({\it vianame\/}, {\it defnstr\/}) & Define a standard
+  via variant\\ \hline
+
+% 100508
+\multicolumn{2}{|c|}{\kb Clipping Functions}\\ \hline
+\vr ClipAround({\it object\_handle1\/}, {\it all1\/}, {\it object\_handle2\/},
+  {\it all2\/}) & Clip object around other objects\\ \hline
+\vr ClipAroundCopy({\it object\_handle1\/}, {\it all1\/},
+  {\it object\_handle2\/}, {\it all2\/}, {\it lname\/}) & Clip objects
+  around other objects, return copies\\ \hline
+\vr ClipTo({\it object\_handle1\/}, {\it all1\/}, {\it object\_handle2\/},
+  {\it all2\/}) & Clip objects to other objects\\ \hline
+\vr ClipToCopy({\it object\_handle1\/}, {\it all1\/}, {\it object\_handle2\/},
+  {\it all2\/}, {\it lname\/}) & Clip objects to other objects, return
+  copies\\ \hline
+\vr ClipObjects({\it object\_handle\/}, {\it merge\/}) & Clip object list so
+  no overlap\\ \hline
+\vr ClipIntersectCopy({\it object\_handle1\/}, {\it all1\/},
+  {\it object\_handle2\/}, {\it all2\/}, {\it lname\/}) &
+  Exclusive-or objects or lists\\ \hline
+
+% 012815
+\multicolumn{2}{|c|}{\kb Other Object Management Functions}\\ \hline
+\vr ChangeLayer() & Change layer of selected objects\\ \hline
+\vr Bloat({\it dimen\/}, {\it mode\/}) & Bloat selected objects\\ \hline
+\vr Manhattanize({\it dimen\/}, {\it mode\/}) & Manhattanize selected
+  objects\\ \hline
+\vr Join() & Join selected objects\\ \hline
+\vr Decompose({\it vert\/}) & Convert selected objects to trapezoids\\ \hline
+\vr Box({\it left\/}, {\it bottom\/}, {\it right\/}, {\it top\/}) & Create a
+  box\\ \hline
+\vr BoxH({\it left\/}, {\it bottom\/}, {\it right\/}, {\it top\/}) & Create a
+  box, return handle\\ \hline
+\vr Polygon({\it num\/}, {\it arraypts\/}) & Create a polygon\\ \hline
+\vr PolygonH({\it num\/}, {\it arraypts\/}) & Create a polygon, return
+  handle\\ \hline
+\vr Arc({\it x\/}, {\it y\/}, {\it rad1X\/}, {\it rad1Y\/}, {\it rad2X\/},
+  {\it rad2Y\/}, {\it ang\_start\/}, {\it ang\_end\/}) & Create an arc
+  polygon\\ \hline
+\vr ArcH({\it x\/}, {\it y\/}, {\it rad1X\/}, {\it rad1Y\/}, {\it rad2X\/},
+  {\it rad2Y\/}, {\it ang\_start\/}, {\it ang\_end\/}) & Create an arc
+  polygon, return handle\\ \hline
+\vr Round({\it x\/}, {\it y\/}, {\it rad\/}) & Create a disk polygon\\ \hline
+\vr RoundH({\it x\/}, {\it y\/}, {\it rad\/}) & Create a disk polygon,
+  return handle\\ \hline
+\vr HalfRound({\it x\/}, {\it y\/}, {\it rad\/}, {\it dir\/}) & Create a
+  half-disk polygon\\ \hline
+\vr HalfRoundH({\it x\/}, {\it y\/}, {\it rad\/}, {\it dir\/}) & Create a
+  half-disk polygon, return handle\\ \hline
+\vr Sides({\it numsides\/}) & Set the number of sides used for round objects\\
+  \hline
+\vr Wire({\it width\/}, {\it num\/}, {\it arraypts\/}, {\it end\_style\/}) &
+  Create a wire\\ \hline
+\vr WireH({\it width\/}, {\it num\/}, {\it arraypts\/}, {\it end\_style\/}) &
+  Create a wire, return handle\\ \hline
+\vr Label({\it text\/}, {\it x\/}, {\it y\/} [, {\it width\/}, {\it height\/},
+  {\it flags\/}]) & Create a label\\ \hline
+\vr LabelH({\it text\/}, {\it x\/}, {\it y\/} [, {\it width\/}, {\it height\/},
+  {\it flags\/}]) & Create a label, return handle\\ \hline
+\vr Logo({\it string\/}, {\it x\/}, {\it y\/} [, {\it width\/},
+  {\it height\/}]) & Create physical text\\ \hline
+\vr Justify({\it hj\/}, {\it vj\/}) & Set default text justification\\ \hline
+\vr Delete() & Delete selected objects\\ \hline
+\vr Erase({\it left\/}, {\it bottom\/}, {\it right\/}, {\it top\/}) & Erase
+  objects in area\\ \hline
+\vr EraseUnder() & Erase overlap with selected objects\\ \hline
+\vr Yank({\it left\/}, {\it bottom\/}, {\it right\/}, {\it top\/}) & Grab
+  geometry into buffer\\ \hline
+\vr Put({\it x\/}, {\it y\/}, {\it bufnum\/}) & Place stored geometry\\ \hline
+\vr Xor({\it left\/}, {\it bottom\/}, {\it right\/}, {\it top\/}) &
+  Exclusive-or geometry in area\\ \hline
+\vr Copy({\it fromx\/}, {\it fromy\/}, {\it tox\/}, {\it toy\/},
+  {\it repcnt\/}) & Copy selected objects\\ \hline
+\vr CopyToLayer({\it fromx\/}, {\it fromy\/}, {\it tox\/}, {\it toy\/},
+  {\it oldlayer\/}, {\it newlayer\/}, {\it repcnt\/}) & Copy selected
+  objects and change layer\\ \hline
+\vr Move({\it fromx\/}, {\it fromy\/}, {\it tox\/}, {\it toy\/}) & Move selected
+  objects\\ \hline
+\vr MoveToLayer({\it fromx\/}, {\it fromy\/}, {\it tox\/}, {\it toy\/},
+  {\it oldlayer\/}, {\it newlayer\/}) &
+  Move selected objects and change layer\\ \hline
+\vr Rotate({\it x\/}, {\it y\/}, {\it ang\/}, {\it remove\/}) & Rotate
+  selected objects\\ \hline
+\vr RotateToLayer({\it x\/}, {\it y\/}, {\it ang\/}, {\it oldlayer\/},
+  {\it newlayer\/}, {\it remove\/}) & Rotate selected objects and change
+  layer\\ \hline
+\vr Split({\it x\/}, {\it y\/}, {\it flag\/}, {\it orient\/}) & Divide selected
+  objects\\ \hline
+\vr Flatten({\it depth\/}, {\it use\_merge\/}, {\it fast\_mode\/}) & Flatten
+  hierarchy\\ \hline
+\vr Layer({\it string\/}, {\it mode\/}, {\it depth\/}, {\it recurse\/},
+  {\it noclear\/}, {\it use\_merge\/}, {\it fast\_mode\/}) &
+  Apply geometric manipulations\\ \hline
+
+% 030215
+\multicolumn{2}{|c|}{\kb Property Management}\\ \hline
+\vr PrpHandle({\it object\_handle\/}) & Return handle to a list of the
+  object's properties\\ \hline
+\vr GetPrpHandle({\it number\/}) & Return a handle to certain properties\\
+  \hline
+\vr CellPrpHandle() & Return handle to a list of all current cell properties\\
+  \hline
+\vr GetCellPrpHandle({\it number\/}) & Return handle to a list of specific
+  current cell properties\\ \hline
+\vr PrpNext({\it prpty\_handle\/}) & Advance to the next property\\ \hline
+\vr PrpNumber({\it prpty\_handle\/}) & Return the property number\\ \hline
+\vr PrpString({\it prpty\_handle\/}) & Return the property string\\ \hline
+\vr PrptyString({\it obj\_or\_prp\_handle\/}, {\it number\/}) & Return the
+  property string\\ \hline
+\vr GetPropertyString({\it number\/}) & Return property string from
+ selected object\\ \hline
+\vr GetCellPropertyString({\it number\/}) & Return property string from
+ current cell\\ \hline
+\vr PrptyAdd({\it object\_handle\/}, {\it number\/}, {\it string\/}) & Add a
+  property\\ \hline
+\vr AddProperty({\it number\/}, {\it string\/}) & Add properties to selected
+  objects\\ \hline
+\vr AddCellProperty({\it number\/}, {\it string\/}) & Add property to current
+  cell\\ \hline
+\vr PrptyRemove({\it object\_handle\/}, {\it number\/}, {\it string\/}) &
+  Remove a property\\ \hline
+\vr RemoveProperty({\it number\/}, {\it string\/}) & Remove properties from
+  selected objects\\ \hline
+\vr RemoveCellProperty({\it number\/}, {\it string\/}) & Remove properties from
+  current cell\\ \hline
+\end{longtable}
+
+These are the computational geometry functions:
+
+\begin{longtable}{|p{3.0in}|p{2.875in}|} \hline
+\multicolumn{2}{|l|}{\kb Computational Geometry and layer Expressions}\\ \hline
+ 
+% 071415
+\multicolumn{2}{|c|}{\kb Trapezoid lists and Layer Expressions}\\ \hline
+\vr SetZref({\it arg\/}) & Set background clipping zoidlist\\ \hline
+\vr GetZref() & Return background clipping zoidlist\\ \hline
+\vr GetZrefBB({\it array\/}) & Return background clipping zoidlist
+  bounding box\\ \hline
+\vr AdvanceZref({\it clear\/}, {\it array\/}) & Establish or advance grid
+  clipping area\\ \hline
+\vr Zhead({\it zoidlist\/}) & Extract and return leading trapezoid\\ \hline
+\vr Zvalues({\it zoidlist\/}, {\it array\/}) & Extract parameters of leading
+  trapezoid\\ \hline
+\vr Zlength({\it zoidlist\/}) & Return number of trapezoids in list\\ \hline
+\vr Zarea({\it zoidlist\/}) & Return total area of trapezoids in list\\ \hline
+\vr GetZlist({\it layersrc\/}, {\it depth\/}) & Create zoidlist from
+  cell\\ \hline
+\vr GetSqZlist({\it layername\/}) & Create zoidlist from
+  selected objects\\ \hline
+\vr TransformZ({\it zoidlist\/}, {\it refx\/}, {\it refy\/}, {\it newx\/},
+  {\it newy\/}) & Apply a transformation to a zoidlist\\ \hline
+\vr BloatZ({\it dimen\/}, {\it zoidlist\/}, {\it mode\/}) & Bloat a
+  zoidlist\\ \hline
+\vr ExtentZ({\it zoidlist\/}) & Find the bounding box of a zoidlist\\ \hline
+\vr EdgesZ({\it dimen\/}, {\it zoidlist\/}, {\it mode\/}) & Create an edge
+  zoidlist\\ \hline
+\vr ManhattanizeZ({\it dimen\/}, {\it zoidlist\/}, {\it mode\/}) &
+  Manhattanize a zoidlist\\ \hline
+\vr RepartitionZ({\it zoidlist\/}) & Canonicalize for horizontal split\\
+  \hline
+\vr BoxZ({\it l\/}, {\it b\/}, {\it r\/}, {\it t\/}) & Create zoidlist from
+  box\\ \hline
+\vr ZoidZ({\it xll\/}, {\it xlr\/}, {\it yl\/}, {\it xul\/}, {\it xur\/},
+  {\it yu\/}) & Create zoidlist from trapezoid\\ \hline
+\vr ObjectZ({\it object\_handle\/}, {\it all\/}) & Create zoidlist from
+  object(s)\\ \hline
+\vr ParseLayerExpr({\it string\/}) & Create layer\_expr from string\\ \hline
+\vr EvalLayerExpr({\it layer\_expr\/}, {\it zoidlist\/}, {\it depth\/},
+  {\it isclear\/}) & Evaluate layer expression in zoidlist\\ \hline
+\vr TestCoverageFull({\it layer\_expr\/}, {\it zoidlist\/}, {\it minsize\/}) &
+  Test layer expression for full coverage of zoidlist\\ \hline
+\vr TestCoveragePartial({\it layer\_expr\/}, {\it zoidlist\/},
+  {\it minsize\/}) & Test layer expression for partial coverage of
+  zoidlist\\ \hline
+\vr TestCoverageNone({\it layer\_expr\/}, {\it zoidlist\/}, {\it minsize\/}) &
+  Test layer expression for no coverage of zoidlist\\ \hline
+\vr TestCoverage({\it layer\_expr\/}, {\it zoidlist\/}, {\it testfull\/}) &
+  Test layer expression in zoidlist\\ \hline
+\vr ZtoObjects({\it zoidlist\/}, {\it lname\/}, {\it join\/},
+  {\it to\_dbase\/}) & Create objects from zoidlist\\ \hline
+\vr ZtoTempLayer({\it longname\/}, {\it zoidlist\/}, {\it join\/}) &
+  Put objects from zoidlist in layer\\ \hline
+\vr ClearTempLayer({\it longname\/}) & Clear objects in layer\\ \hline
+\vr ZtoFile({\it filename\/}, {\it zoidlist\/}, {\it ascii\/}) & Save
+  trapezoid list in file\\ \hline
+\vr ZfromFile({\it filename\/}) & Extract trapezoid list from file\\ \hline
+\vr ReadZfile({\it filename\/}) & Read trapezoids from file into current
+  cell\\ \hline
+\vr ChdGetZlist({\it chd\_name\/}, {\it cellname\/}, {\it scale\/},
+  {\it array\/}, {\it clip\/}, {\it all\/}) &
+  Extract trapezoid list through CHD\\ \hline
+
+% 110213
+\multicolumn{2}{|c|}{\kb Operations}\\ \hline
+\vr Filt({\it zoids\/}, {\it lexpr\/}) & Trapezoid filtering\\ \hline
+\vr GeomAnd({\it zoids1\/} [, {\it zoids2\/}]) & Geometrical AND function\\ \hline
+\vr GeomAndNot({\it zoids1\/}, {\it zoids2\/}) & Clip second list from
+  first\\ \hline
+\vr GeomCat({\it zoids1\/}, ...) & Concatenate zoidlists\\ \hline
+\vr GeomNot({\it zoids1\/}) & Invert zoidlist\\ \hline
+\vr GeomOr({\it zoids1\/}, ...) & Merge zoidlist\\ \hline
+\vr GeomXor({\it zoids1\/} [, {\it zoids2\/}]) & Exclusive-Or zoidlists\\
+  \hline
+
+% 010509
+\multicolumn{2}{|c|}{\kb Spatial Parameter Tables}\\ \hline
+\vr ReadSPtable({\it filename\/}) & Create or replace a table\\ \hline
+\vr NewSPtable({\it name\/}, {\it x0\/}, {\it dx\/}, {\it nx\/}, {\it y0\/},
+  {\it dy\/}, {\it ny\/}) & Create a table\\ \hline
+\vr WriteSPtable({\it name\/}, {\it filename\/}) & Write a table to a file\\
+  \hline
+\vr ClearSPtable({\it name\/}) & Destroy a table\\ \hline
+\vr FindSPtable({\it name\/}, {\it array\/}) & Find a table\\ \hline
+\vr GetSPdata({\it name\/}, {\it x\/}, {\it y\/}) & Obtain value from
+  table\\ \hline
+\vr SetSPdata({\it name\/}, {\it x\/}, {\it y\/}, {\it value\/}) & Set
+  table value\\ \hline
+
+% 010509
+\multicolumn{2}{|c|}{\kb Polymorphic Flat Database}\\ \hline
+\vr ChdOpenOdb({\it chd\_name\/}, {\it scale\/}, {\it cellname\/},
+  {\it array\/}, {\it clip\/}, {\it dbname\/}) & Open a flat object
+  database\\ \hline
+\vr ChdOpenZdb({\it chd\_name\/}, {\it scale\/}, {\it cellname\/},
+  {\it array\/}, {\it clip\/}, {\it dbname\/}) & Open a flat trapezoid
+  database\\ \hline
+\vr ChdOpenZbdb({\it chd\_name\/}, {\it scale\/}, {\it cellname\/},
+  {\it array\/}, {\it dbname\/}, {\it dx\/}, {\it dy\/}, {\it bx\/},
+  {\it by\/}) & Open a binned flat trapezoid database\\ \hline
+\vr GetObjectsOdb({\it dbname\/}, {\it layer\_list\/}, {\it array\/}) &
+  Read objects from database\\ \hline
+\vr ListLayersDb({\it dbname\/}) & List the layers used in the database\\
+  \hline
+\vr GetZlistDb({\it dbname\/}, {\it layer\_name\/}, {\it zoidlist\/}) &
+  Read trapezoids from database\\ \hline
+\vr GetZlistZbdb({\it dbname\/}, {\it layer\_name\/}, {\it nx\/}, {\it ny\/}) &
+  Read trapezoids from ZBDB database\\ \hline
+\vr DestroyDb({\it dbname\/}) & Destroy a database\\ \hline
+\vr ShowDb({\it dbname\/}, {\it array\/}) & Display database region\\ \hline
+
+% 020109
+\multicolumn{2}{|c|}{\kb Named String Tables}\\ \hline
+\vr FindNameTable({\it tabname\/}, {\it create\/}) & Verify existence of or
+  create named string table\\ \hline
+\vr RemoveNameTable({\it tabname\/}) & Destroy named string table\\ \hline
+\vr ListNameTables() & List existing named string tables\\ \hline
+\vr ClearNameTables() & Destroy all named string tables\\ \hline
+\vr AddNameToTable({\it tabname\/}, {\it name\/}, {\it value\/}) & Add
+  name/value to named string table\\ \hline
+\vr RemoveNameFromTable({\it tabname\/}, {\it name\/}) & Remove name from
+  named string table\\ \hline
+\vr FindNameInTable({\it tabname\/}, {\it name\/}) & Return value for name in
+  named string table\\ \hline
+\vr ListNamesInTable({\it tabname\/}) & Return list of names in
+  named string table\\ \hline
+\end{longtable}
+
+These functions are specific to design rule checking:
+
+\begin{longtable}{|p{3.0in}|p{2.875in}|} \hline
+\multicolumn{2}{|l|}{\kb Design Rule Checking Functions}\\ \hline
+
+% 010715
+\multicolumn{2}{|c|}{\kb DRC}\\ \hline
+\vr DRCstate({\it state\/}) & Set interactive DRC\\ \hline
+\vr DRCsetLimits({\it batch\_cnt\/}, {\it intr\_cnt\/}, {\it intr\_time\/},
+  {\it skip\_cells\/}) & Set DRC limit values\\ \hline
+\vr DRCgetLimits({\it array\/}) & Return DRC limit values\\ \hline
+\vr DRCsetMaxErrors({\it value\/}) & Set the batch mode error limit\\ \hline
+\vr DRCgetMaxErrors() & Return the batch mode error limit\\ \hline
+\vr DRCsetInterMaxObjs({\it value\/}) & Set the interactive mode object
+  count limit\\ \hline
+\vr DRCgetInterMaxObjs() & Return the interactive mode object count limit\\
+  \hline
+\vr DRCsetInterMaxTime({\it value\/}) & Set the interactive mode time limit\\
+  \hline
+\vr DRCgetInterMaxTime() & Return the interactive mode time limit\\ \hline
+\vr DRCsetInterMaxErrors({\it value\/}) & Set the interactive mode error
+  count limit\\ \hline
+\vr DRCgetInterMaxErrors() & Return the interactive mode error count limit\\
+  \hline
+\vr DRCsetInterSkipInst({\it value\/}) & Set the interactive mode instance\
+  skip flag\\ \hline
+\vr DRCgetInterSkipInst() & Return the interactive mode instance skip flag\\
+  \hline
+\vr DRCsetLevel({\it level\/}) & Set DRC error reporting level\\ \hline
+\vr DRCgetLevel() & Return DRC error reporting level\\ \hline
+\vr DRCcheckArea({\it array\/}, {\it file\_handle\_or\_name\/}) &
+  Perform DRC in area\\ \hline
+\vr DRCchdCheckArea({\it chdname\/}, {\it cellname\/}, {\it gridsize\/},
+  {\it array\/}, {\it file\_handle\_or\_name\/}, {\it flatten\/}) &
+  Perform DRC in area using CHD\\ \hline
+\vr DRCcheckObjects({\it file\_handle\/}) & Perform DRC for selected objects\\
+  \hline
+\vr DRCregisterExpr({\it expr\/}) & Register a layer expression\\ \hline
+\vr DRCtestBox({\it left\/}, {\it bottom\/}, {\it right\/}, {\it top\/},
+  {\it ld\/}) & Perform DRC for given box\\ \hline
+\vr DRCtestPoly({\it num\/}, {\it points\/}, {\it ld\/}) & Perform DRC for
+  given polygon\\ \hline
+\vr DRCzList({\it layername\/}, {\it rulename\/}, {\it index\/},
+  {\it source\/}) & Create test areas in returned trapezoid list\\ \hline
+\vr DRCzListEx({\it source\/}, {\it target\/}, {\it inside\/},
+  {\it outside\/}, {\it incode\/}, {\it outcode\/}, {\it dimen\/}) &
+  Create test areas in returned trapezoid list\\ \hline
+\end{longtable}
+
+Functions specifically for the extraction system:
+
+\begin{longtable}{|p{3.0in}|p{2.875in}|} \hline
+\multicolumn{2}{|l|}{\kb Extraction Functions}\\ \hline
+
+% 052409
+\multicolumn{2}{|c|}{\kb Menu Commands}\\ \hline
+\vr DumpPhysNetlist({\it filename\/}, {\it depth\/}, {\it modestring\/},
+  {\it names\/}) & Dump physical netlist\\ \hline
+\vr DumpElecNetlist({\it filename\/}, {\it depth\/}, {\it modestring\/},
+  {\it names\/}) & Dump electrical netlist\\ \hline
+\vr SourceSpice({\it filename\/}, {\it modestring\/}) & Update electrical
+  from SPICE file\\ \hline
+\vr ExtractAndSet({\it depth\/}, {\it modestring\/}) & Update electrical
+  from physical\\ \hline
+\vr FindPath({\it x\/}, {\it y\/}, {\it depth\/}, {\it use\_extract\/}) &
+  Return objects in netlist\\ \hline
+\vr FindPathOfGroup({\it groupnum\/}, {\it depth\/}) &
+  Return objects in netlist\\ \hline
+
+% 060716
+\multicolumn{2}{|c|}{\kb Terminals}\\ \hline
+\vr ListTerminals() & List cell contact terminals\\ \hline
+\vr FindTerminal({\it name\/}, {\it index\/}, {\it use\_e\/},
+  {\it xe\/}, {\it ye\/}, {\it use\_p\/}, {\it xp}, {\it yp\/}) &
+  Find a cell connection terminal\\ \hline
+\vr CreateTerminal({\it name\/}, {\it x\/}, {\it y\/}, {\it termtype\/}) &
+  Create new contact terminal\\ \hline
+\vr DestroyTerminal({\it thandle\/}) &
+  Remove and destroy cell contact terminal\\ \hline
+\vr GetTerminalName({\it thandle\/}) &
+  Return terminal name\\ \hline
+\vr SetTerminalName({\it thandle\/}, {\it name\/}) &
+  Assign terminal name\\ \hline
+\vr GetTerminalType({\it thandle}) &
+  Return terminal type code\\ \hline
+\vr SetTerminalType({\it thandle\/}, {\it termtype\/}) &
+  Set terminal type\\ \hline
+\vr GetTerminalFlags({\it thandle\/}) &
+  Return terminal flags\\ \hline
+\vr SetTerminalFlags({\it thandle\/}, {\it flags\/}) &
+  Set terminal flags\\ \hline
+\vr UnsetTerminalFlags({\it thandle\/}, {\it flags\/}) &
+  Unset terminal flags\\ \hline
+\vr GetElecTerminalLoc({\it thandle\/}, {\it index\/}, {\it array\/}) &
+  Return electrical terminal location\\ \hline
+\vr SetElecTerminalLoc({\it thandle\/}, {\it x\/}, {\it y\/}) &
+  Assign electrical terminal location\\ \hline
+\vr ClearElecTerminalLoc({\it thandle\/}, {\it x\/}, {\it y\/}) &
+  Delete symbolic duplicate location\\ \hline
+
+% 060716
+\multicolumn{2}{|c|}{\kb Physical Terminals}\\ \hline
+\vr ListPhysTerminals() & List physical cell contact terminals\\ \hline
+\vr FindPhysTerminal({\it name\/}, {\it use\_p\/}, {\it xp}, {\it yp\/}) &
+  Find a physical cell connection terminal\\ \hline
+\vr CreatePhysTerminal({\it thandle\/}, {\it x\/}, {\it y\/}, {\it layer\/}) &
+  Create new linkage to layout terminal\\ \hline
+\vr HasPhysTerminal({\it thandle\/}) &
+  Check if terminal has physical component\\ \hline
+\vr DestroyPhysTerminal({\it thandle\/}) &
+  Remove and destroy layout terminal linkage\\ \hline
+\vr GetPhysTerminalLoc({\it thandle\/}, {\it array\/}) &
+  Return layout terminal location\\ \hline
+\vr SetPhysTerminalLoc({\it thandle\/}, {\it x\/}, {\it y\/}) &
+  Assign layout terminal location\\ \hline
+\vr GetPhysTerminalLayer({\it thandle\/}) &
+  Return associated layer name\\ \hline
+\vr SetPhysTerminalLayer({\it thandle\/}, {\it layer\/}) &
+  Set layer name for hinting\\ \hline
+\vr GetPhysTerminalGroup({\it thandle\/}) &
+  Return associated physical group number\\ \hline
+\vr GetPhysTerminalObject({\it thandle\/}) &
+  Return handle to associated object\\ \hline
+
+% 070516
+\multicolumn{2}{|c|}{\kb Physical Conductor Groups}\\ \hline
+\vr Group() & Run extraction\\ \hline
+\vr GetNumberGroups() & Return number of groups\\ \hline
+\vr GetGroupBB({\it group\/}, {\it array\/}) & Return bounding box of group\\
+  \hline
+\vr GetGroupNode({\it group\/}) & Return node of group\\ \hline
+\vr GetGroupName({\it group\/}) & Return net or formal terminal name\\ \hline
+\vr GetGroupNetName({\it group\/}) & Return net name\\ \hline
+\vr GetGroupCapacitance({\it group\/}) & Return group capacitance\\ \hline
+\vr CountGroupObjects({\it group\/}) & Count physical objects in group\\ \hline
+\vr ListGroupObjects({\it group\/}) & Return list of objects in group\\ \hline
+\vr CountGroupVias({\it group\/}) & Count standard vias or via cells used in
+ the group\\ \hline
+\vr ListGroupVias({\it group\/}) & Return list of standard via or via cell
+ instances used in the group\\ \hline
+\vr CountGroupDevContacts({\it group\/}) & Count device contacts in group\\
+  \hline
+\vr ListGroupDevContacts({\it group\/}) & Return list of device contacts in
+  group\\ \hline
+\vr CountGroupSubcContacts({\it group\/}) & Count subcircuit contacts in
+  group\\ \hline
+\vr ListGroupSubcContacts({\it group\/}) & Return list of subcircuit contacts
+  in group\\ \hline
+\vr CountGroupTerminals({\it group\/}) & Count cell connection terminals in
+  group\\ \hline
+\vr ListGroupTerminals({\it group\/}) & Return list of cell connection
+  terminals in group\\ \hline
+\vr ListGroupTerminalNames({\it group\/}) & Return list of cell contact
+  terminal names in group\\ \hline
+\vr CountGroupPhysTerminals({\it group\/}) & Count physical terminals in
+  group\\ \hline
+\vr ListGroupPhysTerminals({\it group\/}) & Return list of physical terminals
+  in group\\ \hline
+
+% 070809
+\multicolumn{2}{|c|}{\kb Physical Devices}\\ \hline
+\vr ListPhysDevs({\it name\/}, {\it pref\/}, {\it indices\/},
+  {\it area\_array\/}) & Return list of physical devices\\ \hline
+\vr GetPdevName({\it device\_handle\/}) & Return device name\\ \hline
+\vr GetPdevIndex({\it device\_handle\/}) & Return device index\\ \hline
+\vr GetPdevDual({\it device\_handle\/}) & Return corresponding electrical
+  device\\ \hline
+\vr GetPdevBB({\it device\_handle\/}, {\it array\/}) & Return device bounding
+  box\\ \hline
+\vr GetPdevMeasure({\it device\_handle\/}, {\it mname\/}) & Return device
+  measurement\\ \hline
+\vr ListPdevMeasures({\it device\_handle\/}) & Return list of measurement
+  keywords\\ \hline
+\vr ListPdevContacts({\it device\_handle\/}) & Return list of device contacts\\
+  \hline
+\vr GetPdevContactName({\it dev\_contact\_handle\/}) & Return device contact
+  name\\ \hline
+\vr GetPdevContactBB({\it dev\_contact\_handle\/}, {\it array\/}) & Return
+  device contact bounding box\\ \hline
+\vr GetPdevContactGroup({\it dev\_contact\_handle\/}) & Return device contact
+  conductor group\\ \hline
+\vr GetPdevContactLayer({\it dev\_contact\_handle\/}) & Return device contact
+  layer\\ \hline
+\vr GetPdevContactDev({\it dev\_contact\_handle\/}) & Return device containing
+  contact\\ \hline
+\vr GetPdevContactDevName({\it dev\_contact\_handle\/}) & Return name of
+  device containing contact\\ \hline
+\vr GetPdevContactDevIndex({\it dev\_contact\_handle\/}) & Return index of
+  device containing contact\\ \hline
+
+% 061116
+\multicolumn{2}{|c|}{\kb Physical Subcircuits}\\ \hline
+\vr ListPhysSubckts({\it name\/}, {\it index\/}, {\it l\/}, {\it b\/},
+  {\it r\/}, {\it t\/}) & Return list of physical subcircuits\\ \hline
+\vr GetPscName({\it subckt\_handle\/}) & Return master name of physical
+  subcircuit\\ \hline
+\vr GetPscIndex({\it subckt\_handle\/}) & Return index of physical subcircuit\\
+  \hline
+\vr GetPscIdNum({\it subckt\_handle\/}) & Return id number of physical
+  subcircuit\\ \hline
+\vr GetPscInstName({\it subckt\_handle\/}) & Return instance name of physical
+  subcircuit\\ \hline
+\vr GetPscDual({\it subckt\_handle\/}) & Return corresponding electrical
+  subcircuit\\ \hline
+\vr GetPscBB({\it subckt\_handle\/}, {\it array\/}) & Return physical
+  subcircuit bounding box\\ \hline
+\vr GetPscLoc({\it subckt\_handle\/}, {\it array\/}) & Return physical
+  subcircuit placement location\\ \hline
+\vr GetPscTransform({\it subckt\_handle\/}, {\it type\/}, {\it array\/}) &
+  Return physical subcircuit orienttion string\\ \hline
+\vr ListPscContacts({\it subckt\_handle\/}) & Return list of contacts\\ \hline
+\vr IsPscContactIgnorable({\it subc\_contact\_handle\/}) & Return 1 if contact
+  to ignored subcircuit\\ \hline
+\vr GetPscContactName({\it subc\_contact\_handle\/}) & Return name of
+  subcircuit\\ \hline
+\vr GetPscContactGroup({\it subc\_contact\_handle\/}) & Return conductor group
+  of contact\\ \hline
+\vr GetPscContactSubcGroup({\it subc\_contact\_handle\/}) & Return group of
+  contact in subcircuit\\ \hline
+\vr GetPscContactSubc({\it subc\_contact\_handle\/}) & Return subcircuit
+  containing contact\\ \hline
+\vr GetPscContactSubcName({\it subc\_contact\_handle\/}) & Return name of
+  subcircuit containing contact\\ \hline
+\vr GetPscContactSubcIndex({\it subc\_contact\_handle\/}) & Return index of
+  subcircuit containing contact\\ \hline
+\vr GetPscContactSubcIdNum({\it subc\_contact\_handle\/}) & Return id number of
+  subcircuit containing contact\\ \hline
+\vr GetPscContactSubcInstName({\it subc\_contact\_handle\/}) & Return instnce
+  name of subcircuit containing contact\\ \hline
+
+% 100508
+\multicolumn{2}{|c|}{\kb Electrical Devices}\\ \hline
+\vr ListElecDevs({\it regex\/}) & Return list of electrical devices\\ \hline
+\vr SetEdevProperty({\it devname\/}, {\it prpty\/}, {\it string\/}) & Set
+  electrical device property\\ \hline
+\vr GetEdevProperty({\it devname\/}, {\it prpty\/}) & Return electrical device
+  property\\ \hline
+\vr GetEdevObj({\it devname\/}) & Return electrical device subcell object\\
+  \hline
+
+% 052409
+\multicolumn{2}{|c|}{\kb Resistance/Inductance Extraction}\\ \hline
+\vr ExtractRL({\it conductor\_zoidlist\/}, {\it layername\/},
+  {\it r\_or\_l\/}, {\it array\/}, {\it term\/}, ...) &
+  Extract resistance or inductance from object\\ \hline
+\vr ExtractNetResistance({\it net\_handle\/}, {\it spicefile\/},
+  {\it array\/}, {\it term\/}, ...) &
+  Extract resistance from wire net\\ \hline
+\end{longtable}
+
+Functions for electrical schematic editing:
+
+\begin{longtable}{|p{3.0in}|p{2.875in}|} \hline
+\multicolumn{2}{|l|}{\kb Schematic Editor Functions}\\ \hline
+
+% 060616
+\multicolumn{2}{|c|}{\kb Output Generation}\\ \hline
+\vr Connect({\it for\_spice\/}) & Internally process the schematic\\ \hline
+\vr ToSpice({\it spicefile\/}) & Write SPICE file\\ \hline
+
+% 060616
+\multicolumn{2}{|c|}{\kb Electrical Nodes}\\ \hline
+\vr IncludeNoPhys({\it flag\/}) & Set {\et nophys} property usage\\ \hline
+\vr GetNumberNodes() & Return number of nodes in circuit\\ \hline
+\vr SetNodeName({\it node\/}, {\it name\/}) & Set text name for node\\ \hline
+\vr GetNodeName({\it node\/}) & Return text name for node\\ \hline
+\vr GetNodeNumber({\it name\/}) & Return node number for named node\\ \hline
+\vr GetNodeGroup({\it node\/}) & Return corresponding group for node\\ \hline
+\vr ListNodePins({\it node\/}) & Return list of connected cell contact
+ terminals\\ \hline
+\vr ListNodeContacts({\it node\/}) & Return list of connected instance
+ terminals\\ \hline
+\vr GetNodeContactInstance({\it terminal\_handle\/}) & Return handle to
+ instance providing contact\\ \hline
+\vr ListNodePinNames({\it node\/}) & Return list of connected cell contact
+ terminal names\\ \hline
+\vr ListNodeContactNames({\it node\/}) & Return list of connected instance
+ terminal names\\ \hline
+
+% 030115
+\multicolumn{2}{|c|}{\kb Symbolic Mode}\\ \hline
+\vr IsShowSymbolic() & True if current cell displayed symbolically in main
+  window\\ \hline
+\vr ShowSymbolic({\it show\/}) & Turn on/off symbolic display\\ \hline
+\vr SetSymbolicFast({\it symb\/}) & Set symbolic mode of current cell,
+  no display update\\ \hline
+\vr MakeSymbolic() & Create simple symbolic representation\\ \hline
+
+\end{longtable}
 
 !!SEEALSO
 xicscript

@@ -1245,6 +1245,294 @@ Current Cell
     written.  To write all cells as native cell files, use the <a
     href="ToXIC"><tt>ToXIC</tt></a> function.
     </dl>
+!!LATEX funcs:main1:curcell scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 062109
+\index{Edit function}
+\item{(int) \vt Edit({\it name\/}, {\it symname\/})}\\
+This function will read in the named file or cell and make it, or one
+of the cells in the hierarchy, the current cell.  If the present cell
+has been modified, in graphics mode the user is prompted for whether
+to save the cell before reading the new one.  The {\it name} argument
+can be null or empty, in which case the user will be prompted for a
+file or cell to open for editing, if in graphics mode.  If not in
+graphics mode, an empty cell is created in memory and made the current
+cell.
+
+The {\it name} provided can be an archive file, the name of an {\Xic}
+cell, a library file, or the ``database name'' of a Cell Hierarchy
+Digest (CHD).  If a CHD name or the name of an archive file is given,
+the name of the cell to open can be provided as {\it symname\/}.  If
+{\it symname} is null or empty, The CHD's default cell, or the top
+level cell (the one not used as a subcell by any other cells in the
+file) is the one opened for editing.  If there is more than one top
+level cell, in graphics mode the user is presented with a pop-up
+choice menu and asked to make a selection.  If the file is a library
+file, the {\it symname} can be given, and it should be one of the
+reference names from the library, or the name of a cell defined in the
+library.  If {\it symname} is null or empty, in graphics mode a pop-up
+listing the library contents will appear, allowing the user to select
+a reference or cell.  If not in graphics mode, and the cell to edit
+can not be determined, the current cell is unchanged, and nothing is
+read.
+
+See the table in \ref{features} for the features that apply during a
+call to this function.  This function is consistent with the {\cb
+Open} menu command in that cell name aliasing, layer filtering and
+modification, and scaling are not available (unlike in the pre-3.0.0
+version of this function).  If these features are needed, the {vt
+OpenCell} function should be used instead.
+
+The return value is one of the following integers, representing the
+command status:
+
+\begin{tabular}{|l|p{4.0in}|}\hline
+-2 & The function call was reentered.  This is not likely to happen in
+  scripts.\\ \hline
+-1 & The user aborted the operation.\\ \hline
+0 & The open failed: bad file name, parse error, etc.\\ \hline
+1 & The operation succeeded.\\ \hline
+2 & The read was successful on an archive with multiple top-level cells
+  but the cells to edit can't be determined.  The current cell has not been
+  set, but the cells are in memory.  The second argument could have been
+  used to resolve the ambiguity.\\ \hline
+3 & The cell name was the name of the device library or model library
+  file, which has been opened for text editing (in graphic mode only).\\ \hline
+\end{tabular}
+
+%------------------------------------
+% 100408
+\index{OpenCell function}
+\item{(int) \vt OpenCell({\it name\/}, {\it symname\/}, {\it curcell\/})}\\
+This function will read a file into memory, similar to the {\vt Edit}
+function.  The first two arguments are the same as would be passed to
+{\vt Edit}.  The third argument is a boolean value.
+
+See the table in \ref{features} for the features that apply during a
+call to this function.
+
+If {\it curcell} is nonzero, then this function will behave like the
+{\vt Edit} function in switching the current cell to a newly-read
+cell.  The only difference from {\vt Edit} is that scaling, layer
+filtering and aliasing, and cell name modification are allowed, as in
+the pre-3.0.0 versions of the {\vt Edit} function.  The return values
+are those listed for the {\vt Edit} function.
+
+If {\it curcell} is zero, the new cell will not be the current cell. 
+Once in memory, the cell is available by its simple name, for use by
+the {\vt Place} function for example.  If {\it name} is the name of an
+archive or library file, {\it symname} is the cell or reference to
+open, similar to the {\vt Edit} function.  In this mode, the return
+value is 1 on success, 0 otherwise.
+
+%------------------------------------
+% 030115
+\index{TouchCell function}
+\item{(int) \vt TouchCell({\it cellname\/}, {\it curcell\/})}\\
+If no cell exists in the current symbol table for the current mode
+with the given name, create an empty cell for {\it cellname} and add
+it to the symbol table.  If the boolean {\it curcell} is true, switch
+the current cell to {\it cellname}.  This can be much faster than {\vt
+Edit} or {\vt OpenCell} for cells already in memory.  The return value
+is -1 on error, 0 if no new cell was created, or 1 if a new cell was
+created.
+
+%------------------------------------
+% 081318
+\index{RegisterSubMasters function}
+\item{(int) \vt RegisterSubMasters({\it archive\/})}\\
+Suppose that one has a collection of pcell sub-master {\Xic} cells
+that have been imported from a foreign OpenAccess tool such as
+Virtuoso.  These are assumed to not be portable pcells.  One would
+like to use these cells to resolve pcells when reading directly from
+the OpenAccess database.  There are two issues:  1) the system needs
+to know that these cells are available, and 2) one has to remap the
+cell names.  The first issue is fixed simply by making the sub-masters
+available through the library mechanism.  The second issue is due to
+the simple naming convention of the sub-master instantiations, which
+suffixes the pcell name with ``{\vt \$\$}" followed by an integer. 
+The integer is a count of when the cell was generated, and is
+consistent with the design output at the time, but there is no
+guarantee the the names are consistent with the design at other times.
+
+This function will read a collection of cells into a temporary symbol
+table.  Those that are pcell sub-masters have the property strings
+entered into the internal pcell database, under the existing cell
+name.  This will cause the correct cell name to be associated with a
+given parameter set.  The cells are not saved, but the entries in the
+pcell table persist so that resolution, when reading OpenAccess or
+otherwise, will reference the correct cells.  The cell collection must
+be available through an open library, and this function must be run
+before loading the design.
+
+The argument is either a path to a directory containing native pcell
+sub-master cells, or a path to an archive file that contains the
+cells.  The return is 1 on success, 0 otherwise with a message
+available from {\vt GetError}; This functionality is also available
+with the {\cb !preload} command.
+
+%------------------------------------
+% 012114
+\index{Push function}
+\item{(int) \vt Push({\it object\_handle\/})}\\
+This function will push the editing context to the cell of the
+instance referenced by the handle, that is, make it the currrent cell. 
+The handle is the return value from the {\vt SelectHandle} or {\vt
+AreaHandle} functions.  This is similar to the {\cb Push} command in
+{\Xic}.  The editing context can be restored with the {\vt Pop}
+function.  If the instance is an array, the 0,0 element will be pushed
+(see {\vt PushElement}).
+
+If successful, 1 is returned, otherwise 0 is returned.  This function
+will fail if the handle passed is not a handle to an object list.
+
+This function implicitly calls {\vt Commit} before the context change.
+
+%------------------------------------
+% 012114
+\index{PushElement function}
+\item{(int) \vt PushElement({\it object\_handle\/}, {\it xind\/},
+  {\it yind\/})}\\
+This is very similar to {\vt Push}, but allows passing indices which
+select the instance element to push if the instance is arrayed.  The
+indices are always effectively 0 in the {\vt Push} function.  An out
+of range index value will cause the function to return 0 and not push
+the context.  If both index values are zero, the function is identical
+to {\vt Push}.  The selection of the array element only affects the
+graphical display.
+
+This function implicitly calls {\vt Commit} before the context change.
+
+%------------------------------------
+% 022206
+\index{Pop function}
+\item{(int) \vt Pop()}\\
+This function will pop the editing context to the parent cell, to be
+used after the {\vt Push} function or a {\cb Push} command in {\Xic}. 
+The {\vt Pop} function always returns 1, and has no effect if there
+was no corresponding push.
+
+This function implicitly calls {\vt Commit} before the context change.
+
+%------------------------------------
+% 041704
+\index{NewCellName function}
+\item{(string) \vt NewCellName()}\\
+This function returns a string which is a valid cell name that does
+not conflict with any cell in the current symbol table.  The cell is
+not actually created.  This can be used with the {\vt Edit} function
+to open a new cell for editing, similar to the {\cb New} button in the
+{\cb File Menu}.  This function never fails.
+
+%------------------------------------
+% 030104
+\index{CurCellName function}
+\item{(string) \vt CurCellName()}\\
+The return value of this function is a string containing the name of
+the current cell.
+
+%------------------------------------
+% 030104
+\index{TopCellName function}
+\item{(string) \vt TopCellName()}\\
+The return value of this function is a string containing the name of
+the top level cell in the hierarchy being edited.  This is different
+from the current cell name while in a subedit (i.e., the {\cb Push}
+command is active).
+
+%------------------------------------
+% 030104
+\index{FileName function}
+\item{(string) \vt FileName()}\\
+This function returns the name of the file from which the current cell
+was read.  If there is no such file, a null string is returned.
+
+%------------------------------------
+% 022012
+\index{CurCellBB function}
+\item{(int) \vt CurCellBB({\it array\/})}\\
+This function will return the bounding box of the current cell, in
+microns, in the {\it array}, as l, b, r, t.  The array must have size 4
+or larger.  The function returns 1 on success, 0 if there is no
+current cell.
+
+In electrical mode, the bounding box returned will be for the
+schematiic or symbolic representation, matching how the cell is
+displayed in the main window.  See the {\vt CellBB} function for
+an alternative.
+
+%------------------------------------
+% 101108
+\index{SetCellFlag function}
+\item{(int) \vt SetCellFlag({\it cellname\/}, {\it flagname\/}, {\it set\/})}\\
+This will set a flag (see \ref{cellflags}) in the cell whose name is
+passed as the first argument.  If this argument is 0, or a null or
+empty string, the current cell is understood.  The second argument is
+a string giving the flag name.  This must be the name of a
+user-modifiable flag.  The third argument is a boolean indicating the
+new flag state, a nonzero value will set the flag, zero will unset it. 
+The return value is the previous flag status (0 or 1), or -1 on error. 
+On error, a message can be obtained from {\vt GetError}.
+ 
+{\bf Warning}:  This affects the user flags directly, and does {\bf
+not} update the property used to hold flag status that is written to
+disk when the cell is saved.  These flags should be set by setting the
+{\bf Flags} property (property number 7105) with {\vt AddProperty} or
+{\it AddCellProperty}, if the values need to persist when the cell is
+written to disk and reread.
+
+%------------------------------------
+% 101108
+\index{GetCellFlag function}
+\item{(int) \vt GetCellFlag({\it cellname\/}, {\it flagname\/})}\\
+This will query a flag (see \ref{cellflags}) in the cell whose name is
+passed as the first argument.  If this argument is 0, or a null or
+empty string, the current cell is understood.  The second argument is
+a string giving the flag name, which can be any or the flag names. 
+The return value is the flag status (0 or 1), or -1 on error.  On
+error, a message can be obtained from {\vt GetError}.
+
+%------------------------------------
+% 033009
+\index{Save function}
+\item{(int) \vt Save({\it newname\/})}\\
+This function will save to disk file the current cell, and its
+descendents if the cell originated from an archive file.  If the
+argument is null or the empty string, the current cell name is used,
+suffixed with one of the following if saving as an archive:
+
+\begin{tabular}{|l|l|}\hline
+CGX &     {\vt .cgx}\\ \hline
+CIF &     {\vt .cif}\\ \hline
+GDSII &   {\vt .gds}\\ \hline
+OASIS &   {\vt .oas}\\ \hline
+\end{tabular}
+
+The default format will be the format of the original input file,
+though format conversion can be imposed by adding one of these
+suffixes or ``{\vt .xic}'' to {\it newname\/}.  The cell is saved
+unconditionally; there is no user prompt.
+
+See the table in \ref{functions} for the features that apply during a
+call to this function.
+
+This function returns 1 on success, 0 otherwise.  On error, a message
+is likely available from {\vt GetError}.
+
+%------------------------------------
+% 010406
+\index{UpdateNative function}
+\item{(int) \vt UpdateNative({\it dir\/})}\\
+This will write to disk all of the modified cells in the current
+hierarchy as native cell files in the directory given as the argument. 
+If the argument is null or empty, cells will be written in the current
+directory.  The return value is the number of cells written.
+
+Note that only modified or internally created cells will be written. 
+To write all cells as native cell files, use the {\vt ToXIC} function.
+
+\end{description}
 
 !!SEEALSO
 funcs:main1
@@ -1433,6 +1721,146 @@ Cell Info
     </pre>
     </blockquote>
     </dl>
+!!LATEX funcs:main1:cell scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 022012
+\index{CellBB function}
+\item{(int) \vt CellBB({\it cellname\/}, {\it array\/} [, {\it symbolic\/}])}\\
+This function will return the bounding box of the named cell in the
+current mode, in microns, in the array, as l, b, r, t.  If {\it
+cellname} is null or empty, the current cell is used.  The array must
+have size 4 or larger.  The function returns 1 on success, 0 if the
+cell is not found in memory.
+
+The optional boolean third argument applies to electrical cells.  If
+not given or set to false, the schematic bounding box is always
+returned.  If this argument is true, and the cell has a symbolic
+representation, the symbolic representation bounding box is returned,
+or the function fails and returns 0 if the cell has no symbolic
+representation.
+
+%------------------------------------
+% 010818
+\index{ListSubcells function}
+\item{(stringlist\_handle) \vt ListSubcells({\it cellname\/}, {\it depth\/},
+ {\it array\/}, {\it incl\_top\/})}\\
+This function returns a handle to a sorted list of subcell master
+names found under the named cell, to the given depth, and only if
+instantiated so as to overlap a rectangular area (if given).  These
+apply to the current mode, electrical or physical.  If {\it cellname}
+is null or empty, the current cell is used.  The {\it depth} is the
+search depth, which can be an integer which sets the maximum depth to
+search (0 means search {\it cellname} only and return its subcell
+names, 1 means search {\it cellname} plus its subcells, etc., and a
+negative integer sets the depth to search the entire hierarchy).  This
+argument can also be a string starting with `{\vt a}' such as ``{\vt
+a}'' or ``{\vt all}'' which indicates to search the entire hierarchy.
+
+The cell will be read into memory if not already there.  The function
+fails if the cell can not be found.
+
+The {\it array} argument can be passed 0, which indicates no area
+testing.  Otherwise, the array should be size four or larger, with the
+values being the left ({\it array\/}[0]), bottom, right, and top
+coordinates of a rectangular region of {\it cellname}.  Only cells
+that are instantiated such that the instance bounding box, when
+reflected to top-level coordinates, intersects the region will be
+listed.
+
+If the boolean {\it incl\_top} is nonzero, the top cell name ({\it
+cellname\/}) will be included in the list, unless an array is given
+and there is no overlap with the top cell.
+
+The return is a handle to a list of cell names, and can be empty.  The
+{\vt GenCells} or {\vt ListNext} functions can be used to iterate
+through the list.
+
+%------------------------------------
+% 020411
+\index{ListParents function}
+\item{(stringlist\_handle) \vt ListParents({\it cellname\/})}\\
+This function returns a list of cell names, each of which contain an
+instance of the cell name passed as the argument.  These apply to the
+current mode, electrical or physical.  If {\it cellname} is null or
+empty, the current cell is used.
+
+The function fails if the cell can not be found in memory.  
+  
+The return is a handle to a list of cell names, and can be empty.  The
+{\vt GenCells} or {\vt ListNext} functions can be used to iterate
+through the list.
+
+%------------------------------------
+% 020411
+\index{InitGen function}
+\item{(stringlist\_handle) \vt InitGen()}\\
+This function returns a handle to a list of names of cells used in the
+hierarchy of the current cell, either the physical or electrical part
+according to the current mode.  Each cell is listed once only, and all
+cells are listed, including the current cell which is returned last.
+
+The return is a handle to a list of cell names, and can be empty.  The
+{\vt GenCells} or {\vt ListNext} functions can be used to iterate
+through the list.
+
+%------------------------------------
+% 020411
+\index{CellsHandle function}
+\item{(stringlist\_handle) \vt CellsHandle({\it cellname\/},
+ {\it depth\/})}\\
+This function returns a handle to a list of subcell names found in
+{\it cellname}, to the given hierarchy depth.  If {\it cellname} is null
+or empty, the current cell is used.  The {\it depth} is the search
+depth, which can be an integer which sets the maximum depth to search
+(0 means search {\it cellname} only and return its subcell names, 1
+means search {\it cellname} plus its subcells, etc., and a negative
+integer sets the depth to search the entire hierarchy).  This argument
+can also be a string starting with `a' such as {\vt "a"} or {\vt
+"all"} which indicates to search the entire hierarchy.  The listing
+order is as a tree, with a subcell listed followed by the descent into
+that subcell.
+
+The cell will be read into memory if not already there.  The function
+fails if the cell can not be found.
+
+With ``{\vt all}'' passed, the output is similar to that of the {\vt
+InitGen} function, except that the top-level cell name is not listed,
+and duplicate entries are not removed ({\vt ListUnique} can be called
+to remove duplicate names).
+
+Be aware that the listing will generally contain lots of duplicate
+names.  This function is not recommended for general hierarchy
+traversal.
+
+The return is a handle to a list of cell names, and can be empty.  The
+{\vt GenCells} or {\vt ListNext} functions can be used to iterate
+through the list.
+
+%------------------------------------
+% 020411
+\index{GenCells function}
+\item{(string) \vt GenCells({\it stringlist\_handle})}\\
+This function returns a string containing the name of one of the
+elements in the list whose handle is passed as the argument.  It
+advances the handle to point to the next name.  The argument can be
+the return value from one of the functions above, or any {\it
+stringlist\_handle} variable.  A different name is returned for each
+call.  The null string is returned after all names have been returned. 
+This is identical to the {\vt ListNext} function.
+
+Example:
+\begin{quote}
+This script will list all of the cells in the current hierarchy:
+\begin{verbatim}
+i = InitGen()
+while ((name = GenCells(i)) != 0)
+   Print(name)
+end
+\end{verbatim}
+\end{quote}
+
+\end{description}
 
 !!SEEALSO
 funcs:main1
@@ -1558,6 +1986,101 @@ Database
     alphabetically sorted, giving the source file names of the
     top-level cells in the current symbol table.
     </dl>
+!!LATEX funcs:main1:db scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 020411
+\index{Clear function}
+\item{\vt Clear({\it cellname\/})}\\
+If {\it cellname} is not empty, any matching cell and all its
+descendents are cleared from the database, unless they are referenced
+by another cell not being cleared.  If {\it cellname} is null or
+empty, the entire database is cleared.  This function is obviously
+very dangerous.
+
+%------------------------------------
+% 101412
+\index{ClearAll function}
+\item{\vt ClearAll({\it clear\_tech\/})}\\
+This will clear all cells from the present symbol table, clear and
+delete any other symbol tables that may be defined, and revert the
+layer database.  If the boolean argument is nonzero, layers read from
+the technology file will be cleared, otherwise the layer database is
+reverted to the state just after the technology file was read.  This
+function does {\bf not} automatically open a new cell.  This is for
+server mode, to give the system a good scrubbing between jobs.
+
+%------------------------------------
+% 072904
+\index{IsCellInMem function}
+\item{(int) \vt IsCellInMem({\it cellname\/})}\\
+This function returns 1 if the string {\it cellname} is the name of a
+cell in the current symbol table, 0 otherwise.  If the string contains
+a path prefix, it will be ignored, and the last (filename) component
+used for the test.
+
+%------------------------------------
+% 051310
+\index{IsFileInMem function}
+\item{(int) \vt IsFileInMem({\it filename\/})}\\
+This will compare the string {\it filename} to the source file names
+saved with top-level cells in the current symbol table.  If {\it
+filename} is a full path, the function returns 1 if an exact match is
+found.  If {\it filename} is not rooted, the function returns 1 if the
+last path component matches.  In either case, 0 is returned if no
+match is seen.
+
+%------------------------------------
+% 030104
+\index{NumCellsInMem function}
+\item{(int) \vt NumCellsInMem()}\\
+This function returns an integer giving the number of cells in the
+current symbol table.
+
+%------------------------------------
+% 032215
+\index{ListCellsInMem function}
+\item{(stringlist\_handle) \vt ListCellsInMem({\it options\_str\/})}\\
+This function returns a handle to a list of strings, sorted
+alphabetically, giving the names of cells found in the current symbol
+table.
+  
+A fairly extensive filtering capability is available, which is
+configured through a string passed as the argument.  If 0 is passed,
+or the options string is null or empty, all cells will be listed.
+
+The string consists of a space-separated list of keywords, each of
+which represents a condition for filtering.  The cells listed will be
+the logical AND of all option clauses.  The keysords are described
+with the {\cb Cell List Filter} panel in \ref{cellfilt}.
+
+%------------------------------------
+% 030104
+\index{ListTopCellsInMem function}
+\item{(stringlist\_handle) \vt ListTopCellsInMem()}\\
+This function returns a handle to a list of strings, sorted
+alphabetically, giving the names of top-level cells in the current
+symbol table.  These are the cells that are not used as subcells, in
+either physical or electrical mode.
+
+%------------------------------------
+% 030104
+\index{ListModCellsInMem function}
+\item{(stringlist\_handle) \vt ListModCellsInMem()}\\
+This function returns a handle to a list of strings, sorted
+alphabetically, giving the names of modified cells in the current
+symbol table.  A cell is modified if the contents have changed since
+the cell was read or last written to disk.
+
+%------------------------------------
+% 030104
+\index{ListTopFilesInMem function}
+\item{(stringlist\_handle) \vt ListTopFilesInMem()}\\
+This function returns a handle to a list of strings, alphabetically
+sorted, giving the source file names of the top-level cells in the
+current symbol table.
+
+\end{description}
 
 !!SEEALSO
 funcs:main1
@@ -1608,6 +2131,42 @@ Symbol Tables
     <dd><br>This function returns a string giving the name of the current
     symbol table.
     </dl>
+!!LATEX funcs:main1:stab scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 100408
+\index{SetSymbolTable function}
+\item{(string) \vt SetSymbolTable({\it tabname\/})}\\
+This function will set the current symbol table to the table named in
+the argument string.  If the {\it tabname} is null or empty, the
+default ``{\vt main}'' table is understood.  If a table by the given
+name does not exist, a new table will be created for that name.
+   
+The return value is a string giving the name of the active table
+before the switch.
+
+%------------------------------------
+% 100408
+\index{ClearSymbolTable function}
+\item{(int) \vt ClearSymbolTable({\it destroy\/})}\\
+This function will clear or destroy the current symbol table.  If the
+boolean argument is nonzero, and the current table is not the ``{\vt
+main}'' table, the current table and its contents will be destroyed. 
+Otherwise, the current table will be cleared, i.e., all contained
+cells will be destroyed.  If the current symbol table is destroyed, a
+new current table will be installed from among the internal list of
+existing tables.
+   
+This function always returns 1.
+
+%------------------------------------
+% 100408
+\index{CurSymbolTable function}
+\item{(string) \vt CurSymbolTable()}\\
+This function returns a string giving the name of the current
+symbol table.
+
+\end{description}
 
 !!SEEALSO
 funcs:main1
@@ -1786,6 +2345,151 @@ Display
     sub-windows.  The function returns 0 if the argument does not
     correspond to an existing window, 1 otherwise.
     </dl>
+!!LATEX funcs:main1:dsp scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 030104
+\index{Window function}
+\item{(int) \vt Window({\it x\/}, {\it y\/}, {\it width\/}, {\it win\/})}\\
+The window view is changed so that it is centered at {\it x\/}, {\it
+y} and has width set by the third argument.  If the {\it width\/}
+argument is less than or equal to zero, a centered, full view of the
+current cell is obtained.  In this case, the {\it x\/}, {\it y\/}
+arguments are ignored.  The {\it win} is an integer 0--4 which
+specifies the window:
+
+\begin{tabular}{ll}
+0 & Main drawing window\\
+1--4 & Sub-window (number as shown in title bar)
+\end{tabular}
+
+The function returns 1 on success, 0 if the indicated window does
+not exist.
+
+%------------------------------------
+% 030104
+\index{GetWindow function}
+\item{(int) \vt GetWindow()}\\
+This function returns the window number of the drawing window
+that contains the pointer.  The window number is an integer 0--4:
+
+\begin{tabular}{ll}
+0 & Main drawing window\\
+1--4 & Sub-window (number as shown in title bar)
+\end{tabular}
+
+If the pointer is not in a drawing window, 0 is returned.
+
+%------------------------------------
+% 030104
+\index{GetWindowView function}
+\item{(int) \vt GetWindowView({\it win}, {\it array\/})}\\
+This function returns the view area (visible cell coordinates) of the
+given window {\it win}, which is an integer 0--4 where 0 is the main
+window and 1--4 represent sub-windows.  The view coordinates, in
+microns, are returned in the {\it array}, in order L, B, R, T.  On
+success, 1 is returned, otherwise 0 is returned and the {\it array} is
+untouched.
+
+%------------------------------------
+% 030104
+\index{GetWindowMode function}
+\item{(int) \vt GetWindowMode({\it win})}\\
+This function returns the display mode of the given window {\it win},
+which is 0 for physical mode, 1 for electrical, or -1 if the window
+does not exist.  The argument is an integer 0--4, where 0 represents
+the main window and 1--4 indicate sub-windows.  This function is
+identical to {\vt CurMode}.
+
+%------------------------------------
+% 030104
+\index{Expand function}
+\item{(int) \vt Expand({\it win\/}, {\it string\/})}\\
+This sets the expansion mode for the display in the window specified
+in {\it win\/}.  The {\it win} argument is an integer 0--4, where 0
+refers to the main window, and 1--4 correspond to the sub-windows
+brought up with the {\cb Viewport} command.  The {\it string} contains
+characters which modify the display mode, as would be given to the
+{\cb Expand} command in the {\cb View Menu}.
+
+\begin{tabular}{ll}
+integer  & set expand level\\
+\vt n    & set level to 0\\
+\vt a    & expand all\\
+$+$      & increment expand level\\
+$-$      & decrement expand level\\
+\end{tabular}
+
+%------------------------------------
+% 030104
+\index{Display function}
+\item{(int) \vt Display({\it display\_string\/}, {\it win\_id\/},
+{\it l\/}, {\it b\/}, {\it r\/}, {\it t\/})}\\
+This function will render the current cell in a foreign X window.  The
+X window id is passed as an integer in the second argument.  The first
+argument is the X display string corresponding to the server in which
+the window is cached.  The remaining arguments set the area to be
+displayed, in microns.  The function returns 1 upon success, 0
+otherwise.  This function is useful for rendering a layout if
+interactive graphics is not enabled, such as in server mode.  This
+function will not work under Microsoft Windows.
+
+This is a primitive to allow {\Xic} to export graphics rendering
+capability.  The intention is that this might be used in a {\et Tk}
+script (for example) that is otherwise using {\Xic} in server mode as
+a back-end.  The machine containing the window to be drawn into must
+allow X access to the machine running the {\Xic} server (see the {\et
+xhost} Unix command).
+
+One can demonstrate the capability as follows.  The ``{\vt xwininfo
+-children}'' Unix command can be used to find the window id of a
+suitable {\it child} window in a running application.  The top-level
+window given from {\et xwininfo} without the ``{\vt -children}''
+argument is generally obscured by child windows, so this won't work. 
+For example, an {\et xterm} window has a single child, which is the id
+to use.  In server mode, a cell must be loaded for editing with the
+{\vt Edit} function.  Then, a {\vt Display} command can be given,
+something like
+\begin{quote}\vt
+    Display(":0", 0x1800015, -100, -100, 100, 100)
+\end{quote}
+
+The {\vt ":0"} is the display name for the local machine, assuming
+that the {\Xic} server is also running on this machine.  In general,
+this is the same as the {\et DISPLAY} environment variable, in the
+form {\it hostname\/}{\vt :0}.  The second argument is the window id
+returned from {\et xwininfo}.  The remaining arguments set the area to
+display.  After giving the command, the window should be overwritten
+with a display similar to a drawing window in {\Xic}.  However, if the
+window is redrawn, it will revert to its previous contents.  The user
+must set up expose event handling in a real application.  The
+suggested way to do this is to pass the id of a pixmap to {\Xic}, and
+then copy the pixmap to the destination window.  This is usually
+faster than a direct write, and the pixmap can be used for backing
+store for expose events.
+
+%------------------------------------
+% 030104
+\index{FreezeDisplay function}
+\item{(int) \vt FreezeDisplay({\it freeze\/})}\\
+When this function is called with a nonzero argument, the graphical
+display in the drawing windows will be frozen until a subsequent call
+of this function with a zero argument, or the script terminates.  This
+is useful for speeding execution, and eliminating distracting screen
+drawing while a script is running.  When the function is called with a
+zero argument, all drawing windows are refreshed.
+
+%------------------------------------
+% 030104
+\index{Redraw function}
+\item{(int) \vt Redraw({\it win\/})}\\
+This function will redraw the window indicated by the argument, which
+is 0 for the main window or 1--4 for the sub-windows.  The function
+returns 0 if the argument does not correspond to an existing window, 1
+otherwise.
+
+\end{description}
+
 !!SEEALSO
 funcs:main1
 
@@ -1810,6 +2514,22 @@ Exit
     <dd><br>Calling this function terminates execution of the script,
     equivalent to <tt>Exit</tt>.
     </dl>
+!!LATEX funcs:main1:exit scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 030104
+\index{Exit function}
+\item{\vt Exit()}\\
+Calling this function terminates execution of the script.
+
+%------------------------------------
+% 030104
+\index{Halt function}
+\item{\vt Halt()}\\
+Calling this function terminates execution of the script, equivalent
+to {\vt Exit}.
+
+\end{description}
 
 !!SEEALSO
 funcs:main1
@@ -1978,6 +2698,133 @@ Annotation
     is the number of marks read, or -1 if error.  On error, a message
     may be available from <a href="GetError"><tt>GetEreror</tt></a>.
     </dl>
+!!LATEX funcs:main1:anno scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 120809
+\index{AddMark function}
+\item{(int) \vt AddMark({\it type\/}, {\it arguments\/} ...)}\\
+This function will add a ``user mark'' to a display list, which is
+rendered as highlighting in the current cell.  These can be used for
+illustrative purposes.  The marks are not included in the design
+database, but are persistent to the current cell and are remembered as
+long as the current cell exists in memory.  Any call can have
+associated marks, whether electrical or physical.  Marks are shown in
+any window displaying the cell as the top level.  Marks are not shown
+in expanded subcells.
+
+The arguments that follow the type argument vary depending upon the
+type.  The type argument can be an integer code, or a string whose
+first character signifies the type.  The return value, if nonzero, is
+a unique mark id, which can be passed to {\vt EraseMark} to erase the
+mark.  A zero return indicates that an error occurred.
+
+The table below describes the marks available.  All coordinates and
+dimensions are in microns, in the coordinate system of the current
+cell.  Each mark takes an optional attribute argument, which is an
+integer whose set bits indicate a display property.  These bits are
+
+\begin{description}
+\item{\bf bit 0:}
+  Draw with a textured (dashed) line if set, otherwise use a solid line.
+\item{\bf bit 1:}
+  Cause the mark to blink, using the selection colors.
+\item{\bf bit 2:}
+  Render the mark in an alternate color (bit 1 is ignored).
+\end{description}
+
+\begin{description}
+\item{Type: 1 or {\vt "l"}\\
+Arguments: {\it x1\/}, {\it y1\/}, {\it x2\/}, {\it y2\/}
+[, {\it attribute\/}]}\\
+  Draw a line segment from {\it x1\/},{\it y1\/} to {\it x2\/},{\it y2\/}.
+
+\item{Type: 2 or {\vt "b"}\\
+Arguments: {\it l\/}, {\it b\/}, {\it r\/}, {\it t\/} [, {\it attribute\/}]}\\
+  Draw an open box, {\it l\/},{\it b\/} is lower-left corner and
+ {\it r\/},{\it t\/} is upper-right corner.
+
+\item{Type: 3 or {\vt "u"}\\
+Arguments: {\it xl\/}, {\it xr\/}, {\it yb\/} [, {\it yt\/},
+{\it attribute\/}]}\\
+  Draw an open triangle.  The two base vertices are {\it xl\/},{\it
+  yb\/} and {\it xr\/},{\it yb\/}.  The third vertex is ({\it
+  xl\/}+{\it xr\/})/2,{\it yt\/}.  If {\it yt\/} is not given, it is
+  set to make the triangle equilateral.
+
+\item{Type: 4 or {\vt "t"}\\
+Arguments: {\it yl\/}, {\it yu\/}, {\it xb\/} [, {\it xt\/},
+{\it attribute\/}]}\\
+  Draw an open triangle.  The two lower vertices are {\it xb\/},{\it
+  yl\/} and {\it xb\/},{\it yu\/}.  The third vertex is {\it
+  xt\/},({\it yl\/}+{\it yu\/})/2.  If {\it xt\/} is not given, it is
+  set to make the triangle equilateral.
+
+\item{Type: 5 or {\vt "c"}\\
+Arguments: {\it xc\/}, {\it yc\/}, {\it rad\/} [, {\it attribute\/}]}\\
+  Draw a circle of radius {\it rad\/} centered at {\it xc\/},{\it yc\/}.
+
+\item{Type: 6 or {\vt "e"}\\
+Arguments: {\it xc\/}, {\it yc\/}, {\it rx\/}, {\it ry\/}
+[, {\it attribute\/}]}\\
+  Draw an ellipse centered at xc,yc using radii rx and ry.
+
+\item{Type: 7 or {\vt "p"}\\
+Arguments: {\it numverts\/}, {\it xy\_array\/} [, {\it attribute\/}]}\\
+  Draw an open polygon or path.  The number of vertices is given
+  first, followed by an array of size {\vt 2*}{\it numverts} or larger
+  that contains the vertex coordinates as x-y pairs.  For a polygon,
+  The vertex list should be closed, i.e., the first and last vertices
+  listed (and counted) should be the same.
+
+\item{Type: 8 or {\vt "s"}\\
+Arguments: {\it string\/}, {\it x\/}, {\it y\/} [, {\it width\/},
+    {\it height\/}, {\it xform\/}, {\it attribute\/}]}\\
+  Draw a text string.  The string is followed by the coordinates of
+  the reference point, which for default justification is the
+  lower-left corner of the bounding box.  The {\it width\/}, {\it
+  height\/}, and {\it xform\/} arguments are analogous to those of the
+  {\vt Label} script function, providing the rendering size and
+  justification and transformation information.  Unlike the {\vt
+  Label} function, the settings of the {\vt Justify} and {\vt
+  UseTransform} functions are ignored, transformation and
+  justification must be set through the {\it xform} argument.
+\end{description}
+
+%------------------------------------
+% 041705
+\index{EraseMark function}
+\item{(int) \vt EraseMark({\it id\/})}\\
+Remove a mark from the ``user marks'' display list.  The argument is
+the id number returned from {\vt AddMark}.  If zero is passed instead,
+all marks will be erased.  The return value is 1 if any marks were
+erased.
+
+%------------------------------------
+% 120909
+\index{DumpMarks function}
+\item{(int) \vt DumpMarks({\it filename\/})}\\
+This function will save the marks currently defined in the current
+cell to a file.  If the argument is null or empty (or scalar 0), a
+file name will be composed:  {\it cellname\/}.{\it mode\/}.{\vt
+marks}, where {\it mode} is ``{\vt phys}'' or ``{\vt elec}''.  The
+return is the number of marks written, or -1 if error.  On error, a
+message may be available from {\vt GetError}.  If 0, no file was
+produced, as no marks were found.
+
+%------------------------------------
+% 120909
+\index{ReadMarks function}
+\item{(int) \vt ReadMarks({\it filename\/})}\\
+This function will read the marks found in a file into the current
+cell.  The file must be in the format produced by {\vt DumpMarks}, and
+apply to the same name and display mode as the current cell.  A null
+or empty or 0 argument will imply a cell name composed as described
+for {\vt DumpMarks} The return value is the number of marks read, or
+-1 if error.  On error, a message may be available from {\vt
+GetEreror}.
+
+\end{description}
 
 !!SEEALSO
 funcs:main1
@@ -2136,6 +2983,124 @@ Ghost Rendering
     <tt>UseTransform</tt> is ignored (the translation tracks the mouse
     pointer).
     </dl>
+!!LATEX funcs:main1:ghost scrfuncs.tex
+% 030104
+The {\vt PushGhost/PopGhost} functions are useful in scripts where an
+object is created, and the user must click to place the object.  The
+object's outline can be drawn and attached to the pointer,
+facilitating placement.  Example:
+
+\begin{quote}
+\begin{verbatim}
+array[2000]
+# create some shape in array, nverts is actual size
+...
+ShowPrompt("Click to locate new object");
+xy[2]
+PushGhost(array, nverts)
+ShowGhost(8)
+if !Point(xy)
+    Exit()
+end
+ShowGhost(0)
+PopGhost()
+# use xy to create object in database
+\end{verbatim}
+\end{quote}
+
+\begin{description}
+%------------------------------------
+% 030104
+\index{PushGhost function}
+\item{(int) \vt PushGhost({\it array\/}, {\it numpts\/})}\\
+This function allows a polygon to be added to the list of polygons
+used for dynamic highlighting with the {\vt ShowGhost} function.  The
+outline of the polygon will be ``attached'' to the mouse pointer.  The
+return value is the number of polygons in the list, after the present
+one is added.  The {\it array} is an array of x-y values forming the
+polygon.  The {\it numpts} value is the number of x-y pairs that
+constitute the polygon.  If this value is less than 2 or greater than
+the real size of the array, the real size of the array will be
+assumed.  The second argument is useful when the polygon data do not
+entirely fill the array, and can be set to 0 otherwise.
+
+%------------------------------------
+% 030104
+\index{PushGhostBox function}
+\item{(int) \vt PushGhostBox({\it left\/}, {\it bottom\/}, {\it right\/},
+{\it top\/})}\\
+This function is similar to {\vt PushGhost}.  It allows a box outline
+to be added to the list of polygons used for ghosting with the {\vt
+ShowGhost} function.  The outline of the box will be ``attached'' to
+the mouse pointer.  The return value is the number of polygons in the
+list, after the present one is added.  The arguments are the
+coordinates of the lower left and upper right corners of the box,
+where ``0'' is the point attached to the mouse pointer.  The {\vt
+PopGhost} function is used to remove the most recently added object
+from the list.
+
+%------------------------------------
+% 092915
+\index{PushGhostH function}
+\item{(int) \vt PushGhostH({\it object\_handle\/}, {\it all\/})}\\
+Push the outline of the figure referenced by the handle onto the ghost
+list.  If boolean {\it all} is true, push all objects in the list
+represented by the handle, otherwise push the single object at the
+head of the list.  The return value is an integer count of the number
+of outlines added to the ghost list.
+
+%------------------------------------
+% 030104
+\index{PopGhost function}
+\item{(int) \vt PopGhost()}\\
+This function removes the last ghosting polygon passed to {\vt
+PushGhost} or {\vt PushGhostBox} from the internal list, and returns
+the number of polygons remaining in the list.
+
+%------------------------------------
+% 102913
+\index{ShowGhost function}
+\item{(int) \vt ShowGhost({\it type})}\\
+Show dynamic highlighting.  This function turns on/off the ghosting,
+i.e., the display of certain features which are ``attached'' to the
+mouse pointer.  The argument is one of the numeric codes from the
+table below.
+
+\begin{tabular}{ll}
+0 & Turn off ghosting\\
+1 & full-screen horiz line, snapped to grid\\
+2 & full-screen vert line, snapped to grid\\
+3 & full-screen horiz line, not snapped\\
+4 & full-screen vert line, not snapped\\
+5 & vector from last point location to pointer\\
+6 & box, snapped to grid\\
+7 & box, not snapped\\
+8 & display polygon list from {\vt PushGhost}\\
+9 & vector from last point location to pointer\\
+10 & vector from last point location to pointer\\
+11 & vector from last point location to pointer\\
+\end{tabular}
+
+The modes 5, 9, 10, and 11 draw a vector from the last button 1 down
+location to the pointer.  Mode 5 snaps to the grid, and snaps the
+angle to multiples of 45 degrees when the angle is close.  If the {\et
+Constrain45} variable is set, the angle is strictly constrained to
+multiples of 45 degrees.  Mode 9 is similar, but does not snap to
+grid.  Mode 10 is similar, but there are no angle constraints, except
+that implicit in snapping to the grid.  Mode 11 is similar, but there
+are no angle constraints and no grid snapping.
+
+With the ghosting enabled, the {\vt Point} function returns
+coordinates that are snapped to grid or not depending on the mode
+passed to {\vt ShowGhost}.  Modes 1, 2, 5, 6, 8, and 10 are snapped to
+grid.
+
+If the {\vt UseTransform} function has been called to enable use of
+the current transform, the current transform will be applied to the
+displayed objects when using mode 8.  The translation supplied to {\vt
+UseTransform} is ignored (the translation tracks the mouse pointer).
+
+\end{description}
 
 !!SEEALSO
 funcs:main1
@@ -2582,6 +3547,358 @@ Graphics
     Modes 2,3 are probably not useful on other than 8-plane displays. 
     The function returns 1 on success, 0 otherwise.
     </dl>
+!!LATEX funcs:main1:graphics scrfuncs.tex
+The following functions represent an interface for exporting graphics
+to a ``foreign'' X window.  In particular, the interface can be used
+to draw into a window owned by a {\et Tk} script.  This interface is
+not available on Microsoft Windows.
+
+\begin{description}
+%------------------------------------
+% 030104
+\index{GRopen function}
+\item{(handle) \vt GRopen({\it display}, {\it window\/})}\\
+This function returns a handle to a graphical interface that can be
+used to export graphics to a foreign X window, possibly on another
+machine.  The first argument is the X display string, corresponding to
+the server which owns the target window.  The second argument is the X
+window id of the target window to which graphics rendering is to be
+exported.  If all goes well, and the user has permission to access the
+window, a positive integer handle is returned.  If the open fails, 0
+is returned.  The handle should be closed with the {\vt Close}
+function when done.
+
+%------------------------------------
+% 030104
+\index{GRcheckError function}
+\item{(int) \vt GRcheckError()}\\
+This function returns 1 if the previous operation by any of the GR
+interface functions caused an X error, 0 otherwise.
+
+%------------------------------------
+% 030104
+\index{GRcreatePixmap function}
+\item{(drawable) \vt GRcreatePixmap({\it handle}, {\it width},
+  {\it height\/})}\\
+This function returns the X id of a new pixmap.  The first argument is
+a handle returned from {\vt GRopen}.  The remaining arguments set the
+size of the pixmap.  If the operation fails, 0 is returned.
+
+%------------------------------------
+% 030104
+\index{GRdestroyPixmap function}
+\item{(int) \vt GRdestroyPixmap({\it handle}, {\it pixmap\/})}\\
+This function destroys a pixmap created with {\vt GRcreatePixmap}. 
+The first argument is a handle returned from {\vt GRopen}.  The second
+argument is the pixmap id returned from {\vt GRcreatePixmap}.  The
+function returns 1 on success, 0 if there was an error.
+
+%------------------------------------
+% 030104
+\index{GRcopyDrawable function}
+\item{(int) \vt GRcopyDrawable({\it handle}, {\it dst}, {\it src},
+  {\it xs}, {\it ys}, {\it ws}, {\it hs}, {\it x}, {\it y\/})}\\
+This function is used to copy area between drawables, which can be
+windows or pixmaps.  The first argument is a handle returned from {\vt
+GRopen}.  The next two arguments are the ids of destination and source
+drawables.  The area copied in the source drawable is given by the
+next four arguments.  The coordinates are pixel values, with the
+origin in the upper left corner.  If these four values are all zero,
+the entire source drawable is understood.  The final two values give
+the upper left corner of the copied-to area in the destination
+drawable.
+
+%------------------------------------
+% 030104
+\index{GRdraw function}
+\item{(int) \vt GRdraw({\it handle}, {\it l}, {\it b}, {\it r},
+  {\it t\/})}\\
+This function renders an {\Xic} cell.  The first argument is a handle
+returned from {\vt GRopen}.  The remaining arguments are the
+coordinates of the cell to render, in microns.  The action is the same
+as the {\vt Display} function.  The function returns 1 on success, 0
+if there was an error.
+
+%------------------------------------
+% 030104
+\index{GRgetDrawableSize function}
+\item{(int) \vt GRgetDrawableSize({\it handle}, {\it drawable},
+  {\it array\/})}\\
+This function returns the size, in pixels, of a drawable.  The first
+argument is a handle returned from {\vt GRopen}.  The second argument
+is the id of a window or pixmap.  The third argument is an array of
+size two or larger that will contain the pixel width and height of the
+drawable.  Upon success, 1 is returned, and the array values are set,
+otherwise 0 is returned.  The width is in the 0'th array element.
+
+%------------------------------------
+% 030104
+\index{GRresetDrawable function}
+\item{(drawable) \vt GRresetDrawable({\it handle}, {\it drawable\/})}\\
+This function allows the target window of the graphical context to be
+changed.  Then, the rendering functions will draw into the new window
+or pixmap, rather than the one passed to {\vt GRopen}.  The return
+value is the previous drawable id, or 0 if there is an error.
+
+%------------------------------------
+% 030104
+\index{GRclear function}
+\item{(int) \vt GRclear({\it handle\/})}\\
+This function clears the window.  The argument is a handle returned
+from {\vt GRopen}.  Upon success, 1 is returned, otherwise 0 is
+returned.
+
+%------------------------------------
+% 030104
+\index{GRpixel function}
+\item{(int) \vt GRpixel({\it handle}, {\it x}, {\it y\/})}\\
+This function draws a single pixel at the pixel coordinates given in
+the second and third arguments, using the current color.  The first
+argument is a handle returned from {\vt GRopen}.  Upon success, 1 is
+returned, otherwise 0 is returned.
+
+%------------------------------------
+% 030104
+\index{GRpixels function}
+\item{(int) \vt GRpixels({\it handle}, {\it array}, {\it num\/})}\\
+This function will draw multiple pixels using the current color.  The
+first argument is a handle returned from {\vt GRopen}.  The second
+argument is an array of pixel coordinates, taken as x-y pairs.  The
+third argument is the number of pixels to draw (half the length of the
+array).  Upon success, 1 is returned, otherwise 0 is returned.
+
+%------------------------------------
+% 030104
+\index{GRline function}
+\item{(int) \vt GRline({\it handle}, {\it x1}, {\it y1}, {\it x2},
+  {\it y2\/})}\\
+This function renders a line using the current color and line style. 
+The first argument is a handle returned from {\vt GRopen}.  The next
+four arguments are the endpoints of the line in pixel coordinates. 
+Upon success, 1 is returned, otherwise 0 is returned.
+
+%------------------------------------
+% 030104
+\index{GRpolyLine function}
+\item{(int) \vt GRpolyLine({\it handle}, {\it array}, {\it num\/})}\\
+This function renders a polyline in the current color and line style. 
+The first argument is a handle returned from {\vt GRopen}.  The second
+argument is an array containing vertex coordinates in pixels as x-y
+pairs.  The line will be continued to each successive vertex.  The
+third argument is the number of vertices (half the length of the
+array).  Upon success, 1 is returned, otherwise 0 is returned.
+
+%------------------------------------
+% 030104
+\index{GRlines function}
+\item{(int) \vt GRlines({\it handle}, {\it array}, {\it num\/})}\\
+This function renders multiple distinct lines, each using the current
+color and line style.  The first argument is a handle returned by {\vt
+GRopen}.  The second argument is an array of coordinates, in pixels,
+which if taken four at a time give the x-y endpoints of each line. 
+The third argument is the number of lines in the array (one fourth the
+array length).  Upon success, 1 is returned, otherwise 0 is returned.
+
+%------------------------------------
+% 030104
+\index{GRbox function}
+\item{(int) \vt GRbox({\it handle}, {\it l}, {\it b}, {\it r},
+  {\it t\/})}\\
+This function renders a rectangular area in the current color with the
+current fill pattern.  The first argument is a handle returned from
+{\vt GRopen}.  The remaining arguments provide the diagonal vertices
+of the rectangle, in pixels.  Upon success, 1 is returned, otherwise 0
+is returned.
+
+%------------------------------------
+% 030104
+\index{GRboxes function}
+\item{(int) \vt GRboxes({\it handle}, {\it array}, {\it num\/})}\\
+This function renders multiple rectangles, each using the current
+color and fill pattern.  The first argument is a handle returned from
+{\vt GRopen}.  the second argument is an array of pixel coordinates
+which specify the boxes.  Taken four at a time, the values are the
+upper-left corner (x-y), width, and height.  The third argument is the
+number of boxes represented in the array (one fourth the array
+length).  Upon success, 1 is returned, otherwise 0 is returned.
+
+%------------------------------------
+% 120809
+\index{GRarc function}
+\item{(int) \vt GRarc({\it handle}, {\it x0}, {\it y0}, {\it rx},
+  {\it ry\/}, {\it theta1}, {\it theta2\/})}\\
+This function renders an arc, using the current color and line style. 
+The first argument is a handle returned from {\vt GRopen}.  The next
+two arguments are the pixel coordinates of the center of the ellipse
+containing the arc.  The remaining arguments are the x and y radii,
+and the starting and ending angles.  The angles are in radians,
+relative to the three-o'clock position, counter-clockwise.  Upon
+success, 1 is returned, otherwise 0 is returned.
+
+%------------------------------------
+% 030104
+\index{GRpolygon function}
+\item{(int) \vt GRpolygon({\it handle}, {\it array}, {\it num\/})}\\
+This function renders a polygon, using the current color and fill
+pattern.  The first argument is a handle returned from {\vt GRopen}. 
+The second argument is an array containing the vertices, as x-y pairs
+of pixel coordinates.  The third argument is the number of vertices
+(half the length of the array).  The polygon will be closed
+automatically if the first and last vertices do not coincide.  Upon
+success, 1 is returned, otherwise 0 is returned.
+
+%------------------------------------
+% 022713
+\index{GRtext function}
+\item{(int) \vt GRtext({\it handle}, {\it text}, {\it x}, {\it y},
+  {\it flags\/})}\\
+This function renders text in the current color.  The first argument
+is a handle returned form {\vt GRopen}.  The second argument is the
+text string to render.  The next two arguments give the anchor point
+in pixel coordinates.  If there is no transformation, this will be the
+lower-left of the bounding box of the rendered text.  The {\it flags}
+argument specifies a label flags word as used in {\Xic} (see
+\ref{labelflags}).  Only the bits of the least significant byte are
+likely to be recognized.
+
+Upon success, 1 is returned, otherwise 0 is returned.
+
+%------------------------------------
+% 030104
+\index{GRtextExtent function}
+\item{(int) \vt GRtextExtent({\it handle}, {\it text}, {\it array\/})}\\
+This function returns the width and height in pixels needed to render
+a text string.  The first argument is a handle returned from {\vt
+GRopen}.  The second argument is the string to measure.  If the string
+is null or empty, a ``typical'' single character width and height is
+returned, which can be simply multiplied for the fixed-pitch font in
+use.  The third argument is an array of size two or larger which will
+receive the width (0'th index) and height.  The function returns 1 on
+success, 0 otherwise.
+
+%------------------------------------
+% 030104
+\index{GRdefineColor function}
+\item{(int) \vt GRdefineColor({\it handle}, {\it red}, {\it green},
+  {\it blue\/})}\\
+This function will return a color code corresponding to the given
+color.  The first argument is a handle returned from {\vt GRopen}. 
+The next three arguments are color component values, each in a range
+0--255, giving the red, green, and blue intensity.  The return value
+is a color code representing the nearest displayable color to that
+given.  If an error occurs, 0 (black) is returned.  The returned color
+code can be passed to {\vt GRsetColor} to actually change the drawing
+color.
+
+%------------------------------------
+% 030104
+\index{GRsetBackground function}
+\item{(int) \vt GRsetBackground({\it handle}, {\it pixel\/})}\\
+This function sets the default background color assumed by the
+graphics context.  The first argument is a handle returned from {\vt
+GRopen}.  The second argument is a color code returned from {\vt
+GRdefineColor}.  Upon success, 1 is returned, otherwise 0 is returned.
+
+%------------------------------------
+% 030104
+\index{GRsetWindowBackground function}
+\item{(int) \vt GRsetWindowBackground({\it handle}, {\it pixel\/})}\\
+This function sets the color used to render the window background when
+the window is cleared.  The first argument is a handle returned from
+{\vt GRopen}.  The second argument is a color code returned from {\vt
+GRdefineColor}.  The function returns 1 on success, 0 otherwise.
+
+%------------------------------------
+% 030104
+\index{GRsetColor function}
+\item{(int) \vt GRsetColor({\it handle}, {\it pixel\/})}\\
+This function sets the current color, used for all rendering
+functions.  The first argument is a handle returned from {\vt GRopen}. 
+The second argument is a color code returned from {\vt GRdefineColor}. 
+Upon success, 1 is returned, otherwise 0 is returned.
+
+%------------------------------------
+% 030104
+\index{GRdefineLinestyle function}
+\item{(int) \vt GRdefineLinestyle({\it handle}, {\it index},
+  {\it mask\/})}\\
+This function defines a line style.  The first argument is a handle
+returned from {\vt GRopen}.  The second argument is an index value
+1--15 which corresponds to an internal line style register.  The third
+argument is an integer value whose bits set the line on/off pattern. 
+the pattern starts with the most significant '1' bit in the {\it
+mask}.  The '1' bits will be drawn.  The pattern continues to the
+least significant bit, and is repeated as the line is rendered.  The
+indices 1--10 contain pre-defined line styles, which can be
+overwritten with this function.  The {\vt SetLinestyle} function is
+used to set the pattern actually used for rendering.  Upon success, 1
+is returned, otherwise 0 is returned.
+
+%------------------------------------
+% 030104
+\index{GRsetLinestyle function}
+\item{(int) \vt GRsetLinestyle({\it handle}, {\it index\/})}\\
+This function sets the line style used to render lines.  The first
+argument is a handle returned from {\vt GRopen}.  The second argument
+is an integer 0--15 which corresponds to an internal style register. 
+Index 0 is always solid, whereas the other values can be set with {\vt
+GRdefineLinestyle}.  The function returns 1 on success, 0 otherwise.
+
+%------------------------------------
+% 030104
+\index{GRdefineFillpattern function}
+\item{(int) \vt GRdefineFillpattern({\it handle}, {\it index},
+  {\it nx}, {\it ny} {\it array\_string\/})}\\
+This function is used to define a fill pattern for rendering boxes and
+polygons.  The first argument is a handle returned from {\vt GRopen}. 
+The second argument is an integer 1--15 which corresponds to internal
+fill pattern registers.  The next two arguments set the x and y size
+of the pixel map used for the fill pattern.  These can take values of
+8 or 16 only.  The final argument is a character string which contains
+the pixel map.  The most significant bit of the first byte is the
+upper left corner of the map.  The {\vt SetFillpattern} function is
+used to set the fill pattern actually used for rendering.  The
+function returns 1 on success, 0 otherwise.
+
+%------------------------------------
+% 030104
+\index{GRsetFillpattern function}
+\item{(int) \vt GRsetFillpattern({\it handle}, {\it index\/})}\\
+This function sets the fill pattern used for rendering boxes and
+polygons.  The first argument is a handle returned from {\vt GRopen}. 
+The second argument is an integer index 0--15 which corresponds to
+internal fill pattern registers.  The value 0 is always solid fill. 
+The other values can be set with {\vt GRdefineFillpattern}.  Upon
+success, 1 is returned, otherwise 0 is returned.
+
+%------------------------------------
+% 030104
+\index{GRupdate function}
+\item{(int) \vt GRupdate({\it handle\/})}\\
+This function flushes the X queue and causes any pending operations to
+be performed.  This should be called after completing a sequence of
+drawing functions, to force a screen update.  Upon success, 1 is
+returned, otherwise 0 is returned.
+
+%------------------------------------
+% 030104
+\index{GRsetMode function}
+\item{(int) \vt GRsetMode({\it handle}, {\it mode\/})}\\
+This function sets the drawing mode used for rendering.  The first
+argument is a handle returned from {\vt GRopen}.  The second argument
+is one of the following:
+
+\begin{tabular}{ll}
+0 & normal drawing\\
+1 & XOR\\
+2 & OR\\
+3 & AND-inverted\\
+\end{tabular}
+
+Modes 2,3 are probably not useful on other than 8-plane displays. 
+The function returns 1 on success, 0 otherwise.
+
+\end{description}
 
 !!SEEALSO
 funcs:main1
@@ -2973,6 +4290,326 @@ Hard Copy
     <p>
     The returned value is the previous setting of the media index.
     </dl>
+!!LATEX funcs:main1:hcopy
+The following functions provide an interface for plot and graphical
+file output.  This is completely outside of the normal printing
+interface.
+
+\begin{description}
+%------------------------------------
+% 030104
+\index{HClistDrivers function}
+\item{(stringlist\_handle) \vt HClistDrivers()}\\
+This function returns a handle to a list of available printer drivers. 
+The returned handle can be processed by any of the functions that
+operate on stringlist handles.
+
+%------------------------------------
+% 030104
+\index{HCsetDriver function}
+\item{(int) \vt HCsetDriver({\it driver\/})}\\
+This function will set the current print driver to the name passed (as
+a string).  The name must be one of the internal driver names as
+returned from {\vt HClistDrivers}.  If the operation succeeds, the
+function returns 1, otherwise 0 is returned.
+
+%------------------------------------
+% 030104
+\index{HCgetDriver function}
+\item{(string) \vt HCgetDriver()}\\
+This function returns the internal name of the current driver.  If no
+driver has been set, a null string is returned.
+
+%------------------------------------
+% 030104
+\index{HCsetResol function}
+\item{(int) \vt HCsetResol({\it resol\/})}\\
+This function will set the resolution of the current driver to the
+value passed.  The scalar argument should be one of the values
+supported by the driver, as returned from {\vt HCgetResols}.  If the
+resolution is set successfully, 1 is returned.  If no driver has been
+set, or the driver does not support the given resolution, 0 is
+returned.
+
+%------------------------------------
+% 030104
+\index{HCgetResol function}
+\item{(int) \vt HCgetResol()}\\
+This function returns the resolution set for the current driver, or 0
+if no driver has been set or the driver does not provide settable
+resolutions.
+
+%------------------------------------
+% 030104
+\index{HCgetResols function}
+\item{(int) \vt HCgetResols({\it array\/})}\\
+This function sets the array values to the resolutions supported by
+the current driver.  The array must have size 8 or larger.  The return
+value is the number of resolutions supported.  If no driver has been
+set, or the driver has fixed resolution, 0 is returned.
+
+%------------------------------------
+% 030104
+\index{HCsetBestFit function}
+\item{(int) \vt HCsetBestFit({\it best\_fit\/})}\\
+This function will set or reset the ``best fit'' flag for the current
+driver.  In best fit mode, the image will be rotated 90 degrees if
+this is a better match to the aspect ratio of the rendering area.  If
+the operation succeeds, 1 is returned.  If there is no driver set or
+the driver does not allow best fit mode, 0 is returned.  If the
+argument is nonzero, best fit mode will be set if possible, otherwise
+the mode is unset.
+
+%------------------------------------
+% 030104
+\index{HCgetBestFit function}
+\item{(int) \vt HCgetBestFit()}\\
+This function returns 1 if the current driver is in ``best fit'' mode,
+0 otherwise.
+
+%------------------------------------
+% 030104
+\index{HCsetLegend function}
+\item{(int) \vt HCsetLegend({\it legend\/})}\\
+This function will set or reset the ``legend'' flag for the current
+driver.  If set, a legend will be shown with the rendered image.  If
+the operation succeeds, 1 is returned.  If there is no driver set or
+the driver does not allow a legend, 0 is returned.  If the argument is
+nonzero, the legend mode will be set if possible, otherwise the mode
+is unset.
+
+%------------------------------------
+% 030104
+\index{HCgetLegend function}
+\item{(int) \vt HCgetLegend()}\\
+This function returns 1 if the current driver has the ``legend'' mode
+set, 0 otherwise.
+
+%------------------------------------
+% 030104
+\index{HCsetLandscape function}
+\item{(int) \vt HCsetLandscape({\it landscape\/})}\\
+This function will set or reset the ``landscape'' flag for the current
+driver.  If set, the image will be rotated 90 degrees.  If the
+operation succeeds, 1 is returned.  If there is no driver set or the
+driver does not allow landscape mode, 0 is returned.  If the argument
+is nonzero, the landscape mode will be set if possible, otherwise the
+mode is unset.
+
+%------------------------------------
+% 030104
+\index{HCgetLandscape function}
+\item{(int) \vt HCgetLandscape()}\\
+This function returns 1 if the current driver has the ``landscape''
+mode set, 0 otherwise.
+
+%------------------------------------
+% 030104
+\index{HCsetMetric function}
+\item{(int) \vt HCsetMetric({\it metric\/})}\\
+This function sets a flag in the current driver which indicates that
+the rendering area is given in millimeters.  If not set, the values
+are taken in inches.  This pertains to the values passed to the {\vt
+HCsetSize} function.  If the operation succeeds, 1 is returned.  If
+there is no driver set, 0 is returned.  If the argument is nonzero,
+the metric mode will be set if possible, otherwise the mode is unset.
+
+%------------------------------------
+% 030104
+\index{HCgetMetric function}
+\item{(int) \vt HCgetMetric()}\\
+This function returns 1 if the current driver has the ``metric'' mode
+set, 0 otherwise.
+
+%------------------------------------
+% 030104
+\index{HCsetSize function}
+\item{(int) \vt HCsetSize({\it x}, {\it y}, {\it w}, {\it h\/})}\\
+This function sets the size and offset of the rendering area.  The
+numbers correspond to the entries in the {\cb Print Control Panel}. 
+The values are scalars, in inches unless metric mode is in effect
+(with {\vt HCsetMetric}) in which case the values are in millimeters. 
+The values are clipped to the limits provided in the technology file. 
+Most drivers accept 0 for one of {\it w}, {\it h}, indicating auto
+dimensioning mode.  The function returns 1 on success, 0 if no driver
+has been set.  Not all drivers use all four parameters, unused
+parameters are ignored.
+
+%------------------------------------
+% 030104
+\index{HCgetSize function}
+\item{(int) \vt HCgetSize({\it array\/})}\\
+This function returns the rendering area parameters for the current
+driver.  The array argument must have size 4 or larger.  The values
+are returned in the order x, y, w, h.  If the function succeeds, the
+values are set in the array and 1 is returned.  Otherwise, 0 is
+returned.
+
+%------------------------------------
+% 030104
+\index{HCshowAxes function}
+\item{(int) \vt HCshowAxes({\it style\/})}\\
+This function sets the style or visibility of axes shown in plots of
+physical data (electrical plots never include axes).  The argument is
+an integer 0--2, where 0 suppresses drawing of axes, 1 indicates plain
+axes, and 2 (or anything else) indicates axes with a box at the
+origin.  The return value is the previous setting.
+
+%------------------------------------
+% 030104
+\index{HCshowGrid function}
+\item{(int) \vt HCshowGrid({\it show\/}, {\it mode\/})}\\
+This function determines whether or not the grid is shown in plots. 
+If the first argument is nonzero, the grid will be shown, otherwise
+the grid will not be shown.  The second argument indicates the type of
+data affected:  zero for physical data, nonzero for electrical data. 
+The return value is the previous setting.
+
+%------------------------------------
+% 030104
+\index{HCsetGridInterval function}
+\item{(int) \vt HCsetGridInterval({\it spacing\/}, {\it mode\/})}\\
+This function sets the grid spacing used in plots.  The first argument
+is the interval in microns.  The second argument indicates the type of
+data affected:  zero for physical data, nonzero for electrical data. 
+For electrical data, the spacing in microns is rather meaningless,
+except as being relative to the default which is 1.0.  The return
+value is the previous setting.
+
+%------------------------------------
+% 030104
+\index{HCsetGridStyle function}
+\item{(int) \vt HCsetGridStyle({\it linemod\/}, {\it mode\/})}\\
+This function sets the line style used for the grid lines in plots. 
+The first argument is an integer mask that defines the on-off pattern. 
+The pattern starts at the most significant `1' bit and continues
+through the least significant bit, and repeats.  Set bits are rendered
+as the visible part of the pattern.  If the style is 0, a dot is shown
+at each grid point.  Passing -1 will give continuous lines.  The
+second argument indicates the type of data affected:  zero for
+physical data, nonzero for electrical data.  The return value is the
+previous setting.
+
+%------------------------------------
+% 071110
+\index{HCsetGridCrossSize function}
+\item{(int) \vt HCsetGridCrossSize({\it xsize\/}, {\it mode\/})}\\
+This applies only to grids with style 0 (dot grid).  The {\it xsize}
+is an integer 0--6 which indicates the number of pixels to draw in the
+four compass directions around the central pixel.  Thus, for nonzero
+values, the ``dot'' is rendered as a small cross.  The second argument
+indicates the type of data affected:  zero for physical data, nonzero
+for electrical data.  The return value is 1 if the cross size was set,
+0 if the grid style was nonzero in which case the cross size was not
+set.
+
+%------------------------------------
+% 030104
+\index{HCsetGridOnTop function}
+\item{(int) \vt HCsetGridOnTop({\it on\_top\/}, {\it mode\/})}\\
+This function sets whether the grid lines are drawn after the geometry
+(``on top'') or before the geometry.  If the first argument is
+nonzero, the grid will be rendered on top.  The second argument
+indicates the type of data affected:  zero for physical data, nonzero
+for electrical data.  The return value is the previous setting.
+
+%------------------------------------
+% 030104
+\index{HCdump function}
+\item{(int) \vt HCdump({\it l}, {\it b}, {\it r}, {\it t}, {\it filename},
+  {\it command\/})}\\
+This is the function which actually generates a plot or graphics file. 
+The first four arguments set the area in microns in current cell
+coordinates to render.  If these values are all 0, a full view of the
+current cell will be rendered.  The next argument is the name of the
+file to use for the graphical output.  If this string is null or
+empty, a temporary file will be used.  Under Windows, the final
+argument is the name of a printer, as known to the operating system. 
+These names can be obtained with {\vt HClistPrinters}.  Under
+Unix/Linux, the last argument is a command string that will be
+executed to generate a plot.  In any case if this argument is null or
+empty, the plot file will be generated, but no further action will be
+taken.  In the command string, the character sequence ``{\vt \%s}''
+will be replaced by the file name.  If the sequence does not appear,
+the file name will be appended.  If successful, 1 is returned,
+otherwise 0 is returned, and an error message can be obtained with
+{\vt HCerrorString}.
+
+The {\it filename}, or the temporary file that is used if no {\it
+filename} is given, is {\it not} removed.  The user must remove the
+file explicitly.
+
+The Windows Native driver (Windows only) has slightly different
+behavior.  For this driver, the command string must specify a printer
+name, and can not be null or empty.  If {\it filename} is not null or
+empty, the output goes to that file and is {\it not} sent to the
+printer.  Otherwise, the output goes to the printer.
+
+%------------------------------------
+% 030104
+\index{HCerrorString function}
+\item{(int) \vt HCerrorString()}\\
+This function returns a string indicating the error generated by {\vt
+HCdump}.  If there were no errors, a null string is returned.
+
+%------------------------------------
+% 030104
+\index{HClistPrinters function}
+\item{(stringlist\_handle) \vt HClistPrinters()}\\
+Under Microsoft Windows, this function returns a handle to a list of
+printer names available from the current host.  The first name is the
+name of the default printer.  The remaining names, alphabetized,
+follow.  If there are no printers available, or if not running under
+Windows, the function returns 0.  The returned names can be supplied
+to the {\vt HCdump} function to initiate a print job.
+
+%------------------------------------
+% 030104
+\index{HCmedia function}
+\item{(int) \vt HCmedia()}\\
+This function sets the media index, which is used by the Windows
+Native driver under Microsoft Windows only.  The media index sets the
+assumed paper size.  The argument is one of the integers from the
+table below.  The page dimensions are in points (1/72 inch).
+    
+\begin{tabular}{llll}
+\kb Index & \kb Name & \kb Width & \kb Height\\
+0 &  Letter     & 612  & 792\\
+1 &  Legal      & 612  & 1008\\
+2 &  Tabloid    & 792  & 1224\\
+3 &  Ledger     & 1224 & 792\\
+4 &  10x14      & 720  & 1008\\
+5 &  11x17      & 792  & 1224\\
+6 &  12x18      & 864  & 1296\\
+7 &  17x22 ``C''  & 1224 & 1584\\
+8 &  18x24      & 1296 & 1728\\
+9 &  22x34 ``D''  & 1584 & 2448\\
+10 & 24x36      & 1728 & 2592\\
+11 & 30x42      & 2160 & 3024\\
+12 & 34x44 ``E''  & 2448 & 3168\\
+13 & 36x48      & 2592 & 3456\\
+14 & Statement  & 396  & 612\\
+15 & Executive  & 540  & 720\\
+16 & Folio      & 612  & 936\\
+17 & Quarto     & 610  & 780\\
+18 & A0         & 2384 & 3370\\
+19 & A1         & 1684 & 2384\\
+20 & A2         & 1190 & 1684\\
+21 & A3         & 842  & 1190\\
+22 & A4         & 595  & 842\\
+23 & A5         & 420  & 595\\
+24 & A6         & 298  & 420\\
+25 & B0         & 2835 & 4008\\
+26 & B1         & 2004 & 2835\\
+27 & B2         & 1417 & 2004\\
+28 & B3         & 1001 & 1417\\
+29 & B4         & 729  & 1032\\
+30 & B5         & 516  & 729\\
+\end{tabular}
+  
+The returned value is the previous setting of the media index.
+
+\end{description}
 
 !!SEEALSO
 funcs:main1
@@ -2997,6 +4634,21 @@ Keyboard
     error message is available from <a
     href="GetError"><tt>GetError</tt></a>.
     </dl>
+!!LATEX funcs:main1:keyb scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 011114
+\index{ReadMapfile function}
+\item{(int) \vt ReadMapfile({\it mapfile\/})}\\
+Read and assert a keyboard mapping file, as generated from within
+{\Xic} with the {\cb Key Map} button in the {\cb Attributes Menu}.  If
+the {\it mapfile} is not rooted, it is searched for in the current
+directory, the user's home directory, and in the library search path,
+in that order.  If success, 1 is returned, and the supplied mapping is
+installed.  Otherwise, 0 is returned, and an error message is
+available from {\vt GetError}.
+
+\end{description}
 
 !!KEYWORD
 funcs:main1:libs
@@ -3024,6 +4676,26 @@ Libraries
       a full path to a previously opened library file, or just the
       file name.  This function always returns 1.
     </dl>
+!!LATEX funcs:main1:libs scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 030104
+\index{OpenLibrary function}
+\item{(int) \vt OpenLibrary({\it path\_name\/})}\\
+This function will open the named library.  The name is either a full
+path to the library file, or the name of a library file to find in the
+search path.  Zero is returned on error, nonzero on success.
+
+%------------------------------------
+% 030104
+\index{CloseLibrary function}
+\item{(int) \vt CloseLibrary({\it path\_name\/})}\\
+This function will close the named library, or all user libraries if
+the argument is null.  The {\it path\_name} can be a full path to a
+previously opened library file, or just the file name.  This function
+always returns 1.
+
+\end{description}
 
 !!SEEALSO
 funcs:main1
@@ -3341,11 +5013,238 @@ OpenAccess
     local database, destroy the database.
     </dl>
     <hr>
+!!LATEX funcs:main1:oa scrfuncs.tex
+These functions provide an interface to the OpenAccess database.  An
+OpenAccess exception triggered by these functions will generate a
+fatal error, terminating the script.  The functions that return an
+integer that is not an explicit boolean result always return 1.
+
+\begin{description}
+%------------------------------------
+% 030316
+\index{OaVersion function}
+\item{(string) \vt OaVersion()}\\
+Return the version string of the connected OpenAccess database.
+If none, a null string is returned.
+
+%------------------------------------
+% 030316
+\index{OaIsLibrary function}
+\item{(int) \vt OaIsLibrary({\it libname\/})}\\
+Return 1 if the library named in the string argument is known to
+OpenAccess, 0 if not.
+
+%------------------------------------
+% 030316
+\index{OaListLibraries function}
+\item{(stringlist\_handle) \vt OaListLibraries()}\\
+Return a handle to a list of library names known to OpenAccess.
+
+%------------------------------------
+% 030316
+\index{OaListLibCells function}
+\item{(stringlist\_handle) \vt OaListLibCells({\it libname\/})}\\
+Return a list of the names of cells contained in the OpenAccess
+library named in the argument.
+
+%------------------------------------
+% 030316
+\index{OaListCellViews function}
+\item{(stringlist\_handle) \vt OaListCellViews({\it libname\/},
+ {\it cellname\/})}\\
+Return a handle to a list of view names found for the given cell in
+the given OpenAccess library.
+
+%------------------------------------
+% 030316
+\index{OaIsLibOpen function}
+\item{(int) \vt OaIsLibOpen({\it libname\/})}\\
+Return 1 if the OpenAccess library named in the argument is open,  
+0 otherwise.
+
+%------------------------------------
+% 022316
+\index{OaOpenLibrary function}
+\item{(int) \vt OaOpenLibrary({\it libname\/})}\\
+Open the OpenAccess library of the given name, where the name should
+match a library defined in the {\vt lib.defs} or {\vt cds.lib} file. 
+A library being open means that it is available for resolving
+undefined references when reading cell data in {\Xic}.  The return is
+1 on success, 0 if error.
+
+%------------------------------------
+% 022316
+\index{OaCloseLibrary function}
+\item{(int) \vt OaCloseLibrary({\it libname\/})}\\
+Close the OpenAccess library of the given name, where the name should
+match a library defined in the {\vt lib.defs} or {\vt cds.lib} file. 
+A library being open means that it is available for resolving
+undefined references when reading cell data in {\Xic}.  The return is
+1 on success, 0 if error.
+
+%------------------------------------
+% 030316
+\index{OaIsOaCell function}
+\item{(int) \vt OaIsOaCell({\it libname\/}, {\it open\_only\/})}\\
+Return 1 if a cell with the given name can be resolved in an
+OpenAccess library, 0 otherwise.  If the boolean value {\it
+open\_only} is true, only open libraries are considered, otherwise all
+libraries are considered.
+
+%------------------------------------
+% 030316
+\index{OaIsCellInLib function}
+\item{(int) \vt OaIsCellInLib({\it libname\/}, {\it cellname\/})}\\
+Return 1 if the given cell can be found in the OpenAccess library
+given as the first argument, 0 otherwise.
+
+%------------------------------------
+% 030316
+\index{OaIsCellView function}
+\item{(int) \vt OaIsCellView({\it cellname\/}, {\it viewname\/},
+  {\it open\_only\/})}\\
+Return 1 if the cellname and viewname resolve as a cellview in an
+OpenAccess library, 0 otherwise.  If the boolean {\it open\_only} is
+true, only open libraries are considered, otherwise all libraries are
+considered.
+
+%------------------------------------
+% 030316
+\index{OaIsCellViewInLib function}
+\item{(int) \vt OaIsCellViewInLib({\it libname\/}, {\it cellname\/},
+  {\it viewname\/})}\\
+Return 1 is the cellname and viewname resolve as a cellview in the
+given OpenAccess library, 0 otherwise.
+
+%------------------------------------
+% 030316
+\index{OaCreateLibrary function}
+\item{(int) \vt OaCreateLibrary({\it libname\/}, {\it techlibname\/})}\\
+This will create the library in the OpenAccess database if {\it
+libname} currently does not exist.  This will also set up the
+technology for the new library if {\it techlibname} is given (not null
+or empty).  The new library will attach to the same library as {\it
+techlibname}, or will attach to {\it techlibname} if it has a local
+tech database.  If {\it techlibname} is given then it must exist. 
+
+%------------------------------------
+% 030316
+\index{OaBrandLibrary function}
+\item{(int) \vt OaBrandLibrary({\it libname\/})}\\
+Set or remove the {\Xic} ``brand'' of the given library.  {\Xic} can
+only write to a branded library.  If the boolean {\it branded} is
+true, the library will have its flag set, otherwise the branded status
+is unset.
+
+%------------------------------------
+% 030316
+\index{OaIsLibBranded function}
+\item{(int) \vt OaIsLibBranded({\it libname\/})}\\
+Return 1 if the named library is ``branded'' (writable by {\Xic}), 0
+otherwise.
+
+%------------------------------------
+% 030316
+\index{OaDestroy function}
+\item{(int) \vt OaDestroy({\it libname\/}, {\it cellname\/},
+  {\it viewname\/})}\\
+Destroy the named view from the given cell in the given OpenAccess
+library.  If the {\it viewname} is null or empty, destroy all views
+from the named cell, i.e., the cell itself.  If the {\it cellname} is
+null or empty, undefine the library in the library definition ({\vt
+lib.defs} or {\vt cds.lib}) file, and change the directory name to
+have a ``{\vt .defunct}'' extension.  We don't blow away the data, the
+user can revert by hand, or delete the directory.
+
+%------------------------------------
+% 030416
+\index{OaLoad function}
+\item{(int) \vt OaLoad({\it libname\/}, {\it cellname\/})}\\
+If {\it cellname} is null or empty, load all cells in the OpenAccess
+library named in {\it libname} into {\Xic}.  The current cell is not
+changed.  Otherwise, load the cell and its hierarchy and make it the
+current cell.  Whether the physical or electrical views are read, or
+both, is determined by the value of the {\et OaUseOnly} variable.  If
+the value is ``1'' or starts with `p' or `P', only the physical
+(layout) views are read.  If the value is ``2'' or starts with `e' or
+`E', only the electrical (schematic and symbol) views are read.  If
+anything else or not set, both physical and electrical views are read.
+
+%------------------------------------
+% 030316
+\index{OaReset function}
+\item{(int) \vt OaReset()}\\
+There is a table in {\Xic} that records the cells that have been
+loaded from OpenAccess.  This avoids the ``merge control'' pop-up
+which appears if a common subcell was previously read and is already
+in memory, the in-memory cell will not be overwritten.  This function
+clears the table, and should be called if this protection should be
+ended, for example if the {\Xic} database has been cleared.
+
+%------------------------------------
+% 030416
+\index{OaSave function}
+\item{(int) \vt OaSave({\it libname\/}, {\it allhier\/})}\\
+Write the current cell to the OpenAccess library whose name is given
+in the first argument.  This must exist, and be writable from {\Xic}. 
+Whether the physical or electrical views are written, or both, is
+determined by the value of the {\et OaUseOnly} variable.  If the value
+is ``1'' or starts with `p' or `P', only the physical (layout) views
+are written.  If the value is ``2'' or starts with `e' or `E', only
+the electrical (schematic and symbol) views are written.  If anything
+else or not set, both physical and electrical views are written.  The
+second argument is a boolean that if true (nonzero) indicates that the
+entire cell hierarchy under the current cell should be saved. 
+Otherwise, only the current cell is saved.
+ 
+The actual view names used are given in the {\et OaDefLayoutView},
+{\et OaDefSchematicView}, and {\et OaDefSymbolView} variables, or
+default to ``layout'', ``schematic'', and ``symbol''.
+
+%------------------------------------
+% 030316
+\index{OaAttachTech function}
+\item{(int) \vt OaAttachTech({\it libname\/}, {\it techlibname\/})}\\
+If {\it techlibname} has an attached tech library, then that library
+will be attached to {\it libname}.  If {\it techlibname} has a local
+tech database, then {\it techlibname} itself will be attached to {\it
+libname}.  This will fail if {\it libname} has a local tech database. 
+The local database should be destroyed first.
+
+%------------------------------------
+% 030316
+\index{OaGetAttachedTech function}
+\item{(string) \vt OaGetAttachedTech({\it libname\/})}\\
+Return the name of the OpenAccess library providing the attached
+technology, or a null string if no attachment.
+
+%------------------------------------
+% 030316
+\index{OaHasLocalTech function}
+\item{(int) \vt OaHasLocalTech({\it libname\/})}\\
+Return 1 if the OpenAccess library has a local technology database, 0
+if not.
+
+%------------------------------------
+% 030316
+\index{OaCreateLocalTech function}
+\item{(int) \vt OaHasLocalTech({\it libname\/})}\\
+If the library does not have an attached or local technology database,
+create a new local database.
+
+%------------------------------------
+% 030316
+\index{OaDestroyTech function}
+\item{(int) \vt OaDestroyTech({\it libname\/}, {\it unattach\_only\/})}\\
+If {\it libname} has an attached technology library, unattach it.  If
+the boolean second argument is false, and the library has a local
+database, destroy the database.
+
+\end{description}
 
 !!SEEALSO
 funcs:main1
 !!ENDIF
-
 
 !!KEYWORD
 funcs:main1:mode
@@ -3389,6 +5288,40 @@ Mode
     if the indicated sub-window does not exist.  This function is
     identical to <tt>GetWindowMode</tt>.
     </dl>
+!!LATEX funcs:main1:mode scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 030315
+\index{Mode function}
+\item{(int) \vt Mode({\it window}, {\it mode\/})}\\
+This function switches {\Xic} between physical and electrical modes,
+or switches sub-windows between the two viewing modes.  The first
+argument is an integer 0--4, where 0 represents the main window, in
+which case the application mode is set, and 1--4 represent the
+sub-windows, in which case the viewing mode of that sub-window is set. 
+The sub-window number is the same number as shown in the window title
+bar.
+
+The second argument can be a number or a string.  If a number and the
+nearest integer is not zero, the mode is electrical, otherwise
+physical.  If a string that starts with `{\vt e}' or `{\vt E}', the
+mode is electrical, otherwise physical.
+
+The return value is the new mode setting (0 or 1) or
+-1 if the indicated sub-window is not active.
+
+%------------------------------------
+% 030104
+\index{CurMode function}
+\item{(int) \vt CurMode({\it window\/})}\\
+This function returns the current mode (physical or electrical) of the
+main window or sub-windows.  The argument is an integer 0--4 where 0
+represents the main window (and the application mode) and 1--4
+represent sub-window viewing modes.  The return value is 0 for physical
+mode, 1 for electrical mode, or -1 if the indicated sub-window does not
+exist.  This function is identical to {\vt GetWindowMode}.
+
+\end{description}
 
 !!SEEALSO
 funcs:main1
@@ -3441,6 +5374,47 @@ Prompt Line
     function.  An empty string is returned if there is no current
     message.  This function never fails.
     </dl>
+!!LATEX funcs:main1:prompt scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 030104
+\index{StuffText function}
+\item{(int) \vt StuffText({\it string\/})}\\
+The {\vt StuffText} function stores the {\it string} in a buffer,
+which will be retrieved into the edit line on the next call to an
+editing function.  The edit will terminate immediately, as if the user
+has typed {\it string\/}.  Multiple lines can be stuffed, and will be
+retrieved in order.  This function must be issued before the function
+which invokes the editor.  Once a ``stuffed'' line is used, it is
+discarded.
+
+%------------------------------------
+% 030104
+\index{TextCmd function}
+\item{(int) \vt TextCmd({\it string\/})}\\
+This executes the command in string as if it were one of the keyboard ``!''
+commands in {\Xic}.  The leading ``!'' is optional.  Examples:\\
+\begin{quote}
+\begin{tabular}{ll}
+  \vt TextCmd("!")            & brings up an xterm\\
+  \vt TextCmd("set ho deedo") & sets variable `ho'\\
+  \vt TextCmd("!select c")    & selects all subcells\\
+\end{tabular}
+\end{quote}
+
+%------------------------------------
+% 030104
+\index{GetLastPrompt function}
+\item{(int) \vt GetLastPrompt()}\\
+This function returns the most recent message that was shown on the
+prompt line, or would normally have been shown if {\Xic} is not in
+graphics mode.  Although the prompt line may have been erased, the
+last message is available until the next message is sent to the prompt
+line.  The text on the prompt line while in edit mode is not saved and
+is not accessible with this function.  An empty string is returned if
+there is no current message.  This function never fails.
+
+\end{description}
 
 !!SEEALSO
 funcs:main1
@@ -3693,6 +5667,191 @@ Scripts
     used to return data to a top-level native script from a Tcl or
     Python sub-script.
     </dl>
+!!LATEX funcs:main1:script scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 030104
+\index{ListFunctions function}
+\item{(stringlist\_handle) \vt ListFunctions()}\\
+This function will re-read all of the {\vt library} files in the
+script search path, and return a handle to a string list of the
+functions available from the libraries.
+
+%------------------------------------
+% 030104
+\index{Exec function}
+\item{(untyped) \vt Exec({\it script\/})}\\
+This function will execute a script.  The argument is a string giving
+the script name or path.  If the script is a file, it must have a
+``{\vt .scr}'' extension.  The ``{\vt .scr}'' extension is optional in
+the argument.  If no path is given, the script will be opened from the
+search path or from the internal list of scripts read from the
+technology file or added with the {\cb !script} command.  If a path is
+given, that file will be executed, if found.  It is also possible to
+reference a script which appears in a sub-menu of the {\cb User Menu}
+by giving a modified path of the form ``{\vt @@/{\it
+libname}/.../{\it scriptname}}''.  The {\it libname} is the name of
+the script menu, the ...  indicates more script menus if the menu is
+more than one deep, and the last component is the name of the script. 
+
+The return value is the result of the expression following ``return''
+if a {\vt return} statement caused termination of the script being
+executed.  If the script did not terminate with a {\vt return}
+statement with a following expression, the integer 1 is returned by
+{\vt Exec}.  If the script indicated by the argument to {\vt Exec}
+could not be found, integer 0 is returned.  If the {\vt return}
+statement is used, the type of the return is determined by the type of
+object being returned.
+
+Example:  script1.scr
+\begin{quote}
+({\it executable lines\/})\\
+{\vt return 3}
+\end{quote}
+in main script:
+\begin{quote}
+{\vt Print(Exec("script1"))    \# prints "3"}
+\end{quote}
+
+%------------------------------------
+% 030104
+\index{SetKey function}
+\item{(int) \vt SetKey({\it password\/})}\\
+This function sets the key used by {\Xic} to decrypt encrypted
+scripts.  The password must be the same as that used to encrypt the
+scripts.  This function returns 1 on success, i.e., the key has been
+set, or 0 on failure, which shouldn't happen as even an empty string
+is a valid password.
+
+%------------------------------------
+% 021913
+\index{HasPython function}
+\item{(int) \vt HasPython()}\\
+This function returns 1 if the Python language support plug-in has
+been successfully loaded, 0 otherwise.
+
+%------------------------------------
+% 022813
+\index{RunPython function}
+\item{(int) \vt RunPython({\it command\/} [, {\it arg\/}, ...])}\\
+Pass a command string to the Python interpreter for evaluation.  The
+first argument is a path to a Python script file.  Arguments that
+follow are concatenated and passed to the script.  Presently, only
+string and scalar type arguments are accepted.  The interpreter will
+have available the entire {\Xic} scripting interface, though only the
+basic data types are useful.  The Python interface description
+provides information about the header lines needed to instantiate the
+interface to {\Xic} from Python (see \ref{pyplugin}).
+
+This function exists only if the Python language support plug-in has
+been successfully loaded.  The function returns 1 on success, 0
+otherwise with an error message available from {\vt GetError}.
+
+%------------------------------------
+% 022813
+\index{RunPythonModuleFunc function}
+\item{(int) \vt RunPythonModuleFunc({\it module\/}, {\it function\/}
+ [, {\it arg} ...])}\\
+This function will call the Python interpreter, to execute the module
+function specified in the arguments.  The first argument is the name
+of the module, which must be known to Python.  The second argument is
+the name of the function within the module to evaluate.  Following are
+zero or more function arguments, as required by the function.
+
+This function exists only if the Python language support plug-in has
+been successfully loaded.  The function returns 1 on success, 0
+otherwise with an error message available from {\vt GetError}.
+
+%------------------------------------
+% 100814
+\index{ResetPython function}
+\item{(int) \vt ResetPython()}\\
+Reset the Python interpreter.  It is not clear that a user would ever
+need to call this.
+
+This function exists only if the Python language support plug-in has
+been successfully loaded.  The function always returns 1.
+
+%------------------------------------
+% 021913
+\index{HasTcl function}
+\item{(int) \vt HasTcl()}\\
+This function returns 1 if the Tcl language support plug-in was
+successfully loaded, 0 otherwise.
+
+%------------------------------------
+% 021913
+\index{HasTk function}
+\item{(int) \vt HasTk()}\\
+This function returns 1 if the Tcl with Tk language support plug-in
+was successfully loaded, 0 otherwise.
+
+%------------------------------------
+% 022813
+\index{RunTcl function}
+\item{(int) \vt RunTcl({\it command\/} [, {\it arg} ...])}\\
+Pass a command string to the Tcl interpreter for evaluation.  The
+first argument is a path to a Tck/Tk script.  If both Tcl and Tk are
+available, the script file must have a {\vt .tcl} or {\vt .tk}
+extension.  If only Tcl is available, there is no extension
+requirement, but the file should contain only Tcl commands.  A Tcl
+script ie executed linearly and returns.  A Tk script blocks, handling
+events until the last window is destroyed, at which time it returns.
+
+Arguments that follow are concatenated and passed to the script. 
+Presently, only string and scalar type arguments are accepted.  The
+interpreter will have available the entire {\Xic} scripting interface,
+though only the basic data types are useful.  The Tcl/Tk interface
+description provides more information.
+
+This function exists only if the Tcl language support plug-in has been
+successfully loaded.  The function returns 1 on success, 0 otherwise
+with an error message available from {\vt GetError}.
+
+%------------------------------------
+% 100814
+\index{ResetTcl function}
+\item{(int) \vt ResetTcl()}\\
+Reset the Tcl/Tk interpreter.  It is not clear that a user would ever
+need to call this.
+
+This function exists only if the Tcl language support plug-in has been
+successfully loaded.  The function always returns 1.
+
+%------------------------------------
+% 022813
+\index{HasGlobalVariable function}
+\item{(int) \vt HasGlobalVariable({\it globvar\/})}\\
+Return true if the passed string is the name of a global variable
+currently in scope.  This is part of the exported global variable
+interface to Python and Tcl.
+
+%------------------------------------
+% 022813
+\index{GetGlobalVariable function}
+\item{(int) \vt GetGlobalVariable({\it globvar\/})}\\
+Return the value of the global variable whose name is passed.  The
+function will generate a fatal error, halting the script, if the
+variable is not found, so one may need to check existence with {\vt
+HasGlobalVariable}.  The return type is the type of the variable,
+which can be any known type.  This is for use in Python or Tcl
+scripts, providing access to the global variables maintained in the
+{\Xic} script interpreter.
+
+%------------------------------------
+% 022813
+\index{SetGlobalVariable function}
+\item{(int) \vt SetGlobalVariable({\it globvar\/}, {\it value\/})}\\
+Set the value of the global variable named in the first argument.  The
+function will generate a fatal error if the variable is not found, or
+the assignment fails due to type mismatch.  This is for use in Python
+or Tcl scripts, providing access to the global variables maintained in
+the {\Xic} script interpreter.  Note that global variables can not be
+created from Python or Tcl, but values can be set with this function. 
+Global variables can be used to return data to a top-level native
+script from a Tcl or Python sub-script.
+
+\end{description}
 
 !!SEEALSO
 funcs:main1
@@ -3805,7 +5964,88 @@ Technology File
     return value is 1 if an assignment was made, 0 if the first
     argument is out of range.
     </dl>
+!!LATEX funcs:main1:tech scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 020611
+\index{GetTechName function}
+\item{\vt GetTechName()}\\
+This returns a string containing the current technology name, as set
+in the technology file with the {\vt Technology} keyword.
 
+%------------------------------------
+% 030104
+\index{GetTechExt function}
+\item{(string) \vt GetTechExt()}\\
+This returns a string containing the current technology file name
+extension.
+
+%------------------------------------
+% 030104
+\index{SetTechExt function}
+\item{(int) \vt SetTechExt({\it extension})}\\
+This sets the current technology file extension to the string
+argument.  It alters the name of new technology files created with the
+{\cb Save Tech} button in the {\cb Attributes Menu}.
+
+%------------------------------------
+% 032712
+\index{TechParseLine function}
+\item{(int) \vt TechParseLine({\it line})}\\
+This function will parse and process a line of text is if read from a
+technology file.  It can therefor modify parameters that are otherwise
+set in the technology file, after a technology file has been read, or
+if no technology file was read.
+  
+However, there are limitations.
+\begin{enumerate}
+\item{There is no macro processing done on the line, it is parsed
+verbatim, and macro directives will not be understood.}
+
+\item{There is no line continuation, all related text must appear in
+the given string.}
+
+\item{The print driver block keywords are not recognized, nor are any
+other block forms, such as device blocks for extraction.}
+
+\item{Layer block keywords are acceptable, however they must be given
+in a special format, which is
+\begin{quote}
+  [{\vt elec}]{\vt layer} {\it layername} {\it layer\_block\_line...}
+\end{quote}
+i.e., the text must be prefaced by the {\vt layer}/{\vt eleclayer}
+keyword followed by an existing layer name.  Note that new layers must
+be created first, before calling this function.}
+\end{enumerate}
+
+If the line is recognized and successfully processed, the function
+returns 1.  Otherwise, 0 is returned, and a message is available from
+{\vt GetError}.
+
+%------------------------------------
+% 021913
+\index{TechGetFkeyString function}
+\item{(int) \vt TechGetFkeyString({\it fkeynum})}\\
+This function returns the string which encodes the functional
+assignment of a function key.  This is the same format as used in the
+technology file for the F1Key -- F12Key keyword assignments.  The
+argument is an integer with value 1--12 representing the function key
+number.  The return value is a null string if the argument is out of
+range, or if no assignment has been made.
+
+%------------------------------------
+% 021913
+\index{TechSetFkeyString function}
+\item{(int) \vt TechSetFkeyString({\it fkeynum}, {\it string\/})}\\
+This function sets the string which encodes the functional assignment
+of a function key.  This is the same format as used in the technology
+file for the F1Key -- F12Key keyword assignments.  The first argument
+is an integer with value 1--12 representing the function key number. 
+The second argument is the string, or 0 to clear the assignment.  The
+return value is 1 if an assignment was made, 0 if the first argument
+is out of range.
+
+\end{description}
 
 !!SEEALSO
 funcs:main1
@@ -3933,6 +6173,102 @@ Variables
     of the variables will persist after the script terminates.  This
     function has no return value.
     </dl>
+!!LATEX funcs:main1:var
+\begin{description}
+%------------------------------------
+% 113009
+\index{Set function}
+\item{\vt Set({\it name\/}, {\it string\/})}\\
+The {\vt Set} function allows variable {\it name} to be set to {\it
+string} as with the {\cb !set} keyboard operation in {\Xic}.  Some
+variables, such as the search paths, directly affect {\Xic} operation. 
+The {\vt Set} function can also set arbitrary variables, which may be
+useful to the script programmer.  To set a variable, both arguments
+should be strings.  If the second argument is the constant zero ({\vt
+0} or {\vt NULL}, not {\vt "0"}) or a null (not empty) string, the
+variable will be unset if set.  As with {\cb !set}, forms like \$({\it
+name}) are expanded.  If {\it name} matches the name of a previously
+set variable, that variable's value string replaces the form. 
+Otherwise, if {\it name} matches an environment variable, the
+environment variable text replaces the form.
+
+The {\vt Set} function will permanently change the variable value. 
+See the {\vt PushSet} function for an alternative.
+
+%------------------------------------
+% 030104
+\index{Unset function}
+\item{\vt Unset({\it name\/})}\\
+This function will unset the variable.  No action is taken if the
+variable is not already set.  This is equivalent to {\vt Set}({\it
+name\/}, 0).
+
+%------------------------------------
+% 113009
+\index{PushSet function}
+\item{\vt PushSet({\it name\/}, {\it string\/})}\\
+This function is similar to {\vt Set}, however the previous value is
+stored internally, and can be restored with {\vt PopSet}.  In
+addition, all variables set (or unset) with {\vt PushSet} are reverted
+to original values when the script exits, thus avoiding permanent
+changes.  There can be arbitrarily many {\vt PushSet} and {\vt PopSet}
+operations on a variable.
+
+%------------------------------------
+% 113009
+\index{PopSet function}
+\item{\vt PopSet({\it name\/})}\\
+This reverts a variable set with {\vt PushSet} to its previous state. 
+If the variable has not been set (or unset) with {\vt PushSet}, no
+action is taken.
+
+%------------------------------------
+% 030304
+\index{SetExpand function}
+\item{(string) \vt SetExpand({\it string\/}, {\it use\_env\/})}\\
+This function returns a copy of {\it string} which expands variable
+references in the form \$({\it word}) in {\it string}.  The {\it word}
+is expected to be a variable previously set with the {\vt Set}
+function or {\cb !set} command.  The value of the variable replaces
+the reference in the returned string.  If the integer {\it use\_env}
+is nonzero, variables found in the environment will also be
+substituted.  If {\it word} is not resolved, no change is made. 
+Otherwise, in general, the token is replaced with the value of {\it
+word}.
+
+There is an exception to the direct-substitution rule.  If any
+substitution string is of the form ``{\vt (...)}'', then the
+parentheses and leading/trailing white space are stripped before
+substitution, and the entire substituted string is enclosed in
+parentheses if it is not already.  This is for convenience when adding
+a directory to a search path (see \ref{searchpaths}) variable, and the
+path is enclosed in parentheses.  See the {\cb !set} command
+description in \ref{setcmd} for more information.
+
+%------------------------------------
+% 030104
+\index{Get function}
+\item{(string) \vt Get({\it name})}\\
+The {\vt Get} function returns a string containing the value of {\it
+name\/}, which has been previously set with the {\vt Set} function, or
+otherwise from within {\Xic}.  A null string is returned if
+the named variable has not been set.
+
+%------------------------------------
+% 072904
+\index{JoinLimits function}
+\item{\vt JoinLimits({\it flag})}\\
+This is a convenience function to set/unset the variables which
+control the polygon joining process, i.e., {\et JoinMaxPolyVerts},
+{\et JoinMaxPolyQueue}, and {\et JoinMaxPolyGroup}.  If the argument
+is zero, each of these variables is set to zero, removing all limits. 
+If the argument is nonzero, the variables are unset, meaning that the
+default limits will be applied.  The default limits generally speed
+processing, but will often leave unjoined joinable pieces when complex
+polygons are constructed.  The status of the variables will persist
+after the script terminates.  This function has no return value.
+
+\end{description}
 
 !!SEEALSO
 funcs:main1
@@ -3950,6 +6286,16 @@ funcs:main1:version
     <dd><br>This function returns a string containing the current <i>Xic</i>
     version in a form like "2.5.40".
     </dl>
+!!LATEX funcs:main1:version scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 030104
+\index{VersionString function}
+\item{(string) \vt VersionString()}\\
+This function returns a string containing the current {\Xic}
+version in a form like ``{\vt 2.5.40}''.
+
+\end{description}
 
 !!SEEALSO
 funcs:main1

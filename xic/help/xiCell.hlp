@@ -66,6 +66,35 @@ Cell Menu
       <td><tt>tree</tt></td>
       <td><b>Cell Hierarchy Tree</b></td> <td>Display cell hierarchy</td></tr>
     </table>
+!!LATEX xic:cellmenu cellmenu.tex
+The {\cb Cell Menu} contains the {\cb Push}/{\cb Pop} commands that
+enable pushing the viewing/editing context into the hierarchy, and
+returning.  Other commands provide information about cells and allow
+other manipulations.
+
+In {\Xic}, there is a notion of the ``current cell''.  This is the
+cell hierarchy shown in the main window.  The current cell is acted on
+by many of the commands in {\Xic}, and in particular only the current
+cell can be modified.  The current cell can be set in many ways,
+including using the {\cb Open} command in the {\cb File Menu}, or the
+{\cb Cells Listing} panel from the present menu.  One can set the
+current cell to a subcell with the {\cb Push} command.  This can be
+used in conjunction with the {\cb Info} command in the {\cb View Menu}
+to push to the cell containing a selected object, to any depth in the
+hierarchy.  The {\cb Pop} command can be used to climb back up the
+hierarchy to the original current cell. 
+
+\begin{tabular}{|l|l|l|l|} \hline
+\multicolumn{4}{|c|}{\kb Cell Menu}\\ \hline
+\kb Label & \kb Name & \kb Pop-up & \kb Function\\ \hline\hline
+\et Push & \vt push & none & Make subcell the current cell\\ \hline
+\et Pop & \vt pop & none & Make parent cell the current cell\\ \hline
+\et Symbol Tables & \vt stabs & \cb Symbol Tables & List of cell symbol
+  tables\\ \hline
+\et Cells List & \vt cells & \cb Cells Listing & List cells in memory\\ \hline
+\et Show Tree & \vt tree & \cb Cell Hierarchy Tree & Display cell hierarchy\\
+  \hline
+\end{tabular}
 
 !!SEEALSO
 xic:commands
@@ -131,6 +160,49 @@ Push
     If instead of pressing <b>Enter</b> a subcell is clicked on, the
     subcell is pushed to in the usual way, and all past history below
     the present level is removed.
+!!LATEX xic:push cellmenu.tex
+Pressing the {\cb Push} button in the {\cb Cell Menu} will push the
+editing context to a subcell.  This means that the subcell becomes the
+``current cell'', and editing operations can be performed in this
+cell.  The {\cb Pop} command in the {\cb Cell Menu} can be used to
+return to the original current cell.
+
+If, when the {\cb Push} button is pressed, the {\cb Info} command is
+active and an object is selected that is not in the current cell, The
+editing context will be pushed to the cell containing that object,
+which may be arbitrarily deep in the hierarchy.
+
+Otherwise, if any subcells are selected, the editing context will be
+pushed to the most recently selected subcell.  If no subcell has been
+selected, the user is asked to select one.
+
+The pushed-to cell is displayed in true orientation, with or without
+the surrounding context shown as set with the {\cb Show Context in
+Push} button in the {\cb Main Window} sub-menu in the {\cb Attributes
+Menu} or in the sub-window {\cb Attributes} menu.  The surrounding
+context is generally shown with reduced illumination to visually
+differentiate the current cell from the context.  The illumination
+percentage can be set in the {\cb Window Attributes} panel (from the
+{\cb Attributes Menu}), or equivalently by setting the {\et
+ContextDarkPcnt} variable to a value 1-100 (100 indicates no
+darkening).
+
+The history of which cells have been pushed to and popped from is
+saved.  Assume that previously one has pushed into the hierarchy and
+popped back.  When the {\cb Push} button is active, pressing the {\kb
+Enter} key will push down one level and deactivate the button. 
+Holding the {\kb Ctrl} key while pressing {\kb Enter} will suppress
+the button deactivation, so that one can press {\kb Enter} repeatedly
+to push deeper into the hierarchy, following the last push sequence. 
+Pressing {\kb Shift-Enter} will cycle backwards, i.e., pop, with
+button deactivation controlled by the {\kb Ctrl} key as above.  Unless
+the {\kb Ctrl} key was up during the last context change, the
+{\cb Push} command is still active and one must press {\kb Esc}
+before the cell can be edited.
+
+If instead of pressing {\kb Enter} a subcell is clicked on, the
+subcell is pushed to in the usual way, and all past history below
+the present level is removed.
 
 !!SEEALSO
 xic:cellmenu
@@ -158,6 +230,19 @@ Pop
     push context is lost.  This context is also lost if the
     <b>Clear</b> function in the <b>Cells Listing</b> from the <b>Cell
     Menu</b> is invoked.
+!!LATEX xic:pop cellmenu.tex
+Pressing the {\cb Pop} button in the {\cb Cell Menu} will pop the
+editing context back to the parent cell, if the {\cb Push} command has
+been employed.
+
+If the user switches between physical and electrical mode while a push
+is active, the symbol currently being edited remains the target, but
+the cell becomes top-level (not in a push) in the new mode.  If the
+original mode is returned to without editing a different cell, the
+push stack is retained.  If a new cell is edited in the new mode,
+through a push or otherwise, the original push context is lost.  This
+context is also lost if the {\cb Clear} function in the {\cb Cells
+Listing} from the {\cb Cell Menu} is invoked.
 
 !!SEEALSO
 xic:cellmenu
@@ -237,6 +322,61 @@ Symbol Tables
     Note that when switching between tables, the current cell in use
     at the time of the switch is saved, and recalled when the user
     returns to that table.
+!!LATEX xic:stabs cellmenu.tex
+The {\cb Symbol Tables} panel is brought up with the {\cb Symbol
+Tables} button in the {\cb Cell Menu}.  A ``symbol'' is a cell name,
+which applies to corresponding physical and electrical cells.  A
+symbol table is a container (a hash table) which holds cell
+definitions in memory for rapid access by name.  Within a symbol
+table, all cells have unique names, and an attempt to add a cell with
+an existing name will simply overwrite the existing cell in the table. 
+On program startup, a default symbol table is provided, which will
+contain all cells unless the user intervenes.
+
+It is possible to have multiple symbol tables available.  This allows
+different versions of a cell with the same name to exist in memory
+concurrently, though in different symbol tables.  It also provides a
+means for the user to "start fresh" without actually destroying cells
+in memory.
+
+This pop-up manages the symbol tables that are currently allocated. 
+It is possible to add or delete symbol tables, and to switch between
+the tables.  The table in use contains the cell ``memory'' that is
+currently available.
+
+The option menu to the left provides the means for switching between
+existing tables.  Each table has a name, which is listed in the menu. 
+Initially, only one table, named ``{\vt main} is available.
+
+The {\cb Add} button allows a new symbol table to be created and added
+to the list.  The user is asked to provide a name for the table.  This
+name can be just about any text string, however if the name already
+exists in the table list, a new table is not created.  The table
+corresponding to the name becomes the current table.  Although
+non-alphanumeric characters can be included in the name, this will
+require that the name be double-quoted if used in the extended layer
+name syntax of layer expressions or the {\cb !layer} command.
+
+The {\cb Clear} button will clear and destroy the contents of the
+current table.  After confirmation, if there are modified cells, the
+user will be given a chance to save them to disk.  If the user does
+not abort, all cells in the current table will be destroyed, and the
+table will be empty except for the default ``{\vt noname}'' cell which
+will be read from disk if it exists, and this will become the current
+cell.
+
+The {\cb Destroy} button will destroy the current table, and its
+contents.  It is not possible to destroy the ``{\vt main}'' table,
+the button is disabled when that table is current.  After
+confirmation, if there are modified cells, the user will be given a
+chance to save them to disk.  If the user does not abort, all cells in
+the table, and the table itself, will be destroyed.  After the table
+is destroyed, one of the remaining tables will become the new current
+table.
+
+Note that when switching between tables, the current cell in use at
+the time of the switch is saved, and recalled when the user returns to
+that table.
 
 !!SEEALSO
 xic:cellmenu
@@ -622,6 +762,319 @@ Cells Listing
     criteria, pressing the <b>Apply</b> button in the panel will
     update the listing.
     </dl>
+!!LATEX xic:cells cellmenu.tex
+The {\cb Cells List} button in the {\cb Cell Menu} is used to bring up
+the {\cb Cells Listing} panel, providing a listing of cell names.  The
+cells listed are dependent upon the context, as will be described, and
+can be filtered for various criteria.  The panel can be used to select
+cells for editing or placement, among other useful features.
+
+If the {\cb Display} button in the {\cb Cell Hierarchy Digests} panel
+is active, i.e., the program is in hierarchy display mode, the cells
+listing is obtained from the CHD currently being displayed.  In this
+case, filtering (to be described) does not apply.  Otherwise, the
+listing is obtained from the cells presently in memory, in the current
+symbol table.
+
+To the right of the {\cb Dismiss} button is a drop-down menu which
+provides a choice or electrical or physical display mode for the cells
+list.  The initial selection will be the same as the current display
+mode.  The cells listed will have been created in the selected mode. 
+
+The display of the cell names is paged.  The number of entries
+displayed per page can be set with the {\et ListPageEntries} variable,
+or defaults to 5000 if this variable is unset (variables can be set
+with the {\cb !set} command).  If the listing requires multiple pages,
+a page selection menu will appear to the left of the {\cb Dismiss}
+button.
+
+\index{cells panel!listing}
+Cell names are listed in columns.  The top level cells (those that are
+not used as subcells of another cell) are shown with an asterisk `*',
+and a plus sign `+' appears for modified cells.
+
+The listing is a drag source, cell names can be dragged and dropped
+into drawing windows, to display or edit that cell.
+
+\subsection{Cells Listing Command Buttons}
+
+A cell name can be selected by clicking on the name.  Only one name
+can be selected at once, and it will be highlighted.
+
+A number of buttons appear along the left edge of the panel.  Without
+a selection, these buttons are grayed.  Selected names are acted on by
+buttons of the panel, which become active when a selection is made. 
+The buttons enable functionality described below.
+
+\index{cells panel!Clear button}
+\index{delete cells}
+\begin{description}
+\item{\cb Clear}\\
+The {\cb Clear} button is available when listing cells from memory,
+but not in CHD display mode.
+
+This button will clear top-level cells (those not used as a subcell by
+any other cell in memory, and marked with an asterisk in the list) or
+all cells from memory.  If a top-level cell is selected in the text
+area, that cell and its descendents which are not referenced outside
+of the hierarchy are removed from memory, after confirmation.  There
+is no ``undo'' of this operation.  If the cell is not top-level in
+both electrical and physical modes, the command exits with a warning
+message.  If no cell is selected, the entire symbol table will be
+cleared (after confirmation).  The user is first given a chance to
+save any unsaved work.  The current editing cell becomes the next cell
+given on the command line, or the default ``{\vt noname}'' cell if no
+other cell was specified.  This command can not be undone, and
+anything cleared is very definitely gone.
+
+\index{cells panel!Tree}
+\index{tree diagram}
+\item{\cb Tree}\\
+The {\cb Tree} button is available in normal and CGD display modes,
+and is active when a cell name is selected.
+
+The {\cb Tree} button is used to bring up the {\cb Cell Hierarchy
+Tree} pop-up, which can also be initiated with the {\cb Show Tree}
+button in the {\cb Cell Menu} (for the current cell).  From the {\cb
+Tree} button in the {\cb Cells Listing} panel, the {\cb Cell Hierarchy
+Tree} pop-up will display the hierarchy of the selected cell.
+
+\index{cells panel!edit}
+\index{editing cells}
+\item{\cb Open}\\
+The {\cb Open} button is available when listing cells from memory, but
+not in CHD display mode.  The button is active when a cell name is
+selected.
+
+Pressing the {\cb Open} button will load the selected cell into the
+main window, for display or editing.  Cells can also be dragged from
+the listing and dropped into drawing windows, with a similar effect.
+
+\index{cells panel!Place}
+\index{master cells}
+\item{\cb Place}\\
+The {\cb Place} button is available when listing cells from memory,
+but not in CHD display mode, and is not available in the {\Xiv}
+feature set.  When available, it is active when a cell name is
+selected.
+
+Pressing the {\cb Place} button will cause the selected cell to
+become the current master cell, and the {\cb Cell Placement Control}
+panel will appear.  Instances of the master can be created by pressing
+the {\cb Place} button in the {\cb Cell Placement Control} panel, then
+clicking on locations in a drawing window.
+
+\index{cells panel!Copy button}
+\index{copy cells}
+\item{\cb Copy}\\
+The {\cb Copy} button is available when listing cells from memory, but
+not in CHD display mode, and is not available in the {\Xiv} feature
+set.  When available it is active when a cell name is selected.
+
+The {\cb Copy} button allows an existing cell to be duplicated under a
+new name.  The user must explicitly save the copied cell to disk if
+the new cell is not placed in a hierarchy saved as an archive file,
+otherwise the copied cell will be lost when the program is exited,
+though the new cell is marked as ``modified'' so the user will be
+prompted to save it when exiting.  Pressing {\cb Copy} will cause a
+dialog box to appear asking for a new name for the cell.  A copy will
+be made if the user enters a valid new name, which must not already be
+in use.  The new name will become highlighted in the cell listing. 
+
+Any cell can be copied.  Copies will always be created with the
+IMMUTABLE and LIBRARY flags (see below) unset.
+
+\index{cells panel!Replace button}
+\index{replace cells}
+\index{cells panel!cell replacement}
+\item{\cb Replace}\\
+The {\cb Replace} button is available when listing cells from memory,
+but not in CHD display mode, and is not available in the {\Xiv}
+feature set.  When available, it is active when a cell name is
+selected, and at least one cell instance is selected in a drawing
+window.
+
+The button allows cell instances selected in a drawing window to be
+replaced with instances of the selected cell name.  Pressing the
+button brings up a confirmation pop-up.  A `yes' response will
+initiate the replacement.  The current transform is ignored when
+replacing cells from this panel, which is different from the {\cb
+Replace} function in the {\cb Cell Placement Control} panel from the
+side menu.
+
+When a cell is replaced, the placement of the new cell is determined
+in physical mode by the setting of the {\cb Origin}/{\cb Lower Left}
+buttons in the {\cb Cell Placement Control} panel (though it may not
+be visible).  When {\cb Lower Left} is active, the lower left corner
+of the replacing cell corresponds to the lower left corner of the
+replaced cell, otherwise the cell's origins are used.  In electrical
+mode, the reference terminal (the first connection point) is always
+placed at the same location as the reference terminal of the replaced
+cell.
+
+\index{cells panel!Rename}
+\index{rename cells}
+\item{\cb Rename}\\
+The {\cb Rename} button is available when listing cells from memory,
+but not in CHD display mode, and is not available in the {\Xiv}
+feature set.  When available, it is active when a cell name is
+selected.
+
+The {\cb Rename} button allows a cell in memory to be given a new
+name.  All references to the cell throughout the symbol table will be
+changed to call the new name.  This is useful to avoid name clashes in
+designs intended to be merged with other designs.  Note that the newly
+named cell should be explicitly saved as a file if in native format,
+or it may be lost when the user exits.  The cell will be saved in the
+hierarchy if an ancestor cell is written to an archive file.  The user
+must remember to save any cells which call the renamed cell (the
+MODIFIED flag is set for these cells, so that the user is warned at
+program exit).
+
+Pressing the {\cb Rename} button brings up a dialog box asking for the
+new name.  The renaming is effective if a valid new name, which must
+not already be in use, is given.
+
+Leading and trailing white space is stripped from the name, and any
+non-empty name is accepted, though a warning is issued if the name
+contains a character that may cause trouble.  The GDSII specification
+allows alpha-numerics plus `{\vt \$}' (dollar sign), `{\vt \_}'
+(underscore), and `{\vt ?}' (question mark).  A character not in this
+list will trigger the warning.  The user should stick to valid cell
+names when possible.
+
+Cells with the IMMUTABLE flag (see below) set can not be renamed. 
+Cells with the LIBRARY flag set can be renamed, which will unset the
+LIBRARY flag.
+
+\index{cells panel!Search}
+\item{\cb Search}\\
+The {\cb Search} button is available in normal and CGD display modes.
+
+In normal display mode, when the {\cb Search} button is pressed, the
+listing will initially contain only cells in the hierarchy of the
+current cell, selections in the listing are ignored.  If the user
+clicks in a drawing window displaying the current cell, the listing
+will then contain only cells with instances that appear under the
+click location.  If the user drags button 1 to define a rectangle in a
+drawing window displaying the current cell, only cells that have
+instances that appear in the drag rectangle will be listed.  These
+operations can be repeated, the listing will be updated after each
+operation.  Pressing the {\cb Search} button again to deactivate it
+will revert to listing all cells in the current symbol table.
+
+In CHD display mode, when the {\cb Search} button is pressed, the
+listing will contain cells found in the CHD, including and under the
+cell currently being displayed in the main window.  Clicking or
+dragging in the window will restrict the cell listing as in the normal
+display mode.
+
+\index{InfoInternal variable}
+The label at the top of the {\cb Cells Listing} will show the search
+area coordinates in microns, unless the {\et InfoInternal} variable is
+set, in which case internal units are given.
+
+\index{cells panel!flags}
+\item{\cb Flags}\\
+The {\cb Flags} button is available in normal mode only.
+
+Cells in the main database have two flags which can be modified by the
+user.  The IMMUTABLE flag indicates that the cell is read-only, and
+can not be modified or renamed.  The LIBRARY flag indicates that the
+cell was read through the library mechanism.  Cells with the LIBRARY
+flag set are not included when writing output, unless the {\cb Include
+Library Cells} check box in the {\cb Export Control} panel is
+active, or equivalently the {\et KeepLibMasters} variable is set.
+
+Cells read into the database through the library mechanism will have
+both the IMMUTABLE and LIBRARY flags set.  The panel that appears when
+the {\cb Flags} button is pressed allows the user to change the flag
+states, and corresponding cell behavior.
+
+If no cell name is selected, all of the cells listed in the {\cb Cells
+Listing} will be displayed in the {\cb Set Cell Flags} panel, along
+with colored indicators of the status of the two flags.  If a cell
+name is selected, only the selected cell will be listed in the {\cb
+Set Cell Flags} panel upon pressing {\cb Flags}.  Clicking on the
+indicators will toggle the indicators.  The indicators can also be set
+globally with the buttons above the listing.  The {\cb Apply} button
+must be pressed to actually change the flags in the cells.
+
+Cell flags can also be listed and set/unset with the {\cb !setflag}
+command.
+
+If the IMMUTABLE flag of the current cell is set, user interface
+editing features are disabled.  The {\cb Enable Editing} button in the
+{\cb Edit Menu} can also be used to set the state of the IMMUTABLE
+flag of the current cell.
+
+Setting the LIBRARY flag is a means to prevent cell definitions from
+appearing in the output file when the hierarchy is written.  It is
+occasionally necessary to use this feature to enforce resolution of
+cells from another source in a subsequent read, perhaps from a
+different library or another layout.
+
+It is also useful on occasion to create a customized library cell,
+which will become part of the user's cell collection.  In this case,
+the LIBRARY and IMMUTABLE flags for the library cell would be unset,
+and the cell modified to the user's needs, and the user's cell
+hierarchy written to disk.  On subsequent reads, the user's version of
+the cell, which will exist in the file, will satisfy the references,
+rather than the version from the library.
+
+Another way to accomplish this, perhaps somewhat safer, would be to
+copy the library cell to a new name (using {\cb Copy}), and reference
+instances of the copy instead of the library cell.  Copies do not have
+the flags set (unless reset by the user).
+
+\index{cells panel!info}
+\index{cell info}
+\item{\cb Info}\\
+The {\cb Info} button is available in normal and CGD display modes.
+
+In normal display mode, the {\cb Info} button produces a pop-up that
+provides information about subcells and other objects, as from the
+{\cb Info} button in the {\cb View Menu}.  If a cell name has been
+selected in the listing, the {\cb Cell Hierarchy Tree} pop-up, or in a
+drawing window, pressing the {\cb Info} button will display a window
+containing information about the cell.  This information includes the
+size, number of objects and subcells, and cells for which the selected
+cell is a subcell.  If this button is pressed when there is no
+selected cell name, the info window will also appear, but contain no
+data.  In any case, when the info window is visible, clicking on
+objects in drawing windows will reload the window with information
+about the object.
+
+In CHD display mode, information contained in the CHD is shown, for a
+selected cell or the displayed top-level cell if there are no
+selections.  The information in the CGD is dependent upon the
+parameters used when the CHD was created.
+
+\index{cells panel!Show}
+\index{find cells}
+\item{\cb Show}\\
+The {\cb Show} button is available in normal and CGD display modes.
+
+The {\cb Show} button enables a mode where cell instances are
+highlighted in the main drawing window.  If a cell name has been
+selected in the listing, all instances of the cell will be outlined in
+the highlighting color.  The outlines apply to all instances of the
+cell, regardless of the level in the hierarchy or expansion status. 
+This facilitates finding instances of a cell in a complex hierarchy. 
+The display will track the currently selected cell name in the
+listing.  If no selection, no highlighting is shown, until a selection
+is made.  Only one cell can be highlighted at once.  The number of
+instances found of the selected cell will be printed in the prompt
+area.
+
+\index{cells panel!Filter}
+\item{\cb Filter}\\
+This button brings up the {\cb Cell List Filter} panel, with which one
+can limit the cell list to those with specific attributes.  After
+specifying the filtering criteria, pressing the {\cb Apply} button in
+the panel will update the listing.  The next section describes this
+panel.
+\end{description}
 
 !!SEEALSO
 xic:files
@@ -953,6 +1406,256 @@ Cell List Filtering
     List subcells of <tt>maincell</tt> that have objects on layer
     <tt>BASE</tt> but have no objects on layer <tt>VIA</tt> and that
     have no subcells.
+!!LATEX cellfilt cellmenu.tex
+The {\cb Cell List Filter} panel appears when the {\cb Filter} button
+in the {\cb Cells Listing} panel, which is obtained from the {\cb Cell
+Menu}.  This provides criteria that enables a cell to be listed in the
+{\cb Cells Listing}.
+
+Each entry contains two check boxes, with logic such that at most one
+can be set at a time.  Each is assiciated with some assertion about a
+cell.  If the left box is checked, the cell will be listed if the
+assertion is {\bf not} true.  If the right box is checked, the cell
+will be listed if the assertion is true.  If neither is checked, the
+assertion is not tested.
+
+A cell will be listed if all tests indicate that the cell should be
+listed.  If no tests are done, the cell will be listed by default. 
+The available tests are described below.
+
+\begin{description}
+\item{\cb Immutable}\\
+List cells with the IMMUTABLE flag set.
+\item{\cb not Immutable}\\
+List cells with the IMMUTABLE flag {\bf not} set.
+
+\item{\cb Via sub-master}\\
+List cells that are standard via sub-masters (physical only).
+\item{\cb not Via sub-master}\\
+List cells that are {\bf not} standard via sub-masters (physical only).
+
+\item{\cb Library}\\
+List cells with the LIBRARY flag set.
+\item{\cb not Library}\\
+List cells with the LIBRARY flag {\bf not} set.
+
+\item{\cb PCell sub-master}\\
+List cells that are parameterized cell sub-masters (physical only).
+\item{\cb not PCell sub-master}\\
+List cells that are {\bf not} parameterized cell sub-masters (physical
+only).
+
+\item{\cb Device}\\
+List cells that are devices (electrical only).
+\item{\cb not Device}\\
+List cells that are {\cb not} devices (electrical only).
+
+\item{\cb Top level}\\
+List cells that are top level (not used as a subcell).
+\item{\cb not Top level}\\
+List cells that are {\bf not} top level.
+
+\item{\cb Modified}\\
+List cells that are modified, i.e., have been changed in some way.
+\item{\cb not Modified}\\
+List cells that are {\bf not} modified.
+
+\item{\cb With alt}\\
+List cells that have an alternate-mode cell defined, i.e., in the
+physical listing, list cells if an electrical mode cell of the
+same name exists.
+\item{\cb not With alt}\\
+List cells that have no alternate-mode cell defined.
+
+\item{\cb Reference}\\
+List reference cells.  These are special
+cells that reference another cell hierarchy.
+\item{\cb not Reference}\\
+List cells that are {\bf not} reference cells.
+
+\item{\cb Parent cells}\\
+This makes use of the text entry area on the same line which can
+contain a list of cell names.  List cells that use at least one of the
+listed cells as subcells.  If the text entry is empty, list cells that
+contain subcells.
+\item{\cb not Parent cells}
+List cells that do not contain any of the cells listed in the text
+area as subcells, or list cells that contain no subcells if the text
+area is empty.
+
+\item{\cb Subcell}\\
+This makes use of the text entry area on the same line which can
+contain a list of cell names.  List cells that are subcells of any of
+the listed cells.  If the text area is empty, list cells that are used
+as a subcell of another cell in memory.
+\item{\cb not Subcell}\\
+List cells that are not a subcell of any of the cells listed in the
+text area.  If the text area is empty, list cells that are not used as
+a subcell.
+
+\item{\cb With layers}\\
+This makes use of the text entry area on the same line which can
+contain a list of layer names.  List cells that contain objects on any
+of the layers listed.  If the text area is empty, list cells that
+contain any geometry.
+\item{\cb not With layers}\\
+List cells that do not have any geometry on the listed layers.  If the
+text area is empty, list cells that have no geometry.
+
+\item{\cb With flags}\\
+This makes use of the text entry area on the same line which can
+contain a list of flag names (see \ref{cellflags}).  At least one flag
+must be given or the test is ignored.  List cells that have one or
+more of the listed flags set.
+\item{\cb not With flags}\\
+The text area must have at least one entry or the test is ignored. 
+List cells that do not have any of the listed flags set.
+
+\item{\cb From filetypes}\\
+This makes use of the text entry area on the same line which can
+contain a list of file type names from among ``{\vt none}'', ``{\vt
+native}'', ``{\vt cgx}'', ``{\vt cif}'', ``{\vt gds}'', ``{\vt
+oasis}'', and ``{\vt openaccess}''.  Only the first two letters are
+needed.  List cells that were read from one of the listed file types. 
+Internally generated cells will have type ``{\vt none}''.  If the list
+of types is empty, the test is ignored.
+\item{\cb not From filetypes}\\
+List cells that were not read from the listed file types.  The test is
+ignored if the type list is empty.
+\end{description}
+
+When the {\cb Apply} button is pressed, the cell listing in the {\cb
+Cells Listing} panel will be updated to reflect the given filtering
+criteria.
+
+The filtering state can be saved to and recalled from five registers,
+through the {\cb Store} and {\cb Recall} menus.  There are separate
+register sets for electrical and physical display modes.
+
+The filter state can also be expressed as a string, using keywords. 
+Presently, this is used only by the {\vt ListCellsInMem} script
+function.  Each keyword or keyword/value pair represents a clause, and
+the displayed cells are the logical AND of the clauses given.  The
+available clauses are described below.
+
+\begin{description}
+\item{\vt immutable}\\
+List cells with the IMMUTABLE flag set.
+\item{\vt notimmutable}\\
+List cells the IMMUTABLE flag {\bf not} set.
+
+\item{\vt viasubm}\\
+List cells that are standard via sub-masters (physical only).
+\item{\vt notviasubm}\\
+List cells that are {\bf not} standard via sub-masters (physical only).
+
+\item{\vt library}\\
+List cells with the LIBRARY flag set.
+\item{\vt notlibrary}\\
+List cells with the LIBRARY flag {\bf not} set.
+
+\item{\vt pcellsubm}\\
+List cells that are parameterized cell sub-masters (physical only).
+\item{\vt notpcellsubm}\\
+List cells that are {\bf not} parameterized cell sub-masters (physical
+only).
+
+\item{\vt device}\\
+List device cells.
+\item{\vt notdevice}\\
+List cells that are {\bf not} device cells.
+
+\item{\vt toplev}\\
+List cells that are not used as a subcell, i.e., top-level cells.
+\item{\vt nottoplev}\\
+List cells that are used as a subcell, i.e., {\bf not} top-level.
+
+\item{\vt modified}\\
+List cells with the MODIFIED flag set.
+\item{\vt notmodified}\\
+List cells with the MODIFIED flag {\bf not} set.
+
+\item{\vt withalt}\\
+List cells that have an alternate-mode cell defined, i.e., in the
+physical listing, keep cells if an electrical mode cell of the
+same name exists.
+\item{\vt notwithalt}\\
+List cells without an alternate-mode cell defined.
+
+\item{\vt reference}\\
+List reference cells.
+\item{\vt notreference}\\
+List cells that are {\bf not} reference cells.
+
+\item{{\vt parent "}{\it cellname1 cellname2} {\vt ..."}}\\
+This keyword requires a following quoted list of cell names.  List
+cells that use at least one of the cells in the list as subcells.  If
+the cell list is empty, specified by two quote marks {\vt ""}, list
+cells that have subcells.
+\item{{\vt notparent "}{\it cellname1 cellname2} {\vt ..."}}\\
+This keyword requires a following quoted list of cell names.  List
+cells that do not have any of the listed cells as subcells.  If the
+cell list is empty, specified by two quote marks {\vt ""}, list cells
+that have no subcells.
+
+\item{{\vt subcell "}{\it cellname1 cellname2} {\vt ..."}}\\
+This keyword requires a following quoted list of cell names.  List
+cells that are used as a subcell in one or more of the listed cells. 
+If the cell list is empty, specified by two quote marks {\vt ""}, list
+cells used as a subcell (same as {\vt nottoplev})
+\item{{\vt nosubcell "}{\it cellname1 cellname2} {\vt ..."}}\\
+This keyword requires a following quoted list of cell names.  List
+cells that are not used as a subcell in any of the listed cells.  If
+the cell list is empty, specified by two quote marks {\vt ""}, list
+cells that are not used as a subcell (same as {\vt toplev}).
+
+\item{{\vt layer "}{\it layername1 layername2} {\vt ..."}}\\
+This keyword requires a following quoted list of layer names.  List
+cells that have objects on one or more of the listed layers.  If the
+layer list is empty, specified by two quote marks {\vt ""}, list cells
+that have some geometry on any layer.
+\item{{\vt notlayer "}{\it layername1 layername2} {\vt ..."}}\\
+This keyword requires a following quoted list of layer names.  List
+cells that do not have geometry on any of the listed layers.  If the
+layer list is empty, specified by two quote marks {\vt ""}, list cells
+that have no geometry.
+
+\item{{\vt flag "}{\it flagname1 flagname2} {\vt ..."}}\\
+This keyword requires a following quoted list of flag names (see
+\ref{cellflags}).  List cells that have at least one of the listed
+flags set.  If the list is empty, the clause is ignored.
+\item{{\vt notflag "}{\it flagname1 flagname2} {\vt ..."}}\\
+This keyword requires a following quoted list of flag names.  List
+cells that have none one of the listed flags set.  If the list is
+empty, the clause is ignored.
+
+\item{{\vt ftype "}{\it filetype1 filetype2} {\vt ..."}}\\
+This keyword requires a following quoted list of file types, from
+``{\vt none}'', ``{\vt native}'', ``{\vt gds}'', ``{\vt cgx}'', ``{\vt
+oasis}'', ``{\vt cif}'', and ``{\vt openaccess}''.  Only the first two
+letters of the type names are necessary.  List cells that were read
+from one of the listed file types.  Internally generated cells will
+have type ``{\vt none}''.  If the list is empty, the clause is
+ignored.
+\item{{\vt notftype "}{\it filetype1 filetype2} {\vt ..."}}\\
+This keyword requires a following quoted list of file types, as above. 
+List cells that were read from a file type that is not in the list. 
+If the list is empty, the clause is ignored.
+\end{description}
+
+Examples:
+\begin{quote} \vt
+notlibrary layer "M1 M2" parent cell1 notparent cell2
+\end{quote}
+List cells that are not library cells and that contain objects on {\vt
+M1} or {\vt M2}, and contain {\vt cell1} but don't contain {\vt
+cell2}.
+
+\begin{quote} \vt
+subcell maincell layer BASE notlayer VIA notparent ""
+\end{quote}
+List subcells of {\vt maincell} that have objects on layer {\vt BASE}
+but have no objects on layer {\vt VIA} and that have no subcells.
 
 !! 032015
 !!KEYWORD
@@ -1073,6 +1776,84 @@ Cell Flags
     Convenience flags for the user.  <i>Xic</i> does not use these,
     but they may be useful in some application.
     </dl>
+!!LATEX cellflags cellmenu.tex
+Cells in memory contain a number of flags.  Most of these are used
+internally and can not be set by the user.  All set flags can be seen
+in the {\cb Info} windows when cell data are shown.
+
+The table below lists all flags, with a brief description.
+
+\begin{tabular}{|l|l|l|} \hline
+\bf Flag Name & User Set & Set When, or Description\\ \hline \hline
+
+\vt BBVALID     & N & Cell bounding box is valid\\ \hline
+\vt BBSUBNG     & N & A subcell has unknown bounding box\\ \hline
+\vt ELECTR      & N & Cell contains electrical data\\ \hline
+\vt SYMBOLIC    & N & Cell has active symbolic representation\\ \hline
+\vt CONNECT     & N & Connectivity info is current\\ \hline
+\vt GPINV       & N & Inverted ground plane current\\ \hline
+\vt DSEXT       & N & Devices and subcircuits extracted\\ \hline
+\vt DUALS       & N & Physical/electrical duality established\\ \hline
+\vt UNREAD      & N & Created to satisfy unsatisfied reference\\ \hline
+\vt COMPRESSED  & N & Save hierarchy in compressed form\\ \hline
+\vt SAVNTV      & N & Save in native format before exit\\ \hline
+\vt ALTERED     & N & Cell data were altered when read\\ \hline
+\vt CHDREF      & N & Cell is a reference\\ \hline
+\vt DEVICE      & N & Cell represents a device symbol\\ \hline
+\vt LIBRARY     & Y & Cell is from a user library\\ \hline
+\vt IMMUTABLE   & Y & Cell is read-only\\ \hline
+\vt OPAQUE      & Y & Cell content is ignored in extraction\\ \hline
+\vt CONNECTOR   & Y & Cell is a connector\\ \hline
+\vt SPCONNECT   & Y & SPICE connectivity info is current\\ \hline
+\vt USER0       & Y & User flag 0\\ \hline
+\vt USER1       & Y & User flag 1\\ \hline
+\vt PCELL       & N & Cell is a PCell sub- or super-master\\ \hline
+\vt PCSUPR      & N & Cell is a PCell super-master\\ \hline
+%\ifoa
+\vt PCOA        & N & Cell is a PCell sub-master from OpenAccess\\ \hline
+%\fi
+\vt PCKEEP      & N & PCell sub-master read from file\\ \hline
+\vt STDVIA      & N & Cell is a standard via sub-master\\ \hline
+\end{tabular}
+
+The flags with a Y in the second column can be set by the user, with
+the {\vt SetCellFlag} script function and in other places, depending
+on the flag.
+
+The first two user-modifiable flags are normally controlled by {\Xic},
+however it is possible for the user to change their state through the
+{\cb Flags} button in the {\cb Cells Listing} panel, and through the
+{\vt SetCellFlag} script function.
+
+\begin{description}
+\item{\vt LIBRARY}\\
+This flag is set for cells that were read into memory through the
+library (see \ref{libraries}) mechanism.  By default, these cells are
+not included when a hierarchy is written to disk.
+
+\item{\vt IMMUTABLE}\\
+This indicates that the cell is read-only and can't be edited.  This
+will be set for cells read into memory through the library mechanism.
+\end{description}
+
+The remaining flags are completely under control of the user, they are
+not set by {\Xic}.  These are set via the properties mechanism, from
+the {\cb Cell Property Editor} ({\cb Flags} property) or with the {\vt
+SetCellFlag} script function.  Using a property to control these flags
+provides persistence when saved to disk.
+
+\begin{description}
+\item{\vt OPAQUE}\\
+The physical contents of the cell should be ignored in extraction.
+
+\item{\vt CONNECTOR}\\
+The cell is a via or other connector that contains no devices.
+
+\item{\vt
+USER0}, {\vt USER1}\\
+Convenience flags for the user.  {\Xic} does not use these, but they
+may be useful in some application.
+\end{description}
 
 !! 022916
 !!KEYWORD
@@ -1143,6 +1924,54 @@ Cell Hierarchy Tree
     The listing is a <a href="dragdrop">drag source</a>.  Cell names
     can be dragged and dropped into drawing windows, to display or
     edit that cell.
+!!LATEX xic:tree cellmenu.tex
+The {\cb Show Tree} button in the {\cb Cell Menu} brings up the {\cb
+Cell Hierarchy Tree} window, which presents a tree diagram
+representing cell hierarchy.  Each subcell is initially shown
+unexpanded, but these can be expanded by clicking on the expander
+symbol.  Subcells can be unexpanded by clicking again in the same
+location.  The glyph used to represent the expander is dependent on
+the GTK theme in use, and may take different forms.  Clicking
+elsewhere in the line will select the subcell name, for use by the
+{\cb Info}, {\cb Open}, and {\cb Place} buttons.
+
+When the main drawing window is in CHD display mode, meaning that the
+{\cb Display} button in the {\cb Cell Hierarchy Digests} panel is
+engaged, the {\cb Cell Hierarchy Tree} will display cells from the
+displayed CHD, rooted at the default cell of the CHD.  Otherwise, the
+listing represents cells in memory, rooted at the current cell.  The
+{\cb Tree} button in the {\cb Cells Listing} panel can also be used to
+display the {\cb Cell Hierarchy Tree}, rooted at other cells in memory
+or in the displayed CHD.
+
+Pressing the {\cb Info} button will display information about the
+selected cell.  In CHD display mode, this is information stored in the
+CHD when the CHD was created.  In normal mode, this is the same {\cb
+Info} window available in the {\cb View Menu}.  Initially, this window
+will contain information about the selected cell, though subsequent
+clicks in a drawing window will generate info about other objects.
+
+The {\cb Open} button is only available in normal display mode. 
+Pressing {\cb Open} will open the selected cell in the main drawing
+window, and make it the current cell for editing and selections.
+
+The {\cb Place} button, also available in normal display mode only,
+will pop up the {\cb Cell Placement Control} panel, loaded with the
+selected cell.  This enables instantiation of the cell.  The {\cb
+Place} button is not available in the {\Xiv} feature set.
+
+Pressing the {\cb Update} button will rebuild the tree internally and
+redisplay.  The tree does not automatically track changes in the cell
+hierarchy due to editing, the {\cb Update} button can be used to
+update the tree manually if needed.
+
+The label at the bottom of the panel provides an indication of the
+complexity of the tree.  The total ``nodes'' would be the number of
+lines in the display if all items were expanded.  The depth is the
+maximum hierarchy depth found.
+
+The listing is a drag source.  Cell names can be dragged and dropped
+into drawing windows, to display or edit that cell.
 
 !!SEEALSO
 xic:cellmenu

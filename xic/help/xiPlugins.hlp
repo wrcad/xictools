@@ -94,6 +94,56 @@ Plug-Ins
     use the <b>LD_LIBRARY_PATH</b> environment variable to specify
     where to look for the libraries.  The libraries much match the
     address size (32 or 64 bit) of the running <i>Xic</i> program.
+!!LATEX plugins startup.tex
+A ``plug-in'' is a software library that is read into a running
+program, that provides additional features or capability.  Within
+{\Xic}, plug-ins provide optional support for
+%\ifoa
+OpenAccess, and
+%\fi
+the Python and Tck/Tk languages.  The plug-in provides an interface to
+external libraries that may or not be present on the user's computer. 
+If the needed libraries are present, the plug-in will be loaded into
+{\Xic} on program startup, and a message, such as
+\begin{quote}
+``{\vt Using Tcl/Tk (tcltk.so)}''
+\end{quote}
+will appear in the console among the text generated on program
+startup.  If the needed libraries are not found, the plug-in is not
+loaded, but {\Xic} will run normally except that the plug-in's
+features will be absent.
+
+At present, plug-ins are supported on all platforms except for
+Microsoft Windows.  Windows does not provide the type of shared
+library technology needed for plug-ins.  Although a similar capability
+could be instituted, there are many substantial issues and it is not
+clear if it is worth the development effort.
+
+Plug-ins are distributed as shared library code, and are found in the
+{\vt plugins} sub-directory in the distribution area, i.e.,
+\begin{quote}
+{\it prefix\/}{\vt /xictools/xic/plugins}
+\end{quote}
+The plug-in files are version-specific, and will work {\cb only} with
+the program from the same distribution file.  Of course, {\Xic} needs
+to be able to find its startup files for the plug-ins to be available. 
+If {\Xic} is not installed in the standard location, the {\et
+XT\_PREFIX} environment variable should be set to enable {\Xic} to
+find its startup files.
+
+Normally, if a plug-in is not loaded, there is no message.  If,
+however, the {\et XIC\_PLUGIN\_DBG} environment variable is set,
+diagnostic messages will be printed.  These can help identify why the
+plug-in is not being loaded, and are instrumental in tracking down
+problems when the user expects success.
+
+Lack of success loading a plug-in and generally due to the inability
+of the plug-in code to find the shared libraries needed on the host
+computer.  Unless the library is ``standard'' on the system, which may
+be true of Python, then it will be necessary to use the {\et
+LD\_LIBRARY\_PATH} environment variable to specify where to look for
+the libraries.  The libraries much match the address size (32 or 64
+bit) of the running {\Xic} program.
 
 !!REDIRECT prpty:oa_cstmvia     oaplugin#oa_cstmvia
 !!REDIRECT prpty:oa_orig        oaplugin#oa_orig
@@ -270,6 +320,143 @@ OpenAccess Support
     ('<tt>/</tt>') character.  Using this information, the cell is
     read later.
     </dl>
+!!LATEX oaplugin startup.tex
+{\bf This interface is presently not available under Microsoft Windows.}
+
+{\bf The OpenAccess plug-in is not provided with {\Xic} packages, the
+user must build this from source, which requires OpenAccess source
+code.  }
+
+OpenAccess is a semi-open-source database for CAD/EDA data.  It is
+used by Cadence Virtuoso, Synopsys Custom Compiler, and by many other
+tools.  It provides a commonality among tools from different vendors,
+and is intended to facilitate seamless integration of tools from
+different vendors into a process flow.  OpenAccess is distributed by
+Si2 ({\vt www.si2.org}).  Source code and binary distributions are
+available for a number of operating systems, to registered users and
+coalition members.
+
+{\Xic} can connect to an OpenAccess (OA) database through a plug-in. 
+Since there is no default location for OA, the user must set the {\vt
+XIC\_LIBRARY\_PATH} or the {\vt LD\_LIBRARY\_PATH} variable to include
+the library location in the search path during program loading.  This
+is most conveniently done in the user's shell startup script.
+
+Probably, the main interest in using OA is for limited compatibility
+with Cadence Virtuoso.  There are two levels here.  The first level is
+compatibility with the OA system.  This is basically complete, as any
+{\Xic} design can be saved to and read from OA without data loss or
+change.  The second level is compatibility with the conventions and
+methods used in the Virtuoso product, much of which is proprietary or
+undocumented.  This is a much tougher nut to crack.  Presently, there
+is fairly reasonable capability of taking Virtuoso designs into
+{\Xic}, but the reverse is not true.  Presently, physical (layout
+view) data from {\Xic} can be read by Virtuoso and should appear
+correct, however there is no netlist information or connection to a
+schematic.  It is as if the layout view was read from a GDSII file. 
+Schematic and schematic symbol views from {\Xic} can not be read as
+anything but garbage by Virtuoso.  There are plans for a data
+translation stage in the future to possibly adapt {\Xic} schematics to
+Virtuoso format.
+
+Likewise, The plug-in allows a direct interface to Synopsys Custom
+Compiler, and supports Python-based PCells including stretch handle
+and abutment protocols.
+
+When the OpenAccess plug-in is loaded, there are several changes to
+{\Xic}.
+
+\begin{enumerate}
+\item{There is an {\cb OpenAccess Libs} entry added to the {\cb File
+Menu}.  Pressing this will bring up the {\cb OpenAccess Libraries}
+panel, which provides access to the existing OpenAccess design data.}
+
+\item{A number of ``bang'' commands (text-mode commands that start
+with '!') are made available.  These commands are typed into the
+prompt line to start.  Much of the functionality of these commands is
+also available graphically in the panel.
+\begin{quote}
+{\cb !oaversion}\\
+{\cb !oanewlib}\\
+{\cb !oabrand}\\
+{\cb !oatech}\\
+{\cb !oasave}\\
+{\cb !oaload}\\
+{\cb !oadelete}
+\end{quote}
+}
+\end{enumerate}
+
+In addition, the standard commands for reading and writing design data
+become operable with OpenAccess data.  When specifying a cell, one
+provides two words:  the OpenAccess library name and the cell name.
+
+It is not possible to write to an OA library unless the library has
+been ``branded'' by {\Xic}.  By default, libraries created in {\Xic}
+are writable from {\Xic}, libraries created by other tools are not. 
+The read-only status from {\Xic} of any library can be set from the
+{\cb OpenAccess Libraries} panel, or with the {\cb !oabrand} command.
+
+\subsection{Representing {\Xic} Cells in OpenAccess}
+
+When an {\Xic} cell is saved in OpenAccess, up to three views may be
+created.  The user has specified a library name where the views will
+be saved, and of course the cell name.  Some write commands allow the
+user to save a cell under a different name.
+
+If the cell contains physical data, this will be saved in a view named
+``{\vt layout}'' of OpenAccess view type ``{\vt maskLayout}''.  If the
+cell contains electrical data, the schematic will be saved in a view
+named ``{\vt schematic}'' of view type ``{\vt schematic}''.  If a
+symbolic representation has been defined, this will be saved in a view
+named ``{\vt symbol}'' of OpenAccess view type ``{\vt
+schematicSymbol}''.  This latter view can only exist, as part of an
+{\Xic} cell representation, if a schematic view also exists.  Reading
+or writing an {\Xic} cell will involving translating each of these
+views that exist.
+
+This group of properties applies to the OpenAccess interface.
+
+\begin{description}
+\index{properties!stdvia}
+\index{stdvia property}
+\item{\et stdvia} property, number 7160\\
+This property is applied to standard via sub-masters and instances,
+and is used by the translator to convert OpenAccess standard vias to
+{\Xic} standard vias, and the reverse.  The property is used in {\Xic}
+to identify and specify standard via instances and sub-masters.  The
+format of the property string is described in \ref{stdviaprp}.
+
+\index{properties!oa\_cstmvia}
+\index{oa\_cstmvia property}
+\item{\et oa\_cstmvia} property, number 7161\\
+This property is applied by the OpenAccess reader to master cells that
+represent a custom via.  In {\Xic}, vias are cells, they have no
+unique type as in OpenAccess.  The string format consists of the cell
+identifier followed by parameter specifications.  The cell identifier
+has the form
+\begin{quote}
+$<${\it libname\/}$><${\it cellname\/}$><${\it viewname\/}$>$
+\end{quote}
+This is followed by a space-separated parameter specification string
+in the same format as the {\et pc\_params} property.  A custom via
+master is basically a pcell sub-master.
+
+When written back to OpenAccess, cells with this property will be
+ignored.  A sub-master for the custom via will be created within
+OpenAccess when needed.
+
+\index{properties!oa\_orig}
+\index{oa\_orig property}
+\item{\et oa\_orig} property, number 7183\\
+This property is used transiently when loading OpenAccess cell data
+into {\Xic}.  If is applied to cells, and removed when reading
+completes.  If an instance is read before the corresponding cell
+definition, a dummy {\Xic} cell descriptor is created and given this
+property.  The property string contains the library and cell names,
+separated by a forward slash (`{\vt /}') character.  Using this
+information, the cell is read later.
+\end{description}
 
 !!SUBTOPICS
 cdscompat
@@ -460,6 +647,155 @@ Python Support
       <td>Reset the Python interpreter.</td></tr>
     </table>
     </blockquote>
+!!LATEX pyplugin startup.tex
+{\bf This interface is presently not available under Microsoft Windows.}
+
+The Python ({\vt www.python.org}) scripting language is a powerful,
+versatile language enjoying much popularity.  In particular, it has
+become the language of choice for writing portable parameterized
+cells, as used in the PyCell Studio project from Ciranova, Inc.  (now
+Synopsys).
+%\ifoa
+This download provides the essentials for creating portable pcells,
+using the Python language, and OpenAccess.  Whiteley Research strongly
+favors this approach, and will integrate Ciranova standards as tightly
+as possible.
+%\fi
+
+Python is made available, when Python-2.6 or newer is found on the
+user's computer, via the Python plug-in.  Red Hat Enterprise Linux 6
+and 7 provide a compatible native Python.  Presently, only Python
+release 2.6 is supported on Red Hat Enterprise Linux 5, so
+installation of an updated package is required on that operating
+system.
+
+%\ifoa
+The Ciranova PCell Studio provides Python 2.6, as well as OpenAccess. 
+If using Ciranova, the Ciranova-supplied Python should be used.
+%\fi
+
+\begin{description}
+\item{Red Hat Enterprise Linux 6,7}\\
+This supplies a native Python-2.6/2.7, which will work with the
+plug-in without any configuration.
+%\ifoa
+Unfortunately, this is not compatible with the Python-2.6 provided by
+Ciranova.  {\Xic} can use either one.  The Python-2.6 provided by
+Ciranova was built with different setup flags for handling UTF8 text
+than the stock Python-2.6.
+%\fi
+
+\item{Red Hat Enterprise Linux 5}\\
+The operating system provides Python-2.4, which is not supported.  The
+Ciranova PyCell Studio provides Python-2.6, which is one source for a
+compatible Python.  Another is to install the {\vt python26} extension
+package.  Using the {\cb Package Manager} or {\vt yum}, install
+\begin{quote}
+{\vt epel-release-5-4.noarch}.
+\end{quote}
+This will add additional repositories.  Then, in the {\vt epel}
+repository, find and install a release like ``{\vt
+python26-2.6.8-2.el5.x86\_64}''.
+\end{description}
+
+To use a non-default Python such as that supplied by Ciranova in the
+PyCell Studio, one will need to set the {\et LD\_LIBRARY\_PATH}
+variable to include the alternative shared library location.
+%\ifoa
+This will happen automatically if Ciranova's setup procedure is
+followed before starting {\Xic} (see \ref{ciranova}).
+%\fi
+
+Failure to load the Python plug-in is by default silent.  If the
+environment variable {\vt XIC\_PLUGIN\_DBG} is set, diagnostics and
+error messages will be printed in the console when attempting to load
+plug-ins at program startup.
+
+When the Python plug-in is loaded, {\Xic} is able to execute Python
+scripts.  This includes stand-alone scripts, and scripts that are used
+in parameterized cells.  Note that Ciranova PyCells, which are also
+Python-based, are supported via OpenAccess, and are independent of
+Python support in {\Xic}.  However, future plans are to support
+PyCells natively in {\Xic}.  {\Xic} is presently able to support the
+Ciranova protocols for stretch handles and abutment natively.
+
+{\bf This information is preliminary, and may change.}
+
+The entire library of native script functions are callable from
+Python.  However, at this point many of the more complicated data
+types found in the native function library are unsupported.  There are
+two ways to call a native function from Python:
+
+\begin{quote}
+{\vt xic.}{\it native\_func\/}{\vt (}{\it args\/}, ...{\vt )}\\
+{\vt xic.eval}{\vt ("}{\it native\_func\/}{\vt ",} {\it args\/}, {\vt ...)}
+\end{quote}
+
+The choice of style is up to the user, the first is probably slightly
+more efficient and is recommended.
+
+The Python script must include some initialization lines in order to
+use the {\Xic} interface.  As a simple example, the script below will
+draw two boxes in the current cell, using the current layer.
+
+\begin{quote}\vt
+import xic\\
+import xicerr\\
+import sys\\
+sys.stderr = xicerr\\
+xic.Box(2.0, 2.0, 6.0, 7.0)\\
+xic.eval("Box", 1.0, 1.0, 5.0, 6.0)\\
+xic.Commit()\\
+\end{quote}
+
+The first line is mandatory for using any native script functions.  It
+loads the {\Xic} interface module.
+
+The next three lines redirect Python error messages to the {\Xic}
+error reporting system.  These are optional, if not included Python
+messages will be printed on the console window.
+
+The final three lines call functions from the native script library. 
+The first two of these lines illustrate calling the {\vt Box} function
+using the two syntax styles.  The final line calls the {\vt Commit}
+function, which registers the change with the undo system, among other
+things.
+
+The first four lines are implicitly added during pcell evaluation,
+thus no not have to be included in a Python pcell script (see
+\ref{pcells}).
+
+Presently, datatypes translate in the following manner.  If an
+un-handled data type is encountered, the script will terminate with a
+fatal error.
+
+\begin{tabular}{|l|p{4in}|} \hline
+\bf {\Xic} type & Python type\\ \hline
+string & String.\\ \hline
+scalar & Float.\\ \hline
+array & List of float.\\ \hline
+zlist & List of ``{\vt zlist}'' followed by lists of
+  six integers (LL, LR, YL, UL, UR, YU in internal units).\\ \hline
+handle & A list containing ``{\vt xic\_handle}'',
+  followed by the handle integer value.  For stringlist handles only,
+  the strings follow.\\ \hline
+\end{tabular}
+
+When these forms are passed back to {\Xic} functions, they are
+reverted to the {\Xic} data type.  Note that handles can be passed
+through Python, but except for stringlist handles they are useless in
+Python at present.
+
+When the Python plug-in is loaded, the {\cb !py} command is available. 
+This command will execute a script file containing Python commands,
+the path to which is given as the argument.  Also, the following
+script functions are available:
+
+\begin{tabular}{ll}
+{\vt RunPython} & Run a Python script.\\
+{\vt RunPythonModFunc} & Execute a Python module function.\\
+{\vt ResetPython} & Reset the Python interpreter.\\
+\end{tabular}
 
 !! 022713
 !!KEYWORD
@@ -683,6 +1019,194 @@ Tcl/Tk Support
     <a href="ResetTcl"><tt>ResetTcl</tt></a><br>
     <a href="SetGlobalVariable"><tt>SetGlobalVariable</tt></a>
     </blockquote>
+!!LATEX tclplugin startup.tex
+{\bf This interface is presently not available under Microsoft Windows.}
+
+{\Xic} provides a plug-in interface to Tcl/Tk.  Tcl (Tool control
+language) is a popular open source scripting language, and Tk is a
+graphical package addition.  The language syntax is provided in
+documentation supplied with Tcl/Tk, and is described in several books.
+
+Since this capability is dynamically loaded, {\Xic} can use this
+capability if it has been installed, but does not require the
+installation.  Support is provided for Tcl, with and without Tk.
+
+\index{LD\_LIBRARY\_PATH environment variable}
+If Tcl/Tk have been installed via a standard distribution file on the
+system, which is common for Linux, the plug-in should be able to
+locate the shared libraries automatically.  If the installation is
+non-standard, the user may need to inform the system dynamic linker of
+the shared library location.  This is generally accomplished by
+setting the {\et LD\_LIBRARY\_PATH} variable in the environment,
+before running {\Xic}.  This would normally be done in the user's
+shell startup file.
+
+There are two text-mode commands that can be used to run a Tcl/Tk
+script.
+
+\begin{description}
+\item{\cb !tcl}\\
+This command will exist only if the Tcl language support plug-in is
+loaded, which will occur on program startup if the Tcl shared
+libraries are found.  The script should contain only Tcl commands, not
+Tk.
+
+\item{\cb !tk}\\
+This command will exist only if the Tcl and Tk language support
+plug-in is loaded, which will occur on program startup if both Tcl and
+Tk shared libraries are found.  The script may contain any combination
+of Tcl and Tk commands.
+\end{description}
+
+In either case, the first argument is a path to a file containing the
+script body.  Additional arguments are taken as arguments to the
+script.  The script will be executed as if by the {\et wish} shell
+supplied with Tcl/Tk.
+
+The startup file, which can be used to set defaults, is named ``{\vt
+.xic-wishrc}'' in the user's home directory.  The contents is
+analogous to the {\vt .wishrc} file normally used with Tcl/Tk.  The
+user must create this file if needed.
+
+All of the {\Xic} script functions are exported to Tcl/Tk and can be
+called by name from a Tcl/Tl script.  However, only the basic data
+types are supported.  There is also a function named ``{\vt xic}''
+which can be used in the following manner:
+\begin{quote}
+{\vt xic} {\it function arguments...}
+\end{quote}
+
+The function {\vt xic} is a Tcl function which loads the interface
+function or user-defined function given in the first argument (a
+string).  User defined functions can be accessed if they are already
+known to {\Xic}, i.e., they were defined in a library file or were
+defined in a previously-run {\Xic} script.  The arguments to the
+function follow, and should match the arguments expected by the
+function.  This form must be used when executing a user-defined
+function.
+
+The variable type of an argument is inferred as follows:
+\begin{itemize}
+\item{A single-token numeric value without leading or trailing
+characters not part of the number is taken as a scalar.}
+\item{A token of the form \&{\it arrayname}() is taken as an array.}
+\item{Anything else is taken as a string.}
+\end{itemize}
+
+To explicitly coerce a numeric token into a string, backslash escaped
+double quotes should be used to delimit the token.  For example, {\vt
+$\backslash$"1.234$\backslash$"} is taken as a string.  The backslash
+prevents {\et tcl} from removing the double quotes before passing the
+token.
+
+Arrays passed to interface functions must use ``0'', ``1'', etc.  as
+indices, and are ordered accordingly (in {\et tcl}, array indices can
+be any text token and have no natural order).  The ``0'' element (at
+least) must be set before the array can be passed to a function.  If
+the array is dynamically expanded, new {\et tcl} elements will be
+created.  The initial size of the array is implied by the largest
+contiguous index assigned.  Thus, for example, if the interface
+function requires an array of size 4, the following {\et tcl} code
+could be used
+
+\begin{quote}\vt
+set array(0) 0\\
+set array(1) 0\\
+set array(2) 0\\
+set array(3) 0\\
+xic {\it Function} \&array()
+\end{quote}
+
+When the function returns, the array values will be updated.  Only
+one-dimensional arrays are available.
+
+There is an additional special {\et tcl} function which has been added.
+\begin{quote}
+{\vt xwin} {\it win\_name}
+\end{quote}
+This function returns the X window id of the {\et tk} window given as
+a widget path in {\it win\_name}.  This is used to obtain the window
+id of a {\et tk} window to be used for {\Xic} graphics through the
+{\vt GRopen} interface.  A suggested way to use a {\et tk} window for
+exported drawing from {\Xic} is given in the example below.  The {\vt
+xwin} procedure is used to obtain the window id.  This window should
+be configured with `{\vt -background ""}' which allows redraws to be
+handled through a procedure bound to the window with the {\vt bind}
+command which responds to expose events.  Otherwise, expose events
+will cause the window to be redrawn in gray {\it after} the event
+handler is called.  A pixmap is used to store the image for redraws.
+
+Example
+
+\begin{verbatim}
+
+# This is the window used for drawing by Xic.
+# Note the '-background ""' directive.  This
+# is necessary for proper redrawing after expose
+# events.
+frame .f -width 8c -height 8c -background ""
+pack .f
+
+set win_id [xwin .f]
+set ghandle [xic GRopen ":0" $win_id]
+# The win_id is the X id of the drawing window,
+# the ghandle is the handle value returned from
+# Xic upon opening graphics on this window.
+
+set size(0) 0
+set size(1) 0
+set size(2) 0
+set size(3) 0
+xic GetWindowView 0 &size()
+# The size array contains the displayed area of the
+# cell in the main Xic window, in order L, B, R, T
+
+xic GRdraw $ghandle $size(0) $size(1) $size(2) $size(3)
+# This draws the Xic view into the Tk window
+
+xic GRupdate $ghandle
+# Due to the way Tk (and X) works, unless GRupdate is
+# called after drawing, the drawing won't be visible.
+# The operations are stuck in a cache somewhere waiting.
+# GRupdate flushes the operations.
+
+set dsize(0) 0
+set dsize(1) 0
+xic GRgetDrawableSize $ghandle $win_id &dsize()
+# The dsize array contains the size in pixels of the
+# Tk drawing area.
+
+set pixm [xic GRcreatePixmap $ghandle $dsize(0) $dsize(1)]
+xic GRcopyDrawable $ghandle $pixm $win_id 0 0 $dsize(0) $dsize(1) 0 0
+xic GRupdate $ghandle
+# We have created a pixmap of the same size and depth as
+# the drawing area, and copied the drawing area into it.
+# This will be used to redraw the drawing area after an
+# expose event.
+
+bind .f <Expose> {
+    # This sets up a handler for expose events.  Expose
+    # events are received when a previously obscured part
+    # of the window is uncovered.  The pixmap is copied
+    # into the Tk window.
+    xic GRcopyDrawable $ghandle $win_id $pixm 0 0 $dsize(0) $dsize(1) 0 0
+    xic GRupdate $ghandle
+}
+\end{verbatim}
+
+The {\vt TextCmd} script function can be used to launch a {\et
+tcl/tk} script.  At present, {\et tcl/tk} scripts are not recognized
+in the script path, but one can use a native language wrapper to
+include {\et tck/tk} scripts in the {\cb User Menu}.
+
+The following native script functions can also be used to run Tcl/Tk
+scripts, or perform other related manipulations related to the Tcl/Tk
+interpreter.
+
+\begin{tabular}{ll}
+{\vt RunTcl} & Run a Tcl or Tk script.\\
+{\vt ResetTcl} & Reset the Tcl/Tl interpreter.\\
+\end{tabular}
 
 !!SEEALSO
 xicscript

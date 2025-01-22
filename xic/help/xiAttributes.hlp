@@ -149,6 +149,66 @@ Attributes Menu
       <td><tt>grid</tt></td> <td><b>Grid Setup</b></td>
       <td>Set grid parameters</td></tr>
     </table>
+!!LATEX xic:attrmenu attrmenu.tex
+The {\cb Attributes Menu} contains commands primarily for modifying
+the presentation format of {\Xic}.  Each sub-window has an independent
+set of attributes, which are initially set to those of the main
+window.
+
+The table below summarizes the command buttons found in the {\cb
+Attributes Menu}, listing the internal name and command function.
+
+\hspace*{-1.5em}
+\begin{tabular}{|l|l|l|l|} \hline
+\multicolumn{4}{|c|}{\kb Attributes Menu}\\ \hline
+\kb Label & \kb Name & \kb Pop-up & \kb Function\\ \hline\hline
+\et Save Tech & \vt updat & none & Save technology file\\ \hline
+\et Key Map & \vt keymp & none & Create keyboard mapping file\\ \hline
+\et Define Macro & \vt macro & none & Define a keyboard macro\\ \hline
+\et Main Window & & Attributes sub-menu & Set main window attributes\\ \hline
+\et Set Attributes & \vt attr & \cb Window Attributes &
+    Set misc. attributes for drawing windows\\ \hline
+\et Connection Dots & \vt dots & \cb Connection Points &
+    Show connection dots in schematics\\ \hline
+\et Set Font & \vt font & \cb Font Selection & Set text fonts used\\ \hline
+\et Set Color & \vt color & \cb Color Selection & Set layer and other colors\\
+    \hline
+\et Set Fill & \vt fill & \cb Fill Pattern Editor & Set layer fill patterns\\
+    \hline
+\et Edit Layers & \vt edlyr & \cb Layer Editor & Add or remove layers\\ \hline
+\et Edit Tech Params & \vt lpedt & \cb Tech Parameter Editor & Edit
+    technology parameters\\ \hline
+\end{tabular}
+
+The {\cb Connection Dots} button appears only when the full {\Xic}
+feature set is enabled, not in the {\XicII} or {\Xiv} virtual
+products.
+
+The sub-menu brought up by the {\cb Main Window} button is identical
+to the {\cb Attributes} menu in the sub-windows produced from the {\cb
+Viewport} button in the {\cb View Menu}.  The settings apply to the
+main window.
+
+\begin{tabular}{|l|l|l|p{2.25in}|} \hline
+\multicolumn{4}{|c|}{\kb Sub-Window Attributes Menu}\\ \hline
+\kb Label & \kb Name & \kb Pop-up & \kb Function\\ \hline\hline
+\et Freeze Display & \vt freez & none & Suppress redisplay\\ \hline
+\et Show Context in Push & \vt cntxt & none & Show context in subedit\\ \hline
+\et Show Phys Properties & \vt props & none & Show physical properties\\ \hline
+\et Show Labels & \vt labls & none & Show labels\\ \hline
+\et Label True Orient & \vt larot & none & Show labels transformed\\ \hline
+\et Show Cell Names & \vt cnams & none & Show cell names\\ \hline
+\et Cell Name true Orient & \vt cnrot & none & Show cell names transformed\\
+  \hline
+\et Don't Show Unexpanded & \vt nouxp & none & Don't show unexpanded
+  subcells\\ \hline
+\et Objects Shown & \vt objs & none & Object display control\\ \hline
+\et Subthreshold Boxes & \vt tinyb & none & Show outline of subthreshold
+  cells\\ \hline
+\et No Top Symbolic & \vt nosym & none & Electrical only, don't show top
+  cell as symbolic\\ \hline
+\et Set Grid & \vt grid & {\cb Grid Setup} & Set grid parameters\\ \hline
+\end{tabular}
 
 !!SEEALSO
 xic:commands
@@ -194,6 +254,32 @@ Save Tech
     <p>
     The radio buttons track and set the status of the <a
     href="TechPrintDefaults"><tt>TechPrintDefaults</tt></a> variable.
+!!LATEX updat xiAttributes.hlp
+The {\cb Save Tech} button in the {\cb Attributes menu} will pop up a
+small panel, from which one may write an updated technology file to
+disk.  This file provides setup information to {\Xic}, and is read on
+program start-up.  The file will reflect the current settings of the
+configurable attributes, layers, etc.
+
+The {\cb Write Tech File} panel has three radio buttons that select
+how parameters that are currently set to program defaults will be
+handled.  By default, keywords which would specify a default value are
+omitted from the file, providing a more compact file.  However, it may
+be useful to include the defaults in the file, to facilitate future
+hand-editing.  If {\cb Comment default definitions} is selected, these
+lines will be added to the technology file as comments.  If {\cb
+Include default definitions} is selected, these lines will be added as
+active text.
+
+An entry area allows the user to change the name of the file to write. 
+The default is to use ``{\vt xic\_tech}'' with an extension, if any,
+that was given to {\Xic} on startup with the {\vt -T} option, written
+in the current directory.  The base name must be ``{\vt xic\_tech}''
+and the file must be located in the library search path in order to
+load the new file when {\Xic} is restarted.
+
+The radio buttons track and set the status of the
+{\et TechPrintDefaults} variable.   
 
 !!SEEALSO
 techfile
@@ -358,6 +444,135 @@ Key Map
     with respect to the user interface, such as the mouse button used
     to engage user interface buttons and menu items, will not change. 
     This field is ignored under Windows.
+!!LATEX xic:keymp attrmenu.tex
+Several of the keys which {\Xic} uses are not found on all keyboards,
+or they may return a different code than {\Xic} expects.  {\Xic}
+contains a built-in facility for remapping keys from the keyboard to
+the functions expected in {\Xic}, through the {\cb Key Map} button in
+the {\cb Attributes Menu}.  The user is prompted to press keys on the
+keyboard that will correspond to the various special keys such as {\kb
+Page Up}, {\kb Page Down}, {\kb Home}, and numeric keypad {\kb Add}
+and {\kb Subtract}.  Only special function keys can be remapped, not
+the standard character entry keys, or modifier keys (e.g., {\kb
+Shift}, {\kb Control}) and not the function keys 1--12.  If there is
+no response when a key is pressed and the pointer is in a drawing
+window, then that key can not be mapped.  To skip mapping of a key,
+press {\kb Enter}.  To abort, press {\kb Esc}.  When the prompting is
+finished, a file will be created in the current directory named {\vt
+xic\_keymap} by default.  The user is given the option to alter this
+name.
+
+The file can be moved to a safe place if desired.  The keyboard
+mapping is not actually performed until this file is read by {\Xic},
+which must be done explicitly.  This differs from {\Xic} releases
+earlier than 4.0.0, which attempted to automatically read a created
+mapping file.  There are two ways to accomplish reading the mapping
+file:
+
+\begin{enumerate}
+\item{The {\cb !kmap} command:  {\vt !kmap} {\it mapfile}\\
+This command can be typed into the prompt line and will cause the
+named file to be read and the mapping asserted immediately.}
+
+\item{The {\vt ReadKeymap} script function:
+  {\vt ReadKeymap(}{\it mapfile\/}{\vt )}\\
+The function can be run from any script.  In particular, this line can
+be added to a startup script ({\vt .xicstart} or {\vt .xicinit} file)
+to assert the mapping when {\Xic} starts.}
+\end{enumerate}
+
+In either case, the {\it mapfile} is a path to a file as created with
+this command.  If the path is not rooted, the file is searched for
+relative to the current directory, the user's home directory, and
+through the library search path, in that order.  The commands can be
+re-run with different mapping files at any time, the current mapping
+state reflects the most recent mapping applied.
+
+\subsection{Key Mapping File}
+\index{xic\_keymap file}
+
+The file produced in this manner contains all key mapping and action
+translation tables used by {\Xic}.  Although it is not really
+recommended, this file can be customized by the user, with a text
+editor.  The recommended way to alter a key sequence response is with
+a macro (see below), but there may be occasions where the mapping file
+should be changed to achieve a desired effect.  Contact Whiteley
+Research for assistance.
+
+The name of the file is {\vt xic\_keymap.}{\it hostname}, where {\it
+hostname} is the name of the machine.  When {\Xic} starts, it looks
+for a file of this name in the current directory, then in the user's
+home directory, then in the library search path.  If a file is found,
+it is read and processed.
+
+The first section of the mapping file contains a listing of the
+keysyms for the special keys mapped with this command ({\kb Home},
+{\kb Page Down}, etc.).  The keysym is a system-defined number
+assigned to that key.  In Unix/Linux, keysyms are defined in the X
+include file {\vt X11/keysymdef.h}.
+
+The next section of the file consists of the definition of the ``macro
+suppression'' character (described below).  This must be a printable
+ASCII character, surrounded by single quotes.
+
+The third section contains a mapping table for keysyms to an internal
+code.  The first column contains the keysyms; a numeric value in
+Windows, or the standard name under Unix/Linux.  The second column is
+the internal code.  The third column is a subcode used only for
+function keys.
+
+The next section contains an action table which maps actions before
+the keypress code is sent to any internal command in {\Xic}.  In
+action tables, the first column is a code which is either an internal
+code, or the ASCII value of the keysym.  This is operating system
+dependent.  Under Unix/Linux, the keysym code for a printing character
+is simply the ASCII value of that character.  The internal code is
+interpreted numerically as a value (hex) 0 -- 1f.  Ascii values are
+(hex) 20 -- fe.  Other values are taken as keysyms.  Under Windows, the
+code is similar, but the Windows keysym is used.  The Windows keysym
+differs in that (1) the upper-case alpha characters must be specified
+rather than lower case, (2) for punctuation which is the Shift of a
+numeric key, the numeric key should be given, (3) for punctuation
+which is not a Shift value for a numeric key, a special keysym for
+that key should be given.
+
+The second column is the modifier state.  The actions should be listed
+in order of most specific to least specific with regard to modifiers. 
+A value ``0'' in this column indicates ``don't care''.  Otherwise, the
+entry consists of one or more of ``SHIFT'', ``CTRL'', and ``ALT'',
+separated by a minus sign `{\vt -}'.  The actual modifier should be
+listed, even if a Shift state is implied by the value in column one.
+
+For example, to select the `!' character, in Unix/Linux one has
+\begin{quote}
+\begin{verbatim}
+'!'        SHIFT
+\end{verbatim}
+\end{quote}
+in Windows, this would be
+\begin{quote}
+\begin{verbatim}
+'1'        SHIFT
+\end{verbatim}
+\end{quote}
+
+The third column in the action tables is the name of an action, which
+is defined internally in {\Xic}.  This is the action performed when
+the keypress combination specified in columns one and two is detected.
+
+The next section in the file is an action table that specifies actions
+to perform after the present {\Xic} command processes the keypress. 
+Many of the {\Xic} commands look for specific keys, and if that key is
+seen, further mapping is inhibited.  If the keypress is not used by
+the command, it is available for translation by this final table.
+
+The last section of the file contains a ``{\vt $<$Buttons$>$}'' field
+which maps the functions of the mouse buttons under Unix/Linux.  This
+allows the functions of the buttons within {\Xic} to be permuted. 
+However, the functions of the buttons with respect to the user
+interface, such as the mouse button used to engage user interface
+buttons and menu items, will not change.  This field is ignored under
+Windows.
 
 !!SEEALSO
 xic:attrmenu
@@ -510,6 +725,118 @@ Keyboard Macros
     resulting file selector, then press the green octagon on the file
     selector.  Advanced users can cut/paste sequences of the commands
     into script files or macros.
+!!LATEX xic:macro attrmenu.tex
+Pressing the {\cb Define Macro} button in the {\cb Attributes Menu}
+allows the user to enter a macro.  The generated macros are stored in
+a file named {\vt .xicmacros} or {\vt .xicmacros}.{\it ext}, where
+{\it ext} is the current technology file extension.  In all cases,
+when a macro file is produced, which occurs after any new macro is
+defined, the file is written in the current directory as {\vt
+.xicmacros}.  The new file contains definitions for all current
+macros.  The user can add the suffix and move the file to their home
+directory if desired.
+
+When {\Xic} starts, it looks for a macro file in the following
+sequence, and inputs the first one (and only one) found:\\
+\begin{tabular}{ll}\\
+1. &  current directory using same extension as tech file.\\
+2. &  home directory using same extension as tech file.\\
+3. &  current directory with no extension.\\
+4. &  home directory with no extension.
+\end{tabular}
+
+Under Windows, the home directory is obtained from environment
+variables, in particular the value of {\et HOME}.
+
+Macros can be attached to any combination of a keyboard key and
+modifier key(s), with the exceptions of {\kb Enter}, {\kb Esc}, {\kb
+Backspace}, and the ``bare'' modifier keys ({\kb Shift}, {\kb Ctrl},
+etc).  However, not all key combinations will work.  For example, the
+expansion of keyboard menu accelerators occurs before macro expansion,
+so menu accelerator key combinations can not be used as macros.  Also,
+key combinations that are intercepted by the window manager, which may
+include some combinations involving the {\kb Alt} key, can not be used
+as macros.  Otherwise, macro definitions have higher priority than
+most other functions in {\Xic}.
+
+Macros are {\it not} expanded when the prompt line is in text editing
+mode.  The macro expansion can be suppressed for the next key
+combination by pressing the macro suppression character first.  The
+macro suppression character is the backquote ({\vt `}).  The macro
+suppression character is eliminated from the keypress buffer after the
+next key is typed.  For example, suppose `{\vt o}' is mapped to
+something, but you want to enter a literal `{\vt o}' to trigger the
+{\cb Open} command (``{\vt op}'').  One would type ``{\vt `op}'',
+after which the keypress buffer would contain ``{\vt op}'' triggering
+the {\cb Open} command.
+
+While recording a macro, button and key presses will not have the
+normal effect, but the events are stored in the macro and will have
+the normal effect when the macro is invoked.  Button presses will open
+a menu in the normal way, and selected menu commands will become
+active, but subsequent events will be swallowed by the macro recorder. 
+In most cases, one can send events to a pop-up by performing the
+actions, which won't be carried out but will be recorded in the macro.
+
+Note that while recording a macro, if a command is initiated that uses
+the prompt line, the macro string display will be overwritten.  It
+will come back after the first event.  However, if the command uses
+the prompt line for input, the macro definition will be terminated as
+if {\kb Esc} was entered.
+
+Pressing {\kb Enter} while a drawing window has the keyboard focus
+terminates the macro definition.  Pressing {\kb Esc} terminates a
+macro without saving it.  {\kb Backspace} removes the last event when
+defining a macro.  To enter {\kb Esc}, {\kb Backspace}, or {\kb Enter}
+into the macro, use {\kb Ctrl-Esc}, {\kb Ctrl-Backspace}, {\kb
+Ctrl-Enter}.
+
+For example, Suppose we want to define {\kb Ctrl-x} to ``press'' the
+{\cb Expand} button.  In the {\cb Define Macro} command, press {\kb
+Ctrl} and {\kb x} and release.  In response to the next prompt, select
+the {\kb Expand} button in the {\cb View Menu}, move the pointer into
+a drawing window, and press the {\kb Enter} key.  From then on, {\kb
+Ctrl-x} will be equivalent to pressing the {\kb Expand} button.
+
+To undefine a macro, define it with a null definition for the body.
+
+See the description of the ``!!'' interface in Chapt.  \ref{bangcmds}
+for information on using script functions in macros.
+
+In the present GTK-based user interface, there is less need for
+macros due to the rich set of keyboard accelerators available.
+
+\subsection{Macro File Format}
+\index{.xicmacros file format}
+The {\vt .xicmacros} file can contain any number of macro definitions. 
+It is not expected that most users will have a need to work with this
+file directly, though the possibility exists.  Each macro consists of
+a block of lines in the following form:
+\begin{quote}
+{\vt \#macro}\\
+{\vt KeyDown(... , NULL)}\\
+{\it statements}\\
+{\vt \#end}
+\end{quote}
+
+Lines that start with `{\vt \#}' that are not script preprocessor
+keywords (see \ref{preproc}) are taken as comments.  The body of the
+macro consists entirely of calls to four script functions {\vt
+KeyDown}, {\vt KeyUp}, {\vt BtnDown}, and {\vt BtnUp}.  The first line
+must be a {\vt KeyDown} command which specifies the character mapped
+to the macro.  The widget string is the value ``{\vt NULL}''.  The
+remaining lines contain calls to these functions, which simulate the
+button and key presses recorded in the macro.
+
+The events processed while {\Xic} is in use are recorded in the {\vt
+xic\_run.log} file (see \ref{logfiles}).  This file and other log
+files are stored in a temporary directory, which is deleted when
+{\Xic} terminates normally.  To access the {\vt xic\_run.log} file
+from {\Xic}, press the {\cb Log Files} button in the {\cb Help Menu},
+then select the {\vt xic\_run.log} entry in the resulting file
+selector, then press the green octagon on the file selector.  Advanced
+users can cut/paste sequences of the commands into script files or
+macros.
 
 !!SEEALSO
 scr:preproc
@@ -781,6 +1108,194 @@ Window Attributes
     The setting tracks the value of the <a
     href="LabelMaxLines"><b>LabelMaxLines</b></a> variable.
     </dl>
+!!LATEX xic:attr attrmenu.tex
+The {\cb Set Attributes} button in the {\cb Attributes Menu} brings up
+the {\cb Window Attributes} panel.  The panel contains controls which
+affect presentation attributes in all drawing windows.  The panel
+contains five tabbed pages:  {\cb General}, {\cb Selections}, {\cb
+Phys Props}, {\cb Terminals}, and {\cb Labels}
+
+The controls found in the {\cb General} page are as follows.
+
+\begin{description}
+
+\index{Set Cursor button}
+\index{cursor mode}
+\item{\cb Cursor}\\
+This menu provides a choice of cursors.  These include the system
+default cursor (which is probably the same as the left arrow), cross
+cursor, left and right arrows.  Under Windows, there is no right
+arrow, so an up arrow is used instead (but it is ugly and useless). 
+Also, the default cross cursor for Windows 7 service pack 1 is huge
+and grotesque, but can be switched for a better looking cross cursor
+through the selections in the Windows {\cb System Preferences}
+panel.
+
+\item{\cb Use full-window cursor}\\
+When this check box is checked, the mouse cursor will be represented
+by horizontal and vertical lines which extend across the entire width
+and height of the drawing window containing the cursor.  The lines
+intersect at the nearest snap point in the current window.
+    
+When not checked, the cursor is the normal small cross.
+
+This tracks the state of the {\et FullWinCursor} variable.
+
+\item{\cb Subcell visibility threshold (pixels)}\\
+This entry area specifies a pixel size threshold for display of
+expanded subcells.  Subcells with height or width less than this
+threshold will not be displayed, or displayed as an unfilled bounding
+box, according to the setting of the {\cb Subthreshold Boxes} menu
+button in the {\cb Main Window} sub-menu of the {\cb Attributes Menu},
+and the {\cb Attributes} menu of sub-windows.  The value can be in the
+range 0--100.  If 0, subcells will always be rendered when in expanded
+state, which can greatly increase drawing time when zoomed out.  This
+setting applies to all drawing windows.
+
+This entry tracks the setting of the {\et CellThreshold} variable.
+
+\item{\cb Push context display illumination percent}\\
+When the {\cb Push} command is active, and the ``context'' (the
+features surrounding the pushed-to subcell) is being displayed, the
+intensity of colors used to render the context is reduced.  This
+visually differentiates objects in the current cell from those in the
+context.  The percentage intensity of the context can be set from this
+input area.  If set to 100, the context is rendered with the same
+coloring as the current cell.
+
+This entry tracks the setting of the {\et ContextDarkPcnt} variable.
+
+\item{\cb Pixels between pop-ups and prompt line}\\
+For windows that are automatically placed just above the prompt line,
+giving this entry a positive integer value will position these windows
+toward the top of the screen by that many pixels.  This is useful when
+using ``plasma'' displays (such as Mac or KDE), where the shadow falls
+on the prompt line, which can be distracting.  It might also be
+helpful if the window positioning is incorrect, which might occur with
+some window managers.
+
+This tracks the state of the {\et LowerWinOffset} Variable.
+\end{description}
+
+The {\cb Selections} page contains the following two check boxes.
+
+\begin{description}
+\item{\cb Show origin of selected physical instances}\\
+When this check box is set, selected physical instances will have the cell
+origin marked with a cross.  This applies to the selection
+highlighting, as well as to the ghost rendition which is attached to
+the mouse pointer during a move or copy operation.
+
+Showing the origin may seem trivial, but marking the origin requires a
+bit of overhead since it requires running a transformation and keeping
+track of an additional redisplay area since the origin may be outside
+of the cell bounding box.  Thus, the default is to not show the mark.
+
+This tracks the state of the {\et MarkInstanceOrigin} variable, and
+applies to all physical drawing windows.
+
+\item{\cb Show centroids of selected physical objects}\\
+In mathematics, the centroid or geometric center of a two-dimensional
+region is the arithmetic mean of all the points in the shape.  When
+this check box is set, selected objects will mark the centroid with a
+cross.  This applies to the selection highlighting, as well as to the
+ghost rendition which is attached to the mouse pointer during a move
+or copy operation.
+
+This tracks the state of the {\et MarkObjectCentroid} variable, and
+applies to all physical drawing windows.
+\end{description}
+
+The {\cb Phys Props} page contains the following controls.
+
+\begin{description}
+\item{\cb Erase behind physical properties text}\\
+When this check box is set, in windows where physical properties are
+being displayed, the area around the physical property text is erased,
+providing improved visibility.
+
+This tracks the state of the {\et EraseBehindProps} variable.
+
+\item{\cb Physical property text size (pixels)}\\
+This entry sets the height, in pixels, of the text used to render
+physical properties on-screen, when physical property text is being
+displayed.
+
+This tracks the state of the {\et PhysPropTextSize} variable.
+\end{description}
+
+The {\cb Terminals} page contains the following controls.
+
+\begin{description}
+\item{\cb Erase behind physical terminals}\\
+This will cause the area under terminals in physical windows to be
+erased, to promote visibility.  One can choose to not erase, to erase
+only under the cell's terminals, or to erase under all terminals. 
+This tracks the setting of the {\et EraseBehindTerms} variable.
+
+\item{\cb Terminal text pixel size}\\
+This sets the text height, in pixels, of the text associated with
+terminals in both physical and electrical windows.  This tracks the
+setting of the {\et TermTextSize} variable.  The default text height
+is 14 pixels.
+
+\item{\cb Terminal mark size}\\
+This sets the pixel size of the mark used to indicate terminal
+locations in both physical and electrical windows.  It tracks the
+value of the {\et TermMarkSize} variable.  The default mark size is 10
+pixels.
+\end{description}
+
+Finally, the {\cb Labels} page contains controls related to label
+presentation.
+
+\begin{description}
+\item{\cb Hidden label scope}\\
+By default, all labels participate in a protocol whereby clicking on
+the label with the {\kb Shift} key held will ``hide'' the label,
+displaying a small box instead.  {\kb Shift}-clicking on the box will
+return to the display of the label text.  This menu limits the labels
+which will participate in this protocol.  The choices are {\cb all
+labels} (the default), {\cb all electrical labels}, {\cb electrical
+property labels}, and {\cb no labels}.
+
+This menu tracks the setting of the {\et LabelHiddenMode} variable.
+
+\item{\cb Default minimum label height}\\
+This sets the minimum label height, in microns, for new text labels. 
+The actual initial height may be larger, depending on the zoom factor
+of the window, but it can not be smaller. 
+
+This tracks the setting of the {\et LabelDefHeight} variable.
+
+\item{\cb Maximum displayed label length}\\
+This entry sets the maximum width, in default-sized character cells,
+of a displayed label.  If the label exceeds this width,
+it is not shown, and a small box at the text origin is shown instead. 
+The default is 256.
+
+The ``hidden'' status of a property label can be toggled by clicking
+the text or box with button 1 with the {\kb Shift} key held.
+See \ref{labelbut} for more information.
+
+This entry tracks the setting of the {\et LabelMaxLen} variable.
+
+\item{\cb Label optional displayed line limit}\\
+Label text strings may have embedded newline characters which cause
+them to be displayed on multiple lines.  This setting, when set to a
+positive integer value, provides a limit on the number of lines that
+are actually displayed, in labels that respect this limit.  Only the
+first {\it N} lines would actually appear in the display, where {\it
+N} is the given number.  If {\it N} is zero, there is no limit.
+ 
+Labels observe this limit only if an internal flag is set in the
+label.  Presently, this is set internally for the labels associated
+with {\et value} and {\et param} properties.  The user can apply the
+limit to any label by setting the {\vt LIML} flag in the {\vt
+XprpXform} pseudo-property.
+ 
+The setting tracks the value of the {\et LabelMaxLines} variable.
+\end{description}
 
 !!SEEALSO
 xic:attrmenu
@@ -832,6 +1347,38 @@ Connection Dots
     variable can be set in the <a href="techfile:set">technology
     file</a> or a <a href="initfiles">startup file</a> to initialize
     the connection point indication mode.
+!!LATEX xic:dots attrmenu.tex
+The {\cb Connection Dots} button in the {\cb Attributes Menu} brings
+up the {\cb Connection Points} dialog, which contains three ``radio''
+buttons which specify how connection points are to be indicated in
+schematics shown in electrical mode windows.  This appears in {\Xic}
+only.
+
+If {\cb Don't show dots} is selected, there will not be any indication
+of connection points.
+
+If the {\cb Show dots normally} button is selected, a ``dot'' will be
+shown at ambiguous connections points.  These are wire vertices common
+to two or more wires (except for common end vertices of two wires),
+non-endpoint wire vertices common with device or subcircuit terminals,
+and any point common to three or more terminals or wire vertices.
+This selection is the default.
+
+A dot will also be shown if a cell connection point lies on an
+internal (non-endpoint) wire vertex.  In instances, this marks the
+connection location, and also ensures that a dot will be shown at this
+location, as one likely would not appear otherwise due to the logic
+used.
+
+If the {\cb Show dot at every connection} button is selected, a dot
+will be shown at every intersection recognized as a connection by
+{\Xic}.  This can sometimes be useful for debugging connection
+problems in drawings.
+
+The {\cb Connection Points} choices track and set the state of the
+{\et ShowDots} variable.  This variable can be set in the technology
+file or a startup file to initialize the connection point indication
+mode.
 
 !!SEEALSO
 xic:attrmenu
@@ -951,6 +1498,84 @@ Font Selection
     href="techfile:attr#fontkw">technology file</a>, and are updated
     to the technology file when a <a href="xic:updat"><b>Save
     Tech</b></a> command is given.
+!!LATEX xic:font attrmenu.tex
+The {\cb Set Font} button in the {\cb Attributes Menu} brings up the
+{\cb Font Selection} panel, which allows selection of the fonts used
+in the graphical interface.  A drop-down menu provides selection of
+the various font targets.  Pressing the {\cb Apply} button will
+immediately apply the selected font to all visible windows which use
+the font.
+
+Although many of the fonts used in the graphical interface can be set
+from this panel, the main font, the one used for menu text and control
+labels, must be set externally (it must be available before the
+graphical interface is created).  This is probably set by your desktop
+environment, and there should be a tool available for customization. 
+One can also likely set various "themes" which alter the appearance of
+the window decorations.
+
+This is not true in Windows.  Perhaps there is a better way, but one
+can do the following:  In the directory {\vt c:}$\backslash${\vt Documents
+and Settings}$\backslash${\it your\_username}, create a file named {\vt
+.gtkrc-2.0} containing lines similar to
+
+\begin{quote}
+{\vt style "win32-font"} {\vt \{}\\
+\hspace*{2em}{\vt font\_name = "tahoma 12"}\\
+{\vt \}}\\
+{\vt class "*" style "win32-font"}
+\end{quote}
+
+You may need a DOS or Cygwin window to create the file, as
+Windows Explorer cannot create a file starting with a period.
+
+The {\cb Dump Vector Font} button in the {\cb Font Selection} panel
+will dump the vector font used for text labels in the drawing areas to
+a file.  The user will be prompted for the name of a file to use, the
+default name is ``{\vt xic\_font}''.  Any existing file with the same
+name will be backed up with a {\vt .bak} extension.  A font file with
+this name found along the library search path will be read on program
+startup, and will define the label font, overriding the internal font. 
+The user can start by dumping the internal font, and tweak this to
+their taste.  The format of the vector font file is discussed in
+\ref{vectorfont}.
+
+The drop-down font targets list contains the following entries:
+\begin{description}
+\item{\cb Fixed Pitch Text Window Font}\\
+This sets the font used in pop-up multi-line text windows, such as the
+{\cb Files Listing} and {\cb Cells Listing}, where the names are
+formatted into columns.
+
+\item{\cb Proportional Text Window Font}\\
+This sets the font used in pop-up multi-line text windows where text
+is not formatted, such as the info and error message pop-ups.
+
+\item{\cb Fixed Pitch Drawing Window Font}\\
+This is the font used in the coordinate readout, the status line,
+layer table, and the prompt line.  It is not the font used to render
+label text in the drawing windows, which is a vector font generated by
+other means.
+
+\item{\cb Text Editor Font}\\
+This is the font used in the {\cb Text Editor} pop-up.
+
+\item{\cb HTML Viewer Proportional Font}\\
+This is the base font used for proportional text in the HTML viewer
+(help windows).  If set, this will override the font set in the {\vt
+.mozyrc} file, if any.
+
+\item{\cb HTML Viewer Fixed Pitch Font}\\
+This is the base fixed-pitch font used by the HTML viewer.  If set,
+this will override the font set in the {\vt .mozyrc} file, if any.
+\end{description}
+
+The {\cb Font} button in the {\cb Options} menu of the text editor
+brings up a similar panel, as does the {\cb Font} button in the {\cb
+Options} menu of the help viewer.
+
+These fonts can be set in the technology file, and are updated to
+the technology file when a {\cb Save Tech} command is given.
 
 !!SEEALSO
 xic:attrmenu
@@ -1091,6 +1716,113 @@ Color Selection
     When the <b>Print Control Panel</b> is visible, i.e., in hard copy
     mode, the colors set will be used in that mode only, and in the
     plots if the printer driver supports it.
+!!LATEX xic:color attrmenu.tex
+The {\cb Set Color} button in the {\cb Attributes Menu} brings up the
+{\cb Color Selection} panel.  The panel can also be displayed by
+clicking on a layer in the layer table or layer palette with button 3
+while holding down the {\kb Ctrl} key.  The current layer will become
+the clicked-on layer, and its color will be loaded into the editor.
+
+The panel contains controls that are manipulated to set the components
+of the color of the currently selected layer or other drawing
+attribute.  If the {\cb Print Control} panel (induced by the {\cb
+Print} button in the {\cb File Menu}) is visible, the color set will
+be used for rendering the plot, if the plot driver supports definable
+colors.
+
+Along the top of the panel are three drop-down menus.  The leftmost
+menu selects between {\cb Electrical} and {\cb Physical}, which for
+attributes whose color differs between modes, this specifies which
+color to display or set.
+
+The second menu contains two or three choices:  {\cb Attributesa} and
+{\cb Prompt Line}, and in the case where the first menu choice is {\cb
+Electrical}, a thrid choice {\cb Plot Marks} is available.  The choice
+here will determine the content of the third menu.  Each entry of the
+third menu represents a color that can be adjusted.
+
+The third menu choices for the three choices in the second menu
+are described below.
+
+\begin{description}
+\item{\cb Attributes}\\
+These are the colors used in the drawing windows.  Most of these
+colors can be separately set while in electrical or physical mode.
+
+\begin{tabular}{|l|l|} \hline
+\cb Current Layer & Current layer color\\ \hline
+\cb Background & Drawing window background color\\ \hline
+\cb Coarse Grid & Color used for coarse grid lines\\ \hline
+\cb Fine Grid & Color used for fine grid lines\\ \hline
+\cb Ghosting & Color used for ``sprites'' attached to
+  the mouse pointer\\ \hline
+\cb Highlighting & Color used for highlighting, such as
+  for DRC errors\\ \hline
+\cb Selection Color 1 & One of two alternating colors used
+  for selections\\ \hline
+\cb Selection Color 2 & One of two alternating colors used
+  for selections\\ \hline
+\cb Terminals & Electrical terminals\\ \hline
+\cb Instance Boundary & Boundary color of unexpanded
+  instance\\ \hline
+\cb Instance Name Text & Name text color in unexpanded
+  instance\\ \hline
+\cb Instance Size Text & Size text color in unexpanded
+  instance, physical mode only\\ \hline
+\end{tabular}
+\vspace*{3mm}
+
+\item{\cb Prompt Line}\\
+These are the colors used in the prompt line and status line.
+
+\begin{tabular}{|l|l|} \hline
+\cb Text & Normal prompt line text\\ \hline
+\cb Prompt Text & Text color used for prompting\\ \hline
+\cb Highlight Text & Text color used for hypertext
+  references\\ \hline
+\cb Cursor & Text cursor color\\ \hline
+\cb Background & Normal background color\\ \hline
+\cb Edit Background & Background color while editing\\ \hline
+\end{tabular}
+
+\item{\cb Plot Marks}\\
+These are the colors of the plot point marks used in electrical mode
+to indicate a node or current being plotted by {\WRspice}.  The
+default colors are the same as the trace colors used by {\WRspice}
+for plotting.
+
+The entries are:  {\cb Plot Mark 1} to {\cb Plot Mark 18}.
+\end{description}
+
+The rest of the panel consists of the stock GTK-2 color selection
+widgets.  There are six up/down buttons which can adjust the red,
+green, and blue values, or the hue, saturation, and intensity values. 
+To the left is a color wheel, with a triangle inside.  One can drag
+the marked triangle vertex around the outer ring to set the color, and
+drag the small circle in the triangle to set the lightness.  All
+widgets automatically track the current color setting. 
+
+There is also a palette containing several colors, and a rectangular
+color display area for the current and previous colors.  Colors can be
+dragged between the palette locations and the current color location. 
+The eye-dropper button allows setting the current color from a
+clicked-on screen object.
+
+The {\cb Colors} button brings up a listing of color names and RGB
+values.  Clicking on a list entry will load that color into the color
+selector.
+
+The {\cb Apply} button must be pressed to actually transfer the new
+color to {\Xic}.  For layer colors, drag/drop of a color to the
+entries in the layer table or layer palette can be done as well.  When
+changing layer colors, or screen attribute colors such as grid colors,
+the main window and similar (same display mode) sub-windows will be
+redrawn.  The {\et NoPhysRedraw} variable, if set, will suppress
+automatic redraw of physical-mode windows.
+
+When the {\cb Print Control Panel} panel is visible, i.e., in hard
+copy mode, the colors set will be used in that mode only, and in the
+plots if the printer driver supports it.
 
 !!SEEALSO
 layertab
@@ -1358,6 +2090,206 @@ Fill Pattern Editor
     Pressing the <b>Dismiss</b> button in the <b>Fill Pattern
     Editor</b> will retire the editor.  This has the same effect as
     pressing the <b>Set Fill</b> menu button a second time.
+!!LATEX xic:fill sttrimenu.tex
+The {\cb Set Fill} button in the {\cb Attributes Menu} brings up the
+{\cb Fill Pattern Editor} panel.  The panel can also be displayed by
+clicking on a layer in the layer table or layer palette with button 3
+while holding down the {\kb Shift} key.  The current layer will become
+the clicked-on layer, and its fill pattern will be loaded into the
+editor.
+
+This panel initially displays an array of sample fill patterns.  By
+pressing the {\cb Pixel Editor} button, the pop-up will instead
+display a large pixel editor window, from which stipple patterns can
+be created and modified.  The pixel editor is pre-loaded with the
+pattern of the current layer when the pop-up was invoked.  When
+viewing the pixel editor, the {\cb Show Stores} button reverts the
+display to the sample patterns.
+
+Patterns are moved between the various boxes and layers in the layer
+table by drag/drop.  Press and hold the left mouse button while the
+pointer is over the box or layer entry that is the source of a
+pattern, and release the button after moving the mouse pointer over
+the destination box or layer table entry.
+
+There are also {\cb Load} and {\cb Apply} buttons that will load the
+pattern of the current layer into the editor, or set the pattern of
+the current layer from the {\cb Sample}, respectively.
+
+The {\cb Sample} box, which is visible in both display modes, is the
+entry and exit point for the pixel editor.  Dropping a pattern into
+the {\cb Sample} area will load the pattern into the editor.  The
+current pattern in the {\cb Sample} area, which matches that currently
+in the editor, can be dragged and dropped onto a layer, or into one of
+the storage areas.  When the {\cb Pixel Editor} window is visible, it
+is also a drop receiver, equivalent to the {\cb Sample} area.
+
+When a pattern is applied to a layer by any means, the main window and
+any sub-windows showing the same display mode will be redrawn.  The
+automatic redraw can be suppressed in physical mode by setting the
+{\cb NoPhysRedraw} variable.
+
+When displaying the pattern array, there are 18 pattern windows
+visible.  The first two of these are immutable, containing empty and
+solid fills.  The remaining 16 are registers, preset with default
+patterns.  These patterns can be changed by dropping a new pattern
+into the display box.
+
+There are 64 pattern registers available, in four pages.  When the
+patterns are visible, the {\cb Page} spin button can be used to cycle
+between the four sets of registers.
+
+To summarize, the following transfers are possible with drag/drop:
+\begin{itemize}
+\item{To the {\cb Sample} box from any pattern register box, or the
+empty and solid boxes, or from any layer in the layer table or layer
+palette.  Drag patterns into the {\cb Sample} area to allow editing
+with the pixel editor.  The {\cb Pixel Editor} window is also a drop
+receiver equivalent to the {\cb Sample} area.}
+
+\item{From the {\cb Sample} box to any pattern register box, or to
+any layer in the layer table or layer palette.  Drag patterns into
+layers to set the pattern used for that layer.  A pattern dragged
+into a pattern register box will replace the existing pattern with
+the one from the source.}
+
+\item{From any pattern register box, or the solid and empty fill
+boxes, to any layer in the layer table or layer palette, or to the
+{\cb Sample} box.}
+
+\item{To any pattern register box, from any layer from the layer table
+or layer palette, or the {\cb Sample} box.  Note that it is not
+possible to drag/drop patterns between pattern register boxes
+directly, one can drag from a register to the {\cb Sample} box, then
+from the {\cb Sample} box to another register box.}
+
+\item{From any layer in the layer table or layer palette to any of
+the default pattern boxes except solid and empty, or to the
+{\cb Sample} box.}
+
+\item{To any layer in the layer table or layer palette, from any of
+the pattern register boxes, or the solid and empty boxes, or the {\cb
+Sample} box.}
+\end{itemize}
+
+If the {\cb Print Control} panel (induced by the {\cb Print} button in
+the {\cb File Menu}) is visible, when a new fill pattern is applied to
+a layer, the new fill pattern will be used for rendering the plot, if
+the plot driver supports definable fill patterns.
+
+Note that the new pattern set for a layer will not be visible in the
+drawing windows until they are next redrawn (press {\kb Ctrl-r}, or
+click with button 2 near the center of the window to redraw the
+window).
+
+The color used to display patterns in the pop-up is the color of the
+current layer.  Initiating a drag from a layer in the layer table or
+layer palette will change the current layer (and hence the color) to
+that layer.
+
+The 64 ``default'' fill patterns can be saved in an {\vt xic\_stipples}
+file in the current directory with the {\cb Dump Defs} button, which
+is visible when the pattern array is being displayed.  If this file is
+found in the library search path, it will be used to initialize the
+pattern registers when {\Xic} starts.  A system default {\vt
+xic\_stipples} file is provided in the startup directory.
+
+When a pattern (including empty) is dropped on a layer, the {\cb
+Outline}, {\cb Fat}, and {\cb Cut} buttons at the bottom of the pop-up
+set additional attributes relating to the pattern display.
+
+When a pattern from a layer is dropped into the {\cb Sample} box, the
+buttons will change state to that saved in the layer.  The pattern
+registers, however, do not have attributes, so that the buttons remain
+unchanged when a pattern is dragged from a register box, except to
+gray the {\cb Fat} button if the new pattern is not empty.
+
+For empty fill, there are three available outline styles:
+\begin{enumerate}
+\item{A thin solid line boundary.}
+\item{A thin dashed line boundary.}
+\item{A thick solid line boundary for Manhattan boxes and polygons,
+and a thin solid line boundary for other objects.}
+\end{enumerate}
+
+If the {\cb Outline} button is not in the pressed state, the thin
+solid line boundary (style 1) will be used.  If {\cb Outline} is in
+the pressed state, and {\cb Fat} is not in the pressed state, a thin
+dashed outline (style 2) will be used.  If {\cb Fat} is pressed, thick
+segments (style 3) will be used, but only for edges of boxes and
+Manhattan polygons.  A thin solid outline will be used elsewhere.
+
+If the {\cb Cut} button is in the pressed state, boxes are rendered
+with thin lines along the diagonals, forming an X over the box. 
+Polygons (even four-sided rectangular ones) and wires are drawn
+normally.  The ``cut'' attribute is often used to signify vias.
+
+If {\cb Cut} and {\cb Outline} are pressed with empty fill, but {\cb
+Fat} is not pressed, the diagonal ``cut'' lines will be drawn as
+dashed, as for the outline.
+
+When the pattern is not empty, the options are slightly different.  If
+{\cb Outline} is not pressed, objects will not be outlined.  If {\cb
+Outline} is pressed and {\cb Fat} is not pressed, the patterned areas
+will have a thin solid outline.  When {\cb Fat} is pressed, boxes and
+Manhattan polygons will be shown with thick outlines.  These are the
+only boundaries available with stippled fill.  The {\cb Cut} button
+will produce diagonals over boxes, as in the empty-fill case.  If the
+pattern is solid, none of the attributes will be used, and the buttons
+are grayed.
+
+When a pattern is dropped on a layer, the state of these buttons set
+the attributes for the layer.  This applies whether the pattern source
+is the {\cb Sample} box, or one of the pattern register boxes.  In
+particular, to set up a desired empty-fill presentation for a layer,
+one would set the buttons, then drag the ``pattern'' from the
+empty-fill box to the layer to set.
+
+In the pixel editor, the {\cb NX x NY} spin buttons control the size
+of the map.  Each coordinate can range from 2 to 32.  The pixel editor
+window changes to accommodate the different aspect ratios, keeping the
+actual pixels square.
+
+The three buttons just below operate on the pixel map.
+\begin{description}
+\item{\cb Rot90}\\
+Pressing this button will rotate the pixel map by 90 degrees.  Note that
+this swaps the Nx and Ny values.
+
+\item{\cb X}\\
+This will flip the map right-to-left (mirroring about the Y axis).
+
+\item{\cb Y}\\
+This will flip the map top-to-bottom (mirroring about the X axis).
+\end{description}
+
+The basic operation in the pixel editor is to toggle the state of a
+pixel by clicking on it with button 1, but more complex possibilities
+exist.  A hold and drag will operate on all of the pixels enclosed in
+or intersecting the defined rectangle, which is ghost-drawn.  The
+operations are indicated in the table below.
+
+\begin{tabular}{|l|l|l|l|l|} \hline
+\bf Button & \bf Figure & & \bf Shift & \bf Ctrl\\ \hline
+1 & solid box & toggle & set & unset\\ \hline
+2 & open box & toggle & set & unset\\ \hline
+3 & line & toggle & set & unset\\ \hline
+\end{tabular}
+
+If {\kb Shift} or {\kb Ctrl} is held down {\it before} button 1 is
+pressed, the action will be as for button 2.  The three columns from
+the right indicate the state of the modifier keys on button release
+which produces the stated effect on the pixels.  The {\kb Ctrl} press
+overrides {\kb Shift} if both are pressed.
+
+Pressing the arrow keys while the pop-up has the keyboard focus
+permutes the pixel editor bitmap in the opposite direction of the
+arrow.  This is valuable for allowing layers with similar patterns to
+show through one another.
+
+Pressing the {\cb Dismiss} button in the {\cb Fill Pattern Editor}
+will retire the editor.  This has the same effect as pressing the {\cb
+Set Fill} menu button a second time.
 
 !!SEEALSO
 techfile
@@ -1401,6 +2333,29 @@ Layer Editor
     <p>
     Layers can also be added, removed, and renamed with the <a
     href="!ltab"><b>!ltab</b></a> command.
+!!LATEX xic:edlyr attrmenu.tex
+The {\cb Edit Layers} button in the {\cb Attributes Menu} brings up
+the {\cb Layer Editor} pop-up, which contains buttons for adding and
+removing layers from the layer table, plus a drop-down menu of removed
+layers which can be added back.  When the pop-up first appears, the
+text area will be blank, or will contain the name of the last removed
+layer.  The text area can be edited to provide the name of a new layer
+to add, or the name of a removed layer can be selected in the
+drop-down menu.  After pressing the {\cb Add Layer} button and
+clicking in the layer table, the new layer will be added at the
+location of the layer entry clicked on.  One can also click beyond the
+end of the listed layers to put the new layer above the existing
+layers.  With the {\cb Remove Layer} button pressed, layers clicked on
+will be removed from the layer table and added to the list in the
+drop-down menu.
+ 
+When layers are removed, the geometry on the layer is not affected,
+however it will be invisible on-screen (after the first redraw) and to
+all commands, and the geometry will not be included if the cell is
+updated to disk.
+    
+Layers can also be added, removed, and renamed with the {\cb !ltab}
+command.
 
 !!SEEALSO
 layername
@@ -1571,6 +2526,141 @@ Tech Parameter Editor
     <b>Edit</b> and <b>Delete</b> buttons in the editor's <b>Edit</b>
     menu.  The <b>Edit</b> menu also contains an <b>Undo</b> button,
     allowing the last operation to be undone.
+!!LATEX xic:lpedt attrmenu.tex
+The {\cb Edit Tech Params} button in the {\cb Attributes Menu} brings
+up the {\cb Tech Parameter Editor}.  The editor can also be displayed
+by clicking on a layer in the layer table or layer palette with button
+3 while holding down the {\kb Shift} and {\kb Ctrl} keys.  The current
+layer will become the clicked-on layer, and it will become the target
+layer for the editor.
+
+From the editor, many of the technology file keywords, mostly
+associated with layers, can have their specifications added, deleted,
+or edited.  Keywords that are not adjustable in the editor have an
+alternate means of control, such as the separate panels for setting
+layer colors and fill patterns.  After modification, the {\cb Save
+Tech} button in the {\cb Attributes Menu} can be used to generate a
+new technology file that incorporates the changes.
+
+The present editor applies to all keywords.  In earlier {\Xic}
+releases, there were separate keyword editors in the {\cb Extract} and
+{\cb Convert} menus, as well as an editor in the {\cb Attributes
+Menu}.  The different keyword classes, previously available in
+separate editors, are now available by selecting one of the four tabs
+at the top of the editor window.  Each of these keywords is normally
+applied to a layer in the technology file.
+
+The editor is configured for the class of keywords selected, meaning
+that the pull-down menu contains entries for those keywords, and the
+listing details those keywords only.  The classes, and keywords that
+can be manipulated, are listed below.
+
+\begin{description}
+\item{\cb Layer}\\
+These are miscellaneous layer attributes, as described in \ref{misclattr}.
+\begin{quote} \vt
+LppName\\
+Description\\
+Symbolic\\
+Invisible\\
+NoSelect\\
+Invalid\\
+NoMerge\\
+CrossThick\\
+WireActive\\
+NoInstView\\
+WireWidth
+\end{quote}
+
+\item{\cb Extract}\\
+These are parameters that are used by the extraction system, but have
+relevance elsewhere, such as in the cross section viewer.  These
+keywords are described in \ref{exkwords}.
+\begin{quote} \vt
+Conductor\\
+Routing\\
+GroundPlane\\
+GroundPlaneClear\\
+Contact\\
+Via\\
+Dielectric\\
+DarkField
+\end{quote}
+
+\item{\cb Physical}\\
+These generally set a physical property of the layer material,
+primarily in support of the extraction system.  These keywords are
+described in \ref{phkwords}.
+\begin{quote} \vt
+Planarize\\
+Thickness\\
+Rho\\
+Sigma\\
+Rsh\\
+EpsRel\\
+Capacitance\\
+Lambda\\
+Tline\\
+Antenna
+\end{quote}
+
+\item{\cb Convert}\\
+These are mostly for establishing the mapping between {\Xic} layers
+and GDSII layer and datatype numbers, as described in \ref{convlattr}.
+\begin{quote} \vt
+StreamIn\\
+StreamOut\\
+NoDrcDatatype
+\end{quote}
+\end{description}
+
+In addition to the per-layer keywords, there is a {\cb Global
+Attributes} menu that allows a few miscellaneous non-layer parameters
+to be manipulated.  These were defined as technology file parameters
+in {\Xic} releases earlier than 4.1.7.  In present releases, these are
+simply variables.  The editor provides a ``front end'' for setting the
+variables.
+
+\begin{description}
+\item{\cb Global Attributes}\\
+\begin{quote} \vt
+BoxLineStyle\\
+LayerReorderMode\\
+NoPlanarize\\
+AntennaTotal\\
+SubstrateEps\\
+SubstrateThickness
+\end{quote}
+\end{description}
+
+The editor is similar to the {\cb Design Rule Editor} found in the
+{\cb DRC Menu}.  When the editor first appears, the keyword
+specifications for the current layer in the selected class are listed. 
+The specifications appear as they would in the technology file. 
+Changing the current layer will update the listing to the parameters
+for the new current layer.  Selecting a different keyword class will
+update the display to show the keywords in the selected class.  The
+user can add new keyword lines or modify existing lines as desired.
+
+To add a keyword specification, one selects the desired keyword in the
+keywords menu of the editor.  The available keywords are listed in the
+drop-down menu, and the set available depends on the class tab
+currently selected.  After clicking on a keyword in the menu, the user
+will be asked to enter the associated text in the prompt line, if the
+keyword requires it.  The keyword will be applied internally and
+appear in the listing if there are no errors.  A status message will
+appear, indicating success, or providing an error message.
+
+When adding a keyword, redundant and inconsistent keywords that are
+already in the list, such as a previous instance of the keyword, are
+removed.  In other cases, a pop-up message will appear if inconsistent
+keywords are found.
+
+Clicking on a line in the listing will select the line.  The text for
+the selected line can be edited, or the line deleted, with the {\cb
+Edit} and {\cb Delete} buttons in the editor's {\cb Edit} menu.  The
+{\cb Edit} menu also contains an {\cb Undo} button, allowing the last
+operation to be undone.
 
 !!SEEALSO
 xic:attrmenu
@@ -1637,6 +2727,35 @@ Main Window Sub-Menu
       <td><tt>grid</tt></td> <td><b>Grid Setup</b></td>
       <td>Set grid parameters</td></tr>
     </table>
+!!LATEX xic:attrsubmenu attrmenu.tex
+The {\cb Main Window} button in the {\cb Attributes Menu} brings up a
+sub-menu which is identical to the {\cb Attributes} menu in the
+sub-windows produced by the {\cb Viewport} button in the {\cb View
+Menu}.  The menu contains attribute settings which apply to the main
+window.  When a new sub-window appears, its attributes are inherited
+from the main window, but can be reset for the sub-window through its
+{\cb Attributes} menu.
+
+\begin{tabular}{|l|l|l|p{2.25in}|} \hline
+\multicolumn{4}{|c|}{\kb Main Window Sub-Menu}\\ \hline
+\kb Label & \kb Name & \kb Pop-up & \kb Function\\ \hline\hline
+\et Freeze Display & \vt freez & none & Suppress redisplay\\ \hline
+\et Show Context in Push & \vt cntxt & none & Show context in subedit\\ \hline
+\et Show Phys Properties & \vt props & none & Show physical properties\\ \hline
+\et Show Labels & \vt labls & none & Show labels\\ \hline
+\et Label True Orient & \vt larot & none & Show labels transformed\\ \hline
+\et Show Cell Names & \vt cnams & none & Show cell names\\ \hline
+\et Cell Name true Orient & \vt cnrot & none & Show cell names transformed\\
+  \hline
+\et Don't Show Unexpanded & \vt nouxp & none & Don't show unexpanded
+  subcells\\ \hline
+\et Objects Shown & \vt objs & none & Object display control\\ \hline
+\et Subthreshold Boxes & \vt tinyb & none & Show outline of subthreshold
+  cells\\ \hline
+\et No Top Symbolic & \vt nosym & none & Electrical only, don't show top
+  cell as symbolic\\ \hline
+\et Set Grid & \vt grid & {\cb Grid Setup} & Set grid parameters\\ \hline
+\end{tabular}
 
 !!SEEALSO
 xic:attrmenu
@@ -1691,6 +2810,39 @@ Freeze Display
     this region will be displayed.  The region shown in the main
     window is shown with a dotted yellow outline in the frozen
     sub-window.
+!!LATEX xic:freez attrmenu.tex
+When the {\cb Freeze Display} button in the {\cb Main Window} sub-menu
+of the {\cb Attributes Menu} or the sub-window {\cb Attributes} menu is
+active, no cell structure is drawn in the window, only the grid and
+the cell bounding box.  This is for use when working on a large,
+complex design when it is not necessary to see the structure and it is
+inconvenient to wait for the display.  When active, ``FROZEN'' appears
+in the upper left corner of the window.
+
+In a frozen window, certain other highlighting features may appear. 
+In particular rulers and the viewport location indicators as used by
+the {\cb Show Location} function will be displayed.  Also, the
+outlines of selected objects will appear in these windows.
+    
+Frozen sub-windows have an additional feature:  frozen sub-windows
+display the viewport of the main window, the reverse of the {\cb Show
+Location} function for sub-windows (which displays sub-window viewports
+in the main window).
+
+This allows a useful trick for viewing huge cells.  Suppose that one
+has a large design which takes a long time to render, and one wishes
+to examine a small part of this design (the approximate coordinates
+are known).  One can employ the following procedure.  Freeze the main
+window and read in the design.  Bring up a sub-window by clicking twice
+outside of the cell boundary, so that the sub-window is empty.  Freeze
+the sub-window, then press the {\kb Home} key with the cursor in the
+sub-window to center and fully view the top cell boundary.  Use the
+grid and/or rulers to determine the region of interest.  Drag with
+button 3 to define a rectangle in the sub-window surrounding the region
+of interest, then click with button 3 in the center of the main
+window.  Un-freeze the main window, and this region will be displayed. 
+The region shown in the main window is shown with a dotted yellow
+outline in the frozen sub-window.
 
 !!SEEALSO
 xic:attrmenu
@@ -1714,6 +2866,13 @@ Show Context in Push
     href="xic:cellmenu"><b>Cell Menu</b></a> is active.  The context
     is the surrounding geometry in cells other than the instance of
     the cell that was "pushed" into.
+!!LATEX xic:cntxt attrmenu.tex
+When the {\cb Show Context in Push} button in the {\cb Main Window}
+sub-menu of the {\cb Attributes Menu} or the sub-window {\cb
+Attributes} menu is active, the context is displayed in the window
+when the {\cb Push} command in the {\cb Cell Menu} is active.  The
+context is the surrounding geometry in cells other than the instance
+of the cell that was ``pushed'' into. 
 
 !!SEEALSO
 xic:attrmenu
@@ -1766,6 +2925,35 @@ Show Phys Properties
     equivalently the <a
     href="EraseBehindProps"><b>EraseBehindProps</b></a> variable can
     be set to erase around the property strings, enhancing visibility.
+!!LATEX xic:props attrmenu.tex
+The {\cb Show Phys Properties} button in the {\cb Main Window}
+sub-menu of the {\cb Attributes Menu} or the sub-window {\cb
+Attributes} menu enables the display of object properties on-screen
+while the window is in physical mode.  The property text is placed
+near the leftmost vertex with largest y value of a polygon, the
+leftmost end of a wire, or in the upper left corner of the object's
+bounding box.  Properties of the cell itself are not displayed.
+
+Properties can be assigned with the {\cb Properties} command in the
+{\cb Edit Menu}.
+
+Outside of any command, clicking on a visible physical property string
+allows the property to be edited.  The property string must be close
+to or overlap the object.  If the string is too far away from the
+object (if there are a large number of properties, or the object size
+is small) it can not be selected in this way.  The user is first
+prompted for new text, then for a new property number.  The clicked-on
+property will be replaced with the new values.  If {\kb Ctrl-d} is
+pressed at any time while responding to the prompts, the property will
+be deleted, with no replacement.
+
+Properties with property numbers 7000--7104 are not displayed.  These
+numbers are reserved for internal use and should not be assigned.
+
+The {\cb Erase behind physical properties text} check box in the {\cb
+Window Attributes} panel, or equivalently the {\et EraseBehindProps}
+variable can be set to erase around the property strings, enhancing
+visibility.
 
 !!SEEALSO
 xic:attrmenu
@@ -1791,6 +2979,15 @@ Show Labels
     orientation by default, however if the <a
     href="xic:larot"><b>Label True Orient</b></a> button is active,
     labels will be shown with all transformations applied.
+!!LATEX xic:labls attrmenu.tex
+When the {\cb Show Labels} button in the {\cb Main Window} sub-menu of
+the {\cb Attributes Menu} or the sub-window {\cb Attributes} menu is
+active, labels will be displayed in the window, otherwise label
+rendering is suppressed.  It is unlikely that it would be necessary to
+turn off the display of labels, unless a layout has so many labels
+that important features are obscured.  Labels are shown in legible
+orientation by default, however if the {\cb Label True Orient} button
+is active, labels will be shown with all transformations applied.
 
 !!SEEALSO
 xic:attrmenu
@@ -1814,6 +3011,14 @@ Label True Orient
     active, labels will be shown in true orientation, i.e., all
     transformations are applied to the text before display.  If not
     active, labels will always be shown in "legible" orientation.
+!!LATEX xic:larot attrmenu.tex
+The {\cb Label True Orient} button in the {\cb Main Window} sub-menu
+of the {\cb Attributes Menu} or the sub-window {\cb Attributes} menu is
+sensitive only when labels are being displayed (the {\cb Show Labels}
+button is active).  When active, labels will be shown in true
+orientation, i.e., all transformations are applied to the text before
+display.  If not active, labels will always be shown in ``legible''
+orientation.
 
 !!SEEALSO
 xic:attrmenu
@@ -1837,6 +3042,14 @@ Show Cell Names
     legible orientation, but if the <a href="xic:cnrot"><b>Cell Name
     True Orient</b></a> button is set, the text will be transformed in
     the same way as the cell.
+!!LATEX xic:cname attrmenu.tex
+When the {\cb Show Cell Names} button in the {\cb Main Window}
+sub-menu of the {\cb Attributes Menu} or the sub-window {\cb
+Attributes} menu is active, cell names and other information are
+printed within the bounding box outline of unexpanded subcells.  The
+text is shown in a legible orientation, but if the {\cb Cell Name True
+Orient} button is set, the text will be transformed in the same way as
+the cell.
 
 !!SEEALSO
 xic:attrmenu
@@ -1862,6 +3075,15 @@ Cell Name True Orient
     "legible" orientation.  It is sometimes convenient to invoke this
     option, as one can see at a glance which subcells are rotated,
     mirrored, etc.
+!!LATEX xic:cnrot attrmenu.tex
+The {\cb Cell Name True Orient} button in the {\cb Main Window}
+sub-menu of the {\cb Attributes Menu} or the sub-window {\cb
+Attributes} menu is sensitive when cell names are being displayed in
+unexpanded instances (the {\cb Show Cell Names} button is active). 
+When set, the name text is transformed in the same way as the subcell. 
+When not set, the name text is always shown in a ``legible''
+orientation.  It is sometimes convenient to invoke this option, as one
+can see at a glance which subcells are rotated, mirrored, etc.
 
 !!SEEALSO
 xic:attrmenu
@@ -1884,6 +3106,13 @@ Don't Show Unexpanded
     href="xic:vport">sub-window</a> <b>Attributes</b> menu is active,
     unexpanded subcells will not be displayed at all, i.e., they will
     be invisible.
+!!LATEX xic:nouxp attrmenu.tex
+Normally, unexpanded subcells are shown as a bounding box, containing
+a cell name label and perhaps other text.  When the {\cb Don't Show
+Unexpanded} button in the {\cb Main Window} sub-menu of the {\cb
+Attributes Menu} or the sub-window {\cb Attributes} menu is active,
+unexpanded subcells will not be displayed at all, i.e., they will be
+invisible.
 
 !!SEEALSO
 xic:attrmenu
@@ -1911,6 +3140,17 @@ Objects Shown
     <p>
     Display of labels and instances is controlled by other buttons in
     the same menu.
+!!LATEX xic:objs attrmenu.tex
+This button in the {\cb Main Window} sub-menu of the {\cb Attributes
+Menu} and the {\cb Attributes} menu of subwindows brings up a sub-menu
+containing three checkable entries:  {\cb Boxes}, {\cb Polys}, and
+{\cb Wires}.  All three entries are checked by default.  If unchecked,
+objects of that type will not be shown in the display in the
+corresponding window.  The window will have to be redrawn to see the
+effect, the redraw is not automatic.
+ 
+Display of labels and instances is controlled by other buttons in the
+same menu.
 
 !!SEEALSO
 xic:attrmenu
@@ -1939,6 +3179,17 @@ Subthreshold Boxes
     href="xic:attr"><b>Window Attributes</b></a> panel, or
     equivalently by setting the <a
     href="CellThreshold"><b>CellThreshold</b></a> variable.
+!!LATEX xic:tinyb attrmenu.tex
+When the {\cb Subthreshold Boxes} button in the {\cb Main Window}
+sub-menu of the {\cb Attributes Menu} or the sub-window {\cb
+Attributes} menu is active, subcells with a displayed size smaller
+than a threshold will be shown in unexpanded form, as an unfilled box. 
+Otherwise, the cell will not be shown at all.
+
+The threshold pixel size can be adjusted with the {\cb Subcell
+visibility threshold (pixels)} entry area in the {\cb Main Window
+Attributes} panel, or equivalently by setting the {\et CellThreshold}
+variable.
 
 !!SEEALSO
 xic:attrmenu
@@ -1977,6 +3228,24 @@ No Top Symbolic
     All editing capability is available, so it is possible to edit the
     schematic and symbolic views of the same cell simultaneously, in
     different windows.
+!!LATEX xic:nosym attrmenu.tex
+This button will appear in the {\cb Main Window} sub-menu of the {\cb
+Attributes Menu} or the sub-window {\cb Attributes} menu only when the
+window is displaying in electrical mode.  Thus, it never appears in
+{\XicII} or {\Xiv} feature sets.
+
+When set, the top-level cell will be displayed as a schematic, whether
+or not the top-cell has an active symbolic representation.
+
+Unlike the {\cb symbl} button in the electrical side menu, this does
+not change the internal state of the cell (thus triggering the
+``modified'' flag), and applies only to the window where set.  It is
+available in electrical sub-windows in physical mode, when the
+electrical side menu is hidden.
+
+All editing capability is available, so it is possible to edit the
+schematic and symbolic views of the same cell simultaneously, in
+different windows.
 
 !!SEEALSO
 xic:attrmenu
@@ -2360,6 +3629,307 @@ Grid Setup
     take effect immediately.  All other controls require an
     <b>Apply</b> button press to assert the change, and changes will
     <b>not</b> be saved unless <b>Apply</b> is pressed.
+!!LATEX xic:grid attrmenu.tex
+The {\cb Set Grid} button in the {\cb Main Window} sub-menu of the
+{\cb Attributes Menu} or the sub-window {\cb Attributes} menu brings
+up the {\cb Grid Setup} panel.  Pressing {\kb Ctrl-g} when a drawing
+window has keyboard focus will also produce this panel.  The panel
+provides control of the grid display in the associated drawing window. 
+Separate grid styles are available for electrical and physical mode,
+and in the main drawing window when the {\cb Print Control Panel} is
+visible.
+
+The panel is divided into two pages:  {\cb Snapping} and {\cb Style}. 
+The {\cb Snapping} page is shown when the panel first appears.  It
+provides control of the grid spacing and snapping, plus is the main
+control point for the edge snapping feature to be described.  The {\cb
+Style} page provides control over the visual presentation of the grid.
+
+In most cases, the grid is not actually changed unless/until the {\cb
+Apply} button, at the bottom-left of the panel, is pressed.  This is
+not true of the {\cb Edge Snapping} group, or the {\cb All Windows}
+controls in the {\cb Style} page, which work immediately, but do not
+force a screen redraw.
+
+The following controls appear in the {\cb Snapping} page.
+
+At the top of the panel are entries which control the grid spacing and
+snapping.  There is a coarse grid, and a fine grid, that may be
+displayed in drawing windows and hard-copy output.  The coarse grid is
+an integer multiple of fine grid increments, the multiplier can be set
+from the {\cb Style} page.  If a grid would be too fine, it is not
+shown.
+
+The snap grid represents points where the cursor is allowed to reside. 
+These are related to the fine grid interval, there can be an integer
+number of snap points per fine grid interval, or an integer number of
+fine grid lines between snap points.
+
+\begin{description}
+\index{MfgGrid keyword}
+\index{DatabaseResolution variable}
+\item{\cb Snap Spacing}\\
+The {\cb Snap Spacing} entry area will set the spacing, in microns,
+between snap points.  The mouse pointer is constrained to fall only on
+snap points when geometry is being created.  If the {\et MfgGrid}
+parameter has been set in the technology file, the {\cb Snap Spacing}
+value is constrained to be a multiple of this value.  The {\et
+MfgGrid} value is printed below the text entry area if set, or the
+word ``{\vt unset}'' is printed if not.
+
+The {\cb Snap Spacing} entry displays the actual snap spacing in
+microns.  If a {\vt MfgGrid} has been defined, and one enters a snap
+spacing that is not an integer multiple of this value, the actual snap
+spacing will ``snap'' to the closest multiple before use.
+
+When assigning a {\vt MfgGrid}, one must consider the internal
+resolution, and the {\vt MfgGrid} should be representable in the
+resolution in use.  For example, the default resolution is 1000 per
+micron, or 1nm.  If one attempts to use a {\vt MfgGrid} of 2.5nm,
+round-off error will occur.  To support this {\vt MfgGrid}, a
+resolution of 2000 would be required.  The resolution is set with the
+{\et DatabaseResolution} variable.
+
+When the panel first appears, the initial keyboard focus is to the
+{\cb Snap Spacing} entry.  Thus, text typed will go to this entry. 
+Pressing {\kb Enter} when a text entry has the focus calls the {\cb
+Apply} callback and sets focus to the {\cb Dismiss} button, where
+another {\cb Enter} press will dismiss the panel.  So, to quickly
+change the grid spacing from the keyboard only, one can type
+
+\begin{quote}
+{\kb Ctrl-g} (adjust number) {\kb Enter Enter}
+\end{quote}
+
+\item{\cb SnapPerGrid} or {\cb GridPerSnap}\\
+To the right is another text entry, which accepts an integer in the
+range 1--10.  The entry label indicates {\cb SnapPerGrid} or {\cb
+GridPerSnap}, depending on whether the {\cb GridPerSnap} check box,
+below the text entry, is checked.  This controls the placement of the
+fine grid lines in the window.
+
+If the label indicates {\cb SnapPerGrid}, then the fine grid is spaced
+at the given integer times the {\cb Snap Spacing} value.  For example,
+if the integer is 3, then a fine grid line (or dot) will be drawn at
+every third snap point.  there will be three snap points per fine grid
+interval.
+
+If the label indicates {\cb GridPerSnap}, then the fine grid is spaced
+such that the integer will give the number of fine grid lines per snap
+interval.  For example, it the integer is 3, fine grid lines (or dots)
+will appear at the snap points, as well as the 1/3 and 2/3
+proportional distances between snap points.
+
+Note that when the integer is 1, there is no difference between the
+two cases.
+
+In electrical mode, the snap interval should be a multiple of one
+micron, to avoid connectivity errors due to numerical roundoff. 
+However, this was not enforced in older releases of {\Xic}. 
+Presently, sub-micron snapping on tenth-micron intervals is accepted,
+but with a warning issued.  This allows older files to be
+``repaired'', i.e., objects moved to a one micron grid.  This is
+recommended for files that require it.  A sub-micron snapping interval
+should not be used otherwise, and will not be saved in the technology
+file produced with the {\cb Save Tech} button in the {\cb Attributes
+Menu}.
+\end{description}
+
+The {\cb Edge Snapping} group appears below the grid snapping
+controls.  This is different from grid snapping.  The edge snapping
+will snap the cursor to the edge of a nearby object, which may or may
+not be off grid (``off grid'' means that the coordinate is not on a
+multiple of the snap grid interval).  The edge snapping is used in,
+and the controls apply to, physical mode only.  In electrical mode,
+the cursor will always snap to and indicate when near a connection
+point.
+
+When snapped in this manner to an edge, a small dotted box transiently
+appears around the mouse pointer.  If snapped to vertex of an object,
+the box will have a double outline.
+
+Snapping will apply to visible objects at any level of the cell
+hierarchy.  The edges of unexpanded subcells will also be snapped to.
+
+The group consists of an {\cb Edge Snapping} menu, and four check
+boxes, as described below.  These may be set independently in the main
+window and sub-windows.  When a new sub-window appears, it will
+inherit the edge snapping settings from the main window, but these can
+then be changed in the sub-window if desired.
+
+Unlike other controls in the {\cb Grid Setup} panel, these controls
+operate immediately.  They do not require pressing the {\cb Apply}
+button.
+
+\begin{description}
+\item{\cb Edge Snapping Menu}\\
+The menu has three choices, to set the scope of the edge snapping
+mode.  If {\cb DISABLED} is selected, then there is no edge snapping
+in the window.  The default entry, {\cb Enabled in some commands},
+enables the edge snapping in commands where it may be useful.  These
+include the side menu commands with the following keywords:
+
+\begin{quote} \vt
+arc\\
+box\\
+break\\
+donut\\
+erase\\
+polyg\\
+round\\
+wire\\
+xor
+\end{quote}
+
+as well as the {\cb Rulers} command in the {\cb View Menu}.
+
+The third choice is {\cb Enabled always}, which provides the edge
+snapping at all times, in commands or outside of any command.
+
+\item{\cb Allow off-grid edge snapping}\\
+When this check box is checked, the cursor will snap to nearby edges,
+whether or not they are on grid.  When not checked, only snapping to
+on-grid locations is done.  This is unchecked by default.
+
+\item{\cb Include non-Manhattan edges}\\
+When checked, non-Manhattan (meaning not horizontal or vertical) edges
+will be snapped to.  The snap points are the intersection of the snap
+grid and the edge, plus the endpoints (vertices).  If not checked,
+non-Manhattan edges ar not snapped to.  This is unchecked by default.
+
+\item{\cb Include wire edges}\\
+If checked, the edges of wires are considered for edge snapping.  If
+not checked, wire edges are ignored.  This mode is enabled by default.
+
+\item{\cb Include wire path}\\
+A wire definition consists of a sequence of vertices, with an implied
+line path connecting them.  This path would appear as a line running
+along the center of a drawn wire.  When this box is checked, the wire
+path is considered for ``edge'' snapping.  By default, this box is
+unchecked, so that the wire path is not snapped to.
+\end{description}
+
+The {\cb Style} page contains controls which alter the presentation of
+the grid visually.
+
+\begin{description}
+\item{\cb Show}\\
+If the {\cb Show} button is active, the grid will be visible when
+gradations are adequately large.  Otherwise, the grid will not be
+visible in the window.
+
+\item{\cb On Top}\\
+If the {\cb On Top} button is active, the grid will be drawn last,
+after all geometry.  Otherwise, it will be drawn first, in which case
+it is more likely to be obscured by the geometry.
+
+\item{\cb Store} and {\cb Recall}\\
+The {\cb Store} and {\cb Recall} menus allow a set of grid parameters
+to be saved in an internal register, to be recalled as needed.  There
+are separate physical and electrical grid registers.  One will
+automatically save to and recall from the register associated with the
+window display mode.
+
+The grid registers save all per-window parameters that can be set from
+the {\cb Grid Setup} panel.  There are seven registers available, as
+indicated on the menu produced by the {\cb Store} button.  The {\cb
+Recall} button produces a menu with two additional entries:
+
+\begin{description}
+\item{\cb revert}\\
+Revert the {\cb Grid Setup} panel to the current window settings.
+
+\item{\cb last appl}\\
+Recall the last settings that were applied with the {\cb Apply}
+button.
+\end{description}
+
+Grid registers are saved to the technology file when a technology file
+is written, and are loaded when a technology file is read.
+
+See also the description of the {\cb !rg} and {\cb !sg} commands. 
+These can be used to save and restore the grid from registers.
+
+\item{\cb Axes} group\\
+Below the {\cb Show} button, a radio button group is provided to set
+the presentation style of the axes in physical mode.  The choices are
+{\cb No Axes}, {\cb Plain Axes}, and {\cb Mark Origin}.  The {\cb Mark
+Origin} choice is the default.  The {\cb Plain Axes} choice does away
+with the small box at the origin, showing the axes as simple lines. 
+The {\cb No Axes} choice suppresses the axes entirely.  In electrical
+mode, the axes are always suppressed.
+
+\item{\cb Coarse Mult}\\
+To the right of the radio group is an integer entry for the coarse
+multiple.  This is the number of fine grid lines or dots per coarse
+grid line or dot.  Acceptable values are 1 through 50.  When set to
+one, the coarse grid replaces the fine grid, which is shown with the
+coarse grid color.  The default value is 5.
+
+\item{\cb Line Style Editor}\\
+This group sets the line or dot style used to render the grid.  There
+are three ``radio buttons'', {\cb Solid}, {\cb Dots}, and {\cb
+Textured} that set the basic grid style.  Choosing {\cb Solid} will
+cause the grid to use continuous lines.  The {\cb Dots} option will
+use a grid consisting of a small dot or cross at each grid point. 
+When this selection is active, a {\cb Cross Size} entry area appears. 
+This can be set to values 0--6, indicating the number of pixels to
+light up around the central dot in the four compass directions.  If
+zero, only the central pixel is lit, which can be difficult to see on
+high-resolution displays.  The value 1 generally looks like a much
+brighter dot.  Larger values will appear as a small cross.
+
+If {\cb Textured} is chosen, a user-specified patterned line will be
+used, and the line style editing areas become visible.  The line style
+editor allows the user to specify the patterning of the lines used to
+form the grid.  The upper window is a sample of the current line
+style.  The lower window allows the user to set the line style by
+clicking.
+
+The line pattern starts at the left set bit (blue area) and extends to
+the right of the display.  The pattern is used to ``tile'' the line. 
+The left part of the display is shown in gray to indicate that it is
+not part of the line style mask.  Clicking in this window with button
+1 will toggle the bit.  Button 2 will clear the bit, and button 3 will
+set the bit.  Multiple bits can be set or toggled by dragging.  The
+line in the preview window will reflect changes in the pattern.
+
+The sample window is a drag source for a piece of text giving the line
+style mask in {\vt 0x}{\it hhhh} (hexadecimal) notation.  The mask is
+the integer being represented by the lower window, with set bits in
+blue.  This may be useful for creating line styles for entry
+elsewhere.
+
+\item{\cb All Windows}\\
+This control group appears only in the {\cb Grid Setup} panel for the
+main drawing window.  The two controls in the group are different from
+other controls in the panel in that they apply globally to all drawing
+windows.  They also differ from other controls in that they operate
+immediately without the need to press the {\cb Apply} button, however
+an explicit screen redraw is necessary to see the effect.
+
+The {\cb No coarse when fine invisible} check box applies in physical
+mode only.  When the check box is not checked, as one zooms out, when
+the fine grid becomes too closely spaced it won't be shown, however
+the coarse grid will be shown, unless it too is too finely spaced.  If
+the check box is checked, the coarse grid will not be shown by itself,
+it will be suppressed when the fine grid is suppressed.  This tracks
+the state (set or unset) of the {\et GridNoCoarseOnly} variable.
+
+The {\cb Visibility Threshold} entry sets the minimum number of pixels
+between grid lines or dots.  The grid will be suppressed if it would
+be smaller.  This applies to all drawing windows, both physical and
+electrical.  This tracks the setting of the {\et GridThreshold}
+variable.
+\end{description}
+
+Pressing the {\cb Apply} button will actually save the new grid
+parameters in {\Xic}, and redraw the window if something has changed. 
+Changes in the {\cb Edge Snapping} and {\cb All Windows} groups do not
+need the {\cb Apply} button, changes take effect immediately.  All
+other controls require an {\cb Apply} button press to assert the
+change, and changes will {\bf not} be saved unless {\cb Apply} is
+pressed.
 
 !!SEEALSO
 xic:attrmenu

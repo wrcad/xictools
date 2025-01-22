@@ -1,0 +1,91 @@
+% -----------------------------------------------------------------------------
+% Xic Manual
+% (C) Copyright 2025, Whiteley Research Inc., Sunnyvale CA
+% helpmenu.tex.in
+% -----------------------------------------------------------------------------
+
+% -----------------------------------------------------------------------------
+\chapter{The Help Menu: Obtain Program Documentation}
+\index{Help Menu}
+
+% xic:helpmenu 062313
+<<xic:helpmenu xiHelp.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Help} Button: Obtain Help}
+\label{helpsys}
+\index{Help button}
+\index{help mode}
+\index{help viewer}
+
+% helpsys 031413
+<<helpsys HelpSys.hlp>>
+
+\subsection{XicTools Update}
+\label{update}
+
+% update 102817
+<<update HelpSys.hlp>>
+
+\subsection{The HTML Viewer}
+\label{helpview}
+\index{help viewer!back}
+\index{help viewer!forward}
+\index{help viewer!stop}
+
+% helpview 102917
+<<helpview HelpSys.hlp>>
+
+\subsection{The Help Database}
+\index{help database}
+
+% helpdb 031413
+<<helpdb HelpSys.hlp>>
+
+\subsection{Help System Forms Processing}
+\index{help forms}
+
+% helpforms 031413
+<<helpforms HelpSys.hlp>>
+
+\subsection{Help System Initialization File}
+\label{mozyrcfile}
+
+% helpinit 031413
+<<helpinit HelpSys.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Multi-Window} Button: Set Multi-Window Help Mode}
+\index{Multi-Window Mode button}
+
+% xic:multw 062313
+<<xic:multw xiHelp.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb About} Button: Program and Legal Info}
+\index{About button}
+
+% xic:about 062008
+<<xic:about xiHelp.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Release Notes} Button: View Release Notes}
+\index{Release Notes button}
+
+% xic:notes 062008
+<<xic:notes xiHelp.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Log Files} Button: Access Log Files}
+\index{Log Files button}
+
+% xic:logs 110413
+<<xic:logs xiHelp.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Logging} Button: Set Logging and Debugging Options}
+\index{Logging button}
+
+% xic:dblog 110613
+<<xic:dblog xiHelp.hlp>>
+

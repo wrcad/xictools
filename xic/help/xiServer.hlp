@@ -615,4 +615,468 @@ Server Mode
       the directory containing the log files.  This is due to a
       technical issue in Windows.
     </dl>
+!!LATEX xic:server using.tex
+{\Xic} has the capability of operating as a daemon process, servicing
+requests for processing of design data.  This allows {\Xic} to be used
+as a back-end for automation systems designed by the user or third
+parties.
+
+To start {\Xic} in server mode, the {\vt -S} option is used, as
+\begin{quote}
+{\vt xic -S}[{\it port\/}]
+\end{quote}
+
+This causes {\Xic} to start without graphics, go to the background,
+and listen to a system port for requests.  The port number used can be
+provided on the command line immediately following the ``{\vt -S}''.  If
+not given on the command line, the ``{\vt xic/tcp}'' service is
+queried from the local host.  This will come up empty unless the
+``{\vt xic/tcp}'' service has been added to the host database, usually
+by adding a line like the following to the {\vt /etc/services} file:
+\begin{quote}
+\begin{verbatim}
+xic           6115/tcp   #Whiteley Research Inc.
+\end{verbatim}
+\end{quote}
+where the port number 6115 is replaced by the desired port number.  If
+there is no port assigned for ``{\vt xic/tcp}'', port 6115 is used,
+as this is the IANA registered port number for this service.
+
+If the {\et XTNETDEBUG} environment variable is defined when {\Xic} is
+started in server mode, a debugging mode is active.  {\Xic} will
+remain in the foreground, but will service requests while printing
+status messages to the standard output.  This may be useful for
+debugging.  If the {\vt dumpmsg} command is given, {\Xic} will print
+the text of messages received on the terminal screen, enclosed in `|'
+symbols to delineate the text.  The command {\vt nodumpmsg} can be
+given to turn off the message printing.  This can be a useful feature
+for debugging a client-side program which is communicating with
+{\Xic}.
+
+The user's application should open a socket to this port for
+communications.  Up to five channels can be open simultaneously.
+
+All transmission to the server is in ASCII string format, however
+replies are in a binary format, and are likely to be invisible or
+gibberish in a text-mode connection such as {\vt telnet}.  However,
+the {\vt telnet} program can be used to connect to the {\Xic} daemon,
+and can be used to give simple commands, such as the {\vt kill}
+command.  After starting the daemon, one types
+\begin{quote}
+{\vt telnet} {\it hostname port}
+\end{quote}
+where {\it hostname} is the name of the machine running the daemon
+(one can use ``{\vt localhost}'' if running on the local machine). 
+The {\it port} is the port number in use by the daemon.
+
+An example file {\vt xclient.cc} is available which provides a
+demonstration of how to interact with the {\Xic} daemon through a
+C/C++ program.  This file can be found in the examples directory of
+the {\Xic} installation.
+
+Communication can also be established through use of the example {\vt
+xclient.scr} script, which illustrates use of script functions to
+implement a client within {\Xic}.
+
+While the server is working on a task, the server is sensitive to
+interrupts.  An interrupt will cause the server to abort the current
+task and begin listening for new instructions.  The interrupt handling
+works about the same as in graphical mode when the user types
+{\kb Ctrl-c}, though there is no confirmation prompt --- the task is
+always aborted.  There may be a short delay before the interrupt is
+recognized.
+    
+Interrupts can be sent to the server by sending an interrupt (``{\vt
+INT}'') to the process number of the server with the Unix {\vt kill}
+command.  The server socket will also raise an interrupt if out of
+band (OOB) data are received.  Thus, the client can send a single
+arbitrary byte of OOB data to generate an interrupt.  The Unix manual
+pages describe the concept of OOB data.
+
+The text expected by the daemon is in the form of statements which can
+be understood by the script interpreter, i.e., script lines.  In
+addition, there are a number of special control commands.
+
+As more than one connection can exist at the same time, commands from
+one connection can dramatically alter the environment seen by the
+other connections, including clearing of data and killing the server. 
+Though the connections are separate, they should be considered as
+multiple windows into a single processing environment rather than
+separate processing environments.
+
+Generally, when the last connection closes, all data within the server
+will be cleared and its state reinitialized, though this can be
+suppressed, allowing persistence of state and data.
+
+The server may be used as a ``geometry server'', providing compressed
+representations of the geometry in cells, by layer, as from a Cell
+Geometry Digest (CGD).  A connection object can be linked to a Cell
+Hierarchy Digest (CHD), allowing operations with the CHD to obtain
+geometry through the server.  This would reduce memory use on the
+local machine, assuming that the geometry is stored on a remote
+server.
+
+The built-in non-script commands are described below.  All other input
+should be parsable by the script parser, except that lines that start
+with `\#' are not allowed, so no comments or preprocessor directives
+are allowed.
+
+All transmissions to the server are readable ASCII text, using
+standard network ``{\vt $\backslash$r$\backslash$n}'' line
+termination.  Replies from the server are in a binary form described
+below.
+
+After each line of input is given, the server returns a message giving
+the data type and possibly the data for each script command.  Most
+script functions return some value.  Assignments return the value
+assigned.  A variable name returns the value of that variable, if the
+variable has a known type.  The default mode is to return only the
+data type code, which minimizes the network overhead.  Optionally, the
+{\vt longform} command can be applied, in which case the data are
+returned.  Note that this can be arbitrarily large for some data
+types.
+
+\begin{description}
+\item{\vt close}\\
+This will close the connection to the daemon, and is the normal way to
+end a session.  If no other connections are open, the daemon will
+generally clear the database of all cells and otherwise initialize
+itself to a clean state for the next connection (effectively calling
+{\vt reset} and {\vt clear}, see below), though this can be suppressed
+with {\vt keepall} (see below).  The daemon will continue listening
+for new connections.
+
+\item{\vt kill}\\
+This will close the connection and cause the server to exit.
+
+\item{\vt reset}\\
+This command will reset the script parser to its initial state,
+exiting from any control block in effect and deleting any script
+variables that may have been defined previously.  This will affect all
+open connections.
+
+\item{\vt clear}\\
+This will clear the server database of all cells, and delete any
+layers that were not initially read from the technology file.  This is
+equivalent to calling the {\vt ClearAll} script function.  This will
+affect all open connections.
+
+\item{\vt longform}\\
+After each line of script input is given and the line processed, a
+response message will be returned based on the computed result from
+the line, if any.  The user has a choice of receiving a very brief
+reply, giving only the response code - an integer which indicates
+pass/fail and the type of computed data, if any.  The other choice is
+to actually return the data along with the response code.  The data
+can be arbitrarily large.
+
+The default return is ``shortform'' which does not transmit the data
+values.  Giving this command switches to the mode where values are
+returned, for the present connection only.
+
+\item{\vt shortform}\\
+When given, subsequent replies fro the present connection will use the
+short form for returned data, which consists of only the data type
+code.  This is the default.
+
+\item{\vt dumpmsg}\\
+When given, the text of subsequently received messages from the
+present connection is printed, surrounded by vertical bar (`{\vt |}')
+symbols, on the standard output, meaning that the text will appear in
+the {\vt daemon\_out.log} file in normal operation.  If the server is
+running in debugging mode (the {\et XTNETDEBUG} environment variable
+was found when the server started), this text will be printed on the
+console window.
+
+\item{\vt nodumpmsg}\\
+This turns off the printing of received messages if {\vt dumpmsg} was
+given.  It has no effect otherwise, and applies only to the current
+connection.
+
+\item{\vt dieonerror}\\
+Ordinarily, if the client crashes or there is a connection failure,
+the server will simply reset itself and continue waiting for new
+connections and handling other existing connections.  If {\vt
+dieonerror} was given, the server will instead exit on failure of the
+current connection.
+
+\item{\vt nodieonerror}\\
+This will undo the effect of {\vt dieonerror}, if {\vt dieonerror} was
+given, and has no effect otherwise.  It applies only to the current
+connection.
+
+\item{\vt keepall}\\
+Ordinarily, when the server receives a {\vt close} command, and there
+are no other connections open, the interpreter context is reset, the
+cell database is cleared, and other steps are taken to provide a clean
+environment for the next connection.  If this command is given, all of
+this will be skipped, so that the same context and environment will be
+available to the next connection.  This is a single flag which can be
+set or reset from any connection, but applies to all connections.
+
+\item{\vt nokeepall}\\
+This will undo the effect of {\vt keepall}, if {\vt keepall} was
+given, and has no effect otherwise.  This can be given from any
+connection, and applies to all connections.
+
+\item{\vt geom} [{\it chd\_name\/}] [{\it cellname\/}]\\
+The {\vt geom} command implements the ``geometry server'', and unlike
+the other built-in commands this is an actual function and does not
+affect the interface state.
+
+Information from Cell Geometry Digests saved in server memory is made
+available through this interface.  The {\vt OpenCellGeomDigest} script
+function can be used to create CGDs in the server, and of course the
+target layout file must be accessible to the server.
+
+All of the arguments that follow ``{\vt geom}'' are optional, though
+arguments to the left of a given argument are required.  Below are the
+accepted forms and returns.  In all cases, the actual data are
+returned, as with {\vt longform}.
+
+\begin{description}
+\item{\vt geom}\\
+If no arguments are given, the reply is a space-separated string
+listing of CGD access names found in the server.  If an access
+name contains white space, it will be quoted.
+
+\item{\vt geom ?} {\it cgd\_name}\\
+This form will return the string ``{\vt y}'' if {\it cgd\_name} is the
+access name of a CGD in memory, ``{\vt n}'' if not found.
+
+\item{\vt geom} {\it cgd\_name}\\
+The argument is taken as an access name of a CGD in server memory. 
+The return is a string containing space-separated cell names found in
+the indicated CGD.
+
+\item\parbox[b]{4in}{{\vt geom} {\it cgd\_name} {\vt -?}\\
+  {\vt geom} {\it cgd\_name} {\vt ?-}\\
+  {\vt geom} {\it cgd\_name} {\vt -}}\\
+The argument is taken as an access name of a CGD in server memory.
+The return is a string containing space-separated cell names that
+have been removed from the CGD.
+
+\item{\vt geom} {\it cgd\_name} {\vt ?} {\it cellname}\\
+This form will return the string ``{\vt y}'' if {\it cgd\_name} is the
+access name of a CGD in memory, and {\it cellname} is found in that
+CGD.  The string ``{\vt n}'' is returned if the CHD access name
+matches a CGD name, but the {\it cellname} is not found in that CGD. 
+An empty string is returned otherwise.
+
+\item{\vt geom} {\it cgd\_name} {\vt -} {\it cellname}\\
+if the {\it cgd\_name} and {\it cellname} match a CGD and cell, that
+cell will be removed from the CGD, and resources freed.  However, the
+cell name and its status as having been removed is retained.  This
+will return the string ``{\vt y}'' if {\it cgd\_name} is the access
+name of a CGD in memory, and {\it cellname} is found in that CGD (and
+removed).  The string ``{\vt n}'' is returned if the CHD access name
+matches a CGD name, but the {\it cellname} is not found in that CGD. 
+An empty string is returned otherwise.
+
+\item\parbox[b]{4in}{{\vt geom} {\it cgd\_name} {\vt -?} {\it cellname}\\
+  {\vt geom} {\it cgd\_name} {\vt ?-} {\it cellname}}\\
+These forms will return the string ``{\vt y}'' if {\it cgd\_name} is
+the access name of a CGD in memory, and {\it cellname} has been
+removed from that CGD.  The string ``{\vt n}'' is returned if the CHD
+access name matches a CGD name, but the {\it cellname} is not in the
+removed list for CGD.  An empty string is returned otherwise.
+
+\item{\vt geom} {\it cgd\_name} {\it cellname}\\
+If two arguments, they are taken as the CGD access name and a cell
+name in the indicated CGD.  The return is a string consisting of
+space-separated layer names of layers in the cell that contain
+geometry.
+
+\item{\vt geom} {\it cgd\_name} {\it cellname} {\vt ?} {\vt layername}\\
+This form will return the string ``{\vt y}'' if {\it cgd\_name} is the
+access name of a CGD in memory, and {\it cellname} is found in that
+CGD, and {\it layername} the name of a layer found in that cell.  The
+string ``{\vt n}'' is returned if the CHD access name matches, but
+either {\it cellname} or {\it layername} is not found.  An empty
+string is returned otherwise.
+
+\item{\vt geom} {\it cgd\_name} {\it cellname} {\vt layername}\\
+With this form, the return value is the compressed string representing
+the geometry.  These data have a unique return class, described in the
+format documentation below.
+\end{description}
+\end{description}
+
+The normal way to terminate a session with the server is to issue the
+{\vt close} command.  Unless {\vt keepall} is in effect, if there are
+no other open connections the server will be cleared and
+reinitialized.  The clearing and reinitialization is equivalent to
+giving the {\vt reset} and {\vt clear} commands, which can be given at
+any time from any connection, and affects all connections.  If the
+{\vt keepall} command was in effect, the server will not be reset and
+cleared before the connection is closed, thus its state will be
+retained for the next connection.  If there is a communications error,
+the server will exit if {\vt dieonerror} was in effect for the
+affected connection, otherwise the behavior will be the same as for a
+{\vt close} operation.
+
+There is quite a bit of internal server state that is not reset to any
+preset value between connections.  Examples are the mode (physical or
+electrical) and the status of variables set with the {\cb !set}
+command or {\vt Set} function.  Thus, when writing scripts for
+execution by the server, it is important to explicitly initialize any
+such state or variable.
+
+The {\vt ReadReply} and {\vt ConvertReply} script functions can be
+used the to handle server responses when the client is implemented as
+a script.  For other applications, the user will have to write a
+parser, perhaps using the code from the {\vt xclient.cc} example. 
+Whiteley Research can provide assistance to users who need to develop
+this capability.
+
+\subsection{The Response Message Format}
+\index{server mode!protocol}
+
+Numeric data are sent in ``network byte order'' which means that the
+MSB arrives first.  Integers are always 32-bits, other numeric data
+are 64-bit IEEE floating point values.  The raw bytes read for a
+numeric value must be converted to the machine's byte order before
+being processed in a program.  For integers, the {\vt ntohl} C library
+function is usually available.  For floating values, an example
+conversion function is provided in the {\vt xclient.cc} file.  The
+byte order is the same as that used by Sun sparc systems, thus this
+issue can be ignored on those systems, unless code portability is
+desired.
+
+All response messages begin with a 4-byte integer, which may
+constitute the entire message in some circumstances.  This (and all
+numeric values) is in network byte order, so must be converted to host
+byte order before processing.  The first integer is the ``response
+code'' possibly ORed with the ``longform'' flag.  The response code is
+an integer 0-9, and the longform flag is hex value 80.
+
+If the longform flag is not set, then no more data exists in the
+message.  Otherwise, most response codes will be followed by
+additional data.  The possible responses are described below.
+
+\begin{description}
+\item{0}\\
+This is the server ``ok'' message.  There is no additional data.
+
+\item{1}\\
+This is the server ``more'' message.  There is no additional data.
+This response is given when the server is waiting for input required
+to complete a script conditional block, for example:
+
+\begin{quote}
+\begin{tabular}{ll}
+\bf command  & \bf response\\
+\vt keepall  & 0\\
+\vt if (x)   & 1\\
+...          & \\
+\vt end      & 0\\
+\end{tabular}
+\end{quote}
+
+\item{2}\\
+This is the server ``error'' message.  There is no additional data.
+This response is given if the command produces an error.
+
+\item{3}\\
+This is the server ``scalar'' message.  If the longform flag is set,
+there are 8 bytes of following data, representing a
+double-precision IEEE floating-point value.
+
+\item{4}\\
+This is the server ``string'' message.  If the longform flag is set,
+a 4-byte size integer follows, in turn followed by the string
+characters.  The size value is the number of characters in the
+string and includes the null termination character of ASCII
+strings.
+
+\item{5}\\
+This is the server ``array'' message.  If the longform flag is set,
+a 4-byte integer follows, giving the number of elements in the
+array.  This is followed by the array data, 8 bytes per element,
+in IEEE double-precision floating-point form.
+
+\item{6}\\
+This is the server ``zlist'' message.  If the longform flag is set, a
+4-byte integer follows, which gives the number of trapezoids in the
+list.  This is followed by the trapezoid list data, with 24 bytes per
+trapezoid (six 4-byte integers each).  The values are coordinates in
+the internal units (usually 1000 units per micron), in the order {\it
+xll}, {\it xlr}, {\it yl}, {\it xul}, {\it xur}, {\it yu}.
+
+\item{7}\\
+This is the server ``lexpr'' message, which is the return for the
+layer expression type.  This is treated as a string.  If the longform
+flag is set, a 4-byte size integer follows, followed by the text of
+the layer expression.  The size includes the null termination
+character of the string.
+
+\item{8}\\
+This is the server ``handle'' message, which is the return for all
+handle types.  This is basically useless on the local machine, since
+the underlying data resides on the server.  If the longform flag is
+set, a 4-byte integer follows, which gives the handle identification
+value.
+
+\item{9}\\
+This is the server geometry stream message.  This message always
+returns data, the longform flag is ignored.  The type 9 return is
+unique to the geometry stream response from the {\vt geom} command. 
+The ASCII string responses from the {\vt geom} command use type 4 in
+the normal way, though they are always in ``longform''.  The type 9
+record is very similar to a string, however the first 8 bytes of the
+string contains two integers:  the first integer is the compressed
+size of the following data, and the second integer is the uncompressed
+size.  The compressed size can be zero, in which case compression is
+not used.  The actual string length is the compressed size if nonzero,
+otherwise the uncompressed size.  The string contains OASIS geometry
+records, as in a CBLOCK if compressed.
+
+The user will have to supply an OASIS reader to interpret the stream. 
+{\Xic} provides script functions for this purpose.
+\end{description}
+
+\subsection{Operation}
+
+Internal script variables are defined and set in accord with
+instructions received.  The variables and other context are cleared
+when an initial connection to the server is made or or final
+connection broken (and {\vt keepall} is not in effect), or when ``{\vt
+reset}'' is given.
+
+Other state, such as the current directory and cells in {\Xic} memory,
+is persistent, thus users should initialize {\Xic} appropriately, and
+clear the database before closing the connection.
+
+While in server mode (also in batch mode) the {\Xic} functions that
+query the user for some decision are not available.  If the prompt
+line editor is invoked, it will return immediately as if the user hit
+{\kb Enter}.  The return value is the default string, if any, or any
+text that was previously supplied with the {\vt StuffText} function. 
+The {\cb Merge Control} behavior is as if the {\et NoAskOverwrite}
+variable was set, i.e., the overwriting behavior will be the default
+as set with the {\et NoOverwritePhys} and {\et NoOverwriteElec}
+variables.  If neither of these is set, the action will be to
+overwrite the cell in memory.
+
+The server produces a log file directory in the same manner as under
+normal {\Xic} operation.  These files are removed when the server
+exits normally, i.e., when a ``{\vt kill}'' command is received.  In
+server mode, there are files used that are not used in normal mode:
+
+\begin{description}
+\item{\vt daemon.log}\\
+  This records connection activity to the daemon.
+\item{\vt daemon\_out.log}\\
+  This records the ``stdout'' channel from the daemon, i.e., the text
+  that would go to the console in normal mode.  Under Microsoft
+  Windows, this file is not located with the other log files, but is
+  created in the parent directory of the directory containing the log
+  files.  This is due to a technical issue in Windows.
+\item{\vt daemon\_err.log}\\
+  This records the ``stderr'' channel from the daemon, i.e., the error
+  text that would go to the console in normal mode.  Under Microsoft
+  Windows, this file is not located with the other log files, but is
+  created in the parent directory of the directory containing the log
+  files.  This is due to a technical issue in Windows.
+\end{description}
 

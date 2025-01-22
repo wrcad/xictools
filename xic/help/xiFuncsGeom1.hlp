@@ -548,6 +548,69 @@ General Editing
     or otherwise using <i>Xic</i> input implicitly call
     <tt>Commit</tt>, so can't be selected in this manner.
     </dl>
+!!LATEX funcs:geom1:gen scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 041704
+\index{ClearCell function}
+\item{(int) \vt ClearCell({\it undoable\/}, {\it layer\_list\/})}\\
+This function will clear the content of the present mode (electrical
+or physical) part of the current cell.  If the first argument is
+nonzero, the deletions will be added to the internal undo list,
+otherwise not.  The latter is more efficient, though this makes the
+deletions irreversible.  The second argument, if null or empty,
+indicates that all objects on all layers will be deleted, including
+subcells.  Otherwise this can be set to a string containing a
+space-separated list of layer names, following an optional special
+character `{\vt !}' or `{\vt \symbol{94}}' which must be the first
+character in the string if used.  If the special character does not
+appear, the deletions apply only to the layers listed.  If the special
+character appears, the deletions apply only to the layers {\it not}
+listed.  Recall that the internal name for the layer that contains
+subcells ls ``{\vt \$\$}'', thus for example using ``{\vt !  \$\$}''
+would delete all geometry but retain the subcells.
+
+The return value is the number of objects deleted.
+
+%------------------------------------
+% 030204
+\index{Commit function}
+\item{\vt Commit()}\\
+The Commit functions terminates the present operation, adding it to
+the undo list.  It will also redisplay any changes.  This function
+should be called after each change or after a group of related
+changes.  It is implicitly called when a script exits.
+
+%------------------------------------
+% 030204
+\index{undo}
+\index{Undo function}
+\item{\vt Undo()}\\
+This function will undo the most recent operation.
+
+%------------------------------------
+% 030204
+\index{redo}
+\index{Redo function}
+\item{\vt Redo()}\\
+This function will redo the last undone operation.
+
+%------------------------------------
+% 030204
+\index{SelectLast function}
+\item{(int) \vt SelectLast({\it types\/})}\\
+This function selects objects that have been created by the script
+functions since the last call to {\vt Commit} or {\vt SelectLast}
+(which calls {\vt Commit}), according to {\it type\/}.  The {\it
+type\/} argument is a string whose characters serve to enable
+selection of a given type of object:  `{\vt b}' for boxes, `{\vt p}'
+for polygons, `{\vt w}' for wires, `{\vt l}' for labels, and `{\vt c}'
+for instances.  If this string is empty or null, then all objects will
+be selected.  Objects that are created using {\vt PressButton} or
+otherwise using {\Xic} input implicitly call {\vt Commit}, so can't be
+selected in this manner.
+
+\end{description}
 
 !!SEEALSO
 funcs:geom1
@@ -781,6 +844,189 @@ Current Transform
     &#32;  end
     </pre>
     </dl>
+!!LATEX funcs:geom1:xform scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 030115
+\index{SetTransform function}
+\item{(int) \vt SetTransform({\it angle\_or\_string\/}, {\it reflection\/},
+ {\it magnification\/})}\\
+This function sets the ``current transform'' to the values provided. 
+It is similar in action to the controls in the {\cb Current Transform}
+panel.  The first argument can be a floating point angle that will be
+snapped to the nearest multiple of 45 degrees in physical mode, 90
+degrees in electrical mode.  If bit 1 of {\it reflection\/} is set, a
+reflection of the x-axis is specified.  If bit 2 of {\it reflection\/}
+is set, a reflection of the y-axis is specified.  The {\it
+magnification\/} sets the scaling applied to transformed objects, and
+is accepted only while in physical mode.  It is ignored if less than
+or equal to zero.
+
+The first argument can alternatively be a string, in the format as
+returned from {\vt GetTransformString}.  The string will be parsed,
+and if no error the transform will be set.  The two remaining
+arguments are ignored, but must be given (0 can be passed for both).
+
+The return value is 1 on success, 0 otherwise.
+
+Examples:
+\begin{quote}\rr
+Set rotation 180, mirror the X axis:\\
+\hspace*{1em}{\vt SetTransform(180, 1, 1)} or
+  {\vt SetTransform("R180MX", 0, 0)}\\
+Set rotation 180, mirror the Y axis:\\
+\hspace*{1em}{\vt SetTransform(180, 2, 1)} or
+  {\vt SetTransform("R180MY", 0, 0)}\\
+Set rotation 180, mirror both X,Y axes:\\
+\hspace*{1em}{\vt SetTransform(180, 3, 1)} or
+  {\vt SetTransform("R180MYMX", 0, 0)}\\
+\end{quote}
+
+%------------------------------------
+% 030204
+\index{StoreTransform function}
+\item{(int) \vt StoreTransform({\it register\/})}\\
+This function will save the current transform settings into a
+register, which can be recalled with {\vt RecallTransform}.  The
+argument is a register number 0--5.  These correspond to the ``last''
+and registers 1--5 in the {\cb Current Transform} pop-up.  This
+function returns 1 on success, 0 if the argument is out of range.
+
+%------------------------------------
+% 030204
+\index{RecallTransform function}
+\item{(int) \vt RecallTransform({\it register\/})}\\
+This function will restore the transform settings previously saved
+with {\vt StoreTransform}.  The argument is a register number 0--5. 
+These correspond to the ``last'' and registers 1--5 in the {\cb
+Current Transform} pop-up.  This function returns 1 on success, 0 if
+the argument is out of range.
+
+%------------------------------------
+% 030215
+\index{GetTransformString function}
+\item{(string) \vt GetTransformString()}\\
+Return a string describing the current transform, an empty string will
+indicate the identity transform.  The string is a sequence of tokens
+and contains no white space.  It is the same format used to indicate
+the current transform in the {\Xic} status line.  The tokens are:
+
+\begin{quote}
+[{\vt R}{\it ang\/}][{\vt MY}][{\vt MX}][{\vt M}{\it magn\/}]
+\end{quote}
+
+The square brackets indicate that each token is optional and do not
+appear in the string.  If the rotation angle is nonzero, the first
+token will appear, where {\it ang} is the angle in degrees.  This is
+an integer multiple of 45 degrees in physical mode, 90 degrees in
+electrical mode, larger than zero and smaller than 360.
+
+If reflection of Y or X is in force, one or both of the mext two
+tokens will appear.  These are literal.  If the magnification is not
+unity, the final token will appear, with {\it magn} being a real
+number in the range 0.001 through 1000.0.
+  
+The order of the tokens must be as shown.
+
+The returned string, or one in the same format, can be passed to
+the first argument of {\vt SetTransform}.
+
+%------------------------------------
+% 030204
+\index{GetCurAngle function}
+\item{(int) \vt GetCurAngle()}\\
+This returns the rotation angle of the current transform, in degrees. 
+This will be 0, 45, 90, 135, 180, 225, 270, 315 in physical mode, or
+0, 90, 180, 270 in electrical mode.  The {\vt SetTransform} function
+can be used to set the rotation angle.
+
+%------------------------------------
+% 030204
+\index{GetCurMX function}
+\item{(int) \vt GetCurMX()}\\
+This returns 1 if the current transform mirrors the x-axis, 0
+otherwise.  The {\vt SetTransform} function can be used to set the
+mirror transformations.
+
+%------------------------------------
+% 030204
+\index{GetCurMY function}
+\item{(int) \vt GetCurMY()}\\
+This returns 1 if the current transform mirrors the y-axis, 0
+otherwise.  The {\vt SetTransform} function can be used to set the
+mirror transformations.
+
+%------------------------------------
+% 030204
+\index{GetCurMagn function}
+\item{(real) \vt GetCurMagn()}\\
+This returns the magnification component of the current transform. 
+The {\vt SetTransform} function can be used to set the magnification.
+
+%------------------------------------
+% 041705
+\index{UseTransform function}
+\item{(int) \vt UseTransform({\it enable\/}, {\it x\/}, {\it y\/})}\\
+This command enables and disables use of the current transform in the
+{\vt ShowGhost} function, as well as the functions that create
+objects:  {\vt Box}, {\vt Polygon}, {\vt Arc}, {\vt Wire}, and {\vt
+Label}.  The functions {\vt Move}, {\vt Copy}, {\vt Logo}, and {\vt
+Place} naturally use the current transform and are unaffected by this
+function.
+
+All arguments are numeric.  If the first argument is nonzero, the
+current transformation will be used in subsequent calls to the
+functions listed above.  If the first argument is zero, the current
+transform is ignored by these functions.  The remaining arguments
+provide the translation applied to the object being created, before
+the current transform is applied.
+
+If {\vt UseTransform(1, ...)} has been given, {\vt ShowGhost} will
+apply the current transform to the list of objects to display, using
+the pointer location as the translation rather than the {\it x}, {\it
+y} supplied to {\vt UseTransform}, which are ignored.  The other
+functions listed above will create the object after applying the
+current transform, using {\it x}, {\it y}.
+
+In some scripts, it will be necessary to call {\vt UseTransform(1,
+...)} twice, once to enable {\vt ShowGhost}, and again after the
+location for the new object is obtained.  In particular, if {\vt
+Point} is used to obtain the coordinate, {\vt UseTransform} should be
+called before {\vt Point} (so the ghost drawing will be accurate) and
+again with the coordinates returned from {\vt Point} before the new
+object is created.
+
+The {\vt Box} function will actually create a polygon if the current
+transform is being used and the rotation angle is 45 degrees or one of
+the other non-Manhattan angles.  The {\vt Polygon} function will
+actually create a box if the rotated figure can be so represented. 
+The {\vt Polygon} function will never create boxes unless use of the
+current transform is enabled.
+
+Below is an example script that will place boxes on the current layer
+where the user clicks.  Note that the size and rotation angle of the
+box can be changed while in the script through the {\cb Transform
+Menu}.
+
+\begin{verbatim}
+ShowPrompt("Click to place boxes")
+PushGhostBox(0, 0, 1, 1)
+UseTransform(1, 0, 0)
+while (1)
+    ShowGhost(8)
+    a[2]
+    if !Point(a)
+        ShowPrompt("")
+        Exit()
+    end
+    ShowGhost(0)
+    UseTransform(1, a[0], a[1])
+    Box(0, 0, 1, 1)
+    Commit()
+end
+\end{verbatim}
+
+\end{description}
 
 !!SEEALSO
 funcs:geom1
@@ -1020,10 +1266,188 @@ Derived Layers
     their work is done, to recycle memory.  The return value is an
     integer count of the number of derived layers that were cleared.
     </dl>
+!!LATEX funcs:geom1:drvlyr scrfuncs.tex
+These functions provide an interface to the derived layer capability
+(see \ref{drvlyr}).  Derived layers are invisible internal layers that
+imply geometry resulting from evaluation of a layer expression, which
+may involve normal layers and other derived layers.  Derived layers
+are recognized by name in layer expressions.
+
+There are actually two implementations of derived layer functionality. 
+The interface functions allow explicit choice of which evaluation
+method to use.  Within {\Xic}, this detail is generally invisible to
+the user.
+
+In the original implementation, developed for the DRC system, the
+geometry of derived layers must be created or updated before the
+derived layer is referenced.  In use, reference to a derived layer in
+a layer expression retrieves this geometry, very similar to what
+happens when a normal layer is referenced.  Ordinarily, the derived
+layer geometry will be cleared after final use.  This method may be
+fast when the same layer expressions must be evaluated many times, so
+it seems a good match for DRC, where it is used.
+
+To use this method, the interface function {\vt EvalDerivedLayers} is
+called to create the geometry for each derived layer that will be
+evaluated.  Then, {\vt GetDerivedLayerLexpr} is called with a boolean
+true second argument to get the evaluation objects as needed, which
+are evaluated to create new geometry.  When done, {\vt
+ClearDerivedLayers} is called to destroy the precomputed geometry.
+
+In the second mode of operation, when the parse tree for the derived
+layer is created, references to derived layers will be recursively
+parsed and stitched into the tree.  The final parse tree will contain
+normal layers only, and can therefor be evaluated in any context,
+without the need for precomputed geometry caches.
+
+With this method, there is no need to call {\vt EvalDerivedLayers} and
+{\vt ClearDerivedLayers}, as there is no use of cached geometry.  The
+evaluation object is returned from {\vt GetDerivedLayerLexpr} with a
+boolean false second argument.
+
+\begin{description}
+% 010815
+\index{AddDerivedLayer function}
+\item{(int) \vt AddDerivedLayer({\it lname\/}, {\it index\/},
+ {\it lexpr\/})}\\
+This will add a derived layer to the database, under the name given in
+the first argument.  The second argument is an integer layer number
+for the layer, which is used for ordering when the derived layers are
+printed, for example to an updated technology file.  If not positive,
+{\Xic} will generate a number to be used for a new layer.  Numbers
+need not be unique, sorting is alphabetic among derived layer names
+with the same index number.  If a derived layer of the same name
+already exists, it will be silently overwritten.
+
+The third argument is a string starting with an optional keyword
+followed by a layer expression, separated by space.  The keyword is
+one of {\vt join}, {\vt split}, or {\vt splitv}.  These are the same
+keywords, and have the same effects, as is explained for the {\et
+DerivedLayer} keyword in the technology file.  The expression can
+reference by name ordinary layers and derived layers.  The expression
+is not parsed until evaluation time.
+
+The function fails if either the {\it lname} or {\it lexpr} are null
+or empty strings.
+
+% 120114
+\index{RemDerivedLayer function}
+\item{(int) \vt RemDerivedLayer({\it lname\/})}\\
+If a derived layer exists with the given name, remove the definition
+from the internal registry, so that the derived layer definition and
+any existing geometry becomes inaccessible.  The derived layer
+definition can be restored with {\vt AddDerivedLayer}.  If the derived
+layer is found and removed, this function will return 1, otherwise 0
+is returned.
+
+% 120114
+\index{IsDerivedLayer function}
+\item{(int) \vt IsDerivedLayer({\it lname\/})}\\
+This function will return 1 if the string argument matches a derived
+layer name in the database, 0 otherwise.  Matching is
+case-insensitive.
+
+The name can be in the form ``{\it layer\/}{\vt :}{\it purpose\/}'' as
+for normal {\Xic} layers, however the entire token is taken verbatim. 
+This is a subtle difference from normal layers, where for example
+``{\vt m1:drawing}'' and ``{\vt m1}'' are equivalent (the {\vt
+drawing} purpose being the default).  As derived layer names, the two
+would differ, and the notion of a purpose does not apply to derived
+layers.
+
+% 120114
+\index{GetDerivedLayerIndex function}
+\item{(int) \vt GetDerivedLayerIndex({\it lname\/})}\\
+This returns a positive integer which is the layer index number of the
+derived layer whose name was given, or 0 if no derived layer can be
+found with that name (case insensitive).
+
+% 120114
+\index{GetDerivedLayerExpString function}
+\item{(string) \vt GetDerivedLayerExpString({\it lname\/})}\\
+This returns the layer expression string for the derived layer whose
+name is passed.  If the derived layer is not found, a null string is
+returned.
+
+% 032217
+\index{GetDerivedLayerLexpr function}
+\item{(layer\_expr) \vt GetDerivedLayerLexpr({\it lname\/}, {\it noexp\/})}\\
+This returns a parsed layer expression object created from the layer
+expression of the derived layer whose name is passed.  This can be
+passed to other functions which can use this data type.  If there is a
+parse error, the function fails fatally.  Otherwise the return is a
+valid parse tree object.
+
+The boolean second argument will suppress derived layer expansion if
+set.
+
+There are two ways to handle derived layers.  Generally, layer
+expression parse trees are expanded (second argument is false),
+meaning that when a derived layer is encountered, the parser
+recursively descends into the layer's expression.  The resulting tree
+references only normal layers, and evaluation is straightforward.
+
+A second approach might be faster.  The parse trees are not expanded
+(second argument is true), and a parse node to a derived layer
+contains a layer descriptor, just as for normal layers.  Before any
+computation, {\vt EvalDerivedLayers} must be called, which actually
+creates database objects in a database for the derived layer. 
+Evaluation involves only finding the geometry in the search area, as
+for a normal layer.
+
+% 032217
+\index{EvalDerivedLayers function}
+\item{(string) \vt EvalDerivedLayers({\it list\/}, {\it array\/})}\\
+Derived layer evaluation objects (such as the return from {\vt
+GetDerivedLayerLexpr}) that are not recursively expanded must have
+derived layer geometry precomputed before use.  This function creates
+derived layer geometry for this purpose.
+
+Evaluation creates the geometry described by the layer expression. 
+Derived layers are never visible, so this geometry is internal, but
+can be accessed, e.g., by design rule evaluation functions, or used to
+create normal layers with the {\cb !layer} command or the {\cb
+Evaluate Layer Expression} panel from the {\cb Edit Menu}.
+
+The first argument is a string containing a list of derived layer
+names, separated by commas or white space.  The function will evaluate
+these derived layers, and any derived layers referenced in their layer
+expressions, in an order such that the derived layers will be
+evaluated before being referenced during another evaluation.
+
+All geometry created will exist in the current cell, and the layer
+expressions will source all levels of the hierarchy.  Any geometry
+left in the current cell from a previous evaluation will be cleared
+first.  Derived layer geometry in subcells is ignored.
+
+The second argument can set the area where the layers will be
+evaluated, which can be any rectangular region of the current cell. 
+This can be an array of size four or larger, specifying left, bottom,
+right, and top coordinates in microns in the 0, 1, 2, 3 indices.  The
+argument can also be a scalar 0 which indicates to use the entire
+current cell.
+
+The return is a string listing all of the derived layers evaluated,
+which will include derived layers referenced by the original list but
+not included in the list.  This should be passed to {\vt
+ClearDerivedLayers} when finished using the layers.
+
+% 120114
+\index{ClearDerivedLayers function}
+\item{(int) \vt ClearDerivedLayers({\it list\/})}\\
+The argument is a string containing a list of derived layer names,
+separated by commas or white space.  This may be the return from {\vt
+EvalDerivedLayers}.  All of the layers listed will be cleared in the
+current cell.  If a layer name is not resolved as a derived layer, it
+is silently ignored.  Clearing already clear layers is not an error. 
+Derived layers should be cleared after their work is done, to recycle
+memory.  The return value is an integer count of the number of derived
+layers that were cleared.
+
+\end{description}
 
 !!SEEALSO
 funcs:geom1
-
 
 !! 022712
 !!KEYWORD
@@ -2800,6 +3224,1405 @@ Object Management by Handles
     For other instances, the return value is the same as
     <tt>GetInstanceIdNum</tt>.
     </dl>
+!!LATEX funcs:geom1:objbh scrfuncs.tex
+The following functions provide a fairly complete interface to
+database objects.
+
+Internally, most of the ``{\vt Set}..." functions in this group modify
+objects via application of the pseudo-properties (see
+\ref{pseudoprops}).  This allows modification of most objects and
+types, with the restrictions listed in the table below.  Without
+restrictions, the functions can act on database objects or the
+``object copies'' which are memory objects not part of any cell.  The
+objects can be from electrical or physical cells, and the containing
+cell (if any) need not be the current cell.  However, a restriction
+when working with copies is that the object type can not be changed.
+
+\begin{quote}
+\begin{tabular}{lp{4in}}
+boxes & no restrictions\\
+polys & no restrictions\\
+wires & can't accept electrical wires on the active (SCED) layer\\
+labels & no restrictions\\
+instances & can't accept electrical instances\\
+\end{tabular}
+\end{quote}
+
+As mentioned, some of the functions generate or accept lists of
+``object copies''.  These are objects that are not included in the
+object database for any cell.  A list of copies behaves in most
+respects like an ordinary object list.  The The {\vt CopyObjects}
+function can be used to create a new database object from a copy.  The
+handle manipulation functions such as {\vt HandleCat} work, but lists
+of copies can {\it not} be mixed with lists of database objects, {\vt
+HandleCat} will fail quietly if this is attempted.  Copies can not be
+selected.
+
+\begin{description}
+%------------------------------------
+% 062116
+\index{ListElecInstances function}
+\item{(object\_handle) \vt ListElecInstances()}\\
+This function returns a handle to a complete list of cell instances
+found in the electrical part of the current cell.  Operation is
+identical in electrical and physical modes.  In the schematic, cell
+instances represent subcircuits, devices, and pins.  The ``{\vt
+GetInstance}'' functions described below can be used to obtain
+information about the instances.
+
+%------------------------------------
+% 062116
+\index{ListPhysInstances function}
+\item{(object\_handle) \vt ListPhysInstances()}\\
+This function returns a handle to a complete list of cell instances
+found in the physical layout of the current cell.  Operation is
+identical in electrical and physical modes.  The ``{\vt GetInstance}''
+functions described below can be used to obtain information about the
+instances.
+
+%------------------------------------
+% 030204
+\index{SelectHandle function}
+\item{(object\_handle) \vt SelectHandle()}\\
+This function returns a handle to the list of objects currently
+selected.  The list is copied internally, and so is unchanged if the
+objects are subsequently deselected.
+
+A handle to the object list is returned.  The {\vt ObjectNext}
+function is used to advance the handle to point to the next object in
+the list.  The {\vt HandleContent} function returns the number of
+objects remaining in the list.
+
+%------------------------------------
+% 030204
+\index{SelectHandleTypes function}
+\item{(object\_handle) \vt SelectHandleTypes({\it types\/})}\\
+This function returns a handle to a list of objects that are currently
+selected, but only the types of objects specified in the argument are
+included.  The argument is a string which specifies the types of
+objects to include.  If zero or an empty string is passed, all types
+are included, and the function is equivalent to {\vt SelectHandle}. 
+Otherwise the characters in the string signify which objects to
+include:
+
+\begin{tabular}{ll}\\
+`{\vt b}' & boxes\\
+`{\vt p}' & polygons\\
+`{\vt w}' & wires\\
+`{\vt l}' & labels\\
+`{\vt c}' & subcells
+\end{tabular}
+
+For example, passing ``{\vt pwb}'' would include polygons, wires, and
+boxes only.  The order of the characters is unimportant.
+
+%------------------------------------
+% 030204
+\index{AreaHandle function}
+\item{(object\_handle) \vt AreaHandle({\it l\/}, {\it b\/}, {\it r\/},
+ {\it t\/}, {\it types\/})}\\
+This function creates a list of objects that touch the rectangular
+area specified by the first four coordinates (which are the left,
+bottom, right, and top values of the rectangle).  The fifth argument
+is a string which specifies the types of objects to include.  If zero
+or an empty string is passed, all types are included, otherwise the
+characters in the string signify which objects to include:
+
+\begin{tabular}{ll}\\
+`{\vt b}' & boxes\\
+`{\vt p}' & polygons\\
+`{\vt w}' & wires\\
+`{\vt l}' & labels\\
+`{\vt c}' & subcells
+\end{tabular}
+
+For example, passing ``{\vt pwb}'' would list polygons, wires, and
+boxes only.  The order of the characters is unimportant.
+
+A handle to the object list is returned.  The {\vt ObjectNext}
+function is used to advance the handle to point to the next object in
+the list.  The {\vt HandleContent} function returns the number of
+objects remaining in the list.
+
+%------------------------------------
+% 030204
+\index{ObjectHandleDup function}
+\item{(object\_handle) \vt ObjectHandleDup({\it object\_handle\/},
+ {\it types\/})}\\
+This function creates a new handle and list of objects.  The new
+object list consists of those objects in the list referenced by the
+argument whose types are given in the string {\it types} argument.  If
+zero or an empty string is passed, all types are included, otherwise
+the characters in the string signify which objects to include:
+
+\begin{tabular}{ll}\\
+`{\vt b}' & boxes\\
+`{\vt p}' & polygons\\
+`{\vt w}' & wires\\
+`{\vt l}' & labels\\
+`{\vt c}' & subcells
+\end{tabular}
+
+The return value is a handle, or 0 if an error occurred.  Note that
+the new handle may be empty if there were no matching objects.  The
+function will fail if the handle argument is not a pointer to an
+object list.
+
+%------------------------------------
+% 030204
+\index{ObjectHandlePurge function}
+\item{(int) \vt ObjectHandlePurge({\it object\_handle\/}, {\it types\/})}\\
+This function will purge from the list of objects referenced by the
+handle argument objects with types listed in the {\it types} string. 
+If zero or an empty string is passed, all types are deleted, otherwise
+the characters in the string signify which objects to delete:
+
+\begin{tabular}{ll}\\
+`{\vt b}' & boxes\\
+`{\vt p}' & polygons\\
+`{\vt w}' & wires\\
+`{\vt l}' & labels\\
+`{\vt c}' & subcells
+\end{tabular}
+
+The return value is the number of objects remaining in the list.  The
+function will fail if the handle argument does not reference a list of
+objects.
+
+%------------------------------------
+% 030204
+\index{ObjectNext function}
+\item{(int) \vt ObjectNext({\it object\_handle\/})}\\
+This function is called with a handle to a list of objects, and causes
+the handle to reference the next object in the list.  If there are no
+more objects, the handle is closed, and this function returns zero. 
+Otherwise, 1 is returned.  This function will fail if the handle
+passed is not a handle to an object list.
+
+%------------------------------------
+% 030204
+\index{MakeObjectCopy function}
+\item{(object\_handle) \vt MakeObjectCopy({\it numpts}, {\it array\/})}\\
+This function creates an object copy from the {\it numpts} coordinate
+pairs in the {\it array}.  The function returns an object list handle
+referencing the ``copy'', which can be used in the same manner as
+copies of ``real'' objects.  The coordinate list must be closed, i.e.,
+the last coordinate pair must be the same as the first.  If the
+coordinates represent a rectangle, a box object is created, otherwise
+the object is a polygon.  Coordinates are in microns, relative to the
+origin of the current cell.  The object is associated with the current
+layer (but of course it really does not exist on that layer).
+
+%------------------------------------
+% 080705
+\index{ObjectString function}
+\item{(string) \vt ObjectString({\it object\_handle\/})}\\
+This function returns a CIF-like string describing the object pointed
+to by the given object handle.  This provides all of the geometric
+information for the object.  Strings of this format can be reconverted
+to object copies with the {\vt ObjectCopyFromString} function.
+
+On error or for an empty handle, a null string is returned.  The
+function will fail if the argument is not a handle to an object list.
+
+%------------------------------------
+% 080705
+\index{ObjectCopyFromString function}
+\item{(object\_handle) \vt ObjectCopyFromString({\it string\/}, {\vt layer})}\\
+This function will create an object copy from the CIF-like string, as
+generated by the {\vt ObjectString} function.  Boxes, polygons, and
+wires are supported, labels and subcells will not return a handle. 
+The object will be associated with the layer named in the second
+argument.  The layer will be created if it does not exist.  Only
+physical layers are accepted.
+
+On success, a handle to an object list containing the new copy is
+returned.  On error, a scalar zero is returned.  The function will
+fail if the string is null or a new layer cannot be created.
+
+%------------------------------------
+% 100508
+\index{FilterObjects function}
+\item{(object\_handle) \vt FilterObjects({\it object\_list},
+{\it template\_list}, {\it all\/}, {\it touchok}, {\it remove\/})}\\
+This function creates a handle to a list of objects that is a subset
+of the objects contained in the {\it object\_list}.  The objects in
+the new list are those that touch or overlap objects in the {\it
+template\_list}, which is also a handle to a list of objects.
+
+If {\it all} is nonzero, all of the objects in the {\it
+template\_list} will be used for comparison, otherwise only the head
+object in the template list will be used.
+
+If {\it touchok} is nonzero, objects in the object list that touch but
+do not overlap the template object(s) will be added to the new list,
+otherwise not.
+
+If {\it remove} is nonzero, objects that are added to the new list are
+removed from the {\it object\_list}, otherwise the {\it object\_list}
+is not touched.  The function will fail if the handle arguments are of
+the wrong type.  The return value is a new handle to a list of
+objects.
+
+%------------------------------------
+% 030204
+\index{FilterObjectsA function}
+\item{(object\_handle) \vt FilterObjectsA({\it object\_list},
+{\it array}, {\it array\_size}, {\it touchok}, {\it remove\/})}\\
+This function creates a handle to a list of objects, which consist of
+the objects in the {\it object\_list} that touch or overlap the
+polygon defined in the {\it array}.  The {\it array\_size} is the
+number of x-y coordinates represented in the array.  In the array, the
+values are x-y coordinate pairs representing the polygon vertices, and
+the first pair must match the last pair (i.e., the figure must be
+closed).  The values are specified in microns.  If {\it touchok} is
+nonzero, objects that touch but do not overlap the polygon will be
+added to the list, otherwise not.  If {\it remove} is nonzero, objects
+that are added to the new list are removed from the {\it
+object\_list}, otherwise the {\it object\_list} is not touched.
+
+The function will fail if {\it array\_size} is less than 4, or the
+size of the array is less than twice {\it array\_size}, or if the
+handle argument is not a handle to a list of objects.  The return
+value is a new handle to a list of objects.
+
+%------------------------------------
+% 100408
+\index{CheckObjectsConnected function}
+\item{(int) \vt CheckObjectsConnected({\it object\_handle\/})}\\
+This function returns 1 unless the list contains objects on the layer
+of the first object in the list that are mutually disjoint, meaning
+that there exist two objects and one can not draw a curve from the
+interior of one to the other without crossing empty area.  If disjoint
+objects are found, 0 is returned.
+
+%------------------------------------
+% 030204
+\index{CheckForHoles function}
+\item{(int) \vt CheckForHoles({\it object\_handle\/}, {\it all\/})}\\
+This function returns 1 if the object, or collection of objects, has
+``holes'', i.e., uncovered areas completely surrounded by geometry. 
+The first argument is a handle to a list of objects.  If the second
+argument is nonzero, the geometry represented by all objects in the
+list is checked.  If zero, only the first object (which might be a
+complex polygon containing holes) is checked.  If no holes are found,
+0 is returned.
+
+When {\it all} is true, only objects on the same layer as the first
+object in the list are considered.
+
+%------------------------------------
+% 100508
+\index{BloatObjects function}
+\item{(object\_handle) \vt BloatObjects({\it object\_handle}, {\it all\/},
+ {\it dimen\/}, {\it lname\/}, {\it mode\/})}\\
+This function returns a handle to a list of object copies which are
+bloated versions of the objects referenced by the handle argument,
+similar to the {\cb !bloat} command.  The passed handle and objects
+are not affected.  Edges will be pushed outward or pulled inward by
+{\it dimen} (positive values push outward).  The {\it dimen} is given
+in microns.
+
+The {\it all} argument is a boolean that if nonzero indicates that all
+objects in the list referenced by the handle may be processed.  If
+zero, only the first object in the list will be processed.
+
+The {\it lname} argument is a layer name.  If this argument is zero,
+or a null or empty string, all objects on the returned list are
+associated with the layer of the first object in the passed list, and
+only objects on this layer in the passed list are processed. 
+Otherwise, the layer will be created if it does not exist, and all new
+objects will be associated with this layer, and all objects in the
+passed list will be processed.
+
+The {\it mode} argument is an integer that specifies the algorithm to
+use for bloating.  Giving zero specifies the default algorithm.  See
+the description of the {\cb !bloat} command (\ref{bloatcmd}) for
+documentation of the algorithms available. 
+
+The {\vt DeleteObjects} function can be called to delete the old
+objects.  The {\vt CopyObjects} function can be called on the returned
+objects to add them to the database.  This function returns a handle
+to the new list upon success, or 0 if there are no objects.  The
+function will fail if the first argument is not a handle to a list of
+objects or copies, or the {\it lname} argument is non-null and not a
+valid layer name.
+
+This function uses the {\et JoinMax}{\it XXX} variables in processing. 
+There is no effect on objects in the list whose handle is passed as
+the first argument, or on the handle.
+
+%------------------------------------
+% 100508
+\index{EdgeObjects function}
+\item{(object\_handle) \vt EdgeObjects({\it object\_handle}, {\it all\/},
+ {\it dimen\/}, {\it lname\/}, {\it mode\/})}\\
+This function creates new polygon copies that cover the edges of the
+figures in the passed handle.  The {\it dimen} is half the effective
+path width of the generated wire-like shapes that cover the edges.
+
+If the boolean argument {\it all} is nonzero, all of the objects in
+the passed list may be processed, otherwise only the object at the
+head of the list will be processed.
+
+The {\it lname} argument is a layer name.  If this argument is zero,
+or a null or empty string, all objects on the returned list are
+associated with the layer of the first object in the passed list, and
+only objects on this layer in the passed list are processed. 
+Otherwise, the layer will be created if it does not exist, and all new
+objects will be associated with this layer, and all objects in the
+passed list will be processed.
+
+The {\it mode} is an integer which specifies the algorithm to use.  The
+algorithms are described with the {\vt EdgesZ} function.
+
+The {\vt DeleteObjects} function can be called to delete the old
+objects.  The {\vt CopyObjects} function can be called on the returned
+objects to add them to the database.  This function returns a handle
+to the new list upon success, or 0 if there are no objects.  The
+function will fail if the first argument is not a handle to a list of
+objects or copies, or the {\it lname} argument is non-null and not a
+valid layer name.
+
+%------------------------------------
+% 100508
+\index{ManhattanizeObjects function}
+\item{(object\_handle) \vt ManhattanizeObjects({\it object\_handle},
+ {\it all\/}, {\it dimen\/}, {\it lname\/}, {\it mode\/})}\\
+This function will convert the objects pointed to by the handle
+argument into a list of copies, which is referenced by the returned
+handle.  The supplied objects and handle are not affected.  Each new
+object is a Manhattan approximation of the original object.  The {\it
+dimen} argument is the minimum height or width in microns of
+rectangles created to approximate the non-Manhattan parts.
+
+The {\it all} argument is a boolean that if nonzero indicates that all
+objects in the list referenced by the handle may be processed.  If
+zero, only the first object in the list will be processed.
+
+The {\it lname} argument is a layer name, or zero.  If a layer name is
+given, the new objects will be associated with that layer, which will
+be created if it does not exist.  If 0 or an empty string is passed,
+the new objects will be associated with the layer of the original
+object.
+
+The {\it mode} argument is a boolean value which selects one of two
+Manhattanizing algorithms to employ.  These algorithms are described
+with the {\cb !manh} command.
+
+The function will fail if the first argument is not a handle to a list
+of objects or copies, or the {\it lname} argument is non-null and not
+a valid layer name, or the {\it dimen} argument is smaller than 0.01. 
+On success, a handle to the list of copies is returned.  Each object
+in the returned list is a box or Manhattan polygon which approximates
+one of the original objects.  Of course, if the original objects were
+all Manhattan, the shapes will be unchanged, though the coordinates
+will be moved to a {\it dimen} grid if the gridding mode ({\it mode}
+nonzero) is given.
+
+The {\vt DeleteObjects} function can be called to delete the old
+objects.  The {\vt CopyObjects} function can be called on the returned
+objects to add them to the database.
+
+This function uses the {\et JoinMax}{\it XXX} variables in processing. 
+There is no effect on objects in the list whose handle is passed as
+the first argument, or on the handle.
+
+%------------------------------------
+% 030204
+\index{GroupObjects function}
+\item{(int) \vt GroupObjects({\it object\_handle\/}, {\it array\/})}\\
+This function acts on the first object in the list and all other
+objects on the same layer found in the list.  The objects are copied,
+then sorted into groups, so that each group forms a single figure,
+i.e., no two members of the same group are disjoint.  The groups are
+then joined into polygons, and a handle to each group is returned in
+the array.  The array will be resized if necessary.  The returned
+value is the number of groups, corresponding to the used entries in
+the array.  The {\vt H} function should be used on the array elements
+to convert the values to an object handle data type, similar to the
+treatment of the array returned from the {\vt HandleArray} function. 
+The {\vt CloseArray} function can be used to close the handles.  The
+created objects are copies, so are not added to the database.
+
+This function uses the {\et JoinMax}{\it XXX} variables in processing. 
+There is no effect on objects in the list whose handle is passed as
+the first argument, or on the handle.  The value 0 is returned on
+error or if the list is empty.
+
+%------------------------------------
+% 040904
+\index{JoinObjects function}
+\item{(object\_handle) \vt JoinObjects({\it object\_handle}, {\it lname\/})}\\
+This function will combine the objects in the list passed as the first
+argument, if possible, into a new list of object copies, which is
+returned.  The passed handle and objects are not affected.  All
+objects in the returned list will be associated with the layer named
+in the second argument.  This layer will be created if it does not
+exist, and the output will consist of the joined outlines of all of
+the objects in the passed list, from any layer.  If 0, or a null or
+empty string is passed, the new objects will be associated with the
+layer of the first object in the passed list, and only the outlines of
+objects on this layer found in the passed list will contribute to the
+result.
+
+The {\vt DeleteObjects} function can be called to delete the old
+objects.  The {\vt CopyObjects} function can be called on the returned
+objects to add them to the database.  This function returns a handle
+to the new list upon success, or 0 if there are no objects.  The
+function will fail if the first argument is not a handle to a list of
+objects or copies, or the {\it lname} argument is non-null and not a
+vail layer name.
+
+This function uses the {\et JoinMax}{\it XXX} variables in processing. 
+There is no effect on objects in the list whose handle is passed as
+the first argument, or on the handle.
+
+%------------------------------------
+% 100508
+\index{SplitObjects function}
+\item{(object\_handle) \vt SplitObjects({\it object\_handle}, {\it all\/},
+ {\it lname}, {\it vert\/})}\\
+This function will split the objects in the list passed as the first
+argument into horizontal or vertical trapezoids (polygons or boxes)
+and return a list of the new objects.  The new objects are ``object
+copies'' and are not added to the database.
+
+If the boolean argument {\it all} is nonzero, all of the objects in
+the list referenced by the handle will be processed.  Otherwise, only
+the first object will be processed.
+
+The new objects are placed on the layer with the name given in {\it
+lname}, which is created if it does not exist, independent of the
+originating layer of the objects.  If a null string or 0 is passed for
+{\it lname}, the target layer will be the layer of the first object
+found in the object list.
+
+The {\it vert} argument is an integer which if nonzero indicates a
+vertical decomposition, otherwise a horizontal decomposition is
+produced.
+
+The handle and objects passed are untouched.  The {\vt DeleteObjects}
+function can be called to delete the old objects.  The {\vt
+CopyObjects} function can be called on the returned objects to add them
+to the database.  This function returns a handle to the new list upon
+success, or 0 if there are no objects.  The function will fail if the
+first argument is not a handle to a list of objects or copies, or the
+{\it lname} argument is non-null and not a valid layer name.
+
+%------------------------------------
+% 100508
+\index{DeleteObjects function}
+\item{(int) \vt DeleteObjects({\it object\_handle\/}, {\it all\/})}\\
+Calling this function will delete referenced objects from the current
+cell.  If the boolean argument {\it all} is nonzero, all objects in
+the list will be deleted.  Otherwise, only the first object in the
+list will be deleted.  Once deleted, the objects are no longer
+referenced by the handle, which may become empty as a result.
+
+This function will fail if the handle passed is not a handle to an
+object list.  The number of objects deleted is returned.
+
+%------------------------------------
+% 100508
+\index{SelectObjects function}
+\item{(int) \vt SelectObjects({\it object\_handle\/}, {\it all\/})}\\
+This function will select objects referenced by the handle.  If the
+boolean argument {\it all} is nonzero, all objects in the list will be
+selected.  Otherwise, only the first object in the list will be
+selected.
+
+It is not possible to select object copies, 0 is returned if the
+passed handle represents copies.  Otherwise the return value is the
+number of newly selected objects.
+
+This function will fail if the handle passed is not a handle to an
+object list.
+
+%------------------------------------
+% 100508
+\index{DeselectObjects function}
+\item{(int) \vt DeselectObjects({\it object\_handle\/}, {\it all\/})}\\
+This function will deselect objects referenced by the handle.  If the
+boolean argument {\it all} is nonzero, all objects in the list will be
+deselected.  Otherwise, only the first object in the list will be
+deselected.
+
+It is not possible to select object copies, 0 is returned if the
+passed handle represents copies.  Otherwise the return value is the
+number of newly deselected objects.
+
+This function will fail if the handle passed is not a handle to an
+object list.
+
+%------------------------------------
+% 100508
+\index{MoveObjects function}
+\item{(int) \vt MoveObjects({\it object\_handle}, {\it all\/}, {\it refx},
+ {\it refy}, {\it x}, {\it y})}\\
+This function is similar to the {\vt Move} function, however it
+operates on the object(s) referenced by the handle.  An object is
+moved such that the coordinate {\it refx}, {\it refy} is translated to
+{\it x}, {\it y}.  The current transform will be applied to the move. 
+If {\it all} is nonzero, all objects in the list are moved, otherwise
+only the object currently referenced is moved.  The function returns
+the number of objects moved.  This function will fail if the handle
+passed is not a handle to an object list.
+
+If the handle references object copies, each copy is translated and
+possibly transformed as described above.  The handle will subsequently
+reference the modified object.
+
+%------------------------------------
+% 100508
+\index{MoveObjectsToLayer function}
+\item{(int) \vt MoveObjectsToLayer({\it object\_handle}, {\it all\/},
+ {\it refx\/}, {\it refy\/}, {\it x\/}, {\it y\/}, {\it oldlayer\/},
+ {\it newlayer\/})}\\
+This is similar to the {\vt MoveObjects} function, but allows layer
+change.  If {\it newlayer} is 0, null, or empty, {\it oldlayer} is
+ignored and the function behaves identically to {\vt MoveObjects}. 
+Otherwise the {\it newlayer} string must be a layer name.  If {\it
+oldlayer} is 0, null, or empty, all moved objects are placed on {\it
+newlayer\/}.  Otherwise, {\it oldlayer} must be a layer name, in which
+case only objects on {\it oldlayer} will be placed on {\it
+newlayer\/}, other objects will remain on the same layer.  Subcell
+objects are moved as in {\vt MoveObjects}, i.e., the layer arguments
+are ignored.
+
+%------------------------------------
+% 101415
+\index{CopyObjects function}
+\item{(int) \vt CopyObjects({\it object\_handle}, {\it all\/}, {\it refx},
+ {\it refy}, {\it x}, {\it y}, {\it repcnt\/})}\\
+This function is similar to the {\vt Copy} function, however it
+operates on the object(s) referenced by the handle.  An object is
+copied such that the coordinate {\it refx}, {\it refy} is translated
+to {\it x}, {\it y}.
+
+The {\it repcnt} is an integer replication count in the range
+1--100000, which will be silently taken as one if out of range.  If
+not one, multiple copies are made, at multiples of the translation
+factors given.
+
+The current transform will be applied to the copy.  If {\it all} is
+nonzero, all of the objects in the list are copied, otherwise only the
+object currently being referenced is copied.  The function returns the
+number of objects copied.  This function will fail if the handle
+passed is not a handle to an object list.
+
+If the handle references object copies, the object copies that are
+referenced remains untouched, however the new objects, translated and
+possibly transformed as described above, are added to the database.
+The {\it repcnt} argument is ignored in this case.
+
+%------------------------------------
+% 082009
+\index{CopyObjectsToLayer function}
+\item{(int) \vt CopyObjectsToLayer({\it object\_handle\/}, {\it all\/},
+ {\it refx\/}, {\it refy\/}, {\it x\/}, {\it y\/}, {\it oldlayer\/},
+ {\it newlayer\/}, {\it repcnt\/})}\\
+This is similar to the {\vt CopyObjects} function, but allows layer
+change.  If {\it newlayer} is 0, null, or empty, {\it oldlayer} is
+ignored and the function behaves identically to {\vt CopyObjects}. 
+Otherwise the {\it newlayer} string must be a layer name.  If {\it
+oldlayer} is 0, null, or empty, all copied objects are placed on {\it
+newlayer\/}.  Otherwise, {\it oldlayer} must be a layer name, in which
+case only objects on {\it oldlayer} will be placed on {\it
+newlayer\/}, other objects will remain on the same layer.  Subcell
+objects are copied as in {\vt CopyObjects}, i.e., the layer arguments
+are ignored.
+
+%------------------------------------
+% 092615
+\index{CopyObjectsH function}
+\item{(object\_handle) \vt CopyObjectsH({\it object\_handle\/}, {\it all\/},
+ {\it refx\/}, {\it refy\/}, {\it x\/}, {\it y\/}, {\it oldlayer\/},
+ {\it newlayer\/}, {\it todb\/})}\\
+This function returns an object handle, containing copies of the
+objects in the handle passed as the first argument.  If boolean {\it
+all} is set, all passed objects will be copied, otherwise only the
+first object in the list will be copied.  The next four arguments set
+the copy translation, with {\it refx} and {\it refy} in the passed
+object translated to {\it x}, {\it y} in the copy.  The current
+transform is also applied to the copy.
+
+The two layer name arguments behave as in {\vt CopyObjectToLayer}.  If
+{\it newlayer} is 0, null, or empty, {\it oldlayer} is ignored and no
+object layers will change.  Otherwise the {\it newlayer} string must
+be a layer name.  If {\it oldlayer} is 0, null, or empty, all copied
+objects are placed on {\it newlayer}.  Otherwise, {\it oldlayer} must
+be a layer name, in which case only objects on {\it oldlayer} will be
+placed on {\it newlayer}, other objects will remain on the same layer. 
+Subcell objects are copied as in {\vt CopyObjects}, i.e., the layer
+arguments are ignored.
+
+The final argument is a boolean that when true, the copies are added
+to the database, and the returned handle points to the database
+objects.  If false, the returned handle contains ``object copies''
+which do not appear in the database.  Note that when copies are added
+to the database, unlike other copy functions merging is disabled, and
+the replication feature is not available.
+
+%------------------------------------
+% 030204
+\index{GetObjectType function}
+\item{(string) \vt GetObjectType({\it object\_handle\/})}\\
+This function returns a one-character string representing the type of
+object referenced by the handle argument.  If the handle is invalid, a
+null string is returned.  The types are:
+
+\begin{tabular}{ll}\\
+`{\vt b}' & boxes\\
+`{\vt p}' & polygons\\
+`{\vt w}' & wires\\
+`{\vt l}' & labels\\
+`{\vt c}' & subcells
+\end{tabular}
+
+This function will fail if the handle passed is not a handle to an
+object list.
+
+%------------------------------------
+% 030204
+\index{GetObjectID function}
+\item{(int) \vt GetObjectID({\it object\_handle\/})}\\
+This function returns a unique id number for the object.  The id is
+actually the address of the object in the process memory, so it is
+valid only for the current {\Xic} process.  If the referenced object
+is a copy, the id returned is the address of the real object, not the
+copy.  If no object is referenced by the handle, 0 is returned.  The
+function fails if the handle is not an object list type.
+
+%------------------------------------
+% 072904
+\index{GetObjectArea function}
+\item{(int) \vt GetObjectArea({\it object\_handle\/})}\\
+Return the area in square microns of the object pointed to by the
+handle.  Zero is returned for a defunct handle or upon error.
+
+%------------------------------------
+% 072904
+\index{GetObjectPerim function}
+\item{(int) \vt GetObjectPerim({\it object\_handle\/})}\\
+Return the perimeter in microns of the object pointed to by the
+handle.  Zero is returned for a defunct handle or upon error.
+
+%------------------------------------
+% 062715
+\index{GetObjectCentroid function}
+\item{(int) \vt GetObjectCentroid({\it object\_handle\/}, {\it array\/})}\\
+Return the centroid coordinates in microns of the object pointed to by
+the handle.  The second argument is an array of size two or larger
+that will contain the centroid coordinates upon successful return. 
+The return value is zero for a defunct handle or upon error, one if
+success.
+
+%------------------------------------
+% 030204
+\index{GetObjectBB function}
+\item{(int) \vt GetObjectBB({\it object\_handle\/}, {\it array\/})}\\
+This function loads the left, bottom, right, and top coordinates of
+the object's bounding box (in microns) into the {\it array} passed. 
+This function will fail if the handle passed is not a handle to an
+object list, or if the size of the array is less than 4.  The return
+value is 1 if successful, 0 otherwise.
+
+%------------------------------------
+% 021912
+\index{SetObjectBB function}
+\item{(int) \vt SetObjectBB({\it object\_handle\/}, {\it array\/})}\\
+This function will alter the shape of the object pointed to by the
+handle such that it has the bounding box passed.  The {\it array}
+contains the left, bottom, right, and top coordinates, in microns. 
+This function will fail if the handle passed is not a handle to an
+object list, or if the size of the array is less than 4.  The return
+value is 1 if successful, 0 otherwise.  This function has no effect on
+subcells, but other types of object will be rescaled to the new
+bounding box.
+
+%------------------------------------
+% 120615
+\index{GetObjectListBB function}
+\item{(int) \vt GetObjectListBB({\it object\_handle\/}, {\it array\/})}\\
+This is similar to {\vt GetObjectBB}, but computes the bounding box of
+all objects in the list of objects referenced by the handle.  not just
+the list head.  The function loads the left, bottom, right, and top
+coordinates of the aggregate bounding box (in microns) into the array
+passed.  This function will fail if the handle passed is not a handle
+to an object list, or if the size of the array is less than 4.  The
+return value is a count of the objects in the list.
+
+%------------------------------------
+% 011110
+\index{GetObjectXY function}
+\item{(int) \vt GetObjectXY({\it object\_handle\/}, {\it array\/})}\\
+This function will retrieve the ``XY'' position from the object
+pointed to by the handle into the array, which must have size 2 or
+larger.  This is a coordinate, in microns, the interpretation of which
+depends on the object type.  For boxes, that value is the lower-left
+corner of the box.  For wires and polygons, the value is the first
+vertex in the coordinate list.  For labels, the value is the text
+anchor position.  For subcells, the value is the instantiation point,
+the same as the translation in the instantiation transform.
+
+On success, the return value is 1, with the array values set. 
+Otherwise, 0 is returned.
+
+%------------------------------------
+% 011110
+\index{SetObjectXY function}
+\item{(int) \vt SetObjectXY({\it object\_handle\/}, {\it x\/}, {\it y\/})}\\
+This function will set the ``XY'' coordinate of the object pointed to
+by the handle, as if setting the {\et XprpXY} pseudo-property number
+7215 on the object.  This has the effect of moving the object to a new
+location.  The interpretation of the coordinate, which is supplied in
+microns, depends on the type of object.  For boxes, the lower-left
+corner will assume the new value.  For polygons and wires, the object
+will be moved so that the first vertex in the coordinate list will
+assume the new value.  For labels, the text will be anchored at the
+new value, and for subcells, the new value will set the translation
+part of the instantiation transform.
+
+A value of 1 is returned if the operation succeeds, and the object
+will be moved.  On failure, 0 is returned.
+
+%------------------------------------
+% 030204
+\index{GetObjectLayer function}
+\item{(string) \vt GetObjectLayer({\it object\_handle\/})}\\
+This function returns the name of the layer on which the object
+referenced by the handle is defined.  For subcells, this layer is
+named ``{\vt \$\$}'', but objects will return a layer from the layer
+table.  This function will fail if the handle passed is not a handle
+to an object list.  A stale handle will return a null string.
+
+%------------------------------------
+% 021912
+\index{SetObjectLayer function}
+\item{(int) \vt SetObjectLayer({\it object\_handle\/}, {\it layername\/})}\\
+This function will move the object to the layer named in the string
+{\it layername}.  This will have no effect on subcells.  A value 1 is
+returned if successful, 0 otherwise.  This function will fail if the
+handle passed is not a handle to an object list.
+
+%------------------------------------
+% 070516
+\index{GetObjectFlags function}
+\item{(int) \vt GetObjectFlags({\it object\_handle\/})}\\
+This function returns internal flag data from the object referenced by
+the handle.  This function will fail if the handle passed is not a
+handle to an object list.  A stale handle will return 0.
+
+The following flags are defined:\\
+\begin{tabular}{|l|l|p{4in}|} \hline
+\bf Name         &   \bf Bit  & \bf Description\\ \hline\hline
+\vt MergeDeleted & \vt 0x1    & Object has been deleted due to merge.\\ \hline
+\vt MergeCreated & \vt 0x2    & Object has been created due to merge.\\ \hline
+\vt NoDRC        & \vt 0x4    & Skip DRC tests on this object.\\ \hline
+\vt Expand       & \vt 0x8    & Five flags are used to keep track of cell
+ expansion in main plus four sub-windows, in cell instances only.\\ \hline
+\vt Mark1        & \vt 0x100  & General purpose application flag.\\ \hline
+\vt Mark2        & \vt 0x200  & General purpose application flag.\\ \hline
+\vt MarkExtG     & \vt 0x400  & Extraction system, in grouping phonycell.\\
+ \hline
+\vt MarkExtE     & \vt 0x800  & Extraction system, in extraction phonycell.\\
+ \hline
+\vt InQueue      & \vt 0x1000 & Object is in selection queue.\\ \hline
+\vt NoMerge      & \vt 0x4000 & Object will not be merged.\\ \hline
+\vt IsCopy       & \vt 0x8000 & Object is a copy, not in database.\\ \hline
+\end{tabular}
+
+The bitwise logic functions such as {\vt AndBits} can be used to check
+the state of the flags.  Of these, only {\vt NoDRC}, {\vt Mark1}, and
+{\vt Mark2} can be arbitrarily set by the user, using functions
+described below.
+
+%------------------------------------
+% 070516
+\index{SetObjectNoDrcFlag function}
+\item{(int) \vt SetObjectNoDrcFlag({\it object\_handle\/}, {\it value\/})}\\
+This will set the state of the {\vt NoDRC} flag of the object
+referenced by the handle.  The second argument is a boolean
+representing the flag state.  This can be called on any object, but is
+only significant for boxes, polygons, and wires in the database. 
+Objects with this flag set are ignored during design rule checking.
+
+The return value is 0 or 1 representing the previous state of the
+flag, or -1 on error.
+
+%------------------------------------
+% 070516
+\index{SetObjectMark1Flag function}
+\item{(int) \vt SetObjectMark1Flag({\it object\_handle\/}, {\it value\/})}\\
+This will set the state of the {\vt Mark1} flag of the object
+referenced by the handle.  The second argument is a boolean
+representing the flag state.  This can be called on any object.  The
+flag is unused by {\Xic}, but can be set and tested by the user for
+any purpose.  The flag persists as long as the object is in memory.
+
+The return value is 0 or 1 representing the previous state of the
+flag, or -1 on error.
+
+%------------------------------------
+% 070516
+\index{SetObjectMark2Flag function}
+\item{(int) \vt SetObjectMark2Flag({\it object\_handle\/}, {\it value\/})}\\
+
+This will set the state of the {\vt Mark2} flag of the object
+referenced by the handle.  The second argument is a boolean
+representing the flag state.  This can be called on any object.  The
+flag is unused by {\Xic}, but can be set and tested by the user for
+any purpose.  The flag persists as long as the object is in memory.
+
+The return value is 0 or 1 representing the previous state of the
+flag, or -1 on error.
+
+%------------------------------------
+% 030204
+\index{GetObjectState function}
+\item{(int) \vt GetObjectState({\it object\_handle\/})}\\
+This function returns a status value for the object referenced by the
+handle.  The status values are:
+
+\begin{tabular}{ll}\\
+0 & normal state\\
+1 & object is selected\\
+2 & object is deleted\\
+3 & object is incomplete\\
+4 & object is internal only\\
+\end{tabular}
+
+Only values 0 and 1 are likely to be seen.  This function will fail if
+the handle passed is not a handle to an object list.  A stale handle
+will return 0.
+
+%------------------------------------
+% 033009
+\index{GetObjectGroup function}
+\item{(int) \vt GetObjectGroup({\it object\_handle\/})}\\
+This function returns the conductor group number of the object, which
+is a non-negative integer or possibly -1 in certain cases, and is
+assigned internally by the extraction system.  This is used by the
+extraction system to establish connectivity nets of boxes, polygons,
+and wires, and for subcell indexing.  If extraction is unavailable or
+not being used, then an arbitrary integer can be applied for other
+uses with the {\vt SetObjectGroup} function.
+
+This function will fail if the handle passed is not a handle to an
+object list.  If no group has been assigned, or the handle is stale,
+or the object is part of the ``ground'' group, 0 is returned. 
+Otherwise, any assigned number will be returned. 
+
+%------------------------------------
+% 033009
+\index{SetObjectGroup function}
+\item{(int) \vt SetObjectGroup({\it object\_handle\/}, {\it group\_num\/})}\\
+This function will assign the group number to the object.  All objects
+and instances may receive a group number, which is an arbitrary
+integer.  The group number is usually assigned and used by the
+extraction system, and should {\bf not} be assigned with this function
+if extraction is being used.  However, if extraction is unavailable or
+not being used, then this function allows an arbitrary integer to be
+associated with an object, which might be useful.  Beware that this
+number is zeroed if the object is modified, or in copies.
+
+The {\vt GetObjectGroup} function can be used to obtain the group
+number of an object or cell instance.
+
+This function will fail if the handle passed is not a handle to an
+object list.  If the group number is successfully assigned, 1 is
+returned, 0 is returned otherwise.
+
+%------------------------------------
+% 030204
+\index{GetObjectCoords function}
+\item{(int) \vt GetObjectCoords({\it object\_handle\/}, {\it array\/})}\\
+This function will obtain the vertex list for polygons and wires, or
+the bounding box vertices of other objects, starting from the lower
+left corner and working clockwise.  If an array is passed, the vertex
+coordinates are copied into the array, and the vertex count is
+returned.  The array will contain the x, y values of the vertices, in
+microns, if successful.  The coordinates are copied only if the array
+is large enough, or can be resized.  If the array is a pointer to a
+too small array, or the array is too small but has other variables
+pointing to it, resizing is impossible and the copying is skipped.  In
+this case, the returned value is the negative vertex count.  If 0 is
+passed instead of the array, the (positive) vertex count is returned. 
+Zero is returned if there is an error.  This function will fail if the
+handle passed is not a handle to an object list.
+
+%------------------------------------
+% 030204
+\index{SetObjectCoords function}
+\item{(int) \vt SetObjectCoords({\it object\_handle\/}, {\it array\/},
+ {\it size\/})}\\
+This function will modify a physical object to have the vertex list
+passed in the array.  The size is the number of vertices (one half the
+size of the array used).  For all but wires, the first and last
+vertices must coincide, thus the minimum number of vertices is four. 
+The array consists of x, y coordinates of the vertices.  If the
+operation is successful, 1 is returned, otherwise 0 is returned.  The
+coordinates in the array are in microns.  If the coordinates represent
+a rectangle, the new object will be a box, if it was previously a
+polygon or box.  A box may be converted to a polygon if the
+coordinates are not those of a rectangle.  For labels, the coordinates
+must represent a rectangle, and the label will be stretched to the new
+box.  The function has no effect on instances.  This function will
+fail if the handle passed is not a handle to an object list.
+
+%------------------------------------
+% 030204
+\index{GetObjectMagn function}
+\item{(real) \vt GetObjectMagn({\it object\_handle\/})}\\
+This function returns the magnification part of the transform if the
+object referenced by the handle is a subcell, or 1.0 for other
+objects.  Only physical subcells can have non-unit magnification. 
+This function will fail if the handle passed is not a handle to an
+object list.  A stale handle returns 0.
+
+%------------------------------------
+% 021912
+\index{SetObjectMagn function}
+\item{(int) \vt SetObjectMagn({\it object\_handle\/}, {\it magn\/})}\\
+This will set the magnification of the subcell referenced by the
+handle, or scale other physical objects.  The real number {\it magn}
+must be between .001 and 1000 inclusive.  If the operation is
+successful, 1 is returned, otherwise 0 is returned.  This function
+will fail if the handle passed is not a handle to an object list.
+
+%------------------------------------
+% 030204
+\index{GetWireWidth function}
+\item{(real) \vt GetWireWidth({\it object\_handle\/})}\\
+This function will return the wire width if the object referenced by
+the handle is a wire, otherwise 0 is returned.  This function will
+fail if the handle passed is not a handle to an object list.
+
+%------------------------------------
+% 030204
+\index{SetWireWidth function}
+\item{(int) \vt SetWireWidth({\it object\_handle\/}, {\it width\/})}\\
+This function will set the width of the wire referenced by the handle
+to the given {\it width} (in microns).  If the operation is
+successful, 1 is returned, otherwise 0 is returned.  This function
+will fail if the handle passed is not a handle to an object list.
+
+%------------------------------------
+% 030204
+\index{GetWireStyle function}
+\item{(int) \vt GetWireStyle({\it object\_handle\/})}\\
+This function returns the end style code of the wire pointed to by the
+handle, or -1 if the object is not a wire.  The codes are
+
+\begin{tabular}{ll}\\
+0 & flush ends\\
+1 & projecting rounded ends\\
+2 & projecting square ends
+\end{tabular}
+
+This function will fail if the handle passed is not a handle to an
+object list.
+
+%------------------------------------
+% 030204
+\index{SetWireStyle function}
+\item{(int) \vt SetWireStyle({\it object\_handle\/}, {\it code\/})}\\
+This function will change the end style of the wire referenced by the
+handle to the given {\it code}.  The code is an integer which can take
+the following values
+
+\begin{tabular}{ll}\\
+0 & flush ends\\
+1 & projecting rounded ends\\
+2 & projecting square ends
+\end{tabular}
+
+If the operation succeeds, 1 is returned, otherwise 0.  This can apply
+to physical wires only.  This function will fail if the handle passed
+is not a handle to an object list.
+
+%------------------------------------
+% 030204
+\index{SetWireToPoly function}
+\item{(int) \vt SetWireToPoly({\it object\_handle\/})}\\
+This function converts the wire object referenced by the handle to a
+polygon object.  If the conversion is done, the handle will reference
+the new polygon object.  The conversion will be done only if the wire
+has nonzero width.  If the wire is not a copy, the wire object in the
+database will be converted to a polygon.  Otherwise, only the copy
+will be changed.  Upon success, the function returns 1, otherwise 0 is
+returned.  The function fails if the argument is not a handle to an
+object list.
+
+%------------------------------------
+% 030204
+\index{GetWirePoly function}
+\item{(int) \vt GetWirePoly({\it object\_handle}, {\it array})}\\
+This function returns the polygon used for rendering a wire.  This
+will be different from the wire vertices, if the wire has nonzero
+width.  The first argument is a handle to an object list which
+references a wire object.  The second argument is an array which will
+hold the polygon coordinates.  This argument can be 0, if the polygon
+points are not needed.  The array will be resized if necessary (and
+possible).  The return value is the number of vertices required or
+used in the polygon.  If an error occurs, the return value is 0.  If
+an array is passed which can't be resized because it is referenced by
+a pointer, the return value is a negative value, the negative vertex
+count required.  The function will fail if the first argument is not a
+handle to an object list, or the second argument is not an array or
+zero.  The coordinates returned in the array are in microns, relative
+to the origin of the current cell.
+
+%------------------------------------
+% 030204
+\index{GetLabelText function}
+\item{(string) \vt GetLabelText({\it object\_handle\/})}\\
+This function returns the label text if the object referenced by the
+handle is a label.  Otherwise, a null string is returned.  The actual
+text is always returned, and not the symbolic text that is shown
+on-screen for script and long text labels.  This function will fail if
+the handle passed is not a handle to an object list.
+
+%------------------------------------
+% 021912
+\index{SetLabelText function}
+\item{(int) \vt SetLabelText({\it object\_handle\/}, {\it text\/})}\\
+This function will set the label text of a label referenced by the
+handle.  Setting the text in this manner will cause a long-text label
+to revert to a normal label.  If the operation succeeds, the return
+value is 1, otherwise 0 is returned.  This function will fail if the
+handle passed is not a handle to an object list.
+
+%------------------------------------
+% 022713
+\index{GetLabelFlags function}
+\item{(int) \vt GetLabelFlags({\it object\_handle\/})}\\
+This function returns the flags word used to specify a number of label
+presentation attributes, as described in \ref{labelflags}.
+
+This function will fail if the handle passed is not a handle to an
+object list.
+
+The function was named {\vt GetLabelXform} in releases prior to 3.3.1,
+and is still recognized by that name, though this is deprecated and
+undocumented.
+
+%------------------------------------
+% 022713
+\index{SetLabelFlags function}
+\item{(int) \vt SetLabelFlags({\it object\_handle\/}, {\it flags\/})}\\
+This function will apply the given flags to the label referenced by
+the handle.  The flags are the label flags used by {\Xic} and
+described in \ref{labelflags}.  If the operation is successful, 1 is
+returned, otherwise 0 is returned.  This function will fail if the
+handle passed is not a handle to an object list.
+
+The function was named {\vt SetLabelXform} in releases prior to 3.3.1,
+and is still recognized by that name, though this is deprecated and
+undocumented.
+
+%------------------------------------
+% 030204
+\index{GetInstanceArray function}
+\item{(int) \vt GetInstanceArray({\it object\_handle\/}, {\it array\/})}\\
+This function fills in the {\it array}, which must have size of four
+or larger, with the array parameters for the instance referenced by
+the handle.  If the operation succeeds, 1 is returned, and the array
+components have the following values, relative to the untransformed
+coordinates:
+
+\begin{tabular}{ll}
+array[0] & number of cells along x\\
+array[1] & number of cells along y\\
+array[2] & center to center x spacing (in microns)\\
+array[3] & center to center y spacing (in microns)\\
+\end{tabular}
+
+If the operation fails, 0 is returned.  This function will fail if the
+handle passed is not a handle to an object list.
+
+%------------------------------------
+% 030204
+\index{SetInstanceArray function}
+\item{(int) \vt SetInstanceArray({\it object\_handle\/}, {\it array\/})}\\
+This function will change the array parameters of the instance
+referenced by the handle to the indicated values.  The {\it array}
+values are in the format as returned from {\vt GetInstanceArray}. 
+Only physical mode subcells can be changed by this function, arrays
+are not supported in electrical mode.  If the operation succeeds, 1 is
+returned, otherwise 0 is returned.  This function will fail if the
+handle passed is not a handle to an object list.
+
+%------------------------------------
+% 030204
+\index{GetInstanceXform function}
+\item{(string) \vt GetInstanceXform({\it object\_handle\/})}\\
+This function returns a string giving the CIF transformation code for
+the instance referenced by the handle.  If the object is not an
+instance, a null string is returned.  This function will fail if the
+handle passed is not a handle to an object list.
+
+%------------------------------------
+% 030204
+\index{GetInstanceXformA function}
+\item{(string) \vt GetInstanceXformA({\it object\_handle\/}, {\it array\/})}\\
+This function fills in the {\it array}, which must have size 4 or
+larger, with the components of the transformation of the instance
+referenced by the handle.  The values are:
+
+\begin{tabular}{ll}
+{\it array\/}{\vt [0]} & 1 if mirror-y, 0 if no mirror-y\\
+{\it array\/}{\vt [1]} & angle in degrees\\
+{\it array\/}{\vt [2]} & translation x\\
+{\it array\/}{\vt [3]} & translation y\\
+\end{tabular}
+
+This is the same data as provided by the {\vt GetInstanceXform}
+function, but in numerical rather than string form.  The transform
+components are applied in the order as found in the array, i.e.,
+mirror first, then rotate, then translate.  The function returns 1 if
+successful, 0 otherwise.  It will fail if the handle passed is not a
+handle to an object list.
+
+%------------------------------------
+% 030204
+\index{SetInstanceXform function}
+\item{(int) \vt SetInstanceXform({\it object\_handle\/}, {\it transform\/})}\\
+This function applies the given {\it transform} to the instance
+referenced by the handle.  The {\it transform} is in the form of a CIF
+transformation string, as returned by {\vt GetInstanceXform}.  Note
+that coordinates in the transform string are in internal units (1 unit
+= .001 micron).  Only physical-mode subcells can be modified by this
+function.  If the operation succeeds, 1 is returned, otherwise 0 is
+returned.  This function will fail if the handle passed is not a
+handle to an object list.
+
+%------------------------------------
+% 030204
+\index{SetInstanceXformA function}
+\item{(int) \vt SetInstanceXformA({\it object\_handle\/}, {\it array\/})}\\
+This function applies the given transform parameters in the {\it
+array} to the instance referenced by the handle.  The parameters are:
+
+\begin{tabular}{ll}
+{\it array\/}{\vt [0]} & 1 if mirror-y, 0 if no mirror-y\\
+{\it array\/}{\vt [1]} & angle in degrees\\
+{\it array\/}{\vt [2]} & translation x\\
+{\it array\/}{\vt [3]} & translation y\\
+\end{tabular}
+
+Only physical-mode subcells can be modified by this function.  If the
+operation succeeds, 1 is returned, otherwise 0 is returned.  The
+transform components are applied in the order as found in the array,
+i.e., mirror first, then rotate, then translate.  The function returns
+1 if successful, 0 otherwise.  It will fail if the handle passed is
+not a handle to an object list.
+
+%------------------------------------
+% 010818
+\index{GetInstanceMaster function}
+\item{(string) \vt GetInstanceMaster({\it object\_handle\/})}\\
+Note: prior to 4.2.12, this function was called {\vt GetInstanceName}.
+
+This function returns the master cell name of the instance referenced
+by the handle.  If the object is not an instance, a null string is
+returned.  This function will fail if the handle passed is not a
+handle to an object list.  The cell instance can be electrical or
+physical, and operation is identical in electrical and physical mode.
+
+%------------------------------------
+% 062116
+\index{SetInstanceMaster function}
+\item{(int) \vt SetInstanceMaster({\it object\_handle\/}, {\it newname\/})}\\
+Note: prior to 4.2.12, this function was called {\vt SetInstanceName}.
+
+This currently works with physical cell data only.
+
+This function will replace the instance referenced by the handle with
+an instance of the cell given as {\it newname}, in the parent cell of
+the referenced instance.  The current transform is added to the
+transform of the new instance.  This function will fail if the handle
+passed is not a handle to an object list.  If successful, 1 is
+returned, otherwise 0 is returned.
+
+%------------------------------------
+% 011118
+\index{GetInstanceName function}
+\item{(string) \vt GetInstanceName({\it object\_handle\/})}\\
+Note:  prior to 4.2.12, this function returned the name of the
+instance master cell.  The \newline{\vt GetInstanceMaster} function now
+performs that operation.
+
+This function returns a name for the electrical cell instance
+referenced by the handle.  This is the name of the object, as would
+appear in a generated SPICE file.
+
+For unnamed (missing name property) electrical instances, a null
+string is returned.
+  
+For physical cell instances, an instance name is returned, which
+consists of the master name followed by a colon separator and an index
+number.  The index is a 0-based sequence for instances with a
+particular master.  The index count advances by the size of the array
+for arrayed instances, leaving room in the sequence for individual
+elements.  The index is in database order (top to bottom then left to
+right of the upper left corner of the instance bounding box), and is
+stable and reproducible as long as instance sizes and placement
+locations remain the same.
+
+Internally, electrical names are generated in the following way.  Each
+device has a prefix, as specified in the technology file.  The prefix
+for subcircuits is ``X'', which is defined internally.  The prefixes
+follow (or should follow) SPICE conventions.  The database of instance
+placements is scanned in order of the placement location (upper-left
+corner of the instance bounding box) top to bottom, then left to
+right.  Each instance encountered is given an index number as a count
+of the same prefix previously encountered in the scan.  The prefix
+followed by the index forms the instance name.  This will identify
+each instance uniquely, and the sequencing is predictable from spatial
+location in the schematic.  For example.  {\vt X1} will be above or to
+the left of {\vt X2}.
+
+Rather than the internal electrical name.  this function will return
+an assigned name, if one has been given using {\vt SetInstanceName} or
+by setting the name property,
+
+The index number can be obtained as an integer with {\vt
+GetInstanceIdNum}.  See also \newline{\vt GetInstanceAltName} for a
+different subcircuit name style.
+
+%------------------------------------
+% 010818
+\index{SetInstanceName function}
+\item{(int) \vt SetInstanceName({\it object\_handle\/}, {\it newname\/})}\\
+Note:  prior to 4.2.12, this function would re-master the instance,
+the same as the present \newline{\vt SetInstanceMaster} function.
+
+This will set a name for the electrical instance referenced by the
+handle, which is in effect applying a name property to the instance. 
+this makes sense for devices, subcircuits, and terminal devices.  The
+new name will be used when generating netlist output, so should
+conform to any requirements, for example SPICE conventions, being in
+force.
+
+If the string is null or 0, any applied name will be deleted,
+equivalent to ``removing'' a name property.
+
+Physical instance names can not be changed, an attempt to do so fails
+silently.
+
+The return value is 1 on success, 0 otherwise.
+
+%------------------------------------
+% 060616
+\index{GetInstanceAltName function}
+\item{(string) \vt GetInstanceAltName({\it object\_handle\/})}\\
+This returns an alternative instance name for the electrical
+subcircuit cell instance referenced by the handle.  The format is the
+master cell name, followed by an underscore, followed by an integer. 
+The integer is zero-based and sequential among instances of a given
+master.  For example, instances of master ``{\vt foo}'' would have
+names {\vt foo\_0}, {\vt foo\_1}, etc.  This is more useful an some
+cases than the SPICE-style names {\vt X1}, {\vt X2}, ...  as returned
+by {\vt GetInstanceName}.
+
+For electrical device instances, this function returns the same
+name As the {\vt GetInstanceName} function.
+
+The {\vt GetInstanceAltIdNum} function returns the index number used,
+as an integer.  This is different from the regular index, where every
+instance, of whatever type, has a unique index.  Here, instances of
+each master each have an index count starting from zero.  The order
+that instances appear, however, is the same in both lists. 
+
+Presently, this function returns a null string for physical instances.
+
+%------------------------------------
+% 060616
+\index{GetInstanceType function}
+\item{(string) \vt GetInstanceType({\it object\_handle\/})}\\
+This function will return a string consisting of a single letter that
+indicates the type of cell instance referenced by the handle.  The
+function will fail if the handle is of the wrong type.  A null string
+is returned it the object referenced is not a cell instance. 
+Otherwise, the following strings may be returned.
+
+These apply to electrical cell instances.
+\begin{description}
+\item{``b''}\\
+The instance is ``bad''.  There has been an error.
+
+\item{``n''}\\
+The instance type is ``null'' meaning that it has no electrical
+significance in a schematic.
+  
+\item{``g''}\\
+The instance is a ground pin.  It has a ``hot spot'' that when placed
+forces a ground contact at that location.
+
+\item{``t''}\\
+This is a terminal device, which has a name label and hot spot.  When
+placed, it forces a contact to a net named in the label at the hot
+spot location.
+
+\item{``d''}\\
+The instance represents a device, such as a resistor, capacitor, or
+transistor.
+
+\item{``m''}\\
+This is a macro, which implements a subcircuit that is placed in the
+schematic, as a ``black box''.  Unlike a subcircuit, a macro has no
+sub-structure.
+
+\item{``s''}\\
+This is an instance of a circuit cell, i.e., a subcircuit.  Its master
+contains instances of devices and other objects representing a
+circuit.
+\end{description}
+
+For physical instances, at present there is only one return.
+\begin{description}
+\item{``p''}\\
+   This is a physical instance.
+\end{description}
+
+%------------------------------------
+% 010818
+\index{GetInstanceIdNum function}
+\item{(int) \vt GetInstanceIdNum({\it object\_handle\/})}\\
+This function returns the integer index number used in electrical
+device and subcircuit instance names.  See the {\vt GetInstanceName}
+description for information about how the numbers are computed.  Each
+subcircuit will have a unique number.  Devices are numbered according
+to their prefix strings, each unique prefix has its own number
+sequence.  These values are always non-negative.
+
+The return for all physical instances is similarly created, and is the
+same index used in the instance name returned by {\vt
+GetInstanceName}.
+
+This function will return -1 on error.
+
+%------------------------------------
+% 010818
+\index{GetInstanceAltIdNum function}
+\item{(int) \vt GetInstanceAltIdNum({\it object\_handle\/})}\\
+This returns an alternative index for electrical subcircuits, as used
+in the {\vt GetInstanceAltName} function.  Every subcircuit master
+will have its instances numbered sequentially starting with 0.  The
+ordering is set by the instance placement location in the schematic,
+top to bottom then left to right, with the upper-left corner of the
+bounding box being the reference location.
+
+For physical instances, an internal indexing number used by the
+extraction system is returned.  This is a unique 0-based sequence
+applied to all instances of a cell, in database order.  The count is
+incremented by the array size for arrayed instances.
+
+For other instances, the return value is the same as {\vt
+GetInstanceIdNum}.
+\end{description}
 
 !!SEEALSO
 funcs:geom1

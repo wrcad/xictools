@@ -1,4 +1,8 @@
-% WRspice Manual file: appendix.tex
+% -----------------------------------------------------------------------------
+% WRspice Manual
+% (C) Copyright 2025, Whiteley Research Inc., Sunnyvale CA
+% appendix.tex.in
+% -----------------------------------------------------------------------------
 
 \appendix
 \chapter{File Formats}

@@ -130,6 +130,86 @@ Cadence&#174; Compatibility Features
     <b>Help Menu</b>, which otherwise can't be done before the
     technology file is read on program startup.
     </dl>
+!!LATEX cdscompat pcells.tex
+%\ifoa
+Limited compatibility with Cadence Virtuoso$^{TM}$ is available on two
+levels.  First, technology, display resource (DRF), and layer mapping
+files can be read directly by {\Xic}.  These files are generally
+provided in vendor-supplied process design kits intended for use with
+Cadence Virtuoso.  Second, the OpenAccess plug-in allows {\Xic} to
+access the Cadence libraries directly.  Designs can be loaded into
+{\Xic}, however presently they cannot be returned to Virtuoso without
+losing data required by Virtuoso.
+%\else
+%Limited compatibility with Cadence Virtuoso$^{TM}$ is available.  The
+%ASCII technology, display resource (DRF), and layer mapping files can
+%be read directly by {\Xic}.  These files are generally provided in
+%vendor-supplied process design kits intended for use with Cadence
+%Virtuoso.
+%\fi
+
+For export to a Cadence environment, the {\cb !dumpcds} command will
+create compatible technology and DRF files based on the {\Xic}
+technology file in use.
+
+Import of a Cadence technology environment is handled by three
+keywords which are given in the {\Xic} technology file.  In fact, a
+minimal technology file can consist of little more than these
+keywords.  The keywords should appear in the order given, but
+otherwise can appear anywhere in the {\Xic} technology file.
+
+\begin{description}
+\item{\vt ReadDRF} {\it drf\_file}\\
+This reads the display resource file (DRF), which creates tables
+of layer colors, fill patterns, and similar for use in displays.
+
+\item{\vt ReadCdsTech} {\it techfile}\\
+This will read a Virtuoso ASCII technology file.  The technology file
+contains the layer definitions, and usually quite a lot of technology
+information.  From this, many of the {\it Xic} design rules and
+extraction keywords can be obtained.
+
+%\ifoa
+\item{\vt ReadOaTech} {\it library}\\
+This will obtain Virtuoso technology information directly from
+OpenAccess.  The {\it library} is an OpenAccess library, listed in
+the {\vt lib.defs} or {\vt cds.lib} file.  This obtains technology
+information by use of the OpenAccess plug-in.  There should be no
+reason to use both this and {\vt ReadCdsTech}, as they should
+retrieve the same information.
+%\fi
+
+\item{\vt ReadCdsLmap} {\it filename}\\
+The {\it filename} is the path to a Virtuoso layer mapping file.  This
+provides GDSII layer/datatype numbers for the layers.  This must
+appear in the {\Xic} technology file after {\vt ReadCdsTech}.
+\end{description}
+
+An {\Xic} technology file can consist of these statements only.  This
+will set the layers and their colors, fill patterns, and some or all
+of the electrical, extraction, and design rule information.
+
+When a technology file is written with the {\cb Save Tech} command, it
+will have the usual format and the lines described above are {\bf not}
+included in the new file.
+
+The ability to read the Lisp/Skill file format used by Virtuoso is
+provided by an internal Lisp parser.  The parser is available to run
+general scripts through the {\cb !lisp} command, though this has
+limited utility at present.
+
+In the technology file, is is sometimes useful to enable debugging
+output from the Lisp parser.  The following keyword enables this.
+
+\begin{description}
+\item{\vt LispLogging} [{\vt y/n}]\\
+If this boolean keyword is set in the technology file, a log file will
+be generated when the Lisp parser is used.  This can be used to track
+down issues when parsing Virtuoso-style input files.  Asserting this
+keyword is equivalent to setting the Lisp logging in the {\cb Logging
+Options} panel from the {\cb Help Menu}, which otherwise can't be done
+before the technology file is read on program startup.
+\end{description}
 
 !!SUBTOPICS
 cdsconnect
@@ -259,6 +339,106 @@ The Lisp Parser
     <tr><td><tt>argv</tt></td>       <td>command line argument list</td></tr>
     <tr><td><tt>let</tt></td>        <td>variable scope container</td></tr>
     </table>
+!!LATEX lisp pcells.tex
+The language supported here is similar to Lisp, and to the Cadence
+Skill language.  The intention is not to replicate all features of
+these languages, but to provide a minimal subset of features for
+compatibility.  The language will be referred to as ``Lisp'', but it
+should not be confused with the full-blown programming language.
+
+The language differs from classic Lisp in that algebraic expressions
+within lists are evaluated, as in Skill.  These reduce to a number
+token.  One subtlety is detection of unary minus, for example {\vt (2
+-1)} could be interpreted as a list of two numbers, or one number
+(the difference).  The parser will assume a unary minus if the
+preceding character is space or `{\vt (}', and the following
+character is an integer or period followed by an integer.
+
+One of the advantages of Lisp is the ease with which the syntax
+can be parsed.  The basic data object is a ``node'', which has the form
+\begin{quote}
+[{\it name\/}]( {\it data} ... )
+\end{quote}
+If a node has a {\it name}, there is no space between the name and the
+opening parenthesis.  A named node is roughly equivalent to a function
+call.  The {\it data} can be nodes, strings, or numerical expressions. 
+The items are separated by white space.  The {\it data} can use
+arbitrarily many lines in the input file.
+
+Lisp variables are defined when assigned to, and have global scope
+unless declared in a {\vt let} node, in which case their scope is
+within the {\vt let} node, i.e., local.
+
+A Lisp file consists of one or more named nodes.  When the file is
+accessed with the {\cb !lisp} command, each of the nodes is evaluated. 
+The nodes must have names that are known to {\Xic}.  These are:
+
+\begin{description}
+\item{\vt main}\\
+The content of this node is evaluated.  This is a special name for the
+"main" function of a script.
+\item{Built-in function name}\\
+These are the basic Lisp functions and operator-equivalents.
+\item{{\Xic} function name}\\
+All of the {\Xic} script functions will be recognized, however in Lisp
+the first character of these functions is always lower case.  i.e.,
+the {\vt Edit} script function would be accessed as {\vt edit}( ) in
+Lisp.  Also, only {\Xic} functions that take string or numeric
+arguments will work at present.
+\item{User-defined procedures}\\
+These are Lisp functions defined by the user with the Lisp {\vt
+procedure}( ) function.
+\item{Cadence compatibility name}\\
+There is a growing number of node names that are used to interpret
+Cadence startup and control files (see \ref{cdscompat}).
+\end{description}
+
+A node name that can't be resolved will generate an error.
+
+The parser uses the same numerical parser as the {\WRspice} program,
+and hence recognizes numbers in the same (SPICE) format.  All of the
+math functions based on the standard C library, as used in the native
+scripting language, are available.
+
+The following built-in node names are recognized.
+
+\begin{tabular}{|l|l|} \hline
+\multicolumn{2}{|c|}{\kb Operator Equivalents}\\ \hline
+\vt expt &       \vt expt(x y)       $\Longleftrightarrow  x \symbol{94} y$\\ \hline
+\vt times &      \vt times(x y)      $\Longleftrightarrow  x * y$\\ \hline
+\vt quotient &   \vt quotient(x y)   $\Longleftrightarrow  x / y$\\ \hline
+\vt plus &       \vt plus(x y)       $\Longleftrightarrow  x + y$\\ \hline
+\vt difference & \vt difference(x y) $\Longleftrightarrow  x - y$\\ \hline
+\vt lessp &      \vt lessp(x y)      $\Longleftrightarrow  x < y$\\ \hline
+\vt leqp &       \vt leqp(x y)       $\Longleftrightarrow  x <= y$\\ \hline
+\vt greaterp &   \vt greaterp(x y)   $\Longleftrightarrow  x > y$\\ \hline
+\vt geqp &       \vt geqp(x y)       $\Longleftrightarrow  x >= y$\\ \hline
+\vt equal &      \vt equal(x y)      $\Longleftrightarrow  x == y$\\ \hline
+\vt nequal &     \vt nequal(x y)     $\Longleftrightarrow  x$ $!=$ $y$\\ \hline
+\vt and &        \vt and(x y)        $\Longleftrightarrow  x$ $\&\&$ $y$\\ \hline
+\vt or &         \vt or(x y)         $\Longleftrightarrow  x$ $||$ $y$\\ \hline
+\vt colon &      \vt colon(x y)      $\Longleftrightarrow  '(x y)
+   \Longleftrightarrow x : y$\\ \hline
+\vt setq &       \vt setq(x y)       $\longleftrightarrow  x = y$\\ \hline
+\multicolumn{2}{|c|}{\kb Lists}\\ \hline
+\vt ' &          returns list of arguments\\ \hline
+\vt list &       returns substituted list of arguments\\ \hline
+\vt cons &       add element to front of list\\ \hline
+\vt append &     append lists\\ \hline
+\vt car &        return leading element of list\\ \hline
+\vt cdr &        return list starting at second element\\ \hline
+\vt nth &        return N'th element of list\\ \hline
+\vt member &     return true if element in list\\ \hline
+\vt length &     return length of list\\ \hline
+\vt xCoord &     return first element of list\\ \hline
+\vt yCoord &     return second element of list\\ \hline
+\multicolumn{2}{|c|}{\kb Miscellaneous}\\ \hline
+\vt main &       main function\\ \hline
+\vt procedure &  define a procedure\\ \hline
+\vt argc &       command line argument count\\ \hline
+\vt argv &       command line argument list\\ \hline
+\vt let &        variable scope container\\ \hline
+\end{tabular}
 
 !!SEEALSO
 cdscompat
@@ -336,6 +516,60 @@ ReadDRF keyword
     will be referenced in the technology file <tt>techDisplays</tt>
     node.
     </dl>
+!!LATEX ReadDRF pcells.tex
+This technology file keyword is used to import a Cadence Virtuoso
+display resource (DRF) file into {\Xic}.  The syntax is
+\begin{quote}
+{\vt ReadDRF} {\it drf\_file}
+\end{quote}
+
+The display resource file is generally provided by a process design
+kit intended to be used with Virtuoso.  The file contains definitions
+of the layer colors and fill patterns, and other presentation
+attributes.  Although the names may vary, the display resource file in
+one installation is named ``{\vt display.drf}''
+
+The display resource file (DRF) ia a collection of ``nodes'', as
+understood by the Lisp parser.  A named node has the form
+\begin{quote}
+{\it name}{\vt (} {\it data} {\vt ... )}
+\end{quote}
+There can be no space between the node name and the opening
+parenthesis.  The {\it data} are other Lisp nodes, strings, or
+numerical data or expressions.  This can occupy arbitrarily many lines
+in the file.  The DRF file consists of successive Lisp nodes, with
+names and expected content defined by Cadence.
+
+The following top-level display resource Lisp nodes are understood by
+{\Xic}.  Presently, the only effect from these nodes is the creation
+of internal lists of data items, which are referenced by the nodes
+given in the Cadence ASCII technology file.  Thus, reading in the
+display resource file has no effect on {\Xic} operation other than
+providing display attributes for layers defined in the Cadence ASCII
+technology file.
+
+\begin{description}
+\item{\vt drDefineDisplay}\\
+This node is ignored.
+
+\item{\vt drDefineColor}\\
+For all entries with a display name of ``{\vt display}'', the color is
+added to an internal color list.  This internal list will be
+referenced in the technology file {\vt techDisplays} node.
+
+\item{\vt drDefineStipple}\\
+For all entries with a display name of ``{\vt display}'', the stipple
+pattern is added to an internal stipple list.  This internal list will
+be referenced in the technology file {\vt techDisplays} node. 
+
+\item{\vt drDefineLineStyle}\\
+This node is ignored.
+
+\item{\vt drDefinePacket}\\
+For all entries with a display name of ``{\vt display}'', the packet
+is added to an internal packet list.  This internal list will be
+referenced in the technology file {\vt techDisplays} node.
+\end{description}
 
 !!SEEALSO
 cdscompat
@@ -805,6 +1039,374 @@ ReadCdsTech keyword
     This maps to the <tt>width</tt> <a href="Routing">routing</a>
     parameter.
     </dl>
+!!LATEX ReadCdsTech pcells.tex
+This technology file keyword is used to import a Cadence Virtuoso
+ASCII technology file into {\Xic}.  The syntax is
+\begin{quote}
+{\vt ReadCdsTech} {\it techfile}
+\end{quote}
+
+The ASCII technology file is generally provided in process design kits
+intended for use with Virtuoso.  The file name varies, but ``{\vt
+techfile}'' and ``{\vt techfile.txt}'' have been used.  The file at
+minimum provides the list of layers used in the process.  Generally,
+there is a wealth of technology information available, and the file
+can be quite large and complex.
+
+If a display resource file is also being read, it should be read
+first.  Other than this, {\vt ReadCdsTech} can appear anywhere in the
+technology file, and will cause {\Xic} to read information from the
+Cadence ASCII technology file given in {\it techfile}.  This should be
+a full path to the file, unless the file is in the library search
+path.
+
+The technology file is collections of ``nodes'', as understood by the
+Lisp parser.  A named node has the form
+\begin{quote}
+{\it name\/}{\vt (} {\it data} {\vt ... )}
+\end{quote}
+There can be no space between the node name and the opening
+parenthesis.  The {\it data} are other Lisp nodes, strings, or
+numerical data or expressions.  This can occupy arbitrarily many lines
+in the file.  The file consists of successive Lisp nodes, with names
+and content that are defined by Cadence or OpenAccess.  The nodes that
+are understood by {\Xic} are described below.
+
+Both Virtuoso 5.x and 6.x technology files can be read.  Far more
+information can be obtained from 6.x (OpenAccess) technology files,
+however.  This includes:
+
+\begin{itemize}
+\item{Extraction technology keywords such as {\vt Conductor}, {\vt
+Via}, etc.  (as are available from 5.x files) but additionally
+electrical/physical data such as {\vt Thickness}, resistivity, and
+capacitance parameters are available.}
+
+\item{Design rules are generated from the ``constraint groups''.}
+\end{itemize}
+
+This will provide a much more complete starting point from the
+technology file provided with a foundry kit.  However, this still may
+be incomplete.  For example, a typical technology file may provide
+thickness values for conductors only, not insulators.
+
+Depending on the PDK, the imported design rules and derived layer
+definitions may require review and augmentation.  The ``real'' design
+rules are likely provided in separate configuration files for Mentor
+Calibre, Cadence Assura, and/or others.  In experience with one PDK,
+it was found that the rule set obtained through the OpenAccess
+technology database left a lot to be desired.
+
+\begin{enumerate}
+\item{The very basic rules, such as {\vt MinWidth} and
+{\vt MinSpace} came through fine, including the spacing tables.
+Other simple rules also come through properly.}
+
+\item{Derived layers come across fine, however within the syntax
+limitation, expresions are limited to a single operator, i.e., a form
+like ``{\it layer operator layer\/}''.  Thus, a complex definition
+requires multiple derived layers for intermediate layers, which is
+acceptable.  It was concerning, though, that the derived layers were
+not used anywhere within the technology file, such as in the
+constraints.  There seemed also to be errors, for example one obvious
+place where ``{\vt `and}'' was used where ``{\vt `or}'' was clearly
+required.}
+
+\item{The constraints helpfully included a design rule violation
+number, but were shown to be wrong when the rule was looked up.  For
+example, One rule specified ``(PP OR NP) Enclosure of PO ...'', yet
+there were separate constraints ``PP Enclosure PO...'' and ``NP
+Enclosure PO...'' specified, which is wrong.}
+
+\item{An attempt to DRC a known-clean layout with imported rules
+yielded a lot of bogus errors.  Additional work would be necessary
+to obtain a ``good'' set of design rules.}
+
+\item{As more tools use OpenAccess, perhaps there will be
+improvements in the rulesets provided through the OpenAccess
+technology database.  At present, it appears that this is not
+primary to the serious DRC tools, but may be used by Virtuoso,
+possibly for editing feedback.}
+\end{enumerate}
+
+The tree below shows the hierarchy of the nodes that are recognized in
+the technology file.  Most of these are ignored.  Below we describe
+the nodes that are actually used, and what information they provide.
+
+Below, nodes that were added for Virtuoso 6.1.4 are marked marked with
+an asterisk.  The\\
+{\vt constraintGroups} listing is greatly simplified, there is
+actually far more structure than indicated.
+
+\begin{quote}
+\begin{verbatim}
+    include
+    comment
+    controls
+        techParams
+        techPermissions
+        viewTypeUnits *
+        mfgGridResolution *
+    layerDefinitions
+        techLayers
+        techPurposes
+        techLayerPurposePriorities
+            techDisplays
+            techLayerproperties
+            techDerivedLayers *
+    layerRules
+        functions *
+        routingDirections *
+        stampLabelLayers *
+        currentDensityTables *
+        viaLayers
+        equivalentLayers
+        streamLayers
+    viaDefs *
+        standardViaDefs *
+        customViaDefs *
+    constraintGroups *
+        foundry *
+            spacings *
+                maxWidth
+                minWidth
+                minDiagonalWidth
+                minSpacing
+                minSameNetSpacing
+                minDiagonalSpacing
+                minArea
+                minHoleArea
+            viaStackLimits *
+            spacingTables *
+            orderedSpacings *
+                minOverlap
+                minEnclosure
+                minExtension
+                minOppExtension
+            antennaModels *
+            electrical *
+        LEFDefaultRouteSpec *
+            interconnect *
+                maxRoutingDistance *
+            routingGrids *
+                verticalPitch *
+                horizontalPitch *
+                verticalOffset *
+                horizontalOffset *
+    devices
+        tcCreateCDSDeviceClass
+        multipartPathTemplates *
+        extractMOS *
+        extractRES *
+        symContactDevice
+        ruleContactDevice
+        symEnhancementDevice
+        symDepletionDevice
+        symPinDevice
+        symRectPinDevice
+        tcCreateDeviceClass
+        tcDeclareDevice
+    viaSpecs *
+    physicalRules
+        orderedSpacingRules
+        spacingRules
+        mfgGridResolution
+    electricalRules
+        characterizationRules
+        orderedCharacterizationRules
+    leRules
+        leLswLayers
+    lxRules
+        lxExtractLayers
+        lxNoOverlapLayers
+        lxMPPTemplates
+    compactorRules
+        compactorLayers
+        symWires
+        symRules
+    lasRules
+        lasLayers
+        lasDevices
+        lasWires
+        lasProperties
+    prRules
+        prRoutingLayers
+        prViaTypes
+        prStackVias
+        prMastersliceLayers
+        prViaRules
+        prGenViaRules
+        prTurnViaRules
+        prNonDefaultRules
+        prRoutingPitch
+        prRoutingOffset
+        prOverlapLayer
+\end{verbatim}
+\end{quote}
+
+We mention below only the nodes from which information is extracted. 
+Note that this is a mixture of 5.x and 6.x nodes, providing unified
+support for all current Virtuoso releases.  In most cases, a node with
+an unrecognized name will produce a warning message.  These can be
+ignored, the purpose is only to identify ``new'' information in the
+technology file that might be useful to parse.
+
+\begin{description}
+\item{\vt include}\\
+This node contains a string, which is a path to another Lisp file. 
+That file will be opened and read.
+
+\item{\vt controls/viewTypeUnits}\\
+For {\vt maskLayout}, if {\vt microns}, the {\Xic} database
+resolutions 1000, 2000, 5000, 10000, and 20000 are accepted.
+
+\item{\vt controls/mfgGridResolution}\\
+This will set the {\Xic} {\et MfgGrid} parameter.
+
+\item{\vt layerDefinitions/techLayers}\\
+This associates OpenAccess layer numbers with layer names and
+abbreviations.  These are recorded in the {\Xic} layer database.
+
+\item{\vt layerDefinitions/techPurposes}\\
+This associates OpenAccess purpose numbers with purpose names and
+abbreviations.  These are recorded in the {\Xic} layer database.
+
+\item{\vt layerDefinitions/techLayerPurposePriorities}\\
+This contains a list of layer-purpose pairs, using layer and purpose
+names previously defined.  Each layer-purpose pair is used to create
+an {\Xic} layer.  These are created in the order listed.
+ 
+In Virtuoso, there is no distinction between physical and electrical
+layers as there is in {\Xic}.  All Virtuoso layers are taken as
+physical layers, except for the following internal Virtuoso layer
+numbers which with any purpose number will generate an {\Xic} layer
+listed in both the electrical and physical layer tables in {\Xic}.
+ 
+\begin{quote}
+\begin{tabular}{ll}
+\bf Layer Number & \bf Virtuoso Layer Name\\
+228 & \vt wire\\
+229 & \vt pin\\
+230 & \vt text\\
+231 & \vt device\\
+236 & \vt instance\\
+237 & \vt annotate\\
+\end{tabular}
+\end{quote}
+
+\item{\vt layerDefinitions/techDisplays}\\
+This will assign the colors and fill patterns to layers that exist in
+the {\Xic} layer table.  This references the internal packet, color,
+and stipple lists created from the display resource nodes.  In
+addition, the initial visibility and selectability states are set
+here, as well as the {\et Invalid} flag.
+
+\item{\vt layerDefinitions/techLayerproperties}\\
+This node provides some directly applicable parameters, which are read
+and added to the appropriate layer.  These include {\vt
+sheetResistance}, {\vt areaCapacitance}, {\vt edgeCapacitance}, and
+{\vt thickness}.  The thickness value is specified in angstroms, which
+is converted to microns.  The capacitance value units are picofarads
+and microns, thus no conversion is required.
+
+\item{\vt layerDefinitions/techDerivedLayers}\\
+The derived layers will be imported directly, with the expression
+converted to an {\Xic} layer expression string.  The expression given
+in this node type consists of a single operator and two layer names. 
+The operator keywords which map to geometrical combinations ({\vt
+'and}, {\vt 'or}, {\vt 'not}, and {\vt 'xor}) are accepted.  Others
+are ignored.
+
+\item{\vt layerRules/routingDirections}\\
+Layers found in this table are given the {\vt Routing} attribute.
+
+\item{\vt layerRules/viaLayers}\\
+The conducting layers are assigned the {\vt Conductor} attribute.  The
+via layer is assigned the {\vt Via} attribute.  This is in 5.x files
+only.
+
+\item{\vt layerRules/streamLayers}\\
+A GDSII import/export mapping is applied for each layer given.  This
+is in 5.x files only.
+
+\item{\vt viaDefs/standardViaDefs}\\
+This identifies layers that are given the {\vt Via} attribute.  The
+metal layers that are referenced by the via are given the {\vt
+Conductor} attribute.  The standard via definition is imported, and
+will be available for via generation from the {\cb Via Creation} panel
+from the {\cb Edit Menu}.
+
+\item{\vt constraintGroups/foundry/spacings/maxWidth}\\
+This identifies a {\vt MaxWidth} rule.
+
+\item{\vt constraintGroups/foundry/spacings/minWidth}\\
+This identifies a {\vt MinWidth} rule.
+
+\item{\vt constraintGroups/foundry/spacings/minDiagonalWidth}\\
+This will map to a {\vt Diagonal} clause in a {\vt MinWidth} rule.
+
+\item{\vt constraintGroups/foundry/spacings/minSpacing}\\
+This maps to either a {\vt MinSpace} rule (one layer given) or a {\vt
+MinSpaceTo} rule if two layers are given.
+
+\item{\vt constraintGroups/foundry/spacings/minSameNetSpacing}\\
+This provides the {\vt SameNet} clause to a {\vt MinSpace} or {\vt
+MinSpaceTo} rule.
+
+\item{\vt constraintGroups/foundry/spacings/minDiagonalSpacing}\\
+This provides the {\vt Diagonal} clause to a {\vt MinSpace} or {\vt
+MinSpaceTo} rule.
+
+\item{\vt constraintGroups/foundry/spacings/minArea}\\
+This identifies a {\vt MinArea} rule.
+
+\item{\vt constraintGroups/foundry/spacings/minHoleArea}\\
+This provides the dimension for area filtering in a {\vt NoHoles}
+rule.
+
+\item{\vt constraintGroups/foundry/spacings/minHoleWidth}\\
+This provides the dimension for minimum width filtering in a {\vt
+NoHoles} rule.
+
+\item{\vt constraintGroups/foundry/spacingTables}\\
+This provides tables of length, width, and spacing values, for
+size-dependent spacing rules.  These tables are parsed and added to
+{\vt MinSpace} and {\vt MinSpaceTo} rules.
+
+\item{\vt constraintGroups/foundry/orderedSpacings/minEnclosure}\\
+This maps to a {\vt MinSpaceFrom} rule, with the source and target
+layers swapped.  It provides the {\vt Enclosed} clause, which applies
+when the target figure is completely surrounded by the source
+material.  The alias {\vt minEnclosureDistance} is also recognized.
+
+\item{\vt constraintGroups/foundry/orderedSpacings/minExtension}\\
+This is almost identical with {\vt minEnclosure}, but does not require
+that the target figure be fully surrounded.  It maps to a {\vt
+MinSpaceFrom} rule in the same manner, but sets the rule dimension,
+not the {\vt Enclosed} value.  The alias {\vt minOverlapDistance} is
+also recognized.
+
+\item{\vt constraintGroups/foundry/orderedSpacings/minOppExtension}\\
+This is handled similarly to the two rules above, but sets the {\vt
+Opposite} clause of the {\vt MinSpaceFrom} rule.
+
+\item{\vt constraintGroups/LEFDefaultRouteSpec/interconnect/maxRoutingDistance}\\
+This provides the {\et maxdist} routing parameter (see \ref{exkwords}).
+
+\item{\parbox{4in}{\vt constraintGroups/LEFDefaultRouteSpec/routingGrids/horizontalPitch\newline
+constraintGroups/LEFDefaultRouteSpec/routingGrids/verticalPitch}}\\
+These provide the {\et pitch} routing parameter (see \ref{exkwords}).
+
+\item{\parbox{4in}{\vt constraintGroups/LEFDefaultRouteSpec/routingGrids/horizontalOffset\newline
+constraintGroups/LEFDefaultRouteSpec/routingGrids/verticalOffset}}\\
+These provide the {\vt offset} routing parameter (see \ref{exkwords}).
+
+\item{\vt layerRules/routingDirections}\\
+This provides the preferred routing direction.
+
+\item{\vt constraintGroups/foundry/spacings/minWidth}\\
+This maps to the {\et width} routing parameter (see \ref{exkwords}).
+\end{description}
 
 !!SEEALSO
 cdscompat
@@ -837,6 +1439,25 @@ ReadOaTech keyword
     be obtained from the print option of the <a
     href="!oatech"><b>!oatech</b></a> command.  This can be used to
     view the tech information that is being extracted.
+!!LATEX ReadOaTech pcells.tex
+This is similar to {\vt ReadCdsTech}, however it retrieves the tech
+data from OpenAccess relative to a given library, instead of from the
+ASCII technology file.  The syntax is
+\begin{quote}
+{\vt ReadOaTech} {\it library}
+\end{quote}
+ 
+The {\it library} must be listed in the OpenAccess library
+definitions file, named {\vt lib.defs} or named {\vt cds.lib} in
+Cadence installations.  The OpenAccess plug-in is used to obtain the
+information, and of course must be available and set to connect to an
+OpenAccess database.
+ 
+The technology information is extracted into a temporary Virtuoso
+ASCII technology file, which is then parsed by the equivalent of
+specifying {\vt ReadCdsTech} with this file.  The same file can be
+obtained from the print option of the {\cb !oatech} command.  This
+can be used to view the tech information that is being extracted.
 
 !!SEEALSO
 cdscompat
@@ -869,6 +1490,25 @@ ReadCdsLmap keyword
    href="ReadCdsTech"><tt>ReadCdsTech</tt></a> line, as the layers
    must exist in the <i>Xic</i> database before they can be assigned a
    GDSII mapping.
+!!LATEX ReadCdsLmap pcells.tex
+This technology file keyword allows import of a Cadence Virtuoso layer
+mapping file.  This file provides the layer/datatype numbers for the
+layers defined in the display resource file.  It is important that
+these numbers be equivalent in {\Xic} for success in transferring
+design data via GDSII or OASIS files.  The file is generally provided
+within a process design kit.  The name of the file will vary, in one
+case it is the name of the technology with a ``{\vt .layermap}''
+extension. 
+
+The syntax is 
+\begin{quote}
+{\vt ReadCdsLmap} {\it filename}
+\end{quote}
+       
+The {\it filename} is a path to the Virtuoso layer mapping file.  This
+must appear in the {\Xic} technology file after the {\vt ReadCdsTech}
+line, as the layers must exist in the {\it Xic} database before they
+can be assigned a GDSII mapping. 
 
 !!SEEALSO
 cdscompat
@@ -1074,6 +1714,166 @@ Connecting to Cadence Installations
     sub-masters through OpenAcess, a license checkout for the Cadence
     system occurs.  Virtuoso will not export a sub-master from the
     cache without a license.
+!!LATEX cdsconnect pcells.tex
+The OpenAccess plug-in (see \ref{oaplugin}) makes it possible for
+{\Xic} to access Cadence cell libraries, by making use of the
+OpenAccess libraries provided with the Cadence installation.
+
+When accessing Virtuoso design data, {\Xic} should be provided with a
+consistent technology file.  The Cadence compatibility features
+include the ability to read Virtuoso display resource, ASCII
+technology, and GDSII layer mapping files.  These files are provided
+in the process design kit in use.  The user should create a skeletal
+{\Xic} technology file which will read these files.  Then, layout
+appearance will be consistent between Virtuoso and {\Xic}.
+
+\subsubsection{Compatibility and Setup}
+
+The present release of {\Xic} is known to be compatible with Virtuoso
+6.1.6 in terms of OpenAccess versioning.  It is very likely compatible
+with earlier 6.1.{\it x} releases, but these have not been tested,
+though 6.1.4 has been verified with earlier {\Xic} releases.
+
+The installation location of the Cadence tools may be set in the
+environment variable {\et CDSHOME}.  The user should verify that this
+variable is set in the environment.  If not, the user must locate the
+installation directory for Cadence tools some other way.
+
+Listing the installation directory, e.g.,
+\begin{quote}
+{\vt ls \$CDSHOME}
+\end{quote}
+will provide a listing of files and subdirectories, which include the
+names ``{\vt tools}'' and ``{\vt tools.lnx86}''.  In addition, there
+will be a subdirectory (perhaps more than one) with a name similar or
+identical to ``{\vt oa\_v22.43.050}''.  This is OpenAccess.  In this
+directory you will find a ``{\vt lib}'' directory containing
+subdirectories with library files for 32 and 64-bit systems.  The
+files of interest will match the {\Xic} installation bit-width.  The
+OpenAccess provided with Virtuoso 6.1.6 is newer than the publicly
+available version of OpenAccess that {\Xic} is compiled against, but
+that does not appear to matter.  If there are multiple OpenAccess
+versions present, probably the newest one (largest release numbers)
+should be used, but if problems are encountered other versions can be
+tried.
+
+The full path to the directory containing the appropriate
+OpenAccess shared library files must be added to the system's
+library search string.  On an example Cadence installation, the
+path, for 64-bits, is
+\begin{quote}
+\vt \$CDSHOME/oa\_v22.43.050/lib/linux\_rhel50\_gcc44x\_64/opt
+\end{quote}
+In addition, callbacks may require that {\Xic} have access to
+additional shared libraries supplied by Cadence.  For 64-bits,
+this directory is
+\begin{quote}
+\vt \$CDSHOME/tools.lnx86/lib/64bit
+\end{quote}
+
+Traditionally in Unix/Linux, the shared library search path is
+modified by setting the\\ {\et LD\_LIBRARY\_PATH} environment variable. 
+This variable provides additional locations for the system to search
+for needed shared libraries, in addition to system default locations
+that are implicit.
+
+This variable can be used to set the search path, but in {\Xic} there
+is a better way:  set the\\ {\et XIC\_LIBRARY\_PATH} environment
+variable instead.  This is like {\et LD\_LIBRARY\_PATH}.  but applies
+only to the {\Xic} program.  Setting {\et LD\_LIBRARY\_PATH} applies
+to all programs, whether they need the additional search locations or
+not.
+
+The {\et XIC\_LIBRARY\_PATH} variable is most conveniently set in the
+user's shell startup file.  The variable string consists of a list of
+directories, separated by colon (`{\vt :}') characters.  The
+directories in the list are searched left-to-right to resolve shared
+library references, when a program is started.  One should probably
+also include the value of the {\et LD\_LIBRARY\_PATH} in case that has
+been set for some other reason.
+
+For our example, lines like the following should be added to the shell
+startup files.  For {\vt bash} and similar:
+\begin{quote}\vt
+\# Hook Xic to the Cadence OpenAccess library\\
+XIC\_LIBRARY\_PATH=\$CDSHOME/oa\_v22.43.050/lib/linux\_rhel50\_gcc44x\_64/opt\\
+XIC\_LIBRARY\_PATH=\$XIC\_LIBRARY\_PATH:\$CDSHOME/tools/lib/64bit\\
+export XIC\_LIBRARY\_PATH
+\end{quote}
+and for C-shell:
+\begin{quote}\vt
+\# Hook Xic to the Cadence OpenAccess library\\
+setenv XIC\_LIBRARY\_PATH \$CDSHOME/oa\_v22.43.050/lib/linux\_rhel50\_gcc44x\_64/opt\\
+setenv XIC\_LIBRARY\_PATH \$XIC\_LIBRARY\_PATH:\$CDSHOME/tools/lib/64bit
+\end{quote}
+Similar commands can be given on the command line.
+
+Once the new definitions apply, when {\Xic} starts, the following
+message should appear on the console among the initial startup
+messages:
+\begin{quote}
+\vt Using OpenAccess (oa.so).
+\end{quote}
+If the message is not seen, try setting the {\et XIC\_PLUGIN\_DBG}
+environment variable and starting {\Xic} again.  Messages printed in
+the console window should indicate where the error occurs.
+
+With OpenAccess successfully connected, the {\cb File Menu} will
+contain the {\cb OpenAccess Libs} button.  If {\Xic} was started in a
+directory with a {\vt cds.lib} file, the libraries in the file should
+be listed in the pop-up.  Probably, it is best when working with
+{\Xic} to work from a different directory than when working with
+Virtuoso.  If so, you will want to copy in your {\vt cds.lib} file,
+which defines the Cadence libraries available.  You can modify this
+copy with a text editor if desired.  The libraries will be listed in
+the {\cb OpenAccess Libraries} panel if they exist.
+
+\subsubsection{Express PCells}
+
+In Virtuoso, foundry devices are most likely represented as
+parameterized cells (pcells).  These are cells with an internal script
+which generates a physical layout according to a set of device
+parameters.
+
+Parameterized cells in the Cadence environment are most probably based
+on the Skill language and are not portable outside of a Cadence
+environment.  However, Virtuoso provides a feature called ``Express
+PCells'' which caches pcell sub-masters in the user's home directory. 
+A pcell sub-master is an ordinary cell, created from a pcell using a
+specific parameter set.  The pcell cache provides the benefit that
+pcell evaluation is avoided, so that designs may be opened more
+quickly.  A second advantage is that the cached sub-masters, unlike
+the pcells, can be exported.
+
+Before a design containing Skill-based pcell instances can be fully
+loaded into {\Xic}, the Express PCell feature must be enabled, and all
+of the pcell submasters must be cached.
+
+One should be aware that if only a schematic is being imported into
+{\Xic}, it isn't necessary to worry about pcells, as the pcell
+schematic symbol is available.  Only the physical layout changes with
+different device parameters.
+
+To enable Express PCells, the environment variable
+{\et CDS\_ENABLE\_EXP\_PCELL} should be set to ``{\vt true}''.
+Again, this is most conveniently done in the user's shell
+startup script.  For {\vt bash}:
+\begin{quote}
+\vt export CDS\_ENABLE\_EXP\_PCELL=true
+\end{quote}
+For C-shell:
+\begin{quote}
+\vt setenv CDS\_ENABLE\_EXP\_PCELL true
+\end{quote}
+
+From a Virtuoso Layout Editor window, the {\cb Tools} menu will
+contain an {\cb Express PCell Manager} button.  This brings up a
+window allowing control of the feature.  With the feature on, loading
+a design will populate the cache.  It should then be possible to load
+the same design into {\Xic}, with no unresolved pcell references. 
+Note that when obtaining the pcell sub-masters through OpenAccess, a
+license checkout for the Cadence system occurs.  Cadence will not
+export a sub-master from the cache without a license.
 
 !!SEEALSO
 cdscompat
@@ -1245,6 +2045,140 @@ Importing a Design from Virtuoso
     archive file will not contain the devices.  Be aware that to
     export the design to another <i>Xic</i> installation, the
     <tt>devices</tt> directory will have to be exported too.
+!!LATEX cdsimport pcells.tex
+Once the OpenAccess database of a Cadence Virtuoso installation is
+connected to {\Xic}, designs created in Virtuoso can be imported
+into {\Xic}.  Physical (layout) data should transfer without issues. 
+Schematic and schematic symbol data will transform as electrical
+cells, some of which are devices.  These will probably work
+successfully as {\Xic} cells, but it is possible that a bit of
+intervention will be needed.  It is disasterous if the cells are
+written back to Virtuoso.  By default, Virtuoso libraries are
+read-only in {\Xic} to prevent this from happening.
+
+{\Xic} obtains technology information from its own technology file,
+and (presently) not directly from OpenAccess.  However, the same
+technology information should be available to {\Xic} through direct
+reading of the appropriate {\vt display.drf} and ASCII technology
+files.  These files should be available in the process design kit in
+use.
+
+The user's {\vt cds.lib} file (or a copy) should exist in the current
+directory.  This file will be used and updated by {\Xic}.  It is fine
+to share a {\vt cds.lib} with an active Virtuoso installation, but it
+is probably better to maintain separate files, so that the {\Xic}
+libraries, which are presently incompatible with Virtuoso, are
+invisible in Virtuoso.
+
+If the OpenAccess database is connected, the {\cb OpenAccess
+Libraries} panel, from the {\cb OpenAccess Libs} button in the {\cb
+File Menu}, will display the libraries that are defined in the {\vt
+cds.lib} file.  The button will appear in the {\cb File Menu} only if
+an OpenAccess database is connected.
+
+From the panel, one can select a library by clicking on the listing,
+and list the contents with the {\cb Contents} button in the panel. 
+Pressing the {\cb Contents} button brings up a listing of the cells
+contained in the library.
+
+Presently, {\Xic} does not use ``views'' in the same manner as
+Virtuoso.  Each of the listed cell names contain one or more of the
+following OpenAccess standard views, which are used to create the
+{\Xic} cell.  The {\vt maskLayout} view contributes the physical data. 
+The {\vt schematic} view provides the electrical data, and the {\vt
+schematicSymbol} view provides the {\Xic} symbolic representation. 
+Other views are ignored by {\Xic}.
+
+In the {\cb Listing} panel, one can select cells bu clicking on a
+name.  When a cell is selected, the {\cb Open} button becomes active. 
+Pressing this button will read that cell, and its hierarchy, into
+{\Xic}.  Note that it does not matter whether or not the library is
+``open'' in the {\cb OpenAccess Libraries} listing.  The ``open''
+status means that cells in the library will resolve instantiations as
+archive files are being read, but explicitly read cells, and subcells
+referenced in OpenAccess, are always read.
+
+Before data can be successfully read into {\Xic}, Virtuoso
+parameterized cells must be cached, using the Cadence Express PCells
+feature.  {\Xic} can not create super-masters for Virtuoso
+(Skill-based) pcells, but will import cached super-masters.  The
+imported cell will be an ordinary cell in {\Xic}, but will retain
+properties that identify the cell as originating as a Virtuoso pcell.
+
+Once the hierarchy is read, it should appear visually very similar if
+not identical to the corresponding views in Virtuoso, if the
+appropriate technology has been accessed properly.  Electrical cells
+will always have a symbolic representation, since in Virtuoso
+schematic instantiations are always symbolic, unlike in {\Xic}.
+
+If there are errors or warnings emitted during the import, the log
+file listing will appear.  The user should inspect this and take
+appropriate action if needed.
+
+With the design now local in {\Xic}, it can be saved to disk in any of
+the formats supported by {\Xic}.  Initially, it is recommended saving
+the imported design as a collection of native cell files, into a clean
+directory.  The {\cb Export Control} panel from the {\cb Convert Menu}
+can be used for this.  Then, the devices can be ``harvested''.
+
+Initially, a number of the imported cells represent devices.  These
+correspond to Virtuoso pcells, and have the same name.  Except for
+some terminal devices that are created during translation as needed,
+the standard device library is not used.  The imported devices serve
+the same purpose as the library devices, and will work in the same
+way.  However, they will not appear in the device selection menus, and
+they are treated as ordinary cells in the hierarchy.  By
+``harvesting'' the devices, we will make ``official'' {\Xic} devices
+out of them, allowing use in other designs, and remove them as
+ordinary cells in the imported hierarchy.
+
+The following procedure can be used to identify the ``device'' cells. 
+Bring up the {\cb Cells Listing} panel from the {\cb Cells Menu}.  In
+the lower right-hand corner, select {\cb Elec Cells} in the menu. 
+Click the {\cb Filter} button on the side of the listing, which will
+bring up the {\cb Cell List Filter} panel.  Make sure that the only
+box checked is the one next to {\cb Device} (between {\cb not} and
+{\cb Device}).  Then click {\cb Apply}.  The listing will now consist
+of the device cells only.  You should save this list, using {\cb Save
+Text} or otherwise.
+
+After saving the imported design in a directory as native cell files,
+{\Xic} can be exited.  To harvest the devices, we will create a new
+directory (if needed), and move the device cells in our list from the
+directory containing our design to the new directory.  We will then
+add the new directory as a reference in a local {\vt device.lib} file,
+if this hasn't been done previously.  Then, next time we use {\Xic},
+the devices will be present in the device selection menus, and can be
+used in new schematics just as any other device.  Specifically,
+suppose that you saved the design as native cell files in a directory
+named ``{\vt chip1}'', and you have another directory named ``{\vt
+devices}''.  By hand, move each of the files in the list of devices
+from {\vt chip1<}to {\vt devices}.  Then, add the {\vt devices}
+directory to the {\vt device.lib} file.  The default system-wide {\vt
+device.lib} is in the {\vt startup} directory in the installation area
+({\vt /usr/local/xictools/xic/startup} by default).  You can modify
+this file, or better copy this file to your current directory, and
+modify the copy.  With a text editor, add a line to the end of the
+
+{\vt device.lib} file:
+\begin{quote}
+{\vt Directory}  {\it /full/path/to/your/devices}
+\end{quote}
+
+The second token should be the actual full path to the {\vt devices}
+directory that you created.  Note that in the future, all that you
+need to do to ``install'' a new device is to move the file into your
+{\vt devices} directory.
+
+Once finished, one can start {\Xic} again, with the same technology
+file, and read in the top-level cell from the saved native cell files
+directory.  The devices will be included, now resolved through the
+library mechanism.  One may wish to save the design in an archive
+format such as OASIS or GDSII, which may be more convenient than the
+directory full of cell files.  The archive file will not contain the
+devices.  Be aware that to export the design to another {\Xic}
+installation, the {\vt devices} directory will have to be exported
+too.
 
 !!SEEALSO
 oaplugin

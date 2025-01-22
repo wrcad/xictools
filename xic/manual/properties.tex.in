@@ -1,0 +1,53 @@
+% -----------------------------------------------------------------------------
+% Xic Manual
+% (C) Copyright 2025, Whiteley Research Inc., Sunnyvale CA
+% properties.tex.in
+% -----------------------------------------------------------------------------
+
+% -----------------------------------------------------------------------------
+\index{properties}
+\chapter{Property Specifications}
+\label{prptyspec}
+
+% prptyspec 021513
+<<prptyspec xiProperties.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Physical Mode Property Specifications}
+\label{physpropfmt}
+\index{properties!physical}
+
+% physpropfmt 101016
+<<physpropfmt xiProperties.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{User-Specified Electrical Property Specifications}
+\label{elecpropuser}
+\index{properties!electrical}
+
+% elecpropuser 071920
+<<elecpropuser xiProperties.hlp>>
+
+%------------------------------------------------------------------------------
+\section{{\Xic}-Managed Electrical Property Specifications}
+\index{properties!electrical}
+\label{branchprop}
+
+% elecpropxic 081318
+<<elecpropxic xiProperties.hlp>>
+
+% -----------------------------------------------------------------------------
+\label {spiceline}
+\index{spice device line}
+
+% spiceline 030415
+<<spiceline xiProperties.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Special Escapes}
+\label{prpescapes}
+\index{hypertext reference format}
+
+% prpescapes 062908
+<<prpescapes xiProperties.hlp>>
+

@@ -32,8 +32,8 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * hlp2latex -- A utility to extract latex text blocks stored in the
- * help system and create latex files from .tex.in template files.
+ * hlp2latex -- A utility to extract latex text blocks stored in the      *
+ * help system and create latex files from .tex.in template files.        *
  *                                                                        *
  *========================================================================*
  $Id:$
@@ -62,43 +62,48 @@
 #include "miscutil/msw.h"
 #endif
 
-// Usage: hlp2latex helppath latexdir | file.tex.in ...
+// Usage: hlp2latex [-p helppath] [-d var ...]  latexdir | file.tex.in ...
 //
 // This utility creates latex files from latex templates and blocks
 // of latex saved in the help system.  By saving both html and latex
 // in the same place in the help system, it should be easier to keep
 // these in sync.
 //
-// At least two arguments must be provided.  The first argument is a
-// path to a directory containing help files.  It is assumed that these
-// files contain latex blocks.  These follow HTML or TEXT blocks:
+// The argument following literal "-p" is a path to a directory
+// containing help files.  It is assumed that these files contain
+// latex blocks.  These follow HTML or TEXT blocks:
 //     !!HTML or !!TEXT
 //     (html or plain text)
 //     !!LATEX keyword latexfile
 //     (latex text)
-//  Second or subsequent arguments can be tokenized latex files with
-//  .tex.in extensions, or a directory containing such files.  In
-//  these files, lines with a token starting in the first column in
-//  the form
+//
+// Arguments following literal "-d" are variables which become
+// defined and can be tested with the !!IFDEF and similar constructs
+// in the help text.
+//
+// Other arguments can be tokenized latex files with .tex.in extensions,
+// or a directory containing such files.  In
+// these files, lines with a token starting in the first column in
+// the form
 //     <<keyword helpfile>>
-//  will be replaced with the latex block tagged with the same keyword
-//  when the latex files are generated.  The latex file name is the
-//  same as the source file name with the trailing ".in" stripped.
-//  Other than the tokens described, text is copied verbatim.
+// will be replaced with the latex block tagged with the same keyword
+// when the latex files are generated.  The latex file name is the
+// same as the source file name with the trailing ".in" stripped.
+// Other than the tokens described, text is copied verbatim.
 //
-//  The processing is recursive, so that !!LATEX blocks can contain
-//  <<key filename>> tokens.  These are expanded in place recursively
-//  when found.
+// The processing is recursive, so that !!LATEX blocks can contain
+// <<key filename>> tokens.  These are expanded in place recursively
+// when found.
 //
-//  The !!IFDEF/!!IFNDEF/!!ELSE//!!ENDIF keywords are recognized in
-//  the !!LATEX blocks and operate the same as in !!HTML blocks, i.e.,
-//  allowing conditional inclusions.
+// The !!IFDEF/!!IFNDEF/!!ELSE//!!ENDIF keywords are recognized in
+// the !!LATEX blocks and operate the same as in !!HTML blocks, i.e.,
+// allowing conditional inclusions.
 //
-//  !!LATEX blocks are terminated by any line that starts with "!!"
-//  that is not one of the conditionals mentioned above.  It is usually
-//  not necessary to explicitly terminate as termination occurs naturally
-//  from following !!SEEALO, !!KEYWORD or similar lines.  Termination
-//  also occurs naturally at the end of the file.
+// !!LATEX blocks are terminated by any line that starts with "!!"
+// that is not one of the conditionals mentioned above.  It is usually
+// not necessary to explicitly terminate as termination occurs naturally
+// from following !!SEEALO, !!KEYWORD or similar lines.  Termination
+// also occurs naturally at the end of the file.
 
 
 // The following topic methods override those in help/help_topic.cc,
@@ -172,24 +177,35 @@ main(int argc, char **argv)
         usage();
         return (1);
     }
-    const char *path = argv[1];
     init_signals();
-    HLP()->set_path(path, false);
-    char *err = 0;
-    if (HLP()->error_msg())
-        err = lstring::copy(HLP()->error_msg());
-    if (err) {
-        HLP()->word(".");
-        if (HLP()->error_msg()) {
-            GRpkg::self()->ErrPrintf(ET_ERROR, "%s", HLP()->error_msg());
-            exit (1);
-        }
-        GRpkg::self()->ErrPrintf(ET_WARN, "%s", err);
-        return (1);
-    }
 
-    for (int ac = 2; ac < argc; ac++) {
+    bool want_path = false;
+    bool want_define = false;
+    for (int ac = 1; ac < argc; ac++) {
         const char *in = argv[ac];
+        if (want_path) {
+            HLP()->set_path(in, false);
+            want_path = false;
+            if (HLP()->error_msg()) {
+                GRpkg::self()->ErrPrintf(ET_ERROR, "%s", HLP()->error_msg());
+                return (1);
+            }
+            continue;
+        }
+        if (want_define) {
+            HLP()->define(in);
+            want_define = false;
+            continue;
+        }
+        if (!strcmp(in, "-p")) {
+            want_path = true;
+            continue;
+        }
+        if (!strcmp(in, "-d")) {
+            want_define = true;
+            continue;
+        }
+
         if (filestat::is_directory(in)) {
             // Process all of the .tex.in files found in the directory,
             // other files are ignored.
@@ -378,27 +394,25 @@ cProcTmpl::is_token()
         s += 2;
         while (isspace(*s))
             s++;
-        if (isalnum(s[0]) || (s[0] == '.' && isalnum(s[1])))  {
-            char *e = strchr(pt_buf, '>');
-            if (e && e[1] == '>') {
-                *e = 0;
-                char *kw = lstring::gettok(&s);
-                char *fname = lstring::gettok(&s);
-                if (fname && kw) {
-                    delete [] fname;
-                    FILE *xp = HLP()->open_latex(kw, 0);
-                    if (!xp) {
-                        GRpkg::self()->ErrPrintf(ET_WARN,
-                            "unresolved keyword %s.\n", kw);
-                        delete [] kw;
-                        return (0);
-                    }
+        char *e = strchr(pt_buf, '>');
+        if (e && e[1] == '>') {
+            *e = 0;
+            char *kw = lstring::gettok(&s);
+            char *fname = lstring::gettok(&s);
+            if (fname && kw) {
+                delete [] fname;
+                FILE *xp = HLP()->open_latex(kw, 0);
+                if (!xp) {
+                    GRpkg::self()->ErrPrintf(ET_WARN,
+                        "unresolved keyword %s.\n", kw);
                     delete [] kw;
-                    return (xp);
+                    return (0);
                 }
                 delete [] kw;
-                delete [] fname;
+                return (xp);
             }
+            delete [] kw;
+            delete [] fname;
         }
         GRpkg::self()->ErrPrintf(ET_WARN,
             "token syntax error in %s.\n", pt_buf);

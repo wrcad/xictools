@@ -163,6 +163,39 @@ Output Generation
     be moved, and given a "<tt>.bak</tt>" extension.  The return value
     is 1 on success, 0 otherwise.
     </dl>
+!!LATEX funcs:sced:io scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 060616
+\index{Connect function}
+\item{(int) \vt Connect({\it for\_spice\/})}\\
+This function establishes the circuit connectivity for the current
+hierarchy.  If the boolean {\it for\_spice} is false, then devices
+with the {\et nophys} property set are ignored, and the netlist will
+have the ``shorted'' {\et nophys} devices shorted out.  This is
+appropriate for LVS and other extraction system operations.
+
+If {\it for\_spice} is true, the {\et nophys} devices are included,
+and not shorted.  This applies when generating output for SPICE
+simulation.
+
+The function returns 1 on success, 0 otherwise.  If the schematic is
+already processed and current, the function will return immediately. 
+The schematic is implicitly processed before most internal operations
+that make use of the schematic, so it is unlikely that the user will
+need to call this function.
+
+%------------------------------------
+% 091306
+\index{ToSpice function}
+\item{(int) \vt ToSpice({\it spicefile\/})}\\
+This function will dump a SPICE file from the current cell to a file
+of the given name.  If the argument is null or an empty string, the
+name will be that of the current cell with a ``{\vt .cir}'' suffix. 
+Any existing file of the same name will be moved, and given a ``{\vt
+.bak}'' extension.  The return value is 1 on success, 0 otherwise.
+
+\end{description}
 
 !!SEEALSO
 funcs:sced
@@ -334,6 +367,134 @@ Electrical Nodes
     Return a list of device and subcircuit contact names that connect
     to the given node.
     </dl>
+!!LATEX funcs:sced:nodes scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 011210
+\index{IncludeNoPhys function}
+\item{(int) \vt IncludeNoPhys({\it flag\/})}\\
+This sets an internal mode which applies to the other functions in
+this group.  If the boolean {\it flag} argument is nonzero, devices
+with the {\et nophys} property set will be considered when generating
+the connectivity and node mapping structures.  This has relevance when
+a device has the shorted option to {\et nophys} set, as such devices
+will be considered as normal devices with the flag set.  If the flag
+is unset, these devices will be taken as short circuits, which of
+course alters the node assignments.
+
+Internally, the extraction functions always take these devices as
+shorted, and they are otherwise ignored.  When generating a SPICE file
+during simulation or with other commands in the side menu, these
+devices are included as normal devices.  The present state of the
+netlist data structures will reflect the state of the last operation.
+
+Setting this flag will cause rebuilding of the data structures to the
+requested state if necessary when one of the functions in this section
+is called.  This persists until some other function, such as an
+extraction or SPICE listing function is called, at which time the
+internal state of the flag may change.  Thus, this function may need
+to be called repeatedly ahead of the functions in this section.
+
+The return value is the previous value of the internal flag.
+
+%------------------------------------
+% 030204
+\index{GetNumberNodes function}
+\item{(int) \vt GetNumberNodes()}\\
+Return the size of the internal node map.  The internal node numbers
+range from 0 up to but not including this value.  The return value is
+0 on error or if the cell is empty.
+
+%------------------------------------
+% 050809
+\index{SetNodeName function}
+\item{(int) \vt SetNodeName({\it node}, {\it name\/})}\\
+This function associates the string {\it name} with the node number
+given in the first argument.  This affects the electrical database,
+and is equivalent to setting a node name with the node mapping
+facility available in the side menu in electrical mode.  Netlist
+output will use the given string name rather than a default name,
+however if the existing default name matches a global node name, the
+user-supplied name will be ignored.  If the name given is null or
+empty, any existing given name is deleted, and netlist output will use
+the node number.  The function returns 1 on success, 0 otherwise.
+
+%------------------------------------
+% 050809
+\index{GetNodeName function}
+\item{(string) \vt GetNodeName({\it node\/})}\\
+This function returns a string name for the given node number.  If a
+name has been given for that node, the name is returned, otherwise an
+internally generated default name is returned.  If the operation
+fails, a null string is returned.
+
+%------------------------------------
+% 030204
+\index{GetNodeNumber function}
+\item{(int) \vt GetNodeNumber({\it name\/})}\\
+This function returns the node number corresponding to the name string
+passed as an argument.  If no mapping to the string is found, -1 is
+returned.
+
+%------------------------------------
+% 030204
+\index{GetNodeGroup function}
+\item{(int) \vt GetNodeGroup({\it node\/})}\\
+This function returns the group index in the physical cell that
+corresponds to the given node number.  On error, -1 is returned.
+
+%------------------------------------
+% 060616
+\index{ListNodePins function}
+\index{ListNodeTerminals function}
+\item{(terminal\_handle) \vt ListNodePins({\it node\/})}\\
+Note:  This and {\vt ListNodeContacts} replace {\vt
+ListNodeTerminals}, which was removed in 4.2.12.
+
+Return a handle to the list of cell connection terminals bound to the
+internal node number supplied as the argument.  There probably will be
+at most one such connection.
+
+%------------------------------------
+% 060616
+\index{ListNodeContacts function}
+\item{(terminal\_handle) \vt ListNodeContacts({\it node\/})}\\
+Note:  This and {\vt ListNodePins} replace {\vt ListNodeTerminals},
+which was removed in 4.2.12.
+
+Return a handle to a list of device and subcircuit connection
+terminals bound to the specified node.
+
+%------------------------------------
+% 060616
+\index{GetNodeContactInstance function}
+\item{(object\_handle) \vt GetNodeContactInstance({\it terminal\_handle\/})}\\
+For a handle to an instance contact, such as returned from {\vt
+ListNodeContacts}, this function will return a handle to the device or
+subcircuit instance that provides the contact.
+
+%------------------------------------
+% 060616
+\index{ListNodePinNames function}
+\index{ListNodeTerminalNames function}
+\item{(stringlist\_handle) \vt ListNodePinNames({\it node\/})}\\
+Note:  This and {\vt ListNodeContactNames} replace {\vt
+ListNodeTerminalNames}, which was removed in 4.2.12.
+
+Return a list of cell connection terminal names that connect to the
+given node.  There is likely at most one cell connection per node.
+
+%------------------------------------
+% 060616
+\index{ListNodeContactNames function}
+\item{(stringlist\_handle) \vt ListNodeContactNames({\it node\/})}\\
+Note:  This and {\vt ListNodePinNames} replace {\vt
+ListNodeTerminalNames}, which was removed in 4.2.12.
+
+Return a list of device and subcircuit contact names that connect to
+the given node.
+
+\end{description}
 
 !!SEEALSO
 funcs:sced
@@ -411,6 +572,62 @@ Symbolic Mode
     <p>
     On success, 1 is returned, 0 otherwise.
     </dl>
+!!LATEX funcs:sced:symbl scrfuncs.tex
+\begin{description}
+%------------------------------------
+% 030115
+\index{IsShowSymbolic function}
+\item{(int) \vt IsShowSymbolic()}\\
+This function will return 1 if the current cell is being displayed in
+symbolic form in the main window, 0 otherwise.  The return is always 0
+in physical mode.
+
+%------------------------------------
+% 030115
+\index{ShowSymbolic function}
+\item{(int) \vt ShowSymbolic({\it show\/})}\\
+This will set symbolic mode of the current cell, and display the
+symbolic representation, if possible, in the main window.  The effect
+is similar to the effect of pressing or un-pressing the {\cb symbl}
+button in the electrical side menu.  The function call must be made in
+electrical display mode.  When symbolic mode is asserted, by passing a
+boolean true argument, the current cell will be displayed in symbolic
+mode, unless the {\cb No Top Symbolic} button in the {\cb Main Window}
+sub-menu of the {\cb Attributes Menu} is pressed.  The return value is
+1 on success, 0 if some error occurred, with an error message likely
+available from {\vt GetError}.
+
+%------------------------------------
+% 030115
+\index{SetSymbolicFast function}
+\item{(int) \vt SetSymbolicFast({\it symb\/})}\\
+This will enable or disable symbolic mode of the current cell.  It
+differs from {\vt ShowSymbolic} in two ways.  First, it applies only
+to cells with a symbolic representation, meaning that it has a
+symbolic form which may or may not be visible.  Second, it will change
+the status of a flag in the cell, but there will be no updating of the
+screen or other internal things (such as undo logging).  The caller
+must reset to the original state before a screen redisplay or any
+major operation.  This is much faster than calling {\vt ShowSymbolic},
+and can be used when making quick changes to a cell.
+
+The return value is 1 if the current cell was previously actively
+symbolic, 0 otherwise.  In physical mode the return value is always 0
+and the function has no effect.
+
+%------------------------------------
+% 113009
+\index{MakeSymbolic function}
+\item{(int) \vt MakeSymbolic()}\\
+This will create a very simple symbolic representation of the
+electrical view of the current cell, consisting of a box with a name
+label, and wire stubs containing the terminals.  Any existing symbolic
+representation will be overwritten (but the operation can be undone). 
+In electrical mode, symbolic mode will be asserted.
+
+On success, 1 is returned, 0 otherwise.
+
+\end{description}
 
 !!SEEALSO
 funcs:sced

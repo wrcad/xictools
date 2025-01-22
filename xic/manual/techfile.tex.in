@@ -1,0 +1,185 @@
+% -----------------------------------------------------------------------------
+% Xic Manual
+% (C) Copyright 2025, Whiteley Research Inc., Sunnyvale CA
+% techfile.tex.in
+% -----------------------------------------------------------------------------
+
+\appendix
+\chapter{Technology File}
+% -----------------------------------------------------------------------------
+\label{techfile}
+\index{technology file}
+\index{xic\_tech file}
+\index{-T option}
+\index{technology file!extension}
+
+% techfile 071820
+<<techfile xiTechfile.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Technology File Comments}
+\index{Comment keyword}
+
+% techfile:comments 032117
+<<techfile:comments xiTechfile.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Technology File Macros}
+\index{technology file!macros}
+\label{techmacros}
+
+% techfile:macros 032613
+<<techfile:macros xiTechfile.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Technology File Global Variables}
+
+% techfile:set 021615
+<<techfile:set xiTechfile.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Technology File Path Definitions}
+
+% techfile:paths 062109
+<<techfile:paths xiTechfile.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Technology File Scripts}
+\index{technology file!scripts in}
+
+% techfile:scripts 033112
+<<techfile:scripts xiTechfile.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Technology File Layer Blocks}
+\label{techlayers}
+
+% techfile:layers 032117
+<<techfile:layers xiTechfile.hlp>>
+
+%-------------------------------
+\subsection{Technology File Layer Block Keywords:  Misc. Attributes}
+\label{misclattr}
+
+% techfile:layers:misc 070114
+<<techfile:layers:misc xiTechfile.hlp>>
+
+%-------------------------------
+\subsection{Technology File Layer Block Keywords:  Presentation}
+
+% techfile:layers:pres 120314
+<<techfile:layers:pres xiTechfile.hlp>>
+
+%-------------------------------
+\subsection{Technology File Layer Block Keywords:  Conversion}
+\label{convlattr}
+
+% techfile:layers:conv 070114
+<<techfile:layers:conv xiTechfile.hlp>>
+
+%-------------------------------
+\subsection{Technology File Layer Block Keywords:  Extraction}
+\label{exkwords}
+
+% techfile:layers:ext 011621
+<<techfile:layers:ext xiTechfile.hlp>>
+
+%-------------------------------
+\subsection{Technology File Layer Block Keywords:  Physical Properties}
+\label{phkwords}
+
+% techfile:layers:phys 011621
+<<techfile:layers:phys xiTechfile.hlp>>
+
+%-------------------------------
+\subsection{Technology File Layer Block Keywords:  Design Rules}
+
+% techfile:layers:drc 090814
+<<techfile:layers:drc xiTechfile.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Technology File Standard Via Definitions}
+
+% techfile:stdvia 031815
+<<techfile:stdvia xiTechfile.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Technology File Attributes}
+\label{techattr}
+
+% techfile:attr 021615
+<<techfile:attr xiTechfile.hlp>>
+
+%-------------------------------
+\subsection{Grid Presentation}
+
+% techfile:attr:grid 021415
+<<techfile:attr:grid xiTechfile.hlp>>
+
+%-------------------------------
+\subsection{Misc. Presentation}
+
+% techfile:attr:misc 021415
+<<techfile:attr:misc xiTechfile.hlp>>
+
+%-------------------------------
+\subsection{Attribute Colors}
+\label{attrcolor}
+
+% techfile:attr:color 070214
+<<techfile:attr:color xiTechfile.hlp>>
+
+%-------------------------------
+\subsection{Grid and Edge Snapping}
+
+% techfile:attr:snap 100916
+<<techfile:attr:snap xiTechfile.hlp>>
+
+%-------------------------------
+\subsection{Function Key Assignments}
+\index{function keys}
+
+% techfile:attr:fkey 070214
+<<techfile:attr:fkey xiTechfile.hlp>>
+
+%-------------------------------
+\subsection{Grid Registers}
+\index{grid registers}
+
+% techfile:attr:gridreg 012321
+<<techfile:attr:gridreg xiTechfile.hlp>>
+
+%-------------------------------
+\subsection{Layer Palette Registers}
+\index{palette registers}
+
+% techfile:attr:lpal
+<<techfile:attr:lpal xiTechfile.hlp>>
+
+%-------------------------------
+\subsection{Font Assignments}
+\index{Font keywords}
+
+% techfile:attr:font 070214
+<<techfile:attr:font xiTechfile.hlp>>
+
+%-------------------------------
+\subsection{Variable Setting as Keywords}
+\label{attrvars}
+
+% techfile:attr:vars 021615
+<<techfile:attr:vars xiTechfile.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Hardcopy Driver Parameters}
+
+% hcopytech 071010
+<<hcopytech xiTechfile.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Resource File}
+\label{resourcefile}
+
+% resourcefile 090814
+<<resourcefile xiTechfile.hlp>>
+

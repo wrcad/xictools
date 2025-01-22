@@ -1,0 +1,73 @@
+% -----------------------------------------------------------------------------
+% Xic Manual
+% (C) Copyright 2025, Whiteley Research Inc., Sunnyvale CA
+% cellmenu.tex.in
+% -----------------------------------------------------------------------------
+
+% -----------------------------------------------------------------------------
+\chapter{The Cell Menu:  {\Xic} Cell Navigation and Information}
+\index{Cell menu}
+
+% xic:cellmenu 102308
+<<xic:cellmenu xiCell.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Push} Button: Push Editing Context}
+\label{pushcmd}
+\index{Push button}
+\index{editing subcells}
+
+% xic:push 042909
+<<xic:push xiCell.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Pop} Button: Pop Context}
+\index{pop button}
+\index{editing subcells}
+\index{editing context}
+
+% xic:pop 062109
+<<xic:pop xiCell.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Symbol Tables} Button:  Switch Symbol Table}
+\index{Symbol Tables button}
+\index{symbol tables}
+\label{symtab}
+
+% xic:stabs 062109
+<<xic:stabs xiCell.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Cells List} Button: Cell Listing Panel}
+\index{Cells List button}
+\index{cells panel}
+\index{listing cells}
+
+% xic:cells 030724
+<<xic:cells xiCell.hlp>>
+
+%-------------
+\subsection{Cell Filtering}
+\label{cellfilt}
+\index{cell name filtering}
+
+% cellfilt 031915
+<<cellfilt xiCell.hlp>>
+
+%-----------------
+\subsection{Cell Flags}
+\label{cellflags}
+\index{cell flags}
+
+% cellflags 032015
+<<cellflags xiCell.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Show Tree} Button: Show Cell Hierarchy}
+\index{tree diagram}
+\index{Show Tree button}
+
+% xic:tree 022916
+<<xic:tree xiCell.hlp>>
+

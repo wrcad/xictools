@@ -3,6 +3,24 @@
 # To fix mathend000# bug: edit share/latex2html/versions/math.pl, set
 # $mathend_mark = ""; 
 
+# Instructions:
+# You need latex, and latex2html if you want the HTML manual, dvips for
+# PostScript, and dvipdf for PDF.
+#
+# make import   // this creates the tex files
+#
+# make manual
+# make manual
+# make index
+# make manual   // run these as listed to create the dvi file.
+#
+# make html     // for HTML manual
+# make ps       // for PostScript manual
+# make pdf      // for PDF manual
+
+import::
+	@../../mozy/bin/hlp2latex -p ../help -d Xic -d OpenAccess .
+
 manual::
 	@sed -e "s/@RELEASE@/`../release.sh xic`/" \
   -e "s/@DATE@/`date +'%B %-d, %Y'`/" < xicmanual.sed > xicmanual.tex
@@ -35,6 +53,5 @@ pdf::
 	dvipdf xicmanual.dvi xicmanual-`../release.sh xic`.pdf
 
 clean distclean::
-	-@rm -rf *.log *.aux *.ilg *.ind *.dvi xicmanual.tex xicmanual \
-  *.gz *.pdf
+	-@rm -rf *.log *.aux *.ilg *.ind *.dvi *.tex xicmanual *.gz *.pdf
 

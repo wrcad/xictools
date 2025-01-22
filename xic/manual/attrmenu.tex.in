@@ -1,0 +1,186 @@
+% -----------------------------------------------------------------------------
+% Xic Manual
+% (C) Copyright 2025, Whiteley Research Inc., Sunnyvale CA
+% attrmenu.tex.in
+% -----------------------------------------------------------------------------
+
+% -----------------------------------------------------------------------------
+\chapter{The Attributes Menu:  Set Display Attributes}
+\index{Attributes Menu}
+
+% xic:attrmenu 012715
+<<xic:attrmenu xiAttributes.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Save Tech} Button: Update Technology File}
+\index{Save Tech button}
+\index{updating technology file}
+
+% xic:updat 071010
+<<updat attrimenu.tex>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Key Map} Button: Create Key Mapping File}
+\index{Key Map button}
+\index{key mapping}
+
+% xic:keymp 011014
+<<xic:keymp xiAttributes.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Define Macro} Button: Assign a Macro to a Key}
+\index{Define Macro button}
+\index{macros}
+
+% xic:macro 011114
+<<xic:macro xiAttributtes.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Set Attributes} Button: Set Window Attributes}
+\index{Set Attributes button}
+\index{attributes of window}
+\index{window attributes}
+
+% xic:attr 101016
+<<xic:attr xiAttributes.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Connection Dots} Button: Show Connections}
+\index{dots button}
+\index{connection points!show}
+
+% xic:dots 081824
+<<xic:dots xiAttributes.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Set Font} Button: Set Window Fonts}
+\index{Set Font button}
+\index{font}
+
+% xic:font 032513
+<<xic:font xiAttributes.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Set Color} Button: Set Colors Panel}
+\index{Set Color button}
+\index{color panel}
+\index{set layer colors}
+
+% xic:color 092717
+<<xic:color xiAttributes.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Set Fill} Button: Fill Pattern Edit Panel}
+\index{Set Fill button}
+\index{fill panel}
+\index{fill patter editing}
+
+% xic:fill 022215
+<<xic:fill xiAttributes.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Edit Layers} Button: Edit Layer Table}
+\index{Edit Layers button}
+\index{edit layer table}
+
+% xic:edlyr 022115
+<<xic:edlyr xiAttributes.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Edit Tech Params} Button: Edit Tech Keywords}
+\index{Edit Tech Params button}
+
+% xic:lpedt 022215
+<<xic:lpedt xiAttributes.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Main Window} Button: Attributes sub-menu}
+\label{attrsubmenu}
+\index{Main Window button}
+\index{Attributes sub-menu}
+
+% xic:attrsubmenu 011916
+<<xic:attrsubmenu xiAttributes.hlp>>
+
+\subsection{The {\cb Freeze Display} Button: Suppress Redisplay}
+\index{Freeze Display button}
+\index{frozen window}
+\index{viewing huge cells}
+
+% xic:freez 042909
+<<xic:freez xiAttributes.hlp>>
+
+\subsection{The {\cb Show Context in Push} Button: Control Context Display}
+\index{Show Context in Push button}
+
+% xic:cntxt 042909
+<<xic:cntxt xiAttributes.hlp>>
+
+\subsection{The {\cb Show Phys Properties} Button: Show Physical-Mode
+ Properties}
+\label{xicprops}
+\index{Show Phys Properties button}
+
+% xic:props 042909
+<<xic:props xiAttributes.hlp>>
+
+\subsection{The {\cb Show Labels} Button: Control Label Display}
+\index{Show Labels button}
+
+% xic:labls 042909
+<<xic:labls xiAttributes.hlp>>
+
+\subsection{The {\cb Label True Orient} Button: Set Label Orientation}
+\index{Label True Orient button}
+
+% xic:larot 042909
+<<xic:larot xiAtttributes.hlp>>
+
+\subsection{The {\cb Show Cell Names} Button: Display Cell Names}
+\index{Show cell Names button}
+
+% xic:cnams 042909
+<<xic:cname xiAttributes.hlp>>
+
+\subsection{The {\cb Cell Name True Orient} Button: Set Cell Name Orientation}
+\index{Cell Name true orient button}
+
+% xic:cnrot 042909
+<<xic:cnrot xiAttributtes.hlp>>
+
+\subsection{The {\cb Don't Show Unexpanded} Button: Don't Show Unexpanded
+ Subcells}
+\index{Don't Show Unexpanded button}
+
+% xic:nouxp 042909
+<<xic:nouxp xiAttributes.hlp>>
+
+\subsection{The {\cb Objects Shown} Button: Object Display menu}
+\index{Objects Shown button}
+
+% xic:objs 053110
+<<xic:objs xiAttributes.hlp>>
+
+\subsection{The {\cb Subthreshold Boxes} Button: Outline Tiny Subcells}
+\index{Subthreshold Boxes button}
+
+% xic:tinyb 042909
+<<xic:tinyb xiAttributes.hlp>>
+
+\subsection{The {\cb No Top Symbolic} Button: Enforce Schematic View}
+\index{No Top Symbolic button}
+
+% xic:nosym 090814
+<<xic:nosym xiAttributes.hlp>>
+
+\subsection{The {\cb Set Grid} Button: Set Grid Parameters}
+\label{gridpop}
+\index{Set Grid button}
+\index{Grid Setup panel}
+\index{snap grid}
+\index{grid style}
+\index{keyboard!Ctrl-g}
+
+% xic:grid 022215
+<<xic:grid xiAttributes.hlp>>
+

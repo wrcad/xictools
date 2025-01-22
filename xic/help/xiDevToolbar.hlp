@@ -65,6 +65,15 @@ Ground Device
     device that has no <a href="prpty:name"><b>name</b></a> property
     and exactly one <a href="prpty:node"><b>node</b></a> property is
     taken as a ground device.
+!!LATEX dev:gnd sidemenu.tex
+The {\et gnd} device is used to connect to node 0, which is always
+taken as the reference (ground) node in SPICE.  This can be placed in
+the main circuit and subcircuits.
+
+The device library may contain multiple, functionally identical
+``ground'' devices, that differ only visually.  In the library, any
+device that has no {\et name} property and exactly one {\et node}
+property is taken as a ground device.
 
 !!SEEALSO
 xic:devs
@@ -80,6 +89,11 @@ Alternative Ground Device
     be placed in the main circuit and subcircuits.  This is
     functionally equivalent to the <a href="dev:gnd"><b>gnd</b></a>
     device, but differs visually.
+!!LATEX dev:gnde sidemenu.tex
+The {\et gnde} device is used to connect to node 0, which is always
+taken as the reference (ground) node in SPICE.  This can be placed in
+the main circuit and subcircuits.  This is functionally identical to
+the {\et gnd} device, but differs visually.
 
 !!SEEALSO
 xic:devs
@@ -116,6 +130,27 @@ Terminal Device
     The name applied to a net via a terminal device is handled
     identically to a name obtained from a <a href="wirelabel">wire
     label</a>.
+!!LATEX dev:tbar sidemenu.tex
+The {\et tbar}, {\et tblk}, {\et ttri}, and {\et txbox} are ``terminal
+devices'' from the default device library.  These devices behave
+identically, and differ only in appearance.  Each device has an
+associated label (with text defaulting to the device name) which can
+be changed by the user by selecting the label and pressing the {\cb
+label} button in the side menu.  The label will supply a name, which
+will be applied to a connected net.  All nets connected to a terminal
+device with the same name are taken as being connected together.
+
+This will not tie nets between the main circuit and subcircuits, or
+between subcircuits, unless the terminal name is also a global net
+name.  If not global, the scope is within the cell only.  See
+\ref{nodmp} for more information about net name assignments.
+
+Internally, the device will reconfigure itself as a scalar or
+multi-contact device according to the label.  Older {\Xic} releases
+provided a {\et tbus} terminal, which is no longer compatible.
+
+The name applied to a net via a terminal device is handled
+identically to a name obtained from a wire label.
     
 !!SEEALSO
 xic:devs
@@ -133,6 +168,10 @@ Bus Terminal Device
     in older <i>Xic</i> releases.  It is no longer compatible or
     supported, and must be replaced by a <a href="dev:tbar">current
     terminal device</a> in legacy schematics.
+!!LATEX dev:tbus sidemenu.tex
+The {\et tbus} terminal device was provided as a bus terminal in older
+{\Xic} releases.  It is no longer compatible or supported, and must be
+replaced by a current terminal device in legacy schematics.
 
 !!SEEALSO
 xic:devs
@@ -159,6 +198,18 @@ Resistor Device
     divided by the resistance in ohms, yielding the current through
     the resistor.  The 'O' that follows the resistance is the 'ohms'
     unit specifier, and <i>not</i> an extra zero.
+!!LATEX dev:res sidemenu.tex
+The {\et res} device is a two-terminal resistor.  Typically, a {\et
+value} property is added to specify resistance.  Alternatively, a {\et
+model} property can be added to specify a resistor model.  If a {\et
+model} property is assigned, then a {\et param} property can be used
+to supply the geometric or other parameters.
+
+The `$+$' symbol in the representation accesses a {\et branch}
+property that returns a hypertext expression consisting of the voltage
+across the resistor divided by the resistance in ohms, yielding the
+current through the resistor.  The `O' that follows the resistance is
+the `ohms' unit specifier, and {\it not} an extra zero.
 
 !!SEEALSO
 xic:devs
@@ -186,6 +237,18 @@ Capacitor Device
     hypertext expression consisting of the capacitance value times the
     time-derivative of the voltage across the capacitor, yielding the
     capacitor current.
+!!LATEX dev:cap sidemenu.tex
+The {\et cap} device is a two-terminal capacitor.  Typically, a {\et
+value} property is added to specify capacitance.  Alternatively, a
+{\et model} property can be added to specify a capacitor model.  If a
+{\et model} property is assigned, then a {\et param} property can be
+used to supply the geometric parameters.  In either case, the {\et
+param} property can be used to provide initial conditions.
+
+The `$+$' symbol in the representation accesses a {\et branch}
+property that returns a hypertext expression consisting of the
+capacitance value times the time-derivative of the voltage across the
+capacitor, yielding the capacitor current.
 
 !!SEEALSO
 xic:devs
@@ -206,6 +269,13 @@ Inductor Device
     The '+' symbol in the representation accesses a <a
     href="prpty:branch"><b>branch</b></a> property that returns a
     hypertext link to the inductor current vector.
+!!LATEX dev:ind sidemenu.tex
+The {\et ind} device is a two-terminal inductor.  A {\et value}
+property should be added to specify inductance.  A {\et param}
+property can be used to provide initial conditions.
+
+The `$+$' symbol in the representation accesses a {\et branch}
+property that returns a hypertext link to the inductor current vector.
 
 !!SEEALSO
 xic:devs
@@ -264,6 +334,49 @@ Mutual Inductor
     Pressing the <b>Esc</b> key terminates this (and every) command. 
     One can back out of the operation if necessary with <b>Tab</b>
     (undo), as usual.
+!!LATEX dev:mut sidemenu.tex
+The {\et mut} device provides support for mutual inductors.  The {\et
+mut} device is never placed.  When the {\et mut} device is selected in
+the device menu, rather than selecting a device for placement as do
+the other selections, a command mode is entered which allows existing
+inductors to be selected into mutual inductor pairs.
+
+When the {\et mut} device is selected, an existing pair of coupled
+inductors (if any have been defined) is shown highlighted, and the
+SPICE coupling factor printed.  The arrow keys cycle through the
+internal list of coupled inductor pairs, or a pair may be selected by
+clicking on one of the inductors or the coefficient label with button
+1.  At any time, pressing the `{\kb a}' key will allow addition of a
+mutual inductor pair.  The same effect is obtained by clicking on a
+non-mutual inductor with button 1.  The user is asked to click on the
+two coupled inductors (if `{\kb a}' entered or there are no existing
+mutual inductors), or the second inductor (if the user clicked on an
+inductor), and then to enter the coupling factor.  The coupling factor
+can be any string, so as to allow shell variable expansion in
+{\WRspice}, but if it parses as a number it must be in the range
+between -1 and 1.
+
+Pressing the `{\kb d}' key will delete the mutual inductance
+specification for the two inductors currently shown. 
+
+Pressing the `{\kb k}' key will prompt for a new value of the coupling
+factor for the mutual inductors shown, as will clicking on the
+coefficient label in a drawing window.  When entering the coefficient
+string, one can enter either the form {\it name\/}={\it
+coef\_string\/}, or simply the coefficient string.  In the first case,
+the {\it name} will provide an alternate fixed name for the mutual
+inductor in SPICE output.  This can be any alphanumeric name, but
+should start with `k' or `K' for SPICE.  If no name is given, {\Xic}
+will assign a name consisting of {\vt K} followed by a unique index
+integer.
+
+One can also change the coefficient string and/or name with the {\cb
+label} button in the side menu.  Again, the label text can have either
+of the forms described above.
+
+Pressing the {\kb Esc} key terminates this (and every) command.  One
+can back out of the operation if necessary with {\kb Tab} (undo), as
+usual. 
 
 !!SEEALSO
 xic:devs
@@ -287,6 +400,15 @@ Current Source
     "<tt>@</tt><i>name</i><tt>[c]</tt>".  A <a
     href=".save"><tt>.save</tt></a> line for this vector is
     automatically added to the SPICE output.
+!!LATEX dev:isrc sidemenu.tex
+The {\et isrc} device is a general current source.  A {\et value}
+and/or {\et param} property can be added to specify the value,
+function, or other parameters required by the source.
+
+The arrow head in the representation accesses a {\et branch} property
+that returns a hypertext link to the current in the form ``{\vt @}{\it
+name}{\vt [c]}''.  A {\vt .save} line for this vector is automatically
+added to the SPICE output.
 
 !!SEEALSO
 xic:devs
@@ -307,6 +429,14 @@ Voltage Source
     The '+' symbol in the representation accesses a <a
     href="prpty:branch"><b>branch</b></a> property that returns a
     hypertext link to the current vector when clicked on.
+!!LATEX dev:vsrc sidemenu.tex
+The {\et vsrc} device is a general voltage source.  A {\et value}
+and/or {\et param} property can be added to specify the value,
+function, or other parameters required by the source.
+
+The `$+$' symbol in the representation accesses a {\et branch}
+property that returns a hypertext link to the current vector when
+clicked on.
 
 !!SEEALSO
 xic:devs
@@ -326,6 +456,15 @@ Current Meter
     The symbol contains a hot spot in the representation that accesses
     a <a href="prpty:branch"><b>branch</b></a> property that returns a
     hypertext link to the current vector when clicked on.
+!!LATEX dev:vp sidemenu.
+In SPICE, voltage sources are often used as ``current meters'', as the
+current through a voltage source is saved with the simulation result
+vectors, and can be plotted or printed.  The {\et vp} device is
+actually a voltage source (identical to a {\vt vsrc} device) however
+the symbol size is tiny, so that it can be more easily added to an
+existing schematic for use as a current meter.  The symbol contains a
+hot spot in the representation that accesses a {\et branch} property
+that returns a hypertext link to the current vector when clicked on.
 
 !! 062908
 !!KEYWORD
@@ -340,6 +479,12 @@ Junction Diode
 
     <p>
     The diode contains no hidden targets.
+!!LATEX dev:dio sidemenu.tex
+The {\et dio} device is a junction diode.  A {\et model} property
+should be added to specify a diode model.  A {\et param} property can
+be added to specify additional parameters.
+
+The diode contains no hidden targets.
 
 !!SEEALSO
 xic:devs
@@ -360,6 +505,14 @@ Josephson Junction
     The '+' symbol in the representation accesses the phase node of
     the Josephson junction.  The "voltage" on this node is equal to
     the junction phase, in radians.
+!!LATEX dev:jj sidemenu.tex
+The {\et jj} device is a Josephson junction.  A {\et model} property
+should be added to specify a Josephson junction model.  A {\et param}
+property can be added to specify additional parameters.
+
+The `$+$' symbol in the representation accesses the phase node of the
+Josephson junction.  The ``voltage'' on this node is equal to the
+junction phase, in radians.
 
 !!SEEALSO
 xic:devs
@@ -378,6 +531,12 @@ NPN Bipolar Transistor
 
     <p>
     The bipolar transistor contains no hidden targets.
+!!LATEX dev:npn sidemenu.tex
+The {\et npn} device is an npn bipolar transistor.  A {\et model}
+property should be added to specify a bipolar transistor model.  A
+{\et param} property can be added to specify additional parameters.
+
+The bipolar transistor contains no hidden targets.
 
 !!SEEALSO
 xic:devs
@@ -396,6 +555,12 @@ PNP Bipolar Transistor
 
     <p>
     The bipolar transistor contains no hidden targets.
+!!LATEX dev:pnp sidemenu.tex
+The {\et pnp} device is a pnp bipolar transistor.  A {\et model}
+property should be added to specify a bipolar transistor model.  A
+{\et param} property can be added to specify additional parameters.
+
+The bipolar transistor contains no hidden targets.
 
 !!SEEALSO
 xic:devs
@@ -414,6 +579,12 @@ N-Channel Junction FET
 
     <p>
     The JFET contains no hidden targets.
+!!LATEX dev:njf sidemenu.tex
+The {\et njf} device is an n-channel junction field-effect transistor. 
+A {\et model} property should be added to specify a JFET model.  A
+{\et param} property can be added to specify additional parameters.
+
+The JFET contains no hidden targets.
 
 !!SEEALSO
 xic:devs
@@ -432,7 +603,12 @@ P-Channel Junction FET
 
     <p>
     The JFET contains no hidden targets.
+!!LATEX dev:pjf sidemenu.tex
+The {\et pjf} device is a p-channel junction field-effect transistor. 
+A {\et model} property should be added to specify a JFET model.  A
+{\et param} property can be added to specify additional parameters.
 
+The JFET contains no hidden targets.
 
 !!SEEALSO
 xic:devs
@@ -456,6 +632,16 @@ N-Channel MOSFET, 4 Nodes
 
     <p>  
     This device contains no hidden targets.
+!!LATEX dev:nmos1 sidemenu.tex
+The {\et nmos1} device is a 4-terminal n-channel MOSFET (drain, gate,
+source, bulk).  A {\et model} property should be added to specify a
+MOS model, suitable for 4-terminal devices.  Some of the MOS models
+provided in {\WRspice}, for SOI devices, use more than four terminals
+and will not work with this device.  It is left as an exercise for the
+user to create a modified device suitable for use with these models. 
+A {\et param} property can be added to specify additional parameters.
+
+This device contains no hidden targets.
 
 !!SEEALSO
 xic:devs
@@ -479,6 +665,16 @@ P-Channel MOSFET, 4 Nodes
  
     <p>
     This device contains no hidden targets.
+!!LATEX dev:pmos1 sidemenu.tex
+The {\et pmos1} device is a 4-terminal p-channel MOSFET (drain, gate,
+source, bulk).  A {\et model} property should be added to specify a
+MOS model, suitable for 4-terminal devices.  Some of the MOS models
+provided in {\WRspice}, for SOI devices, use more than four terminals
+and will not work with this device.  It is left as an exercise for the
+user to create a modified device suitable for use with these models. 
+A {\et param} property can be added to specify additional parameters.
+
+This device contains no hidden targets.
 
 !!SEEALSO
 xic:devs
@@ -510,6 +706,23 @@ N-Channel MOSFET, 3 Nodes
 
     <p> 
     This device contains no hidden targets.
+!!LATEX dev:nmos sidemenu.tex
+The {\et nmos} device is an n-channel MOSFET variation that contains
+three visible nodes (drain, gate, source).  The bulk node is connected
+to an internal global node named ``NSUB''.  To use this device, the
+circuit should contain a voltage source tied to a terminal device with
+label ``NSUB'' to provide substrate bias to all devices of this type. 
+This simplifies the schematic by hiding the substrate connection to
+each transistor.
+
+A {\et model} property should be added to specify a MOS model,
+suitable for 4-terminal devices.  Some of the MOS models provided in
+{\WRspice}, for SOI devices, use more than four terminals and will not
+work with this device.  It is left as an exercise for the user to
+create a modified device suitable for use with these models.  A {\et
+param} property can be added to specify additional parameters.
+
+This device contains no hidden targets.
 
 !!SEEALSO
 xic:devs
@@ -541,6 +754,23 @@ P-Channel MOSFET, 3 Nodes
 
     <p>
     This device contains no hidden targets.
+!!LATEX dev:pmos sidemenu.tex
+The {\et pmos} device is a p-channel MOSFET variation that contains
+three visible nodes (drain, gate, source).  The bulk node is connected
+to an internal global node named ``PSUB''.  To use this device, the
+circuit should contain a voltage source tied to a terminal device with
+label ``PSUB'' to provide substrate bias to all devices of this type. 
+This simplifies the schematic by hiding the substrate connection to
+each transistor.
+
+A {\et model} property should be added to specify a MOS model,
+suitable for 4-terminal devices.  Some of the MOS models provided in
+{\WRspice}, for SOI devices, use more than four terminals and will not
+work with this device.  It is left as an exercise for the user to
+create a modified device suitable for use with these models.  A {\et
+param} property can be added to specify additional parameters.
+
+This device contains no hidden targets.
 
 !!SEEALSO
 xic:devs
@@ -559,6 +789,12 @@ N-Channel MESFET
 
     <p>
     The MESFET contains no hidden targets.
+!!LATEX dev:nmes sidemenu.tex
+The {\et nmes} device is an n-channel MESFET.  A {\et model} property
+should be added to specify a MESFET model.  A {\et param} property can
+be added to specify additional parameters.
+
+The MESFET contains no hidden targets.
 
 !!SEEALSO
 xic:devs
@@ -576,6 +812,12 @@ P-Channel MESFET
 
     <p>
     The MESFET contains no hidden targets.
+!!LATEX dev:pmes sidemenu.tex
+The {\et pmes} device is a p-channel MESFET.  A {\et model} property
+should be added to specify a MESFET model.  A {\et param} property can
+be added to specify additional parameters.
+
+The MESFET contains no hidden targets.
 
 !!SEEALSO
 xic:devs
@@ -597,6 +839,14 @@ Transmission Line
 
     <p>  
     The transmission line contains no hidden targets.
+!!LATEX dev:tra sidemenu.tex
+The {\et tra} device is a general transmission line.  In {\WRspice},
+this can be lossy or lossless, and may access a model.  In other
+versions of SPICE, this is a lossless line with no model.  A {\et
+model} property can be added to specify a transmission line model.  A
+{\et param} property can be added to specify additional parameters.
+
+The transmission line contains no hidden targets.
 
 !!SEEALSO
 xic:devs
@@ -620,6 +870,16 @@ Transmission Line (LTRA compatibility)
 
     <p>
     The transmission line contains no hidden targets.
+!!LATEX dev:ltra sidemenu.tex
+The {\et ltra} device is a general transmission line.  In {\WRspice},
+this can be lossy or lossless, and is basically the same as the {\et
+tra} device, but defaults to a convolution approach if lossy.  In
+other versions of SPICE, this is a lossy line that requires a model. 
+A {\et model} property can be added to specify a transmission line
+model.  A {\et param} property can be added to specify additional
+parameters.
+
+The transmission line contains no hidden targets.
 
 !!SEEALSO
 xic:devs
@@ -638,6 +898,12 @@ Uniform RC Line
 
     <p>
     The <b>urc</b> line contains no hidden targets.
+!!LATEX dev:urc sidemenu.tex
+The {\et urc} device is a lumped-approximation RC line.  A {\et model}
+property should be added to specify a urc model.  A {\et param}
+property can be added to specify additional parameters.
+
+The {\et urc} line contains no hidden targets.
 
 !!SEEALSO
 xic:devs
@@ -658,6 +924,14 @@ Voltage-Controlled Current Source
 
     <p>
     The VCCS contains no hidden targets.
+!!LATEX dev:vccs sidemenu.tex
+The {\et vccs} device is a voltage-controlled dependent current
+source.  A {\et value} and/or {\et param} property can be added to
+specify the gain, or other parameters required by the dependent
+source.  Since all four nodes are specified, the two-node variants
+supported by {\WRspice} are not supported by this device.
+
+The VCCS contains no hidden targets.
 
 !!SEEALSO
 xic:devs
@@ -678,6 +952,14 @@ Voltage-Controlled Voltage Source
 
     <p>
     The VCVS contains no hidden targets.
+!!LATEX dev:vcvs sidemenu.tex
+The {\et vcvs} device is a voltage-controlled dependent voltage
+source.  A {\et value} and/or {\et param} property can be added to
+specify the gain, or other parameters required by the dependent
+source.  Since all four nodes are specified, the two-node variants
+supported by {\WRspice} are not supported by this device.
+
+The VCVS contains no hidden targets.
 
 !!SEEALSO
 xic:devs
@@ -700,6 +982,15 @@ Current-Controlled Current Source
 
     <p>
     The CCCS contains no hidden targets.
+!!LATEX dev:cccs sidemenu.tex
+The {\et cccs} device is a current-controlled dependent current
+source.  A {\et devref} property can be used to specify the name of
+the controlling voltage source or inductor in the common case.  A {\et
+value} and/or {\et param} property should be added to specify gain, or
+other parameters required by the dependent source.  This device
+supports all of the variants supported in {\WRspice}.
+
+The CCCS contains no hidden targets.
 
 !!SEEALSO
 xic:devs
@@ -722,6 +1013,15 @@ Current-Controlled Voltage Source
 
     <p>
     The CCVS contains no hidden targets.
+!!LATEX dev:ccvs sidemenu.tex
+The {\et ccvs} is a current-controlled dependent voltage source.  A
+{\et devref} property can be used to specify the name of the
+controlling voltage source or inductor in the common case.  A {\et
+value} and/or {\et param} property should be added to specify the
+gain, or other parameters required by the dependent source.  This
+device supports all of the variants supported in {\WRspice}.
+
+The CCVS contains no hidden targets.
 
 !!SEEALSO
 xic:devs
@@ -740,6 +1040,12 @@ Voltage-Controlled Switch
 
     <p>
     This device contains no hidden targets.
+!!LATEX dev:sw sidemenu.tex
+The {\et sw} device is a voltage-controlled switch.  A {\et model}
+property should be added to specify a switch model.  A {\et param}
+property can be added to specify additional parameters.
+
+This device contains no hidden targets.
 
 !!SEEALSO
 xic:devs
@@ -761,6 +1067,14 @@ Current-Controlled Switch
 
     <p>
     This device contains no hidden targets.
+!!LATEX dev:csw sidemenu.tex
+The {\et csw} device is a current-controlled switch.  A {\et devref}
+property must be used to specify the name of the controlling voltage
+source or inductor.  A {\et model} property should be added to specify
+the switch model.  A {\et param} property can be added to specify
+additional parameters.
+
+This device contains no hidden targets.
 
 !!SEEALSO
 xic:devs
@@ -778,6 +1092,13 @@ Example Opamp Macro
     
     <p>
     This device contains no hidden targets.
+!!LATEX dev:opamp sidemenu.tex
+The {\et opamp} device is an example ``black box'' device that expands
+into a subcircuit.  It has a predefined {\et model} parameter which
+gives the subcircuit name (which is resolved in the model library). 
+No properties are required.
+
+This device contains no hidden targets.
 
 !!SEEALSO
 xic:devs

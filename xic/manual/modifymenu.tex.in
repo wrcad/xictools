@@ -1,0 +1,85 @@
+% -----------------------------------------------------------------------------
+% Xic Manual
+% (C) Copyright 2025, Whiteley Research Inc., Sunnyvale CA
+% modifymenu.tex.in
+% -----------------------------------------------------------------------------
+
+% -----------------------------------------------------------------------------
+\chapter{The Modify Menu:  Modify Geometry}
+\index{Modify Menu}
+
+% xic:modifymenu 020113
+<<xic:modifymenu xiModify.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Undo} Button: Undo Operation}
+\index{Undo button}
+\index{undo}
+
+% xic:undo 061608
+<<xic:undo xiModify.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Redo} Button: Redo Last Undo}
+\index{Redo button}
+
+% xic:redo 061608
+<<xic:redo xiModify.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Delete} Button: Delete Objects}
+\index{Delete button}
+\index{object deletion}
+
+% xic:delet 061608
+<<xic:delet xiModify.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Erase Under} Button: Erase Under Objects}
+\index{Erase Under button}
+
+% xic:eundr 100412
+<<xic:eundr xiModify.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Move} Button: Move Objects}
+\index{Move button}
+\index{move objects}
+\index{object movement}
+
+% xic:move 082024
+<<xic:move xiModify.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Copy} Button: Copy Objects}
+\index{Copy button}
+\index{object copying}
+\index{copy objects}
+
+% xic:copy 082024
+<<xic:copy xiModify.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Stretch} Button: Stretch Objects}
+\index{Stretch button}
+\index{object stretching}
+
+% xic:strch 012815
+<<xic:strch xiModify.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Change Layer} Button: Change Layer}
+\index{Change Layer button}
+\index{layer change of object}
+
+% xic:chlyr 061608
+<<xic:chlyr xiModify.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Set Layer Chg Mode} Button: Set Change Mode for Move/Copy}
+\index{Set Layer Chg Mode button}
+\index{layer change of object}
+
+% xic:mclcg 101212
+<<xic:mclcg xiModify.hlp>>
+

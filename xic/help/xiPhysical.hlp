@@ -197,6 +197,160 @@ Physical Layout Editing
     Reading the help and then trying the operation is the fastest way
     to learn.  The help mode, and any command, can ge exited by
     pressing the <b>Esc</b> key.
+!!LATEX physedit using.tex
+In physical mode, one arranges geometrical shapes on the various
+layers to produce a working circuit.  One can also place subcells,
+which have been previously created.  The knowledge of what shapes to
+place, and where, is dependent on the technology in use, and
+represents the essence of integrated circuit engineering.  The user
+must be familiar with these fundamentals, as {\Xic} is only a tool for
+application of this knowledge.
+
+\index{box}
+\index{box!merge}
+\index{box button}
+The basic primitive used by {\Xic} is the box.  Boxes are filled
+rectangular structures representing an area of opacity on the
+corresponding mask level.  The {\cb box} button in the side menu, with
+the rectangular icon, is used to create boxes.  With the {\cb box}
+button active, the user points to the two diagonal corners of the box
+desired in the drawing window, and a colored box will appear.  The
+color and fill pattern are set for each layer in the technology file,
+and can be changed by the user with the {\cb Set Color} and {\cb Set
+Fill} buttons in the {\cb Attributes Menu}.  The layer can be selected
+by clicking on the desired layer in the layer table, which is arrayed
+near the bottom of the main {\Xic} window.  Note that when boxes
+created on the same level overlap, they are clipped or merged so as to
+not actually overlap.  This increases the storage and retrieval
+efficiency of the database.
+
+If the created box is too small or otherwise causes a design rule
+violation, a message will appear, if interactive rule checking is
+active.  By default, all objects are checked for design rule
+violations when they are added to the database, though this can be set
+otherwise in the technology file or if the {\cb Set Interactive}
+button in the {\cb DRC Menu} is not active.  Objects that ``fail'' are
+actually in the database, and it is the responsibility of the user to
+correct the error when it is flagged.
+
+\index{wires}
+\index{wire button}
+Boxes can be used exclusively to create a working circuit, however
+other structures are sometimes more convenient.  Wires are fixed-width
+paths that are often used to make electrical connections.  The {\cb
+wire} button in the side menu allows the creation of wires, and the
+{\cb style} button can be used to change or set the wire width and end
+style.  The {\cb wire} button has a sideways L-shaped icon.  Every
+layer has a default wire width.  To construct a wire, simply click on
+the points of the drawing window which correspond to wire vertices,
+and click the last vertex twice to end the wire.  Note that the wire
+can zigzag at any angle, however the angles can be fixed to multiples
+of 45 degrees by setting the {\cb Constrain angles to 45 degree
+multiples} check box in the {\cb Editing Setup} panel from the {\cb
+Edit Menu}.  Also note that acute angles will most likely cause a
+design rule violation message to appear.
+
+\index{polygons}
+\index{polyg button}
+Polygons are constructed in a manner similar to wires, using the {\cb
+polyg} button in the side menu.  This button has a triangle icon.  The
+polygon is constructed by clicking at each desired vertex location,
+and is terminated by clicking again on the first vertex.  Polygons can
+have edges with arbitrary angles, which can be constrained to
+multiples of 45 degrees with the {\cb Constrain angles to 45 degree
+multiples} check box in the {\cb Editing Setup} panel.  Again, acute
+angles are likely to cause design rule violations.  Polygons are most
+useful for constructing rounded or off-angle shapes used in high
+frequency circuits.  It is also slightly more efficient to use
+polygons rather than a collection of boxes.
+
+\index{selections}
+With none of the geometry-creating buttons active, clicking on an
+object can cause it to be ``selected''.  Only objects on layers that
+are selectable, as shown in the layer table, can be selected.  A
+selected object will be outlined with a flashing highlight.  Selected
+objects are used by many of the other commands.  An object can be
+deselected by clicking on it a second time.  The status window below
+the layer table will indicate the number of objects selected. 
+Multiple objects can be selected at once by pressing and holding
+button 1, dragging the pointer, and releasing.  A ghost-drawn
+rectangle will appear during this operation.  Objects which overlap
+this rectangle will be selected (or deselected if already selected). 
+All selected objects can be deselected with the {\cb desel} button in
+the top button menu (above the main drawing window).
+
+\index{object deletion}
+\index{deleting objects}
+Once selected, an object can be deleted, either by pressing the {\kb
+Delete} key, or by pressing the {\cb Delete} button in the {\cb Modify
+Menu}.  The objects will disappear from the screen, and the database.
+
+\index{undo}
+\index{redo}
+\index{undo button}
+\index{redo button}
+Almost any operation which modifies the database can be undone with
+the {\cb Undo} button in the {\cb Modify Menu}, which is equivalent to
+pressing the {\kb Tab} key.  The last 25 operation are saved, and can
+be undone.  The {\cb Redo} button, or equivalently {\kb Shift-Tab}
+will redo the last undo.  All of the undone operations are saved in
+the redo list, however the redo list is cleared after each new
+operation that is not an undo.
+
+\index{strch button}
+The {\cb Stretch} button in the {\cb Modify Menu} is used to modify the
+shapes or sizes of boxes, polygons, wires, and labels.  By pointing at
+the edge or corner of a box, one can move that edge or corner to a new
+location.  Similarly, polygon and wire vertices can be moved. 
+Polygons and wires can also be modified with the vertex editor built
+into the {\cb polyg} and {\cb wire} command buttons.  If a polygon or
+wire is selected before pressing the corresponding command button, the
+vertices of the selected object will be marked.  The selected vertices
+can be deleted or moved, and new vertices added.
+
+\index{erase button}
+The {\cb erase} button in the side menu has an icon consisting of a
+box with a corner missing.  This button is used to delete parts of
+objects.  One clicks twice, or presses and drags, to define a
+rectangle, which is ghost-drawn during the operation.  This
+rectangular area will be cleared of fill from any box, polygon, or
+wire.  Wires may not be entirely erased, as they are only cut at
+points where the central path crosses the erase box boundary.
+
+The user may have already designed one or more cells using {\Xic},
+which are then available for use as subcells in the present layout. 
+Subcells are called and placed with the {\cb place} command button in
+the side menu.  After pressing the {\cb place} button, the {\cb Cell
+Placement Control} pop-up will appear, which allows the user to select
+a cell to place from cells that have been placed previously, or to
+enter a new cell name to place.  The cell name can be dragged from the
+{\cb File Selection} panel or from the list pop-ups in the {\cb File
+Menu}.  In addition, the {\cb List} pop-ups contain a {\cb Place}
+button which will also set the name of the current ``master'' cell to
+be placed, and pop up the {\cb Cell Placement Control} pop-up if it is
+not already visible.  When the {\cb Place} button in the {\cb Cell
+Placement Control} pop-up is active, the current ``master'' will be
+``attached'' to the mouse pointer, and instances will be placed at
+locations where the user clicks with mouse button 1 in the drawing. 
+There is provision in the {\cb Cell Placement Control} pop-up to
+define array parameters, so that an array of instances will be created
+rather than a single instance.  The placement mode can be exited by
+pressing the {\kb Esc} key, or by unsetting the {\cb Place} button in
+the {\cb Cell Placement Control} pop-up.
+
+Once a physical layout is substantially complete, the layout is a
+candidate for batch design rule checking and extraction.  These
+capabilities are described in detail in later chapters.
+
+This brief introduction should convey the flavor of using {\Xic} in
+physical mode.  There are many more commands, and some of the commands
+introduced have additional features not mentioned.  The best way to
+learn {\Xic} is to use it, and read the on-line help available for the
+commands.  After pressing the {\cb Help} button in the {\cb Help Menu},
+pressing any command button will bring up a help screen describing the
+command.  Reading the help and then trying the operation is the
+fastest way to learn.  The help mode, and any command, can ge exited
+by pressing the {\kb Esc} key.
 
 !!SEEALSO
 elecedit
@@ -411,6 +565,179 @@ Batch Mode
     <p>
     In batch mode, the log files for reading and writing of files are
     written to the current directory.  
+!!LATEX xic:batch using.tex
+{\Xic} has a batch mode of operation, where {\Xic} will start without
+graphics, run commands, and exit.  Batch mode is signaled by giving
+the {\vt -B} option in the command line, in one of the following
+forms:
+\begin{quote}
+{\vt -B}{\it scriptfile}[,{\it param1\/}={\it value1\/}][,{\it param2\/}={\it value2\/}]...\\
+{\vt -B-}{\it command}[{\vt @}{\it arguments}]
+\end{quote}
+ 
+In the first form, the path to a file containing {\Xic} script
+statements immediately follows ``{\vt -B}'' with no space.  The
+statements in the script file will be executed after the first input
+file is loaded.  If no input file is given on the command line, the
+script will be executed after the default ``noname'' cell is loaded.
+ 
+It is possible to pass parameters to the batch-mode scripts from the
+command line.  The comma is used as a delimiter.  Commas in the line
+that remain in single or double quotes {\it after} the shell has
+treated the line are not taken as separators.  The entire construct
+should not have any embedded white space, except when single or double
+quoted as part of the {\it values}.
+ 
+The {\it param1}, {\it param2}, etc.  are the names of variables that
+will be defined in the execution context of the script.  These
+variables will be set to {\it value1}, {\it value2}, etc.  The
+values are numbers, strings, or executable text.  Values that contain
+white space must be quoted, but note that the shell will strip the
+quote marks, so that a string constant should be single and double
+quoted as shown below.
+ 
+Example
+\begin{quote}
+{\vt xic -Bmyscript,p1=1.234,p2='"a string"',p3="p1 + 1"}
+\end{quote}
+ 
+This translates into the virtual addition of three lines to the
+beginning of the script:
+\begin{quote}\vt
+p1 = 1.234\\
+p2 = "a string"\\
+p3 = p1 + 1
+\end{quote}
+
+In the second form, the ``{\vt -B}'' is immediately followed by
+another `{\vt -}' and one of the command keywords listed below.  After the
+first cell is loaded (or ``noname'' if no input file was named in the
+command line) the command will be executed.  The recognized commands
+are listed below.
+
+The command name can be immediately followed by an argument string that
+begins with the `{\vt @}' character.  The arguments are specific to the
+command.  Multiple arguments can be separated by `{\vt @}' characters,
+or by white space if quoted.
+
+The {\vt .xicstart} file is read and executed (if it exists) before
+the first cell is loaded, and all other initialization is performed in
+the normal sequence.  The commands below are simple shortcuts to
+common operations.  If unavailable options are required, then these
+can either be set in a {\vt .xicinit} or {\vt .xicstart} file, or the
+first form of the {\vt -B} option should be used.
+
+\index{batch mode commands}
+\begin{description}
+\item{\vt tocgx}, {\vt tocif}, {\vt togds}, {\vt tooas}, {\vt toxic}\\
+These write the hierarchy under the current cell to CGX, CIF, GDSII,
+OASIS, and native cell files, respectively.  They perform file
+conversion by reading a file into {\Xic}, then writing it out in the
+specified format.  The {\FileTool} utility and {\vt -F} command line
+option provide a far more powerful format translation capability.
+
+The default name for the file written is the name of the current cell,
+suffixed with ``{\vt .cgx}'', ``{\vt .cif}'', ``{\vt .gds}'', and
+``{\vt .oas}'' for the four archive file formats.  Native cell files
+always have the same name as the cell contained.
+
+These commands can take the following options.  The options are
+separated from the command name and from one another by `{\vt @}'
+characters, and consist of a single character identifier, an optional
+`=' character, and a value.
+
+\begin{description}
+\item{\vt o=}{\it outfile}\\
+The {\it outfile} is the name of the file to be generated.  If not
+provided, the file name will be the name of the top-level cell
+suffixed with an extension appropriate for the format.  In the case of
+{\vt toxic}, the {\it outfile} is a path to a directory where the
+cell files will be created.
+
+\item{\vt s=}{\it scale}\\
+The {\it scale} is a floating point value from 0.001 to 1000.0 which
+applied when the file is written.
+
+\item{\vt l=+|-}{\it lname\/}[{\vt ,}{\it lname} ...]\\
+This option specifies a list of layer names.  The first character in
+the list is a {\vt +} or {\vt -} to indicate that only the listed
+layers will be output, or that all layers except the listed layers
+will be output, respectively.  Immediately following is a layer name,
+optionally followed by additional layer names separated by commas.
+
+\item{\vt e}[{\it N\/}]\\
+The letter `{\vt e}' can be immediately followed by an integer
+0--3.  This sets the empty cell filtering level, as described for the
+{\cb Format Conversion} panel in \ref{ecfilt}.  The values are
+
+\begin{tabular}{ll}
+{\vt e} or {\vt e1} & Use both pre- and post-filtering.\\
+{\vt e2} & Use pre-filtering only.\\
+{\vt e3} & Use post-filtering only.\\
+{\vt e0} & No empty cell filtering (no operation).\\
+\end{tabular}
+
+\item{\vt f}\\
+This flag option indicates that the output will contain a flat
+representation of the cell hierarchy.  If the {\vt w} option is given,
+only objects that overlap the window area will be present in output. 
+This option will not work with {\vt toxic}.
+
+\item{\vt w=}{\it l\/},{\it b\/},{\it r\/},{\it t}\\
+This specifies a rectangular area, in microns, for use when
+flattening.
+
+\item{\vt c}\\
+This flag indicates that when flattening with a window (both {\vt f}
+and {\vt w} options also given) objects will be clipped to the window
+boundary in output.
+\end{description}
+
+Example:\\
+
+{\vt xic -B-togds@o=file1.gds@w=100,200,200,300@fc@l=+0600 myfile.gds}\\
+
+This will create {\vt file1.gds}, containing objects on layer 0600
+within the window area, flattened and clipped.  Note that the {\vt @}
+separation character is actually optional after flags, and other
+options which are not lists or strings.
+
+\item{\vt drc}\\
+Design rule checking is performed, and results are written to a log
+file.
+
+There are optional arguments that can be provided, separated from the
+command name and from each other with `{\vt @}' characters.
+
+\begin{description}
+\item{\vt w=}{\it l\/},{\it b\/},{\it r\/},{\it t}\\
+This provides an area, given in microns, of the top-level cell where
+checking will be performed.  The value consists of four
+comma-separated floating-point numbers.  If not given, the entire cell
+will be checked.
+
+\item{\vt m=}{\it maxerrs}\\
+This provides the maximum batch-mode error count, checking will
+terminate when this count is reached.  The {\it maxerrs} is an
+integer 0--100000, with 0 indicating no limit.  This will override
+the maximum error count set in the technology file, if any.
+
+\item{\vt r=}{\it level}\\
+This sets the error recording level to use when checking.  The {\it
+level} is an integer 0--2.  These correspond to recording one error
+per object, one error of each type per object, or all errors.  This
+will override the recording level set in the technology file.
+
+\item{\vt d}\\
+This a flag, not followed by an `=' sign or value.  If given, the file
+which was the source of the current cell will be deleted from the disk
+when DRC completes.  This facilitates cleaning up temporary files,
+but obviously should be used with care.
+\end{description}
+\end{description}
+
+In batch mode, the log files for reading and writing of files are
+written to the current directory.  
 
 !!SEEALSO
 xic:server
@@ -522,6 +849,96 @@ Cell Organization and Libraries
     other libraries.  This is natural, if the file name is used as the
     reference name, and the filename has a "<tt>.lib</tt>" extension
     as is recommended.
+!!LATEX fileorg using.tex
+{\Xic} provides several methods by which collections of cells can be
+organized.
+
+\begin{itemize}
+\item{{\Xic} makes use of a search path for file names given to {\Xic}
+    which do not have a directory path prepended.  A search path is a
+    list of directories where {\Xic} searches for a named file.  If
+    the file name contains a full path, that path will be used to
+    obtain the file.  If a file name has a relative path, {\Xic} will
+    look for the file relative to each of the directories in the
+    search path.  The search path can be set in the technology file,
+    or by setting the {\et Path} variable with the {\et !set} command. 
+    The current path can be examined by entering ``{\vt !set}'', which
+    pops up a list of the currently defined variables, including {\et
+    Path}.  The directories are searched in left-to-right order.
+}
+
+\item{{\Xic} accepts library files.  These are text-mode files which
+    contain references to cells and other libraries, and may contain
+    cell definitions.  If a library file is ``open'', cell names
+    referenced or defined in the library will be resolved through the
+    library, before resolving through the search path.  The name of a
+    cell reference in a library is the name by which the cell will be
+    added to {\Xic} memory, which can be different from the name by
+    which the cell is stored on disk.  The fact that a library can
+    reference other libraries allows a hierarchy to be established for
+    accessing cells, independent of the search path.
+
+    The {\cb Libraries List} button in the {\cb File Menu} brings up a
+    panel which lists the currently open libraries, and provides
+    command buttons for performing basic manipulations on libraries,
+    including opening/closing, viewing content, and opening cells.
+}
+
+\item{Cells contained in archive files can be randomly accessed from
+    the file, thus these files can be used for archival purposes.  The
+    {\cb Contents} button in the panel brought up by the {\cb Files
+    List} button in the {\cb Files Menu} will display the cells
+    contained in these files.  The {\cb Contents} button will also
+    list the contents of library files.  Individual cells (and their
+    subcells) can be opened for editing or placement through this
+    panel.  Also, when giving a name to the {\cb Open} command, or the
+    {\cb place} command in the side menu, one can give two names:  the
+    name of an archive file and a space-separated name of a cell in
+    the archive.  That cell will be opened.  If the cell name is not
+    given, the top-level cell in the archive is opened.  }
+\end{itemize}
+
+The strategy used to organize cells is highly dependent upon the
+user's needs and preferences.  Below are some recommendations which
+are probably suitable for most applications.
+
+\begin{itemize}
+\item{Keep the search path short.  This can usually consist of two
+    directories:  the current directory (``.'') listed first, and a
+    root directory for the user's design files.  The search path is
+    most conveniently defined in the technology file, with the {\et
+    Path} keyword.  The search path has the disadvantage that all
+    components are visible at all times.  If a cell name appears more
+    than once in the search path, only the first instance will be
+    found, unless the full path is given.  Libraries, on the other
+    hand, can be opened and closed easily, changing the accessibility
+    of the contents.
+}
+\item{Use hierarchies of libraries rooted in the search path to
+    organize cells.  One can open only the libraries in use,
+    preventing loading of cells unexpectedly.
+}
+\item{Place collections of cells to be referenced through libraries
+    in separate directories not in the search path.  Alternatively,
+    the {\Xic} cell definitions can be incorporated directly into the
+    library file.  The cells can otherwise be kept as individual cells
+    of any compatible format, or combined into a single archive file.
+}
+\end{itemize}
+
+Library files have a simple format which allows the user to easily
+create and customize them with a text editor.  There is a {\et !mklib}
+command in {\Xic} which can create a new library or append to an
+existing library references to cells in the current editing hierarchy
+or cells in a given archive file.
+
+If one clicks on a reference in a library content listing which points
+to another library, without a resolving ``{\it cellname\/}'', a second
+content window appears providing a listing of the second library's
+references.  Thus, when constructing library files, one should use an
+easily recognizable name for browsable references to other libraries. 
+This is natural, if the file name is used as the reference name, and
+the filename has a ``{\vt .lib}'' extension as is recommended.
 
 !! 090814
 !!KEYWORD
@@ -724,4 +1141,160 @@ Database Overview
     <p>
     Unless there is a specific need, it is recommended that users
     employ the default resolution.
+!!LATEX xicdb intro.tex
+The core of {\Xic} is the main database, which stores objects in a
+format that can be rapidly accessed spatially.  The database, when
+given a rectangular region, will efficiently provide a list of
+contained objects whose bounding boxes overlap the given region.  For
+example, when the user clicks or drags in a drawing window, the main
+database will quickly provide a list of the objects which overlap this
+area, so they may be shown as selected.
+
+Each cell in memory has a database for each layer used by objects in
+the cell, plus a database corresponding to a dummy layer which
+contains the locations of subcell instances.  The cells themselves are
+saved in one or more hash tables, the ``symbol tables''.  The symbol
+tables allow cell data to be rapidly found by name.  Cell name strings
+are saved in a common string table, so that address values can be used
+for efficient string comparison.
+
+Each symbol table represents a self-contained design space, which can
+be rapidly switched between.  {\Xic} allows the user to define any
+number of symbol tables.  Cells of the same name can not be saved in
+the same symbol table, but can exist in different symbol tables. 
+Thus, for example, different versions of the same cell hierarchy can
+be kept in memory simultaneously, but the user can only view/edit
+using one symbol table at a time.  This capability is used
+transparently by the geometry comparison functions, for example, in
+comparing two versions of the same cell.
+
+The main database is organized as a tree, though the details are
+proprietary.  This structure is self-balancing, unlike KD trees, thus
+there is no need to ``rebuild'' the database when objects are added or
+removed.  The structure is optimized for rapid access, at a cost of
+time to build the structure.  It is also optimized for low memory
+consumption, at a slight cost in speed.
+
+When a file in loaded into the {\Xic} ``main'' database, cell
+structures are created for each cell defined in the file.  The cell
+structures contain trees for each layer used plus one for subcells if
+any, and are linked into the current symbol table.
+
+The main database, with spatial access features, is not particularly
+efficient with regard to memory use.  Large designs may not fit into
+available memory, depending on the machine.  The physical memory
+limitation of the computer determines the maximum size of a file that
+can be read into {\Xic} efficiently.  Very roughly, the memory
+available should equal the size of the (uncompressed) GDSII file.  If
+the file requires too much memory, {\Xic} performance can become very
+sluggish due to page swapping, or in some cases the operating system
+will halt the process if memory limits are exceeded.
+
+Although the design must reside in the main database for efficient
+cell editing, there are operations where this is not needed.  There
+are provisions for handling extremely large files which can not be
+normally loaded.
+
+\subsection{Cell Hierarchy Digest}
+
+The Cell Hierarchy Digest (CHD) is a data structure designed to solve
+this problem.  A CHD is an in-memory database which contains
+information about a hierarchy of cells, in a very compact manner.  It
+holds no information about the geometry contained in the cells, but
+does contain offsets into the original layout file, so that through
+the CHD, the cell contents can be obtained reasonably quickly.  Since
+the CHD uses a small fraction of the memory of the full design in the
+main database, it allows operations to be performed on very large
+designs with a modest computer.
+
+The operations that can be performed with a CHD generally involve
+translation of a layout file into another layout file.  For example,
+cell sub-hierarchies can be extracted, scaled, layers filtered or
+aliased, or cell names globally changed or aliased.  The hierarchy can
+be flattened, filtered through a rectangular window and possibly
+clipped to the window, and empty cells (possibly produced by layer
+filtering) can be removed.
+
+The CHD can also be used to view but not (directly) edit a large file. 
+This is not as fast as viewing through the main database, but it is
+possible to view much larger files with a CHD.
+
+There are also some novel ways to use CHDs in {\Xic} to perform some
+limited editing.  Reference cells in the main database are dummy cells
+that contain no data, but reference a cell hierarchy through a CHD. 
+These cells can be instantiated in other cells normally.  However,
+when written to a layout file on disk, they are replaced in output
+with the full referenced hierarchy obtained through the CHD.  Thus one
+can use reference cells to assemble the top-level cell of a very large
+design.  Each reference cell points to a sub-part of the design, kept
+in a separate layout file.  When the top-level cell is written to
+disk, all of the parts will be extracted and combined into this file.
+
+There is a cell override table which contains the names of cells in
+main memory.  When enabled, when reading cell data through a CHD,
+cells in the override table will supersede cells in the original
+layout file.  Thus, the cell override table provides a substitution
+mechanism.  To perform minor editing in a hierarchy too large for main
+memory, one can
+\begin{enumerate}
+\item{extract only the cells to be edited into main memory through a
+CHD,}
+\item{edit these cells, and place their names in the override
+table, then}
+\item{write a new layout file using the CHD, which will
+contain the new versions of the cells.}
+\end{enumerate}
+
+There is a related Cell Geometry Digest (CGD) which contains highly
+compact geometry collections on a per-cell/per-layer basis.  A CGD can
+be linked to a CHD, with the total memory used still far smaller (by
+approximately a factor of 10) than the same cell hierarchy in the main
+database.  With a linked CGD, when reading cell data through the CHD,
+the data are extracted from the CGD, avoiding accessing the original
+file on disk.  This is usually faster.
+
+\subsection{Database Resolution}
+
+By default, {\Xic} uses an internal resolution of 1000 units per
+micron.  In releases prior to 3.0.12, this was internally hard-coded. 
+As the dimensions used in integrated circuits continue to shrink, an
+option for higher resolution has been added.
+
+The resolution can be set with the {\et DatabaseResolution} variable,
+which can be set to ``{\vt 1000}'', ``{\vt 2000}'', ``{\vt 5000}'', or
+``{\vt 10000}''.  If unset, 1000 units is used.  This resolution
+applies only to physical data, electrical resolution is fixed at 1000.
+
+This variable can be set only from the {\vt .xicinit} file, which is
+read before the technology file, or the technology file.  It can not
+be set or unset in a {\vt .xicstart} file (read after the technology
+file) unless no technology file is read, or by any other means.  It is
+important that the resolution be set before reading such things as DRC
+rules, since the rules contain resolution-dependent numbers which
+would be incorrect after a resolution change. 
+
+Superficially, changing the internal resolution has only subtle
+effects from the user's vantage point.  Some of these are:
+
+\begin{enumerate}
+\item{If not 1000, four digits following the decimal point are used
+when printing coordinates in microns, in many places in {\Xic}. 
+Otherwise, only three digits are used.}
+
+\item{The ultimate zoom-in and grid spacing sizes are smaller for
+higher resolutions.}
+
+\item{The size of ``infinity'', the maximum accessible size for the
+design, becomes smaller as resolution is increased, since
+coordinates are stored internally as 32-bit integers.  For 1000
+units, the field width is approximately 2 meters, which decreases
+to 20 centimeters at 10000 units.  This should still be plenty for
+most purposes.}
+
+\item{Layout files produced by {\Xic} will use the internal
+resolution, so that no accuracy is lost.}
+\end{enumerate}
+
+Unless there is a specific need, it is recommended that users employ
+the default resolution.
 

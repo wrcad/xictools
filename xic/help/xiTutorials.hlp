@@ -208,6 +208,149 @@ xictop
     physical layout, plus extracted physical device parameters, can be
     used to generate a SPICE output file, and even a schematic. 
     Automated layout vs.~schematic (LVS) testing is provided.
+!!LATEX xictop intro.tex
+{\Xic} is a dual-mode graphical editing tool.  In the physical editing
+mode, {\Xic} is a hierarchical mask layout editor, with interactive
+and batch mode design rule checking, arbitrary angle polygon and wire
+support, netlist and parameter value extraction, and many more
+advanced features.  In electrical layout mode, {\Xic} serves as a
+hierarchical electrical schematic editor and schematic capture front
+end for SPICE.  In the {\XicTools} environment, circuit simulation can
+be performed and results analyzed from within {\Xic}, through an
+interprocess communication channel established to the companion
+{\WRspice} program.
+
+Arrayed along the top of the main window is a toolbar containing
+drop-down menu selectors.  Below the menu bar is a tool bar containing
+buttons and other controls, including the coordinate readout area to
+the right.  To the left of the main window is an array of additional
+command buttons.  These menu commands control the operation of {\Xic}. 
+The main drawing window occupies the largest section of the main
+window.  The main drawing window supports drag and drop as a drop
+receiver for files.  To the left of the main drawing window is the
+layer menu, which displays a listing of the layers used in the
+process.  The layers, and their attributes, are specified in a
+technology file read by {\Xic} at program startup.
+
+Just below the main drawing window is the prompt line, which provides
+a channel for text-mode interaction with the program.  In the same
+row, below the buttons in the side menu is the key press buffer area,
+which records characters typed into the graphics window.  It is
+invisible until characters are typed.  The typed characters are
+interpreted as command accelerators.  Below the prompt line, at the
+bottom of the main window, is a status line which provides information
+about the current program operating state.
+
+The WR button, in the upper left corner of the main window, brings
+up a mail client which can be used to send messages and files via
+internet mail.  It is preloaded with the address of the technical
+support group at Whiteley Research.
+
+Despite the array of features, {\Xic} is intended to be
+straightforward and intuitive to use, {\Xic} has extensive on-line
+documentation available through a context-sensitive help system.  This
+help system can easily be augmented and customized by the user, so
+that the user's design rules and tips, and other technical information
+can be made available from within {\Xic}.
+
+{\Xic} includes a native, script execution facility, with plug-in
+support for Python and Tcl/Tk.  These languages will be available if
+installed on the user's computer.  The native scripting language is a
+straightforward but powerful C-like language with a rich library of
+primitives for controlling the operation of {\Xic}.  Scripting can be
+used for automation, for parameterized cells and executable labels,
+and to implement user-defined commands.  These commands may appear as
+buttons in the {\cb User Menu}.
+
+One application of the user scripts is to provide simple, menu based
+commands for creating geometrical objects, devices, or parameterized
+device structures for use in circuit layout.  Further uses for this
+capability are limited only by the user's imagination.
+
+{\Xic} can execute scripts in batch and server modes, allowing
+geometrical manipulations to be performed in a background or non-local
+environment.  As a server, {\Xic} can serve as the workhorse back-end
+for web-based or turn-key third-party products or services, or
+in-house custom applications.
+
+%\ifoa
+{\Xic} provides access to the OpenAccess database via a plug-in.  It
+can utilize the OpenAccess database provided with Cadence Virtuoso, or
+Synopsys/Ciranova PyCell Studio, and others.  {\Xic} has some limited
+compatibility with Cadence Virtuoso:  {\Xic} can directly read Cadence
+technology and display resource files, and can read layout and some
+schematic and schematic symbol views.
+%\fi
+
+Default schematic editing support is provided for a wide variety of
+devices, even Josephson junctions.  Additional devices and subcircuits
+can easily be added by the user, or changes can be made to existing
+devices, by editing a single text file.  {\Xic} also provides a
+high-powered model library search engine compatible with any SPICE
+format model or subcircuit library files, such as those provided by
+semiconductor manufacturers.
+
+Hard copy support is available for a variety of printers and file
+formats, including PostScript (mono and color), HPGL, and HP laser. 
+
+{\Xic} has support for several archive layout file formats, plus
+native input and output.  Data input in a given format will remain in
+that format, unless explicitly converted.
+
+{\Xic} produces data files which contain both electrical and physical
+data, though one of these two data areas may be empty.  The file
+format used can be one of:
+\begin{itemize}
+\item{The native format, in which each cell of a design is written to
+an independent ASCII file.}
+\item{An extension of GDSII, a binary format where the entire design    
+can be written to a single file.}
+\item{The newer and more compact OASIS format, which is a replacement
+for GDSII.}
+\item{An extension of CIF, a multi-cell format, somewhat archaic,
+but an ASCII format so human-readable.}
+\item{The CGX file format, developed by Whiteley Research.}
+%\ifoa
+\item{OpenAccess, a third-party database used by Cadence and others.}
+%\fi
+\end{itemize}
+{\Xic} will read any of these file types automatically, and save any
+editing changes in the same file type unless instructed otherwise.
+
+Built-in converters can be used to convert between the file formats. 
+It is possible to ``strip'' the output, providing a
+physical-data file completely compatible with the industry standard
+file formats, for portability of mask layout information.  It is also
+possible to read and write a ``text-mode'' version of GDSII files,
+which can be used to repair corrupted or misbehaving GDSII databases.
+
+{\Xic} provides a powerful facility for translating between supported
+layout file formats, while potentially modifying the data.  Possible
+modifications include layer filtering and aliasing, cell name global
+modification and aliasing, flattening, and spatial filtering to a
+rectangular area with or without clipping, cell replacement, and more. 
+These operations can be applied to very large files, as a unique
+technique minimizes memory use.
+
+In physical mode, design rule checking can be performed as each new
+object is created of modified.  Batch mode checking is also available,
+either in the foreground, or as a background child process.  The
+philosophy of {\Xic} is that it is never in the user's best interest
+to ``cheat'' in the enforcement of design rules, yet there may be
+times when a given rule is not appropriate, and a modified rule should
+be used.  Following this philosophy, the user is given complete
+control over the design rules, which can be edited, disabled, or rules
+added interactively.  The user can initiate batch mode design rule
+checking over a given area or over a complete cell.  Design rule
+checking is performed over a pseudo-flat internal representation of
+the layout, so that physical rules are checked without any constraint
+based upon which subcells contain the geometry.
+
+{\Xic} has provision for netlist and parameter extraction.  The
+netlist obtained from the physical layout, plus extracted physical
+device parameters, can be used to generate a SPICE output file, and
+even a schematic.  Automated layout vs.~schematic (LVS) testing is
+provided.
 
 !! 010615
 !!KEYWORD
@@ -584,6 +727,280 @@ A Quick Tour of <i>Xic</i> Capabilities
     href="xic:pcells">template (parameterized) cells</a>, which enable
     on-the-fly generation of subcells based on an arbitrary set of
     parameters.
+!!LATEX captour intro.tex
+The precursor to {\Xic} was the Kic layout editor, a very simple
+no-frills layout editor developed at Berkeley in the 1980's.  In the
+late 1980s, the author needed a layout editor to support contract
+development and research efforts in superconductive electronics, and
+adopted Kic, run under something called a ``DOS extender'' (to support
+32-bit applications) on an early and very expensive i386 computer. 
+This required extensive modification to Kic, mostly to support the PC
+graphics.  Kic is still available as free software on the Whiteley
+Research web site.
+
+After Unix became available for 386/486 PCs in the form of the FreeBSD
+operating system, DOS and direct-write graphics became history. 
+{\Xic} became a separate program in late 1995, initially using the
+X-window system (Xt) user interface toolkit.  Over the following
+years, {\Xic} became a full-time development effort, and the
+extraction, DRC, and other subsystems were added.  Although to this
+day faint similarities to Kic exist, internally the code has been
+replaced has been replaced by several iterations of more modern code,
+and the database and other systems were replaced with improved
+implementations.
+
+Eventually, {\Xic} underwent a complete rewrite into C++ (from C) to
+improve maintainability and organization.  The GTK toolkit was
+adopted for the user interface.
+
+Whiteley Research Inc.  was founded in 1996 to market {\Xic}, and the
+companion {\WRspice} program.  Since then, {\Xic} has continued to
+develop, as new users brought forward new ideas and requirements.
+
+\subsection{General}
+
+{\Xic} provides a menu of buttons along the side (the ``side menu''),
+and s number of drop-down menus along the top of the main window. 
+{\Xic} responds to key presses in various ways, and provides an
+input/output text area just below the main window.  Key presses are
+interpreted as macros, special commands, menu command accelerators, or
+as `!' commands.  Several control sequences directly initiate certain
+operations, for example {\kb Ctrl-r} will redraw the window and {\kb
+Ctrl-g} will prompt for grid parameters.  Other control sequences will
+trigger menu commands as accelerators, and typing the unique prefix of
+the command name (as shown in the tool tip which appears as the mouse
+pointer hovers over a menu entry) will trigger menu commands.  If `!'
+is pressed, the rest of the sequence (until {\kb Enter} is pressed) is
+taken as an internal or Unix shell command.  If `?' is pressed, the
+rest of the sequence (until {\kb Enter} is pressed) is taken as a help
+database keyword.
+
+\subsection{The Help System}
+
+{\Xic} contains a comprehensive HTML-based on-line help system.  The
+help viewer can also function as a web browser, providing access to
+internet resources.  The viewer can serve as an input device for
+scripts, i.e., the window would contain a form which provides
+parameters to a script.  The help database can be augmented by the
+user, allowing local information to be easily accessed.
+
+{\Xic} is internet aware, and can actually open design files
+served by a remote HTTP or FTP host.  Files can also be opened in
+response to clicking on links in the help viewer.
+
+\subsection{Cadence Virtuoso and OpenAccess Compatibility}
+
+%\ifoa
+{\Xic} can read and write design data to an OpenAccess database, but
+OpenAccess is not required.  {\Xic} can read and use ASCII technology
+and DRF files intended for Cadence Virtuoso and other similar tools,
+as provided by chip foundries.  {\Xic} can read schematic, symbol, and
+layout views produced by Cadence, and to varying degrees, obtain a
+working, simulatable cell hierarchy.  Presently, it is not possible
+to write back schematic information to Cadence without corruption.
+
+{\Xic} supports Ciranova/Synopsys portable Python-based parameterized
+cells, and provides support for abutment and stretch handles in native
+parameterized cells.
+%\else
+%{\Xic} can read and use ASCII technology and DRF files intended for
+%Cadence Virtuoso and other similar tools, as provided by chip
+%foundries.
+%
+%OpenAccess support is presently not available.  Such support would
+%allow access to an OpenAccess database, such as used with Virtuoso. 
+%This support, once available.  has been removed for legal/financial
+%reasons, but could be reinstated if there is sufficient demand. 
+%Contact Whiteley Research for more information.
+%\fi
+
+\subsection{Layout Editing}
+
+First and foremost, {\Xic} is an editor for integrated circuit mask
+layouts.  Although, in large measure, the notion of mask layout from
+manual polygon placement has disappeared in modern electronics, having
+been replaced by automated cell place and route, there are still many
+instances where layout viewing and editing are essential.  {\Xic} is
+designed the make this task efficient and straightforward.
+
+{\Xic} makes use of a proprietary database technology which provides
+extremely fast access to spatially-keyed data.  The database
+technology has changed several times over the life of the program, and
+the current database, though invisible to users, is an important
+achievement.
+
+{\Xic} has a complete set of features for creating, moving,
+transforming, and modifying geometrical features and subcells, with
+complete undo/redo capability.  Most of these features are accessed
+from the side menu, and from the {\cb Edit Menu} and {\cb Modify
+Menu}.  Basic mouse operations allow selection, and moving, copying,
+or stretching selected objects.  The ability to create physical text
+or crude images (e.g., for company logos) is built in.
+
+{\Xic} operates on a cell hierarchy, and has commands to push
+and pop the editing context through the hierarchy, and to flatten
+the hierarchy to arbitrary depth.
+
+Some releases of {\Xic} are 32-bit applications, and as such have an
+inherent memory limitation of about 3Gb.  {\Xic} has internal memory
+management which is designed to use as much available virtual memory
+as possible.  On a system with sufficient memory, 2-3 GB files can be
+read in for editing directly.  In {\Xic} releases compiled for
+64-bits, there is no such memory limitation.
+
+\subsection{Input/Output}
+
+The technology-specific information used by {\Xic} is maintained in a
+single human-readable file.  Most of the parameters set by the
+technology file can be set or reset from within {\Xic}, and an updated
+technology file can be easily generated.
+
+{\Xic} can read or write files in several formats.  These include
+
+\begin{description}
+\item{GDSII}\\
+The industry-standard binary data format.
+
+\item{OASIS}\\
+A new standard intended to replace GDSII and is far more
+compact.
+
+\item{CIF}\\
+An ancient ASCII data format, still in use occasionally.
+
+\item{CGX}\\
+A more compact replacement for GDSII developed by Whiteley Research
+(and placed in the public domain).  It still uses fixed-sized
+integers, so is not nearly as compact as OASIS, but is simple to
+generate and parse.
+
+\item{Native}\\
+A CIF-like cell-per-file format.
+
+%\ifoa
+\item{OpenAccess}\\
+If present, {\Xic} can read and write to an OpenAccess database,
+including the databases provided with Cadence Virtuoso and Ciranova
+PyCell Studio.
+%\fi
+\end{description}
+
+Any files in these formats can be read directly into {\Xic}, whether
+or not the current technology matches.  In fact, it is possible (and
+sometimes desirable) to start {\Xic} with no technology file.  As the
+file is read, {\Xic} will add layers as necessary to represent the
+file.  After changing layer colors and fill patterns as desired, a new
+technology file can be dumped.
+
+Files can be read into the {\Xic} database, and later written to disk
+in any of these formats.  The default is to write in the same format
+as the original file.
+
+In addition, format conversions can be applied directly, bypassing the
+database load.  While converting, windowing operations (clipping),
+scaling, or flattening can be applied.  Since {\Xic} uses 64-bit file
+offsets, the direct conversions can be applied to huge files, even
+with 32-bit {\Xic} binaries and modest memory.
+
+\subsection{Design Rule Checking}
+
+{\Xic} has a built-in design rule checking engine, based on rules
+provided in the technology file or interactively in {\Xic}.  Both
+interactive (performed after every geometry modification) and
+batch-mode checking (foreground or background) is supported, in all or
+a portion of the layout.
+
+Errors are reported in a log file, and indicators added on-screen. 
+Clicking on the indicator can provide a close-up view of the error and
+explanatory text.
+
+There is a rule editor that gives the user complete control over the
+rules and parameters in use.  Although a fairly complete set of
+built-in tests is provided, user-defined tests allow more specialized
+tests to be performed.  Special layers and flags allow objects and
+regions to be ignored during testing.
+
+\subsection{Electrical Mode}
+
+When {\Xic} is in electrical mode (selectable under the {\cb View
+Menu}) the main window is set up for schematic editing.  A
+user-configurable palette of devices is available for placement. 
+Devices are placed, wired together, and properties added to provide
+device parameters.  Once a schematic is complete, it can be dumped as
+a SPICE file, or simulation can be performed interactively through the
+companion {\WRspice} program.  Performing a simulation is as easy as
+clicking the {\cb run} button in the side menu, then, when complete,
+the {\cb plot} button can be pressed, then clicking on nodes in the
+circuit diagram will display simulation plots.  Plots can also be
+created while simulating, and are updated as the simulation
+progresses.
+
+There are provisions for providing arbitrary names for nodes and
+devices in the circuit.  The default is for {\Xic} to define the names
+in most cases.  There is a symbolic representation capability,
+enabling a subcircuit to have a special symbol, instead of a
+schematic, when used as a subcell.
+
+{\Xic} provides vectorized instance placements, and a complete
+net expression capability for multi-conductor wire net definition.
+
+Electrical-mode data is ``tied'' to the physical mode data, and saved
+in the same file.  This requires some extensions to be employed in the
+files.  These extensions are 1) usually ignored by other programs, and
+2) can be easily stripped out to ensure portability of physical data.
+
+\subsection{Extraction}
+
+The commands in the {\cb Extract Menu} deal with the
+electrical/physical association defined for a cell, i.e., the
+electrical schematic and the physical layout.
+
+It is not always necessary to enter the schematic by hand.  A
+schematic can be produced from a SPICE file, or from the physical
+layout.  The resulting schematic is perhaps not too useful from a
+human-readability standpoint, but is valid nonetheless.  The user of
+course has the option to rearrange things and make other changes to
+promote readability and aesthetics.
+
+There are provisions to update the schematic from the physical layout,
+either globally or per-device.  It is possible to dump a netlist file
+or SPICE file created directly from the physical layout.
+
+There is provision for LVS (layout vs. schematic) analysis.
+
+The parameters that control extraction, and device definitions for
+extraction, generally appear in the technology file.  These can be
+created or modified from within {\Xic} through the technology parameter
+editor window.
+
+\subsection{Automation}
+
+{\Xic} contains a just-in-time compiler for a powerful built-in
+scripting language.  The native language is C-like, though a Lisp-like
+variant is also supported.  There is also interoperability with the
+popular tcl/tk scripting language.
+
+A lengthly and expanding set of interface functions allow {\Xic} to be
+controlled by the scripts, and a very efficient computational geometry
+engine allows database manipulation.
+
+{\Xic} even supports a server mode, whereby {\Xic} does not use
+graphics, and instead becomes a ``daemon'', listening for job
+requests.  Other applications can use the server for geometrical and
+other manipulations.  A similar batch mode, where {\Xic} again does
+not use graphics but instead executes a script and exits, is also
+available.
+
+The user's scripts can appear as command buttons in the {\cb User
+Menu}, allowing custom operations to be easily accessible in normal
+operation.
+
+The script language is used elsewhere, for example in user-defined
+design rule tests, and in executable labels.  An executable label is a
+text object in a design that when clicked-on will perform some
+operation.  Scripts are also used in template (parameterized) cells,
+which enable on-the-fly generation of subcells based on an arbitrary
+set of parameters.
 
 !!SEEALSO
 xicdb
@@ -994,6 +1411,279 @@ A Quick Tour of the <i>Xic</i> Menus
     <tr><td>others</td> <td> - </td> <td> - </td>
       <td>User scripts and menus</td></tr>
     </table>
+!!LATEX menutour intro.tex
+\subsection{Side Button Menu}
+
+Buttons arrayed along the side of the main window control the
+generation of objects - rectangles, polygons, wires (fixed-width
+paths), arcs, and rounded objects.  Other buttons enable setting
+related defaults, such as wire end style and width, and the number of
+vertices used in ``round'' objects.  Additional buttons control
+operations such as erase/yank/put, xor, clipping, and rotating.  In
+electrical mode, this menu changes to provide buttons for adding
+connection terminals, controlling the node-naming, and managing the
+simulation interface to the companion {\WRspice} program.  These
+buttons are described in chapter \ref{sidemenu}.
+
+\subsection{Top Button Menu}
+
+There are a few buttons arrayed horizontally above the main drawing
+window, along with the coordinates display.  These are associated with
+the layer table and selection control.  The controls in this menu are
+described in \ref{topbuttons}.
+
+The drop-down menus arrayed along the top of the main window control
+additional features.
+
+In addition, there are a number of special `!' commands that are
+entered by typing the command name.  These control or enable
+additional features that are not as frequently used.
+
+Finally, there is a rather sophisticated scripting interface with a
+large collection of built-in functions, which enables the user to
+create automation scripts.  These scripts can be initiated from the
+{\cb User Menu}.
+
+\subsection{File Menu}
+
+The {\cb File Menu} provides commands to open, save, and list files,
+cells, and other things.  This menu also contains the printer
+interface.
+
+\begin{tabular}{|l|l|l|p{2in}|} \hline
+\multicolumn{4}{|c|}{\kb File Menu}\\ \hline
+\kb Label & \kb Name & \kb Pop-up & \kb Function\\ \hline\hline
+\et File Select & \vt fsel & \cb File Selection & Open file\\ \hline
+\et Open & \vt open & none & Open new cell or file\\ \hline
+\et Save & \vt sv & {\cb Modified Cells} & Save modified cells\\ \hline
+\et Save As & \vt save & none & Save file, rename\\ \hline
+\et Save As Device & \vt sadev & {\cb Device Parameters} & Electrical
+  mode only,{\newline}apply defaults and save device\\ \hline
+\et Print & \vt hcopy & \cb Print Control Panel & Hard copy plot\\ \hline
+\et Files List & \vt files & \cb Path Files Listing & List search path files\\
+  \hline
+\et Hierarchy Digests & \vt hier & \cb Cell Hierarchy Digests &
+  List of Cell Hierarchy Digests\\ \hline
+\et Geometry Digests & \vt geom & \cb Cell Geometry Digests &
+  List of Cell Geometry Digests\\ \hline
+\et Libraries List & \vt libs & \cb Libraries & List libraries\\ \hline
+%\ifoa
+\et OpenAccess Libs & \vt oalib & \cb OpenAccess Libraries & List OA
+  libraries (with OA only)\\ \hline
+%\fi
+\et Quit & \vt quit & none & Exit {\Xic}\\ \hline
+\end{tabular}
+
+\subsection{Cell Menu}
+
+The {\cb Cell Menu} contains command buttons to change the current
+cell, and to get information about cells in memory.
+
+\begin{tabular}{|l|l|l|l|} \hline
+\multicolumn{4}{|c|}{\kb Cell Menu}\\ \hline
+\kb Label & \kb Name & \kb Pop-up & \kb Function\\ \hline\hline
+\et Push & \vt push & none & Edit subcell\\ \hline
+\et Pop & \vt pop & none & Edit parent cell\\ \hline
+\et Symbol Tables & \vt stabs & \cb Symbol Tables & List of cell symbol
+  tables\\ \hline
+\et Cells List & \vt cells & \cb Cells Listing & List cells in memory\\ \hline
+\et Show Tree & \vt tree & \cb Cell Hierarchy Tree & Display cell hierarchy\\
+  \hline
+\end{tabular}
+
+\subsection{Edit Menu}
+
+The {\cb Edit Menu} contains commands which provide panels for cell
+placement and property editing, and other features.
+
+\begin{tabular}{|l|l|l|p{1.75in}|} \hline
+\multicolumn{4}{|c|}{\kb Edit Menu}\\ \hline
+\kb Label & \kb Name & \kb Pop-up & \kb Function\\ \hline\hline
+\et Enable Editing & \vt cedit & none & Enable/disable editing mode
+ for current cell\\ \hline
+\et Setup & \vt edset & \cb Editing Setup & Show {\cb Editing Setup} panel\\
+ \hline
+\et Create Cell & \vt crcel & none & Create new cell\\ \hline
+\et Create Via & \vt crvia & none & Create a standard via\\ \hline
+\et Flatten & \vt flatn & \cb Flatten Hierarchy & Flatten hierarchy\\ \hline
+\et Join/Split & \vt join & \cb Join or Split Objects & Control join/split
+  operations\\ \hline
+\et Layer Expression & \vt lexpr & \cb Evaluate Layer Expression & Control
+  layer expression evaluation\\ \hline
+\et Properties & \vt prpty & \cb Property Editor & Edit properties\\ \hline
+\et Cell Properties & \vt cprop & \cb Cell Property Editor & Edit cell
+  properties\\ \hline
+\end{tabular}
+
+\subsection{Modify Menu}
+
+The {\cb Modify Menu} contains supplements the side menu with commands
+to undo/redo operations, and move, copy, and delete objects.  Most of
+these commands have a faster keyboard equivalent.
+
+\begin{tabular}{|l|l|l|l|} \hline
+\multicolumn{4}{|c|}{\kb Modify Menu}\\ \hline
+\kb Label & \kb Name & \kb Pop-up & \kb Function\\ \hline\hline
+\et Undo & \vt undo & none & Undo last operation\\ \hline
+\et Redo & \vt redo & none & Redo last undo\\ \hline
+\et Delete & \vt delet & none & Delete objects\\ \hline
+\et Erase Under & \vt eundr & none & Erase under objects\\ \hline
+\et Move & \vt move & none & Move objects\\ \hline
+\et Copy & \vt copy & none & Copy objects\\ \hline
+\et Stretch & \vt strch & none & Stretch objects\\ \hline
+\et Chg Layer & \vt chlyr & none & Move object to new layer\\ \hline
+\et Set Layer Chg Mode & \vt mclcg & {\cb Layer Change Mode} &
+ Set layer change mode for move/copy\\ \hline
+\end{tabular}
+
+\subsection{View Menu}
+
+The {\cb View Menu} contains commands which affect the presentation of
+the current design, including the selection of physical and electrical
+(schematic) modes.
+
+\begin{tabular}{|l|l|l|l|} \hline
+\multicolumn{4}{|c|}{\kb View Menu}\\ \hline
+\kb Label & \kb Name & \kb Pop-up & \kb Function\\ \hline\hline
+\et View & \vt view & none & Set view in window\\ \hline
+{\et Physical} or {\et Electrical} & {\vt phys} or {\vt sced} & none &
+ Switch mode\\ \hline
+\et Expand & \vt expnd & \cb Expand & Show detail in window\\ \hline
+\et Zoom & \vt zoom & dialog & Change window scale\\ \hline
+\et Viewport & \vt vport & sub-window & New drawing window\\ \hline
+\et Peek & \vt peek & none & Show layers in area\\ \hline
+\et Cross Section & \vt csect & sub-window & Show layers in cross-section\\
+ \hline
+\et Rulers & \vt ruler & none & Add transient gradations\\ \hline
+\et Info & \vt info & \cb Info & Show cell/object parameters\\ \hline
+\et Allocation & \vt alloc & \cb Memory Monitor & Show memory statistics\\
+ \hline
+\end{tabular}
+
+\subsection{Attributes Menu}
+
+The {\cb Attributes Menu} provides commands which affect the
+presentation of the design, such as the colors used.
+
+\hspace*{-1.5em}
+\begin{tabular}{|l|l|l|l|} \hline
+\multicolumn{4}{|c|}{\kb Attributes Menu}\\ \hline
+\kb Label & \kb Name & \kb Pop-up & \kb Function\\ \hline\hline
+\et Save Tech & \vt updat & none & Save technology file\\ \hline
+\et Key Map & \vt keymp & none & Create keyboard mapping file\\ \hline
+\et Define Macro & \vt macro & none & Define a keyboard macro\\ \hline
+\et Main Window & & Attributes sub-menu & Set main window attributes\\ \hline
+\et Set Attributes & \vt attr & \cb Window Attributes &
+    Set rendering attributes for main window\\ \hline
+\et Connection Dots & \vt dots & \cb Connection Points &
+    Show connection dots in schematics\\ \hline
+\et Set Font & \vt font & \cb Font Selection & Set text fonts used\\ \hline
+\et Set Color & \vt color & \cb Color Selection & Set layer and other colors\\
+    \hline
+\et Set Fill & \vt fill & \cb Fill Pattern Editor & Set layer fill patterns\\
+    \hline
+\et Edit Layers & \vt edlyr & \cb Layer Editor & Add or remove layers\\ \hline
+\et Edit Tech Params & \vt lpedt & \cb Tech Parameter Editor &
+    Edit technology parameters\\ \hline
+\end{tabular}
+
+\subsection{Convert Menu}
+
+The {\cb Convert Menu} provides commands for importing and exporting
+designs to various non-native file formats, and for converting between
+file formats.
+
+\hspace*{-1.5em}
+\begin{tabular}{|l|l|l|l|} \hline
+\multicolumn{4}{|c|}{\kb Convert Menu}\\ \hline
+\kb Label & \kb Name & \kb Pop-up & \kb Function\\ \hline\hline
+\et Export Cell Data & \vt exprt & \cb Export Control &
+  Create a cell data file\\ \hline
+\et Import Cell Data & \vt imprt & \cb Import Control &
+  Read a cell data file\\ \hline
+\et Format Conversion & \vt convt & \cb Format Conversion & Direct file-to-file
+  format conversions\\ \hline
+\et Assemble Layout & \vt assem & \cb Layout File Merge Tool &
+  Merge layout data\\ \hline
+\et Compare Layouts & \vt diff & \cb Compare Layouts &
+  Find differences between layouts\\ \hline
+\et Cut and Export & \vt cut & \cb Export Control &
+  Write out part of a layout\\ \hline
+\et Text Editor & \vt txted & \cb Text Editor & Text edit cell file\\ \hline
+\end{tabular}
+
+\subsection{DRC Menu}
+
+The {\cb DRC Menu} contains commands associated with design rule
+checking.
+
+\begin{tabular}{|l|l|l|p{2.25in}|} \hline
+\multicolumn{4}{|c|}{\kb DRC Menu}\\ \hline
+\kb Label & \kb Name & \kb Pop-up & \kb Function\\ \hline\hline
+\et Setup & \vt limit & \cb DRC Parameter Setup & Set limits and other
+   parameters\\ \hline
+\et Set Skip Flags & \vt sflag & none & Set skip flags\\ \hline
+\et Enable Interactive & \vt intr & none & Set interactive DRC\\ \hline
+\et No Pop Up Errors & \vt nopop & none & No interactive errors list\\ \hline
+\et Batch Check & \vt check & \cb DRC Run Control & Initiate DRC run\\ \hline
+\et Check In Region & \vt point & none & Test rules in region\\ \hline
+\et Clear Errors & \vt clear & none & Erase error indicators\\ \hline
+\et Query Errors & \vt query & none & Print error messages\\ \hline
+\et Dump Error File & \vt erdmp & none & Dump errors to file\\ \hline
+\et Update Highlighting & \vt erupd & none & Update highlighting from file\\
+  \hline
+\et Show Errors & \vt next & sub-window & Sequentially display errors from
+  file\\ \hline
+\et Create Layer & \vt erlyr & none & Write highlight error regions to
+  objects on layer\\ \hline
+\et Edit Rules & \vt dredt & \cb Design Rule Editor & Edit rules for layers\\
+ \hline
+\end{tabular}
+
+\subsection{Extract Menu}
+
+The {\cb Extract Menu} provides commands associated with the
+extraction of electrical information and netlists from the physical
+layout, and layout versus schematic checking.
+
+\hspace*{-1.5em}
+\begin{tabular}{|l|l|l|l|} \hline
+\multicolumn{4}{|c|}{\kb Extract Menu}\\ \hline
+\kb Label & \kb Name & \kb Pop-up & \kb Function\\ \hline\hline
+\et Setup & \vt excfg & \cb Extraction Setup & Set up and control
+  extraction\\ \hline
+\et Net Selections & \vt exsel & \cb Path Selection Control & Select groups,
+ nodes, paths\\ \hline
+\et Device Selections & \vt dvsel & \cb Show/Select Devices & Select
+ and highlight devices\\ \hline
+\et Source SPICE & \vt sourc & \cb Source SPICE File & Update from SPICE
+ file\\ \hline
+\et Source Physical & \vt exset & \cb Source Physical & Update electrical from
+ physical\\ \hline
+\et Dump Phys Netlist & \vt pnet & \cb Dump Phys Netlist & Save physical
+ netlist\\ \hline
+\et Dump Elec Netlist & \vt enet & \cb Dump Elec Netlist & Save electrical
+ netlist\\ \hline
+\et Dump LVS & \vt lvs & \cb Dump LVS & Save physical/electrical comparison\\
+ \hline
+\et Extract C & \vt exc & \cb Cap Extraction & Extract capacitance
+ using Fast[er]Cap\\ \hline
+\et Extract LR & \vt exlr & \cb LR Extraction & Extract L/R using FastHenry\\
+ \hline
+\end{tabular}
+
+\subsection{User Menu}
+
+The {\cb User Menu} contains the script debugger, and the buttons that
+correspond to user-generated scripts.
+
+\begin{tabular}{|l|l|l|l|} \hline
+\multicolumn{4}{|c|}{\kb User Menu}\\ \hline
+\kb Label & \kb Name & \kb Pop-up & \kb Function\\ \hline\hline
+\et Debugger & \vt debug & \cb Script Debugger & Debug scripts\\ \hline
+\et Rehash & \vt hash & none & Rebuild {\cb User Menu}\\ \hline
+others &  --- & --- & User scripts and menus\\ \hline
+\end{tabular}
 
 !! 022816
 !!KEYWORD
@@ -1054,6 +1744,55 @@ Using <i>Xic</i>
     electrical and physical modes.  The new user should read these
     sections, and practice using <i>Xic</i> while reading the help
     text for the various commands.
+!!LATEX usingxic using.tex
+{\Xic} has two basic operating modes: physical and electrical.  In
+physical mode, one is editing the geometry of the mask patterns on the
+multiple layers used in the photomasks to manufacture the circuit.  In
+electrical mode, one is editing an electrical schematic of the circuit
+or subcircuit represented by the cell.  The schematic is used for
+documentation, and also for performing simulation of the circuit to
+verify performance.  The schematic and layout can be interlinked to
+provide consistency verification.  This is the purpose of the functions
+in the {\cb Extract Menu}, to be described in Chapter \ref{chpext}.
+
+\index{hierarchy of cells}
+A full design database typically consists of a hierarchy of cells. 
+The top level or main cell usually depicts the entire chip.  Subcells
+represent the bond pads, annotation, and major circuit blocks.  The
+circuit blocks in turn have subcells representing more primitive
+circuit blocks, down to the gate level and below.
+
+In {\Xic}, one can edit any of these cells and their subcells at any
+depth in the hierarchy, as both physical layout and electrical
+schematic.  The use of a hierarchical database is far more efficient
+and convenient than a flat database.  The designer is encouraged to
+make liberal use of subcells rather than designing single, highly
+complex cells.
+
+When a design is complete, i.e., when all electrical simulations and
+physical design rule checks have been performed, the physical part of
+the database can be submitted for processing.  The exact mechanism
+varies with organization, but the physical-only ({\cb Strip For
+Export} button in the {\cb Export Control} panel from the {\cb
+Convert Menu} active) GDSII, OASIS and CIF outputs provided by {\Xic}
+are portable to any mask fabrication facility or foundry.
+
+The user can switch between physical and electrical modes at any time,
+by pressing the {\cb Electrical} or {\cb Physical} button (whichever
+appears) in the {\cb View Menu}.  Sub-windows, brought up with the {\cb
+Viewport} button in the {\cb View Menu}, are individually switchable
+between schematic and physical views.  The side menus differ somewhat
+between the two modes, and some menu commands operate a little
+differently.
+
+The next two sections of this chapter provide an introduction to
+editing in physical and electrical modes.  The remaining sections
+provide information on certain {\Xic} operation modes and features,
+and are somewhat more advanced in nature.  The following chapters
+provide detailed information on all of the menu command functions.
+
+The new user should read the first two sections of this chapter, and
+practice using {\Xic} while reading the help messages.
 
 !!SUBTOPICS
 physedit

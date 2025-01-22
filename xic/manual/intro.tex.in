@@ -1,0 +1,100 @@
+% -----------------------------------------------------------------------------
+% Xic Manual
+% (C) Copyright 2025, Whiteley Research Inc., Sunnyvale CA
+% intro.tex.in
+% -----------------------------------------------------------------------------
+
+% -----------------------------------------------------------------------------
+% not in help
+\chapter{Introduction to {\Xic}}
+\pagenumbering{arabic}
+
+This chapter will provide an overview of the {\Xic} program, setup and
+initialization information, and information for basic use.  Detailed
+information on the various commands, features, and modes will be found
+in the following chapters.  Information on file formats and other
+rather technical topics can be found in the appendices.  New users
+should read this chapter and the first two sections of the following
+chapter thoroughly, and read the sections in the remaining chapters
+describing the commands referred to in the usage sections in chapter
+2.  The on-line help contains most of the information presented in
+this manual, in a cross-referenced format.  Users will likely make
+extensive use of the help system.  The information provided in the
+help system is generally more up-to-date than can be provided in the
+manual, and should be considered to be correct if there is ever a
+conflict.
+
+Whiteley Research is more than happy to assist users by answering
+questions and providing information.  The ``{\cb WR}'' button in the
+{\Xic} interface brings up a mail client which can be used to send
+questions to Whiteley Research, which will be answered as soon as
+possible.  However, in order for this service to operate efficiently,
+it is requested that users make an effort to answer questions by
+reading the provided documentation before contacting Whiteley
+Research.
+
+In this manual, text which is provided in {\vt typewriter} font
+represents verbatim input to or output from the program.  Text
+enclosed in square brackets ( [text] ) is optional in the given
+context, as in optional command arguments, whereas other text should
+be provided as indicated.  Text which is {\it italicized\/} should be
+replaced with the necessary input, as described in the accompanying
+text.
+
+% -----------------------------------------------------------------------------
+\section{{\Xic} Graphical Editor Overview}
+
+% xictop 040713
+<<xictop xiTutorials.hlp>>
+
+% -----------------------------------------------------------------------------
+% not in help
+\section{{\Xic} Feature Sets}
+
+The {\Xic} user may have access to only a subset of features.  These
+feature sets correspond to "virtual" products, that were historically
+separate programs.
+
+There are three feature sets available.  The ``{\vt FULL}'' set enables
+all {\Xic} features.  The ``{\vt EDITOR}'' feature set corresponds to the
+{\XicII} program, which provides physical layout editing capability.
+The ``{\vt VIEWER}'' feature set corresponds to the {\Xiv} program, which
+allows physical layout viewing.  The subsections that follow describe these
+feature sets in more detail.
+
+%----------------------------------
+\subsection{The EDITOR Feature Set}
+\index{EDITOR feature set}
+\index{XicII program}
+
+% xicii 093017
+<<xicii xiMain.hlp>>
+
+%----------------------------------
+\subsection{The VIEWER Feature Set}
+\index{VIEWER feature set}
+\index{Xiv program}
+
+% xiv 093017
+<<xiv xiMain.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{A Quick Tour of {\Xic} Capabilities}
+
+\subsection{History of {\Xic}}
+
+% captour 010615
+<<captour xiTutorials.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{A Quick Tour of the {\Xic} Menus}
+
+% menutour 022916
+<<menutour xiTutorials.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Database Overview}
+
+% xicdb 090814
+<<xicdb xiPhysical.hlp>>
+

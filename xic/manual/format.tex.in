@@ -1,0 +1,52 @@
+% -----------------------------------------------------------------------------
+% Xic Manual
+% (C) Copyright 2025, Whiteley Research Inc., Sunnyvale CA
+% format.tex.in
+% -----------------------------------------------------------------------------
+
+% -----------------------------------------------------------------------------
+\chapter{Design Data File Formats}
+\index{strip button}
+
+% symfilefmt 022816
+<<symfilefmt xiFileFormat.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Computer Graphics Exchange (CGX) Format}
+\label{cgxformat}
+\index{CGX format}
+
+% cgxformat 061713
+<<cgxformat xiFileFormat.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{OASIS Format}
+
+% oasis 022916
+<<oasis xiFileFormat.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Library Files}
+\label{libfile}
+\index{library files}
+
+% libraries 041215
+<<libraries xiFileFormat.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Device Library File}
+\label{devdotlib}
+\index{device.lib file}
+\index{device library file}
+
+% devlib 041715
+<<devlib xiFileFormat.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Model Library Files}
+\index{model.lib file}
+\index{model library file}
+
+% modlib 081318
+<<modlib xiFileFormat.hlp>>
+

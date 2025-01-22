@@ -1,0 +1,51 @@
+% -----------------------------------------------------------------------------
+% Xic Manual
+% (C) Copyright 2025, Whiteley Research Inc., Sunnyvale CA
+% using.tex.in
+% -----------------------------------------------------------------------------
+
+% -----------------------------------------------------------------------------
+\chapter{Using {\Xic}}
+\index{physical mode}
+\index{electrical mode}
+
+% usingxic 022816
+<<usingxic xiTutorials.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Physical Layout Editing}
+
+% physedit 020615
+<<physedit xiPhysical.hlp>>
+
+
+
+% -----------------------------------------------------------------------------
+\section{Electrical Schematic Editing}
+\index{electrical mode editing}
+
+% elecedit 040316
+<<elecedit xiElectrical.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Cell Organization and Libraries}
+
+% fileorg 020615
+<<fileorg xiPhysical.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Batch Mode}
+\index{batch mode}
+\label{batchmode}
+
+% xic:batch 022916
+<<xic:batch xiPhysical.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Server Mode}
+\index{server mode}
+\label{servermode}
+
+% xic:server 012411
+<<xic:server xiPhysical.hlp>>
+

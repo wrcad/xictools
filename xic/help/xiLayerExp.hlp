@@ -364,6 +364,265 @@ Layer Expressions
     <tt>!layer M2 = bloat(5, M2, 0)</tt>
     </blockquote>
       This bloats the M2 geometry by 5 microns.
+!!LATEX layer_exp drc.tex
+Many of the design rules, extraction specifications, and commands make
+use of ``layer expressions''.  These expressions are used to signify
+regions of the layout where certain combinations of layers (or absence
+of layers) exist.  A layer expression consists of a logical
+expression, in the format recognized by the script parser used to
+evaluate script files.
+
+The expression may contain physical layer and derived layer (see
+\ref{drvlyr}) names, functions from the list below, operators from the
+table below, numeric constants, and parentheses to enforce precedence. 
+In its simplest form, a layer expression is a layer name, which can be
+thought of as a list of regions corresponding to the dark areas
+(boxes, polygons, and wires) of that layer.  A numeric value of zero
+represents emptiness, and a nonzero value represents full coverage.
+
+When a layer expression is evaluated in the {\cb !layer} command or
+the {\cb Evaluate Layer Expression} panel, the result is always a
+normal layer, thus derived layers can be made visible by this means. 
+If the layer expression represents a simple copy, the created physical
+layer will take any attributes of the derived layer (color, fill,
+etc.) that were given to the derived layer. 
+
+If the names of any defined layers are numeric values, one must be a
+little careful when specifying the equivalent numeric value, since a
+layer name interpretation will supersede a numeric interpretation. 
+For example, in the presence of a layer named ``1'', one could use
+``1.0'' to specify the number 1.  A four-digit hex number is always
+assumed to be a layer name, even if a layer of that name does not
+presently exist.  This is necessary so that when reading the
+technology file, layer expressions can reference layers with numerical
+names (likely from GDSII conversion) that have not yet been defined.
+Layer names in the ``decimal'' format must be double quoted, e.g.,
+{\vt "22,0"}.
+
+The layer name token can actually take an extended syntax which
+enables extraction of geometry from cells other than the current cell. 
+
+\begin{quote}
+{\it lname\/}[{\vt .}{\it stname\/}][{\vt .}{\it cellname\/}]
+\end{quote}
+
+See the description of the {\cb !layer} command in \ref{layercmd} for
+a description of this syntax and examples.
+
+The following operators are accepted in layer expressions:
+       
+\begin{tabular}{|l|l|} \hline
+\et $\&$ or $*$ & intersection\\ \hline
+\et $|$ or $+$  & union\\ \hline
+\et $!$  & inversion\\ \hline
+\et $\symbol{94}$  & exclusive-or\\ \hline
+\et $-$  & and-not, i.e., $A-B = A\&!B$\\ \hline
+\vt and  & synonym for $\&$\\ \hline
+\vt or   & synonym for $|$\\ \hline
+\vt not  & synonym for $!$ or $-$\\ \hline
+\vt xor  & synonym for $\symbol{94}$\\ \hline
+\end{tabular}
+
+The operator-equivalent keywords ({\vt and}, {\vt or}, {\vt not}, {\vt
+xor}) are recognized without case sensitivity.  The {\vt not} keyword
+can represent a unary negation or a binary ``andnot'', depending on
+the context.  Thus, for layers {\vt A} and {\vt B}, each of the
+following are equivalent:  {\vt A not B}, {\vt A $-$ B}, {\vt A $\&!$
+B}, {\vt A and not B}.
+
+Parentheses can be used to enforce precedence.
+
+The expression returns an internal data structure representing those
+regions of the current cell where the expression is true, i.e., where
+the layers exist with the given logic.
+
+There is a special layer named ``\$\$'' which logically consists of
+boxes covering each of the subcells in the current cell.
+
+The {\cb !layer} command can create a new layer from a layer
+expression, and is therefor a good vehicle for experimenting with
+layer expressions.
+
+The tokens are interpreted as they would be in an ordinary expression
+involving numbers, thus their precedence might not be quite as
+expected in layer expressions.  For example
+\begin{quote}
+    {\vt !layer CAA = !CAA \& \$\$}
+\end{quote}
+and
+\begin{quote}
+    {\vt !layer CAA = !CAA * \$\$}
+\end{quote}
+are {\it not} equivalent.  The latter expression is equivalent to
+\begin{quote}
+    {\vt !layer CAA = !(CAA \& \$\$)}
+\end{quote}
+since `*' has higher precedence than `\&'.  The equivalent expression
+is
+\begin{quote}
+    {\vt !layer CAA = (!CAA) * \$\$}
+\end{quote}
+(recall that `\$\$' is the name for an internal layer consisting of
+subcell bounding boxes).
+
+\index{Layer expressions, functions}
+The following function calls are supported in layer expressions.  Only
+the functions listed below are available, and all return a layer
+expression object.
+
+\begin{description}
+\index{sqz layer expression function}
+\item{\vt sqz}(layer\_exp {\it expr\/})\\
+This is a special function that evaluates the layer expression passed
+as an argument, but the geometry for the given layers is obtained from
+the selection queue (the currently selected objects), and not the
+entire cell as in the normal case.  It can be freely used within a
+larger layer expression.
+
+Below are some examples, using the {\cb !layer} command.
+
+\begin{description}
+\item{\vt !layer new = sqz(CPG-CAA)}\\
+Create a layer ``new'' that will contain the selected objects on CPG
+clipped around selected objects on CAA.
+\item{\vt !layer new = VIA \& sqz(M2)}\\
+Create a layer ``new'' that will contain the areas of VIA that overlap
+selected objects on M2.
+\item{\vt !layer CPG = CPG - sqz(temp)}\\
+Clip out the selected objects on layer temp from CPG.
+\end{description}
+
+\item{\vt bloat}(real {\it incr\/}, layer\_exp {\it layer\/},
+ int {\it mode\/})\\
+\index{bloat layer expression function}
+This expands the features on the layer by {\it incr} (in microns),
+which may be negative.  The effect is similar to the {\cb !bloat}
+command and the {\vt BloatZ} script function.  The {\it mode} integer
+is described with the {\cb !bloat} command.
+
+\index{extent layer expression function}
+\item{\vt extent}(layer\_exp {\it layer\/})\\
+This evaluates to a trapezoid list containing at most one entry, a
+rectangle giving the bounding box of the expression result.  The
+return is null if the expression is nowhere dark.  This is similar to
+the {\vt ExtentZ} script function.
+
+\index{edges layer expression function}
+\item{\vt edges}(real {\it incr\/}, layer\_exp {\it layer\/},
+ int {\it mode\/})\\
+This creates an edge list, similar to the {\vt EdgesZ} script
+function.  See the description of that function for the edge modes
+available.  The modes 0--3 are equivalent to returns from the {\vt
+bloat} function when returning the edge template, for the four corner
+fill-in modes.
+
+\index{manhattanize layer expression function}
+\item{\vt manhattanize}(real {\it dimen\/}, layer\_exp {\it layer\/},
+ int {\it mode\/})\\
+This converts the representation to a Manhattan approximation.  The
+first argument is the minimum width or height in microns of rectangles
+that are created to approximate the non-Manhattan parts.  The third
+argument is an integer taken as zero or nonzero to specify which of
+two algorithms to use.  This is similar to the {\cb !manh} command
+(where the algorithms are described), and to the {\vt ManhattanizeZ}
+script function.
+
+\index{box layer expression function}
+\item{\vt box}(real {\it l\/}, real {\it b\/}, real {\it r\/},
+ real {\it t\/})\\
+This defines a rectangular region from the four real arguments, which
+can be used for clipping or construction in layer expressions.  The
+coordinates are given in microns.  This is similar to the {\vt BoxZ}
+script function.
+
+\index{zoid layer expression function}
+\item{\vt zoid}(real {\it xll\/}, real {\it xlr\/}, real {\it yl\/},
+real {\it xul\/}, real {\it xur\/}, real {\it yu\/})\\
+This defines a horizontal trapezoid region from the six real
+arguments, which can be used for clipping or construction in layer
+expressions.  The coordinates are given in microns.  This is similar
+to the {\vt ZoidZ} script function.
+
+\index{filt layer expression function}
+\item{\vt filt}(layer\_exp {\it zoids\/}, layer\_exp {\it lyr2\/})\\
+This function is rather specialized.  First, the trapezoids passed in
+the first argument are separated into groups of mutually-connected
+trapezoids.  Each group is like a wire net.  We throw out the groups
+that do not intersect with nonzero area the dark area implied by the
+second argument.  The return value is a list of the trapezoids that
+remain.
+
+\index{geomAnd layer expression function}
+\item{\vt geomAnd}(layer\_exp {\it lyr1} [, layer\_exp {\it lyr2\/}])\\
+If one argument is given, the result is the overlapping parts of
+regions in the internal list corresponding to the argument.  This is
+only useful if the argument was explicitly constructed with {\vt
+geomCat} (see below).  With two arguments, this is equivalent to the
+intersection operator.  The function is similar to the {\vt GeomAnd}
+script function.
+
+\index{geomAndNot layer expression function}
+\item{\vt geomAndNot}(layer\_exp {\it lyr1\/}, layer\_exp {\it lyr2\/})\\
+This is equivalent to the and-not operator, and is similar to the {\vt
+GeomAndNot} script function.
+
+\index{geomCat layer expression function}
+\item{\vt geomCat}(layer\_exp {\it lyr1\/}, ... )\\
+This takes one or more layer expression arguments and simply
+concatenates the regions, without any merging or clipping, similar to
+the {\vt GeomCat} script function.
+
+\index{geomNot layer expression function}
+\item{\vt geomNot}(layer\_exp {\it lyr\/})\\
+This is equivalent to the inversion operator, similar to the {\vt
+GeomNot} script function.
+
+\index{geomOr layer expression function}
+\item{\vt geomOr}(layer\_exp {\it lyr1\/}, ...)\\
+This takes one or more layer expression arguments and returns the
+union, constructed internally so that no two regions overlap.  This is
+similar to the {\vt GeomOr} script function.
+
+\index{geomXor layer expression function}
+\item{\vt geomXor}(layer\_exp {\it lyr1} [, layer\_exp {\it lyr2\/}])\\
+If one argument is given, the return is the set of regions
+representing the exclusive-or of regions represented by the argument. 
+This is only useful if the user has explicitly constructed the
+argument using {\vt geomCat}.  If two arguments are given, the result
+is the exclusive-or of the areas, equivalent to the exclusive-or
+operator.  This function is similar to the {\vt GeomXor} script
+function.
+
+\index{drcZlist layer expression function}
+\item{\vt drcZlist}(string {\it layername\/}, string {\it rulename\/},
+  integer {\it index\/}, layer\_exp {\it lyr1\/})\\
+This will return the test areas based on an existing design rule
+definition, very similar to the {\vt DRCzList} script function.  This
+function exists only when design rule checking is included in the
+feature set.
+
+\index{drcZlistEx layer expression function}
+\item{\vt drcZlistEx}(layer\_exp {\it lyr1\/}, tring {\it target\/},
+  string {\it inside\/}, string {\it outside\/}, integer {\it incode\/},
+  integer {\it outcode\/}, real {\it dimen\/})\\
+This will return the test areas based on the DRC test area generation
+specified by the arguments, very similar to the {\vt DRCzListEx}
+script function.  This function exists only when design rule checking
+is included in the feature set.
+
+\end{description}
+
+    Examples:
+
+\begin{quote}
+    {\vt !layer M2 = M2 \& box(100, 100, 200, 200)}
+\end{quote}
+      This clips M2 to the given box.
+
+\begin{quote}
+    {\vt !layer M2 = bloat(5, M2, 0)}
+\end{quote}
+      This bloats the M2 geometry by 5 microns.
 
 !!SUBTOPICS
 drc:assign
@@ -450,4 +709,63 @@ Derived Layers
     layer.  References to that name will resolve to the normal layer,
     thus with a few exceptions the derived layer would be
     inaccessible.
+!!LATEX drvlayer drc.tex
+Derived layers are layers which represent the result of a layer
+expression involving normal layers and other derived layers.  Although
+derived layers are invisible, they can be used to create normal layers
+which can be seen.  Derived layers were developed forthe design rule
+checking (DRC) system, but can be used in any layer expression.
+
+There are actually two implementations of derived layer functionality. 
+In the original implementation, developed for the DRC system, the
+geometry of derived layers must be created or updated before the
+derived layer is referenced.  In use, reference to a derived layer in
+a layer expression retrieves this geometry, very similar to what
+happens when a normal layer is referenced.  Ordinarily, the derived
+layer geometry will be cleared after final use.  The DRC system
+handles creation and destruction of derived layer geometry
+transparently.
+
+In the second mode of operation, when the parse tree for the derived
+layer is created, references to derived layers will be recursively
+parsed and stitched into the tree.  The final parse tree will contain
+normal layers only, and can therefor be evaluated in any context,
+without the need for precomputed geometry caches.  This method is more
+convenient and flexible, however the original method may run more
+quickly, particularly when there are a large number of evaluateions of
+the same expression, as in DRC.
+
+The derived layer evaluation mode is invisible to the used except
+tehat it can be specifically set when using the derived layer script
+library function interface.  This provides explicit control of derived
+layer geometry creation and destruction, and evaluation mode, through
+functions like {\vt EvalDerivedLayers} and {\vt ClearDerivedLayers}.
+
+Derived layers can be defined in the technology file, or the
+definitions may be imported from a Virtuoso ASCII technology file. 
+Derived layers can also be created with the {\vt AddDerivedLayer}
+script function.
+
+A derived layer definition consists of a layer name, a positive
+integer index number, and a layer expression string.  The layer
+expression can not be null or empty.  The index number is used for
+establishing the order when the derived layers are listed, such as
+when printing an updated technology file.  This number need not be
+unique among derived layers, derived layers with the same index are
+ordered alphabetically by name.
+
+The derived layer name may be in the {\it layer\/}:{\it purpose} form,
+or may be a simple alphanumeric name.  It either case, it is treated
+as a case-insensitive atomic token in name comparisons.  This is
+subtly different from normal layers, where for example ``{\vt M1}''
+and ``{\vt M1:drawing}'' refer to the same {\Xic} layer (the {\vt
+drawing} purpose is the default and need not be explicitly specified). 
+As derived layer names, the two forms represent two different derived
+layers.
+
+Derived layers can be created arbitrarily.  If a name is already in
+use, the existing derived layer definition is updated.  It is not an
+error if a derived layer has a name that matches a normal layer. 
+References to that name will resolve to the normal layer, thus with a
+few exceptions the derived layer would be inaccessible.
 

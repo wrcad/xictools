@@ -1,0 +1,169 @@
+% -----------------------------------------------------------------------------
+% Xic Manual
+% (C) Copyright 2025, Whiteley Research Inc., Sunnyvale CA
+% drc.tex.in
+% -----------------------------------------------------------------------------
+
+% -----------------------------------------------------------------------------
+\chapter{The DRC Menu:  Design Rule Checking}
+
+% xic:drcmenu 091509
+<<xic:drcmenu xiDRC.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Layer Expressions}
+\label{layerexp}
+\index{layer expressions}
+\index{design rules!expressions}
+
+% layer_exp 032217
+<<layer_exp xiLayerExp.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Derived Layers}
+\label{drvlyr}
+\index{derived layers}
+
+% drvlayer 032217
+<<drvlayer xiLayerExp.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Built-In Design Rules}
+\label{designrules}
+
+% drcrules 010715
+<<drcrules xiDRC.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Spacing Tables}
+\label{spacetab}
+
+% spacetab 120214
+<<spacetab xiDRC.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{User-Defined Design Rules}
+\label{udefrules}
+
+% userrules 061908
+<<userrules xiDRC.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Assigning Design Rules}
+\index{design rules!assignment}
+
+% drc:assign 061908
+<<drc:assign xiDRC.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Setup} Button: Set DRC Limits}
+\index{Setup button}
+\index{design rules!limits}
+\index{design rules!setup}
+
+% xic:limit 021615
+<<xic:limit xiDRC.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Set Flags} Button: Set Skip Flags}
+\index{Set Flags button}
+\index{design rules!skip objects}
+
+% xic:sflag 063014
+<<xic:sflag xiDRC.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Enable Interactive} Button: Set Interactive Checking}
+\index{Set Interactive button}
+\index{design rules!interactive}
+\index{interactive rule checking}
+
+% xic:intr 021815
+<<xic:intr xiDRC.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb No Pop Up Errors} Button: Suppress Error Report}
+\index{No Pop Up errors button}
+
+% xic:nopop 021815
+<<xic:nopop xiDRC.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Batch Check} Button:  Initiate Rule Check}
+\index{Batch Check button}
+\index{keyboard!Ctrl-c}
+\index{design rules!check}
+
+% xic:check 010615
+<<xic:check xiDRC.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Check In Region} Button: Check Objects}
+\index{Check In Region button}
+\index{design rules!check in region}
+
+% xic:point 061908
+<<xic:point xiDRC.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Clear Errors} Button: Clear Error List}
+\index{Clear Errors button}
+\index{design rules!clear errors}
+
+% xic:clear 061908
+<<xic:clear xiDRC.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Query Errors} Button: Print Error Text}
+\index{Query Errors button}
+\index{design rules!print error}
+
+% xic:query 061908
+<<xic:query xiDRC.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Dump Error File} Button: Save Errors to File}
+\index{Dump Error File button}
+
+% xic:erdmp 091509
+<<xic:erdmp xiDRC.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Update Highlighting} Button: Create Highlighting from File}
+\index{Update Highlighting button}
+
+% xic:erupd 010615
+<<xic:erupd xiDRC.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Show Errors} Button: Show Next Error}
+\index{Show Errors button}
+\index{design rules!browsing errors}
+\index{keyboard!Page Up}
+\index{keyboard!Page Down}
+\index{keyboard!Ctrl-f}
+\index{keyboard!Ctrl-b}
+\index{keyboard!Ctrl-p}
+
+% xic:next 010615
+<<xic:next xiDRC.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Create Layer} Button: Create Error Region Layer}
+\index{Create Layer button}
+
+% xic:erlyr 091509
+<<xic:erlyr xiDRC.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Edit Rules} Button: Rule Editor Panel}
+\index{Edit Rules button}
+
+% xic:dredt 040112
+<<xic:dredt xiDRC.hlp>>
+
+\subsection{The {\cb Design Rule Parameters} Panel}
+
+% xic:ruleedit 010815
+<<xic:ruleedit xiDRC.hlp>>
+

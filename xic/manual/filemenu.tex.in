@@ -1,0 +1,207 @@
+% -----------------------------------------------------------------------------
+% Xic Manual
+% (C) Copyright 2025, Whiteley Research Inc., Sunnyvale CA
+% filemenu.tex.in
+% -----------------------------------------------------------------------------
+
+% -----------------------------------------------------------------------------
+\chapter{The File Menu:  {\Xic} Input/Output}
+\index{File menu}
+
+% xic:filemenu 041215
+<<xic:filemenu xiFile.hlp>>
+
+% -----------------------------------------------------------------------------
+\index{File Select button}
+\section{The {\cb File Select} Button: Pop Up File Selection Panel}
+
+% xic:fsel 102208
+<<xic:fsel xiFile.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Open} Button: Open Cell or File}
+\label{editbut}
+\index{Open button}
+\index{editing cells}
+
+% xic:open 040724
+<<xic:open xiFile.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The File Selection Panel}
+\label{filesel}
+\index{file manager}
+\index{file selection}
+
+% filesel 032513
+<<filesel FileSel.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Save} Button: Save Modified Cells}
+\index{Save button}
+\index{saving cells}
+
+% xic:sv 030713
+<<xic:sv xiFile.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Save As} Button: Save Cell, Renaming}
+\index{Save As button}
+\index{saving cells}
+
+% xic:save 022316
+<<xic:save xiFile.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Save As Device} Button:  Editing Devices}
+\index{Save As Device button}
+\label{devedit}
+
+% xic:sadev 081418
+<<xic:sadev xiFile.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Print} Button: Print Control Panel}
+\index{hcopy button}
+\index{hardcopy plots}
+
+% xic:hcopy 081824
+<<xic:hcopy xiFile.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{Print Control Panel}
+\index{hardcopy panel}
+
+% hcopypanel 092817
+<<hcopypanel Hardcopy.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb Format} Menu: Hardcopy File Formats}
+\index{hardcopy panel!format}
+\label{hcformat}
+
+% hcopyfmt 041110
+<<hcopyfmt Hardcopy.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Files List} Button: {\cb Path Files Listing} Panel}
+\index{Files List button}
+\index{files panel}
+\index{listing files}
+
+% xic:files 090914
+%%<<xic:files xiFile.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Cell Hierarchy and geometry Digests}
+\index{Cell Hierarchy Digests}
+\index{Cell Geometry Digests}
+
+% xic:chdcgd 012411
+<<xic:chdcgd xiFile.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Hierarchy Digests} Button: List {\cb Cell Hierarchy Digests}}
+\index{Hierarchy Digests button}
+\index{Cell Hierarchy Digests panel}
+\index{Cell Hierarchy Digests}
+
+% xic:hier 022816
+<<xic:hier xiFile.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb Open Cell Hierarchy} Panel}
+\index{Open Cell Hierarchy Digest panel}
+\label{chdadd}
+
+% xic:chdadd 012511
+<<xic:chdadd xiFile.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb Configure Cell Hierarchy Digest} Panel}
+\index{Configure Cell Hierarchy Digest panel}
+\label{chdcfg}
+
+% xic:chdconfig 012511
+<<xic:chdconfig xiFile.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{Reference Cells}
+\label{refcell}
+\index{reference cells}
+
+% refcell 030216
+<<refcell xiFile.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The {\cb Cell Table Listing} Panel: Set Override Cells}
+\label{overtab}
+\index{Cell Table Listing panel}
+
+% xic:overtab 022816
+<<xic:overtab xiFile.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Geometry Digests} Button: List {\cb Cell Geometry Digests}}
+\index{Geometry Digests button}
+\index{Cell Geometry Digests panel}
+\index{Cell Geometry Digests}
+
+% xic:geom 032111
+<<xic:geom xiFile.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Open Cell Geometry Digest} Panel}
+\index{Open Cell Geometry Digest panel}
+\label{cgdadd}
+
+% xic:cgdopen 012511
+<<xic:cgdopen xiFile.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Libraries List} Button:  List Open Libraries}
+\label{libraries}
+\index{Libraries List button}
+\index{listing libraries}
+
+% xic:libs 022116
+<<xic:libs xiFile.hlp>>
+
+%\ifoa
+% -----------------------------------------------------------------------------
+\section{The {\cb OpenAccess Libs} Button:  List OpenAccess Libraries}
+\label{oalibs}
+\index{OpenAccess Libs button}
+\index{listing libraries}
+\index{OpenAccess libraries}
+
+% xic:oalib 030416
+<<xic:oalib xiFile.hlp>>
+%\fi
+
+%\ifoa
+% ----------------
+\section{The {\cb OpenAccess Tech} Panel}
+\label{oatech}
+
+% xic:oatech 041415
+<<xic:oatech xiFile.hlp>>
+%\fi
+
+%\ifoa
+% ----------------
+\section{The {\cb OpenAccess Defaults} Panel}
+\label{oadefs}
+
+% xic:oadefs 022216
+<<xic:oadefs xiFile.hlp>>
+%\fi
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Quit} Button: Exit {\Xic}}
+\index{Quit button}
+\index{exiting Xic}
+
+% xic:quit 061608
+<<xic:quit xiFile.hlp>>
+

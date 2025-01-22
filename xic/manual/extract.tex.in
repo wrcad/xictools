@@ -1,0 +1,213 @@
+ -----------------------------------------------------------------------------
+% Xic Manual
+% (C) Copyright 2025, Whiteley Research Inc., Sunnyvale CA
+% extract.tex.in
+% -----------------------------------------------------------------------------
+
+% -----------------------------------------------------------------------------
+\chapter{The Extract Menu: Extraction and Verification}
+\label{chpext}
+\index{netlist extraction}
+\index{extraction}
+
+% xic:extmenu 090314
+<<xic:extmenu xiExtract.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Extraction System: Methodology and Overview}
+\index{extraction!methodology}
+\index{group number}
+
+% ext:method 022816
+<<ext:method xiExtract.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Extraction System: Logging and Error Reporting}
+\index{extraction logging}
+\index{log files}
+
+% ext:errlog 110513
+<<ext:errlog xiExtract.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Extraction System: Operations and Algorithms}
+\index{extraction algorithm}
+
+% ext:operations 110513
+<<ext:operations xiExtract.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Extraction System: Cell Hierarchy and Flattening}
+\index{extraction flattening}
+\label{exthier}
+
+% ext:exthier 110513
+<<ext:exthier xiExtract.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Extraction System:  Group/Net Naming}
+\index{extraction net names}
+\index{extraction name labels}
+\label{netname}
+
+% ext:netname 061916
+<<ext:netname xiExtract.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Extraction System:  Ground Plane Handling}
+\index{extraction ground plane}
+
+% ext:gplane 110513
+<<ext:gplane xiExtract.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Extraction System: Measurement Caching}
+\index{extraction measurement cache}
+\label{meascache}
+
+% ext:meascache 110513
+<<ext:meascache xiExtract.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Extraction System: Setup and Configuration}
+\label{extsetup}
+
+% ext:setup 021615
+<<ext:setup xiExtract.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{Device Blocks}
+\label{devblock}
+\index{device block}
+
+% ext:deviceblock 032117
+<<ext:deviceblock xiExtract.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{Device Templates}
+\index{device template}
+
+% ext:devtmpl 032117
+<<ext:devtmpl xiExtract.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{Format Library File}
+\index{format library}
+\label{fmtlib}
+
+% ext:fmtlib 062016
+<<ext:fmtlib xiExtract.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Misc Config} Button: Misc. Extraction Settings}
+\index{Misc Config button}
+
+% xic:excfg 103113
+<<xic:excfg xiExtract.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Net Selections} Button: Path Selection Control Panel}
+\index{Net Selections button}
+
+% xic:exsel 090914
+<<xic:exsel xiExtract.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Device Selections} Button: Show/Select Devices}
+\index{Device Selections button}
+
+% xic:dvsel 103013
+<<xic:dvsel xiExtract.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Source SPICE} Button: Update From SPICE File}
+\index{Source SPICE button}
+
+% xic:sourc 030715
+<<xic:sourc xiExtract.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Source Physical} Button: Update Electrical From Physical}
+\index{Source Physical button}
+
+% xic:exset 113009
+<<xic:exset xiExtract.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Dump Phys Netlist} Button: Dump Physical Netlist}
+\index{Dump Phys Netlist button}
+\index{physical netlist}
+\index{netlist!physical}
+
+% xic:pnet 062016
+<<xic:pnet xiExtract.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Dump Elec Netlist} Button: Dump Electrical Netlist}
+\index{netlist}
+\index{Dump Elec Netlist button}
+\index{netlist!electrical}
+\index{electrical netlist}
+
+% xic:enet 062016
+<<xic:enet xiExtract.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Dump LVS} Button: Test Layout vs. Schematic}
+\label{lvs}
+\index{Dump LVS button}
+\index{LVS}
+\index{layout vs. schematic}
+
+% xic:lvs 030412
+<<xic:lvs xiExtract.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Extract C} Button: Capacitance Extraction}
+\index{Extract C button}
+
+% xic:exc 090314
+<<xic:exc xiExtractRLC.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The Capacitance Extraction Interface}
+\index{capacitance extraction interface}
+\index{FastCap program}
+\index{FasterCap program}
+\label{fcinterf}
+
+% fcinterf 053015
+<<fcinterf xiExtractRLC.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The Cap Extraction Panel}
+\index{Cap Extraction panel}
+\label{fcpanel}
+
+% fcpanel 070814
+<<fcpanel xiExtractRLC.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Extract LR} Button: Inductance/Resistance Extraction}
+\index{Extract LR button}
+
+% xic:exlr 090314
+<<xic:exlr xiExtractRLC.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The Inductance/Resistance Extraction Interface}
+\index{inductance extraction interface}
+\index{FastHenry program}
+\label{fhinterf}
+
+% fhinterf 071920
+<<fhinterf xiExtractRLC.hlp>>
+
+% -----------------------------------------------------------------------------
+\subsection{The LR Extraction Panel}
+\index{LR Extraction Panel}
+\label{fhpanel}
+
+% fhpanel 011721
+<<fhpanel xiExtractRLC.hlp>>
+

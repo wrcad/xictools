@@ -1,0 +1,71 @@
+% -----------------------------------------------------------------------------
+% Xic Manual
+% (C) Copyright 2025, Whiteley Research Inc., Sunnyvale CA
+% filetool.tex.in
+% -----------------------------------------------------------------------------
+
+\chapter{The FileTool Utility}
+\index{filetool utility}
+\label{filetool}
+
+\section{Introduction}
+
+% filetool 090814
+<<filetool xiFiletool.hlp>>
+
+%------------------
+\section{FileTool:  Setting Variables}
+\index{filetool variables}
+
+% ft:set 051310
+<<ft:set xiFiletool.hlp>>
+
+%------------------
+\section{FileTool:  Assemble Script File Evaluation}
+\index{filetool scripts}
+
+% ft:eval 102109
+<<ft:eval xiFiletool.hlp>>
+
+%------------------
+\section{FileTool:  Obtaining File Information}
+\index{filetool file info}
+
+% ft:info 102109
+<<ft:info xiFiletool.hlp>>
+
+%------------------
+\section{FileTool:  ASCII Text Representation of Layout Files}
+\index{filetool text conversion}
+
+% ft:text 102109
+<<ft:text xiFiletool.hlp>>
+
+%------------------
+\section{FileTool:  Layout File Comparison}
+\index{filetool layout comparison}
+
+% ft:comp 102109
+<<ft:comp xiFiletool.hlp>>
+
+%------------------
+\section{FileTool:  Layout File Splitting}
+\index{filetool file splitting}
+
+% ft:split 102109
+<<ft:split xiFiletool.hlp>>
+
+%------------------
+\section{FileTool:  CHD File Generation}
+\index{filetool CHD file generation}
+
+% ft:cfile 120110
+<<ft:cfile xiFiletool.hlp>>
+
+%------------------
+\section{FileTool:  Layout File Merging and Translation}
+\index{filetool file merging}
+
+% ft:assem 071010
+<<ft:assem xiFiletool.hlp>>
+

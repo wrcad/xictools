@@ -1,0 +1,48 @@
+% -----------------------------------------------------------------------------
+% Xic Manual
+% (C) Copyright 2025, Whiteley Research Inc., Sunnyvale CA
+% usermenu.tex.in
+% -----------------------------------------------------------------------------
+
+% -----------------------------------------------------------------------------
+\chapter{The User Menu:  User Commands and {\Xic} Scripts}
+\label{chpscript}
+
+% xic:usermenu 081824
+<<xic:usermenu xiUser.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Script Menus: User-Defined Sub-Menus}
+
+% submenu 020611
+<<submenu xiUser.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Script Libraries: Code Sharing}
+\label{scrlib}
+\index{library file}
+\index{function library}
+
+% scr:library 062808
+<<scr:library xiUser.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Encrypted Scripts}
+
+% scr:crypt 062808
+<<scr:crypt xiUser.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Debug} Button: Enter Script Debugger}
+\index{scripts!debugging}
+
+% xic:debug 041413
+<<xic:debug xiUser.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{The {\cb Rehash} Button: Rebuild User menu}
+\index{scripts!rehash}
+
+% xic:hash 062808
+<<xic:hash xiUser.hlp>>
+

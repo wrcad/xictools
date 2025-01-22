@@ -1,4 +1,8 @@
-% WRspice Manual file: useriface.tex
+% -----------------------------------------------------------------------------
+% WRspice Manual
+% (C) Copyright 2025, Whiteley Research Inc., Sunnyvale CA
+% useriface.tex.in
+% -----------------------------------------------------------------------------
 
 \chapter{The {\WRspice} User Interface}
 

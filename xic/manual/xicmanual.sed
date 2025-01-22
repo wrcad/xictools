@@ -150,9 +150,9 @@ This page intentionally left blank.
 \ifodd\value{page}\else This page intentionally left blank. \fi
 \include{viewmenu}
 \ifodd\value{page}\else This page intentionally left blank. \fi
-\include{attrimenu}
+\include{attrmenu}
 \ifodd\value{page}\else This page intentionally left blank. \fi
-\include{cnvrtmenu}
+\include{cvrtmenu}
 \ifodd\value{page}\else This page intentionally left blank. \fi
 \include{drc}
 \ifodd\value{page}\else This page intentionally left blank. \fi

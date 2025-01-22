@@ -1,0 +1,34 @@
+% -----------------------------------------------------------------------------
+% Xic Manual
+% (C) Copyright 2025, Whiteley Research Inc., Sunnyvale CA
+% miscfmt.tex.in
+% -----------------------------------------------------------------------------
+
+\chapter{Other File Formats}
+
+% -----------------------------------------------------------------------------
+\section{Label Font File Format}
+\label{vectorfont}
+\index{font file}
+\index{vector font}
+\index{label font}
+
+% vectorfont 062908
+<<vectorfont xiFileFormat.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Label Flags}
+\label{labelflags}
+\index{label flags}
+
+% labelflags 022713
+<<labelflags xiFileFormat.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Help Database Files}
+\label{helpfiles}
+\index{help mode!file format}
+
+% helpfiles 090814
+<<helpfiles HelpSys.hlp>>
+
