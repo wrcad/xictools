@@ -1,12 +1,11 @@
 
 !!  ---------------------------------------------------------------
 !!  Xic/WRspice Help System Database
-!!  $Id: spExpressions.hlp,v 1.39 2016/03/15 00:06:40 stevew Exp $
-!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  Copyright (C) Whiteley Research Inc. 2025.  All Rights Reserved
+!!  WRspice help file
 !!  ---------------------------------------------------------------
 
 !!TAG WRspice
-!! This file in sync with manual.
 
 !!KEYWORD
 spExpressions.hlp
@@ -16,6 +15,7 @@ spExpressions.hlp
 
 !!SUBTOPICS
 plotvec
+vectors
 constants
 expressions
 operators
@@ -24,8 +24,6 @@ statfuncs
 explists
 setandlet
 
-!!REDIRECT temper       plotvec#temper
-!!REDIRECT specialvec   plotvec#special
 
 !! useriface.tex 032320
 !!KEYWORD
@@ -33,15 +31,6 @@ plotvec
 !!TITLE
 Plots and Vectors
 !!HTML 
-    <table border=0>
-    <tr><td valign=top><b>jump to</b></td> <td>
-    <a href="plotvec#vecs"><b>Vector Characteristics</b></a><br>
-    <a href="plotvec#crtvec"><b>Vector Creation and Assignment</b></a><br>
-    <a href="plotvec#analvec"><b>Analysis Vectors and Access Mapping</b></a><br>
-    <a href="plotvec#special"><b>Special Vectors</b></a>
-    </td></tr></table>
-
-    <p>
     <i>WRspice</i> data are in the form of vectors, which are lists of
     numbers that may represent, e.g., time, voltage, or any typed or
     untyped set of values.  Vectors of length one are termed
@@ -221,10 +210,181 @@ Plots and Vectors
     Script authors should be in the habit of using this form when
     creating vectors, when there is any possibility of a name clash
     with the context plot.
+!!LATEX plotvec useriface.tex
+{\WRspice} data are in the form of vectors, which are lists of numbers
+that may represent, e.g., time, voltage, or any typed or untyped set
+of values.  Vectors of length one are termed ``scalars''.  During a
+simulation, each of the circuit variables, plus a scale vector, are
+filled with data from the simulation.  For example, in transient
+analysis, the scale vector (named ``{\vt time}'') will contain the
+time values where output is generated, and each node and other circuit
+variables will have a corresponding vector of the same length as the
+scale, containing the values for the scale points.
 
-    <a name="vecs"></a>
-    <h2>Vector Characteristics</h2>
+\index{exec plot}
+For each simulation, the resulting vectors are contained in a
+``plot'', which is a container data structure for vectors.  The plot
+is given a name (such as ``tran2''), and appended to a list containing
+other previously-generated plots.  If an input file contains an {\vt
+.exec} block in which vectors are created, a special ``exec'' plot
+will be created to hold these.  There is also an internally generated
+plot named ``{\vt constants}'' which contains various scalars set to
+constant values.  The {\vt constants} plot can not be deleted, thus
+the internal plot list is never empty.
 
+When a plot data file is read into {\WRspice} with the {\cb load}
+command, a plot containing vectors is produced, as if an anaylsis had
+been run.  The new plot becomes the current plot.
+
+\index{current plot}
+When a new plot is created by an analysis or with the {\cb load}
+command, it becomes the ``current plot''.  The current plot represents
+a context, where the existing vectors can be accessed by their name,
+and new vectors created, for example with the {\cb let} command, will
+(by default) be added to the current plot.
+
+The current plot is usually the last plot produced by an analysis run,
+or the {\vt constants} plot if no analyses have been run or rawfiles
+loaded.  The current plot can be changed with the {\cb setplot}
+command, or with the {\cb Plots} panel from the {\cb Tools} menu.  A
+vector from the current plot or the {\vt constants} plot can be
+referenced by name.  A vector from any plot can be referenced with the
+notation
+\begin{quote}
+{\it plotname\/}.{\it vecname}
+\end{quote}
+where {\it plotname} is the name of the plot or an alias, and {\it
+vecname} is the vector name.
+
+The default separation character is a period, however this can be
+changed by setting the variable {\et plot\_catchar}.  If this variable
+is set to a string consisting of a single punctuation character, that
+character becomes the separator.  We will continue to use a period in
+the examples, but be aware that other options exist.
+
+The {\it plotname} can also be a numerical index.  Plots are saved in
+the order created, and as listed by the {\cb setplot} command without
+arguments, and in the {\cb Plots} tool.  The numerical forms below are
+equivalent to the Berkeley SPICE3 syntax.  These cause trouble in
+{\WRspice}, however, since they are often misinterpreted as numbers,
+and typically require double quoting when used as arguments to
+commands.  {\WRspice} has an equivalent set of alias keywords which do
+not require special treatment. 
+
+Below is a list of the special alias keywords and constructs which can
+be given as the {\it plotname}, in addition to the actual name of the
+plot to reference.  Below, {\it N} is an unsigned integer.
+
+\begin{description}
+\item{\vt curplot}\\
+This is an alias for the name of the current plot.  Use of this
+keyword may seem redundant, but it has an important use to be
+explained below.
+
+\item{\vt -}{\it N}\\
+Use the {\it N\/}'th plot back from the current plot.  {\it N} must be
+1 or larger.  For example, ``{\vt -1.v(1)}'' will reference {\vt v(1)}
+in the previous plot.  It is likely that this form must be
+double-quoted to avoid misinterpretation as a number.
+
+\item{\vt prev}[{\it N\/}]\\
+This is very similar functionally to the form above, but does not
+cause parse errors.  The square brackets above are {\bf not} literal,
+but indicate that the integer is optional.  If missing, {\it N\/}=1 is
+implied.  With {\it N\/}=0, the current plot is indicated (equivalent
+to {\vt curplot}).
+
+\item{\vt +}{\it N}\\
+This goes in the reverse direction, indicating a plot later in the
+list than the current plot.  It is likely that this form must be
+double-quoted to avoid misinterpretation as a number.
+
+\item{\vt next}[{\it N\/}]\\
+This is very similar functionally to the form above, but does not
+cause parse errors.  The square brackets above are {\bf not} literal,
+but indicate that the integer is optional.  If missing, {\it N\/}=1 is
+implied.  With {\it N\/}=0, the current plot is indicated (equivalent
+to {\vt curplot}).
+
+\item{\it N}\\
+An integer without {\vt +} or {\vt -} indicates an absolute index into
+the plot list, zero-based.  The value 0 will always indicate the
+``constants'' plot, which is the first plot created (on program
+startup).  It is likely that this form must be double-quoted to avoid
+misinterpretation as a number.
+
+\item{\vt plot}[{\it N\/}]\\
+This is very similar functionally to the form above, but does not
+cause parse errors.  The square brackets above are {\bf not} literal,
+but indicate that the integer is optional.  If missing, {\it N\/}=0 is
+implied, which will specify the {\vt constants} plot.
+\end{description}
+
+When using the {\it plotname\/}.{\it vecname} construct, internally
+the vector and its scale are copied into the current plot as temporary
+vectors.  If you do ``{\vt plot -1.v(1)}'' (for example) it may be
+surprising to find that the plot title, etc.  are from the current
+plot, and not the source plot.
+
+When a script is run, the current plot when the script starts is taken
+as the ``context plot'' which will be used to resolve references to
+vectors in the script, after searching the current plot (if
+different).  Suppose that we have a script that defines a loop counter
+vector, then runs a loop that performs an analysis.  If we didn't save
+and search the context plot, the loop counter vector would not be
+accessible after the analysis is run, since the analysis will set a
+new current plot.
+
+One should keep this behavior in mind, as it can sometimes cause
+surprises.  For example, consider the script fragment
+
+\begin{quote} \vt
+run\\
+let foo = i(vds)\\
+plot foo
+\end{quote}
+
+Now suppose that the context plot contains a vector named ``{\vt
+foo}''.  Instead of creating a new vector in the current plot, the
+``{\vt foo}'' vector in the context plot will be used, probably
+meaning that the scale in the displayed plot is incorrect.
+
+To enforce the desired behavior, the second line above should be
+changed to
+\begin{quote} \vt
+let curplot.foo = i(vds)
+\end{quote}
+
+Script authors should be in the habit of using this form when creating
+vectors, when there is any possibility of a name clash with the
+context plot.
+
+!!SUBTOPICS
+vectors
+constants
+
+!!SEEALSO
+expressions
+plot
+print
+setandlet
+
+!!REDIRECT temper       vectors#temper
+!!REDIRECT specialvec   vectors#special
+
+!!KEYWORD
+vectors
+!!TITLE
+Vector Characteristics
+!!HTML 
+    <table border=0>
+    <tr><td valign=top><b>jump to</b></td> <td>
+    <a href="vectors#crtvec"><b>Vector Creation and Assignment</b></a><br>
+    <a href="vectors#analvec"><b>Analysis Vectors and Access Mapping</b></a><br>
+    <a href="vectors#special"><b>Special Vectors</b></a>
+    </td></tr></table>
+
+    <p>
     Vectors posses a dimensionality.  A scalar is a vector of the
     lowest dimensionality.  Most vectors are one-dimensional lists of
     numbers.  Certain types of analysis produce multidimensional
@@ -580,154 +740,305 @@ Plots and Vectors
     <p>
     Finally, the <a href="rusage"><b>rusage</b> keywords are searched.
     Any of these keywords will match.
-!!LATEX plotvec useriface.tex
-{\WRspice} data are in the form of vectors, which are lists of numbers
-that may represent, e.g., time, voltage, or any typed or untyped set
-of values.  Vectors of length one are termed ``scalars''.  During a
-simulation, each of the circuit variables, plus a scale vector, are
-filled with data from the simulation.  For example, in transient
-analysis, the scale vector (named ``{\vt time}'') will contain the
-time values where output is generated, and each node and other circuit
-variables will have a corresponding vector of the same length as the
-scale, containing the values for the scale points.
+!!LATEX vectors useriface.tex
+Vectors posses a dimensionality.  A scalar is a vector of the lowest
+dimensionality.  Most vectors are one-dimensional lists of numbers. 
+Certain types of analysis produce multidimensional vectors, which are
+analogous to arrays.  This dimensionality is indicated when the
+vectors are listed with the {\cb display} command or the {\cb let}
+command without arguments.  Plotting a multidimensional vector will
+produce a family of traces.  Elements and sub-dimensional vectors are
+specified with multiple square brackets, with the bracket on the right
+having the lowest dimensionality.
 
-\index{exec plot}
-For each simulation, the resulting vectors are contained in a
-``plot'', which is a container data structure for vectors.  The plot
-is given a name (such as ``tran2''), and appended to a list containing
-other previously-generated plots.  If an input file contains an {\vt
-.exec} block in which vectors are created, a special ``exec'' plot
-will be created to hold these.  There is also an internally generated
-plot named ``{\vt constants}'' which contains various scalars set to
-constant values.  The {\vt constants} plot can not be deleted, thus
-the internal plot list is never empty.
-
-When a plot data file is read into {\WRspice} with the {\cb load}
-command, a plot containing vectors is produced, as if an anaylsis had
-been run.  The new plot becomes the current plot.
-
-\index{current plot}
-When a new plot is created by an analysis or with the {\cb load}
-command, it becomes the ``current plot''.  The current plot represents
-a context, where the existing vectors can be accessed by their name,
-and new vectors created, for example with the {\cb let} command, will
-(by default) be added to the current plot.
-
-The current plot is usually the last plot produced by an analysis run,
-or the {\vt constants} plot if no analyses have been run or rawfiles
-loaded.  The current plot can be changed with the {\cb setplot}
-command, or with the {\cb Plots} panel from the {\cb Tools} menu.  A
-vector from the current plot or the {\vt constants} plot can be
-referenced by name.  A vector from any plot can be referenced with the
-notation
+For example, one might issue the following command:
 \begin{quote}
-{\it plotname\/}.{\it vecname}
+{\vt .ac dec 10 1Hz 1Mhz dc v1 0 2 .1 v2 4.5 5.5 .25}
 \end{quote}
-where {\it plotname} is the name of the plot or an alias, and {\it
-vecname} is the vector name.
+which will perform an ac analysis with the dc sources {\vt v1} and
+{\vt v2} stepped through the ranges 0--2 step .1 for {\vt v1},
+4.5--5.5 step .25 for {\vt v2}.  The resulting output vectors will
+have dimensions [5,21,61], i.e., 5 values for {\vt v2}, 21 for {\vt
+v1}, and 61 for the ac analysis.  Typing ``{\vt plot v(1)}'' (for
+example) would plot all 21*5 analyses on the same scale (this would
+not be too useful).  However, one can plot subranges by entering, for
+example, ``{\vt plot v(1)[1]}'' which would plot the results for {\vt
+v2} = 4.75, or ``{\vt plot v(1)[1][2]}'' for {\vt v2} = 4.75, {\vt v1}
+= .2, etc.  Range specifications also work, for example ``{\vt plot
+v(1)[2][0,2]}'' plots the values for {\vt v2} = 5, {\vt v1} = 0, .1,
+.2.  The memory space required to hold the multidimensional plot data
+can grow quite large, so one should be reasonable.
 
-The default separation character is a period, however this can be
-changed by setting the variable {\et plot\_catchar}.  If this variable
-is set to a string consisting of a single punctuation character, that
-character becomes the separator.  We will continue to use a period in
-the examples, but be aware that other options exist.
+\index{vector indexing}
+Vectors have an indexing that begins with 0, and an index, or range of
+indices, can be specified in square brackets following the vector
+name, for each dimension.  The notation {\vt [{\it lower\/},{\it
+upper\/}]}, where {\it lower} and {\it upper} are integers, denotes
+the range of elements between {\it lower} and {\it upper}.  The
+notation {\vt [{\it num\/}]} denotes the {\it num\/}'th element.  If
+{\it upper} is less than {\it lower}, the order of the elements is
+reversed.
 
-The {\it plotname} can also be a numerical index.  Plots are saved in
-the order created, and as listed by the {\cb setplot} command without
-arguments, and in the {\cb Plots} tool.  The numerical forms below are
-equivalent to the Berkeley SPICE3 syntax.  These cause trouble in
-{\WRspice}, however, since they are often misinterpreted as numbers,
-and typically require double quoting when used as arguments to
-commands.  {\WRspice} has an equivalent set of alias keywords which do
-not require special treatment. 
+Vectors typically have defined units.  The units are carried through a
+computation, and simplified when the result is generated.  Presently,
+the system can not handle fractional powers.  The units of a vector
+can be set with the {\cb settype} command.
 
-Below is a list of the special alias keywords and constructs which can
-be given as the {\it plotname}, in addition to the actual name of the
-plot to reference.  Below, {\it N} is an unsigned integer.
+\subsection{Vector Creation and Assignment}
+
+Vectors can be created with the {\cb let} and {\cb compose} commands. 
+
+\index{let command}
+Using the {\cb let} command, a vector may be assigned the values of a
+vector already defined, or a floating-point number (a real scalar), or
+a comma separated pair of numbers (a complex scalar).  A number may be
+written in any format acceptable to SPICE2, such as {\vt 14.6MEG} or
+{\vt -1.231e-4}.  Note that one can use either scientific notation or
+one of the abbreviations like MEG or G (case insensitive), but not
+both.  As with SPICE2, a number may have trailing alphabetic
+characters after it, which can indicate the units.  If the vector
+being assigned to does not exist, it will be created.
+
+The {\cb compose} command can also be used to create vectors, and is
+useful for creating vectors with multiple points that follow some
+relationship, such as linear or logarithmic.
+
+Newly-created vectors are added to the current plot, unless a {\it
+plotname} field is specified as part of the vector reference name. 
+For example, entering
+\begin{quote}
+{\vt let constants.myvec = 2}
+\end{quote}
+will assign a vector {\vt myvec} in the {\vt constants} plot the value
+2.0.  Entering
+\begin{quote}
+{\vt let myvec = constants.const\_e}
+\end{quote}
+will assign a vector {\vt myvec} in the current plot the values of the
+vector {\vt const\_e} in the {\vt constants} plot.  The {\cb let} command
+without arguments will print a listing of vectors in the current plot.
+
+Recent {\WRspice} releases also allow vectors to be assigned a value
+with the {\cb set} command.  The syntax in this case is
+ 
+\begin{quote}
+{\vt set \&}{\it vector} {\vt =} {\it value}
+\end{quote}
+ 
+which is equivalent to
+ 
+\begin{quote}
+{\vt let} {\it vector} {\vt =} {\it value}
+\end{quote}
+ 
+When entering this form from the {\WRspice} command line, the `{\vt
+\&}' character must be hidden from the shell, perhaps most
+conveniently be preceding it with a backslash.  The {\it value} must
+be numeric, and a value must be given, unlike normal usage of the {\cb
+set} command which can set a variable as a boolean by omitting the
+right side of the assignment.
+
+\subsection{Analysis Vectors and Access Mapping}
+
+The vectors actually produced depend on the type of analysis, but the
+most common output is the node voltage.  Node voltages are denoted by
+vectors of the form {\vt v({\it N\/})}, where {\it N} is a name
+representing the node.  Although the notation looks like a function
+call, the construct actually refers to a vector, and may be used in
+expressions whenever a vector is syntactically expected.  Another
+common form is {\it name\/}{\vt \#branch}, which represents the
+``branch'' current through voltage sources and inductors.  The SPICE
+algorithm adds a term to the matrix for these elements, which
+represents the current flowing through the device.  As there is a
+specific matrix element for the current for these devices, the value
+is available as an output variable.  The {\it name} is the name of the
+voltage source or inductor.
+
+For compatibility with SPICE2, several mappings and equivalences are
+provided.  When referencing node voltages, one can reference a node by
+name (e.g.  {\vt v(6)} or {\vt v(input)}).  These are string names of
+the produced vectors.  In addition, one can use the SPICE2 form for
+the argument inside the parentheses of the node voltage construct. 
+This is {\vt (}{\it node1} [{\vt ,}{\it node2\/}]{\vt )}, where if
+both {\it node1} and {\it node2} are given, the vector represents the
+voltage difference between nodes {\it node1} and {\it node2}.  For
+example, {\vt v(1,2)} is equivalent to {\vt v(1) - v(2)}.  The {\vt
+v()} construct in the case of two arguments is like a function.
+
+Additionally, the construct {\vt i({\it name\/})} is internally mapped
+to {\it name\/}{\vt \#branch}, and the two notations can be used
+interchangeably.  The {\it name} is the name of a voltage source or
+inductor.
+
+Additional mappings familiar from SPICE2 are also recognized in
+{\WRspice}.  In addition to {\vt v} and {\vt i}, the following are
+recognized for node voltages.  These are most useful for complex
+vectors as are produced in ac analysis.
 
 \begin{description}
-\item{\vt curplot}\\
-This is an alias for the name of the current plot.  Use of this
-keyword may seem redundant, but it has an important use to be
-explained below.
+\item{\vt vm}\\
+This computes the magnitude, by mapping to the {\vt mag} vector
+function.  The following forms are equivalent:
+\begin{quote}\vt
+vm(a) = mag(v(a))\\
+vm(a,b) = mag(v(a) - v(b))
+\end{quote}
 
-\item{\vt -}{\it N}\\
-Use the {\it N\/}'th plot back from the current plot.  {\it N} must be
-1 or larger.  For example, ``{\vt -1.v(1)}'' will reference {\vt v(1)}
-in the previous plot.  It is likely that this form must be
-double-quoted to avoid misinterpretation as a number.
+\item{\vt vp}\\
+This computes the phase, by mapping to the {\vt ph} vector
+function.  The following forms are equivalent:
+\begin{quote}\vt
+vp(a) = ph(v(a))\\
+vp(a,b) = ph(v(a) - v(b))
+\end{quote}
 
-\item{\vt prev}[{\it N\/}]\\
-This is very similar functionally to the form above, but does not
-cause parse errors.  The square brackets above are {\bf not} literal,
-but indicate that the integer is optional.  If missing, {\it N\/}=1 is
-implied.  With {\it N\/}=0, the current plot is indicated (equivalent
-to {\vt curplot}).
+\item{\vt vr}\\
+This computes the real part, by mapping to the {\vt re} vector
+function.  The following forms are equivalent:
+\begin{quote}\vt
+vr(a) = re(v(a))\\
+vr(a,b) = re(v(a) - v(b))
+\end{quote}
 
-\item{\vt +}{\it N}\\
-This goes in the reverse direction, indicating a plot later in the
-list than the current plot.  It is likely that this form must be
-double-quoted to avoid misinterpretation as a number.
+\item{\vt vi}\\
+This computes the imaginary part, by mapping to the {\vt im} vector
+function.  The following forms are equivalent:
+\begin{quote}\vt
+vi(a) = im(v(a))\\
+vi(a,b) = im(v(a) - v(b))
+\end{quote}
 
-\item{\vt next}[{\it N\/}]\\
-This is very similar functionally to the form above, but does not
-cause parse errors.  The square brackets above are {\bf not} literal,
-but indicate that the integer is optional.  If missing, {\it N\/}=1 is
-implied.  With {\it N\/}=0, the current plot is indicated (equivalent
-to {\vt curplot}).
-
-\item{\it N}\\
-An integer without {\vt +} or {\vt -} indicates an absolute index into
-the plot list, zero-based.  The value 0 will always indicate the
-``constants'' plot, which is the first plot created (on program
-startup).  It is likely that this form must be double-quoted to avoid
-misinterpretation as a number.
-
-\item{\vt plot}[{\it N\/}]\\
-This is very similar functionally to the form above, but does not
-cause parse errors.  The square brackets above are {\bf not} literal,
-but indicate that the integer is optional.  If missing, {\it N\/}=0 is
-implied, which will specify the {\vt constants} plot.
+\item{\vt vdb}\\
+This computes the decibel value (20*log10), by mapping to the
+{\vt db} vector function.  The following forms are equivalent:
+\begin{quote}\vt
+vdb(a) = db(v(a))\\
+vdb(a,b) = db(v(a) - v(b))
+\end{quote}
 \end{description}
 
-When using the {\it plotname\/}.{\it vecname} construct, internally
-the vector and its scale are copied into the current plot as temporary
-vectors.  If you do ``{\vt plot -1.v(1)}'' (for example) it may be
-surprising to find that the plot title, etc.  are from the current
-plot, and not the source plot.
+Similar constructs are available for the current vectors of voltage
+sources and inductors.  In these constructs, the single argument is
+always the name of a ``branch'' device, either a voltage source or
+inductor.
 
-When a script is run, the current plot when the script starts is taken
-as the ``context plot'' which will be used to resolve references to
-vectors in the script, after searching the current plot (if
-different).  Suppose that we have a script that defines a loop counter
-vector, then runs a loop that performs an analysis.  If we didn't save
-and search the context plot, the loop counter vector would not be
-accessible after the analysis is run, since the analysis will set a
-new current plot.
+\begin{description}
+\item{\vt img}\\
+This computes the magnitude, by mapping to the {\vt mag} vector
+function.  The following forms are equivalent:
+\begin{quote}\vt
+img(vx) = mag(vx\#branch)
+\end{quote}
+Note that this name differs from the SPICE2 ``{\vt im}'' to avoid
+a clash with the {\vt im()} vector function in {\WRspice}.
 
-One should keep this behavior in mind, as it can sometimes cause
-surprises.  For example, consider the script fragment
-
-\begin{quote} \vt
-run\\
-let foo = i(vds)\\
-plot foo
+\item{\vt ip}\\
+This computes the phase, by mapping to the {\vt ph} vector
+function.  The following forms are equivalent:
+\begin{quote}\vt
+ip(vx) = ph(vx\#branch)
 \end{quote}
 
-Now suppose that the context plot contains a vector named ``{\vt
-foo}''.  Instead of creating a new vector in the current plot, the
-``{\vt foo}'' vector in the context plot will be used, probably
-meaning that the scale in the displayed plot is incorrect.
-
-To enforce the desired behavior, the second line above should be
-changed to
-\begin{quote} \vt
-let curplot.foo = i(vds)
+\item{\vt ir}\\
+This computes the real part, by mapping to the {\vt re} vector
+function.  The following forms are equivalent:
+\begin{quote}\vt
+ir(vx) = re(vx\#branch)
 \end{quote}
 
-Script authors should be in the habit of using this form when creating
-vectors, when there is any possibility of a name clash with the
-context plot.
+\item{\vt ii}\\
+This computes the imaginary part, by mapping to the {\vt im} vector
+function.  The following forms are equivalent:
+\begin{quote}\vt
+ii(vx) = im(vx\#branch)
+\end{quote}
+
+\item{\vt idb}\\
+This computes the decibel value (20*log10), by mapping to the
+{\vt db} vector function.  The following forms are equivalent:
+\begin{quote}\vt
+vdb(vx) = db(vx\#branch)
+\end{quote}
+\end{description}
+
+\index{p pseudo-function}
+There is one additional mapping available, {\vt p}({\it devname\/}),
+which returns the instantaneous power of a device {\it devname\/}. 
+This can be applied to any device that has a readable ``{\vt p}''
+parameter defined, which is true for most devices.  The {\cb show}
+command can be used to list available device parameters.  This is
+particularly useful for sources, as it returns the power supplied to
+the circuit.  For non-dissipative elements, it represents the stored
+power.
+
+This is a mapping to the special vector {\vt @}{\it devname\/}{\vt
+[p]} (see below).  Thus, the special vector data must be available for
+this form to be used successfully, meaning that in analysis, as with
+other special vectors representing device parameters, the vector must
+be explicitly saved with the {\cb save} command or in a {\vt .save}
+line.  However, if this form is used in a {\vt .measure} line, the
+needed vector will be saved automatically.  This is also true if the
+form is used in one of the ``runops'' as listed with the {\cb status}
+command.
+
+\subsection{Special Vectors}
+\label{specialvec}
+
+Most simply, vector names can be any alphanumeric word that starts
+with an alpha character.  Vector names may also be of the form {\it
+string\/}({\it something\/}), if the {\it string} is not the name of a
+built-in or user-defined function.
+
+\index{temper variable}
+There is one vector named ``{\vt temper}'' that is always available,
+though not saved in any plot.  This is the current temperature assumed
+by the program, in Celsius.
+
+In {\WRspice}, a vector name beginning with the `{\vt @}' symbol is a
+``special'' vector, and is considered a reference to an internal
+device or model parameter, or a circuit parameter.  If the variable
+{\et spec\_catchar} is set to a string consisting of a single
+punctuation character, then that character will identify a special
+vector, instead of `{\vt @}'.  The descriptions below use `{\vt @}',
+but in actuality this character can be respecified by the user.
+
+If the vector name is of the form {\vt @{\it name}[{\it param}]}, this
+denotes the parameter {\it param} of the device or model named {\it
+name}.  Of course, there must be a device or model with that name
+defined for the current circuit and {\it param} must be a valid
+parameter name for that device or model type.  See the documentation
+or use the {\cb show} command for a listing of the parameters
+available.
+
+Special vectors should be saved with the {\cb save} command or on a
+{\vt .save} line during analysis if a value is required at each
+analysis point.  Otherwise, only the current value is available, which
+is the value used at the final analysis point after analysis
+completes.
+
+The special vectors that correspond to device and model parameters in
+the current circuit can be assigned.  When a special vector is
+assigned, the effect is similar to the {\cb alter} command.  Actual
+assignment is deferred until the next analysis run of the current
+circuit, and assignment applies to that run only.  The assignment must
+be repeated if needed for additional runs.
+
+Other special vectors are read-only.
+
+If the vector name is of the form {\vt @}{\it param}, this refers to a
+parameter of the circuit with the name {\it param}.
+
+These are resolved in the following way.  First, a match to one of the
+``official'' options is sought.  These are the options listed in the
+table in the options description (\ref{options}).  Any of these will
+match, with the exceptions in the sub-tables listing batch mode and
+obsolete options.
+
+If this fails, parameters defined in the current circuit are searched
+for a matching name.  These are defined in {\vt .param} lines.
+
+Finally, the {\cb rusage} command (see \ref{rusage}) keywords are
+searched.  Any of these keywords will match.
 
 !!SUBTOPICS
 constants
@@ -828,6 +1139,7 @@ deleted, and its vectors are read-only.  The values are in MKS units.
 
 !!SEEALSO
 plotvec
+vectors
 expressions
 
 !!KEYWORD
@@ -836,7 +1148,7 @@ expressions
 Vector Expressions
 !!HTML 
     An expression is an algebraic combination of already defined <a
-    href="plotvec">vectors</a>, scalars (a scalar is a vector of
+    href="vectors">vectors</a>, scalars (a scalar is a vector of
     length 1), <a href="constants">constants</a>, <a
     href="operators">operators</a>, and <a
     href="mathfuncs">functions</a>.  Some examples of expressions are:

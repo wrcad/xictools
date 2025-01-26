@@ -7,7 +7,7 @@
 % -----------------------------------------------------------------------------
 \chapter{Interface Functions}
 
-% scr:iffuncs 082408
+% scr:iffuncs
 <<scr:iffuncs xiFuncs.hlp>>
 
 %------------------------------------------------------------------------------
@@ -109,7 +109,6 @@
 
 %funcs:main1:version
 <<funcs:main1:version xiFuncsMain1.hlp>>
-
 
 %------------------------------------------------------------------------------
 \section{Main Functions 2}
@@ -213,17 +212,11 @@
 %funcs:main2:textout
 <<funcs:main2:textout xiFuncsMain2.hlp>>
 
-
 %------------------------------------------------------------------------------
 \section{Main Functions 3}
 
-% 101812
-Many of the layer-related functions take a ``standard layer
-argument''.  This can be an integer index number into the layer table,
-where the index is 1-based, and values less than 1 return the current
-layer.  The argument can also be a string, giving a layer name in {\it
-layer\/}[{\vt :}{\it purpose\/}] form, or an alias name.  If the
-string is null or empty, the current layer is returned.
+% funcs:main3 101812
+<<funcs:main3 xiFuncsMain3.hlp>>
 
 \subsection{Grid and Edge Snapping}
 
@@ -274,7 +267,6 @@ string is null or empty, the current layer is returned.
 
 %funcs:main3:meas
 <<funcs:main3:meas xiFuncsMain3.hlp>>
-
 
 %------------------------------------------------------------------------------
 \section{Layout File Input/Output Functions}
@@ -386,8 +378,6 @@ string is null or empty, the current layer is returned.
 
 %funcs:geom2:prp
 <<funcs:geom2:prp xiFuncsGeom2.hlp>>
-
-XXXXXXXX
 
 %------------------------------------------------------------------------------
 \section{Computational Geometry and Layer Expressions}

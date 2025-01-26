@@ -1,4 +1,10 @@
 
+!!  ---------------------------------------------------------------
+!!  Mozy Help System Database
+!!  Copyright (C) Whiteley Research Inc. 2025.  All Rights Reserved
+!!  mozy help file
+!!  ---------------------------------------------------------------
+
 !!HEADER
     <table border=1 width=100% cellpadding=0 cellspacing=0>
     <tr><td bgcolor=white><img src=wrbannermain.gif width=300 align=left>
@@ -10,7 +16,7 @@
  
 !!FOOTER
     <p><hr><font size=3 face=sans color=darkblue>
-    &#169; Whiteley Research Inc. 2014, All Rights Reserved.</font>
+    &#169; Whiteley Research Inc. 2025, All Rights Reserved.</font>
 
 !!KEYWORD
 mozy mozyhelp

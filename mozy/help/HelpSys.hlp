@@ -1,8 +1,8 @@
 
 !!  ---------------------------------------------------------------
 !!  Xic/WRspice Help System Database
-!!  $Id: HelpSys.hlp,v 1.35 2017/03/22 07:30:07 stevew Exp $
-!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  Copyright (C) Whiteley Research Inc. 2025.  All Rights Reserved
+!!  mozy help file
 !!  ---------------------------------------------------------------
 
 !!KEYWORD
@@ -19,7 +19,6 @@ helpdb
 helpforms
 helpinit
 helpfiles
-hlp2latex
 
 
 !! 122924
@@ -49,6 +48,16 @@ Help System
     a help window is brought up with the keyboard <a
     href="!help"><b>!help</b></a> command, <i>Xic</i> is not in help
     mode, thus menu buttons will have their normal functions.
+
+    <p>
+    If the variable <a
+    href="HelpDefaultTopic"><b>HelpDefaultTopic</b></a> is set (with
+    the <a href="!set"><b>!set</b></a> command or otherwise) to an
+    empty string, pressing the <b>Help</b> button will not bring up
+    the default top-level window.  However, clicking on objects and
+    buttons will bring up help topics as usual.  One can also set this
+    variable to a URL or database keyword, the content from which will
+    appear in the initial window as the default topic.
 !!ENDIF
 !!IFDEF WRspice
     <p>
@@ -68,18 +77,6 @@ Help System
     descriptions may look a little strange.  The figures (and all
     images) are not shown, and clickable links will not be available,
     other than the "references" and "seealso" topics.
-!!ENDIF
-
-!!IFDEF Xic
-    <p>
-    If the variable <a
-    href="HelpDefaultTopic"><b>HelpDefaultTopic</b></a> is set (with
-    the <a href="!set"><b>!set</b></a> command or otherwise) to an
-    empty string, pressing the <b>Help</b> button will not bring up
-    the default top-level window.  However, clicking on objects and
-    buttons will bring up help topics as usual.  One can also set this
-    variable to a URL or database keyword, the content from which will
-    appear in the initial window as the default topic.
 !!ENDIF
 
     <p>
@@ -122,7 +119,7 @@ Help System
     text to display can follow the <a href="help"><b>help</b></a>
     command keyword on the command line.
 !!ENDIF
-    The name given to the command, or to to the <b>Open</b> command in
+    The name given to the command, or to the <b>Open</b> command in
     the viewer's <b>File</b> menu, can be
     <ul>
     <li>A keyword for an entry in the help database.
@@ -240,14 +237,14 @@ Help System
     file.  References to files with extensions "<tt>.rpm</tt>",
     "<tt>.gz</tt>", and other common binary file suffixes will cause
     downloading rather than viewing.  When downloading, the <a
-    href="filesel"><b>File Selection</b></a> pop-up will appear,
+    href="filesel"><b>File Selection</b></a> panel will appear,
     pre-loaded with the file name (or "<tt>http_return</tt>" if not
     known) in the current directory.  One can change the saved name
     and the directory of the file to be downloaded.  Pressing the
     <b>Download</b> button will start downloading.  A pop-up will
     appear that monitors the transfer, which can be aborted with the
     <b>Cancel</b> button.
-!!LATEX helpsys useriface.tex
+!!LATEX helpsys local
 !!IFDEF Xic
 {\Xic} provides on-line context-sensitive help through activation of
 the {\cb Help} button in the {\cb Help Menu}.  When this button is
@@ -266,6 +263,15 @@ the {\cb Quit} button in the help window {\cb File} menu, or with
 window manager functions.  If a help window is brought up with the
 keyboard {\cb !help} command, {\Xic} is not in help mode, thus menu
 buttons will have their normal functions.
+
+\index{HelpDefaultTopic variable}
+If the variable {\et HelpDefaultTopic} is set (with the {\cb !set}
+command or otherwise) to an empty string, pressing the {\cb Help}
+button will not bring up the default top-level window.  However,
+clicking on objects and buttons will bring up help topics as usual.
+One can also set this variable to a URL or database keyword, the
+content from which will appear in the initial window as the default
+topic.
 !!ENDIF
 !!IFDEF WRspice
 The {\WRspice} help system provides a cross-referenced rich-text
@@ -282,17 +288,6 @@ converter only handles the most common HTML tags, so some
 descriptions may look a little strange.  The figures (and all
 images) are not shown, and clickable links will not be available,
 other than the ``references'' and ``seealso'' topics.
-!!ENDIF
-
-!!IFDEF Xic
-\index{HelpDefaultTopic variable}
-If the variable {\et HelpDefaultTopic} is set (with the {\cb !set}
-command or otherwise) to an empty string, pressing the {\cb Help}
-button will not bring up the default top-level window.  However,
-clicking on objects and buttons will bring up help topics as usual.
-One can also set this variable to a URL or database keyword, the
-content from which will appear in the initial window as the default
-topic.
 !!ENDIF
 
 Clicking on a colored HTML reference will bring up the text of the
@@ -320,22 +315,16 @@ usual way.
 The viewer can be used to display any text file or URL.  In {\Xic} and
 its derivatives, pressing the question mark key (``{\kb ?}'') will
 prompt the user for text to display.
-!!IFDEF Xic
 The {\cb !help} command has the same effect.  In {\WRspice}, the text
 to display can follow the ``{\cb help}'' command keyword on the command
 line.
-!!ELSE
-The {\cb !help} command has the same effect.  In {\WRspice}, the text
-to display can follow the ``{\cb help}'' command keyword on the
-command line.
-!!ENDIF
-The name given to the command, or to to the {\cb Open} command in the
+The name given to the command, or to the {\cb Open} command in the
 viewer's {\cb File} menu, can be
 \begin{itemize}
 \item{A keyword for an entry in the help database.}
 \item{A path to a file on the local machine.  The file can be an image
 in any standard format, or HTML or plain text.}
-\item{An arbitrary URL accessible through the Internet.}
+\item{An arbitrary URL accessible through the internet.}
 \end{itemize}
 
 If the given name can be resolved, the resulting page will be
@@ -344,19 +333,19 @@ receiver.  If a file name or URL is dragged into the viewer and
 dropped, that file or URL is read into the viewer, after confirmation.
 
 The ability to access general URLs should be convenient for accessing
-information from the Internet while using {\Xic} and {\WRspice}.  The
+information from the internet while using {\Xic} and {\WRspice}.  The
 prefix ``{\tt http://}'' {\it must} be provided with the URL.  Thus,
 for example,
 \begin{quote}\vt
 help http://wrcad.com
 \end{quote}
-will bring up the Whiteley Research web page.  The links can be
-followed by clicking in the usual way.  Of course, the computer must
-have internet access for web pages to be accessible.
+will bring up the Whiteley Research web page in {\Xic} or {\WRspice}.
+The links can be followed by clicking in the usual way.  Of course,
+the computer must have internet access for web pages to be accessible.
 
 Be advised, however, that the ``{\vt mozy}'' HTML viewer used in
 Unix/Linux releases is HTML-3.2 compliant with only a few HTML-4.0
-features implemented, and has no JavaScript, Java or Flash
+features implemented, and has no JavaScript, Java, or Flash
 capabilities.  A few years ago, this was sufficient for viewing most
 web sites, but this is no longer true.  Most sites now rely on css
 styles, JavaScript, and other features not available in {\vt mozy}. 
@@ -423,18 +412,15 @@ some hasic HTML formatting tags, but this is easy to learn.
 
 Holding {\kb Shift} while clicking on an anchor that points to a URL
 which specifies a file on a remote system will download the file. 
-Downloading makes use of the {\vt httpget} utility program available
-in the Accessories distribution.  Installation of the accessories is
-required for downloading to be available under Unix/Linux.  References
-to files with extensions ``{\vt .rpm}'', ``{\vt .gz}'', and other
-common binary file suffixes will automatically cause downloading
-rather than viewing.  When downloading, the file selection pop-up will
-appear, pre-loaded with the file name (or ``{\vt http\_return}'' if
-the name is not known) in the current directory.  One can change the
-saved name and the directory of the file to be downloaded.  Pressing
-the {\cb Download} button will start downloading.  A pop-up will
-appear that monitors the transfer, which can be aborted with the {\cb
-Cancel} button.
+References to files with extensions ``{\vt .rpm}'', ``{\vt .gz}'',
+and other common binary file suffixes will automatically cause
+downloading rather than viewing.  When downloading, the {\cb File
+Selection} panel will appear, pre-loaded with the file name (or
+``{\vt http\_return}'' if the name is not known) in the current
+directory.  One can change the saved name and the directory of the
+file to be downloaded.  Pressing the {\cb Download} button will start
+downloading.  A pop-up will appear that monitors the transfer, which
+can be aborted with the {\cb Cancel} button.
 
 !!SUBTOPICS
 helpview
@@ -471,7 +457,7 @@ XicTools Update
     The <i>XicTools</i> package management capability is available from
     the the internal help system in <i>Xic</i> and <i>WRspice</i>, and
     from the stand-alone <i>mozy</i> help browser.
-!!LATEX update useriface.tex
+!!LATEX update local
 The help system provides package management capability for the
 {\XicTools} programs.  Giving the keyword
 \begin{quote}\vt
@@ -849,7 +835,7 @@ The HTML Help Viewer
     are not cleared.
 
     <p>
-    The <b>Read Cache</b> button in the <b>Options</b> menu will
+    The <b>Reload Cache</b> button in the <b>Options</b> menu will
     clear and reload the internal cache from the files that presently
     exist in the cache directory.
 
@@ -947,7 +933,10 @@ The HTML Help Viewer
     will display the item in the viewer.  The bookmark entries are
     saved in a file named "<tt>bookmarks</tt>" which is located in the
     same directory containing the cache files.
-!!LATEX helpview useriface.tex
+!!LATEX helpview local
+The help viewer windows provide access to the help system topics, and
+can display general HTML and image files.
+
 There are three colored buttons in the menu bar of the viewer.  The
 left-facing arrow button (back) will return to the previous topic
 shown in the window.  The right-facing arrow button (forward) will
@@ -994,7 +983,8 @@ text.  If the {\cb To File} button is active, output goes to that
 file, otherwise the command string is executed to send output to a
 printer.  If the characters ``{\vt \%s}'' appear in the command
 string, they are replaced with the temporary print file name,
-otherwise the temporary file name is appended to the string.
+otherwise the temporary file name is appended to the string, separated
+by a space character.
 
 \index{help viewer!Reload}
 \item{\cb Reload}\\
@@ -1017,13 +1007,13 @@ again.
 \item{\cb Old Charset}\\
 The help viewer uses the UTF-8 character set, which is the current
 standard international character set.  However, older input sources
-may assume another character set, such as ISO-8859, that wll display
+may assume another character set, such as ISO-8859, that will display
 some characters incorrectly.  If the user observes that some
 characters are missing or wrong in the display, setting this mode
 might help.
 
 \index{help viewer!Make FIFO}
-\item{\cb <b>Make FIFO}\\
+\item{\cb Make FIFO}\\
 This controls an obscure but unique feature.  When the button is
 pressed, a named pipe, or FIFO, is created in the user's home
 directory.  The name is ``{\vt mozyfifo}'', or if this name is in use,
@@ -1111,7 +1101,7 @@ period.  For example, if {\vt -ZZ} is given, the new file would be
 of that name will be overwritten.
 
 If the argument consists of only a plus sign `{\vt +}', if a file
-named ``{\vt ,wrproxy.bak}'' exists in the user's home directory, it
+named ``{\vt .wrproxy.bak}'' exists in the user's home directory, it
 will be moved to {\vt .wrproxy}.  An existing {\vt .wrproxy} will be
 overwritten.  If the `{\vt +}' is followed by some non-space
 characters, the command will look for a file where the characters are
@@ -1230,7 +1220,7 @@ of the GTK toolkit employed.
 !!ENDIF
 
 \index{help viewer!disk cache}
-\item{{\cb Cache} group}\\
+\item{\cb Cache} group\\
 A disk cache of downloaded pages and images is maintained.  The cache
 is located in the user's home directory under a subdirectory named
 ``{\vt .wr\_cache}''.  The cache files are named ``{\vt wr\_cache}{\it
@@ -1275,7 +1265,7 @@ later, from cache, without being on-line.
 \item{\cb No Cookies}\\
 Support is provided for Netscape-style cookies.  Cookies are small
 fragments if information stored by the browser and transmitted to or
-received from the web site.  The {\cb No Cookies} button in the {\cb  
+received from the web site.  The {\cb No Cookies} button in the {\cb
 Options} menu will disable sending and receiving cookies.  With
 cookies, it is possible to view certain web sites that require
 registration (for example).  It is also possible to view some commerce
@@ -1394,7 +1384,7 @@ The Help Database
     them.  Each help item is indexed by a keyword which should be
     unique in the database.  The help text may be in HTML or plain
     text format.
-!!LATEX helpdb useriface.tex
+!!LATEX helpdb local
 The {\XicTools} help system uses a fast hashed lookup table
 containing cached file offsets to the entry text.  A modular database
 provides flexibility and portability.  The files are located by
@@ -1405,9 +1395,8 @@ environment variables and/or startup files.  All of the files with
 suffix ``{\vt .hlp}'' in the directories along the help search path
 are parsed, and reference pointers added to the internal list, the
 first time the help command is issued in the application.  In
-addition, other types of files, such
-as image files, which are referenced in the HTML help text may be
-present as well.
+addition, other types of files, such as image files, which are
+referenced in the HTML help text may be present as well.
 
 !!IFDEF Xic
 The help search path can be set in the environment with the variable
@@ -1420,7 +1409,7 @@ window.
 The ``{\vt .hlp}'' files have a simple format allowing users to create
 and modify them.  Each help item is indexed by a keyword which should
 be unique in the database.  The help text may be in HTML or plain text
-format.  The format is described in \ref{helpfiles}.
+format.  The file format is described in \ref{helpfiles}.
 
 !!SEEALSO
 helpsys
@@ -1431,7 +1420,7 @@ helpforms
 !!TITLE
 Help System Forms Processing
 !!HTML
-    Support is provided for HTML forms.
+    There exists basic support for HTML forms.
 !!IFDEF Xic
     In <i>Xic</i>, HTML forms can be used as input sources for <a
     href="scr:forms">scripts</a>.
@@ -1466,8 +1455,8 @@ Help System Forms Processing
     standard input.  The command standard output will appear in the
     HTML viewer window.  Thus, one can create HTML form front-ends for
     favorite shell commands and programs.
-!!LATEX helpforms useriface.tex
-Support is provided for HTML forms.
+!!LATEX helpforms local
+There exists basic support for HTML forms.
 !!IFDEF Xic
 In {\Xic}, HTML forms can be used as input sources for scripts.  More
 information is available in \ref{htmlforms}.
@@ -1483,9 +1472,9 @@ key/value pairs in the following formats:
 There is no white space around `=', and text containing white space is
 double-quoted.  Each assignment is on a separate line.
 
-The action string from the ``{\vt <form ...>}'' tag determines how   
+The action string from the ``{\vt <form ...>}'' tag determines how
 this file is used.  The file is a temporary file, and is deleted
-immediately after use.  If the action string is in the form ``{\vt   
+immediately after use.  If the action string is in the form ``{\vt
 action\_local\_}{\it xxxx\/}'', then the form data are processed
 internally.
 
@@ -1515,21 +1504,21 @@ Help System Initialization File
     but is created or overwritten with the <b>Save Config</b> button
     in the <b>Options</b> menu of a help window.  This need be done
     once only.  It should be done if a <tt>.mozyrc</tt> file exists,
-    but it is from a release breanch earlier than 4.0.  Once a
+    but it is from a release branch earlier than 4.0.  Once a
     <tt>.mozyrc</tt> file exists, it will be updated when leaving
     help, reflecting any setting changes.
 
     <p>
     Incidently "mozy" is the name of the stand-alone version of the
     HTML viewer/web browser available on the Whiteley Research web site.
-!!LATEX helpinit useriface.tex
+!!LATEX helpinit local
 When a help window pops up, an initialization file is read, if it
 exists.  This file is named ``{\vt .mozyrc}'' and is sought in the
 user's home directory.  This file is not created automatically, but is
 created or overwritten with the {\cb Save Config} button in the {\cb
 Options} menu of a help window.  This need be done once only.  It
 should be done if a {\vt .mozyrc} file exists, but it is from a
-release breanch earlier than 3.3.  Once a {\vt .mozyrc} file exists,
+release branch earlier than 3.3.  Once a {\vt .mozyrc} file exists,
 it will be updated when leaving help, reflecting any setting changes.
 
 Incidently ``mozy'' is the name of the stand-alone version of the HTML
@@ -1712,15 +1701,15 @@ Help Database Files
     application.  Presently, the following words are defined:
     <dl>
     <dt><tt>Xic</tt><dd>
-    Defined when running the <i>Xic</i> program with any feature set.
+    Defined when running <i>Xic</i> with any feature set.
     <dt><tt>XicII</tt><dd>
-    Defined when running the <i>Xic</i> program with the <i>XicII</i>
-    feature set.
+    Defined when running <i>Xic</i> with the <i>XicII</i> feature set.
     <dt><tt>Xiv</tt><dd>
-    Defined when running the <i>Xic</i> program with the <i>Xiv</i>
-    feature set.
+    Defined when running <i>Xic</i> with the <i>Xiv</i> feature set.
+    <dt><tt>OpenAccess</tt><dd?
+    Defined when running <i>Xic</i> when OpenAccess is available.
     <dt><tt>WRspice</tt><dd>
-    Defined when running the <i>WRspice</i> program.
+    Defined when running <i>WRspice</i>.
     <dt><tt>Windows</tt><dd>
     Defined when running under Microsoft Windows.
     </dl>
@@ -2114,17 +2103,16 @@ Help Database Files
     comma-separated data <a href="csvfilefmt">(CSV) files</a>), and
     "<tt>.csdf</tt>" and others for common simulation data format <a
     href="csdffilefmt">(CSDF) files</a>.
-!!LATEX helpfiles appendix.tex
+!!LATEX helpfiles local
 The help information is obtained from database files suffixed with
 {\vt .hlp} found along the help search path.  These directories may
 also contain other files referenced in the help text, such as image
 files.
 
-!!PROTECT
 !!IFDEF Xic
 In {\Xic}, the help search path can be set in the environment with the
-variable {\et XIC\_HLP\_PATH}, and/or may be set with the {\vt
-helppath} variable, which will override the environment.
+variable {\et XIC\_HLP\_PATH}, and/or may be set in the technology
+file (the technology file overrides the environment). 
 !!ENDIF
 !!IFDEF WRspice
 In {\WRspice}, the help search path can be set in the environment with
@@ -2144,6 +2132,7 @@ help system provides rich-text presentation from HTML formatting,
 entries can be in plain text.  A sample plain-text entry has the
 form:
 
+!!PROTECT
 \begin{quote}
 \begin{verbatim}
 !!KEYWORD
@@ -2169,14 +2158,18 @@ application.  The text which appears in the topic (following {\vt
 !!TEXT}) is shown indented, which is recommended for clarity, but is
 not required.
 
-In ``{\vt .hlp}'' files, lines anywhere with `{\vt *}' or `{\vt \#}'
-in the first column are ignored, as they are assumed to be comments.
-Blank lines outside of the {\vt !!TEXT} field are ignored.  Leading
-white space is stripped, which can be a problem for maintaining
-indentation in formatted plain text.  To add a space which will not be
-stripped, use the HTML escape ``{\vt \&\#32;}''.
+In {\vt .hlp} files, outside of {\vt !!TEXT} and {\vt !!HTML} blocks
+(described below), lines with `{\vt *}' or `{\vt \#}' in the first
+column are ignored, as they are assumed to be comments.  Lines that
+begin in the first column with ``{\vt !!}(space)'' (space character
+following two exclamation points) anywhere are also ignored, as
+comments.  Blank lines outside of the {\vt !!TEXT} and {\vt !!HTML}
+fields are ignored.  Leading white space is stripped from all lines
+read, which can be a problem for maintaining indentation in formatted
+plain text.  To add a space which will not be stripped, one can use
+the HTML escape ``{\vt \&\#32;}''.
 
-The following `{\vt !!}' keywords can appear in ``{\vt .hlp}'' files.
+The following `{\vt !!}' keywords can appear in {\vt .hlp} files.
 These are recognized only in upper case, and must start in the first
 text column.
 
@@ -2200,9 +2193,9 @@ not be part of a keyword name.  Also, character sequences that could
 be confused with a URL or directory path should be avoided.  The
 latter basically prohibits the `{\vt /}' character (and also
 `$\backslash$' under Windows) from being included in keywords.  There
-are special names starting with `\$' which are expanded to
+are special names starting with `{\vt \$}' which are expanded to
 application-specific internal variables, as described below.  To avoid
-any possibility of a clash, it is probably best to avoid `\$' in
+any possibility of a clash, it is probably best to avoid `{\vt \$}' in
 general keywords.
 
 It is often useful to include a meaningful prefix in keywords to
@@ -2258,9 +2251,12 @@ in the topic.  The {\it word} is one of the special words defined by
 the application.  Presently, the following words are defined:
 
 \begin{tabular}{ll}\\
-in {\Xic} & {\vt Xic}\\
-in {\WRspice} & {\vt WRspice}\\
-in either, under Windows & {\vt Windows}\\
+{\vt Xic}     & Defined when running {\Xic} with any feature set.\\
+{\vt XicII}   & Defined when running {\Xic} with the {\XicII} feature set.\\
+{\vt Xiv}     & Defined when running {\Xic} with the {\Xiv} feature set.\\
+{\vt OpenAccess} & Defined when running {\Xic} when OpenAccess is available.\\
+{\vt WRspice} & Defined in {\WRspice}.\\
+{\vt Windows} & Defined when running under Microsoft Windows.\\
 \end{tabular}
 
 If {\it word} is defined, the text up to the next {\vt !!ELSE} or {\vt
@@ -2339,6 +2335,31 @@ Giving ``{\vt !help nyt}'' in {\Xic} or ``{\vt help nyt}'' in
 {\WRspice} will bring up a help window containing the New York Times
 web page.
 
+\item{\vt !!SEEALSO {\vt keyword-list}}\\
+This keyword, if used, is expected to be found at the end of the topic
+text.  The {\it keyword-list} consists of a list of keywords that are
+expected to be defined by {\vt !!KEYWORD} lines elsewhere in the
+database.  A menu of these items is displayed at the bottom of the
+topic text, under the heading ``References''.  The keywords specified
+after {\vt !!SEEALSO} can appear on the same line separated with
+space, or on multiple lines that follow.  If a keyword in the list is
+not found in the database, the normal action is to ignore the error.
+The application may provide a debugging mode, whereby unresolved
+references will produce a warning message.
+
+\item{\vt !!SUBTOPICS {\it keyword-list}}\\
+This keyword, if used, is expected to be found at the end of the topic
+text.  This produces a menu of the topics found in the {\it
+keyword-list} very similar to {\vt !!SEEALSO}, however under the
+heading ``Subtopics''.  This can be used in addition to {\vt !!SEEALSO},
+the order is unimportant
+\end{description}
+
+The following definitions supply header and footer text which will be
+applied to each page.  These should be defined at most once each in
+the database.
+
+\begin{description}
 \item{\vt !!HEADER}\\
 The text that follows, up until the next {\vt !!KEYWORD} or {\vt
 !!FOOTER}, is saved for inclusion in each page composed from the {\vt
@@ -2355,25 +2376,40 @@ The text that follows, up until the next {\vt !!KEYWORD} or {\vt
 !!HTML} lines for database keywords.  The footer is inserted at the
 bottom of the page.  There can be only one footer defined, and if more
 than one are found in the help files, the first one read will be used.
-
-\item{\vt !!SEEALSO {\vt keyword-list}}\\
-The {\it keyword-list} consists of a list of keywords that are
-expected to be defined by {\vt !!KEYWORD} lines elsewhere in the
-database.  A menu of these items is displayed at the bottom of the
-topic text, under the heading ``References''.  The keywords specified
-after {\vt !!SEEALSO} can appear on the same line separated with
-space, or on multiple lines.  If a keyword in these lists is not found
-in the database, the normal action is to ignore the error.  The
-application may provide a debugging mode, whereby unresolved
-references will produce a warning message.
-
-\item{\vt !!SUBTOPICS {\it keyword-list}}\\
-This produces a menu of the topics found in the {\it keyword-list}
-very similar to {\vt !!SEEALSO}, however under the heading
-``Subtopics''.  This can be used in addition to {\vt !!SEEALSO}.
 \end{description}
 
-%SU-------------------------------------
+The following keywords implement a means to mark topics that are from
+imported or supplemental files.  For example, in {\Xic}, many of the
+{\WRspice} help files are included for reference and to satisfy links
+in the {\Xic} help files.  There is a need to mark these pages as
+applying to the {\WRspice} program, otherwise the information could be
+confusing.  In the {\Xic} help system, the pages from {\WRspice} have
+a banner just below the header identifying the topic as applying to
+{\WRspice}.
+
+\begin{description}
+\item{\vt !!MAINTAG} {\it tagname}\\
+This keyword should appear once in the database, probably defined
+along with the header/footer.  The {\it tagname} is an arbitrary short
+keyword which identifies the database, such as ``{\vt Xic}''.
+
+\item{\vt !!TAG} {\it tagname}\\
+This should be given at the top of each help file in the database. 
+Those files that are part if the main database should have the same
+{\it tagname} as was given to {\vt !!MAINTAG}.  Files containing
+supplemental information should have some other {\it tagname}, e.g.,
+``{\vt WRspice}''
+
+\item{\vt !!TAGTEXT} {\it tagname}\\
+This should be given once only in the database, probably where the
+{\vt !!MAINTAG} is defined.  It is followed by HTML text, in the
+manner of the header and footer.  This text will be inserted just
+below the header in topic pages that come from files with tags that
+differ from the main tag.  For this to happen, both the tag and main
+tag must have been defined.  In the text, the token ``{\vt \%TAG\%}''
+will be replaced with the actual tag that applies to the topic.
+\end{description}
+
 \subsection{Anchor Text}
 
 Clickable references in the HTML text have the usual form:
@@ -2396,6 +2432,7 @@ somekeyword
     ...
     <a name="refname">some text</a>
 \end{verbatim}
+!!UNPROTECT
 
 \begin{flushleft}
 Then, referencing forms like ``{\vt !help somekeyword\#refname}'' and
@@ -2550,7 +2587,6 @@ extensions (which of course must match the file type) include ``{\vt
 .raw}'' (for rawfiles), ``{\vt .csv}'' (for comma-separated data (CSV)
 files), and ``{\vt .csdf}'' and others for common simulation data
 format (CSDF) files.
-!!UNPROTECT
 
 !!KEYWORD
 mozyrcfile
@@ -2576,19 +2612,23 @@ HTML Viewer Startup File
     <p>
     If you have a <tt>.mozyrc</tt> file installed, you can view it
     by clicking <a href="$HOME/.mozyrc">here</a>.
-!!LATEX mozyrcfile appendix.tex
+!!LATEX mozyrcfile local
 The help system looks for a file named ``{\vt .mozyrc}'' in the user's
 home directory, which contains keywords which define the default
 behavior of many of the commands and features of the help window. 
-This is used only in UNIX/Linux releases.  It is necessary to install
-this file if one wants alternate selections from the help window, for
-example different fonts, to be persistent.
+It is necessary to create this file once only by pressing the {\cb
+Save Config} button in the {\cb Options} menu of a help window.  Once
+the file exists, it is updated when exiting help windows, reflecting
+any changes in settings.
 
-A sample {\vt .mozyrc} file listing is provided below.  The file can
-be found in the {\vt startup} directory in the installation tree,
-under the name ``{\vt mozyrc}''.  To install, edit the file if
-necessary, then move it to your home directory under the name ``{\vt
-.mozyrc}''.
+The {\vt .mozyrc} file is a text file, with comments describing
+the various entries.  Most if not all of the entries correspond to
+settings from within the help window {\cb Options} menu and
+subsidiary pop-ups.  Although it is easy to edit the file by hand,
+one should take care that the file is not prematurely overwritten
+by a running program.
+
+A sample {\vt .mozyrc} file listing is provided below.
 
 \begin{verbatim}
 # This is the startup file which sets defaults for the mozy web browser
@@ -2697,104 +2737,4 @@ BadHTMLwarnings 0
 
 !!SEEALSO
 helpsys
-
-!! 122924
-!!KEYWORD
-hlp2latex
-!!TITLE
-The hlp2latex Utility
-!!HTML
-    Usage: <tt>hlp2latex</tt> <i>helppath</i> <i>latexdir</i> |
-    <i>file</i><tt>.tex.in</tt> ...
-
-    <p>
-    This utility creates LaTeX files from LaTeX templates and blocks
-    of LaTeX saved in the help system.  By saving both HTML and LaTeX
-    in the same place in the help system, it should be easier to keep
-    these in sync.
-
-    <p>
-    At least two arguments must be provided.  The first argument is a
-    path to a directory containing help files.  It is assumed that
-    these files contain LaTeX blocks.  These follow HTML or TEXT blocks:
-    <blockquote>
-      <tt>!!HTML</tt> or <tt>!!TEXT</tt><br>
-      &nbsp;<i>HTML or plain text</i>...<br>
-      <tt>!!LATEX</tt> <i>keyword</i> <i>latexfile</i><br>
-      &nbsp;<i>LaTeX text</i>...
-    </blockquote>
-    Second or subsequent arguments can be tokenized LaTeX files with
-    <tt>.tex.in</tt> extensions, or a directory containing such files.
-    In these files, lines with a token starting in the first column in
-    the form
-    <blockquote>
-    &lt;&lt;<i>keyword</i> <i>filename</i>&gt;&gt;
-    </blockquote>
-    will be replaced with the LaTeX block tagged with the same
-    keyword when the LaTeX files are generated.  The LaTeX file name
-    is the same as the source file name with the trailing "<tt>.in</tt>"
-    stripped.  Other than the tokens described, text is copied verbatim.
-
-    <p>
-    The processing is recursive, so that <tt>!!LATEX</tt> blocks can
-    contain &lt;&lt;<i>keyword</i> <i>filename</i>&gt;&gt; tokens.
-    These are expanded in place recursively when found.
-
-    <p>
-    The <tt>!!IFDEF</tt>, <tt>!!IFNDEF</tt>, <tt>!!ELSE</tt>, and
-    <tt>!!ENDIF</tt> keywords are recognized in the
-    <tt>!!LATEX</tt> blocks and operate the same as in
-    <tt>!!HTML</tt> blocks, i.e., allowing conditional inclusions.
-
-    <p>
-    <tt>!!LATEX</tt> blocks are terminated by any line that starts
-    with "<tt>!!</tt>" that is not one of the conditionals mentioned
-    above.  It is usually not necessary to explicitly terminate as
-    termination occurs naturally from following <tt>!!SEEALO</tt>,
-    <tt>!!KEYWORD</tt> or similar lines.  Termination also occurs
-    naturally at the end of the file.
-!!LATEX hlp2latex appendix.tex
-Usage: {\vt hlp2latex} {\it helppath} {\it latexdir} |
-{\it file\/}{\vt .tex.in} ...
-
-This utility creates LaTeX files from LaTeX templates and blocks
-of LaTeX saved in the help system.  By saving both HTML and LaTeX
-in the same place in the help system, it should be easier to keep
-these in sync.
-
-At least two arguments must be provided.  The first argument is a
-path to a directory containing help files.  It is assumed that
-these files contain LaTeX blocks.  These follow HTML or TEXT blocks:
-\begin{quote}
-{\vt !!HTML} or {\vt !!TEXT}\\
-{\it HTML or plain text}...\\
-{\vt !!LATEX} {\it keyword} {\it filename}\\
-<i>LaTeX text}...
-\end{quote}
-Second or subsequent arguments can be tokenized LaTeX files with
-{\vt .tex.in} extensions, or a directory containing such files.
-In these files, lines with a token starting in the first column in
-the form
-\begin{quote}
-<<{\it keyword} {\it filename\/}>>
-\end{quote}
-will be replaced with the LaTeX block tagged with the same
-keyword when the LaTeX files are generated.  The LaTeX file name
-is the same as the source file name with the trailing ``{\vt .in}''
-stripped.  Other than the tokens described, text is copied verbatim.
-
-The processing is recursive, so that {\vt !!LATEX} blocks can
-contain <<{\it keyword} {\it filename\/}>> tokens.  These are
-expanded in place recursively when found.
-
-The {\vt !!IFDEF}, {\vt !!IFNDEF}, {\vt !!ELSE}, and {\vt !!ENDIF}
-keywords are recognized in the {\vt !!LATEX} blocks and operate the
-same as in {\vt !!HTML} blocks, i.e., allowing conditional inclusions.
-
-{\vt >!!LATEX} blocks are terminated by any line that starts
-with ``{\vt !!}'' that is not one of the conditionals mentioned
-above.  It is usually not necessary to explicitly terminate as
-termination occurs naturally from following {\vt !!SEEALO},
-{\vt !!KEYWORD} or similar lines.  Termination also occurs
-naturally at the end of the file.
 

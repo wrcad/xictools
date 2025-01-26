@@ -782,6 +782,7 @@ commands are described in detail in the following sections.
 \cb !mmclear & Clear caches\\ \hline
 
 %\ifoa
+!!IFDEF OpenAccess
 % 062313
 \multicolumn{2}{|c|}{\kb OpenAccess Interface}\\ \hline
 \cb !oaversion & Print OpenAccess release number\\ \hline
@@ -792,6 +793,7 @@ commands are described in detail in the following sections.
 \cb !oasave & Save cell to OpenAccess library\\ \hline
 \cb !oaload & Read cell from OpenAccess library\\ \hline
 \cb !oadelete & Delete OpenAccess object\\ \hline
+!!ENDIF
 %\fi
 
 % 081318
@@ -2915,10 +2917,12 @@ This will dump the default parameter list for every parameterized cell
 (pcell) evaluated during the session.  The list is in the format of
 the {\et pc\_params} property, including constraints.
 %\ifoa
+!!IFDEF OpenAccess
 This can be
 useful for viewing the parameters and constraints of OpenAccess
 pcells, as they lack a native super-master and thus the {\et
 pc\_params} property.
+!!ENDIF
 %\fi
 
 The argument is the name of a file to create for output.  If not
@@ -10546,6 +10550,7 @@ there is no way to put them back, except perhaps very laboriously by
 hand.  Don't use this command unless you want all pcell history in the
 current cell hierarchy to go away forever.
 
+!!IFDEF OpenAccess
 When importing design data from Cadence Virtuoso, for example, using
 the Express PCell feature to obtain pcell sub-masters, you may wish to
 use this command on the new hierarchy.  In {\Xic}, the pcells can not
@@ -10557,6 +10562,7 @@ and able to provide the sub-masters, the pcell instances won't be
 resolved.  Thus you must remember to explicitly enable saving the
 sub-masters when writing output, unless you have used the {\cb
 !rmpcprops} command.
+!!ENDIF
 
 !!SEEALSO
 keybang

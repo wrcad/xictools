@@ -1,17 +1,16 @@
 
 !!  ---------------------------------------------------------------
 !!  Xic/WRspice Help System Database
-!!  $Id: PlotPanel.hlp,v 1.18 2017/03/28 22:23:13 stevew Exp $
-!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  Copyright (C) Whiteley Research Inc. 2025.  All Rights Reserved
+!!  WRspice help file
 !!  ---------------------------------------------------------------
 
 !!TAG WRspice
-!! This file in sync with manual.
 
 !!KEYWORD
-PlotPanel.hlp
+spPlotPanel.hlp
 !!TITLE
-PlotPanel.hlp
+spPlotPanel.hlp
 !!HTML
 
 !!SUBTOPICS

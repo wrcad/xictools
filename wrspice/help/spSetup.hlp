@@ -1,12 +1,11 @@
 
 !!  ---------------------------------------------------------------
 !!  Xic/WRspice Help System Database
-!!  $Id: spSetup.hlp,v 1.18 2016/01/30 20:43:03 stevew Exp $
-!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  Copyright (C) Whiteley Research Inc. 2025.  All Rights Reserved
+!!  WRspice help file
 !!  ---------------------------------------------------------------
 
 !!TAG WRspice
-!! This file in sync with manual.
 
 !!KEYWORD
 spSetup.hlp

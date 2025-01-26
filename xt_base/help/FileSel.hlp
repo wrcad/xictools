@@ -1,8 +1,8 @@
 
 !!  ---------------------------------------------------------------
 !!  Xic/WRspice Help System Database
-!!  $Id: FileSel.hlp,v 1.12 2013/12/17 02:13:41 stevew Exp $
-!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  Copyright (C) Whiteley Research Inc. 2025.  All Rights Reserved
+!!  base help file
 !!  ---------------------------------------------------------------
 
 !!KEYWORD
@@ -246,15 +246,15 @@ File Selection Panel
     This does not contain the list of files found in the other
     variations, but allows the user to select a directory.
 !!ENDIF
-!!LATEX filesel useriface.tex
+!!LATEX filesel local
 \index{File Selection window}
-The File Selection panel allows the user to navigate the host's
-file systems, and select a file for input to the program.
+The {\cb File Selection} panel allows the user to navigate the
+host's file systems, and select a file for input to the program.
 
 The panel provides two windows; the left window displays the
 subdirectories in a tree format, and the right window displays a
 listing of files in a columnar form.  The panel is similar in
-operation to the Windows Explorer tool provided by Microsoft.
+operation to the {\et Windows Explorer} tool provided by Microsoft.
 
 When the panel first appears, the directories listing contains a
 single entry, which is shown selected, and the files window contains a
@@ -304,11 +304,11 @@ the application, whether or not the name was selected.
 \index{drag and drop}
 Files can be dragged and dropped into the application, as an
 alternative to the {\cb Go} button.  Files and directories can also be
-dragged/dropped between multiple instances of the File Selection
-pop-up, or to other file manager programs, or to other directories
-within the same file manager panel.  The currently selected directory
-is the target for files dropped in the files listing window.  When
-dragging in the directory listing, the underlying directory is
+dragged/dropped between multiple instances of the {\cb File Selection}
+panel, or to other file manager programs, or to other directories
+within the same {\cb File Selection} panel.  The currently selected
+directory is the target for files dropped in the files listing window.
+When dragging in the directory listing, the underlying directory is
 highlighted.  The highlighted directory will be the drop target.
 
 By default, a confirmation pop-up will always appear after a
@@ -388,7 +388,8 @@ character lexically between the two.  Some patterns can be negated:
 The sequence `$[\symbol{94}...]$' matches any single character not
 specified by the characters and/or ranges of characters in the braces.
 An entire pattern can also be negated with `{\vt \symbol{94}}'.  The
-notation `{\vt a\{b,c,d\}e}' is a shorthand for `{\vt abe ace ade}'.
+notation `{\vt a}\{{\vt b,c,d}\}{\vt e}' is a shorthand for `{\vt abe
+ace ade}'.
 
 The {\cb Relist} button will update the files list.  The file listing
 is automatically updated when a new filter is selected, or when {\kb

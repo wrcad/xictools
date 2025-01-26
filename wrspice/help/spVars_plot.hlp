@@ -1,12 +1,11 @@
 
 !!  ---------------------------------------------------------------
 !!  Xic/WRspice Help System Database
-!!  $Id: spVars_plot.hlp,v 1.16 2016/08/09 03:46:12 stevew Exp $
-!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  Copyright (C) Whiteley Research Inc. 2025.  All Rights Reserved
+!!  WRspice help file
 !!  ---------------------------------------------------------------
 
 !!TAG WRspice
-!! This file in sync with manual.
 
 !!KEYWORD
 spVars_plot.hlp

@@ -1,0 +1,1299 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  Copyright (C) Whiteley Research Inc. 2025.  All Rights Reserved
+!!  mozy help file
+!!  ---------------------------------------------------------------
+
+
+!!KEYWORD
+accessories.hlp
+!!TITLE
+accessories.hlp
+!!HTML
+
+!!SUBTOPICS
+accessories
+mozy
+httpget
+fcpp
+hlp2html
+hlp2latex
+hlpsrv
+lstpack
+
+!! 072014
+!!KEYWORD
+accessories
+!!TITLE
+The <i>XicTools</i> Accessories
+!!HTML
+    The <i>XicTools</i> accessories are programs provided in the optional
+    accessories distribution file.  These are open-source programs, and
+    the source code distribution can be found in the free software archive
+    of <a href="http://wrcad.com/freestuff.html"><tt>wrcad.com</tt></a>.
+    
+    <p>
+    The programs in the accessories distributions are the following.
+
+    <dl>
+    <dt><a href="mozy"><tt>mozy</tt></a><dd>
+    A stand-alone help/www browser.  This can be used to browse the
+    <i>Xic</i> and <i>WRspice</i> help databases, or general HTML and
+    image files.  It supports HTML-3.2 and a few 4.0 features, so is
+    no longer much good as a web browser, but it works well as a help
+    system and viewer.
+    </dl>
+
+    <dl>
+    <dt><a href="xeditor"><tt>xeditor</tt></a><dd>
+    A stand-alone text editor window.  This is one polymorph of a
+    widget that can be configured as a file browser or email client as
+    well.
+    </dl>
+
+    <dl>
+    <dt><a href="httpget"><tt>httpget</tt></a><dd>
+    A program for retrieving files served from a remote FTP or HTTP
+    server.
+    </dl>
+
+    <dl>
+    <dt><a href="hlp2html"><tt>hlp2html</tt></a><dd>
+    A program for creating standard HTML files from help database
+    (<tt>.hlp</tt>) files.
+    </dl>
+
+    <dl>
+    <dt><a href="hlp2latex"><tt>hlp2latex</tt></a><dd>
+    A utility for extracting LaTeX versions of the help text saved in
+    (<tt>.hlp</tt>) files.
+    </dl>
+
+    <dl>
+    <dt><a href="hlpsrv"><tt>hlpsrv</tt></a><dd>
+    A bridge program to allow access to a help database through a web
+    server.
+    </dl>
+
+    <dl>
+    <dt><a href="fcpp"><tt>fcpp</tt></a><dd>
+    A post-processor for <i>FastCap</i> and <i>FasterCap</i> (from
+    <a href="http://fastfieldsolvers.com"><tt>FastFieldSolvers.com</tt></a>)
+    output, which finds and prints the capacitance values.
+    </dl>
+
+    <dl>
+    <dt><a href="lstpack"><tt>lstpack</tt></a><br>
+    <tt>lstunpack</tt><dd>
+    Utilities to convert <i>FastCap</i> input files between the packed
+    (single file) and unpacked (multiple file) formats.  The Whiteley
+    Research release of <i>FastCap</i> and <i>FasterCap</i> from
+    <tt>FastFieldSolvers.com</tt> understand the packed format, other
+    versions do not.
+    </dl>
+
+    These tools and the supporting libraries are provided in the hope
+    that they may be useful, under the GNU Library General Public
+    License.  This is open-source software, with no guarantees
+    whatsoever, use at your own risk.
+
+    <p>
+    The graphics support library was originally written as a
+    toolkit-independent layer between the application and the GUI.  It
+    is used in all graphical {\XicTools} programs.  Support was
+    available for GTK-1 and GTK-2, Windows native WIN32, and Qt4.
+    Currently, support is provided for GTK-2, Qt5, and Qt6.
+!!LATEX accessories local
+The {\XicTools} accessories are programs provided in the optional
+accessories distribution file.  These are open-source programs, and
+the source code distribution can be found in the free software archive
+of {\vt wrcad.com}.
+
+The programs in the accessories distributions are the following.
+
+\begin{description}
+\item{\vt mozy}\\
+A stand-alone help/www browser.  This can be used to browse the {\Xic}
+and {\WRspice} help databases, or general HTML and image files.  It
+supports HTML-3.2 and a few 4.0 features, so is no longer much good as
+a web browser, but it works well as a help system and viewer.
+
+\item{\vt xeditor}\\
+A stand-alone text editor window, as descriptd in \ref{textedit}. 
+This is one polymorph of a widget that can be configured as a file
+browser or email client as well.
+
+\item{\vt httpget}\\
+A program for retrieving files served from a remote FTP or HTTP
+server.
+
+\item{\vt hlp2html}\\
+A program for creating standard HTML files from help database ({\vt
+.hlp}) files.
+
+\item{\vt hlp2latex}\\
+A utility for extracting LaTeX versions of the help text saved in ({\vt
+.hlp}) files.
+
+\item{\vt hlpsrv}\\
+A bridge program to allow access to a help database through a web
+server.
+
+\item{\vt fcpp}\\
+A post-processor for {\it FastCap} and {\it FasterCap} (from {\vt
+FastFieldSolvers.com}) output, which finds and prints the capacitance
+values.
+
+\item{\vt lstpack} and {\vt lstunpack}\\
+Utilities to convert {\it FastCap} input files between the packed
+(single file) and unpacked (multiple file) formats.  The Whiteley
+Research release of {\it FastCap} and {\it FasterCap} from {\vt
+FastFieldSolvers.com} understand the packed format, other versions do
+not.
+\end{description}
+
+These tools and the supporting libraries are provided in the hope that
+they may be useful, under the GNU Library General Public License. 
+This is open-source software, with no guarantees whatsoever, use at
+your own risk.
+
+The graphics support library was originally written as a
+toolkit-independent layer between the application and the GUI.  It is
+used in all graphical {\XicTools} programs.  Support was available for
+GTK-1 and GTK-2, Windows native WIN32, and QT.  Currently, support is
+provided for GTK-2, Qt5, and Qt6.
+
+!!SUBTOPICS
+httpget
+fcpp
+hlp2html
+hlp2latex
+hlpsrv
+httpget
+lstpack
+mozy
+xeditor
+
+!! 072014
+!!KEYWORD
+mozy mozyhelp
+!!TITLE
+mozy
+!!HTML
+    <table border=0 width=100%>
+    <tr><td align=center>
+    <font face=helvetica color="#000090">
+    <b>Sunnyvale California</b>
+    </font>
+    <table border=0 width=80%>
+     <tr><td align=left>
+     </td><td align=right>
+     </td></tr>
+     <tr><td align=left>
+     <font face=helvetica>
+     <a href="http://wrcad.com">wrcad.com</a>
+     </font>
+     </td><td align=right>
+     <font face=helvetica>
+     <a href="mailto:support@wrcad.com">support@wrcad.com</a></tr>
+     </font>
+     </td></tr>
+     </table>
+    </td></tr>
+    </table>
+
+    <p>
+    <center>
+    <h3><font color=red>Welcome to <i>Mozy</i>!</font></h3>
+    </center>
+
+    <p>
+    <b><i>Mozy</i></b> is a multi-purpose <a href="helpview">HTML
+    viewer</a> derived from the <a href="helpsys">help system</a> used
+    in the <i>XicTools</i> products from Whiteley Research Inc.  These
+    products are described on the Whiteley Research web site at <a
+    href="http://wrcad.com"><tt>wrcad.com</tt></a>.
+
+    <p>
+    There are a few command line options recognized. 
+    <b><i>Mozy</i></b> will take the first argument that is not an
+    option as a topic to view.  Recognized options are:
+
+    <dl>
+    <dt><tt>--xic</tt><dd>
+    This will cause <b><i>Mozy</i></b> to define the <tt>Xic</tt> flag in
+    help text, i.e., help text enclosed in "<tt>!!IFDEF Xic</tt>"
+    blocks will be read.  The <i>Xic</i> help path will also be
+    included in the default path.  Thus, the text presented should
+    match that as seen from running help within the <i>Xic</i>
+    program.  This option should be given if <b><i>Mozy</i></b> is
+    being used to read the <i>Xic</i> help database.
+    </dl>
+
+    <dl>
+    <dt><tt>--wrs</tt><br>
+    <tt>--wrspice</tt><dd>
+    Either of these will cause <b><i>Mozy</i></b> to define the
+    <tt>WRspice</tt> flag in help text, i.e., help text enclosed in
+    "<tt>!!IFDEF WRspice</tt>" blocks will be read.  The
+    <i>WRspice</i> help path will also be included in the default
+    path.  Thus, the text presented should match that as seen from
+    running help within the <i>WRspice</i> program.  This option
+    should be given if <b><i>Mozy</i></b> is being used to read the
+    <i>WRspice</i> help database.
+    </dl>
+
+    <p>
+    The GTK2 graphical interface accepts the following options.  These
+    options are not processed by <b><i>Mozy</i></b>, but are
+    intercepted by the graphics subsystem and affect the interface to
+    the X-window system in Linux.  The multiple forms are equivalent.
+
+    <p>
+    <dl>
+    <dt><tt>-d</tt> <i>dispname</i><br>
+    <tt>-display</tt> <i>dispname</i><br>
+    <tt>--display</tt> <i>dispname</i><dd>
+    This option specifies the name of the X display to use.  The
+    <i>dispname</i> is in the form
+    <blockquote>
+     <tt>[<i>host</i>]:<i>server</i>[.<i>screen</i>]</tt>
+    </blockquote>
+    The <i>host</i> is the host name of the physical display,
+    <i>server</i> specifies the display server number, and
+    <i>screen</i> specifies the screen number.  Either or both of the
+    <i>host</i> and <i>screen</i> elements to the display
+    specification can be omitted.  If <i>host</i> is omitted, the
+    local display is assumed.  If <i>screen</i> is omitted, screen 0
+    is assumed (and the period is unnecessary).  The colon and
+    (display) <i>server</i> are necessary in all cases.  If no display
+    is specified on the command line, the display is set to the value
+    of the <tt>DISPLAY</tt> environment variable.
+    </dl>
+
+    <dl>
+    <dt><tt>-name</tt> <i>appname</i><br>
+    <tt>--name</tt> <i>appname</i><dd>
+    This option provides and alternative name to the application, as
+    known to the X window system.  The application name is used by X
+    to apply resource specifications.
+    </dl>
+
+    <dl>
+    <dt><tt>--class</tt> <i>classname</i><dd>
+    This option provides and alternative class name to the
+    application, as known to the X window system.  The application
+    class name is used by X to apply resource specifications.
+    </dl>
+
+    <dl>
+    <dt><tt>-synchronous</tt><br>
+    <tt>--sync</tt><dd>
+    This option indicates that requests to the X server should be sent
+    synchronously, instead of asynchronously.  Since the X system
+    normally buffers requests to the server, errors do not necessarily
+    get reported immediately after they occur.  This option turns off
+    the buffering so that the application can be debugged more easily. 
+    It should never be used with a working program.
+    </dl>
+
+    <dl>
+    <dt><tt>--no-xshm</tt><dd>
+    In releases running under the X-Window system (Unix/Linux),
+    <b><i>Mozy</i></b> will use the MIT-SHM shared memory extension if
+    the X server supports this extension, and the server is running on
+    the local machine.  This allows image data to be transferred to
+    the X server via shared memory, which is faster than the normal X
+    socket interface.  Screen updates may be faster as a result.
+
+    <p>
+    Giving the option <tt>--no-xshm</tt> on the command line will
+    prevent use of this extension, if for some reason this is
+    necessary.
+    </dl>
+    
+    Topics can also be entered by using the <b>Open</b> menu item in
+    the <b>File</b> menu.  A topic can be one of:
+
+    <ul>
+    <li>The keyword associated with a help topic in the help database.
+    <p>
+    <li>A general URL referencing a page on the world-wide web.  The
+    URL must include the protocol specifier ("<tt>http:</tt>") in the
+    web address.
+    <p>
+    <li>The path to a viewable file on the local machine.  A viewable
+    file can be plain or HTML text, or an image.
+    </ul>
+
+    <p>
+    <b><i>Mozy</i></b> displays level 3.2 HTML, and does not
+    understand style sheets and consequently does a poor job displaying
+    most current web sites.  It works fine for basic HTML as likely
+    found in help text, and in HTML email.
+
+    <p>
+    One application for <b><i>Mozy</i></b> is as an accessory to allow
+    display of HTML messages from an email client such as
+    <tt>mutt</tt> which does not have that capability.  If, from
+    <tt>mutt</tt>, HTML content is piped to <b><i>Mozy</i></b>, the
+    viewer will appear displaying the content.  Once visible, the
+    operation can be repeated and the viewer will display the new
+    content.
+
+    <p>
+    <b><i>Mozy</b></i> contains some unique features, provided in the
+    menus.  One such feature is the optional FIFO created in the
+    user's home directory.  Text written to this "file" will be parsed
+    and displayed.  Another example is the <b>Log Transactions</b>
+    button, which will cause the actual transmissions to and from the
+    server to be duplicated to the standard output.  This can be
+    useful for debugging purposes.  The <b>Bad HTML Warnings</b>
+    button will issue warnings about imperfections in the HTML as it
+    is parsed.
+
+    <p>
+    <b><i>Mozy</i></b> maintains a cache of pages and images, which is
+    located in the subdirectory "<tt>.wr_cache</tt>" in the user's
+    home directory.  If you see a really nifty web page, and you want
+    to see the source, simply look at the <tt>.wr_cache/directory</tt>
+    file.  This will provide a listing of all of the components of the
+    page, which are conveniently located in the same directory.  The
+    cache contents can also be viewed as a pop-up list from the
+    <b>Show Cache</b> button in the <b>Options</b> menu.  Clicking on
+    an entry in the list will show that entry.  Thus, you can revisit
+    pages even when off-line.
+
+    <p>
+    Many of the features and capabilities of <b><i>Mozy</i></b> can be
+    configured with a <tt>.mozyrc</tt> file placed in the user's home
+    directory.  This is accomplished by pressing the <b>Save
+    Config</b> button in the <b>Options</b> menu.  Once this file is
+    installed, it will be updated when viewer windows are closed,
+    retaining the last settings.
+
+    <h2><i>Mozy</i> Configuration</h2>
+
+    <p>
+    When <b><i>Mozy</i></b> starts, it will build an internal table of
+    the topics found in the <a href="helpfiles"><tt>.hlp</tt>
+    files</a> that are found in the search path.  The search path is a
+    colon-separated list of directory paths, and if not given it will
+    default to the single directory that corresponds to the default
+    installation location for help files.  This is
+    <tt>/usr/local/xictools/mozy/help</tt>.
+
+    <p>
+    The search path is specified to <b><i>Mozy</i></b> through the
+    <b>MOZY_HELP_PATH</b> environment variable.  For example, suppose
+    that the user has created some new <tt>.hlp</tt> files, and wishes
+    to make them accessible to <b><i>Mozy</i></b>, while keeping
+    access to the supplied files that are installed in the usual
+    place.  The user has placed the files, along with any needed image
+    files, in <tt>/home/joe/helpfiles</tt>.  If using
+    <tt>bash</tt> or another Bourne-type shell, the command to set the
+    environment variable would be
+    <br><br>
+    <tt>export
+    MOZY_HELP_PATH=/home/joe/helpfiles:/usr/local/xictools/mozy/help</tt>
+    <br><br>
+    If using the C-shell, the corresponding command would be
+    <br><br>
+    <tt>setenv MOZY_HELP_PATH
+    /home/joe/helpfiles:/usr/local/xictools/mozy/help</tt>
+
+    <p>
+    With this variable set in the environment, <b><i>Mozy</i></b> will
+    be able to locate and display the user's topics.
+
+    <p>
+    When <b><i>Mozy</i></b> starts without an argument, a default
+    topic is shown.  The user may prefer that another topic be shown
+    instead.  This can be specified with the <b>MOZY_DEF_TOPIC</b>
+    environment variable.  This variable can be set to any keyword,
+    URL, or local file path that could be given to <b><i>Mozy</i></b>
+    through the <b>Open</b> command in the <b>File</b> menu.  When the
+    variable is set, the indicated page will be displayed when
+    <b><i>Mozy</i></b> first appears.
+
+    <p>
+    The environment variables can be set in the user's shell startup
+    script to make the definitions "permanent".
+!!LATEX mozy local
+{\it Mozy} is a multi-purpose HTML viewer derived from the help system
+used in the {\XicTools} products from Whiteley Research Inc.  These
+products are described on the Whiteley Research web site at {\vt
+wrcad.com}.  See \ref{helpsys} for a description of the {\Xic} help
+system, and \ref{helpview} for a description of the window controls.
+
+There are a few command line options recognized.  {\it Mozy} will take
+the first argument that is not an option as a topic to view. 
+Recognized options are:
+
+\begin{description}
+\item{\vt --xic}\\
+This will cause {\it Mozy} to define the {\vt Xic} flag in help text,
+i.e., help text enclosed in ``{\vt !!IFDEF Xic}'' blocks will be read. 
+The {\Xic} help path will also be included in the default path.  Thus,
+the text presented should match that as seen from running help within
+the {\Xic} program.  This option should be given if {\it Mozy} is
+being used to read the {\Xic} help database.
+
+\item{\vt --wrs} or {\vt --wrspice}\\
+Either of these will cause {\vt Mozy} to define the {\vt WRspice} flag
+in help text, i.e., help text enclosed in ``{\vt !!IFDEF WRspice}''
+blocks will be read.  The {\WRspice} help path will also be included
+in the default path.  Thus, the text presented should match that as
+seen from running help within the {\WRspice} program.  This option
+should be given if {\it Mozy} is being used to read the {\WRspice}
+help database.
+\end{description}
+
+The GTK2 graphical interface accepts the following options.  These options
+are not processed by {\it Mozy}, but are intercepted by the graphics
+subsystem and affect the interface to the X-window system in Linux. 
+The multiple forms are equivalent.
+
+\begin{description}
+\item\parbox[b]{4in}{
+{\et -d} {\it dispname}\\
+{\et -display} {\it dispname}\\
+{\et \symbol{45}\symbol{45}display} {\it dispname}}\\
+This option specifies the name of the X display to use.  The {\it
+dispname} is in the form
+\begin{quote}
+ [{\it host\/}]:{\it server\/}[.{\it screen\/}]\\
+\end{quote}
+The {\it host\/} is the host name of the
+physical display, {\it server\/} specifies the display server number,
+and {\it screen\/} specifies the screen number.  Either or both of the
+{\it host\/} and {\it screen\/} elements to the display specification
+can be omitted.  If {\it host\/} is omitted, the local display is
+assumed.  If {\it screen\/} is omitted, screen 0 is assumed (and the
+period is unnecessary).  The colon and (display) {\it server\/} are
+necessary in all cases.  If no display is specified on the command
+line, the display is set to the value of the environment variable {\et
+DISPLAY}.
+
+\item\parbox[b]{4in}{
+{\et -name} {\it string}\\
+{\et \symbol{45}\symbol{45}name} {\it string}}\\
+This option provides an alternative name to the application, as known
+to the X window system.  The application name is used by X to apply
+resource specifications.
+
+\index{command line!options!\symbol{45}\symbol{45}class}
+\item{\et \symbol{45}\symbol{45}class} {\it string}\\
+This option provides an alternative class name to the application, as
+known to the X window system.  The application class name is used by X
+to apply resource specifications.
+
+\item\parbox[b]{4in}{
+{\et -synchronous}\\
+{\et \symbol{45}\symbol{45}sync}}\\
+This option indicates that requests to the X server should be sent
+synchronously, instead of asynchronously.  Since the X system normally
+buffers requests to the server, errors do not necessarily get reported
+immediately after they occur.  This option turns off the buffering so
+that the application can be debugged more easily.  It should never be
+used with a working program.
+
+\item{\et \symbol{45}\symbol{45}no-xshm} {\it string}\\
+In releases running under the X-Window system (Unix/Linux), {\it Mozy}
+will use the MIT-SHM shared memory extension if the X server supports
+this extension, and the server is running on the local machine.  This
+allows image data to be transferred to the X server via shared memory,
+which is faster than the normal X socket interface.  Screen updates
+may be faster as a result.
+
+Giving the option {\et \symbol{45}\symbol{45}no-xshm} on the command
+line will prevent use of this extension, if for some reason this is
+necessary.
+\end{description}
+
+Topics can also be entered by using the {\cb Open} menu item in the
+{\cb File} menu.  A topic can be one of:
+
+\begin{itemize}
+\item{The keyword associated with a help topic in the help database.}
+
+\item{A general URL referencing a page on the world-wide web.  The
+URL must include the protocol specifier (``{\vt http:}'') in the
+web address.}
+
+\item{The path to a viewable file on the local machine.  A viewable
+file can be plain or HTML text, or an image.}
+\end{itemize}
+
+{\it Mozy} displays level 3.2 HTML, and does not understand style
+sheets and consequently does a poor job displaying most current web
+sites.  It works fine for basic HTML as likely found in help text, and
+in HTML email.
+
+One application for {\it Mozy} is as an accessory to allow display of
+HTML messages from an email client such as {\vt mutt} which does not
+have that capability.  If, from {\vt mutt}, HTML content is piped to
+{\it Mozy}, the viewer will appear displaying the content.  Once
+visible, the operation can be repeated and the viewer will display the
+new content.
+
+{\it Mozy} contains some unique features, provided in the menus.  One
+such feature is the optional FIFO created in the user's home
+directory.  Text written to this ``file'' will be parsed and
+displayed.  Another example is the {\cb Log Transactions} button,
+which will cause the actual transmissions to and from the server to be
+duplicated to the standard output.  This can be useful for debugging
+purposes.  The {\cb Bad HTML Warnings} button will issue warnings
+about imperfections in the HTML as it is parsed.
+
+{\it Mozy} maintains a cache of pages and images, which is located in
+the subdirectory ``{\vt .wr\_cache}'' in the user's home directory. 
+If you see a really nifty web page, and you want to see the source,
+simply look at the {\vt .wr\_cache/directory} file.  This will provide
+a listing of all of the components of the page, which are conveniently
+located in the same directory.  The cache contents can also be viewed
+as a pop-up list from the {\cb Show Cache} button in the {\cb Options}
+menu.  Clicking on an entry in the list will show that entry.  Thus,
+you can revisit pages even when off-line.
+
+Many of the features and capabilities of {\it Mozy} can be configured
+with a {\vt .mozyrc} file placed in the user's home directory.  This
+is accomplished by pressing the {\cb Save Config} button in the {\cb
+Options} menu.  Once this file is installed, it will be updated when
+viewer windows are closed, retaining the last settings.
+
+\subsection{{\it Mozy} Configuration}
+
+When {\it Mozy} starts, it will build an internal table of the topics
+found in the {\vt .hlp} files that are found in the search path.  The
+search path is a colon-separated list of directory paths, and if not
+given it will default to the single directory that corresponds to the
+default installation location for help files.  This is {\vt
+/usr/local/xictools/mozy/help}.
+
+The search path is specified to {\it Mozy} through the {\vt
+MOZY\_HELP\_PATH} environment variable.  For example, suppose that the
+user has created some new {\vt .hlp} files, and wishes to make them
+accessible to {\it Mozy}, while keeping access to the supplied files
+that are installed in the usual place.  The user has placed the files,
+along with any needed image files, in {\vt /home/joe/helpfiles}.  If
+using {\vt bash} or another Bourne-type shell, the command to set the
+environment variable would be
+
+\begin{quote} \vt
+export MOZY\_HELP\_PATH=/home/joe/helpfiles:/usr/local/xictools/mozy/help
+\end{quote}
+If using the C-shell, the corresponding command would be
+\begin{quote} \vt
+setenv MOZY\_HELP\_PATH /home/joe/helpfiles:/usr/local/xictools/mozy/help
+\end{quote}
+
+With this variable set in the environment, {\it Mozy} will be able to
+locate and display the user's topics.
+
+When {\it Mozy} starts without an argument, a default topic is shown. 
+The user may prefer that another topic be shown instead.  This can be
+specified with the {\vt MOZY\_DEF\_TOPIC} environment variable.  This
+variable can be set to any keyword, URL, or local file path that could
+be given to {\it Mozy} through the {\cb Open} command in the {\cb
+File} menu.  When the variable is set, the indicated page will be
+displayed when {\it Mozy} first appears.
+
+The environment variables can be set in the user's shell startup
+script to make the definitions ``permanent''.
+
+!!SUBTOPICS
+accessories
+mailclient
+textentry
+filesel
+helpsys
+hcopypanel
+xic
+wrspice
+
+!! 092715
+!!KEYWORD
+httpget
+!!TITLE
+File Transfer Utility:  <tt>httpget</tt>
+!!HTML
+    The <tt>httpget</tt> program is a stand-alone utility for copying
+    files from a remote system using the HTTP or FTP protocols.  This
+    is similar to the <tt>httpget</tt> program supplied with the
+    XmHTML widget by Ripley Software Development with a few additions:
+
+    <ol>
+    <li>Support for FTP file retrieval.
+    <li>Optional graphical window for status reporting.
+    <li>Support for POST queries.
+    <li>Support for HTTP basic authentication.
+    <li>Support for transaction logging.
+    <li>Conversion to C++ and (hopefully) useful classes.
+    </ol>
+
+    <p>
+    The workings have been packaged into a library,
+    <tt>libhttpget</tt>, which can be incorporated into other programs
+    to provide in-process support for httpget-type functionality.
+
+    <p>
+    The <tt>httpget</tt> program is a command-line utility for
+    retrieving files and posting queries to a remote HTTP or FTP
+    server.  It can be used, for example, from within a shell script
+    to automate a software update.  The program is invoked with
+
+    <blockquote>
+    <tt>httpget</tt> [<i>options</i>] <i>url</i>
+    </blockquote>
+
+    where the <i>options</i> are listed below, and the <i>url</i> is a
+    standard-syntax universal resource locator, i.e., a web address of
+    a file, in a form like
+    [<tt>http://</tt>]<i>server</i>/[<i>document</i>] or
+    <tt>ftp://</tt><i>host</i>/<i>file</i>.  The <i>url</i> should
+    contain the <tt>http://</tt> or <tt>ftp://</tt> prefix to indicate
+    HTTP or FTP protocol, respectively.  If no protocol is given, HTTP
+    is assumed.  The options are:
+
+    <dl>
+    <dt><tt>-c</tt> <i>file</i><dd>
+     Name of a cookie file.  If not given no cookies are sent. 
+     Cookies will be stored in and dispatched from this file, during
+     the transaction, if given.
+
+    <p>
+    <dt><tt>-d</tt><dd>
+     Enable HTTP debug mode, by enabling printing of extra status
+     messages during the transaction.
+
+    <p>
+    <dt><tt>-e</tt><dd>
+     Don't reissue the request for HTTP location change error.  Normal
+     behavior if a 302 (location changed) response is received is to
+     reissue the request to the new location.  This option prevents
+     this.
+
+    <p>
+    <dt><tt>-fp</tt> | <tt>-fh</tt><dd>
+     Output format for errors:  plain or HTML.  Error messages are in
+     plain text by default, but can be HTML formatted if <tt>-fh</tt>
+     is given.
+
+    <p>
+    <dt><tt>-g</tt>[<i>x</i>:<i>y</i>]<dd>
+     Use a graphical window.  If the graphics support has been
+     included in the build, this option pops up a window which
+     provides status indication and a <b>Cancel</b> button. 
+     Optionally colon-separated <i>x</i>/<i>y</i> root window
+     coordinates can immediately follow, in which case the upper-left
+     corner of the pop-up will be at that location, if allowed by the
+     window manager.
+
+    <p>
+    <dt><tt>-h</tt><dd>
+     Show help.  The program lists these options and exits.
+
+    <p>
+    <dt><tt>-i</tt><dd>
+     Only get HTTP document info (HEAD).  The normal behavior is to
+     retrieve the entire document.  This option obtains document
+     parameters only.
+
+    <p>
+    <dt><tt>-l</tt> <i>file</i><dd>
+     Log bytes sent and received in <i>file</i>.  The log file will
+     contain a listing of the data transmitted and received.
+
+    <p>
+    <dt><tt>-n</tt><dd>
+     Don't print download status indication.  Normal behavior is to
+     print the number of bytes received.  This option suppresses this.
+
+    <p>
+    <dt><tt>-o</tt> <i>file</i><dd>
+     Name of destination file on the local machine.  If not given the
+     standard output is used for HTTP and the host file name is used
+     for FTP.
+    </dl>
+
+    <p>
+    <dt><tt>-p</tt> <i>proxy_url</i><dd>
+     If given, the proxy will relay all transactions.  The <i>proxy_url</i>
+     must begin with an <tt>http:</tt> protocol specifier (<tt>https</tt>
+     is not supported), and should have the port number appended following
+     a colon, unless the default port 80 is used.
+    </dl>
+
+    <p>
+    <dt><tt>-q</tt> <i>file</i><dd>
+     Query file for POST.  The file is uploaded to the server.
+    </dl>
+
+    <p>
+    The following two options set the time to wait for transmission. 
+    If contact is not achieved in the timeout interval,
+    <tt>httpget</tt> will try again, up to the retry count.
+
+    <dl>
+    <dt><tt>-r</tt> <i>num</i><dd>
+     Retry count, default is 0.
+    <dt><tt>-t</tt> <i>num</i><dd>
+     Timeout in seconds, default is 5.
+    <dt><tt>-s</tt><dd>
+     Save HTTP error to output on failure.  The normal behavior is to
+     emit errors to the standard error channel.  With this option,
+     errors are directed to the output channel (to the file if the
+     <tt>-o</tt> option is given).
+    <dt><tt>-x</tt><dd>
+      Use HTTP error code as program exit value.
+    </dl>
+!!LATEX httpget local
+The {\vt httpget} program is a stand-alone utility for copying files
+from a remote system using the HTTP or FTP protocols.  This is similar
+to the {\vt httpget} program supplied with the XmHTML widget by Ripley
+Software Development with a few additions:
+
+\begin{enumerate}
+\item{Support for FTP file retrieval.}
+\item{Optional graphical window for status reporting.}
+\item{Support for POST queries.}
+\item{Support for HTTP basic authentication.}
+\item{Support for transaction logging.}
+\item{Conversion to C++ and (hopefully) useful classes.}
+\end{enumerate}
+
+The workings have been packaged into a library, {\vt libhttpget},
+which can be incorporated into other programs to provide in-process
+support for httpget-type functionality.
+
+The {\vt httpget} program is a command-line utility for retrieving
+files and posting queries to a remote HTTP or FTP server.  It can be
+used, for example, from within a shell script to automate a software
+update.  The program is invoked with
+
+\begin{quote}
+{\vt httpget} [{\it options\/}] {\it url}
+\end{quote}
+
+where the {\it options} are listed below, and the {\it url} is a
+standard-syntax universal resource locator, i.e., a web address of a
+file, in a form like
+
+\begin{quote}
+[{\vt http://}]{\it server\/}/[{\it document\/}]
+\end{quote}
+or
+\begin{quote}
+{\vt ftp://}{\it host\/}{\vt /}{\it file}
+\end{quote}
+
+The {\it url} should contain the {\vt http://} or {\vt ftp://} prefix
+to indicate HTTP or FTP protocol, respectively.  If no protocol is
+given, HTTP is assumed.  The options are:
+
+\begin{description}
+\item{\vt -c} {\it file}\\
+Name of a cookie file.  If not given no cookies are sent.  Cookies
+will be stored in and dispatched from this file, during the
+transaction, if given.
+
+\item{\vt -d}\\
+Enable HTTP debug mode, by enabling printing of extra status messages
+during the transaction.
+
+\item{\vt -e}\\
+Don't reissue the request for HTTP location change error.  Normal
+behavior if a 302 (location changed) response is received is to
+reissue the request to the new location.  This option prevents this.
+
+\item{\vt -fp} $|$ {\vt -fh}\\
+Output format for errors:  plain or HTML.  Error messages are in plain
+text by default, but can be HTML formatted if {\vt -fh} is given.
+
+\item{\vt -g}[{\it x\/}{\vt :}{\it y\/}]\\
+Use a graphical window.  If the graphics support has been included in
+the build, this option pops up a window which provides status
+indication and a {\cb Cancel} button.  Optionally colon-separated {\it
+x}/{\it y} root window coordinates can immediately follow, in which
+case the upper-left corner of the pop-up will be at that location, if
+allowed by the window manager.
+
+\item{\vt -h}\\
+Show help.  The program lists these options and exits.
+
+\item{\vt -i}\\
+Only get HTTP document info (HEAD).  The normal behavior is to
+retrieve the entire document.  This option obtains document parameters
+only.
+
+\item{\vt -l} {\it file}\\
+Log bytes sent and received in {\it file\/}.  The log file will
+contain a listing of the data transmitted and received.
+
+\item{\vt -n}\\
+Don't print download status indication.  Normal behavior is to print
+the number of bytes received.  This option suppresses this.
+
+\item{\vt -o} {\it file}\\
+Name of destination file on the local machine.  If not given the
+standard output is used for HTTP and the host file name is used for
+FTP.
+
+\item{\vt -p} {\it proxy\_url}\\
+If given, the proxy will relay all transactions.  The {\it proxy\_url}
+must begin with an {\vt http:} protocol specifier ({\vt https} is not
+supported), and should have the port number appended following a
+colon, unless the default port 80 is used.
+
+\item{\vt -q} {\it file}\\
+Query file for POST.  The file is uploaded to the server.
+\end{description}
+
+The following two options set the time to wait for transmission.  If
+contact is not achieved in the timeout interval, {\vt httpget} will
+try again, up to the retry count.
+
+\begin{description}
+\item{\vt -r} {\it num}\\
+Retry count, default is 0.
+
+\item{\vt -t} {\it num}\\
+Timeout in seconds, default is 5.
+
+\item{\vt -s}\\
+Save HTTP error to output on failure.  The normal behavior is to emit
+errors to the standard error channel.  With this option, errors are
+directed to the output channel (to the file if the {\vt -o} option is
+given).
+
+\item{\vt -x}\\
+Use HTTP error code as program exit value.
+\end{description}
+
+!!SEEALSO
+accessories
+
+!! 072014
+!!KEYWORD
+fcpp
+!!TITLE
+The <i>FastCap</i> Post-Processor:  <tt>fcpp</tt>
+!!HTML
+    Usage:  <tt>fcpp</tt> <i>fastcap_outfile</i>
+
+    <p>
+    This program processes the output from the <i>FastCap</i> family
+    of capacitance extraction programs, and prints the self and mutual
+    capacitance values.  It works with any known derivative of the
+    original MIT <i>FastCap</i>, and with the <i>FasterCap</i> program
+    from <tt>FastFieldSolvers.com</tt>.
+!!LATEX fcpp local
+Usage:  {\vt fcpp} {\it fastcap\_outfile}\\
+
+This program processes the output from the {\it FastCap} family of
+capacitance extraction programs, and prints the self and mutual
+capacitance values.  It works with any known derivative of the
+original MIT {\it FastCap}, and with the {\it FasterCap} program from
+{\vt FastFieldSolvers.com}.
+
+!!SEEALSO
+accessories
+
+!! 072014
+!!KEYWORD
+hlp2html
+!!TITLE
+Help to HTML Conversion Utility:  <tt>hlp2html</tt>
+!!HTML
+    Usage: <tt>hlp2html</tt> <i>path</i> [<i>path</i>...]
+
+    <p>
+    This program will convert a help database (<tt>.hlp</tt>) file to
+    a collection of pure HTML files that can be viewed with a standard
+    web browser.  The program takes as argements paths to
+    <tt>.hlp</tt> files, or paths to directories containing
+    <tt>.hlp</tt> files, and converts the help text to ordinary HTML
+    files in the current directory.  The resulting set of files can be
+    used to read the help text using an ordinary web browser.
+
+    <p>
+    WARNING:  This program is ancient and rather obsolete, and does
+    not handle the newer help database features.
+!!LATEX hlp2html local
+Usage: {\vt hlp2html} {\it path} [{\it path\/}...]\\
+
+This program will convert a help database ({\vt .hlp}) file to a
+collection of pure HTML files that can be viewed with a standard web
+browser.  The program takes as argements paths to {\vt .hlp} files, or
+paths to directories containing {\vt .hlp} files, and converts the
+help text to ordinary HTML files in the current directory.  The
+resulting set of files can be used to read the help text using an
+ordinary web browser.
+
+WARNING:  This program is ancient and rather obsolete, and does not
+handle the newer help database features.
+
+!!SEEALSO
+accessories
+
+!! 122924
+!!KEYWORD
+hlp2latex
+!!TITLE
+The hlp2latex Utility
+!!HTML
+    Usage: <tt>hlp2latex</tt> [<tt>-p></tt> <i>helppath</i>]
+    [<tt>-d</tt> <i>var</i> ...] <i>latexdir</i> | <i>file</i><tt>.tex.in</tt> ...
+
+    <p>
+    This utility creates LaTeX files from LaTeX templates and blocks
+    of LaTeX saved in the help system.  By saving both HTML and LaTeX
+    in the same place in the help system, it should be easier to keep
+    these in sync.
+
+    <p>
+    The argument following literal "<tt>-p</tt>" is a path to a
+    directory containing help files.  It is assumed that these files
+    contain LaTeX blocks.  These follow HTML or TEXT blocks:
+    <blockquote>
+      <tt>!!HTML</tt> or <tt>!!TEXT</tt><br>
+      &nbsp;<i>HTML or plain text</i>...<br>
+      <tt>!!LATEX</tt> <i>keyword</i> <i>latexfile</i><br>
+      &nbsp;<i>LaTeX text</i>...
+    </blockquote>
+    The <i>latexfile</i> can be the name of the intended LaTeX output
+    file.  This is unused but a word must be present.
+
+    <p>
+    Arguments following literal "<tt>-d<tt>" are variables which
+    become defined and can be tested with the <tt>!!IFDEF</tt> and
+    similar constructs in the help text.
+
+    <p>
+    Other arguments can be tokenized LaTeX files with
+    <tt>.tex.in</tt> extensions, or a directory containing such files.
+    In these files, lines with a token starting in the first column in
+    the form
+    <blockquote>
+    &lt;&lt;<i>keyword</i> <i>helpfile</i>&gt;&gt;
+    </blockquote>
+    will be replaced with the LaTeX block tagged with the same
+    keyword when the LaTeX files are generated.  The LaTeX file name
+    is the same as the source file name with the trailing "<tt>.in</tt>"
+    stripped.  Other than the tokens described, text is copied verbatim.
+    The <i>helpfile</i> can be the name of the originating
+    <tt>.hlp</tt>file.  This is not used but a word must be present.
+
+    <p>
+    The processing is recursive, so that <tt>!!LATEX</tt> blocks can
+    contain &lt;&lt;<i>keyword</i> <i>filename</i>&gt;&gt; tokens.
+    These are expanded in place recursively when found.
+
+    <p>
+    The <tt>!!IFDEF</tt>, <tt>!!IFNDEF</tt>, <tt>!!ELSE</tt>, and
+    <tt>!!ENDIF</tt> keywords are recognized in the
+    <tt>!!LATEX</tt> blocks and operate the same as in
+    <tt>!!HTML</tt> blocks, i.e., allowing conditional inclusions.
+
+    <p>
+    <tt>!!LATEX</tt> blocks are terminated by any line that starts
+    with "<tt>!!</tt>" that is not one of the conditionals mentioned
+    above.  It is usually not necessary to explicitly terminate as
+    termination occurs naturally from following <tt>!!SEEALO</tt>,
+    <tt>!!KEYWORD</tt> or similar lines.  Termination also occurs
+    naturally at the end of the file.
+!!LATEX hlp2latex local
+Usage: {\vt hlp2latex} [{\vt -p} {\it helppath\/}] [{\vt -d}
+{\it var\/} ...] {\it latexdir} | {\it file\/}{\vt .tex.in} ...
+
+This utility creates LaTeX files from LaTeX templates and blocks
+of LaTeX saved in the help system.  By saving both HTML and LaTeX
+in the same place in the help system, it should be easier to keep
+these in sync.
+
+The argument following literal ``{\vt -p}'' is a path to a
+directory containing help files.  It is assumed that these files
+contain LaTeX blocks.  These follow HTML or TEXT blocks:
+\begin{quote}
+{\vt !!HTML} or {\vt !!TEXT}\\
+{\it HTML or plain text}...\\
+{\vt !!LATEX} {\it keyword} {\it latexfile}\\
+<i>LaTeX text}...
+\end{quote}
+The {\it latexfile} can be the name of the intended LaTeX output
+file.  This is unused but a word must be present.
+
+Arguments following literal ``{\vt -d}'' are variables which
+become defined and can be tested with the {\vt !!IFDEF} and
+similar constructs in the help text.
+
+Other arguments can be tokenized LaTeX files with
+{\vt .tex.in} extensions, or a directory containing such files.
+In these files, lines with a token starting in the first column in
+the form
+\begin{quote}
+<<{\it keyword} {\it helpfile\/}>>
+\end{quote}
+will be replaced with the LaTeX block tagged with the same
+keyword when the LaTeX files are generated.  The LaTeX file name
+is the same as the source file name with the trailing ``{\vt .in}''
+stripped.  Other than the tokens described, text is copied verbatim.
+The {\it helpfile} can be the name of the the originating {\vt
+.hlp} file.  This is not used but a word must be present.
+
+The processing is recursive, so that {\vt !!LATEX} blocks can
+contain <<{\it keyword} {\it filename\/}>> tokens.  These are
+expanded in place recursively when found.
+
+The {\vt !!IFDEF}, {\vt !!IFNDEF}, {\vt !!ELSE}, and {\vt !!ENDIF}
+keywords are recognized in the {\vt !!LATEX} blocks and operate the
+same as in {\vt !!HTML} blocks, i.e., allowing conditional inclusions.
+
+{\vt >!!LATEX} blocks are terminated by any line that starts
+with ``{\vt !!}'' that is not one of the conditionals mentioned
+above.  It is usually not necessary to explicitly terminate as
+termination occurs naturally from following {\vt !!SEEALO},
+{\vt !!KEYWORD} or similar lines.  Termination also occurs
+naturally at the end of the file.
+
+!! 072014
+!!KEYWORD
+hlpsrv
+!!TITLE
+Web Server Bridge to Help Database:  <tt>hlpsrv</tt>
+!!HTML
+    This is a server for the help database, which, through use of a
+    simple cgi script, allows the help system to be accessed through a
+    web server, such as Apache.  Thus, the help database can be exported
+    over the internet, as seen on the Whiteley Research web site
+    <a href="http://wrcad.com"><tt>wrcad.com</tt></a>.
+
+    <p>
+    There are three environment variables that must be set:
+    <dl>
+    <dt><tt>HLPSRV_PATH</tt><dd>
+    The full real path to the help database files.
+    </dl>
+
+    <dl>
+    <dt><tt>HLPSRV_CGIPATH</tt><dd>
+    The server path to a cgi script, with argument prefix.  This is
+    prepended to the anchor text for all help keyword anchors.  For
+    example, the <tt>.hlp</tt> file contains
+    <blockquote>
+    <tt>&#60;a href="keyword"></tt>
+    </blockquote>
+    and we have
+    <blockquote>
+    <tt>HLPSRV_CGIPATH = "/cgi-bin/hlpsrv.cgi?h="</tt>
+    </blockquote>
+    Then, the tag would be converted to
+    <blockquote>
+    <tt>&#60;a href="/cgi-bin/hlpsrv.cgi?h=keyword"></tt>
+    </blockquote>
+    </dl>
+
+    <dl>
+    <dt><tt>HLPSRV_IMPATH</tt><dd>
+    The server path to images called from help database files.  This
+    is prepended to the path which follows <tt>src=</tt> in
+    <tt>img</tt> tags.  Images should be linked or moved to this
+    location.
+    </dl>
+
+    The invocation arguments are database keywords.  The program dumps
+    the <tt>Content-type</tt> header and topic text to the standard
+    output.
+
+    <p>
+    Below is an example Apache cgi script, which makes available the
+    <i>Xic</i> help database.  This would be installed in the server's
+    <tt>cgi-bin</tt> as (e.g.) <tt>xichelp.cgi</tt>.
+
+    <table border=0 bgcolor=#eeeeff>
+    <tr><td>
+    <pre>
+    #! /bin/sh
+
+    IFS='='
+    set $QUERY_STRING
+
+    export HLPSRV_PATH="/usr/local/xictools/xic/help"
+    export HLPSRV_CGIPATH="/cgi-bin/xichelp.cgi?h="
+    export HLPSRV_IMPATH="/help-images/"
+
+    /usr/local/xictools/bin/hlpsrv $2
+    </pre>
+    </td></tr>
+    </table>
+
+    <p>
+    In web pages, the help system can then be accessed using code like
+    <blockquote>
+    <tt>&#60;a href="/cgi-bin/xichelp.cgi?h=xic">
+    Click here&#60;/a> to enter the on-line &#60;b>&#60;i>Xic&#60;/i>&#60;/b>
+    help system.&#60;br></tt>
+    </blockquote>
+    The word that follows <tt>?h</tt> is a help database keyword.
+!!LATEX hlpsrv local>>
+This is a server for the help database, which, through use of a simple
+cgi script, allows the help system to be accessed through a web
+server, such as Apache.  Thus, the help database can be exported over
+the internet, as seen on the Whiteley Research web site {\vt
+wrcad.com}.
+
+There are three environment variables that must be set:
+\begin{description}
+\item{\vt HLPSRV\_PATH}\\
+The full real path to the help database files.
+
+\item{\vt HLPSRV\_CGIPATH}\\
+The server path to a cgi script, with argument prefix.  This is
+prepended to the anchor text for all help keyword anchors.  For
+example, the {\vt .hlp} file contains
+\begin{quote} \vt
+<a href="keyword">
+\end{quote}
+and we have
+\begin{quote} \vt
+HLPSRV\_CGIPATH = "/cgi-bin/hlpsrv.cgi?h="
+\end{quote}
+Then, the tag would be converted to
+\begin{quote} \vt
+<a href="/cgi-bin/hlpsrv.cgi?h=keyword">
+\end{quote}
+
+\item{\vt HLPSRV\_IMPATH}\\
+The server path to images called from help database files.  This is
+prepended to the path which follows {\vt src=} in {\vt img} tags. 
+Images should be linked or moved to this location.
+\end{description}
+
+The invocation arguments are database keywords.  The program dumps the
+{\vt Content-type} header and topic text to the standard output.
+
+Below is an example Apache cgi script, which makes available the
+{\Xic} help database.  This would be installed in the server's
+{\vt cgi-bin} as (e.g.) {\vt xichelp.cgi}.
+
+\begin{quote}\vt
+\#! /bin/sh\\
+\\
+IFS='='\\
+set \$QUERY\_STRING\\
+\\
+export HLPSRV\_PATH="/usr/local/xictools/xic/help"\\
+export HLPSRV\_CGIPATH="/cgi-bin/xichelp.cgi?h="\\
+export HLPSRV\_IMPATH="/help-images/"\\
+\\
+/usr/local/xictools/bin/hlpsrv \$2\\
+\end{quote}
+
+In web pages, the help system can then be accessed using code like
+
+\begin{quote} \vt
+<a href="/cgi-bin/xichelp.cgi?h=xic">\\
+Click here</a> to enter the on-line <b><i>Xic</i></b> help system.<br>
+\end{quote}
+
+The word that follows {\vt ?h} is a help database keyword.
+
+!!SEEALSO
+accessories
+
+!! 072014
+!!KEYWORD
+lstpack lstunpack
+!!TITLE
+List File Pack/Unpack Utilities:  <tt>lstpack</tt>, <tt>lstunpack</tt>
+!!HTML
+    Utilities are provided to convert between different formats of
+    list files, which are input files to the <i>FastCap</i> family of
+    capacitance extraction programs.  The <a
+    href="fcinterf">capacitance extraction</a> interface generates
+    this file format.
+    
+    <p>
+    The original list file format, specified by MIT for the original
+    <i>FastCap</i> program, actually used multiple files to describe
+    the geometry.  The list file references the other files.
+    
+    <p>
+    The Whiteley Research revision of <i>FastCap</i> and the
+    <i>FasterCap</i> program from <a
+    href="http://fastfieldsolvers.com"><tt>FastFieldSolvers.com</tt></a>
+    can make use of a "unified" list file format, where the geometry
+    "files" are actually tacked onto the end of the list file itself,
+    so that all input is provided in a single file.  This can be much
+    more convenient in cases where the input would otherwise require a
+    large collection of files.
+
+    <p>
+    Whiteley Research provides two simple utilities to convert between
+    formats.
+
+    <dl>
+    <dt><tt>lstpack</tt> <i>listfile</i><dd>
+    The <i>listfile</i> is an old-style (unpacked) list file, which
+    references geometry files found in the same directory as the
+    <i>listfile</i>.  The utility will create, in the current
+    directory, an equivalent unified list file.  The base name of the
+    file will be that of the input file, but with "<tt>_p</tt>"
+    appended.  The new file will have a "<tt>.lst</tt>" extension.
+    </dl>
+
+    <dl>
+    <dt><tt>lstunpack</tt> <i>listfile</i><dd>
+    The <i>listfile</i> is a new-style (packed, or unified) list file.
+    The utility will create, in the current directory, a new
+    old-style unpacked list file, and all of the referenced geometry
+    files.  It would usually be wise to run this in a previously clear
+    directory.  The new file will have the same base name as the input
+    file, but with "<tt>_unp</tt>" appended, and will be given a
+    "<tt>.lst</tt>" extension.
+    </dl>
+!!LATEX lstpack local
+Utilities are provided to convert between different formats of list
+files, which are input files to the {\it FastCap} family of
+capacitance extraction programs.  The capacitance extraction interface
+(see \ref{fcinterf}) generates this file format.
+    
+The original list file format, specified by MIT for the original {\it
+FastCap} program, actually used multiple files to describe the
+geometry.  The list file references the other files.
+
+The Whiteley Research revision of {\it FastCap} and the {\it
+FasterCap} program from {\vt FastFieldSolvers.com} can make use of a
+``unified'' list file format, where the geometry ``files'' are
+actually tacked onto the end of the list file itself, so that all
+input is provided in a single file.  This can be much more convenient
+in cases where the input would otherwise require a large collection of
+files.
+
+Whiteley Research provides two simple utilities to convert between
+formats.
+
+\begin{description}
+\item{\vt lstpack} {\it listfile}\\
+The {\it listfile} is an old-style (unpacked) list file, which
+references geometry files found in the same directory as the {\it
+listfile}.  The utility will create, in the current directory, an
+equivalent unified list file.  The base name of the file will be that
+of the input file, but with ``{\vt \_p}'' appended.  The new file will
+have a ``{\vt .lst}'' extension.
+
+\item{\vt lstunpack} {\it listfile}\\
+The {\it listfile} is a new-style (packed, or unified) list file.  The
+utility will create, in the current directory, a new old-style
+unpacked list file, and all of the referenced geometry files.  It
+would usually be wise to run this in a previously clear directory. 
+The new file will have the same base name as the input file, but with
+``{\vt \_unp}'' appended, and will be given a ``{\vt .lst}''
+extension.
+\end{description}
+
+!!SEEALSO
+accessories
+

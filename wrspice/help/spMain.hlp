@@ -1,8 +1,8 @@
 
 !!  ---------------------------------------------------------------
 !!  Xic/WRspice Help System Database
-!!  $Id: spMain.hlp,v 1.44 2016/10/16 19:25:43 stevew Exp $
-!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  Copyright (C) Whiteley Research Inc. 2025.  All Rights Reserved
+!!  WRspice help file
 !!  ---------------------------------------------------------------
 
 !!HEADER
@@ -23,7 +23,6 @@
     &#169; Whiteley Research Inc. 2025, All Rights Reserved.</font>
 
 !!MAINTAG WRspice
-!! This file in sync with manual.
 
 !!KEYWORD
 spMain.hlp

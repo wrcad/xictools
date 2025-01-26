@@ -1,7 +1,7 @@
 # wrspice/lib/help/Makefile
 
 BASEFILES = FileSel.hlp Hardcopy.hlp TMsmall.gif
-MOZYFILES = HelpSys.hlp TextEditor.hlp
+MOZYFILES = HelpSys.hlp TextEditor.hlp Accessories.hlp
 
 SPFILES = \
   spAnalysis.hlp spElements.hlp spExpressions.hlp spInput.hlp spModels.hlp \
@@ -28,6 +28,7 @@ Hardcopy.hlp:   $(BASE)/Hardcopy.hlp
 TMsmall.gif:    $(BASE)/TMsmall.gif
 HelpSys.hlp:    $(MOZY)/HelpSys.hlp
 TextEditor.hlp: $(MOZY)/TextEditor.hlp
+Accessories.hlp: $(MOZY)/Accessories.hlp
 
 spAnalysis.hlp: $(SPBASE)/spAnalysis.hlp
 spElements.hlp: $(SPBASE)/spElements.hlp

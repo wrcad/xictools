@@ -1,8 +1,8 @@
 
 !!  ---------------------------------------------------------------
 !!  Xic/WRspice Help System Database
-!!  $Id: TextEditor.hlp,v 1.20 2014/05/11 21:03:34 stevew Exp $
-!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  Copyright (C) Whiteley Research Inc. 2025.  All Rights Reserved
+!!  mozy help file
 !!  ---------------------------------------------------------------
 
 !!KEYWORD
@@ -29,7 +29,7 @@ Text Entry
     windows for use in the graphical interface.  These entry areas use
     a common set of key bindings and respond to and use the system
     clipboard and other selection mechanisms in the same way.
-!!LATEX textentry useriface.tex
+!!LATEX textentry local
 The GTK interface provides single and multi-line text entry windows
 for use in the graphical interface.  These entry areas use a common
 set of key bindings (see \ref{textkeybind}) and respond to and use the
@@ -51,7 +51,7 @@ Single-Line Text Entry
     In many operations, text is entered by the user into single-line
     text-entry areas that appear in pop-up windows.  These entry areas
     provide a number of editing and interprocess communication
-    features which will be described in the sub-topics.
+    features which are described in the subtopics.
 
     <p>
     In both Unix/Linux and Windows, the single-line entry is typically
@@ -61,11 +61,12 @@ Single-Line Text Entry
     1.  The dragged text will be inserted into the text in the entry
     area, either at the cursor or at the drop location, depending on
     the implementation.
-!!LATEX onelineentry useriface.tex
+!!LATEX onelineentry local
 In many operations, text is entered by the user into single-line
 text-entry areas that appear in pop-up windows.  These entry areas
 provide a number of editing and interprocess communication features
-which will be described in subsequent sections.
+which are described with the key bindings (see \ref{textkeybind})
+and system clipboard (see \ref{clipboard}).
 
 In both Unix/Linux and Windows, the single-line entry is typically
 also a receiver of drop events, meaning that text can be dragged form
@@ -287,7 +288,7 @@ Text Editor
     href="textkeybind">key bindings</a> which also apply to
     single-line text entry windows.  These are actually programmable,
     and the advanced user may wish to augment the default set locally.
-!!LATEX xeditor useriface.tex
+!!LATEX xeditor local
 The graphical interface provides a general-purpose text editor window. 
 It is used for editing text files or blocks, and may be invoked in
 read-only mode for use as a file viewer.  In that mode, commands which
@@ -510,7 +511,7 @@ Selections and Clipboards
     Windows, the primary selection applies only to the program
     containing the selection.  In Unix/Linux, the primary selection
     applies to the entire desktop,
-!!LATEX clipboard useriface.tex
+!!LATEX clipboard local
 Under Unix/Linux, there are two similar data transfer registers:  the
 ``primary selection'', and the ``clipboard''.  both correspond to
 system-wide registers, which can accommodate one data item (usually a
@@ -651,7 +652,7 @@ GTK Text Input Key Bindings
     code for &pi; (pi) is <tt>03c0</tt>.  Note that special characters
     can also be selected and copied, or in some cases dragged and
     dropped, from another window.
-!!LATEX keybind useriface.tex
+!!LATEX textkeybind local
 The following table provides the key bindings for editable text entry
 areas in GTK-2.  However, be advised that these bindings are
 programmable, and may be augmented or changed by installation of a
@@ -695,6 +696,19 @@ with one important difference:  in Windows, the primary selection
 applies only to the program containing the selection.  In Unix/Linux,
 the primary selection applies to the entire desktop, like the
 clipboard.
+
+\index{unicode}
+Special characters can be entered using the Unicode escape {\kb
+Ctrl-u}.  The sequence starts by pressing {\kb Ctrl-u}, then entering
+hex digits representing the character code, and is terminated with a
+space character or {\kb Enter}.  The Unicode coding can be obtained
+from tables provided on the internet, or from applications such as
+KCharSelect which is part of the KDE desktop.  These are generally
+expressed as ``{\vt U + xxxx}'' where the {\vt xxxx} is a hex number. 
+It is the hex number that should be entered following {\kb Ctrl-u}. 
+For example, the code for ${\pi}$ (pi) is {\vt 03c0}.  Note that
+special characters can also be selected and copied, or in some cases
+dragged and dropped, from another window.
 
 !!SEEALSO
 clipboard
@@ -757,7 +771,7 @@ Mail Client
     eventually worked.  This application supports MAPI, apparently the
     default Windows 8 Mail application does not.  The default Windows
     8 Mail application also does not work with POP3 servers.
-!!LATEX mailclient useriface.tex
+!!LATEX mailclient local
 The mail client can be used to send mail to arbitrary mail addresses,
 though when the panel appears, it is pre-loaded with the address of
 Whiteley Research technical support.  The text field containing the
@@ -775,7 +789,7 @@ client without sending mail by pressing {\cb Quit}.
 The {\cb Edit} menu contains commands to cut, copy, and paste text.
 
 The {\cb Options} menu contains a {\cb Search} command to find a text
-string in the text.  The {\cb Attach} command is used to add a mime
+string in the text.  The {\cb Attach} command is used to add a {\et mime}
 attachment to the message.  Pressing this button will cause prompting
 for the name of a file to attach.  While the prompt pop-up is visible,
 dragging a file into the mail client will load that file name into the

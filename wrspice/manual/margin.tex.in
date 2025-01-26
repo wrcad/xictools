@@ -8,19 +8,19 @@
 
 <<marganal spOpRangeAnal.hlp>>
 
-%S-----------------------------------------------------------------------------
+%------------------------------------------------------------------------------
 \section{Operating Range Analysis}
 \index{operating range analysis}
 \label{oprange}
 
 <<oprng_anal spOpRangeAnal.hlp>>
 
-%S-----------------------------------------------------------------------------
+%------------------------------------------------------------------------------
 \section{Operating Range Analysis File Format}
 
 <<oprngfile spOpRangeAnal.hlp>>
 
-%S-----------------------------------------------------------------------------
+%------------------------------------------------------------------------------
 \section{Example Operating Range Analysis Control File}
 
 The listing that follows is an operating range analysis control file
@@ -253,13 +253,13 @@ for a Josephson binary counter circuit.
     .end
 \end{verbatim}
 
-%S-----------------------------------------------------------------------------
+%------------------------------------------------------------------------------
 \section{Monte Carlo Analysis}
 \index{Monte Carlo analysis}
 
 <<monte spOpRangeAnal.hlp>>
 
-%S-----------------------------------------------------------------------------
+%------------------------------------------------------------------------------
 \section{Example Monte Carlo Analysis Control File}
 
 The following is an example new format Monte Carlo input file:
@@ -480,13 +480,13 @@ The following is an example new format Monte Carlo input file:
     .end
 \end{verbatim}
 
-%S-----------------------------------------------------------------------------
+%------------------------------------------------------------------------------
 \section{Atomic Monte Carlo and Range Analysis}
 \label{atomic}
 
 <<atomic spOpRangeAnal.hlp>>
 
-%S-----------------------------------------------------------------------------
+%------------------------------------------------------------------------------
 \section{Circuit Margin Optimization}
 
 <<optimize spOpRangeAnal.hlp>>

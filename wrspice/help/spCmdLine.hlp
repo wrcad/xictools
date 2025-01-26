@@ -1,18 +1,11 @@
 
 !!  ---------------------------------------------------------------
 !!  Xic/WRspice Help System Database
-!!  $Id: spCmdLine.hlp,v 1.19 2015/11/15 22:55:43 stevew Exp $
-!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  Copyright (C) Whiteley Research Inc. 2025.  All Rights Reserved
+!!  WRspice help file
 !!  ---------------------------------------------------------------
 
-*****************************************************************
-*
-* Command Line Arguments
-*
-*****************************************************************
-
 !!TAG WRspice
-!! This file in sync with manual.
 
 !!KEYWORD
 spCmdLine.hlp

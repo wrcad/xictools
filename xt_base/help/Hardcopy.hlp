@@ -1,8 +1,8 @@
 
 !!  ---------------------------------------------------------------
 !!  Xic/WRspice Help System Database
-!!  $Id: Hardcopy.hlp,v 1.18 2015/01/09 20:17:03 stevew Exp $
-!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  Copyright (C) Whiteley Research Inc. 2025.  All Rights Reserved
+!!  base help file
 !!  ---------------------------------------------------------------
 
 !!KEYWORD
@@ -211,7 +211,7 @@ Print Control Panel
 !!ELSE
     The <b>Dismiss</b> button retires the <b>Print Control Panel</b>.
 !!ENDIF
-!!LATEX hcopypanel useriface.tex
+!!LATEX hcopypanel local
 The {\cb Print Control Panel} is a highly configurable multi-purpose
 printer interface used in many parts of {\Xic} and {\WRspice}.  This
 section describes all of the available features, however many of these
@@ -235,11 +235,11 @@ This default can be set with the {\et DefaultPrintCmd} variable.
 !!ENDIF
 
 Under Unix/Linux, the operating system command used to generate the
-plot is entered into the {\cb Print Command} text area of the Print
-Control panel.  In this string, the characters ``{\vt \%s}'' will be
-replaced with the name of the (temporary) file being printed.  If
-there is no ``{\vt \%s}'', the file name will be added to the end of
-the string, separated by a space character.  The string is sent to
+plot is entered into the {\cb Print Command} text area of the {\cb
+Print Control Panel}.  In this string, the characters ``{\vt \%s}''i
+will be replaced with the name of the (temporary) file being printed.
+If there is no ``{\vt \%s}'', the file name will be added to the end
+of the string, separated by a space character.  The string is sent to
 the operating system to generate the plot.
 
 The temporary file used to hold plot data before it is sent to the
@@ -247,8 +247,8 @@ printer is {\it not\/} deleted, so it is recommended that the print
 command include the option to delete the file when plotting is
 finished.
 !!IFDEF Xic
-In {\Xic} the {\et RmTmpFileMinutes} variable can be set to enable
-automatic deletion of the temporary file, if necessary.
+In {\Xic} the {\et RmTmpFileMinutes} variable can be set to an
+integer to enable automatic deletion of the temporary file.
 !!ENDIF
 !!IFDEF WRspice
 In {\WRspice}, the {\et hcopyrmdelay} variable can be set to an
@@ -256,10 +256,10 @@ integer to enable automatic delayed deletion of the temporary file.
 !!ENDIF
 
 \index{plot to file}
-If the {\cb To File} button is active, then this same field contains
-the name of the file to receive the plot data, and nothing is sent to
-the printer.  The user must enter a name or path to the file, which
-will be created.
+If the {\cb To File} button is active, then this same text field
+contains the name of a file to receive the plot data, and nothing is
+sent to the printer.  The user must enter a name or path to the file,
+which will be created.
 
 {\Xic} normally supplies a legend on the hardcopy output, which can be
 suppressed by un-checking the {\cb Legend} check box.  The legend is
@@ -294,7 +294,7 @@ useful for printers with roll paper.
 The full-page values for many standard paper sizes are selectable in
 the drop-down {\cb Media} menu below the text areas.  Selecting a
 paper size will load the appropriate values into the text areas to
-produce a full page image.  Under Windows, the ``Windows Native''
+produce a full page image.  Under Windows, the {\cb Windows Native}
 driver requires that the actual paper type be selected.  Otherwise,
 this merely specifies the default size of the image.
 
@@ -308,8 +308,9 @@ using auto-height, the legend will always be in portrait orientation.
 \index{hardcopy panel!Best Fit}
 When the {\cb Best Fit} button is active, the driver is allowed to
 rotate the image 90 degrees if this improves the fit to the aspect
-ratio of the plotting area.  This supersedes the Portrait/Landscape
-setting for the image, but not for the legend, if displayed.
+ratio of the plotting area.  This supersedes the {\cb Portrait}/{\cb
+Landscape} setting for the image, but not for the legend, if
+displayed.
 
 The landscape mode is available on all print drivers.  The behavior
 differs somewhat between drivers.  The PostScript and PCL drivers
@@ -405,12 +406,12 @@ Format Menu
     <p>
     <dl>
     <dt><b>PostScript bitmap</b><dd>
-    The output is a two-color PostScript bitmap of the plotted area.
+    The output is a two color PostScript bitmap of the plotted area.
     </dl>
 
     <dl>
     <dt><b>PostScript bitmap, encoded</b><dd>
-    This also produces a two-color PostScript bitmap, but uses
+    This also produces a two color PostScript bitmap, but uses
     compression to reduce file size.  Some elderly printers may not
     support the compression feature.
     </dl>
@@ -432,7 +433,7 @@ Format Menu
 
     <dl>
     <dt><b>PostScript line draw, mono</b><dd>
-    This driver produces a two-color PostScript graphics list
+    This driver produces a monochrome PostScript graphics list
     representing the plotted area.
     </dl>
 
@@ -461,6 +462,7 @@ Format Menu
 !!ENDIF
     </dl>
 
+!!IFDEF Windows
     <a name="winnative">
     <dl>
     <dt><b>Windows Native</b> (Microsoft Windows versions only)<dd>
@@ -478,6 +480,7 @@ Format Menu
     is true if the printer understands PCL, as do most laser printers. 
     This may vary between printers, so one should experiment and use
     whatever works best.
+!!ENDIF
 
     <p>
     In the Unix/Linux versions, selecting a page size from the
@@ -537,12 +540,14 @@ Format Menu
     Note that selecting resolution 200 and size 4x4 would produce the
     same bitmap size as 100 and 8x8.
 
+!!IFDEF Windows
     <p>
     Under Microsoft Windows, an additional feature is available.  If
     the word "<tt>clipboard</tt>" is entered in the <b>File Name</b>
     text box, the image will be composed in the Windows clipboard,
     from where it can be pasted into other Windows applications. 
     There is no file generated in this case.
+!!ENDIF
 
     <p>
     On Unix/Linux systems, if you have the open source <b>ImageMagick</b>
@@ -580,10 +585,10 @@ Format Menu
     The necessary preamble for Encapsulated PostScript (EPSF-3.0) is
     included in all PostScript files, so that they may be included
     in other documents without modification.
-!!LATEX hcopyfmt useriface.tex
+!!LATEX hcopyfmt local
 The printing system for {\Xic} and {\WRspice} provides a number of
 built-in drivers for producing output in various file formats.  In
-Windows, an additional ``Windows Native'' driver uses the operating
+Windows, an additional {\et Windows Native} driver uses the operating
 system to provide formatting, thus providing support for any graphical
 printer known to Windows.  The data formats are selected from a
 drop-down menu available in the {\cb Print Control Panel}.  The name
@@ -594,7 +599,7 @@ are listed (all drivers are enabled by default).
 !!ENDIF
 The format selections are described below.
 
-Except for the ``Windows Native'' driver all formatting is done in the
+Except for the {\et Windows Native} driver all formatting is done in the
 {\Xic}/{\WRspice} printer drivers, and the result is sent to the
 printer as "raw" data.  This means that the selected printer {\it
 must} understand the format.  In practice, this means that the printer
@@ -602,9 +607,11 @@ selected must be a PostScript printer, and one of the PostScript
 formats used, or the printer can be an HP Laserjet, and the PCL format
 used, etc.  The available formats are listed below.
 
+\index{Postscript}
+\index{PCL}
 \begin{description}
 \item{\et PostScript bitmap}\\
-The output is a two-color PostScript bitmap of the plotted area.
+The output is a two color PostScript bitmap of the plotted area.
 
 \item{\et PostScript bitmap, encoded}\\
 This also produces a two color PostScript bitmap, but uses compression
@@ -622,7 +629,7 @@ non-compressing format, unless the local printer does not support
 PostScript run length decoding.
 
 \item{\et Postscript line draw, mono}\\
-This driver produces a two color PostScript graphics list representing
+This driver produces a monochrome PostScript graphics list representing
 the plotted area.
 
 \item{\et PostScript line draw, color}\\
@@ -661,12 +668,12 @@ In the Unix/Linux versions, selecting a page size from the {\cb Media}
 menu will load that size into the entry areas that control printed
 image size.  This is the only effect, and there is no communication of
 actual page size to the printer.  This is true as well under Windows,
-except in the Windows Native driver.  Microsoft's driver will clip the
-image to the page size before sending it to the printer, and will send
-a message to the printer giving the selected paper size.  The printer
-may not print if the given paper size is not what is in the machine.
-Thus, when using this driver, it is necessary to select the actual
-paper size in use.
+except in the {\et Windows Native} driver.  Microsoft's driver will
+clip the image to the page size before sending it to the printer, and
+will send a message to the printer giving the selected paper size.
+The printer may not print if the given paper size is not what is in
+the machine.  Thus, when using this driver, it is necessary to select
+the actual paper size in use.
 
 \item{\et Xfig line draw, color}\\
 Xfig is a free (and very nice) drafting program available over the
@@ -682,21 +689,20 @@ technology file (section \ref{techlayers}) for more information.
 
 \item{\et Image: jpeg, tiff, png, etc}\\
 This driver converts into a multitude of bitmap file formats.  This
-supports file generation only.  The type of file is determined by
-the extension of the file name provided (the file name should have
-one!).  The driver can convert to several formats internally, and
-can convert to many more by making use of ``helper'' programs that
-may be on your system.
-
-Internal formats:
+supports file generation only.  The type of file is determined by the
+extension of the file name provided (the file name should have one!).
+The driver can convert to several formats internally, and can convert
+to many more by making use of ``helper'' programs that may be on your
+system.
 
 \begin{tabular}{|l|l|}\hline
-\bf    Extension       & \bf Format\\ \hline \hline
-\vt    ppm, pnm, pgm   & Portable Bitmap (netpbm)\\ \hline
-\vt    ps              & PostScript\\ \hline
-\vt    jpg, jpeg       & JPEG\\ \hline
-\vt    png             & PNG\\ \hline
-\vt    tif, tiff       & TIFF\\ \hline
+\multicolumn{2}{|c|}{\kb Internal formats}\\ \hline
+\kb Extension & \kb Format\\ \hline
+\vt ppm, pnm, pgm & portable bitmap (netpbm)\\ \hline
+\vt ps            & PostScript\\ \hline
+\vt jpg, jpeg     & JPEG\\ \hline
+\vt png           & PNG\\ \hline
+\vt tif, tiff     & TIFF\\ \hline
 \end{tabular}
 
 For the bitmap image formats, the driver resolution choice really

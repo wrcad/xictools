@@ -639,6 +639,14 @@ Main Functions 3
      </td><td>Check if objects touch or overlap</td></tr>
 
      </table>
+!!LATEX funcs:main3 scrfuncs.tex
+\index{standard layer}
+Many of the layer-related functions take a ``standard layer
+argument''.  This can be an integer index number into the layer table,
+where the index is 1-based, and values less than 1 return the current
+layer.  The argument can also be a string, giving a layer name in {\it
+layer\/}[{\vt :}{\it purpose\/}] form, or an alias name.  If the
+string is null or empty, the current layer is returned.
 
 !!SEEALSO
 scr:iffuncs

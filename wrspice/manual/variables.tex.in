@@ -4,46 +4,39 @@
 % variables.tex.in
 % -----------------------------------------------------------------------------
 
-%S-----------------------------------------------------------------------------
+%------------------------------------------------------------------------------
 \section{Variables}
 \label{variables}
 
 <<variables spVariables.hlp>>
 
-%SU-------------------------------------
 \subsection{Shell Variables}
 
 <<shell_vars spVars_shell.hlp>>
 
-%SU-------------------------------------
 \subsection{Command-Specific Variables}
 
 <<command_vars spVars_cmds.hlp>>
 
-%SU-------------------------------------
 \subsection{Plot Variables}
 \label{plotvars}
 
 <<plot_vars spVars_plot.hlp>>
 
-%SU-------------------------------------
 \subsection{Simulation Option Variables}
 \label{simvars}
 
 <<sim_vars spVars_sim.hlp>>
 
-%SU-------------------------------------
 \subsection{Batch Mode Option Variables}
 \label{batchvars}
 
 <<batch_vars spVars_sim.hlp>>
 
-%SU-------------------------------------
 \subsection{Unused Option Variables}
 
 <<unused_vars spVars_sim.hlp>>
 
-%SU-------------------------------------
 \subsection{Debugging Variables}
 
 <<debug_vars spVars_debug.hlp>>

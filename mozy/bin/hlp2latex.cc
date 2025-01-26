@@ -76,6 +76,8 @@
 //     (html or plain text)
 //     !!LATEX keyword latexfile
 //     (latex text)
+// The latexfile can be the name of the intended latex output file.
+// This is unused but a word must be present.
 //
 // Arguments following literal "-d" are variables which become
 // defined and can be tested with the !!IFDEF and similar constructs
@@ -89,7 +91,9 @@
 // will be replaced with the latex block tagged with the same keyword
 // when the latex files are generated.  The latex file name is the
 // same as the source file name with the trailing ".in" stripped.
-// Other than the tokens described, text is copied verbatim.
+// Other than the tokens described, text is copied verbatim.  The
+// helpfile can be the name of the originating .hlp file.  This is
+// not used but a word must be present.
 //
 // The processing is recursive, so that !!LATEX blocks can contain
 // <<key filename>> tokens.  These are expanded in place recursively
@@ -365,8 +369,16 @@ cProcTmpl::do_block(FILE *xp)
                 pt_scopedepth--;
             continue;
         }
-        if (pt_scopedepth >= 0 && !pt_scopes[pt_scopedepth].reading)
+        bool reading = true;
+        for (int j = 0; j <= pt_scopedepth; j++) {
+            if (!pt_scopes[j].reading) {
+                reading = false;
+                break;
+            }
+        }
+        if (!reading)
             continue;
+
         if (!pmode) {
             if (s[0] == '!' && s[1] == '!')
                 break;  // End of a block.

@@ -105,7 +105,7 @@
 % keypage 072808
 <<keypage xiMain.hlp>>
 
-% keybang (first para) 022504
+% not in help
 \index{keyboard!"!}
 The command line interface through the prompt area provides an
 interface to operating system commands, as well as to a number of
@@ -398,118 +398,15 @@ provide examples.
 
 
 
-% clipboard 040913
 \subsection{Selections and Clipboards}
 \label{clipboard}
+
+% clipboard 040913
+<<clipboard TextEditor.hlp>>
  
-Under Unix/Linux, there are two similar data transfer registers:  the
-``primary selection'', and the ``clipboard''.  both correspond to
-system-wide registers, which can accommodate one data item (usually a
-text string) each.  When text is selected in any window, usually by
-dragging over the text with button 1 held down, that text is
-automatically copied into the primary selection register.  The primary
-selection can be ``pasted'' into other windows that are accepting text
-entry.
-
-The clipboard, on the other hand, is generally set and used only by
-the GTK text-entry widgets.  This includes the single-line entry used
-in many places, and the multi-line text window used in the text editor
-(see \ref{textedit}), file browser, and some other places including
-error reporting and info windows.  From these windows, there are key
-bindings that cut (erase) or copy selected text to the clipboard, or
-paste clipboard text into the window.  The cut/paste functions are
-only available if text in the window is editable, copy is always
-available.
-
-Under Windows there is a single ``Windows clipboard'' which is a
-system-wide data-transfer register that can accommodate a single data
-item (usually a string).  This can be used to pass data between
-windows.  In use, the Windows clipboard is somewhat like the
-Unix/Linux clipboard.
- 
-Text in most text display windows can be selected by dragging with
-button 1 held down, however the selected text is not automatically
-added to the Windows clipboard.  On must initiate a {\cb cut} or {\cb
-copy} operation in the window to actually save the selected text to
-the Windows clipboard.  The ``copy to clipboard'' accelerator
-{\kb Ctrl-c} is available from most windows that present highlighted
-or selected text.  Note that there is no indication when text is
-copied to the clipboard, the selected text in all windows is
-unaffected, i.e., it won't change color or disappear.  The user must
-remember which text was most recently copied to the Windows clipboard.
-
-Clicking with button 2 will paste the primary selection into the line
-at the click location, if the window text is editable.
-
-Clicking with button 3 will will bring up a context menu.  From the
-menu, the user can select editing operations.
-
-The GTK interface hides the details of the underlying selection
-mechanisms, creating a consistent interface under Windows or
-Uniix/Linux.  There is one important difference, however:  in Windows,
-the primary selection applies only to the program containing the
-selection.  In Unix/Linux, the primary selection applies to the entire
-desktop,
-
-
-% textkeybind 010914
 \subsection{GTK Text Input Key Bindings}
 \label{textkeybind}
 
-The following table provides the key bindings for editable text entry
-areas in GTK-2.  However, be advised that these bindings are
-programmable, and may be augmented or changed by installation of a
-local theme.
-
-\begin{longtable}{lp{4in}}\\
-\multicolumn{2}{l}{\bf GTK Text-Entry Key Bindings}\vspace{1.5ex}\\
-\kb Ctrl-a & Select all text\\
-\kb Ctrl-c & Copy selected text to clipboard\\
-\kb Ctrl-v & Paste clipboard at cursor\\
-\kb Ctrl-x & Cut selection to clipboard\\
-\kb Home & Move cursor to beginning of line\\
-\kb End & Move cursor to end of line\\
-\kb Left & Move cursor left one character\\
-\kb Ctrl-Left & Move cursor left one word\\
-\kb Right & Move cursor right one character\\
-\kb Ctrl-Right & Move cursor right one word\\
-\kb Backspace & Delete previous character\\
-\kb Ctrl-Backspace & Delete previous word\\
-\kb Clear & Delete current line\\
-\kb Shift-Insert & Paste clipboard at cursor\\
-\kb Ctrl-Insert & Copy selected text to clipboard\\
-\kb Delete & Delete next character\\
-\kb Shift-Delete & Cut selected text to clipboard\\
-\kb Ctrl-Delete & Delete next word\\
-\end{longtable}
-
-Clicking with button 1 will move the cursor to that location.  Double
-clicking will select the clicked-on word.  Triple clicking will select
-the entire line.  Button 1 is also used to select text by dragging the
-pointer over the text to select.
-
-Clicking with button 2 will paste the primary selection into the line
-at the click location, if the window text is editable.
-
-Clicking with button 3 will will bring up a context menu.  From the
-menu, the user can select editing operations.
-
-These operations are basically the same in Windows and Unix/Linux,
-with one important difference:  in Windows, the primary selection
-applies only to the program containing the selection.  In Unix/Linux,
-the primary selection applies to the entire desktop, like the
-clipboard.
-
-\index{unicode}
-Special characters can be entered using the Unicode escape {\kb
-Ctrl-u}.  The sequence starts by pressing {\kb Ctrl-u}, then entering
-hex digits representing the character code, and is terminated with a
-space character or {\kb Enter}.  The Unicode coding can be obtained
-from tables provided on the internet, or from applications such as
-KCharSelect which is part of the KDE desktop.  These are generally
-expressed as ``{\vt U + xxxx}'' where the {\vt xxxx} is a hex number. 
-It is the hex number that should be entered following {\kb Ctrl-u}. 
-For example, the code for ${\pi}$ (pi) is {\vt 03c0}.  Note that
-special characters can also be selected and copied, or in some cases
-dragged and dropped, from another window.
+% textkeybind 010914
+<<textkeybind TextEditor.hlp>>
 

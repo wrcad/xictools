@@ -39,14 +39,12 @@
 
 <<analyses spAnalysis.hlp>>
 
-%----------------------------------------------------
 \subsection{Chained Sweep Analysis}
 \index{chained analysis}
 \index{sweep analysis}
 
 <<multidc spAnalysis.hlp>>
 
-%----------------------------------------------------
 \subsection{{\vt .ac} Line}
 \index{.ac line}
 \index{ac analysis}
@@ -55,7 +53,6 @@
 
 <<.ac spAnalysis.hlp>>
 
-%----------------------------------------------------
 \subsection{{\vt .dc} Line}
 \index{.dc line}
 \index{dc analysis}
@@ -64,7 +61,6 @@
 
 <<.dc spAnalysis>>
 
-%----------------------------------------------------
 \subsection{{\vt .disto} Line}
 \index{.disto line}
 \index{distortion analysis}
@@ -73,7 +69,6 @@
 
 <<.disto apAnalysis.hlp>>
 
-%----------------------------------------------------
 \subsection{{\vt .noise} Line}
 \index{.noise line}
 \index{noise analysis}
@@ -82,14 +77,12 @@
 
 <<.noise spAnalysis>>
 
-%----------------------------------------------------
 \subsection{{\vt .op} Line}
 \index{.op line}
 \label{opline}
 
 <<.op spAnalysis>>
 
-%----------------------------------------------------
 \subsection{{\vt .pz} Line}
 \index{.pz line}
 \index{pole-zero analysis}
@@ -98,7 +91,6 @@
 
 <<.pz spAnalysis.hlp>>
 
-%----------------------------------------------------
 \subsection{{\vt .sens} Line}
 \index{.sens line}
 \index{sensitivity analysis}
@@ -107,7 +99,6 @@
 
 <<.sens spAnalysis.hlp>>
 
-%----------------------------------------------------
 \subsection{{\vt .tf} Line}
 \index{.tf line}
 \index{transfer function analysis}
@@ -116,7 +107,6 @@
 
 <<.tf spAnalysis.hlp>>
 
-%----------------------------------------------------
 \subsection{{\vt .tran} Line}
 \index{.tran line}
 \index{transient analysis}
