@@ -104,7 +104,6 @@ Accessories.hlp \
 FileSel.hlp \
 Hardcopy.hlp \
 HelpSys.hlp \
-PlotPanel.hlp \
 TextEditor.hlp \
 TMsmall.gif \
 blockdiag.gif \
@@ -123,6 +122,7 @@ spModels.hlp \
 spOpRangeAnal.hlp \
 spOptions.hlp \
 spPlot.hlp \
+spPlotPanel.hlp \
 spRusage.hlp \
 spSemicond.hlp \
 spSetup.hlp \
