@@ -13,7 +13,7 @@ help/Hardcopy.hlp
 help/HelpSys.hlp
 help/TMsmall.gif
 help/TextEditor.hlp
-help/accessories.hlp
+help/Accessories.hlp
 help/arc.xpm
 help/box.xpm
 help/break.xpm
@@ -101,6 +101,6 @@ manual/xicmanual.ilg
 manual/xicmanual.ind
 manual/xicmanual.log
 manual/xicmanual.toc
-manual/xicmanual.tex
+manual/tocloft.sty
 manual/xicmanual
 manual/*.tex

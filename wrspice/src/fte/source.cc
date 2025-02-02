@@ -1980,7 +1980,8 @@ sFtCirc::setup(sLine *spdeck, const char *fname, wordlist *exec,
             }
             else if (lstring::cieq(v->name(), spkw_post)) {
                 if (!Sp.GetFlag(FT_RAWFGIVEN) && v->type() == VTYP_STRING) {
-                    if (lstring::cieq(v->string(), "csdf") ||
+                    if (lstring::cieq(v->string(), "csv") ||
+                            lstring::cieq(v->string(), "csdf") ||
                             lstring::cieq(v->string(), "raw")) {
                         const char *tfn = filename();
                         if (!tfn)

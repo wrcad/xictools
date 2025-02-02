@@ -174,7 +174,7 @@ End of general info.
 
 
 ===============================================================================
-wrspice-4.3.22  11/xx/2024
+wrspice-4.3.22  1/31/2025
 Current Release
 
 CHANGES AND NEW FEATURES
@@ -191,6 +191,27 @@ CHANGES AND NEW FEATURES
   neither of these support CSDF.  WaveView now supports rawfiles so
   the original motivation to support CSDF no longer applies.
 
+* New general support for comma separated value (CSV) files for plot
+  data.  This may facilitate data export to/from other programs.
+  see "help csvfilefmt" for the format description.  This file type
+  is identified with a ".csv" extension.  Commands that expect plot
+  data will accept this file format if the extension appears.
+
+* New arguments to the write command:
+    write [-a][-w][[-f] [filename][expr ...]
+    -a:     Append to output file if it exists.
+    -w:     Overwrite output file when the appendwrite variable is set.
+    -f filename:  Explicitly define output file.
+    These must appear ahead of the filename and vectors, the previous
+    syntax is also supported.
+
+* Documentation system update.  Latex manual descriptive text is now
+  saved in the help database with the same help text.  Keeping the
+  text in the same place makes it easier to keep the documents in
+  sync.  The manual is now generated with Latex extracted from the
+  help system, previous files are now templates.  This is
+  accomplished with a new hlp2latex utility.
+
 BUGS FIXED
 ---- -----
 * Fix syntax in downloading code for ADMS examples to be compatible with
@@ -198,6 +219,11 @@ BUGS FIXED
   --output_dir option).
 
 * Fix typo in definition of boltzmann constant, "boltz" was garbage.
+
+* Fixed nonfunctional Print/Plot/Save Plot functions in the plot windows.
+
+* Comment lines truncated to fit a text window could generate spurious
+  continuation lines.
 
 
 -------------------------------------------------------------------------------

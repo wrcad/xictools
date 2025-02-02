@@ -3838,10 +3838,21 @@ Batch Mode Option Variables
     <dt><tt>post=csdf</tt> (warning:  obsolete)<dd>
     In batch mode, if no rawfile (<a href="-r"><tt>-r</tt> option</a>)
     was specified on the <i>WRspice</i> command line, a <a
-    href="load">CSDF file</a> will be produced for the batch run.  The
-    name of the file will be that of the input file suffixed with
-    "<tt>.csdf</tt>" if the input file name is known, or
+    href="csdffilefmt">CSDF file</a> will be produced for the batch
+    run.  The name of the file will be that of the input file suffixed
+    with "<tt>.csdf</tt>" if the input file name is known, or
     "<tt>unknown.csdf</tt>" if the input file name can't be
+    determined.
+    </dl>
+
+    <dl>
+    <dt><tt>post=csv</tt><dd>
+    In batch mode, if no rawfile (<a href="-r"><tt>-r</tt> option</a>)
+    was specified on the <i>WRspice</i> command line, a <a
+    href="csvfilefmt">CSV file</a> will be produced for the batch run.
+    The name of the file will be that of the input file suffixed with
+    "<tt>.csv</tt>" if the input file name is known, or
+    "<tt>unknown.csv</tt>" if the input file name can't be
     determined.
     </dl>
 
@@ -3918,6 +3929,13 @@ In batch mode, if no rawfile ({\vt -r} option) was specified on the
 run.  The name of the file will be that of the input file suffixed
 with ``{\vt .csdf}'' if the input file name is known, or ``{\vt
 unknown.csdf}'' if the input file name can't be determined.
+
+    \item{\vt post=csv}\\
+In batch mode, if no rawfile ({\vt -r} option) was specified on the
+{\WRspice} command line, a CSV file will be produced for the batch
+run.  The name of the file will be that of the input file suffixed
+with ``{\vt .csv}'' if the input file name is known, or ``{\vt
+unknown.csv}'' if the input file name can't be determined.
 
 \item{\vt post=raw}\\
 In batch mode, if no rawfile ({\vt -r} option) was specified on the

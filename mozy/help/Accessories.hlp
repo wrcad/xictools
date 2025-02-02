@@ -944,7 +944,7 @@ hlp2latex
 !!TITLE
 The hlp2latex Utility
 !!HTML
-    Usage: <tt>hlp2latex</tt> [<tt>-p></tt> <i>helppath</i>]
+    Usage: <tt>hlp2latex</tt> [<tt>-p</tt> <i>helppath</i>]
     [<tt>-d</tt> <i>var</i> ...] <i>latexdir</i> | <i>file</i><tt>.tex.in</tt> ...
 
     <p>
@@ -967,7 +967,7 @@ The hlp2latex Utility
     file.  This is unused but a word must be present.
 
     <p>
-    Arguments following literal "<tt>-d<tt>" are variables which
+    Arguments following literal "<tt>-d</tt>" are variables which
     become defined and can be tested with the <tt>!!IFDEF</tt> and
     similar constructs in the help text.
 

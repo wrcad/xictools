@@ -12,6 +12,7 @@ bin/proc2mod
 bin/proc2mod.exe
 bin/wrspiced
 bin/wrspiced.exe
+help/Accessories.hlp
 help/FileSel.hlp
 help/Hardcopy.hlp
 help/HelpSys.hlp
@@ -54,4 +55,6 @@ manual/wrsmanual.ilg
 manual/wrsmanual.ind
 manual/wrsmanual.log
 manual/wrsmanual.toc
+manual/tocloft.sty
 manual/wrsmanual
+manual/*.tex

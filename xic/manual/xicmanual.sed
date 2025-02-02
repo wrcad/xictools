@@ -105,7 +105,7 @@ With OpenAccess Support\\
 \end{center}
 \vspace{.75in}
 \begin{quote}
-\copyright{} Whiteley Research Incorporated, 2017.
+\copyright{} Whiteley Research Incorporated, 2025.
 
 {\Xic} is part of the {\XicTools} software package for integrated
 circuit design.  {\Xic} was primarily authored by S.~R.  Whiteley,

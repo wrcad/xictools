@@ -80,7 +80,7 @@
 \end{center}
 \vspace{.5in}
 \begin{quote}
-\copyright{} Whiteley Research Incorporated, 2017.
+\copyright{} Whiteley Research Incorporated, 2025.
 
 % commands, menu entries, and pop-up names: {\cb }
 % variables, vectors: {\et }
