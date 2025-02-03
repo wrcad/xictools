@@ -46,7 +46,7 @@ $(ADMS_SUB): $(ADMS)
 	mv -f $(ADMS_DIR) $(ADMS_SUB)
 	sed -e s/VERSION/$$(./release.sh)/ < files/configure.in.sed \
 	  > $(ADMS_SUB)/configure.in
-        sed -e s/GIT/$(GIT)/ -e s/XT_IDSTRING/$(IDSTR)/ \
+	sed -e s/GIT/$(GIT)/ -e s/XT_IDSTRING/$(IDSTR)/ \
 	  < files/admsXml.c.sed > $(ADMS_SUB)/admsXml/admsXml.c
 	mv -f $(ADMS_SUB)/configure.ac $(ADMS_SUB)/configure.ac.notused
 	cp -f files/install-sh $(ADMS_SUB)/auxconf
