@@ -916,8 +916,10 @@ dnl        done
     elif test $GRPKG == QT6 ; then
         if test -f "$QTBASE/share/qt6/bin/moc.exe"; then
             MOC="$QTBASE/share/qt6/bin/moc"
-        else
+        elif test -f "$QTBASE/libexec/moc"; then
             MOC="$QTBASE/libexec/moc"
+        else
+            MOC="$QTBASE/bin/moc"
         fi
     fi
     TOOLKITINC="$QT_INCLUDE"

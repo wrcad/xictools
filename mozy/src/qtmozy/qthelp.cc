@@ -1878,7 +1878,7 @@ QThelpDlg::ignore_case_slot(bool ign)
 // Private functions
 
 
-// Handle htm signam from clicking on an anchor.
+// Handle htm signal from clicking on an anchor.
 //
 void
 QThelpDlg::htm_activate_proc(htmAnchorCallbackStruct *cbs)

@@ -51,7 +51,6 @@
 #include <QPaintEngine>
 #include <math.h>
 
-#define USE_TIMER
 //#define OVLDEBUG
 
 class QEvent;
@@ -64,6 +63,7 @@ class QDragEvent;
 class QEnterEvent;
 class QFocusEvent;
 class QWheelEvent;;
+class QAbstractEventDispatcher;
 
 namespace qtinterf {
     class cGhostDrawCommon;
@@ -289,10 +289,11 @@ signals:
     void drag_enter_event(QDragEnterEvent*);
     void drop_event(QDropEvent*);
 
+private slots:
+    void awake_slot();
+    void block_slot();
+
 protected:
-#ifdef USE_TIMER
-    void timerEvent(QTimerEvent*);
-#endif
     void resizeEvent(QResizeEvent*);
     void paintEvent(QPaintEvent*);
     void mousePressEvent(QMouseEvent*);
@@ -372,6 +373,7 @@ private:
     void draw_line_prv(int, int, int, int);
     void initialize();
 
+    QAbstractEventDispatcher *da_dsp; // For idle detection.
     QPixmap     *da_pixmap;         // Main pixmap.
     QPixmap     *da_overlay_bg;     // Background pixmap for overlay.
     QPixmap     *da_pixmap2;        // Backing pixmap.

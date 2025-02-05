@@ -47,6 +47,7 @@
 #include <QFocusEvent>
 #include <QWheelEvent>
 #include <QGuiApplication>
+#include <QAbstractEventDispatcher>
 
 
 using namespace qtinterf;
@@ -96,8 +97,14 @@ QTcanvas::QTcanvas(QWidget *prnt) : QWidget(prnt)
 #endif
     da_brush.setStyle(Qt::SolidPattern);
     da_pen.setStyle(Qt::NoPen);
+
+    da_dsp = QAbstractEventDispatcher::instance();
+    connect(da_dsp, &QAbstractEventDispatcher::awake,
+        this, &QTcanvas::awake_slot);
+    connect(da_dsp, &QAbstractEventDispatcher::aboutToBlock,
+        this, &QTcanvas::block_slot);
+
     initialize();
-    startTimer(0);
 }
 
 
@@ -1254,24 +1261,27 @@ QTcanvas::draw_polygon(bool filled, QPoint *points, int numpts)
 // End of extra drawing functions
 
 
-#ifdef USE_TIMER
+// Slots.
 
 void
-QTcanvas::timerEvent(QTimerEvent*)
+QTcanvas::awake_slot()
 {
+//XXX    printf("awake\n");
+}
+
+void
+QTcanvas::block_slot()
+{
+//XXX    printf("block\n");
     if (!da_pixmap_bak && da_regx1 >= da_regx0 && da_regy1 >= da_regy0) {
         repaint(da_regx0, da_regy0,
             da_regx1 - da_regx0 + 1, da_regy1 - da_regy0 + 1);
         region_reset();
-//XXX
-//static int foo;
-//printf("repaint %d\n", foo);
-//foo++;
     }
 }
 
-#endif
 
+// Event processing.
 
 void
 QTcanvas::resizeEvent(QResizeEvent *ev)
