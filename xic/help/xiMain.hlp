@@ -175,7 +175,8 @@ help
 
     <h4>Introduction and <i>Xic</i> Overview</h4>
     <a href="xictop"><i>Xic</i> Graphical Editor Overview</a><br>
-    <a href="xic:graphics">Graphics Support and Requirements</a><br>
+    <a href="graphics">Graphics Support and Requirements</a><br>
+    <a href="macos">Apple MacOS Notes</a><br>
     <a href="mswindows">Microsoft Windows Notes</a><br>
     <a href="captour">A Quick Tour of <i>Xic</i> Capabilities</a><br>
     <a href="xicdb">Database Overview</a><br>

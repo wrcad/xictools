@@ -5745,7 +5745,7 @@ Technology File Attributes:  Font Assignments
 
     <dl>
     <dt><tt>Font1P - Font6P</tt> <i>name_of_font</i><dd>
-    These fonts apply to the releases that use the GTK-2 (Pango) font
+    These fonts apply to the releases that use the GTK2 (Pango) font
     system.  At the 4.0 release level, all <i>XicTools</i> programs
     use this graphical toolkit, and will use these keywords.
     </dl>
@@ -5753,10 +5753,10 @@ Technology File Attributes:  Font Assignments
     <dl>
     <dt><tt>Font1X - Font6X</tt> <i>name_of_font</i><dd>
     These keywords apply to non-current releases (FreeBSD7, Linux2, OS
-    X) that use the GTK-1 X-windows font system.  The
+    X) that use the GTK1 X-windows font system.  The
     <i>name_of_font</i> is the X Logical Font Descriptor for a font
     available on the user's system, or an alias.  These font
-    specifications are ignored in GTK-2 (all current) releases.
+    specifications are ignored in GTK2 (all current) releases.
     </dl>
 
     <dl>
@@ -5764,7 +5764,7 @@ Technology File Attributes:  Font Assignments
     These keywords apply only to the non-current Microsoft Windows
     release, which used native Win32 for the graphical interface. 
     There is really no syntactical difference between these and
-    Pango (<tt>P</tt>) specifications, and (current) GTK-2 releases
+    Pango (<tt>P</tt>) specifications, and (current) GTK2 releases
     will accept (but not write) these.
     </dl>
 
@@ -5886,22 +5886,22 @@ with the {\cb Save Tech} button in the {\cb Attributes Menu}.  Rather,
 the system-specific keywords below will be written.
 
 \item{\vt Font1P --- Font6P} {\it name\_of\_font}\\
-These fonts apply to the releases that use the GTK-2 (Pango) font
+These fonts apply to the releases that use the GTK2 (Pango) font
 system.  At the 3.3 release level, all {\XicTools} programs use this
 graphical toolkit, and will use these keysords.
 
 \item{\vt Font1X --- Font6X} {\it name\_of\_font}\\
 These keywords apply to non-current releases (FreeBSD7, Linux2, OS X)
-that use the GTK-1 X-windows font system.  The {\it name\_of\_font} is
+that use the GTK1 X-windows font system.  The {\it name\_of\_font} is
 the X Logical Font Descriptor for a font available on the user's
-system, or an alias.  These font specifications are ignored in GTK-2
+system, or an alias.  These font specifications are ignored in GTK2
 (all current) releases.
 
 \item{\vt Font1W --- Font6W} {\it name\_of\_font}\\
 These keywords apply only to the non-current Microsoft Windows
 release, which used native Win32 for the graphical interface.  There
 is really no syntactical difference between these and Pango ({\vt P})
-specifications, and (current) GTK-2 releases will accept (but not
+specifications, and (current) GTK2 releases will accept (but not
 write) these.
 \end{description}
 

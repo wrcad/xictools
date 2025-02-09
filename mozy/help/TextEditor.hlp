@@ -572,7 +572,7 @@ textkeybind
 GTK Text Input Key Bindings
 !!HTML
     The following table provides the key bindings for editable text
-    entry areas in GTK-2.  However, be advised that these bindings are
+    entry areas in GTK2.  However, be advised that these bindings are
     programmable, and may be augmented or changed by installation of a
     local theme.
 
@@ -654,7 +654,7 @@ GTK Text Input Key Bindings
     dropped, from another window.
 !!LATEX textkeybind local
 The following table provides the key bindings for editable text entry
-areas in GTK-2.  However, be advised that these bindings are
+areas in GTK2.  However, be advised that these bindings are
 programmable, and may be augmented or changed by installation of a
 local theme.
 

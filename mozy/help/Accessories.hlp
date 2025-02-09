@@ -5,11 +5,25 @@
 !!  mozy help file
 !!  ---------------------------------------------------------------
 
+!!IFDEF Mozy
+!!HEADER
+    <table border=1 width=100% cellpadding=0 cellspacing=0>
+    <tr><td bgcolor=white><img src=wrbannermain.gif width=300 align=left>
+    <font face=sans color=royalblue size=5>
+    <br>&nbsp;&nbsp; Help System</font></td></tr>          
+    <tr><td bgcolor=white height=40>
+    <font face=sans color="#dd0000" size=5>&nbsp;&nbsp;%TITLE%</font></td></tr>
+    </table><p>
+ 
+!!FOOTER
+    <p><hr><font size=3 face=sans color=darkblue>
+    &#169; Whiteley Research Inc. 2025, All Rights Reserved.</font>
+!!ENDIF
 
 !!KEYWORD
-accessories.hlp
+Accessories.hlp
 !!TITLE
-accessories.hlp
+Accessories.hlp
 !!HTML
 
 !!SUBTOPICS
@@ -21,6 +35,7 @@ hlp2html
 hlp2latex
 hlpsrv
 lstpack
+gtkargs
 
 !! 072014
 !!KEYWORD
@@ -102,8 +117,8 @@ The <i>XicTools</i> Accessories
     The graphics support library was originally written as a
     toolkit-independent layer between the application and the GUI.  It
     is used in all graphical {\XicTools} programs.  Support was
-    available for GTK-1 and GTK-2, Windows native WIN32, and Qt4.
-    Currently, support is provided for GTK-2, Qt5, and Qt6.
+    available for GTK1 and GTK2, Windows native WIN32, and Qt4.
+    Currently, support is provided for GTK2, Qt5, and Qt6.
 !!LATEX accessories local
 The {\XicTools} accessories are programs provided in the optional
 accessories distribution file.  These are open-source programs, and
@@ -161,8 +176,8 @@ your own risk.
 The graphics support library was originally written as a
 toolkit-independent layer between the application and the GUI.  It is
 used in all graphical {\XicTools} programs.  Support was available for
-GTK-1 and GTK-2, Windows native WIN32, and QT.  Currently, support is
-provided for GTK-2, Qt5, and Qt6.
+GTK1 and GTK2, Windows native WIN32, and QT.  Currently, support is
+provided for GTK2, Qt5, and Qt6.
 
 !!SUBTOPICS
 httpget
@@ -213,7 +228,9 @@ mozy
     viewer</a> derived from the <a href="helpsys">help system</a> used
     in the <i>XicTools</i> products from Whiteley Research Inc.  These
     products are described on the Whiteley Research web site at <a
-    href="http://wrcad.com"><tt>wrcad.com</tt></a>.
+    href="http://wrcad.com"><tt>wrcad.com</tt></a>. <b><i>Mozy</i></b>
+    windows are available from within <i>Xic</i> and <i>WRspice</i>,
+    and from the stand-alone <i>Mozy</i> application.
 
     <p>
     There are a few command line options recognized. 
@@ -245,74 +262,10 @@ mozy
     </dl>
 
     <p>
-    The GTK2 graphical interface accepts the following options.  These
-    options are not processed by <b><i>Mozy</i></b>, but are
-    intercepted by the graphics subsystem and affect the interface to
-    the X-window system in Linux.  The multiple forms are equivalent.
-
-    <p>
-    <dl>
-    <dt><tt>-d</tt> <i>dispname</i><br>
-    <tt>-display</tt> <i>dispname</i><br>
-    <tt>--display</tt> <i>dispname</i><dd>
-    This option specifies the name of the X display to use.  The
-    <i>dispname</i> is in the form
-    <blockquote>
-     <tt>[<i>host</i>]:<i>server</i>[.<i>screen</i>]</tt>
-    </blockquote>
-    The <i>host</i> is the host name of the physical display,
-    <i>server</i> specifies the display server number, and
-    <i>screen</i> specifies the screen number.  Either or both of the
-    <i>host</i> and <i>screen</i> elements to the display
-    specification can be omitted.  If <i>host</i> is omitted, the
-    local display is assumed.  If <i>screen</i> is omitted, screen 0
-    is assumed (and the period is unnecessary).  The colon and
-    (display) <i>server</i> are necessary in all cases.  If no display
-    is specified on the command line, the display is set to the value
-    of the <tt>DISPLAY</tt> environment variable.
-    </dl>
-
-    <dl>
-    <dt><tt>-name</tt> <i>appname</i><br>
-    <tt>--name</tt> <i>appname</i><dd>
-    This option provides and alternative name to the application, as
-    known to the X window system.  The application name is used by X
-    to apply resource specifications.
-    </dl>
-
-    <dl>
-    <dt><tt>--class</tt> <i>classname</i><dd>
-    This option provides and alternative class name to the
-    application, as known to the X window system.  The application
-    class name is used by X to apply resource specifications.
-    </dl>
-
-    <dl>
-    <dt><tt>-synchronous</tt><br>
-    <tt>--sync</tt><dd>
-    This option indicates that requests to the X server should be sent
-    synchronously, instead of asynchronously.  Since the X system
-    normally buffers requests to the server, errors do not necessarily
-    get reported immediately after they occur.  This option turns off
-    the buffering so that the application can be debugged more easily. 
-    It should never be used with a working program.
-    </dl>
-
-    <dl>
-    <dt><tt>--no-xshm</tt><dd>
-    In releases running under the X-Window system (Unix/Linux),
-    <b><i>Mozy</i></b> will use the MIT-SHM shared memory extension if
-    the X server supports this extension, and the server is running on
-    the local machine.  This allows image data to be transferred to
-    the X server via shared memory, which is faster than the normal X
-    socket interface.  Screen updates may be faster as a result.
-
-    <p>
-    Giving the option <tt>--no-xshm</tt> on the command line will
-    prevent use of this extension, if for some reason this is
-    necessary.
-    </dl>
+    Releases that use the GTK2 grahical toolkit have a few
+    additional <a href="gtkargs">arguments</a> available.
     
+    <p>
     Topics can also be entered by using the <b>Open</b> menu item in
     the <b>File</b> menu.  A topic can be one of:
 
@@ -424,8 +377,10 @@ mozy
 {\it Mozy} is a multi-purpose HTML viewer derived from the help system
 used in the {\XicTools} products from Whiteley Research Inc.  These
 products are described on the Whiteley Research web site at {\vt
-wrcad.com}.  See \ref{helpsys} for a description of the {\Xic} help
+wrcad.com}.  See \ref{helpsys} for a description of the {\XicTools} help
 system, and \ref{helpview} for a description of the window controls.
+{\it Mozy} windows are available from within {\Xic} and {\WRspice},
+and from the stand-alone {\it Mozy} application.
 
 There are a few command line options recognized.  {\it Mozy} will take
 the first argument that is not an option as a topic to view. 
@@ -450,67 +405,8 @@ should be given if {\it Mozy} is being used to read the {\WRspice}
 help database.
 \end{description}
 
-The GTK2 graphical interface accepts the following options.  These options
-are not processed by {\it Mozy}, but are intercepted by the graphics
-subsystem and affect the interface to the X-window system in Linux. 
-The multiple forms are equivalent.
-
-\begin{description}
-\item\parbox[b]{4in}{
-{\et -d} {\it dispname}\\
-{\et -display} {\it dispname}\\
-{\et \symbol{45}\symbol{45}display} {\it dispname}}\\
-This option specifies the name of the X display to use.  The {\it
-dispname} is in the form
-\begin{quote}
- [{\it host\/}]:{\it server\/}[.{\it screen\/}]\\
-\end{quote}
-The {\it host\/} is the host name of the
-physical display, {\it server\/} specifies the display server number,
-and {\it screen\/} specifies the screen number.  Either or both of the
-{\it host\/} and {\it screen\/} elements to the display specification
-can be omitted.  If {\it host\/} is omitted, the local display is
-assumed.  If {\it screen\/} is omitted, screen 0 is assumed (and the
-period is unnecessary).  The colon and (display) {\it server\/} are
-necessary in all cases.  If no display is specified on the command
-line, the display is set to the value of the environment variable {\et
-DISPLAY}.
-
-\item\parbox[b]{4in}{
-{\et -name} {\it string}\\
-{\et \symbol{45}\symbol{45}name} {\it string}}\\
-This option provides an alternative name to the application, as known
-to the X window system.  The application name is used by X to apply
-resource specifications.
-
-\index{command line!options!\symbol{45}\symbol{45}class}
-\item{\et \symbol{45}\symbol{45}class} {\it string}\\
-This option provides an alternative class name to the application, as
-known to the X window system.  The application class name is used by X
-to apply resource specifications.
-
-\item\parbox[b]{4in}{
-{\et -synchronous}\\
-{\et \symbol{45}\symbol{45}sync}}\\
-This option indicates that requests to the X server should be sent
-synchronously, instead of asynchronously.  Since the X system normally
-buffers requests to the server, errors do not necessarily get reported
-immediately after they occur.  This option turns off the buffering so
-that the application can be debugged more easily.  It should never be
-used with a working program.
-
-\item{\et \symbol{45}\symbol{45}no-xshm} {\it string}\\
-In releases running under the X-Window system (Unix/Linux), {\it Mozy}
-will use the MIT-SHM shared memory extension if the X server supports
-this extension, and the server is running on the local machine.  This
-allows image data to be transferred to the X server via shared memory,
-which is faster than the normal X socket interface.  Screen updates
-may be faster as a result.
-
-Giving the option {\et \symbol{45}\symbol{45}no-xshm} on the command
-line will prevent use of this extension, if for some reason this is
-necessary.
-\end{description}
+Releases that use the GTK2 grahical toolkit have a few additional
+arguments available (see \ref{gtkargs}).
 
 Topics can also be entered by using the {\cb Open} menu item in the
 {\cb File} menu.  A topic can be one of:

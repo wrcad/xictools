@@ -9,7 +9,7 @@ XPMS = \
   wire.xpm wr.xpm xform.xpm xor.xpm
 
 BASEFILES = \
-  FileSel.hlp Hardcopy.hlp TMsmall.gif wrbannermain.gif
+  FileSel.hlp Graphics.hlp Hardcopy.hlp TMsmall.gif wrbannermain.gif
 
 MOZYFILES = \
   HelpSys.hlp TextEditor.hlp Accessories.hlp
@@ -39,6 +39,7 @@ $(SPFILES):
 	cp -fp $(SPBASE)/$@ .
 
 FileSel.hlp:    $(BASE)/FileSel.hlp
+Graphics.hlp:   $(BASE)/Graphics.hlp
 Hardcopy.hlp:   $(BASE)/Hardcopy.hlp
 TMsmall.gif:    $(BASE)/TMsmall.gif
 wrbannermain.gif: $(BASE)/wrbannermain.gif

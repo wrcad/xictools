@@ -1,0 +1,1711 @@
+
+!!KEYWORD
+Graphics.hlp
+!!TITLE
+Graphics.hlp
+!!HTML
+
+!!SUBTOPICS
+graphics
+gtkargs
+macos
+mswindows
+
+
+!! 040824
+!!KEYWORD
+graphics
+!!TITLE
+Graphics Support
+!!HTML
+    When a graphical support environment is found on program
+    startup, graphical components of the program will be enabled
+    unless these are explicitly disabled.  Graphics support is
+    always available in Microsoft Windows, and on macOS when using
+    the Qt graphics (see below).  Otherwise, graphics support is
+    provided by a running X server.
+    When the <b>DISPLAY</b> variable is found in the
+!!IFDEF Xic
+    <a href="xic:env">environment</a> upon program startup,
+    <i>Xic</i> assumes that a graphical (X-window) server is
+    available.
+!!ELSEIF WRSPICE
+    <a href="environment">environment</a> upon program startup,
+    <i>WRspice</i> assumes that a graphical (X-window) server is
+    available.  If this initialization fails, <i>WRspice</i> will
+    terminate.  If the <b>DISPLAY</b> variable is not set, and the
+    <a href="-d"><tt>-d</tt></a> option is not used to specify the
+    display, or the <a href="-dnone"><tt>-dnone</tt></a> command
+    line option is given, then <i>WRspice</i> will run in text-only
+    mode.  In this mode, the core functionality is available, but
+    not the graphical niceties such as plotting (other than the
+    infamous crude line-printer plots of yore).
+!!ENDIF
+
+    <p>
+    Starting with Generation 4, <i>Xic</i> and all other Whiteley
+    Research products used the GTK2 graphical user interface toolkit
+    exclusively.  This replaced the Win32 graphical interface
+    previously used under Windows and the GTK1 interface used for
+    other systems.  Thus, all releases had precisely the same
+    graphical interface, which greatly simplified documentation,
+    maintenance, and development.
+
+    <p>
+    Presently (February 2025) GTK2 is still the reference toolkit,
+    but it is being replaced by Qt, another popular toolkit.  The
+    user interface is very similar, most of the changes are "under
+    the hood".  The tremendous amount of work to bring in a different
+    toolkit is about complete, and Qt releases are in use.
+
+    <p>
+    The GTK2 library is now very old and considered obsolete, but
+    unfortunately the Cairo graphical layer used in subsequent GTK3
+    and GTK4 is not acceptable for a program such as <i>Xic</i> due
+    to perfomance and rendering accuracy issues.  Qt, on the other
+    hand, provides the needed support, and is contemporary
+    software under active development.  Qt is written in C++ (like
+    <i>Xic</i> and <i>WRspice</i>) rather than C as used in GTK.
+    The internal organization of the Qt version of the programs is
+    far cleaner and more concise and will be easier to maintain and
+    extend.  Qt has very good compatibility with Microsoft Windows
+    and macOS.  Qt is the overwhelming choice for EDA/CAD
+    applications for these reasons.
+
+    <p>
+    Under macOS, there is no need to run an X server like XQuartz
+    with the Qt versions.  An X server is required for GTK2.
+
+    <p>
+    The <i>Xic</i>, <i>WRspice</i>, and <i>Mozy</i> packages
+    presently provide executables for both graphical libraries,
+    at least one of which must be available to run the programs in
+    graphical mode.
+
+    <p>
+    From XicTools xt-4.3.20 (xic-4.3.14, wrspice-4.3.20), package
+    releases contain separate binaries which link the GTK2 and Qt
+    graphics libraries used for the GUI display.  This is likely to
+    be temporary as the Qt versions will replace the GTK versions,
+    as the GTK2 library is considered to be obsolete.  For now, both
+    versions are included for comparison purposes, and possibly as a
+    work around if there is trouble with one or the other.
+
+    <p>
+    For the packages, the Qt versions used are
+    <blockquote>
+    <table>
+    <tr><td>Windows</td>     <td>QT6</td></tr>
+    <tr><td>macOS</td>       <td>QT6</td></tr>
+    <tr><td>all Linux</td>   <td>QT5</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    To use Qt, you may have to install it.  Use these commands:
+    <dl>
+    <dt>Windows: <dd><tt>pacman -S mingw-w64-x86_64-qt6</tt>
+    <dt>macOS: <dd><tt>sudo port install qt6</tt>
+    <dt>Linux: <dd>Qt5 is likely installed already, but if not you
+    can give commands like (as root)
+    <blockquote>
+    Debian/Ubuntu: <tt>apt-install qt5-qtbase-devel</tt><br>
+    Red Hat equiv: <tt>dnf install qt5-qtbase-devel</tt>
+    </blockquote>
+    </dl>
+
+    <p>
+    You can switch between the two versions using a <tt>.xtrc</tt>
+    file which is found either in the current directory or your home
+    directory.  You will need to create this file to use the Qt
+    version.  This is easily done with a text editor.  If this file
+    is not found, GTK2 is the default.
+
+    <p>
+    The <tt>.xtrc</tt> file contains a single active line that looks
+    similar to
+    <blockquote>
+    <tt>grpref=GTK2</tt>
+    </blockquote>
+    where "<tt>GTK2</tt>" can as well be "<tt>QT5</tt>" or
+    "<tt>QT6</tt>" to set the desired choice.  The '<tt>#</tt>'
+    character can be used to comment out unused lines.
+
+    <p>
+    Note that there is no white space around the '<tt>=</tt>' character.
+    You can change which version to run by modifying the <tt>.xtrc</tt>
+    file with a text editor.
+
+!!LATEX graphics local
+When a graphical support environment is found on program startup,
+graphical components of the program will be enabled unless these are
+explicitly disabled.  Graphics support is always available in Microsoft
+Windows, and on macOS when using the Qt graphics (see below).  Otherwise,
+graphics support is provided by a running X-Windows server.  When the
+{\et DISPLAY} variable is found in the environment upon program startup,
+the program assumes that a graphical (X-window) server is available.
+!!IFDEF WRspice
+If this initialization fails, {\WRspice} will terminate.  If the
+{\et DISPLAY} variable is not set, and the {\vt -d} option is not used
+on the command line to specify the display, or the {\vt -dnone} command
+line option is given, then {\WRspice} will run in text-only mode.  In this
+mode, the core functionality is available, but not the graphical
+niceties such as plotting (other than the infamous crude line-printer
+plots of yore).
+!!ENDIF
+
+Starting with Generation 4, {\Xic} and all other Whiteley
+Research products used the GTK2 graphical user interface toolkit
+exclusively.  This replaced the Win32 graphical interface previously
+used under Windows and the GTK1 interface used for other systems.  Thus,
+all releases had precisely the same graphical interface, which greatly
+simplified documentation, maintenance, and development.
+
+Presently (February 2025) GTK2 is still the reference toolkit, but it is
+being replaced by Qt, another popular toolkit.  The user interface is very
+similar, most of the changes are ``under the hood''.  The tremendous amount
+of work to bring in a different toolkit is about complete, and Qt releases
+are in use.
+
+The GTK2 library is now very old and considered obsolete, but unfortunately
+the Cairo graphical layer used in subsequent GTK3 and GTK4 is not acceptable
+for a program such as {\Xic} due to perfomance and rendering accuracy
+issues.  Qt, on the other hand, provides the needed support, and is
+contemporary software under active development.  Qt is written in C++ (like
+{\Xic} and {\WRspice}) rather than C as used in GTK.  The internal
+organization of the Qt version of the programs is far cleaner and more
+concise and will be easier to maintain and extend.  Qt has very good
+compatibility with Microsoft Windows and macOS.  Qt is the overwhelming
+choice for EDA/CAD applications for these reasons.
+
+Under macOS, there is no need to run an X server like XQuartz with the Qt
+versions.  An X server is required for GTK2.
+
+The {\Xic}, {\WRspice}, and {\it Mozy} packages presently provide
+executables for both graphical libraries, at least one of which must be
+available to run the programs in graphical mode.
+
+From XicTools xt-4.3.20 (xic-4.3.14, wrspice-4.3.20), package releases
+contain separate binaries which link the GTK2 and Qt graphics libraries
+used for the GUI display.  This is likely to be temporary as the Qt versions
+will replace the GTK versions, as the GTK2 library is considered to be
+obsolete.  For now, both versions are included for comparison purposes, and
+possibly as a work around if there is trouble with one or the other.
+
+For the packages, the Qt versions used are
+\begin{quote}
+\begin{tabular}{ll}
+Windows & QT6\\
+macOS   & QT6\\
+Linux   & QT5\\
+\end{tabular}
+\end{quote}
+
+To use Qt, you may have to install it.  Use these commands:
+\begin{description}
+\item{Windows:} {\vt pacman -S mingw-w64-x86\_64-qt6}
+\item{macOS:} {\vt sudo port install qt6}
+\item{Linux:} {Qt5 is likely installed already, but if not you can give
+commands like (as root)
+\begin{quote}
+Debian/Ubuntu: {\vt apt-install qt5-qtbase-devel}\\
+Red Hat equiv: {\vt dnf install qt5-qtbase-devel}
+\end{quote}}
+\end{description}
+
+You can switch between the two versions using a {\vt .xtrc} file which is
+found either in the current directory or your home directory.  You will
+need to create this file to use the Qt version.  This is easily done with
+a text editor.  If this file is not found, GTK2 is the default.
+
+The {\vt .xtrc} file contains a single active line that looks similar to
+\begin{quote}
+{\vt grpref=GTK2}
+\end{quote}
+where ``{\vt GTK2}'' can as well be ``{\vt QT5}'' or ``{\vt QT6}'' to set
+the desired choice.  The `{\vt \#}' character can be used to comment out
+unused lines.
+
+Note that there is no white space around the `{\vt =}' character.
+You can change which version to run by modifying the {\vt .xtrc} file with
+a text editor.
+
+!!SEEALSO
+gtkargs
+macos
+mswindows
+
+!!KEYWORD
+gtkargs
+!!TITLE
+GTK2 Command Line Arguments
+!!HTML
+    The GTK2 graphical interface accepts the following options.  These
+    options are not processed by <b><i>Mozy</i></b>, but are
+    intercepted by the graphics subsystem and affect the interface to
+    the X-window system in Linux.  The multiple forms are equivalent.
+
+    <p>
+    <dl>
+    <dt><tt>-d</tt> <i>dispname</i><br>
+    <tt>-display</tt> <i>dispname</i><br>
+    <tt>--display</tt> <i>dispname</i><dd>
+    This option specifies the name of the X display to use.  The
+    <i>dispname</i> is in the form
+    <blockquote>
+     <tt>[<i>host</i>]:<i>server</i>[.<i>screen</i>]</tt>
+    </blockquote>
+    The <i>host</i> is the host name of the physical display,
+    <i>server</i> specifies the display server number, and
+    <i>screen</i> specifies the screen number.  Either or both of the
+    <i>host</i> and <i>screen</i> elements to the display
+    specification can be omitted.  If <i>host</i> is omitted, the
+    local display is assumed.  If <i>screen</i> is omitted, screen 0
+    is assumed (and the period is unnecessary).  The colon and
+    (display) <i>server</i> are necessary in all cases.  If no display
+    is specified on the command line, the display is set to the value
+    of the <tt>DISPLAY</tt> environment variable.
+    </dl>
+
+    <dl>
+    <dt><tt>-name</tt> <i>appname</i><br>
+    <tt>--name</tt> <i>appname</i><dd>
+    This option provides and alternative name to the application, as
+    known to the X window system.  The application name is used by X
+    to apply resource specifications.
+    </dl>
+
+    <dl>
+    <dt><tt>--class</tt> <i>classname</i><dd>
+    This option provides and alternative class name to the
+    application, as known to the X window system.  The application
+    class name is used by X to apply resource specifications.
+    </dl>
+
+    <dl>
+    <dt><tt>-synchronous</tt><br>
+    <tt>--sync</tt><dd>
+    This option indicates that requests to the X server should be sent
+    synchronously, instead of asynchronously.  Since the X system
+    normally buffers requests to the server, errors do not necessarily
+    get reported immediately after they occur.  This option turns off
+    the buffering so that the application can be debugged more easily. 
+    It should never be used with a working program.
+    </dl>
+
+    <dl>
+    <dt><tt>--no-xshm</tt><dd>
+    In releases running under the X-Window system (Unix/Linux),
+    <b><i>Mozy</i></b> will use the MIT-SHM shared memory extension if
+    the X server supports this extension, and the server is running on
+    the local machine.  This allows image data to be transferred to
+    the X server via shared memory, which is faster than the normal X
+    socket interface.  Screen updates may be faster as a result.
+
+    <p>
+    Giving the option <tt>--no-xshm</tt> on the command line will
+    prevent use of this extension, if for some reason this is
+    necessary.
+    </dl>
+!!LATEX gtkargs local
+Releases that use the GTK2 graphical toolkit also accept the following
+options.  These options are intercepted by the graphics subsystem and
+affect the interface to the X-window system in Linux.  The multiple
+forms are equivalent.
+
+\index{command line!options|(}
+\begin{description}
+\index{command line!options!--display}
+\item\parbox[b]{4in}{
+{\vt -d} {\it dispname}\\
+{\vt -display} {\it dispname}\\
+{\vt -\/-display} {\it dispname}}\\
+This option specifies the name of the X display to use.  The {\it
+dispname} is in the form
+\begin{quote}
+ [{\it host\/}]:{\it server\/}[.{\it screen\/}]\\
+\end{quote}
+The {\it host\/} is the host name of the
+physical display, {\it server\/} specifies the display server number,
+and {\it screen\/} specifies the screen number.  Either or both of the
+{\it host\/} and {\it screen\/} elements to the display specification
+can be omitted.  If {\it host\/} is omitted, the local display is
+assumed.  If {\it screen\/} is omitted, screen 0 is assumed (and the
+period is unnecessary).  The colon and (display) {\it server\/} are
+necessary in all cases.  If no display is specified on the command
+line, the display is set to the value of the environment variable {\et
+DISPLAY}.
+
+\index{command line!options!--name}
+\item\parbox[b]{4in}{
+{\vt -name} {\it string}\\
+{\vt -\/-name} {\it string}}\\
+This option provides an alternative name to the application, as known
+to the X window system.  The application name is used by X to apply
+resource specifications.
+
+\index{command line!options!--class}
+\item{\vt -\/-class} {\it string}\\
+This option provides an alternative class name to the application, as
+known to the X window system.  The application class name is used by X
+to apply resource specifications.
+
+\index{command line!options!--sync}
+\item\parbox[b]{4in}{
+{\vt -synchronous}\\
+{\vt -\/-sync}}\\
+This option indicates that requests to the X server should be sent
+synchronously, instead of asynchronously.  Since the X system normally
+buffers requests to the server, errors do not necessarily get reported
+immediately after they occur.  This option turns off the buffering so
+that the application can be debugged more easily.  It should never be
+used with a working program.
+
+\index{command line!options!--no-xshm}
+\item{\vt -\/-no-xshm} {\it string}\\
+In releases running under the X-Window system (Unix/Linux), {\it Mozy}
+will use the MIT-SHM shared memory extension if the X server supports
+this extension, and the server is running on the local machine.  This
+allows image data to be transferred to the X server via shared memory,
+which is faster than the normal X socket interface.  Screen updates
+may be faster as a result.
+
+Giving the option {\vt -\/-no-xshm} on the command line will prevent
+use of this extension, if for some reason this is necessary.
+\end{description}
+\index{command line!options|)}
+
+!!SEEALSO
+graphics
+
+!! 091124
+!!KEYWORD
+macos macosx
+!!TITLE
+Apple macOS Notes
+!!HTML
+    In macOS, lurking beneath the pretty graphics is a complete Unix
+    operating system based on FreeBSD, including support for
+    X-windows.  Most of the open-source software developed for
+    Linux/FreeBSD has been ported to macOS, so for the Unix fans (like
+    me), the operating system can look like Unix with a great
+    graphical interface that also runs Macintosh applications. 
+    Overall, macOS is a very impressive desktop/laptop operating
+    system.
+
+    <p>
+    The programs built with the GTK graphics toolkit require that an
+    X-windows server be running, as X is used for graphics.  This is
+    not installed automatically.  The Apple-sponsored X-server is
+    called "XQuartz" and is available for download from the project
+    web site (google "XQuartz download").
+
+    <p>
+    The programs built with the Qt graphics toolkit are native macOS
+    applications and make use of direct access to the screen, so there is
+    no need for XQuartz in this case.
+
+    <p>
+    Operation and behavior should be identical or very similar to the
+    Unix/Linux versions of the programs.
+
+    <h2>Package Installation</h2>
+
+    <p>
+    Packages (precompiled program binaries) are being phased out in
+    favor of building from source code.  If you have compatible package
+    files, they can be instlled as described here.
+   
+    <p>
+    The package distribution files are "flat" Apple package files. 
+    The installation procedure is pretty much the same as under
+    Unix/Linux, using the <tt>wr_install</tt> script from a terminal
+    window.
+
+    <ol>
+    <li>Download the necessary distribution files and scripts. 
+    Probably, the easiest course is to download everything in the
+    distribution directory for your operating system, into a new,
+    empty temporary directory.  Presently, there are eight package
+    files and two scripts.  The installation method below uses the
+    terminal window.  When downloading completes, cd to the new
+    directory.
+
+    <li>Make sure that the <tt>wr_install</tt> and
+    <tt>wr_uninstall</tt> scripts are executable (they might not be
+    after the download).  If not, use<br>
+    <tt>chmod 0755 wr_install wr_uninstall</tt>
+
+    <li>The installation location is under
+    <tt>/usr/local/xictools</tt>, and can not be changed.  You will
+    need to become 'root' in order to install packages.  For future
+    use of the automated updating features of <i>Xic</i> and
+    <i>WRspice</i>, you will need to have your account enabled for the
+    "sudo" command, i.e., your account name should be listed in
+    "<tt>/etc/sudoers</tt>".  If this is set up, the installer will
+    ask for your password to enable installation.  Otherwise you will
+    have to use the su command to become root (which may not be
+    enabled).
+
+    <li>Run <tt>wr_install</tt> with the argument(s) being the names of the
+    distribution files, or "<tt>all</tt>".
+    <blockquote> </tt>
+    ./wr_install all
+    </tt></blockquote>
+    The argument "<tt>all</tt>" is equivalent to <tt>*.pkg</tt>.  This
+    automates the installation procedure.  Do NOT change the names of
+    the files, or <tt>wr_install</tt> will probably fail.
+
+    <li>Add the <tt>/usr/local/xictools/bin</tt> directory to your shell search
+    path, if you haven't done so.  Once <i>Xic</i> and <i>WRspice</i> have been
+    installed, updating could not be simpler.  See the program
+    documentation:  In <i>WRspice</i>, give the commands "help passwd" and
+    "help wrupdate".  In <i>Xic</i> , with the mouse pointer in the main
+    drawing window, type "?!passwd" and "?!update".  These help
+    topics explain how to set up and use the update features.  The
+    programs will check for updates when started.  The user can
+    download and install updates when available. (Warning, packlages
+    are deprecated and the update feature is not supported presently).
+
+    <li>For a first-time installation, you will need to install and
+    set up MacPorts.  This provides the graphical libraries used by
+    the programs.  Following the instructions, install MacPorts for
+    your operating system.  Be sure to install the default package
+    which installs in the default location (i.e., don't build from
+    source and change the location).  Note that the procedure also
+    requires installing Apple xcode from the App Store.  Once the
+    basic installation is done, run, as root, the following commands:
+
+    <blockquote> <tt>
+    port -v selfupdate<br>
+    port install gtk2<br>
+    port install gsl<br>
+    port install python2_select<br>
+    port install python27<br>
+    port install autoconf<br>
+    port install pkgconfig<br>
+    </tt></blockquote>
+
+    <li>Finally, if you are installing GTK versions and if you don't
+    already have an X-server, you should install X-Quartz.  XQuartz is
+    the "official" X server for macOS and is recommended.
+  
+    <li>You're done, and should be able to run the programs. 
+    Furthermore, you should be able to build the <i>XicTools</i> from
+    source, the MacPorts and xcode provide the necessary libraries.
+    </ol>
+
+    <h2>Installation from Source</h2>
+
+    Presently, this is the recommended procedure for installing
+    <i>Xic</i> and all of the <i>XicTools</i> on your system.  See the
+    README file at the top directory of the <i>XicTools</i> source
+    tree from <tt>github.com/wrcad/xictools</tt>.
+
+    <h2>Un-Installation</h2>
+
+    To uninstall, the <tt>wr_uninstall</tt> script can be used.  This
+    takes care of file removal and updating the systgem package
+    database.
+
+    <h2>Running the Applications</h2>
+
+    It is assumed that the user will be initiating the applications
+    from a terminal window, as under Unix/Linux.  The directories
+    containing the program binaries (<tt>/usr/local/xictools/bin</tt>)
+    should be in the shell search path.  Then, all executables will be
+    found by name.  Operation is the same as under Unix/Linux.
+
+    <h2>MacBook Keyboard Mapping Issues</h2>
+
+    The Darwin64 releases work great on a MacBook Pro, however there
+    are some keyboard mapping issues.  Keys which have normal
+    significance to <i>Xic</i>, such as <b>Home</b>, <b>Page Up</b>
+    and <b>Page Down</b>, and the numeric keypad plus and minus keys
+    are nowhere to be found.  Yet, all functionality is present, but
+    maps to alternative key combinations.  One can run the <a
+    href="xic:keymp"><b>Key Map</b></a> command in the <b>Attributes
+    Menu</b> if another mapping is needed.
+
+    <p>
+    The table below describes the default mapping.
+
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>MacBook Pro</th>  <th>Normal keyboard</th></tr>
+    <tr><th>Delete</th> <td><b>Backspace</b><br>
+      The key labeled "<b>Delete</b>" actually sends a backspace
+      character.</td></tr>
+    <tr><th>fn-Delete</th> <td><b>Delete</b><br>
+      Press the <b>fn</b> key with <b>Delete</b> to get a real delete
+      character.</td></tr>
+    <tr><th>fn-Left</th> <td><b>Home</b><br>
+      Press the <b>fn</b> key with the left arrow for the
+      center-full-view function in <i>Xic</i>.</td></tr>
+    <tr><th>fn-Up</th> <td><b>Page Up</b><br>
+      Press the <b>fn</b> key with up arrow to get a page up code,
+      used in <i>Xic</i> for displaying DRC errors.</td></tr>
+    <tr><th>fn-Down</th> <td><b>Page Down</b><br>
+      Press the <b>fn</b> key with down arrow to get a page down
+      code, used in <i>Xic</i> for displaying DRC errors.</td></tr>
+
+    <tr><td colspan=2>
+      <b>These mappings are set in Apple releases only.</td></tr>
+    <tr><th>fn-Enter</th> <td><b>KeyPad Enter</b><br>
+      Press the <b>fn</b> key with <b>Enter</b> to get the numeric
+      keypad enter code.  This is mapped to the zoom-in action, as for
+      <b>Numeric Plus</b>.</td></tr>
+    <tr><th>fn-Right</th> <td><b>End</b><br>
+      Press the <b>fn</b> key with the right arrow to get the end key
+      code.  This is mapped to the zoom-out action, as for <b>Numeric
+      Minus</b>.</td></tr>
+    </table>
+
+    <p>
+    Note that if you use a "normal" keyboard with your Apple computer,
+    the two new mappings will be in addition to the normmal mappings.
+
+    <p>
+    The "secondary press" mentioned in Apple documents is button 3
+    (the right mouse button on a three-button mouse).  You should
+    probably change the track-pad settings in the <b>Preferences</b>
+    to enable this.  There is no button 2 (middle mouse button). 
+    You'll have to live without it, or get a three-button pointing
+    device.
+
+    <h4>The Alt Key Issue</h4>
+
+    The MacBook Pro and probably other Mac machines lack a compatible
+    <b>Alt</b> key.  This <b>Alt</b> key is used in <i>Xic</i> as a
+    menu accelerator, and for a button-press modifier.  It is
+    reasonable to live without it, but there is a fix.
+
+    <p>
+    The following fix works on my MacBook Pro.  Create a file in your
+    home directory named "<tt>.Xmodmap</tt>" containing the following
+    two lines:
+
+    <blockquote><tt>
+    keycode 66 = Alt_L<br>
+    add mod1 = Alt_L
+    </tt></blockquote>
+
+    <p>
+    This will map the left "option" button to <b>Alt</b>.  The right
+    option button will still do the normal Mac thing, i.e., send
+    alternate character keycodes.
+
+    <p>
+    However, this depends on the left option key returning scan code
+    66, which may not be true on different hardware.  The <tt>xev</tt>
+    program can be used to find the actual scan code.
+
+    <p>
+    This will apply to all X applications, and the mapping will be
+    recorded when the X server starts.  You can also give the command
+    <blockquote>
+    <tt>xmodmap -e "keycode 66 = Alt_L" -e "add mod1 = Alt_L"</tt>
+    </blockquote>
+    which will re-map the keys for the current X session.
+!!LATEX macos local
+In macOS, lurking beneath the pretty graphics is a complete Unix
+operating system based on FreeBSD, including support for X-windows. 
+Most of the open-source software developed for Linux/FreeBSD has been
+ported to macOS, so for the Unix fans (like me), the operating system
+can look like Unix with a great graphical interface that also runs
+Macintosh applications.  Overall, macOS is a very impressive
+desktop/laptop operating system.
+
+The programs built with the GTK graphics toolkit require that an
+X-windows server be running, as X is used for graphics.  This is not
+installed automatically.  The Apple-sponsored X-server is called
+``XQuartz'' and is available for download from the project web site
+(google ``XQuartz download'').
+
+The programs built with the Qt graphics toolkit are native macOS
+applications and make use of direct access to the s creen, so there is
+no neew for XQuartz in this case.
+
+Operation and behavior should be identical or very similar to the
+Unix/Linux versions of the programs.
+
+\subsection{Package Installation}
+
+Packages (precompiled program binaries) are being phased out in favor
+of building from source code.  If you have compatible package files,
+they can be installed as described here.
+
+The package distribution files are ``flat'' Apple package files.  The
+installation procedure is pretty much the same as under Unix/Linux,
+using the {\vt wr\_install} script from a terminal window.
+
+\begin{enumerate}
+\item{Download the necessary distribution files and scripts. 
+Probably, the easiest course is to download everything in the
+distribution directory for your operating system, into a new, empty
+temporary directory.  Presently, there are eight package files and two
+scripts.  The installation method below uses the terminal window. 
+When downloading completes, cd to the new directory.}
+
+\item{Make sure that the {\vt wr\_install} and {\vt wr\_uninstall}
+scripts are executable (they might not be after the download).  If
+not, use\\
+{\vt chmod 0755 wr\_install wr\_uninstall}}
+
+\item{The installation location is under {\vt /usr/local/xictools},
+and can not be changed.  You will need to become `root' in order to
+install packages.  For future use of the automated updating features
+of {\Xic} and {\WRspice}, you will need to have your account enabled
+for the ``sudo'' command, i.e., your account name should be listed in
+``{\vt /etc/sudoers}''.  If this is set up, the installer will ask for
+your password to enable installation.  Otherwise you will have to use
+the su command to become root (which may not be enabled).}
+
+\item{Run {\vt wr\_install} with the argument(s) being the names of
+the distribution files, or ``{\vt all}''.
+\begin{quote}\vt
+./wr\_install all
+\end{quote}
+The argument ``{\vt all}'' is equivalent to {vt *.pkg}.  This
+automates the installation procedure.  Do NOT change the names of the
+files, or {\vt wr\_install} will probably fail.}
+
+\item{Add the {\vt /usr/local/xictools/bin} directory to your shell
+search path, if you haven't done so.  Once {\Xic} and {\WRspice} have
+been installed, updating could not be simpler.  See the program
+documentation:  In {\WRspice}, give the commands ``help passwd'' and
+``help wrupdate''.  In {\Xic} , with the mouse pointer in the main
+drawing window, type ``?!passwd'' and ``?!update''.  These help topics
+explain how to set up and use the update features.  The programs will
+check for updates when started.  The user can download and install
+updates when available.  (Warning, packlages are deprecated and the
+update feature is not supported presently).}
+
+\item{For a first-time installation, you will need to install and set
+up MacPorts.  This provides the graphical libraries used by the
+programs.  Following the instructions, install MacPorts for your
+operating system.  Be sure to install the default package which
+installs in the default location (i.e., don't build from source and
+change the location).  Note that the procedure also requires
+installing Apple xcode from the App Store.  Once the basic
+installation is done, run, as root, the following commands:
+
+\begin{quote}\vt
+port -v selfupdate\\
+port install gtk2\\
+port install gsl\\
+port install python2\_select\\
+port install python27\\
+port install autoconf\\
+port install pkgconfig\\
+\end{quote}}
+
+\item{Finally, if you are installing GTK versions and if you don't
+already have an X-server, you should install X-Quartz.  XQuartz is the
+``official'' X server for masOS and is recommended.}
+  
+\item{You're done, and should be able to run the programs. 
+Furthermore, you should be able to build the {\XicTools} from source,
+the MacPorts and xcode provide the necessary libraries.}
+\end{enumerate}
+
+\subsection{Installation from Source}
+
+Presently, this is the recommended procedure for installing {\Xic} and
+all of the {\XicTools} on your system.  See the README file at the top
+directory of the {\XicTools} source tree from {\vt
+github.com/wrcad/xictools}.
+
+\subsection{Un-Installation}
+
+To uninstall, the {\vt wr\_uninstall} script can be used.  This takes
+care of file removal and updating the system package database.
+
+\subsection{Running the Applications}
+
+It is assumed that the user will be initiating the applications from a
+terminal window, as under Unix/Linux.  The directory containing the
+program binaries ({\vt /usr/local/xictools/bin}) should be in the
+shell search path.  Then, all executables will be found by name. 
+Operation is the same as under Unix/Linux.
+
+\subsection{MacBook Keyboard Mapping Issues}
+
+The Darwin64 releases work great on a MacBook Pro, however there are
+some keyboard mapping issues.  Keys which have normal significance to
+{\Xic}, such as {\kb Home}, {\kb Page Up} and {\kb Page Down}, and the
+numeric keypad plus and minus keys are nowhere to be found.  Yet, all
+functionality is present, but maps to alternative key combinations. 
+One can run the {\cb Key Map} command in the {\cb Attributes Menu} if
+another mapping is needed.
+
+The table below describes the default mapping.
+
+\begin{tabular}{|l|p{5in}|} \hline
+\bf MacBook Pro &  \bf Normal keyboard\\ \hline\hline
+\kb Delete & {\kb Backspace}\newline
+  The key labeled ``{\kb Delete}'' actually sends a backspace
+  character.\\ \hline
+\kb fn-Delete & {\kb Delete}\newline
+  Press the {\kb fn} key with {\kb Delete} to get a real delete
+  character.\\ \hline
+\kb fn-Left & {\kb Home}\newline
+  Press the {\kb fn} key with the left arrow for the center-full-view
+  function in {\Xic}.\\ \hline
+\kb fn-Up & {\kb Page Up}\newline
+  Press the {\kb fn} key with up arrow to get a page up code, used in
+  {\Xic} for displaying DRC errors.\\ \hline
+\kb fn-Down & {\kb Page Down}\newline
+  Press the {\kb fn} key with down arrow to get a page down code, used
+  in {\Xic} for displaying DRC errors.\\ \hline\hline
+\multicolumn{2}{|c|}
+  {These mappings are set in Apple releases only.}\\ \hline\hline
+\kb fn-Enter & {\kb KeyPad Enter}\newline
+  Press the {\kb fn} key with {\kb Enter} to get the numeric keypad
+  enter code.  This is mapped to the zoom-in action, as for {\kb
+  Numeric Plus}.\\ \hline
+\kb fn-Right & {\kb End}\newline
+  Press the {\kb fn} key with the right arrow to get the end key code. 
+  This is mapped to the zoom-out action, as for {\kb Numeric Minus}.\\
+  \hline
+\end{tabular}
+
+Note that if you use a ``normal'' keyboard with your Apple computer,
+the two new mappings will be in addition to the normmal mappings.
+
+The ``secondary press'' mentioned in Apple documents is button 3 (the
+right mouse button on a three-button mouse).  You should probably
+change the track-pad settings in the {\cb Preferences} to enable this. 
+There is no button 2 (middle mouse button).  You'll have to live
+without it, or get a three-button pointing device.
+
+\subsection{The Alt Key Issue}
+
+The MacBook Pro and probably other Mac machines lack a compatible {\kb
+Alt} key.  This {\kb Alt} key is used in {\Xic} as a menu accelerator,
+and for a button-press modifier.  It is reasonable to live without it,
+but there is a fix.
+
+The following fix works on my MacBook Pro.  Create a file in your home
+directory named ``{\vt .Xmodmap}'' containing the following two lines:
+
+\begin{quote}\vt
+keycode 66 = Alt\_L\\
+add mod1 = Alt\_L
+\end{quote}
+
+This will map the left ``option'' button to {\kb Alt}.  The right
+option button will still do the normal Mac thing, i.e., send alternate
+character keycodes.
+
+However, this depends on the left option key returning scan code 66,
+which may not be true on different hardware.  The {\vt xev} program
+can be used to find the actual scan code.
+
+This will apply to all X applications, and the mapping will be
+recorded when the X server starts.  You can also give the command
+\begin{quote}
+\vt xmodmap -e "keycode 66 = Alt\_L" -e "add mod1 = Alt\_L"
+\end{quote}
+which will re-map the keys for the current X session.
+
+!! 061124
+!!KEYWORD
+mswindows
+!!TITLE
+Microsoft Windows Notes
+!!HTML
+    <font color=red>Section needs updating.</font><br>
+    <table border=0>
+    <tr><td valign=top><b>jump to</b></td> <td>
+    <a href="mswindows#setup"><b>Installation and Setup</b></a><br>
+    <a href="mswindows#general"><b>General Notes</b></a><br>
+    <a href="mswindows#env"><b>Setting Environment Variables</b></a><br>
+    </td></tr></table>
+
+    <p>
+    This topic contains notes relevant to the Microsoft Windows
+    release of the <i>XicTools</i>.
+
+    <a name="setup"></a>
+    <h3>Package Installation and Setup</h3>
+
+!!IFDEF xtlerv
+    In order to license a Windows host, two pieces of information are
+    needed:
+    <ul>
+    <li>The machine's host name
+    <li>The Windows Product ID
+    </ul>
+
+    <p>
+    The recommended way to retrieve this information is to download
+    the <tt>licinfo.exe</tt> program from the <a
+    href="http://wrcad.com"<tt>wrcad.com</tt></a> web site.  When run,
+    this program generates a file named "<tt>XtLicenseInfo</tt>" which
+    should be emailed to Whiteley Research.  A pop-up window displays
+    the information, and indicates success or failure.
+!!ENDIF
+
+    <p>
+    Packages (precompiled binary programs) are deprecated in favor of
+    building the programs from source.  If you have access to packages,
+    they can be installed per the instructions in this section.
+
+    <p>
+    The packages come in self-extracting <tt>.exe</tt> files.  Simply
+    run the files to do the installation.  The programs can later be
+    uninstalled, either with the Windows software manager or by
+    clicking the <b>Uninstall</b> icons in the <b>XicTools</b> program
+    group in the <b>Start</b> menu.
+
+    <p>
+    The same process can be used to install updated releases - it is
+    not necessary to uninstall first.  A more convenient way to keep
+    current is to use the <a href="update">updating</a> feature of the
+    <a href="helpsys">help system</a>.  (Package updating is not
+    currently available).
+
+    <p>
+    <table border=0 bgcolor="#ffeeee" cellpadding=3><tr><td>
+    WARNING<br>
+    The programs use an entry in the Windows Registry to find their
+    startup files, etc.  This entry is created by the installer
+    program.
+    </td></tr></table>
+
+    Thus
+    <ol>
+    <li>The correct way to move an existing installation to another
+    location is to uninstall the program, and reinstall to the new location
+    using the standard distribution file.  If you just move the files to
+    a new location, the Registry won't be updated and the program won't
+    run correctly.
+
+    <li>You can not simply copy files from another machine when
+    creating a new installation.  The files must be installed through
+    the distribution files, or the Registry entry won't be set.
+    </ol>
+
+    The Registry entry used (by the <tt>inno</tt> installer program) is
+    (for example)
+    <blockquote>
+    <tt>HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall\Xic-4is1</tt>
+    </blockquote>
+    The Windows <tt>regedit</tt> utility can be used to repair the
+    Registry if necessary.  The Windows <tt>reg</tt> utility can also
+    be used to query and modify the Registry from the command line.
+
+    <p>
+    The programs are installed by default under <tt>C:\usr\local</tt>,
+    which can be specified to the program installer.  The installation
+    directories will be created if necessary.  All of the programs
+    will install under a directory named "<tt>xictools</tt>" under the
+    prefix, (for example, <i>Xic</i> files would be installed by
+    default in <tt>C:\usr\local\xictools\xic</tt>).  The structure of
+    the tree is exactly that as under Linux, which simplifies
+    compatibility.  It is recommended that the default installation
+    location be used, if possible.
+
+    <h4>Installing MSYS2</h4>
+
+    <p>
+    Starting January 2021, all Windows binaries are 64-bit, compiled
+    under the MINGW64 subsystem of MSYS2 (64-bit version).
+
+    <p>
+    Although it may be possible to run the programs from other MINGW64
+    installations, for example Cygwin, it is recommended MSYS2 be
+    installed.  This replaces the <tt>gtk_bundle</tt> package that was
+    previously used to supply graphical interface dlls.
+
+    <p>
+    When installing MSYS2 and <i>XicTools</i> programs, you are strongly
+    advised to install in the default locations if possible.
+
+    <p>
+    Go to <tt>www.msys2.org</tt>.  Download and run the installer, and
+    follow the directions.  It is easy.  When done, you will have a
+    shell window on the screen.  You should type the following
+    commands to load some things you will need.
+    <blockquote><tt>
+    pacman -S vim<br>
+    pacman -S winpty<br>
+    pacman -S mingw-w64-x86_64-gtk2<br>
+    pacman -S mingw-w64-x86_64-gsl<br>
+    </tt></blockquote>
+    This provides the vim editor, the winpty program described below,
+    the GTK2 libraries and dependencies, and the Gnu Scientific
+    Library.  These satisfy all references needed to run the
+    <i>XicTools</i> programs.
+
+    <p>
+    Then, use the vim editor to edit the <tt>.bash_profile</tt> file that
+    exists in the current (your home) directory.  Add the following
+    lines to the bottom of the file:
+
+    <blockquote><tt>
+    mount c:/usr/local/xictools /usr/local/xictools<br>
+    export PATH="/usr/local/xictools/bin:$PATH"<br>
+    export XT_HOMEDIR=c:/msys64/home/your_username<br>
+    </tt></blockquote>
+
+    <p>
+    To run the programs in the future:<br>
+    Click MSYS2 64bit in the Start menu, then MSYS2 MinGW x64 in the
+    sub-menu.  This brings up a shell window with the MinGW 64-bit
+    support enabled.  Note that there are multiple choices in the
+    sub-menu so be sure to select the one specified, others may not
+    work with the <i>XicTools</i> programs.  Take some time to learn
+    about MSYS2 and MINGW64, particularly the pacman package manager. 
+    You can install lots of useful software that runs in this
+    environment.
+
+    <h4>The mintty Terminal Emulator Window</h4>
+
+    <p>
+    The terminal window used in MSYS2 is "mintty".  This does NOT work
+    directly with native Windows programs that work with a console
+    window, which includes the <i>XicTools</i> programs.  One must run
+    <i>WRspice</i> and possibly <i>Xic</i> with the "winpty" program. 
+    Just type winpty followed by the name and arguments of the program
+    you want to run.
+
+    <p>
+    For example, the command to run <i>WRspice</i> is
+    <blockquote><tt>
+    winpty wrspice ...
+    </tt></blockquote>
+    where the ... represents the command line arguments to <i>WRspice</i>.
+    The winpty program performs some magic that enables native Windows
+    programs expecting to find a cmd.com type of window to work with
+    the mintty.
+
+    <h4>MSYS2 Basics</h4>
+
+    <p>
+    The environment is a bash shell and environment very similar to Linux.
+
+    <p>
+    You bring up a new shell window from the MSYS2 64bit / MSYS2 MinGW
+    x64 entry of the Start menu.  There are multiple selections for
+    MSYS2 in the Start menu, including MSYS2 MinGW x86 which is the
+    MINGW 32-bit subsystem, MSYS2 MinGW x64 is the MINGW 64-bit
+    subsystem used for <i>XicTools</i>, and MSYS2 MSYS is the MSYS
+    subsystem without MinGW support.  MinGW is "minimal Gnu (for)
+    Windows" and is a library that provides a limited Linux-like
+    programming environment under Windows.  The <i>XicTools</i>
+    programs use this environment and are thus Windows-native
+    programs.
+
+    <p>
+    MSYS2 uses an underlying dll to provide a more complete Linux-like
+    environment, similar to Cygwin.  Installed programs are available
+    for all three subsystems, though the search order differs.  The
+    <i>XicTools</i> do not use the dll, but the MSYS2 environment is very
+    convenient for use with the tools.  The MSYS subsystem provides
+    the shell and other Linux-emulation commands.  The MinGW
+    subsystems provide libraries which enable porting of Linux
+    programs to native Windows.
+
+    <p>
+    From the shell window, the file system installed under
+    <tt>c:\msys64</tt> (or wherever the msys64 directory is installed)
+    is taken as root.  One can access the files and directories
+    explicitly with a path starting with <tt>/c</tt> where the
+    <tt>c</tt> can be any existing drive letter.  Your home directory
+    is <tt>/home/<i>yourname</i></tt>, or equivalently
+    <tt>/c/msys64/home/<i>yourname</i></tt>.
+
+    <p>
+    It is important to realize that within MINGW and other native
+    Windows programs including <i>XicTools</i>, the paths used by the
+    programs are expected to be Windows paths, though they may use
+    forward slashes.  For example, in the shell <tt>/usr/local</tt> is
+    rooted to the <tt>msys64</tt> directory, but within <i>Xic</i>
+    <tt>/usr/local</tt> is rooted to the current drive, e.g.,
+    <tt>c:/usr/local</tt>.
+
+    <p>
+    In MSYS2, the mount command can provide an alias between the file
+    system as viewed from the shell and that of Windows.  The command
+    <blockquote><tt>
+    mount c:/usr/local/xictools /usr/local/xictools
+    </tt></blockquote>
+    will map the Windows directory <tt>c:/usr/local/xictools</tt> to
+    the location <tt>/usr/local/xictools</tt> in the shell.  From a
+    shell window, <tt>/usr/local/xictools</tt> is equjivalent to
+    <tt>/c/usr/local/xictools</tt>, or in Windows
+    <tt>c:/usr/local/xictools</tt>, the default <i>Xictools</i>
+    installation location.
+
+    <p>
+    By default, the actual binary executable is run from a script
+    (<tt>.bat</tt>) file, which is installed in the same directory as
+    the executables, which by default is
+    <tt>C:\usr\local\xictools\bin</tt>.
+
+    <p>
+    A program group named <tt>XicTools</tt> is created in the
+    Start menu (or equivalent), from which the programs can
+    be started.  The programs can also be started from a command line,
+    in either a Windows <b>Command Prompt</b> window or a MSYS2/Cygwin
+    shell window.  One will need to type the full path to the bat file
+    (e.g., type "<tt>C:\usr\local\xictools\bin\xic</tt>" to start
+    <i>Xic</i>).  There are two ways to avoid having to type the whole
+    path:
+
+    <ol>
+    <li>Add the directory to your search path.  This is the
+    <tt>PATH</tt> variable in the environment.  This can be set in
+    your <b>Command Prompt</b> window by giving a command like
+    <blockquote>
+        <tt>PATH=%PATH%;c:\usr\local\xictools\bin</tt>
+    </blockquote>
+    or the <tt>PATH</tt> can be set from the <b>Control Panel</b> (the
+    procedure is described below for Windows 8).
+
+    <li>The <tt>bat</tt> files can be copied from the installation
+    location into a directory that is already in the search path, or
+    to the current directory.
+    </ol>
+
+    <a name="general"></a>
+    <h3>General Notes</h3>
+
+    The <i>XicTools</i> for Windows are supported on Windows 10 and
+    later.  The programs retain the "look and feel" of the Unix/Linux
+    versions as much as possible, given the constraints of the Windows
+    operating system.
+
+    <p>
+    Starting with Generation 4, the programs use the GTK2 graphical
+    interface toolkit, as used by the other releases.  The native
+    Win32 interface is gone.  The GTK2 libraries are supplied in a
+    separate installation module.  Installation is mandatory, but the
+    libraries are quite static so will not require much attention
+    after the initial installation.
+
+    <p>
+    Most basic features are available under Windows.  Some of the more
+    advanced features are not.
+
+    <p>
+    <ul>
+    <li>There is presently no support for the Tcl/Tk or Python script
+    language plug-ins.
+!!IFDEF OpenAccess
+    There is also no support for the OpenAccess plug-in.
+!!ENDIF
+
+    <p>
+    <li>There is no automatic provision for remote running of the
+    programs as with the X window system in Linux.
+
+    <p>
+    <li>Under Unix/Linux, when the program crashes (of course, a very
+    rare occurrence!), the <tt>gdb</tt> debugger is called to generate
+    a stack trace, which is emailed to Whiteley Research for analysis. 
+    Since it is rare to find <tt>gdb</tt> on a Windows system, an
+    alternative is built in.  This produces a file named
+    <i>progname</i>.<tt>stackdump</tt>, which is emailed (if possible)
+    to Whiteley Research.
+
+    <p>
+    <li>Windows does not provide a reliable interface for internet
+    mail, so the email clients and crash-dump report in the
+    <i>XicTools</i> may not work.  The mail in <i>XicTools</i> works
+    by passing the message to a Windows interface called "MAPI", which
+    in turn relies on another installed program to actually send the
+    mail.
+
+    <p>
+    To get this working in Windows 8, I had to download and install
+    something called "live mail" from Microsoft, which eventually
+    worked.  This app supports MAPI, apparently the Windows 8 Mail app
+    does not(?).  The Windows 8 app also does not work with POP3
+    servers, solidifying my disrespect.
+    </ul>
+
+    <p>
+    The "environment variables" mentioned in the
+    <i>Xic</i>/<i>WRspice</i> documentation are available, and can be
+    set in a <b>Command Prompt</b> window with the "<tt>set</tt>"
+    command before starting the programs, or from the <b>System</b>
+    entry in the <b>Control Panel</b> (or wherever this capability
+    lives in your version of Windows).  Only the latter method works
+    if the programs are started from an icon or menu.
+
+    <p>
+    Directory path names used by the programs can use either '/' or
+    '\' as the directory separator character, interchangeably.  The
+    path can also contain a drive specifier.
+
+    <p>
+    The path variables used by <i>Xic</i> that contain lists of
+    directory paths must use either a space or ';' (semicolon) as a
+    separator.  Under Unix, the separation characters are space and
+    ':' (colon).
+
+    <p>
+    The text files used by the programs can have either DOS or Unix
+    line termination.  Text files produced by the programs under
+    Windows will use the DOS format, which is expected in Windows.
+
+    <p>
+    Under Windows, where the concept of a "home directory" is somewhat
+    tenuous, the programs will look for environment variables,
+    particularly <a href="HOME"><b>HOME</b></a>, and if found
+    interpret the value as a path to the home directory.  This is true
+    when programs look for startup files.  When the program is started
+    from an icon or shortcut, and the start directory is not
+    explicitly set in the icon properties (it defaults to
+    <tt>C:/</tt>), the current directory will be the home directory,
+    rather than <tt>C:/</tt>.
+
+    <p>
+    Those used to a Unix environment are encouraged to download and
+    install the Cygwin tools.  These include most of your favorite
+    Unix commands, plus a complete compiler toolchain for application
+    development.  In particular, the bash shell is quite useful, as it
+    provides a "DOS box" that responds to Unix shell commands, and
+    from which one can execute shell scripts.  The tools can be
+    downloaded as individual modules.
+
+    <p>
+    If it is needed and does not exist, <i>Xic</i> and <i>WRspice</i>
+    will create a <tt>\tmp</tt> directory on the current drive.  This
+    will contain temporary files, used by the programs.  These should
+    be removed automatically when the programs terminate, but if not
+    the files can be safely deleted if <i>Xic</i> and <i>WRspice</i>
+    are not running.
+
+    <a name="env"></a>
+    <h3>Setting Environment Variables</h3>
+
+    By running Cygwin, the setting of environment variables and
+    similar becomes very familiar to a Linux user.  In particular,
+    running <i>Xic</i> from a Cygwin bash-shell window emulates pretty
+    well the Linux experience.  This is a recommended approach for
+    those familiar with Unix/Linux.
+
+    <p>
+    Otherwise, environment variables can be set manually in a
+    <b>Command Prompt</b> window from which the programs are run.  The
+    <tt>bat</tt> files can be modified and "<tt>set</tt>" lines added,
+    as an option to avoid manual setting of variables that should
+    always be in force.  Another option is to set the system default
+    environment variables.  Be aware that all other programs will see
+    the variables.  Setting the system environment variables is
+    probably something to avoid if possible.  If you insist, here is
+    the procedure for Windows 8.1.  Other supported Windows releases
+    are probably not horribly different.
+
+    <ol>
+    <li>Go to the infamous <b>Start</b> page, click on the circle with
+    down arrow icon near the bottom-left corner.  This shifts to the
+    <b>Apps</b> page.
+
+    <li>Find the <b>Control Panel</b>, it is listed on the <b>Apps</b>
+    page under <b>Windwos System</b>.  You can use the search tool if
+    necessary.  Eventually, you'll find the icon, then click it to
+    bring up the <b>Control Panel</b>.
+
+    <li>Click <b>System and Security</b>.  The display will change to a
+    new set of choices.
+
+    <li>Click <b>System</b>.
+
+    <li>Click <b>Advanced system settings</b> along the left.  This
+    brings up a <b>System Properties</b> window.
+
+    <li>Click the <b>Environment Variables</b> button near the bottom
+    of the <b>Advanced</b> page (this page should be shown initially).
+    </ol>
+
+    There are a couple of things one may want to do here, as examples.
+
+    <ol>
+    <li>Add the <i>XicTools</i> <tt>bin</tt> directory to the system
+      search path.<br><br>
+    Scroll the lower <b>System variables</b> window to find the
+    <tt>Path</tt> entry.  Click on this to select it.  Click the
+    <b>Edit...</b> button below, which brings up a text entry window. 
+    In the <b>Variable value</b> window, scroll all the way to the
+    right, and add, for example (use the actual path if different on
+    your system)
+    <blockquote>
+    <tt>;c:\usr\local\xictools\bin</tt>
+    </blockquote>
+    Check the spelling, and make sure there is no white space, and
+    that the character before the '<tt>c</tt>' is a semicolon, and
+    the character that follows the '<tt>c</tt>' is a colon.  Then
+    click the <b>OK</b> button.
+
+    <li>Add a <tt>HOME</tt> variable to define a "home directory".<br><br>
+
+    Press the <b>New...</b> button below the UPPER listing window (not
+    the one you just used).  This brings up a text entry as we saw
+    before.  Enter <tt>HOME</tt> for <b>Variable name</b>, For
+    <b>Variable value</b>, enter a path to some directory which you
+    want to be your "working" directory, where <i>Xic</i> and
+    <i>WRspice</i> will look for startup files, etc.  Enter the full
+    path to this directory.  Check spelling, Click <b>OK</b>.
+    </ol>
+
+    Finalle, click the <b>OK</b> button at the bottom of the window,
+    we're done.
+
+    <p>
+    When a program is started from an icon, an icon property specifies
+    the directory where the program logically starts from.  This is
+    the apparent current directory seen by the user when running the
+    program.  By default, this is usually sonething like
+    "<tt>C:\</tt>", which is not a good choice.  The user should have
+    a directory dedicated for this, and the following procedure can be
+    used to cause the programs started from an icon to start in this
+    directory.
+
+    <ol>
+    <li>Go to the <b>Start</b> page, click on the circle with down
+    arrow icon near the bottom-left corner.  This shifts to the <b>Apps</b>
+    page.
+
+    <li>Find the <b>XicTools</b> program group.  There should be
+    entries for the programs that you have installed.
+
+    <li>For each program:<br>
+      <ol>
+      <li>Click on the program icon with the RIGHT mouse button.  An icon
+      banner along the bottom of the screen will appear.
+
+      <li>Click on <b>Open File Location</b>.  This brings up a listing
+      showing the <b>XicTools</b> programs.
+
+      <li>Above the list, find the <b>Properties</b> icon and click
+      it.  This brings up a multi-page <b>Properties</b> pop-up.
+
+      <li>In the <b>Shortcut</b> page, change the entry in the
+      <b>Start in</b> entry area to a full directory path to the
+      directory where the program should start.  This might be the
+      same directory that you used for the <tt>HOME</tt> environment
+      variable. 
+
+      <li>Then click the <b>Apply</b> button, and click <b>OK</b> if there
+      is a confirmation pop-up.
+      </ol>
+    </ol>
+
+    This applies to the icon in the <b>Apps</b> page.  Other icons
+    can be set similarly.
+!!LATEX mswindows local
+This section contains notes relevant to the Microsoft Windows
+release of the {\XicTools}.
+
+\subsection{Installation and Setup}
+
+%\ifxtlserv
+%In order to license a Windows host, two pieces of information are
+%needed:
+%\begin{enumerate}
+%\item{The machine's host name}
+%\item{The Windows Product ID}
+%\end{enumerate}
+%
+%The recommended way to retrieve this information is to download the
+%{\vt licinfo.exe} program from the {\vt wrcad.com} web site.  When
+%run, this program generates a file named ``{\vt tLicenseInfo}'' which
+%should be emailed to Whiteley Research.  A pop-up window displays the
+%information, and indicates success or failure.
+%\fi
+
+Packages (precompiled binary programs) are deprecated in favor of
+building the programs from source.  If you have access to packages,
+they can be installed per the instructions in this section.
+
+The packages come in self-extracting {\vt .exe} files.  Simply run
+the files to do the installation.  The programs can later be
+uninstalled, either with the Windows software manager or by clicking
+the {\cb Uninstall} icons in the {\cb XicTools} program group in the
+{\cb Start} menu.
+
+The same process can be used to install updated releases -- it is not
+necessary to uninstall first.  A more convenient way to keep current
+is to use the updating feature of the help system (see \ref{update}). 
+(Package updating is not currently available).
+
+WARNING\\
+The programs use an entry in the Windows Registry to find their
+startup files, etc.  This entry is created by the installer program. 
+Thus
+\begin{enumerate}
+\item{The correct way to move an existing installation to another
+location is to uninstall the program, and reinstall to the new
+location using the standard distribution file.  If you just move the
+files to a new location, the Registry won't be updated and the program
+won't run correctly.}
+
+\item{You can not simply copy files from another machine when creating
+a new installation.  The files must be installed through the
+distribution files, or the Registry entry won't be set.}
+\end{enumerate}
+
+The Registry entry used (by the {\vt inno} installer program) is
+(for example)
+\begin{quote}\vt
+HKLM$\backslash$Software$\backslash$Microsoft$\backslash$Windows$\backslash$CurrentVersion$\backslash$Uninstall$\backslash$Xic-4is1
+\end{quote}
+
+The Windows {\vt regedit} utility can be used to repair the Registry
+if necessary.  The Windows {\vt reg} utility can also be used to query
+and modify the Registry from the command line.
+
+The programs are installed by default under {\vt
+C:{$\backslash$}usr{$\backslash$}local}, which can be specified to the
+program installer.  The installation directories will be created if
+necessary.  All of the programs will install under a directory named
+``{\vt xictools}'' under the prefix, (for example, {\Xic} files would
+be installed by default in {\vt
+C:$\backslash$usr$\backslash$local$\backslash$xictools$\backslash$xic}). 
+The structure of the tree is exactly that as under Linux, which
+simplifies compatibility.  It is recommended that the default
+installation location be used, if possible.
+
+\subsubsection{Installing MSYS2}
+
+Starting January 2021, all Windows binaries are 64-bit, compiled under
+the MINGW64 subsystem of MSYS2 (64-bit version).
+
+Although it may be possible to run the programs from other MINGW64
+installations, for example Cygwin, it is recommended MSYS2 be
+installed.  This replaces the {\vt gtk\_bundle} package that was
+previously used to supply graphical interface dlls.
+
+When installing MSYS2 and {\XicTools} programs, you are strongly
+advised to install in the default locations if possible.
+
+Go to {\vt www.msys2.org}.  Download and run the installer, and follow
+the directions.  It is easy.  When done, you will have a shell window
+on the screen.  You should type the following commands to load some
+things you will need.
+\begin{quote} \vt
+pacman -S vim\\
+pacman -S winpty\\
+pacman -S mingw-w64-x86\_64-gtk2\\
+pacman -S mingw-w64-x86\_64-gsl\\
+\end{quote}
+This provides the vim editor, the winpty program described below, the
+GTK2 libraries and dependencies, and the Gnu Scientific Library. 
+These satisfy all references needed to run the {\XicTools} programs.
+
+Then, use the vim editor to edit the {\vt .bash\_profile} file that
+exists in the current (your home) directory.  Add the following lines
+to the bottom of the file:
+\begin{quote} \vt
+mount c:/usr/local/xictools /usr/local/xictools\\
+export PATH="/usr/local/xictools/bin:\$PATH"\\
+export XT\_HOMEDIR=c:/msys64/home/your\_username\\
+\end{quote}
+
+To run the programs in the future:\\
+Click MSYS2 64bit in the {\cb Start} menu, then MSYS2 MinGW x64 in the
+sub-menu.  This brings up a shell window with the MinGW 64-bit support
+enabled.  Note that there are multiple choices in the sub-menu so be
+sure to select the one specified, others may not work with the
+{\XicTools} programs.  Take some time to learn about MSYS2 and MINGW64,
+particularly the pacman package manager.  You can install lots of
+useful software that runs in this environment.
+
+\subsubsection{The mintty Terminal Emulator Window}
+
+The terminal window used in MSYS2 is ``mintty''.  This does NOT work
+directly with native Windows programs that work with a console window,
+which includes the {\XicTools} programs.  One must run {\WRspice} and
+possibly {\Xic} with the ``winpty'' program.  Just type winpty
+followed by the name and arguments of the program you want to run.
+
+For example, the command to run {\WRspice} is
+\begin{quote} \vt
+winpty wrspice ...
+\end{quote}
+where the ...  represents the command line arguments to {\WRspice}. 
+The winpty program performs some magic that enables native Windows
+programs expecting to find a cmd.com type of window to work with the
+mintty.
+
+subsubsection{MSYS2 Basics}
+
+The environment is a bash shell and environment very similar to Linux.
+
+You bring up a new shell window from the MSYS2 64bit / MSYS2 MinGW x64
+entry of the {\cb Start} menu.  There are multiple selections for MSYS2 in
+the {\cb Start} menu, including MSYS2 MinGW x86 which is the MINGW 32-bit
+subsystem, MSYS2 MinGW x64 is the MINGW 64-bit subsystem used for
+{\XicTools}, and MSYS2 MSYS is the MSYS subsystem without MinGW
+support.  MinGW is ``minimal Gnu (for) Windows'' and is a library that
+provides a limited Linux-like programming environment under Windows. 
+The {\XicTools} programs use this environment and are thus
+Windows-native programs.
+
+MSYS2 uses an underlying dll to provide a more complete Linux-like
+environment, similar to Cygwin.  Installed programs are available for
+all three subsystems, though the search order differs.  The
+{\XicTools} do not use the dll, but the MSYS2 environment is very
+convenient for use with the tools.  The MSYS subsystem provides the
+shell and other Linux-emulation commands.  The MinGW subsystems
+provide libraries which enable porting of Linux programs to native
+Windows.
+
+From the shell window, the file system installed under {\vt
+c:$\backslash$msys64} (or wherever the msys64 directory is installed)
+is taken as root.  One can access the files and directories explicitly
+with a path starting with {\vt /c} where the {\vt c} can be any
+existing drive letter.  Your home directory is {\vt /home/{\it
+yourname}}, or equivalently {\vt /c/msys64/home/{\it yourname}}.
+
+It is important to realize that within MINGW and other native Windows
+programs including {\XicTools}, the paths used by the programs are
+expected to be Windows paths, though they may use forward slashes. 
+For example, in the shell {\vt /usr/local} is rooted to the
+{\vt msys64} directory, but within {\Xic} {\vt /usr/local} is
+rooted to the current drive, e.g., {\vt c:/usr/local}.
+
+In MSYS2, the mount command can provide an alias between the file
+system as viewed from the shell and that of Windows.  The command
+\begin{quote}\vt
+mount c:/usr/local/xictools /usr/local/xictools
+\end{quote}
+will map the Windows directory {\vt c:/usr/local/xictools} to the
+location {\vt /usr/local/xictools} in the shell.  From a shell window,
+{\vt /usr/local/xictools} is equivalent to {\vt
+/c/usr/local/xictools}, or in Windows {\vt c:/usr/local/xictools}, the
+default {\XicTools} installation location.
+
+By default, the actual binary executable is run from a script ({\vt
+.bat}) file, which is installed in the same directory as the
+executables, which by default is
+ {\vt C:$\backslash$usr$\backslash$local$\backslash$xictools$\backslash$bin}.
+
+A program group named {\vt XicTools} is created in the {\cb Start}
+menu (or equivalent), from which the programs can be started.  The
+programs can also be started from a command line, in either a Windows
+{\cb Command Prompt} window or a MSYS2/Cygwin shell window.  One will
+need to type the full path to the bat file (e.g., type ``{\vt
+C:$\backslash$usr$\backslash$local$\backslash$xictools$\backslash$bin$\backslash$xic}''
+to start {\Xic}).  There are two ways to avoid having to type the
+whole path:
+\begin{enumerate}
+\item{Add the directory to your search path.  This is the {\vt PATH}
+variable in the environment.  This can be set in your {\cb Command
+Prompt} window by giving a command like
+\begin{quote}\vt
+PATH=%PATH%;c:\usr\local\xictools\bin
+\end{quote}
+or the {\vt PATH} can be set from the {\cb Control Panel} (the
+procedure is described below for Windows 8).}
+
+\item{The {\vt bat} files can be copied from the installation location
+into a directory that is already in the search path, or to the current
+directory.}
+\end{enumerate}
+
+\subsection{General Notes}
+
+The {\XicTools} for Windows are supported on Windows 10 and later. 
+The programs retain the ``look and feel'' of the Unix/Linux versions
+as much as possible, given the constraints of the Windows operating
+system.
+
+Starting with Generation 4, the programs use the GTK2 graphical
+interface toolkit, as used by the other releases.  The native Win32
+interface is gone.  The GTK2 libraries are supplied in a separate
+installation module.  Installation is mandatory, but the libraries are
+quite static so will not require much attention after the initial
+installation.
+
+Most basic features are available under Windows.  Some of the more
+advanced features are not.
+
+\begin{itemize}
+\item{There is presently no support for the Tcl/Tk or Python script 
+language plug-ins.
+%\ifoa
+There is also no support for the OpenAccess plug-in.
+%\fi
+}
+
+\item{There is no provision for remote running of the programs as
+with the X window system in Linux.}
+
+\item{Under Unix/Linux, when the program crashes (of course, a very
+rare occurrence!), the {\vt gdb} debugger is called to generate a
+stack trace, which is emailed to Whiteley Research for analysis. 
+Since it is rare to find {\vt gdb} on a Windows system, an alternative
+is built in.  This produces a file named {\it progname\/}.{\vt
+stackdump}, which is emailed (if possible) to Whiteley Research.}
+
+\item{Windows does not provide a reliable interface for internet mail,
+so the email clients and crash-dump report in the {\XicTools} may not
+work.  The mail in {\XicTools} works by passing the message to a
+Windows interface called ``MAPI'', which in turn relies on another
+installed program to actually send the mail.
+
+To get this working in Windows 8, I had to download and install
+something called ``live mail'' from Microsoft, which eventually
+worked.  This app supports MAPI, apparently the Windows 8 Mail app
+does not(?).  The Windows 8 app also does not work with POP3 servers,
+solidifying my disrespect.}
+\end{itemize}
+
+The ``environment variables'' mentioned in the {\Xic}/{\WRspice}
+documentation are available, and can be set in a {\cb Command Prompt}
+window with the ``{\vt set}'' command before starting the programs, or
+from the {\cb System} entry in the {\cb Control Panel} (or wherever
+this capability lives in your version of Windows).  Only the latter
+method works if the programs are started from an icon or menu.
+
+Directory path names used by the programs can use either `/' or
+`$\backslash$' as the directory separator character, interchangeably. 
+The path can also contain a drive specifier.
+
+The path variables used by {\Xic} that contain lists of directory
+paths must use either a space or `;' (semicolon) as a separator. 
+Under Unix, the separation characters are space and `:' (colon).
+
+The text files used by the programs can have either DOS or Unix line
+termination.  Text files produced by the programs under Windows will
+use the DOS format.
+
+Under Windows, where the concept of a ``home directory'' is somewhat
+tenuous, the programs will look for environment variables,
+particularly {\et HOME}, and if found interpret the value as a path to
+the home directory.  This is true when programs look for startup
+files.  When the program is started from an icon or shortcut, and the
+start directory is not explicitly set in the icon properties (it
+defaults to {\vt C:/}), the current directory will be the home
+directory, rather than {\vt C:/}.
+
+Those used to a Unix environment are encouraged to download and
+install the Cygwin tools.  These include most of your favorite Unix
+commands, plus a complete compiler toolchain for application
+development.  In particular, the bash shell is quite useful, as it
+provides a ``DOS box'' that responds to Unix shell commands, and from
+which one can execute shell scripts.  The tools can be downloaded as
+individual modules.
+
+If it is needed and does not exist, {\Xic} and {\WRspice} will create
+a {\vt {$\backslash$}tmp} directory on the current drive.  This will
+contain temporary files, used by the programs.  These should be
+removed automatically when the programs terminate, but if not the
+files can be safely deleted if {\Xic} and {\WRspice} are not running.
+
+\subsection{Setting Environment Variables}
+
+By running Cygwin, the setting of environment variables and similar
+becomes very familiar to a Linux user.  In particular, running {\Xic}
+from a Cygwin bash-shell window emulates pretty well the Linux
+experience.  This is a recommended approach for those familiar with
+Unix/Linux.
+
+Otherwise, environment variables can be set manually in a {\cb Command
+Prompt} window from which the programs are run.  The {\vt bat} files
+can be modified and ``{\vt set}'' lines added, as an option to avoid
+manual setting of variables that should always be in force.  Another
+option is to set the system default environment variables.  Be aware
+that all other programs will see the variables.  Setting the system
+environment variables is probably something to avoid if possible.  If
+you insist, here is the procedure for Windows 8.1.  Other supported
+Windows releases are probably not horribly different.
+
+\begin{enumerate}
+\item{Go to the infamous {\cb Start} page, click on the circle with
+down arrow icon near the bottom-left corner.  This shifts to the {\cb
+Apps} page.}
+
+\item{Find the {\cb Control Panel}, it is listed on the {\cb Apps}
+page under {\cb Windwos System} You can use the search tool if
+necessary.  Eventually, you'll find the icon, then click it to bring
+up the {\cb Control Panel}.}
+
+\item{Click {\cb System and Security}.  The display will change to a
+new set of choices.}
+
+\item{Click {\cb System}.}
+
+\item{Click {\cb Advanced system settings} along the left.  This
+brings up a {\cb System Properties} window.}
+
+\item{Click the {\cb Environment Variables} button near the bottom of
+the {\cb Advanced} page (this page should be shown initially).}
+\end{enumerate}
+
+There are a couple of things one may want to do here, as examples.
+
+\begin{enumerate}
+\item{Add the {\XicTools} {\vt bin} directory  to the system search path.\\\\
+Scroll the lower {\cb System variables} window to find the {\vt Path}
+entry.  Click on this to select it.  Click the {\cb Edit...} button
+below, which brings up a text entry window.  In the {\cb Variable
+value} window, scroll all the way to the right, and add, for example
+(use the actual paths if different on your system)
+\begin{quote}\vt
+;c:$\backslash$usr$\backslash$local$\backslash$xictools$\backslash$bin
+\end{quote}
+Check the spelling, and make sure there is no white space, and that
+the character before the `{\vt c}' is a semicolon, and the character
+that follows the `{\vt c}' is a colon.  Then click the {\cb OK}
+button.}
+
+\item{Add a {\vt HOME} variable to define a ``home directory''.\\\\
+Press the {\cb New...} button below the UPPER listing window (not the
+one you just used).  This brings up a text entry as we saw before. 
+Enter {\vt HOME} for {\cb Variable name}, For {\cb Variable value},
+enter a path to some directory which you want to be your ``working''
+directory, where {\Xic} and {\WRspice} will look for startup files,
+etc.  Enter the full path to this directory.  Check spelling, Click
+{\cb OK}.}
+\end{enumerate}
+
+Finally, click the {\cb OK} button at the bottom of the window, we're
+done.
+
+When a program is started from an icon, an icon property specifies the
+directory where the program logically starts from.  This is the
+apparent current directory seen by the user when running the program. 
+By default, this is usually sonething like ``{\vt C:$\backslash$}'',
+which is not a good choice.  The user should have a directory
+dedicated for this, and the following procedure can be used to cause
+the programs started from an icon to start in this directory.
+
+\begin{enumerate}
+\item{Go to the {\cb Start} page, click on the circle with down arrow
+icon near the bottom-left corner.  This shifts to the {\cb Apps} page.}
+
+\item{Find the {\cb XicTools} program group.  There should be entries
+for the programs that you have installed.}
+
+\item{For each program:\\
+\begin{enumerate}
+  \item{Click on the program icon with the RIGHT mouse button.  An
+  icon banner along the bottom of the screen will appear.}
+
+  \item{Click on {\cb Open File Location}.  This brings up a listing
+  showing the {\cb XicTools} programs.}
+
+  \item{Above the list, find the {\cb Properties} icon and click it. 
+  This brings up a multi-page {\cb Properties} pop-up.}
+
+  \item{In the {\cb Shortcut} page, change the entry in the {\cb Start
+  in} entry area to a full directory path to the directory where the
+  program should start.  This might be the same directory that you
+  used for the {\vt HOME} environment variable.}
+
+  \item{Then click the {\cb Apply} button, and click {\cb OK} if there
+  is a confirmation pop-up.}
+\end{enumerate}
+}
+\end{enumerate}
+
+This applies to the icon in the {\cb Apps} page.  Other icons can be
+set similarly.
+
+!!SEEALSO graphics

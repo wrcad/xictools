@@ -46,3 +46,24 @@
 
 <<wrspiced spMain.hlp>>
 
+\chapter{Graphics and Operating System}
+% -----------------------------------------------------------------------------
+\section{Graphics Support}
+
+<<graphics Graphics.hlp>>
+
+\subsection{GTK2 Command Line Arguments}
+\label{gtkargs}
+
+<<gtkargs Graphics.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Apple macOS Notes}
+
+<<macos Graphics.hlp>>
+
+% -----------------------------------------------------------------------------
+\section{Microsoft Windows Notes}
+
+<<mswindows Graphics.hlp>>
+

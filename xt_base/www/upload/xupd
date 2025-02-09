@@ -1,9 +1,0 @@
-#! /bin/bash
-
-# Update online Xic manual.
-
-cd ~/wrcad.com/html/manual
-rm -rf xicmanual xicmanual.pdf
-tar xzf ../xictools/docs/xicmanual-html-4.*.tar.gz
-cp ../xictools/docs/xicmanual-4.*.pdf xicmanual.pdf
-

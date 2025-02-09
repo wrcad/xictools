@@ -9,24 +9,30 @@
 
 \section{Graphics Support}
 
-% xic:graphics 040824
-<<xic:graphics xiStartup.hlp>>
+% graphics 040824
+<<graphics Graphics.hlp>>
+
+\subsection{GTK2 Command Line Arguments}
+\label{gtkargs}
+
+<<gtkargs Graphics.hlp>>
 
 % -----------------------------------------------------------------------------
 \section{Apple macOS Notes}
 
 % macos 091124
-<<macos xiStartup.hlp>>
+<<macos Graphics.hlp>>
 
 % -----------------------------------------------------------------------------
 \section{Microsoft Windows Notes}
 
 % mswindows 061124
-<<mswindows xiStartup.hlp>>
+<<mswindows Graphics.hlp>>
 
 % -----------------------------------------------------------------------------
 \section{Command Line Options}
 \index{command line}
+\index{command line options|(}
 
 % xic:cmdline 052222
 <<xic:cmdline xiStartup.hlp>>

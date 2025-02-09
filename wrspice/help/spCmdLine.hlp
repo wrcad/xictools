@@ -34,10 +34,6 @@ arguments
 !!REDIRECT -s           arguments#-s
 !!REDIRECT -t           arguments#-t
 !!REDIRECT -x           arguments#-x
-!!REDIRECT --class      arguments#--class
-!!REDIRECT --name       arguments#--name
-!!REDIRECT --no-xshm    arguments#--no-xshm
-!!REDIRECT --sync       arguments#--sync
 !!REDIRECT --v          arguments#--v
 !!REDIRECT --vv         arguments#--vv
 
@@ -347,46 +343,6 @@ Command Line Arguments
     "<tt>xterm</tt>" command is used to obtain the text window.
     </dl>
 
-    <p>
-    The UNIX/Linux graphical subsystem will accept the following
-    options.  It is unlikely that the user will ever need these.
-
-    <p>
-    <a name="--class"></a>
-    <dl>
-    <dt><tt>--class</tt> <i>classname</i><dd>
-    This option specifies the application class name under which
-    resources for the application should be found.
-    </dl>
-
-    <a name="--name"></a>
-    <dl>
-    <dt><tt>--name</tt> <i>appname</i><dd>
-    This option specifies the name under which resources for the
-    application should be found.  This option is useful in shell
-    aliases to distinguish between invocations of an application,
-    without resorting to creating links to alter the executable file
-    name.  This option can also be given as "<tt>-name</tt>".
-    </dl>
-
-    <a name="--sync"></a>
-    <dl>
-    <dt><tt>--sync</tt><dd>
-    This option indicates that requests to the X server should be sent
-    synchronously, instead of asynchronously.  Since Xlib normally
-    buffers requests to the server, errors do not necessarily get
-    reported immediately after they occur.  This option turns off the
-    buffering so that the application can be debugged.  It should
-    never be used with a working program.  This option can also be
-    given as "<tt>-synchronous</tt>".
-    </dl>
-
-    <a name="--no-xshm"></a>
-    <dl>
-    <dt><tt>--no-xshm</tt><dd>
-    If set, the X server will not use shared memory.
-    </dl>
-
     <a name="--v"></a>
     <dl>
     <dt><tt>--v</tt><dd>
@@ -416,7 +372,13 @@ Command Line Arguments
     If this argument is given, <i>WRspice</i> will print the build date
     to the standard output, and exit.
     </dl>
+
+    <p>
+    Releases that use the GTK2 grahical toolkit have a few
+    additional <a href="gtkargs">arguments</a> available.
 !!LATEX arguments useriface.tex
+\index{command line}
+\index{command line!options|(}
 The {\WRspice} simulator is invoked by typing
 \begin{quote}
 {\vt wrspice} {\it options} ... {\it input\_files} ...
@@ -463,7 +425,7 @@ The following option forms are accepted by {\WRspice}.  The option
 letter can be lower or upper case.
 
 \begin{description}
-\index{command line options!-b}
+\index{command line!options!-b}
 \index{batch mode}
 \item{\vt -b}\\
 Run in batch mode.  {\WRspice} will read the standard input or the
@@ -478,7 +440,7 @@ filename} was specified.  See the description of the {\cb write}
 command (\ref{writecmd}) for information about the file formats
 available and how they can be specified.
 
-\index{command line options!-c}
+\index{command line!options!-c}
 \index{case sensitivity}
 \item{\vt -c} {\it flags}\\
 This option sets the case sensitivity of various name classes
@@ -513,7 +475,7 @@ setcase} command.  This command takes as an argument a string as
 described above.  The command line setting occurs after setting from a
 startup file.
 
-\index{command line options!-d}
+\index{command line!options!-d}
 \item{\vt -d} [{\it host}]:{\it server}[.{\it screen}]\\
 This option is applicable when running under X windows, and specifies
 the name of the display to use.  The {\it host} is the hostname of the
@@ -526,7 +488,7 @@ unnecessary).  The colon and (display) {\it server} are necessary in
 all cases.  This option can also be given as {\vt -display} and {\vt
 -\/-display}.
 
-\index{command line options!-dnone}
+\index{command line!options!-dnone}
 \item{\vt -dnone}\\
 This is a special form of the {\vt -d} option that when given will
 suppress all use of graphics.  This can be desirable when running
@@ -534,7 +496,7 @@ suppress all use of graphics.  This can be desirable when running
 also work under Windows, if for some reason it is necessary to run
 {\WRspice} in text-only mode.
 
-\index{command line options!-i}
+\index{command line!options!-i}
 \item{\vt -i}\\
 Run in interactive (as opposed to batch) mode.  This is useful if the
 standard input is not a terminal but interactive mode is desired. 
@@ -542,7 +504,7 @@ Command completion is not available unless the standard input is a
 terminal, however.  Interactive mode is the default when the standard
 input is a terminal.
 
-\index{command line options!-j}
+\index{command line!options!-j}
 \item{\vt -j}\\
 Run in JSPICE3 compatibility mode.  This applies when running
 interactively, and causes the following behavior.
@@ -556,7 +518,7 @@ sets the subcircuit expansion method to match JSPICE3 and SPICE3.}
 \end{enumerate}
 
 %\ifxtlserv
-%\index{command line options!-l}
+%\index{command line!options!-l}
 %\item{\vt -l} {\it license\_server\/}[{\vt :}{\it port\/}]\\
 %This option provides the host name of a machine running the license
 %server, and optionally the port number in use by the server.  The port
@@ -575,7 +537,7 @@ sets the subcircuit expansion method to match JSPICE3 and SPICE3.}
 %\end{quote}
 %\fi
 
-\index{command line options!-m}
+\index{command line!options!-m}
 \item{\vt -m} {\it path}\\
 The {\it path} is to a loadable device module (see \ref{loadable})
 file, or to a directory containing module files.  Giving this option
@@ -587,13 +549,13 @@ modpath} or the {\vt devices} sub-directory in the {\vt startup}
 directory will not be done.  Modules can be loaded from within
 {\WRspice} with the {\cb devload} command.
 
-\index{command line options!-mnone}
+\index{command line!options!-mnone}
 \item{\vt -mnone}\\
 This option will suppress auto-loading of modules from the {\et
 modpath} or the {\vt devices} sub-directory in the {\vt startup}
 directory.
 
-\index{command line options!-n}
+\index{command line!options!-n}
 \item{\vt -n}\\
 Don't try to execute the user's startup files ({\vt .wrspiceinit}
 files) upon startup.  Normally {\WRspice} tries to find these files in
@@ -603,17 +565,17 @@ specified by setting the {\et HOME} environment variable.  The global
 file {\vt wrspiceinit} in the system startup directory is sourced in
 any case.
 
-\index{command line options!-o}
+\index{command line!options!-o}
 \item{\vt -o} {\it outfile}\\
 The argument {\it outfile\/} specifies a file to be used for output,
 rather than the standard output (terminal).
 
-\index{command line options!-p}
+\index{command line!options!-p}
 \item{\vt -p}\\
 Open {\WRspice} in a mode which takes input from a UNIX port, used to
 establish interprocess communications as a slave process.
 
-\index{command line options!-q}
+\index{command line!options!-q}
 \item{\vt -q}\\
 Disable command completion, which saves memory and may run slightly
 faster.  This prevents initial loading of the command completion data
@@ -621,7 +583,7 @@ structures.  If the variable {\et nocc} is set and unset, command
 completion will be turned on, however most internal keywords will not
 be present in the database.
 
-\index{command line options!-r}
+\index{command line!options!-r}
 \item{\vt -r} {\it filename}\\
 Use {\it filename\/} as the default file into which the results of the
 simulation are saved with the {\cb write} command, and for data output
@@ -630,7 +592,7 @@ variable.  See the description of the {\cb write} command
 (\ref{writecmd}) for information about the file formats available, and
 how they can be specified.
 
-\index{command line options!-s}
+\index{command line!options!-s}
 \item{\vt -s}\\
 Run in server mode.  This is like batch mode, except that a temporary
 rawfile is used and then written to the standard output, preceded by a
@@ -640,7 +602,7 @@ is used by the {/WRspice} daemon {\vt wrspiced}.  In server mode,
 in rawfile or margin analysis file format, on the standard output. 
 The {\vt -r} and {\vt -b} options are ignored.
 
-\index{command line options!-t}
+\index{command line!options!-t}
 \item{{\vt -t} {\it termname}}\\
 This specifies the name of the terminal, as known in a termcap or
 terminfo database.  The terminal name is only needed in interactive
@@ -650,46 +612,14 @@ in overriding bad terminal info specifications allowing line editing
 to work, such as by giving a value of ``{\vt vt220}'' when running in
 an {\vt xterm}.
 
-\index{command line options!-x}
+\index{command line!options!-x}
 \item{\vt -x}\\
 This option, if given, will cause {\WRspice} to provide its own window
 for text input, if {\WRspice} is in interactive mode and graphics is
 available.  Under the X window system, the ``{\vt xterm}'' command
 is used to obtain the text window.
-\end{description}
 
-The UNIX/Linux graphical subsystem will accept the following options. 
-It is unlikely that the user will ever need these.
-
-\begin{description}
-\index{command line options!--class}
-\item{\vt -\/-class} {\it classname}\\
-This option specifies the application class name under which resources
-for the application should be found.
-
-\index{command line options!--name}
-\item{\vt -\/-name} {\it appname}\\
-This option specifies the name under which resources for the
-application should be found.  This option is useful in shell aliases
-to distinguish between invocations of an application, without
-resorting to creating links to alter the executable file name.
-This option can also be given as ``{\vt -name}''.
-
-\index{command line options!--sync}
-\item{\vt -\/-sync}\\
-This option indicates that requests to the X server should be sent
-synchronously, instead of asynchronously.  Since Xlib normally buffers
-requests to the server, errors do not necessarily get reported
-immediately after they occur.  This option turns off the buffering so
-that the application can be debugged.  It should never be used with a
-working program.  This option can also be given as ``{\vt
--synchronous}''.
-
-\index{command line options!--no-xshm}
-\item{\vt -\/-no-xshm}\\
-If set, the X server will not use shared memory.
-
-\index{command line options!--v}
+\index{command line!options!--v}
 \item{\vt -\/-v}\\
 If this argument is given, {\WRspice} will print a version string
 consisting of three tokens to the standard output, and exit.  The
@@ -699,7 +629,7 @@ format is
 \end{quote}
 for example ``{\vt 4.3.11 LinuxCentos7 x86\_64}''.
 
-\index{command line options!--vv}
+\index{command line!options!--vv}
 \item{\vt -\/-vv}\\
 If this argument is given, {\WRspice} will print a CVS-style release
 tag string in the form
@@ -708,10 +638,12 @@ tag string in the form
 \end{quote}
 to the standard output, and exit.
 
-\index{command line options!--vb}
+\index{command line!options!--vb}
 \item{\vt -\/-vb}\\
 If this argument is given, {\WRspice} will print the build date to the
 standard output, and exit.
 \end{description}
-\index{command line options|)}
+\index{command line!options|)}
 
+Releases that use the GTK2 grahical toolkit have a few
+additional arguments available, see \ref{gtkargs}.

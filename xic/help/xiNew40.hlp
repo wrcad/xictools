@@ -130,8 +130,8 @@ Xic 4.0 Changes and New Features
 
     <p>
     All releases now use the same graphical user interface, <a
-    href="http://www.gtk.org">GTK-2</a>, which is native to Linux.  A
-    separate GTK-2 package must now be installed under Windows, OS X,
+    href="http://www.gtk.org">GTK2</a>, which is native to Linux.  A
+    separate GTK2 package must now be installed under Windows, OS X,
     and FreeBSD.  This installation will be needed once-only and the
     procedure will be made as painless as possible.
 
@@ -140,11 +140,11 @@ Xic 4.0 Changes and New Features
     across platforms, and greatly simplify maintenance and
     development.  The parallel Win32 GUI, which represents countless
     hours of development using Microsoft's unbelievably terrible
-    software, is history.  The GTK-2 port to Windows is now complete
+    software, is history.  The GTK2 port to Windows is now complete
     and stable enough for use.
 
     <p>
-    In OS X, X11 is still required.  There is a GTK-2 porting effort
+    In OS X, X11 is still required.  There is a GTK2 porting effort
     to native OS X, but thus far there are too many flaws for use with
     products.
 
@@ -163,7 +163,7 @@ Xic 4.0 Changes and New Features
     and <tt>dpkg</tt> are both found, the installer will prompt
     whether to use them instead of the <tt>rpm</tt> program.
     <dt><b>Linux2</b><dd>
-    Obsolete static-link using GTK-1.2, to be terminated.
+    Obsolete static-link using GTK1.2, to be terminated.
     <dt><b>LinuxRHEL3</b>, <b>LunuxRHEL3_64</b><dd>
     Red Hat EL3/4 has reached end of life, will be terminated.
     </dl>
@@ -196,7 +196,7 @@ Xic 4.0 Changes and New Features
     installed in Mavericks</b>, as it is not part of the base package.
 
     <p>
-    The Generation 4 releases require that the MacPorts GTK-2
+    The Generation 4 releases require that the MacPorts GTK2
     libraries be installed.  As this is being written, the mechanism
     for providing this is being worked out.
 
@@ -205,18 +205,18 @@ Xic 4.0 Changes and New Features
     push-button icons in X-quartz.  They look funny and ugly and are
     barely recognizable, but the problem is only cosmetic and the
     programs seem to work properly.  This is due to an incompatibility
-    between the old GTK-1 graphical code and X-quartz.  It is not
-    present when using GTK-2 so is not a problem in Generation 4.
+    between the old GTK1 graphical code and X-quartz.  It is not
+    present when using GTK2 so is not a problem in Generation 4.
     
     <p>
-    The Generation 4 Windows releases now also use the GTK-2 graphical
+    The Generation 4 Windows releases now also use the GTK2 graphical
     interface.  The old Win32 interface, source of countless hours of
     frustration in development, is gone.  The Windows programs are now
     virtually identical to the programs on the other platforms, and I
     only have to maintain one version of the graphical interface.
 
     <p>
-    The GTK-2 libraries are provided in a separate package, which is
+    The GTK2 libraries are provided in a separate package, which is
     available along with the programs and must be installed before the
     programs can be used.  This is (more or less) a one-time
     operation.
@@ -1632,7 +1632,7 @@ Xic 4.0 Changes and New Features
 
     <dl>
     <dt>Removed <b>XT_USE_GTK_THEMES</b> environment variable<dd>
-    This applied to GTK-1.2 which is no longer in use.
+    This applied to GTK1.2 which is no longer in use.
     </dl>
 
     <dl>

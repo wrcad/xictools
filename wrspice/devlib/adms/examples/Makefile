@@ -19,7 +19,10 @@ SUBDIRS = \
   psp \
   tjm
 
+JJS = jj tjm
+
 dummy: $(SUBDIRS)
+jjs: $(JJS)
 
 make::
 	@for a in $(SUBDIRS); do \

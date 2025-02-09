@@ -1680,7 +1680,7 @@ Color Selection
     The entries are:  <b>Plot Mark 1</b> to <b>Plot Mark 18</b>
 
     <p>
-    The rest of the panel consists of the stock GTK-2 color selection
+    The rest of the panel consists of the stock GTK2 color selection
     widgets.  There are six up/down buttons which can adjust the red,
     green, and blue values, or the hue, saturation, and intensity
     values.  To the left is a color wheel, with a triangle inside. 
@@ -1794,7 +1794,7 @@ for plotting.
 The entries are:  {\cb Plot Mark 1} to {\cb Plot Mark 18}.
 \end{description}
 
-The rest of the panel consists of the stock GTK-2 color selection
+The rest of the panel consists of the stock GTK2 color selection
 widgets.  There are six up/down buttons which can adjust the red,
 green, and blue values, or the hue, saturation, and intensity values. 
 To the left is a color wheel, with a triangle inside.  One can drag

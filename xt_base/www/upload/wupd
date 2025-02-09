@@ -1,9 +1,0 @@
-#! /bin/bash
-
-# Update online WRspice manual.
-
-cd ~/wrcad.com/html/manual
-rm -rf wrsmanual wrsmanual.pdf
-tar xzf ../xictools/docs/wrsmanual-html-4.*.tar.gz
-cp ../xictools/docs/wrsmanual-4.*.pdf wrsmanual.pdf
-
