@@ -447,7 +447,7 @@ QTtoolbar::tb_mail_destroy_cb(GReditPopup *w)
 {
     QTeditDlg *we = dynamic_cast<QTeditDlg*>(w);
     if (we)
-        TB()->SetLoc(tid_bug, we);
+        SetLoc(tid_bug, we);
 }
 
 
@@ -483,8 +483,8 @@ void
 QTtoolbar::tb_font_cb(const char *btn, const char *name, void*)
 {
     if (!name && !btn) {
-        TB()->SetLoc(tid_font, TB()->tb_fontsel);
-        TB()->SetActiveDlg(tid_font, 0);
+        SetLoc(tid_font, TB()->tb_fontsel);
+        SetActiveDlg(tid_font, 0);
         entries(tid_font)->action()->setChecked(false);;
     }
 }

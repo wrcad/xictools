@@ -3,7 +3,7 @@ LOCATION = mozy/lib/help
 #######################################################################
 
 MOZYFILES = \
-  Main.hlp HelpSys.hlp TextEditor.hlp Accessories.hlp
+  HelpSys.hlp TextEditor.hlp Accessories.hlp
 
 BASEFILES = \
   FileSel.hlp Hardcopy.hlp TMsmall.gif wrbannermain.gif

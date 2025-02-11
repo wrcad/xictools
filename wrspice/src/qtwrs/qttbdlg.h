@@ -57,6 +57,7 @@ class QGroupBox;
 class QDragEnterEvent;
 class QDropEvent;
 
+
 class QTtbDlg : public QDialog, public QTdraw
 {
     Q_OBJECT
@@ -84,6 +85,10 @@ public:
         }
 
     static QTtbDlg *self()          { return (instPtr); }
+
+protected:
+    void closeEvent(QCloseEvent*);
+    void focusInEvent(QFocusEvent*);
 
 private slots:
     void file_menu_slot(QAction*);

@@ -66,6 +66,7 @@
 #include <QDropEvent>
 #include <QMimeData>
 #include <QToolButton>
+//#include <QSocketNotifier>
 
 #ifdef WIN32
 #include <windows.h>
@@ -437,10 +438,24 @@ QTtbDlg::QTtbDlg(int xx, int yy) : QTdraw(0)
     // Here we draw once quickly and periodically refresh more slowly.
 
     TB()->RegisterTimeoutProc(50, tb_res_timeout, (void*)1L);
-    TB()->RegisterTimeoutProc(2000, tb_res_timeout, 0);
-    TB()->FixLoc(&xx, &yy);
-    TB()->SetActiveDlg(tid_toolbar, this);
-    move(xx, yy);
+    TB()->RegisterTimeoutProc(2000, tb_res_timeout, 0); TB()->FixLoc(&xx, &yy);
+    TB()->SetActiveDlg(tid_toolbar, this); move(xx, yy);
+
+    // Here's a bad thing...
+    // We need to do something to increase the frequency of interrupt
+    // handling of the text interface, otherwise it is very slow, when
+    // typing characters, several seconds are required for each character
+    // to appear.  This solves the text response problem, and also allows
+    // simulation to run quickly, but will hog cpu time.
+    //
+    startTimer(0);
+
+    // Here's something that is interesting but doesn't solve the problem.
+    // This will wake the event loop when there is something to read on
+    // stdin, so character processing appears instantaneous, and no cpu
+    // hogging.  However, the simulations run incredibly slowly.
+    //
+    //new QSocketNotifier(STDIN_FILENO, QSocketNotifier::Read);
 }
 
 
@@ -449,6 +464,38 @@ QTtbDlg::~QTtbDlg()
     instPtr = 0;
     TB()->SetLoc(tid_toolbar, this);
     TB()->SetActiveDlg(tid_toolbar, 0);
+}
+
+
+void
+QTtbDlg::closeEvent(QCloseEvent *ev)
+{
+    ev->ignore();
+    // Quit the program, confirm if work is unsaved.
+    if (CP.GetFlag(CP_NOTTYIO)) {
+        // In server mode, just hide ourself.
+        hide();
+    }
+    else {
+        CommandTab::com_quit(0);
+        ::raise(SIGINT);  // for new prompt, else it hangs
+    }
+}
+
+
+// XXX
+// Implement revert to console on initial pop-up.
+void
+QTtbDlg::focusInEvent(QFocusEvent*)
+{
+    static bool lockout;
+    if (lockout)
+        return;
+    lockout = true;
+    clearFocus();
+#ifdef __APPLE__
+    system("osascript -e \"tell application \\\"Terminal\\\" to activate\"");
+#endif
 }
 
 

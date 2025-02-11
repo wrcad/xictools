@@ -190,7 +190,6 @@ public:
     void KeywordsCleanup(QTtbHelpDlg*);
 
     void Toolbar();
-//XXX    void RevertFocus(GtkWidget*);
 
     // Return the entry of the named tool, if found.
     //
