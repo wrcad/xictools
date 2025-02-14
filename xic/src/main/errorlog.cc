@@ -453,7 +453,7 @@ cErrLog::CloseLogDir()
     }
     DIR *wdir = opendir(el_log_directory);
     if (wdir) {
-        char *path = new char[strlen(el_log_directory) + 256];
+        char *path = new char[strlen(el_log_directory) + 1024];
         strcpy(path, el_log_directory);
         char *t = path + strlen(path) - 1;
         if (!lstring::is_dirsep(*t)) {

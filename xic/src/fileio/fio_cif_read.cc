@@ -1354,7 +1354,7 @@ cFIO::TranslateDir(const char *dirpath, const FIOcvtPrms *prms)
     if (oiret == OIok) {
         DIR *wdir = opendir(dirpath);
         if (wdir) {
-            char *path = new char[strlen(dirpath) + 256];
+            char *path = new char[strlen(dirpath) + 1024];
             strcpy(path, dirpath);
             char *t = path + strlen(path) - 1;
             if (!lstring::is_dirsep(*t)) {
@@ -1422,7 +1422,7 @@ cFIO::TranslateDir(const char *dirpath, const FIOcvtPrms *prms)
         if (oiret == OIok) {
             DIR *wdir = opendir(dirpath);
             if (wdir) {
-                char *path = new char[strlen(dirpath) + 256];
+                char *path = new char[strlen(dirpath) + 1024];
                 strcpy(path, dirpath);
                 char *t = path + strlen(path) - 1;
                 if (!lstring::is_dirsep(*t)) {

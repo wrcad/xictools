@@ -311,7 +311,6 @@ QTtoolbar::QTtoolbar() : QTbag(0)
     }
     instancePtr = this;
 
-    tb_mailer = 0;
     tb_fontsel = 0;
     for (int i = 0; i < TBH_end; i++) {
         tb_kw_help[i] = 0;
@@ -448,6 +447,7 @@ QTtoolbar::tb_mail_destroy_cb(GReditPopup *w)
     QTeditDlg *we = dynamic_cast<QTeditDlg*>(w);
     if (we)
         SetLoc(tid_bug, we);
+    tb_entries[tid_bug].set_dialog(0);
 }
 
 
@@ -456,12 +456,14 @@ QTtoolbar::tb_mail_destroy_cb(GReditPopup *w)
 void
 QTtoolbar::PopUpBugRpt(ShowMode mode, int x, int y)
 {
+    GReditPopup *mailer =
+        dynamic_cast<GReditPopup*>(tb_entries[tid_bug].dialog());
     if (mode == MODE_OFF) {
-        if (tb_mailer)
-            tb_mailer->popdown();
+        if (mailer)
+            mailer->popdown();
         return;
     }
-    if (!tb_mailer) {
+    if (!mailer) {
         if (!Global.BugAddr()) {
             GRpkg::self()->ErrPrintf(ET_ERROR,
                 "no IP address set for bug reports.");
@@ -470,10 +472,9 @@ QTtoolbar::PopUpBugRpt(ShowMode mode, int x, int y)
         char buf[128];
         snprintf(buf, sizeof(buf), "WRspice %s bug", Global.Version());
         FixLoc(&x, &y);
-        tb_mailer = PopUpMail(buf, Global.BugAddr(), tb_mail_destroy_cb,
+        mailer = PopUpMail(buf, Global.BugAddr(), tb_mail_destroy_cb,
             GRloc(LW_XYA, x, y));
-        if (tb_mailer)
-            tb_mailer->register_usrptr((void**)&tb_mailer);
+        tb_entries[tid_bug].set_dialog(dynamic_cast<QTeditDlg*>(mailer));
     }
 }
 

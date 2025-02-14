@@ -1462,7 +1462,7 @@ GTKfilePopup::add_dir(GtkTreeIter *parent_node, char *dir)
     DIR *wdir = opendir(dir);
     if (wdir) {
 
-        int sz = strlen(dir) + 64;
+        int sz = strlen(dir) + 1024;
         char *p = new char[sz];
         strcpy(p, dir);
         char *dt = p + strlen(p) - 1;
@@ -1623,7 +1623,7 @@ GTKfilePopup::list_files()
         delete [] dir;
         return;
     }
-    int sz = strlen(dir) + 64;
+    int sz = strlen(dir) + 1024;
     char *p = new char[sz];
     strcpy(p, dir);
     char *dt = p + strlen(p) - 1;
@@ -3108,7 +3108,7 @@ GTKfilePopup::fs_list_subdirs(const char *dir)
     stringlist *s0 = 0;
     DIR *wdir = opendir(dir);
     if (wdir) {
-        int sz = strlen(dir) + 64;
+        int sz = strlen(dir) + 1024;
         char *p = new char[sz];
         strcpy(p, dir);
         char *dt = p + strlen(p) - 1;

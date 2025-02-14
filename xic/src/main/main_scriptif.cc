@@ -1222,7 +1222,7 @@ SIlocal::add_dir(const char *dir, SymTab *nametab, umenu *ul)
     if (!(wdir = opendir(dir)))
         return (ul);
 
-    char *path = new char[strlen(dir) + 256];
+    char *path = new char[strlen(dir) + 1024];
     strcpy(path, dir);
     char *end = path + strlen(path) - 1;
     if (!lstring::is_dirsep(*end)) {

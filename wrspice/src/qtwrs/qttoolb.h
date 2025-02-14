@@ -235,7 +235,6 @@ private:
     static void tb_mail_destroy_cb(GReditPopup*);
     static void tb_font_cb(const char*, const char*, void*);
 
-    GReditPopup *tb_mailer;
     QTfontDlg   *tb_fontsel;
 
     QWidget     *tb_kw_help[TBH_end];

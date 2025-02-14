@@ -1524,7 +1524,7 @@ QTfileDlg::list_files_slot()
         delete [] dir;
         return;
     }
-    char *p = new char[strlen(dir) + 128];
+    char *p = new char[strlen(dir) + 1024];
     strcpy(p, dir);
     delete [] dir;
     char *dt = p + strlen(p) - 1;
@@ -1783,7 +1783,7 @@ QTfileDlg::add_dir(QTreeWidgetItem *prnt, char *dir)
 {
     if (!dir || !*dir)
         return;
-    char *p = new char[strlen(dir) + 64];
+    char *p = new char[strlen(dir) + 1024];
     strcpy(p, dir);
     char *dt = p + strlen(p) - 1;
     if (!lstring::is_dirsep(*dt)) {
@@ -2122,7 +2122,7 @@ namespace {
         stringlist *s0 = 0;
         DIR *wdir = opendir(dir);
         if (wdir) {
-            char *p = new char[strlen(dir) + 64];
+            char *p = new char[strlen(dir) + 1024];
             strcpy(p, dir);
             char *dt = p + strlen(p) - 1;
             if (!lstring::is_dirsep(*dt)) {

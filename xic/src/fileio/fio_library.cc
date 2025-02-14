@@ -474,7 +474,7 @@ sLib::open_library(sLib **plib, const char *searchpath, const char *fname)
                     p = cp;
                     DIR *wdir = opendir(p);
                     if (wdir) {
-                        char *path = new char[strlen(p) + 256];
+                        char *path = new char[strlen(p) + 1024];
                         strcpy(path, p);
                         char *t = path + strlen(path) - 1;
                         if (!lstring::is_dirsep(*t)) {

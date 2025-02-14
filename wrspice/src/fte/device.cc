@@ -848,7 +848,7 @@ namespace {
         if (!wdir)
             return;
 
-        char *filepath = new char[strlen(mpath) + 128];
+        char *filepath = new char[strlen(mpath) + 1024];
         char *t = lstring::stpcpy(filepath, mpath);
         if (t > filepath && !lstring::is_dirsep(*(t-1)))
             *t++ = '/';
