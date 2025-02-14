@@ -66,6 +66,7 @@
 #include <QDropEvent>
 #include <QMimeData>
 #include <QToolButton>
+#include <QTimer>
 //#include <QSocketNotifier>
 
 #ifdef WIN32
@@ -95,6 +96,26 @@ QTtoolbar::PopUpToolbar(ShowMode mode, int x, int y)
     QTtbDlg::self()->show();
 }
 // End of QTtoolbar functions.
+
+
+namespace {
+    // We would like to revert focus to the starting console.
+    void revert_focus()
+    {
+        QTtbDlg *dlg = QTtbDlg::self();
+        if (!dlg)
+            return;
+#ifdef __APPLE__
+        system(
+            "osascript -e \"tell application \\\"Terminal\\\" to activate\"");
+        dlg->setWindowFlags(dlg->windowFlags() & ~Qt::WindowStaysOnTopHint);
+#else
+        dlg->setWindowFlags(dlg->windowFlags() & ~Qt::WindowStaysOnTopHint);
+        dlg->setAttribute(Qt::WA_ShowWithoutActivating, false);
+#endif
+        dlg->show();
+    }
+}
 
 
 QTtbDlg *QTtbDlg::instPtr;
@@ -441,6 +462,16 @@ QTtbDlg::QTtbDlg(int xx, int yy) : QTdraw(0)
     TB()->RegisterTimeoutProc(2000, tb_res_timeout, 0); TB()->FixLoc(&xx, &yy);
     TB()->SetActiveDlg(tid_toolbar, this); move(xx, yy);
 
+    // Start out with the pop-up on top, but revert focus to console
+    // if possible.
+    setWindowFlags(Qt::WindowStaysOnTopHint);
+#ifdef __APPLE__
+    QTimer::singleShot(100, revert_focus);
+#else
+    setAttribute(Qt::WA_ShowWithoutActivating);
+    QTimer::singleShot(0, revert_focus);
+#endif
+
     // Here's a bad thing...
     // We need to do something to increase the frequency of interrupt
     // handling of the text interface, otherwise it is very slow, when
@@ -480,22 +511,6 @@ QTtbDlg::closeEvent(QCloseEvent *ev)
         CommandTab::com_quit(0);
         ::raise(SIGINT);  // for new prompt, else it hangs
     }
-}
-
-
-// XXX
-// Implement revert to console on initial pop-up.
-void
-QTtbDlg::focusInEvent(QFocusEvent*)
-{
-    static bool lockout;
-    if (lockout)
-        return;
-    lockout = true;
-    clearFocus();
-#ifdef __APPLE__
-    system("osascript -e \"tell application \\\"Terminal\\\" to activate\"");
-#endif
 }
 
 

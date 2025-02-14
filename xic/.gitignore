@@ -8,12 +8,13 @@ bin/wrencode
 bin/wrencode.exe
 bin/wrsetpass
 bin/wrsetpass.exe
+help/Accessories.hlp
 help/FileSel.hlp
+help/Graphics.hlp
 help/Hardcopy.hlp
 help/HelpSys.hlp
-help/TMsmall.gif
 help/TextEditor.hlp
-help/Accessories.hlp
+help/TMsmall.gif
 help/arc.xpm
 help/box.xpm
 help/break.xpm

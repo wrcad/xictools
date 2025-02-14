@@ -88,7 +88,6 @@ public:
 
 protected:
     void closeEvent(QCloseEvent*);
-    void focusInEvent(QFocusEvent*);
 
 private slots:
     void file_menu_slot(QAction*);
