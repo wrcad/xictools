@@ -63,6 +63,8 @@
 #include <QScreen>
 #include <QWindow>
 
+#include <unistd.h>
+
 
 // Device-dependent setup.
 //
@@ -114,9 +116,24 @@ QTdev::~QTdev()
 void
 QTdev::on_null_ptr()
 {
-    fprintf(stderr, "Singleton class QTdev used before insgtantiated.\n");
+    fprintf(stderr, "Singleton class QTdev used before instantiated.\n");
     exit(1);
 }
+
+
+#ifdef __APPLE__
+// This and the code in QTdev::Init eliminate display of an annoying parasitic
+// warning in Apple Sequoia concerning the IMK subsystem.  When Apple gets
+// around to fixing this, the code here will go away.
+// Just installed 15.3.1, the bug persists.
+namespace {
+    void fsckapple()
+    {
+        freopen("/dev/tty", "w", stderr);
+        //fprintf(stderr, "hello i'm back\n");
+    }
+}
+#endif
 
 
 bool
@@ -137,8 +154,14 @@ QTdev::Init(int *argc, char **argv)
         new QApplication(ac, argv);
         *argc = ac;
     }
-
     Fnt()->initFonts();
+
+#ifdef __APPLE__
+    if (isatty(fileno(stderr))) {
+        freopen("/dev/null", "a", stderr);
+        QTimer::singleShot(500, fsckapple);
+    }
+#endif
 
     // set correct information
     width = 1;
