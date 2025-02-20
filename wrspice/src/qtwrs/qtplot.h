@@ -93,25 +93,8 @@ public:
         pbtn_NUMBTNS
     };
 
-    QTplotDlg(int type) : QTbag(this), QTdraw(type)
-    {
-        pb_graph = 0;
-        pb_gbox = 0;
-        for (int i = 0; i < pbtn_NUMBTNS; i++)
-            pb_checkwins[i] = 0;
-        pb_id = 0;
-        pb_x = pb_y = 0;
-        pb_rdid = 0;
-        pb_event_test = false;
-        pb_event_deferred = false;
-        setAttribute(Qt::WA_DeleteOnClose);
-    }
-
-    ~QTplotDlg()
-    {
-        if (pb_id)
-            QTdev::self()->RemoveIdleProc(pb_id);
-    }
+    QTplotDlg(int, cGraph*);
+    ~QTplotDlg();
 
     // Don't pop down from Esc press.
     void keyPressEvent(QKeyEvent *ev)
@@ -166,6 +149,7 @@ private slots:
     void do_save_print_slot(const char*, void*);
 
 private:
+    void revert_focus();
     static int redraw_timeout(void*);
     static int motion_idle(void*);
     static void set_hccb(HCcb*);

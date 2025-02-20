@@ -5061,7 +5061,7 @@ cGraph::start_drag_zoom(void *arg)
 //
 
 // Below are stubs needed to link without a graphics package.  The
-// functions below are gemerally implemented in graphics code.
+// functions below are generally implemented in graphics code.
 
 #ifndef WITH_GRFXTK
 

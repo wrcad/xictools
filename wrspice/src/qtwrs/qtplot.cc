@@ -82,10 +82,86 @@ Authors: 1988 Jeffrey M. Hsu
 #include <QDropEvent>
 #include <QDrag>
 #include <QMimeData>
+#include <QTimer>
 
 // help keywords used in this file
 // plotpanel
 // mplotpanel
+
+
+QTplotDlg::QTplotDlg(int type, cGraph *gr) : QTbag(this), QTdraw(type)
+{
+    pb_graph = gr;
+    pb_gbox = 0;
+    for (int i = 0; i < pbtn_NUMBTNS; i++)
+        pb_checkwins[i] = 0;
+    pb_id = 0;
+    pb_x = pb_y = 0;
+    pb_rdid = 0;
+    pb_event_test = false;
+    pb_event_deferred = false;
+    setAttribute(Qt::WA_DeleteOnClose);
+
+    QIcon icon;
+    icon.addPixmap(QPixmap(wrs_16x16_xpm));
+    icon.addPixmap(QPixmap(wrs_32x32_xpm));
+    icon.addPixmap(QPixmap(wrs_48x48_xpm));
+    setWindowIcon(icon);
+
+    char buf[128];
+    const char *anam = "";
+    if (gr->apptype() == GR_PLOT)
+        anam = GR_PLOTstr;
+    else if (gr->apptype() == GR_MPLT)
+        anam = GR_MPLTstr;
+    snprintf(buf, sizeof(buf), "%s %s %d", CP.Program(), anam, gr->id());
+    setWindowTitle(buf);
+
+    QHBoxLayout *hbox = new QHBoxLayout(this);
+    hbox->setContentsMargins(2, 2, 2, 2);
+    hbox->setSpacing(2);
+
+    // set up viewport
+    gd_viewport = new QTcanvas();
+    hbox->addWidget(gd_viewport);
+    gd_viewport->setFocusPolicy(Qt::StrongFocus);
+    gd_viewport->setAcceptDrops(true);
+
+    QFont *fnt;
+    if (Fnt()->getFont(&fnt, FNT_SCREEN))
+        gd_viewport->set_font(fnt);
+    connect(QTfont::self(), &QTfont::fontChanged,
+        this, &QTplotDlg::font_changed_slot, Qt::QueuedConnection);
+
+    connect(gd_viewport, &QTcanvas::resize_event,
+        this, &QTplotDlg::resize_slot);
+    connect(gd_viewport, &QTcanvas::press_event,
+        this, &QTplotDlg::button_down_slot);
+    connect(gd_viewport, &QTcanvas::release_event,
+        this, &QTplotDlg::button_up_slot);
+    connect(gd_viewport, &QTcanvas::motion_event,
+        this, &QTplotDlg::motion_slot);
+    connect(gd_viewport, &QTcanvas::key_press_event,
+        this, &QTplotDlg::key_down_slot);
+    connect(gd_viewport, &QTcanvas::drag_enter_event,
+        this, &QTplotDlg::drag_enter_slot);
+    connect(gd_viewport, &QTcanvas::drop_event,
+        this, &QTplotDlg::drop_slot);
+
+    pb_gbox = new QGroupBox();
+    hbox->addWidget(pb_gbox);
+    pb_gbox->setMaximumWidth(100);
+    init_gbuttons();
+    hbox->setStretch(0, 1);
+}
+
+
+QTplotDlg::~QTplotDlg()
+{
+    if (pb_id)
+        QTdev::self()->RemoveIdleProc(pb_id);
+}
+
 
 
 QSize
@@ -144,64 +220,8 @@ QTplotDlg::sizeHint() const
 
 
 bool
-QTplotDlg::init(cGraph *gr)
+QTplotDlg::init(cGraph*)
 {
-    pb_graph = gr;
-
-    QIcon icon;
-    icon.addPixmap(QPixmap(wrs_16x16_xpm));
-    icon.addPixmap(QPixmap(wrs_32x32_xpm));
-    icon.addPixmap(QPixmap(wrs_48x48_xpm));
-    setWindowIcon(icon);
-
-    char buf[128];
-    const char *anam = "";
-    if (gr->apptype() == GR_PLOT)
-        anam = GR_PLOTstr;
-    else if (gr->apptype() == GR_MPLT)
-        anam = GR_MPLTstr;
-    snprintf(buf, sizeof(buf), "%s %s %d", CP.Program(), anam, gr->id());
-    setWindowTitle(buf);
-
-    QHBoxLayout *hbox = new QHBoxLayout(this);
-    hbox->setContentsMargins(2, 2, 2, 2);
-    hbox->setSpacing(2);
-
-    // set up viewport
-    gd_viewport = new QTcanvas();
-    hbox->addWidget(gd_viewport);
-    gd_viewport->setFocusPolicy(Qt::StrongFocus);
-    gd_viewport->setAcceptDrops(true);
-
-    QFont *fnt;
-    if (Fnt()->getFont(&fnt, FNT_SCREEN))
-        gd_viewport->set_font(fnt);
-    connect(QTfont::self(), &QTfont::fontChanged,
-        this, &QTplotDlg::font_changed_slot, Qt::QueuedConnection);
-
-    connect(gd_viewport, &QTcanvas::resize_event,
-        this, &QTplotDlg::resize_slot);
-    connect(gd_viewport, &QTcanvas::press_event,
-        this, &QTplotDlg::button_down_slot);
-    connect(gd_viewport, &QTcanvas::release_event,
-        this, &QTplotDlg::button_up_slot);
-    connect(gd_viewport, &QTcanvas::motion_event,
-        this, &QTplotDlg::motion_slot);
-    connect(gd_viewport, &QTcanvas::key_press_event,
-        this, &QTplotDlg::key_down_slot);
-    connect(gd_viewport, &QTcanvas::drag_enter_event,
-        this, &QTplotDlg::drag_enter_slot);
-    connect(gd_viewport, &QTcanvas::drop_event,
-        this, &QTplotDlg::drop_slot);
-
-    pb_gbox = new QGroupBox();
-    hbox->addWidget(pb_gbox);
-    pb_gbox->setMaximumWidth(100);
-
-    init_gbuttons();
-
-    hbox->setStretch(0, 1);
-
     // Position the plot on screen and enable display.
     int xx, yy;
     GP.PlotPosition(&xx, &yy);
@@ -209,13 +229,25 @@ QTplotDlg::init(cGraph *gr)
     move(xx, yy);
     show();
 
-    gr->gr_pkg_init_colors();
-    gr->set_fontsize();
-    gr->area().set_width(Viewport()->width());
-    gr->area().set_height(Viewport()->height());
+    pb_graph->gr_pkg_init_colors();
+    pb_graph->set_fontsize();
+    pb_graph->area().set_width(Viewport()->width());
+    pb_graph->area().set_height(Viewport()->height());
 
     Clear();
     pb_graph->gr_redraw();
+
+    if (isatty(fileno(stdin))) {
+        // Start out with the pop-up on top, but revert focus to console
+        // if possible.
+        setWindowFlag(Qt::WindowStaysOnTopHint);
+#ifdef __APPLE__
+        QTimer::singleShot(100, this, &QTplotDlg::revert_focus);
+#else
+        setAttribute(Qt::WA_ShowWithoutActivating);
+        QTimer::singleShot(0, this, &QTplotDlg::revert_focus);
+#endif
+    }
 
     return (false);
 }
@@ -496,6 +528,23 @@ QTplotDlg::eventFilter(QObject *obj, QEvent *ev)
         }
     }
     return (false);
+}
+
+
+// Revert focus to the starting console.
+// //
+void
+QTplotDlg::revert_focus()
+{
+#ifdef __APPLE__
+    system(
+        "osascript -e \"tell application \\\"Terminal\\\" to activate\"");
+    setWindowFlags(windowFlags() & ~Qt::WindowStaysOnTopHint);
+#else
+    setWindowFlags(windowFlags() & ~Qt::WindowStaysOnTopHint);
+    setAttribute(Qt::WA_ShowWithoutActivating, false);
+#endif
+    show();
 }
 
 

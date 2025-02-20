@@ -102,6 +102,7 @@ private slots:
     void drop_slot(QDropEvent*);
 
 private:
+    void revert_focus();
     static int tb_res_timeout(void*);
 
     QMenu   *tb_file_menu;

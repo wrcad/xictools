@@ -73,7 +73,7 @@ Authors: 1988 Jeffrey M. Hsu
 GRwbag *
 cGraph::gr_new_gx(int type)
 {
-    return (new QTplotDlg(type));
+    return (new QTplotDlg(type, this));
 }
 
 

@@ -98,26 +98,6 @@ QTtoolbar::PopUpToolbar(ShowMode mode, int x, int y)
 // End of QTtoolbar functions.
 
 
-namespace {
-    // We would like to revert focus to the starting console.
-    void revert_focus()
-    {
-        QTtbDlg *dlg = QTtbDlg::self();
-        if (!dlg)
-            return;
-#ifdef __APPLE__
-        system(
-            "osascript -e \"tell application \\\"Terminal\\\" to activate\"");
-        dlg->setWindowFlags(dlg->windowFlags() & ~Qt::WindowStaysOnTopHint);
-#else
-        dlg->setWindowFlags(dlg->windowFlags() & ~Qt::WindowStaysOnTopHint);
-        dlg->setAttribute(Qt::WA_ShowWithoutActivating, false);
-#endif
-        dlg->show();
-    }
-}
-
-
 QTtbDlg *QTtbDlg::instPtr;
 
 QTtbDlg::QTtbDlg(int xx, int yy) : QTdraw(0)
@@ -459,18 +439,22 @@ QTtbDlg::QTtbDlg(int xx, int yy) : QTdraw(0)
     // Here we draw once quickly and periodically refresh more slowly.
 
     TB()->RegisterTimeoutProc(50, tb_res_timeout, (void*)1L);
-    TB()->RegisterTimeoutProc(2000, tb_res_timeout, 0); TB()->FixLoc(&xx, &yy);
-    TB()->SetActiveDlg(tid_toolbar, this); move(xx, yy);
+    TB()->RegisterTimeoutProc(2000, tb_res_timeout, 0);
+    TB()->FixLoc(&xx, &yy);
+    TB()->SetActiveDlg(tid_toolbar, this);
+    move(xx, yy);
 
-    // Start out with the pop-up on top, but revert focus to console
-    // if possible.
-    setWindowFlags(Qt::WindowStaysOnTopHint);
+    if (isatty(fileno(stdin))) {
+        // Start out with the pop-up on top, but revert focus to console
+        // if possible.
+        setWindowFlag(Qt::WindowStaysOnTopHint);
 #ifdef __APPLE__
-    QTimer::singleShot(100, revert_focus);
+        QTimer::singleShot(100, this, &QTtbDlg::revert_focus);
 #else
-    setAttribute(Qt::WA_ShowWithoutActivating);
-    QTimer::singleShot(0, revert_focus);
+        setAttribute(Qt::WA_ShowWithoutActivating);
+        QTimer::singleShot(0, this, &QTtbDlg::revert_focus);
 #endif
+    }
 
     // Here's a bad thing...
     // We need to do something to increase the frequency of interrupt
@@ -666,6 +650,27 @@ QTtbDlg::update(ResUpdType updt)
         }
         Update();
     }
+}
+
+
+// Revert focus to the starting console.
+//
+void
+QTtbDlg::revert_focus()
+{
+#ifdef __APPLE__
+    system(
+        "osascript -e \"tell application \\\"Terminal\\\" to activate\"");
+    //XXX
+    // Note that the "on top" functionality is broken by the Apple
+    // bug work around in QTdev::Init.  Hope that this is temporary.
+    setWindowFlag(Qt::WindowStaysOnTopHint, false);
+#else
+    setWindowFlag(Qt::WindowStaysOnTopHint, false);
+    setAttribute(Qt::WA_ShowWithoutActivating, false);
+#endif
+    show();
+    //raise();
 }
 
 
