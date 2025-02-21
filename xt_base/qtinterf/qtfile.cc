@@ -90,7 +90,7 @@ extern "C" { extern int fnmatch(const char*, const char*, int); }
 // Help keywords used in this file:
 // filesel
 
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
 #define USE_QTOOLBAR
 #endif
 
@@ -349,7 +349,7 @@ QTfileTreeWidget::start_drag()
             delete [] path;
 
             Qt::KeyboardModifiers m = QGuiApplication::queryKeyboardModifiers();
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             // alt == option on Apple's planet
             if ((m & Qt::ShiftModifier) && (m & Qt::AltModifier)) {
                 drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction,
@@ -548,7 +548,7 @@ QTfileListWidget::start_drag()
             delete [] path;
 
             Qt::KeyboardModifiers m = QGuiApplication::queryKeyboardModifiers();
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
             // alt == option on Apple's planet
             if ((m & Qt::ShiftModifier) && (m & Qt::AltModifier)) {
                 drag->exec(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction,

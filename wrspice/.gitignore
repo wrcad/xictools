@@ -14,6 +14,7 @@ bin/wrspiced
 bin/wrspiced.exe
 help/Accessories.hlp
 help/FileSel.hlp
+help/Graphics.hlp
 help/Hardcopy.hlp
 help/HelpSys.hlp
 help/TMsmall.gif
@@ -46,7 +47,6 @@ src/sparse/spsolve.cc
 src/sparse/sputils.cc
 startup/wr_install
 manual/*.aux
-manual/*.tex
 manual/wrsmanual-*
 manual/wrsmanual.aux
 manual/wrsmanual.dvi

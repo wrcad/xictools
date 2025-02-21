@@ -121,7 +121,7 @@ QTdev::on_null_ptr()
 }
 
 
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
 // This and the code in QTdev::Init eliminate display of an annoying parasitic
 // warning in Apple Sequoia concerning the IMK subsystem.  When Apple gets
 // around to fixing this, the code here will go away.
@@ -156,7 +156,7 @@ QTdev::Init(int *argc, char **argv)
     }
     Fnt()->initFonts();
 
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
     if (isatty(fileno(stderr))) {
         freopen("/dev/null", "a", stderr);
         QTimer::singleShot(500, fsckapple);

@@ -62,7 +62,7 @@ namespace { QTfont _qt_font_; }
 ginterf::GRfont *Fnt()      { return (_qt_font_.self()); }
 
 
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
 #define DEF_SIZE 11
 #define DEF_FIXED_FACE "Menlo"
 #define DEF_PROP_FACE "Arial"

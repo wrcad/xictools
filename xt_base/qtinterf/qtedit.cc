@@ -65,7 +65,7 @@
 #include <QTextBlock>
 #include <QTextCursor>
 
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
 #define USE_QTOOLBAR
 #endif
 

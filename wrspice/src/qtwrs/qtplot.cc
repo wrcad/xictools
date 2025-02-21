@@ -238,12 +238,11 @@ QTplotDlg::init(cGraph*)
     pb_graph->gr_redraw();
 
     if (isatty(fileno(stdin))) {
-        // Start out with the pop-up on top, but revert focus to console
-        // if possible.
-        setWindowFlag(Qt::WindowStaysOnTopHint);
-#ifdef __APPLE__
-        QTimer::singleShot(100, this, &QTplotDlg::revert_focus);
+#ifdef Q_OS_MACOS
+        // Terminal keeps focus, uncomment to give focus to plot.
+        //raise();
 #else
+        setWindowFlag(Qt::WindowStaysOnTopHint);
         setAttribute(Qt::WA_ShowWithoutActivating);
         QTimer::singleShot(0, this, &QTplotDlg::revert_focus);
 #endif
@@ -532,18 +531,12 @@ QTplotDlg::eventFilter(QObject *obj, QEvent *ev)
 
 
 // Revert focus to the starting console.
-// //
+//
 void
 QTplotDlg::revert_focus()
 {
-#ifdef __APPLE__
-    system(
-        "osascript -e \"tell application \\\"Terminal\\\" to activate\"");
-    setWindowFlags(windowFlags() & ~Qt::WindowStaysOnTopHint);
-#else
-    setWindowFlags(windowFlags() & ~Qt::WindowStaysOnTopHint);
+    setWindowFlag(Qt::WindowStaysOnTopHint, false);
     setAttribute(Qt::WA_ShowWithoutActivating, false);
-#endif
     show();
 }
 

@@ -445,10 +445,8 @@ QTtbDlg::QTtbDlg(int xx, int yy) : QTdraw(0)
     move(xx, yy);
 
     if (isatty(fileno(stdin))) {
-        // Start out with the pop-up on top, but revert focus to console
-        // if possible.
         setWindowFlag(Qt::WindowStaysOnTopHint);
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
         QTimer::singleShot(100, this, &QTtbDlg::revert_focus);
 #else
         setAttribute(Qt::WA_ShowWithoutActivating);
@@ -658,19 +656,18 @@ QTtbDlg::update(ResUpdType updt)
 void
 QTtbDlg::revert_focus()
 {
-#ifdef __APPLE__
+    VTvalue vv;
+#ifdef Q_OS_MACOS
     system(
         "osascript -e \"tell application \\\"Terminal\\\" to activate\"");
-    //XXX
-    // Note that the "on top" functionality is broken by the Apple
-    // bug work around in QTdev::Init.  Hope that this is temporary.
-    setWindowFlag(Qt::WindowStaysOnTopHint, false);
+    if (!Sp.GetVar("tbontop", VTYP_BOOL, &vv))
+        setWindowFlag(Qt::WindowStaysOnTopHint, false);
 #else
-    setWindowFlag(Qt::WindowStaysOnTopHint, false);
+    if (!Sp.GetVar("tbontop", VTYP_BOOL, &vv))
+        setWindowFlag(Qt::WindowStaysOnTopHint, false);
     setAttribute(Qt::WA_ShowWithoutActivating, false);
 #endif
     show();
-    //raise();
 }
 
 
