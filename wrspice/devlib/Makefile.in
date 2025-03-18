@@ -35,6 +35,7 @@ MODULES = \
   bsim4.6.5 \
   bsim4.7.0 \
   bsim4.8.0 \
+  bsim4.8.2 \
   b3soi-3.0 \
   b3soi-3.2 \
   bsimsoi-4.0 \

@@ -1,0 +1,7 @@
+The BSIM4 standard has been supported by the members of Silicon Integration Initiative's Compact Model Coalition. 
+
+CMC Release Date:  January 1, 2020
+Public Release Date:  July 1, 2021
+
+A link to the most recent version of this standard can be found at:
+http://www.si2.org/cmc 
