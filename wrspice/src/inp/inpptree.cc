@@ -266,6 +266,8 @@ IFparseTree::treeParse(const char **expstr)
     if (!expstr)
         return (0);
     const char *t = *expstr;
+    if (!t)
+        return (0);
     while (isspace(*t))
         t++;
     if (!*t)

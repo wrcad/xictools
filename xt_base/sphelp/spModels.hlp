@@ -2173,6 +2173,8 @@ MOSFET Device Models
         <td>U.C. Berkeley bsim4.7.0 model</td></tr>
     <tr><td>17, 59</td><td>BSIM4.8.0</td>
         <td>U.C. Berkeley bsim4.8.0 model</td></tr>
+    <tr><td>18, 60</td><td>BSIM4.8.2</td>
+        <td>U.C. Berkeley bsim4.8.2 model</td></tr>
 
     <tr><td>20</td>    <td>BSIMSOI-3.0</td>
        <td>U.C. Berkeley bsimsoi-3.0 model</td></tr>
@@ -2451,6 +2453,7 @@ The table below lists all of the MOS levels recognized in {\WRspice}.
 \bf 15, 54 & BSIM4.6.5 & U.C. Berkeley bsim-4.6.5 model\\ \hline
 \bf 16, 56 & BSIM4.7.0 & U.C. Berkeley bsim-4.7.0 model\\ \hline
 \bf 17, 59 & BSIM4.8.0 & U.C. Berkeley bsim-4.8.0 model\\ \hline
+\bf 18, 60 & BSIM4.8.2 & U.C. Berkeley bsim-4.8.2 model\\ \hline
 \bf 20 & BSIMSOI-3.0 & U.C. Berkeley bsimsoi-3.0 SOI model\\ \hline
 \bf 21 & BSIMSOI-3.2 & U.C. Berkeley bsimsoi-3.2 SOI model\\ \hline
 \bf 22, 57 & BSIMSOI-4.0 & U.C. Berkeley bsimsoi-4.0 SOI model\\ \hline
