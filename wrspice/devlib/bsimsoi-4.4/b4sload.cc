@@ -360,9 +360,9 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double jbjts, jbjtd, djbjts_dT, djbjtd_dT;
     double jrecs, jrecd, djrecs_dT, djrecd_dT;
     double jtuns, jtund, djtuns_dT, djtund_dT;
-    double rds0, ua, ub, uc;
+    double rds0=0.0, ua, ub, uc;
     double dvbi_dT, dvfbb_dT, /*djbjt_dT, djdif_dT, djrec_dT, djtun_dT,*/ du0temp_dT;
-    double dvsattemp_dT, drds0_dT, dua_dT, dub_dT, duc_dT, dni_dT, dVtm_dT;
+    double dvsattemp_dT, drds0_dT=0.0, dua_dT, dub_dT, duc_dT, dni_dT, dVtm_dT;
     double dVfbeff_dT, dQac0_dT, dQsub0_dT;
     double CbT, CsT, CgT/*, CeT*/;
 //    double CdT;                                                         /* new line Wagner */
@@ -424,7 +424,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
 #ifndef NOBYPASS
     double delvges, delvgms;
 #endif
-    double gcgmgmb, gcgmdb, gcgmsb, gcdgmb, gcsgmb;
+    double gcgmgmb=0.0, gcgmdb, gcgmsb, gcdgmb, gcsgmb;
     double gcgmeb, gcegmb, qgme, qgmid, ceqqgmid;
     double gcgbb;
     double vgge, vggm;
@@ -488,14 +488,14 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double delvdbs;
 #endif
     double gcdbdb, gcsbsb, gcsbb, gcdbb;
-    double ceqqjd, ceqqjs;
+    double ceqqjd=0.0, ceqqjs=0.0;
     double Lpe_Vb; /* v4.0 for Vth */
     double DITS_Sft, DITS_Sft2, dDITS_Sft_dVb, dDITS_Sft_dVd, dDITS_Sft2_dVd, dDITS_Sft_dT;
     double FP, dFP_dT, dFP_dVg, dFP_dVb, dFP_dVd, dFP_dVe;
     double VADITS, dVADITS_dVg, dVADITS_dVd, dVADITS_dVb, dVADITS_dVe, dVADITS_dT; /* for DITS */
     double Iii_Igidl, /*Giigidl_b, Giigidl_d, Giigidl_g, Giigidl_e,*/ Giigidl_T;
 //    double gjsdb;
-    double Idbdp, Isbsp, cdbdp, csbsp, gcjdbdp, gcjsbsp, GGjdb, GGjsb;
+    double Idbdp=0.0, Isbsp=0.0, cdbdp, csbsp, gcjdbdp, gcjsbsp, GGjdb, GGjsb;
     double vdes, vses/*, vdedo, delvdes, delvses, delvded, Isestot,*/
     /*cseshat, Idedtot, cdedhat*/;
 #if (!defined(NOBYPASS) || !defined(NEWCONV))
@@ -504,7 +504,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
 #ifndef NOBYPASS
     double delvdes, cseshat, cdedhat;
 #endif
-    double PowWeffWr, rd0, rs0, rdwmin, rswmin, drs0_dT, drd0_dT, drswmin_dT,
+    double PowWeffWr, rd0=0.0, rs0=0.0, rdwmin=0.0, rswmin=0.0, drs0_dT, drd0_dT, drswmin_dT,
            drdwmin_dT, Rd, dRd_dVg, dRd_dVb, dRd_dT, Rs, dRs_dVg, dRs_dVb, dRs_dT;
     double dgstot_dvd, dgstot_dvg, dgstot_dvs, dgstot_dvb, dgstot_dve, dgstot_dT;
     double dgdtot_dvd, dgdtot_dvg, dgdtot_dvs, dgdtot_dvb, dgdtot_dve, dgdtot_dT;

@@ -102,7 +102,7 @@ B4SOIdev::temperature(sGENmodel *genmod, sCKT *ckt)
     double Temp, TempRatio, Inv_L, Inv_W, Inv_LW, /*Dw, Dl,*/ Vtm0, Tnom/*, TRatio*/;
     double SDphi, SDgamma;
     double Inv_saref, Inv_sbref, Inv_sa, Inv_sb, rho, dvth0_lod;
-    double W_tmp, Inv_ODeff, OD_offset, dk2_lod, deta0_lod, kvsat;
+    double W_tmp, Inv_ODeff, OD_offset, dk2_lod, deta0_lod, kvsat=0.0;
     int Size_Not_Found, i;
     double PowWeffWr, T10; /*v4.0 */
 

@@ -169,7 +169,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     int selfheat;
 
     double /* SourceSatCurrent, DrainSatCurrent, */ Gmin;
-    double ag0, qgd, qgs, /* qgb, von, cbhat,*/ VgstNVt, ExpVgst;
+    double ag0, qgd, qgs, /* qgb, von, cbhat,*/ VgstNVt, ExpVgst=0.0;
     double /*cdhat,*/ cdreq, ceqbd, ceqbs, ceqqb, ceqqd, ceqqg /*, ceq, geq */;
 #if (!defined(NOBYPASS) || !defined(NEWCONV))
     double cbhat, cdhat;
@@ -193,7 +193,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double vg, vd, vs, vp, ve/*, vb*/;
     double Vds, Vgs, Vbs, Gmbs, FwdSum, RevSum;
 
-    double Vgs_eff, Vfb, dVfb_dVb, dVfb_dVd, dVfb_dT;
+    double Vgs_eff, Vfb=0.0, dVfb_dVb, dVfb_dVd, dVfb_dT;
     double Phis, /*dPhis_dVb,*/ sqrtPhis, dsqrtPhis_dVb, Vth, dVth_dVb, dVth_dVd, dVth_dT;
     double Vgst, dVgst_dVg, dVgst_dVb, dVgs_eff_dVg /*, Nvtm */;
     double /* Vgdt, Vgsaddvth, Vgsaddvth2, Vgsaddvth1o3, */ n, dn_dVb, Vtm;
@@ -219,7 +219,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double T8, /* dT8_dVg, */ dT8_dVd /*, dT8_dVb, dT8_dVrg */;
     double T9, /* dT9_dVg, */ dT9_dVd /*, dT9_dVb, dT9_dVrg */;
     double T10, /* dT10_dVg, */ dT10_dVb, dT10_dVd;
-    double T11, T12;
+    double T11, T12=0.0;
     double tmp, Abulk, dAbulk_dVb, Abulk0, dAbulk0_dVb;
 //    double T100, T101;
     double VACLM, dVACLM_dVg, dVACLM_dVd, dVACLM_dVb, dVACLM_dT;
@@ -315,7 +315,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
 //    double ExpVbd2, dExpVbd2_dVb, dExpVbd2_dT;
 //    double ExpVbd4, dExpVbd4_dVb, dExpVbd4_dT;
     double WTsi, NVtm1, NVtm2;
-    double Ic ,dIc_dVb ,dIc_dVd;
+    double Ic ,dIc_dVb=0.0 ,dIc_dVd=0.0;
     double Ibs /* , dIbs_dVb , dIbs_dVd*/;
     double Ibd /* ,dIbd_dVb */;
     double Denomi ,dDenomi_dVg ,dDenomi_dVd ,dDenomi_dVb ,dDenomi_dT;
@@ -332,9 +332,9 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double jbjts, jbjtd, djbjts_dT, djbjtd_dT;
     double jrecs, jrecd, djrecs_dT, djrecd_dT;
     double jtuns, jtund, djtuns_dT, djtund_dT;
-    double rds0, ua, ub, uc;
+    double rds0=0.0, ua, ub, uc;
     double dvbi_dT, dvfbb_dT, /* djbjt_dT, djdif_dT, djrec_dT, djtun_dT, */ du0temp_dT;
-    double dvsattemp_dT, drds0_dT, dua_dT, dub_dT, duc_dT, dni_dT, dVtm_dT;
+    double dvsattemp_dT, drds0_dT=0.0, dua_dT, dub_dT, duc_dT, dni_dT, dVtm_dT;
     double dVfbeff_dT, dQac0_dT, dQsub0_dT;
     double CbT, CsT, CgT /*, CeT */;
     double rho, rho_ref, ku0temp; /* v4.0 */
@@ -379,7 +379,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double Delt_vthzb, dDelt_vthzb_dT;
     double DeltVthwzb, dDeltVthwzb_dT;
     double DeltVthtempzb, dDeltVthtempzb_dT;
-    double Vthzb, dVthzb_dT, Vfbzb, dVfbzb_dT;
+    double Vthzb=0.0, dVthzb_dT=0.0, Vfbzb, dVfbzb_dT;
 
     /* v3.2 */
     double noff, dnoff_dVd, dnoff_dVb;
@@ -392,7 +392,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
 #ifndef NOBYPASS
     double delvges, delvgms;
 #endif
-    double gcgmgmb, gcgmdb, gcgmsb, gcdgmb, gcsgmb;
+    double gcgmgmb=0.0, gcgmdb, gcgmsb, gcdgmb, gcsgmb;
     double gcgmeb, gcegmb, qgme, qgmid, ceqqgmid;
     double gcgbb;
     double vgge, vggm;
@@ -409,7 +409,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     /* v3.0 */
     double Vbsitf, dVbsitf_dVg, dVbsitf_dVd, dVbsitf_dVb, dVbsitf_dVe, dVbsitf_dT;
     double dIgb1_dVe, gige, Giie, dT0_dVe, dRatio_dVe, dVdiff_dVe;
-    double dT1_dVe, dT5_dVe, dIgb_dVe, dVox_dVe, dVoxdepinv_dVe, dVaux_dVe;
+    double dT1_dVe, dT5_dVe, dIgb_dVe, dVox_dVe, dVoxdepinv_dVe=0.0, dVaux_dVe;
     double Gme, gTte, gbbe, gddpe, gsspe;
 //    double Vbsdio, dVbsdio_dVg, dVbsdio_dVd, dVbsdio_dVe, dVbsdio_dVb, dVbsdio_dT;
     double Vbs0, dVbs0_dVg, dVbs0_dVd, /* dVbs0_dVb, */ dVbs0_dVe, dVbs0_dT;
@@ -426,14 +426,14 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double dVgsteff_dVe, dVbseff_dVg, dVbseff_dVd, dVbseff_dVe, dVbseff_dT;
 
     /* v2.2 release */
-    double Vgb, dVgb_dVg, dVgb_dVb, Vox, dVox_dVg, dVox_dVd, dVox_dVb;
+    double Vgb=0.0, dVgb_dVg=0.0, dVgb_dVb, Vox, dVox_dVg, dVox_dVd, dVox_dVb;
     double OxideRatio, Vaux, dVaux_dVg, dVaux_dVd, dVaux_dVb;
     double Igb, dIgb_dVg, dIgb_dVd, dIgb_dVb;
     double ceqgate;
     double dT0_dVox, Voxeff, dVoxeff_dVox;
-    double dVox_dT, dVaux_dT, dIgb_dT;
-    double Voxacc, dVoxacc_dVg, dVoxacc_dVd, dVoxacc_dVb /*, dVoxacc_dT */;
-    double Voxdepinv, dVoxdepinv_dVg, dVoxdepinv_dVb, dVoxdepinv_dVd, dVoxdepinv_dT;
+    double dVox_dT, dVaux_dT=0.0, dIgb_dT;
+    double Voxacc=0.0, dVoxacc_dVg=0.0, dVoxacc_dVd, dVoxacc_dVb=0.0 /*, dVoxacc_dT */;
+    double Voxdepinv=0.0, dVoxdepinv_dVg=0.0, dVoxdepinv_dVb=0.0, dVoxdepinv_dVd=0.0, dVoxdepinv_dT=0.0;
     double Igb1, dIgb1_dVg, dIgb1_dVd, dIgb1_dVb, dIgb1_dT;
     double Igb2, dIgb2_dVg, dIgb2_dVd, dIgb2_dVb, dIgb2_dT;
     double gigs, gigd, gigb, gigg, gigT;
@@ -453,14 +453,14 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double delvdbs;
 #endif
     double gcdbdb, gcsbsb, gcsbb, gcdbb;
-    double ceqqjd, ceqqjs;
+    double ceqqjd=0.0, ceqqjs=0.0;
     double Lpe_Vb; /* v4.0 for Vth */
     double DITS_Sft, DITS_Sft2, dDITS_Sft_dVb, dDITS_Sft_dVd, dDITS_Sft2_dVd, dDITS_Sft_dT;
     double FP, dFP_dT, dFP_dVg;
     double VADITS, dVADITS_dVg, dVADITS_dVd, dVADITS_dT; /* for DITS */
     double Iii_Igidl, /*Giigidl_b, Giigidl_d, Giigidl_g, Giigidl_e,*/ Giigidl_T;
 //    double gjsdb;
-    double Idbdp, Isbsp, cdbdp, csbsp, gcjdbdp, gcjsbsp, GGjdb, GGjsb;
+    double Idbdp=0.0, Isbsp=0.0, cdbdp, csbsp, gcjdbdp, gcjsbsp, GGjdb, GGjsb;
     double vdes, vses/*, vdedo, delvdes, delvses, delvded, Isestot,*/
         /*cseshat, Idedtot, cdedhat*/;
 #if (!defined(NOBYPASS) || !defined(NEWCONV))
@@ -469,7 +469,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
 #ifndef NOBYPASS
     double delvdes, cseshat, cdedhat;
 #endif
-    double PowWeffWr, rd0, rs0, rdwmin, rswmin, drs0_dT, drd0_dT, drswmin_dT,
+    double PowWeffWr, rd0=0.0, rs0=0.0, rdwmin=0.0, rswmin=0.0, drs0_dT, drd0_dT, drswmin_dT,
            drdwmin_dT, Rd, dRd_dVg, dRd_dVb, dRd_dT, Rs, dRs_dVg, dRs_dVb, dRs_dT;
     double dgstot_dvd, dgstot_dvg, dgstot_dvs, dgstot_dvb, dgstot_dve, dgstot_dT;
     double dgdtot_dvd, dgdtot_dvg, dgdtot_dvs, dgdtot_dvb, dgdtot_dve, dgdtot_dT;
@@ -496,29 +496,29 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
 
     /* improved body contact charge model */
     double CoxWL2, CoxWLb2;
-    double ExpVgst2, Vgsteff2, VgstNVt2, ExpArg2;
-    double dVgsteff2_dVd, dVgsteff2_dVg, dVgsteff2_dVb, /*dVgsteff2_dVe,*/ dVgsteff2_dT;
-    double T02;
-    double Qac02, dQac02_dVrg, dQac02_dVd, dQac02_dVg, dQac02_dVb, dQac02_dT;
+    double ExpVgst2, Vgsteff2=0.0, VgstNVt2, ExpArg2;
+    double dVgsteff2_dVd=0.0, dVgsteff2_dVg=0.0, dVgsteff2_dVb=0.0, /*dVgsteff2_dVe,*/ dVgsteff2_dT=0.0;
+    double T02=0.0;
+    double Qac02, dQac02_dVrg=0.0, dQac02_dVd=0.0, dQac02_dVg=0.0, dQac02_dVb=0.0, dQac02_dT=0.0;
     double Vgs_eff2, dVgs_eff2_dVg;
 //    double Vthzb2;
-    double Vfbzb2, dVfbzb2_dT;
+    double Vfbzb2=0.0, dVfbzb2_dT;
     double Vfb2, dVfb2_dVd, dVfb2_dVb, dVfb2_dT;
-    double Vfbeff2, dVfbeff2_dVd, dVfbeff2_dVrg, dVfbeff2_dVg, dVfbeff2_dVb, dVfbeff2_dT;
-    double Qsub02, dQsub02_dVg, dQsub02_dVrg, dQsub02_dVd, dQsub02_dVb, dQsub02_dT;
+    double Vfbeff2=0.0, dVfbeff2_dVd, dVfbeff2_dVrg, dVfbeff2_dVg=0.0, dVfbeff2_dVb=0.0, dVfbeff2_dT;
+    double Qsub02, dQsub02_dVg=0.0, dQsub02_dVrg=0.0, dQsub02_dVd=0.0, dQsub02_dVb=0.0, dQsub02_dT=0.0;
     double VdsatCV2/*, dVdsatCV2_dVg, dVdsatCV2_dVb*/;
-    double VdseffCV2, dVdseffCV2_dVg, dVdseffCV2_dVd, dVdseffCV2_dVb;
-    double Cbg12, Cbd12, Cbb12;
-    double Cgg12, Cgd12, Cgb12;
-    double Csg12, Csd12, Csb12;
+    double VdseffCV2=0.0, dVdseffCV2_dVg=0.0, dVdseffCV2_dVd=0.0, dVdseffCV2_dVb=0.0;
+    double Cbg12=0.0, Cbd12=0.0, Cbb12=0.0;
+    double Cgg12=0.0, Cgd12=0.0, Cgb12=0.0;
+    double Csg12=0.0, Csd12=0.0, Csb12=0.0;
     double Tcen2, dTcen2_dVg, dTcen2_dVd, dTcen2_dVb, dTcen2_dT;
     double Ccen2;
-    double Coxeff2, dCoxeff2_dVg, dCoxeff2_dVd, dCoxeff2_dVb, dCoxeff2_dT;
-    double CoxWLcenb2, dCoxWLcenb2_dT;
+    double Coxeff2=0.0, dCoxeff2_dVg=0.0, dCoxeff2_dVd=0.0, dCoxeff2_dVb=0.0, dCoxeff2_dT=0.0;
+    double CoxWLcenb2=0.0, dCoxWLcenb2_dT;
     double QovCox2;
     double DeltaPhi2, dDeltaPhi2_dVg/*, dDeltaPhi2_dVd, dDeltaPhi2_dVb*/;
-    double CoxWLcen2;
-    double T22, T52;
+    double CoxWLcen2=0.0;
+    double T22=0.0, T52;
     double qsrc2, qbulk2;
     double Csg2, Csd2, Csb2;
     double  DELTA_3_SOI2;

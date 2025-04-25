@@ -73,25 +73,25 @@ struct ufsAPI_InstData *pInst;
 struct ufsAPI_OPData *pOpInfo;
 struct ufsTDModelData *pTempModel;
 
-double vbs=0.0, vgfs, vds, vbd, vgfd, vgfdo, delvgfs, delvds, delvbd, delvbs;
-double delvgfd, cdhat, cbhat, /*cghat,*/ T, delt, xfact, Tprev, vgbs, Vgbs, gdpr, gspr;    /* 7.0Y */
+double vbs=0.0, vgfs, vds, vbd, vgfd, vgfdo, delvgfs, delvds=0.0, delvbd, delvbs;
+double delvgfd, cdhat, cbhat, /*cghat,*/ T, delt=0.0, xfact, Tprev, vgbs, Vgbs, gdpr, gspr;    /* 7.0Y */
 #ifndef NEWCONV
 double cghat;
 #endif
 double gcggb, gcgdb, gcgsb, gcgbb, gcdgb, gcddb, gcdsb, gcdbb, tempv;
 double gcsgb, gcsdb, gcssb, gcsbb, gcbgb, gcbdb, gcbsb, gcbbb;
-double qgate, qdrn, qsrc, qbulk, /*vgbso,*/ Cth, vgbd, delvgbd, delvgbs;
-double gcgtb, gcdtb, gcstb, gcbtb, gcth, /*grth, Vbd,*/ ceqqs, vgbdo;
+double qgate, qdrn, qsrc, qbulk, /*vgbso,*/ Cth=0.0, vgbd, delvgbd, delvgbs;
+double gcgtb=0.0, gcdtb=0.0, gcstb=0.0, gcbtb=0.0, gcth=0.0, /*grth, Vbd,*/ ceqqs, vgbdo;
 double geq, ceq, ceqqg, ceqqd, ceqqb, cqgate, cqdrn, cqbulk/*, cqsrc*/;
-double dId_dVg, dId_dVd, dId_dVs, dId_dVb, dId_dT, dP_dT, dP_dVg;
-double dIs_dVg, dIs_dVd, dIs_dVs, dIs_dVb, dIs_dT, dP_dVd, dP_dVs;
-double dIgf_dVg, dIgf_dVd, dIgf_dVs, dIgf_dVb, dIgf_dT;                                /* 7.0Y */
-double dIb_dVg, dIb_dVd, dIb_dVs, dIb_dVb, dIb_dT, dP_dVb, gbpr, Qt, cqt, ceqqt;
-double /*vgb,*/ Vds, Vgfs, Vbs, ag0, ceqg, ceqd, ceqs, ceqb, ceqp/*, ceqgb*/;
+double dId_dVg, dId_dVd, dId_dVs, dId_dVb, dId_dT=0.0, dP_dT=0.0, dP_dVg=0.0;
+double dIs_dVg, dIs_dVd, dIs_dVs, dIs_dVb, dIs_dT=0.0, dP_dVd=0.0, dP_dVs=0.0;
+double dIgf_dVg, dIgf_dVd, dIgf_dVs, dIgf_dVb, dIgf_dT=0.0;                                /* 7.0Y */
+double dIb_dVg, dIb_dVd, dIb_dVs, dIb_dVb, dIb_dT=0.0, dP_dVb=0.0, gbpr, Qt, cqt, ceqqt=0.0;
+double /*vgb,*/ Vds, Vgfs, Vbs, ag0, ceqg, ceqd, ceqs, ceqb, ceqp=0.0/*, ceqgb*/;
 double cqback, T0, /*T1, T2,*/ Cgfdo, Cgfso, Cgfbo, ceqqgb;                     
 double Cgbbo, Qgfdo, Qgfso, Qgfbo, Qgbbo, Csg, Csd, Csb, Csgb, qback;
 double gcggbb, gcdgbb, gcbgbb, gcgbgbb, gcgbgb, gcgbdb, gcgbbb;
-double gcgbtb, gcsgbb, gcgbsb, dId_dVgb, dIb_dVgb, dIs_dVgb, dIgf_dVgb, dP_dVgb;       /* 7.0Y */
+double gcgbtb=0.0, gcsgbb, gcgbsb, dId_dVgb, dIb_dVgb, dIs_dVgb, dIgf_dVgb, dP_dVgb=0.0;       /* 7.0Y */
 double Vthf, Vthb, Idtot, Ibtot, Igtot, Weff, Leff, Vtemp, Qnqff, Qnqfb;               /* 7.0Y */
 int SH;                                                                                /* 4.5 */
 struct ufsAPI_EnvData Env;

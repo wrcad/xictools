@@ -66,7 +66,7 @@ BSIM3dev::pzLoad(sGENmodel *genmod, sCKT *ckt, IFcomplex *s)
     double gdpr, gspr, gds, gbd, gbs, capbd, capbs, FwdSum, RevSum, Gm, Gmbs;
     double cggb, cgdb, cgsb, cbgb, cbdb, cbsb, cddb, cdgb, cdsb;
     double GSoverlapCap, GDoverlapCap, GBoverlapCap;
-    double dxpart, sxpart, xgtg, xgtd, xgts, xgtb, xcqgb, xcqdb, xcqsb, xcqbb;
+    double dxpart, sxpart, xgtg, xgtd, xgts, xgtb, xcqgb=0.0, xcqdb=0.0, xcqsb=0.0, xcqbb=0.0;
     double gbspsp, gbbdp, gbbsp, gbspg, gbspb;
     double gbspdp, gbdpdp, gbdpg, gbdpb, gbdpsp;
     double ddxpart_dVd, ddxpart_dVg, ddxpart_dVb, ddxpart_dVs;

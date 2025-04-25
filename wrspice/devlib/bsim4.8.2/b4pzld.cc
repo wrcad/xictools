@@ -97,14 +97,14 @@ BSIM4dev::pzLoad(sGENmodel *genmod, sCKT *ckt, IFcomplex *s)
     double gIbtotg, gIbtotd, gIbtots, gIbtotb;
     double gIgtotg, gIgtotd, gIgtots, gIgtotb;
     double cgso, cgdo/*, cgbo*/;
-    double xcdbdb, xcsbsb, xcgmgmb, xcgmdb, xcgmsb, xcdgmb, xcsgmb;
-    double xcgmbb, xcbgmb;
-    double dxpart, sxpart, xgtg, xgtd, xgts, xgtb, xcqgb, xcqdb, xcqsb, xcqbb;
+    double xcdbdb=0.0, xcsbsb=0.0, xcgmgmb=0.0, xcgmdb=0.0, xcgmsb=0.0, xcdgmb=0.0, xcsgmb=0.0;
+    double xcgmbb=0.0, xcbgmb=0.0;
+    double dxpart, sxpart, xgtg, xgtd, xgts, xgtb, xcqgb=0.0, xcqdb=0.0, xcqsb=0.0, xcqbb=0.0;
     double gbspsp, gbbdp, gbbsp, gbspg, gbspb;
     double gbspdp, gbdpdp, gbdpg, gbdpb, gbdpsp;
     double ddxpart_dVd, ddxpart_dVg, ddxpart_dVb, ddxpart_dVs;
     double dsxpart_dVd, dsxpart_dVg, dsxpart_dVb, dsxpart_dVs;
-    double T0, T1, CoxWL, qcheq, Cdg, Cdd, Cds, /*Cdb,*/ Csg, Csd, Css/*, Csb*/;
+    double T0=0.0, T1, CoxWL, qcheq, Cdg, Cdd, Cds, /*Cdb,*/ Csg, Csd, Css/*, Csb*/;
     double ScalingFactor = 1.0e-9;
     struct bsim4SizeDependParam *pParam;
     double ggidld, ggidlg, ggidlb,/*ggisld,*/ ggislg, ggislb, ggisls;

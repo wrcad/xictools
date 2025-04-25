@@ -63,11 +63,11 @@ double xcdgb, xcddb, xcdsb, xcdbb, xcsgb, xcsdb, xcssb, xcsbb;
 double gdpr, gspr, gbpr, omega, dId_dVg, dId_dVd, dId_dVs, dId_dVb;           
 double dIs_dVg, dIs_dVd, dIs_dVs, dIs_dVb, dIb_dVg, dIb_dVd, dIb_dVs, dIb_dVb;
 double dIgf_dVg, dIgf_dVd, dIgf_dVs, dIgf_dVb;                                   /* 7.0Y */
-double xcstb, xcgtb, xcdtb, xcbtb, xcth, Cgfdo, Cgfso, Cgfbo, Cgbbo, MFinger;
-double dP_dVg, dP_dVd, dP_dVb, dP_dVs, dP_dT, dId_dT, dIb_dT, dIs_dT, dIgf_dT;   /* 7.0Y */
+double xcstb, xcgtb, xcdtb, xcbtb, xcth=0.0, Cgfdo, Cgfso, Cgfbo, Cgbbo, MFinger;
+double dP_dVg=0.0, dP_dVd=0.0, dP_dVb=0.0, dP_dVs=0.0, dP_dT, dId_dT, dIb_dT, dIs_dT, dIgf_dT;   /* 7.0Y */
 double Weff, Leff, xcggbb, xcdgbb, xcsgbb, xcbgbb;
 double xcgbsb, xcgbgb, xcgbdb, xcgbbb, xcgbgbb, xcgbtb;
-double Csg, Csd, Csb, Csgb, dId_dVgb, dIs_dVgb, dIb_dVgb, dIgf_dVgb, dP_dVgb;    /* 7.0Y */
+double Csg, Csd, Csb, Csgb, dId_dVgb, dIs_dVgb, dIb_dVgb, dIgf_dVgb, dP_dVgb=0.0;    /* 7.0Y */
 
     omega = ckt->CKTomega;
     for (; model != NULL; model = model->UFSnextModel) 

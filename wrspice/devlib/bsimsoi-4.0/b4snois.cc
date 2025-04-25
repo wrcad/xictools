@@ -157,7 +157,7 @@ B4SOIdev::noise(int mode, int operation, sGENmodel *genmod, sCKT *ckt,
     double /*n, ExpArg,*/ Ssi, Swi;
 
     /* v3.2 */
-    double npart_theta, npart_beta, igsquare, esat;
+    double npart_theta, npart_beta, igsquare, esat=0.0;
     /* v3.2 end */
     double gspr, gdpr;
 

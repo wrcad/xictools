@@ -93,8 +93,8 @@ BSIM4dev::acLoad(sGENmodel *genmod, sCKT *ckt)
     double Cggr, Cgdr, Cgsr, /*Cgbr,*/ Cggi, Cgdi, Cgsi, Cgbi;
     double xcddbr, xcdgbr, xcdsbr, xcdbbr, xcsdbr, xcsgbr, xcssbr, xcsbbr;
     double xcddbi, xcdgbi, xcdsbi, xcdbbi, xcsdbi, xcsgbi, xcssbi, xcsbbi;
-    double xcdbdb, xcsbsb, xcgmgmb, xcgmdb, xcgmsb, xcdgmb, xcsgmb;
-    double xcgmbb, xcbgmb;
+    double xcdbdb, xcsbsb=0.0, xcgmgmb=0.0, xcgmdb=0.0, xcgmsb=0.0, xcdgmb, xcsgmb;
+    double xcgmbb=0.0, xcbgmb;
     double /*capbd, capbs,*/ omega;
     double gstot, gstotd, gstotg, gstots, gstotb, gspr;
     double gdtot, gdtotd, gdtotg, gdtots, gdtotb, gdpr;
@@ -105,7 +105,7 @@ BSIM4dev::acLoad(sGENmodel *genmod, sCKT *ckt)
     double cgso, cgdo/*, cgbo*/;
     double gbspsp, gbbdp, gbbsp, gbspg, gbspb;
     double gbspdp, gbdpdp, gbdpg, gbdpb, gbdpsp;
-    double T0, T1, T2, T3/*, T4, T5, T6, T7, T8, T9, T10, T11*/;
+    double T0=0.0, T1, T2, T3/*, T4, T5, T6, T7, T8, T9, T10, T11*/;
     double Csg, Csd, Css/*, Csb*/;
     double Cdgr, Cddr, Cdsr, Cdbr, Csgr, Csdr, Cssr/*, Csbr*/;
     double Cdgi, Cddi, Cdsi, Cdbi, Csgi, Csdi, Cssi, Csbi;

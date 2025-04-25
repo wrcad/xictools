@@ -155,7 +155,7 @@ B3SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     int selfheat;
 
     double /*SourceSatCurrent, DrainSatCurrent,*/ Gmin;
-    double ag0, qgd, qgs, /*qgb, von,*/ cbhat, VgstNVt, ExpVgst;
+    double ag0, qgd, qgs, /*qgb, von,*/ cbhat, VgstNVt, ExpVgst=0.0;
     double cdhat, cdreq, ceqbd, ceqbs, ceqqb, ceqqd, ceqqg /*, ceq, geq */;
     double /*evbd, evbs,*/ arg/*, sarg*/;
     double delvbd, delvbs, delvds, delvgd, delvgs;
@@ -170,7 +170,7 @@ B3SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double vbd, vbs, vds, vgb, vgd, vgs, vgdo, xfact;
     double vg, vd, vs, vp, ve/*, vb*/;
     double Vds, Vgs, Vbs, Gmbs, FwdSum, RevSum;
-    double Vgs_eff, Vfb, dVfb_dVb, dVfb_dVd, dVfb_dT;
+    double Vgs_eff, Vfb=0.0, dVfb_dVb, dVfb_dVd, dVfb_dT;
     double Phis, /*dPhis_dVb,*/ sqrtPhis, dsqrtPhis_dVb, Vth, dVth_dVb, dVth_dVd, dVth_dT;
     double Vgst, dVgst_dVg, dVgst_dVb, dVgs_eff_dVg/*, Nvtm*/;
     double /*Vgdt, Vgsaddvth, Vgsaddvth2, Vgsaddvth1o3,*/ n, dn_dVb, Vtm;
@@ -238,7 +238,7 @@ B3SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double gddpsp, gddpdp, gddpg, gddpb, gddpT;
     double gsspsp, gsspdp, gsspg, gsspb, gsspT;
     double Gbpbs, Gbpps;
-    double /*vse, vde,*/ ves, ved, veb, vge, delves, vedo, delved;
+    double /*vse, vde,*/ ves, ved, veb, vge=0.0, delves, vedo, delved;
     double vps, vpd, Vps, delvps;
     double Vbd, Ves, Vesfb, /*sqrtXdep,*/ DeltVthtemp, dDeltVthtemp_dT;
     double Vbp, dVbp_dVb;
@@ -260,7 +260,7 @@ B3SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double ni, Eg, Cbox, /*Nfb,*/ CboxWL;
     double cjsbs;
     double dVfbeff_dVrg;
-    double qinv, qgate, qbody, qdrn, qsrc, qsub, cqgate, cqbody, cqdrn, cqsub, cqtemp;
+    double qinv, qgate=0.0, qbody=0.0, qdrn=0.0, qsrc, qsub=0.0, cqgate, cqbody, cqdrn, cqsub, cqtemp;
     double Cgg, Cgd, /*Cgs,*/ Cgb/*, Cdg, Cdd, Cds, Cdb, Qg, Qd*/;
     double Csg, Csd, /*Css,*/ Csb, Cbg=0, Cbd=0, /*Cbs,*/ Cbb=0/*, Qs, Qb*/;
     double Cgg1, Cgb1, Cgd1, Cbg1, Cbb1, Cbd1, Csg1, Csd1, Csb1;
@@ -355,7 +355,7 @@ B3SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     /* v3.0 */
     double Vbsitf, dVbsitf_dVg, dVbsitf_dVd, dVbsitf_dVb, dVbsitf_dVe, dVbsitf_dT;
     double dIgb1_dVe, gige, Giie, dT0_dVe, dRatio_dVe, dVdiff_dVe;
-    double dT1_dVe, dT5_dVe, dIgb_dVe, dVox_dVe, dVoxdepinv_dVe, dVaux_dVe;
+    double dT1_dVe, dT5_dVe, dIgb_dVe, dVox_dVe, dVoxdepinv_dVe=0.0, dVaux_dVe;
     double Gme, gTte, gbbe, gddpe, gsspe;
 //double Vbsdio, dVbsdio_dVg, dVbsdio_dVd, dVbsdio_dVe, dVbsdio_dVb, dVbsdio_dT;
     double Vbs0, dVbs0_dVg, dVbs0_dVd, /*dVbs0_dVb,*/ dVbs0_dVe, dVbs0_dT;
@@ -372,14 +372,14 @@ B3SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double dVgsteff_dVe, dVbseff_dVg, dVbseff_dVd, dVbseff_dVe, dVbseff_dT;
 
     /* v2.2 release */
-    double Vgb, dVgb_dVg, dVgb_dVb, Vox, dVox_dVg, dVox_dVd, dVox_dVb;
+    double Vgb=0.0, dVgb_dVg=0.0, dVgb_dVb, Vox, dVox_dVg, dVox_dVd, dVox_dVb;
     double OxideRatio, Vaux, dVaux_dVg, dVaux_dVd, dVaux_dVb;
     double Igb, dIgb_dVg, dIgb_dVd, dIgb_dVb;
     double ceqgate;
     double dT0_dVox, Voxeff, dVoxeff_dVox;
     double dVox_dT, dVaux_dT, dIgb_dT;
-    double Voxacc, dVoxacc_dVg, dVoxacc_dVd, dVoxacc_dVb/*, dVoxacc_dT*/;
-    double Voxdepinv, dVoxdepinv_dVg, dVoxdepinv_dVb, dVoxdepinv_dVd, dVoxdepinv_dT;
+    double Voxacc=0.0, dVoxacc_dVg=0.0, dVoxacc_dVd, dVoxacc_dVb=0.0/*, dVoxacc_dT*/;
+    double Voxdepinv=0.0, dVoxdepinv_dVg=0.0, dVoxdepinv_dVb=0.0, dVoxdepinv_dVd=0.0, dVoxdepinv_dT=0.0;
     double Igb1, dIgb1_dVg, dIgb1_dVd, dIgb1_dVb, dIgb1_dT;
     double Igb2, dIgb2_dVg, dIgb2_dVd, dIgb2_dVb, dIgb2_dT;
     double gigs, gigd, gigb, gigg;

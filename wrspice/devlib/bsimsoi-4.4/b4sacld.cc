@@ -94,13 +94,13 @@ B4SOIdev::acLoad(sGENmodel *genmod, sCKT *ckt)
     double Gme, gddpe, gsspe, gbbe, gTte;
 
     /* v3.1 added variables for RF */
-    double T0;
+    double T0=0.0;
     double gcrgd, gcrgg, gcrgs, gcrgb, gcrg;
     double xcgmgmb, xcgmdb, xcgmsb, xcgmeb, xcdgmb, xcsgmb, xcegmb;
     double geltd;
 //double gcrgT;
     double gigg, gigd, gigs, gigb, gige, gigT;
-    double gigpg, gigpp;
+    double gigpg=0.0, gigpp=0.0;
 
     /* v3.1.1 bug fix */
     double gIstotg, gIstotd, gIstotb, gIstots;

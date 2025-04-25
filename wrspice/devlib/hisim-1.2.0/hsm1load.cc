@@ -247,7 +247,7 @@ HSM1dev::load(sGENinstance *in_inst, sCKT *ckt)
   int ChargeComputationNeeded = ckt->CKTchargeCompNeeded;
   int showPhysVal;
   int isConv;
-  double vds_pre;
+  double vds_pre=0.0;
 
 /* SRW
   for ( ; model != NULL; model = model->HSM1nextModel ) {

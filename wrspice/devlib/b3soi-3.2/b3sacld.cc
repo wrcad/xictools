@@ -91,7 +91,7 @@ B3SOIdev::acLoad(sGENmodel *genmod, sCKT *ckt)
     double Gme, gddpe, gsspe, gbbe, gTte;
 
     /* v3.1 added variables for RF */
-    double T0;
+    double T0=0.0;
     double gcrgd, gcrgg, gcrgs, gcrgb, gcrg;
     double xcgmgmb, xcgmdb, xcgmsb, xcgmeb, xcdgmb, xcsgmb, xcegmb;
     double geltd;

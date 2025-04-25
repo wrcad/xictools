@@ -239,8 +239,8 @@ double  Psl ;
 double  Psl_dVbs , Psl_dVds , Psl_dVgs ;
 double  Psl_lim ;
 /* Pds := Psl - Ps0 */
-double  Pds ;
-double  Pds_dVbs , Pds_dVds , Pds_dVgs ;
+double  Pds=0.0 ;
+double  Pds_dVbs=0.0 , Pds_dVds=0.0 , Pds_dVgs=0.0 ;
 double  Pds_ini ;
 double  Pds_max ;
 /* iteration numbers of Ps0 and Psl equations. */
@@ -381,12 +381,12 @@ double  exp_Chi , exp_Rho , exp_bVbs , exp_bVbsVds ;
 double  Fs0, Fsl ;
 double  Fs0_dPs0 , Fsl_dPsl ;
 double  dPs0 , dPsl ;
-double  Qn0 ;
+double  Qn0=0.0 ;
 double  Qn0_dVbs , Qn0_dVds , Qn0_dVgs ;
 double  Qb0 ;
-double  Qb0_dVbs , Qb0_dVds , Qb0_dVgs ;
-double  Qn00 ;
-double  Qn00_dVbs , Qn00_dVds , Qn00_dVgs ;
+double  Qb0_dVbs , Qb0_dVds , Qb0_dVgs=0.0 ;
+double  Qn00=0.0 ;
+double  Qn00_dVbs=0.0 , Qn00_dVds=0.0 , Qn00_dVgs=0.0 ;
 double  Qbnm ;
 double  Qbnm_dVbs , Qbnm_dVds , Qbnm_dVgs ;
 double  DtPds ;
@@ -421,7 +421,7 @@ double  Fdd_dVbs , Fdd_dVds , Fdd_dVgs ;
 double  Eeff ;
 double  Eeff_dVbs , Eeff_dVds , Eeff_dVgs ;
 double  Rns ;
-double  Mu ;
+double  Mu=0.0 ;
 double  Mu_dVbs , Mu_dVds , Mu_dVgs ;
 double  Muun , Muun_dVbs , Muun_dVds , Muun_dVgs ;
 double  Ey ;
@@ -501,7 +501,7 @@ double  Rs , Rd ;
 double  Fbs , Fds , Fgs ;
 double  DJ , DJI ;
 double  JI11 , JI12 , JI13 , JI21 , JI22 , JI23 , JI31 , JI32 , JI33 ;
-double  dVbs , dVds , dVgs ;
+double  dVbs=0.0 , dVds=0.0 , dVgs=0.0 ;
 double  dV_sum ;
 /* Junction Bias */
 double  Vbsj , Vbdj ;
@@ -512,7 +512,7 @@ double  Psa_dVbs , Psa_dVds , Psa_dVgs ;
 double  Psdl , Psdl_dVbs , Psdl_dVds , Psdl_dVgs ;
 double  Ed , Ed_dVbs , Ed_dVds , Ed_dVgs ;
 double  Ec , Ec_dVbs , Ec_dVds , Ec_dVgs ;
-double  Lred , Lred_dVbs , Lred_dVds , Lred_dVgs ;
+double  Lred=0.0 , Lred_dVbs , Lred_dVds , Lred_dVgs ;
 double  Wd , Wd_dVbs , Wd_dVds , Wd_dVgs ;
 double  Aclm ;
 /* Pocket Implant */
@@ -542,7 +542,7 @@ double  Lgate ;
 double  rp1 , rp1_dVds ;
 /* connecting function */
 double  FD2 , FD2_dVbs , FD2_dVds , FD2_dVgs ;
-double  FMD , FMD_dVds ;
+double  FMD , FMD_dVds=0.0 ;
 /* Phonon scattering */
 double	Wgate ;
 double	mueph ;

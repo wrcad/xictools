@@ -162,8 +162,8 @@ BSIM3dev::load(sGENinstance *in_inst, sCKT *ckt)
     double AbulkCV, dAbulkCV_dVb;
     double qgdo, qgso, cgdo, cgso;
 
-    double qcheq, qdef, gqdef, cqdef, cqcheq, gtau_diff, gtau_drift/*, csreq*/;
-    double gcqdb,gcqsb,gcqgb,gcqbb/*,vss*/;
+    double qcheq, qdef, gqdef=0.0, cqdef, cqcheq, gtau_diff, gtau_drift/*, csreq*/;
+    double gcqdb=0.0,gcqsb=0.0,gcqgb=0.0,gcqbb=0.0/*,vss*/;
     double dxpart, sxpart, ggtg, ggtd, ggts, ggtb;
     double ddxpart_dVd, ddxpart_dVg, ddxpart_dVb, ddxpart_dVs;
     double dsxpart_dVd, dsxpart_dVg, dsxpart_dVb, dsxpart_dVs;

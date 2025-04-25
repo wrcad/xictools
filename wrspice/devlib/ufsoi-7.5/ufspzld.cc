@@ -64,11 +64,11 @@ double xcdgb, xcddb, xcdsb, xcdbb, xcsgb, xcsdb, xcssb, xcsbb;
 double gdpr, gspr, gbpr, dId_dVg, dId_dVd, dId_dVs, dId_dVb;                
 double dIs_dVg, dIs_dVd, dIs_dVs, dIs_dVb, dIb_dVg, dIb_dVd, dIb_dVs, dIb_dVb;
 double dIgf_dVg, dIgf_dVd, dIgf_dVs, dIgf_dVb, dIgf_dVgb;                        /* 7.0Y */
-double xcstb, xcgtb, xcdtb, xcbtb, xcth, MFinger, Cgfdo, Cgfso, Cgfbo, Cgbbo;
-double dP_dT, dP_dVg, dP_dVd, dP_dVs, dP_dVb, dId_dT, dIb_dT, dIs_dT, dIgf_dT;   /* 7.0Y */
+double xcstb, xcgtb, xcdtb, xcbtb, xcth=0.0, MFinger, Cgfdo, Cgfso, Cgfbo, Cgbbo;
+double dP_dT, dP_dVg=0.0, dP_dVd=0.0, dP_dVs=0.0, dP_dVb=0.0, dId_dT, dIb_dT, dIs_dT, dIgf_dT;   /* 7.0Y */
 double xcggbb, xcdgbb, xcsgbb, xcbgbb;
 double xcgbsb, xcgbgb, xcgbdb, xcgbbb, xcgbgbb, xcgbtb;
-double Csg, Csd, Csb, Csgb, dId_dVgb, dIs_dVgb, dIb_dVgb, dP_dVgb, Weff, Leff;
+double Csg, Csd, Csb, Csgb, dId_dVgb, dIs_dVgb, dIb_dVgb, dP_dVgb=0.0, Weff, Leff;
 
     for (; model != NULL; model = model->UFSnextModel) 
     {    pModel = model->pModel;
