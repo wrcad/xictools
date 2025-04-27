@@ -23,10 +23,10 @@ LIB_TARGET = @DEVLIB_STATIC_FILE@
 # library configuration
 
 # Devices built as loadable modules, not in library (not implemented yet).
-MODULES = \
+ALLMODULES = \
   bsim1 \
   bsim2 \
-  bsim32 \
+  bsim3.2.0 \
   bsim3.2.4 \
   bsim3.3.0 \
   bsim4.2.1 \
@@ -36,15 +36,32 @@ MODULES = \
   bsim4.7.0 \
   bsim4.8.0 \
   bsim4.8.2 \
-  b3soi-3.0 \
-  b3soi-3.2 \
+  bsimsoi-3.0 \
+  bsimsoi-3.2 \
   bsimsoi-4.0 \
   bsimsoi-4.3 \
   bsimsoi-4.4 \
-  ekv \
+  ekv26 \
   hisim-1.1.0 \
   hisim-1.2.0 \
   stag \
+  ufsoi-7.5
+
+# These models are included in the binary, those not included here are
+# considered obsolete.
+MODULES = \
+  bsim3.3.0 \
+  bsim4.2.1 \
+  bsim4.3.0 \
+  bsim4.4.0 \
+  bsim4.6.5 \
+  bsim4.7.0 \
+  bsim4.8.0 \
+  bsim4.8.2 \
+  bsimsoi-3.2 \
+  bsimsoi-4.4 \
+  ekv26 \
+  hisim-1.2.0 \
   ufsoi-7.5
 
 # Devices provided in the static library.

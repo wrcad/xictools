@@ -365,9 +365,7 @@ Analysis at Different Temperatures
     Temperature dependent support is provided for resistors and
     semiconductor devices.  The details of the temperature adjustments
     can be found in the description of the models.  For details of the
-    BSIM temperature adjustment, see <a href="park">Park</a> (BSIM1),
-    <a href="szeto">Szeto</a> (BSIM2), and <a href="cheng">Cheng</a>
-    (BSIM3).
+    BSIM3 temperature adjustment, see <a href="cheng">Cheng</a>.
 
     <p>
     Temperature appears explicitly in the exponential terms of the BJT
@@ -486,9 +484,8 @@ parameter on the instance.
 
 Temperature dependent support is provided for resistors and
 semiconductor devices.  The details of the temperature adjustments can
-be found in the description of the models.  For details of the BSIM
-temperature adjustment, see \cite{park} (BSIM1), \cite{szeto} (BSIM2),
-and \cite{bsim3} (BSIM3).
+be found in the description of the models.  For details of the BSIM3
+temperature adjustment, see \cite{bsim3}.
 
 Temperature appears explicitly in the exponential terms of the BJT and
 diode model equations.  In addition, saturation currents have a
@@ -2146,11 +2143,6 @@ MOSFET Device Models
     <tr><td>3</td>     <td>MOS</td>
         <td>The SPICE3 mos3 model (a semi-empirical model,
         see reference for mos2)</td></tr>
-    <tr><td>4</td>     <td>BSIM1</td>
-        <td>The SPICE3 bsim1 model (empirical model, see
-        <a href="refs#sheu">reference</a>)</td></tr>
-    <tr><td>5</td>     <td>BSIM2</td>
-        <td>The SPICE3 bsim2 model, successor to bsim1</td></tr>
     <tr><td>6</td>     <td>MOS</td>
         <td>The SPICE3 mos6 model</td></tr>
 
@@ -2441,8 +2433,6 @@ The table below lists all of the MOS levels recognized in {\WRspice}.
 \bf 1 & MOS & The SPICE3 mos1 (Shichman-Hodges) model\\ \hline
 \bf 2 & MOS & The SPICE3 mos2 model described in \cite{vlad}\\ \hline
 \bf 3 & MOS & The SPICE3 mos3 semi-empirical model (see\cite{vlad})\\ \hline
-\bf 4 & BSIM1 & The SPICE3 bsim1 empirical model described in \cite{sheu}\\ \hline
-\bf 5 & BSIM2 & The SPICE3 bsimw model, successor to bsim1\\ \hline
 \bf 6 & MOS & The SPICE3 mos6 model\\ \hline
 \bf 7, 49 & BSIM3.2.0 & U.C. Berkeley bsim-3.2.0 model\\ \hline
 \bf 8, 47 & BSIM3.2.4 & U.C. Berkeley bsim-3.2.4 model\\ \hline
@@ -2773,9 +2763,7 @@ MOSFET Models
     This section describes the basic SPICE2/3 models.  The level 1-3
     and 6 models can be used for quick analysis and examples, but are
     probably not suitable for serious design work using modern
-    deep-submicron devices.  The BSIM1 and BSIM2 models are for
-    compatibility only, and are not likely to be useful except for
-    analysis of legacy projects.
+    deep-submicron devices.
 
     <p>
     The dc characteristics of the level 1 through level 3 MOSFETs are
@@ -2955,174 +2943,6 @@ MOSFET Models
         <td>C</td>              <td>25</td>     <td>50</td></tr>
     </table>
 
-    <p>
-    <a name="bsim"></a>
-    The level 4 (BSIM1) parameters are all values obtained from process
-    characterization, and can be generated automatically.  <a
-    href="refs#pierret">J.  Pierret</a> describes a means of generating
-    a 'process' file, and the program <a
-    href="proc2mod"><tt>proc2mod</tt></a> provided with <i>WRspice</i>
-    will convert this file into a sequence of <tt>.model</tt> lines
-    suitable for inclusion in <i>WRspice</i> input. 
-    Parameters marked below with an * in the l/w column also have
-    corresponding parameters with a length and width dependency.  For
-    example, <tt>vfb</tt> is the basic parameter with units of Volts,
-    and <tt>lvfb</tt> and <tt>wvfb</tt> also exist and have units of
-    Volt-umeter The formula
-    <blockquote>
-        <tt>p=p0 + pL/Leffective + pw/Weffective</tt>
-     </blockquote>
-    is used to evaluate the parameter for the actual device specified
-    with
-    <blockquote>
-        <tt>Leffective=Linput-dl</tt>
-    </blockquote>
-    and
-    <blockquote>
-        <tt>Weffective=Winput-dw</tt>
-    </blockquote>
-
-    <p>
-    Note that unlike the other models in <i>WRspice</i>, the BSIM model is
-    designed for use with a process characterization system that
-    provides all the parameters, thus there are no defaults for the
-    parameters, and leaving one out is considered an error.  For an
-    example set of parameters and the format of a process file, see
-    the SPICE2 implementation <a href="refs#sheu">notes</a>.
-
-    <p>
-    <table border=1 cellpadding=2 bgcolor="#ffffee">
-    <caption>BSIM1 (level 4) parameters</caption>
-    <tr><th>name</th> <th>l/w</th>
-        <th>parameter</th>
-        <th>units</th></tr>
-    <tr><td><tt>vfb</tt></td> <td>*</td>
-        <td>flat-band voltage</td>
-        <td>V</td</tr>>
-    <tr><td><tt>phi</tt></td> <td>*</td>
-        <td>surface inversion potential</td>
-        <td>V</td></tr>
-    <tr><td><tt>k1</tt></td> <td>*</td>
-        <td>body effect coefficient</td>
-        <td>V<sup>0.5</sup></td></tr>
-    <tr><td><tt>k2</tt></td> <td>*</td>
-        <td>drain/source depletion charge sharing coefficient</td>
-        <td>-</td></tr>
-    <tr><td><tt>eta</tt></td> <td>*</td>
-        <td>zero-bias drain-induced barrier lowering coefficient</td>
-        <td>-</td></tr>
-    <tr><td><tt>muz</tt></td> <td>&nbsp;</td>
-        <td>zero-bias mobility</td>
-        <td>cM<sup>2</sup>/VS</td></tr>
-    <tr><td><tt>dl</tt></td> <td>&nbsp;</td>
-        <td>shortening of channel</td>
-        <td>&#181M</td></tr>
-    <tr><td><tt>dw</tt></td> <td>&nbsp;</td>
-        <td>narrowing of channel</td>
-        <td>&#181M</td></tr>
-    <tr><td><tt>u0</tt></td> <td>*</td>
-        <td>zero-bias transverse-field mobility degradation coefficient</td>
-        <td>1/V</td></tr>
-    <tr><td><tt>u1</tt></td> <td>*</td>
-        <td>zero-bias velocity saturation coefficient</td>
-        <td>&#181M/V</td></tr>
-    <tr><td><tt>x2mz</tt></td> <td>*</td>
-        <td>sens. of mobility to substrate bias at vds=0</td>
-        <td>cM<sup>2</sup>/V<sup>2</sup>S</td></tr>
-    <tr><td><tt>x2e</tt></td> <td>*</td>
-        <td>sens. of drain-induced barrier lowering effect to substrate
-          bias</td>
-        <td>1/V</td></tr>
-    <tr><td><tt>x3e</tt></td> <td>*</td>
-        <td>sens. of drain-induced barrier lowering effect to drain bias
-          at Vds=Vdd</td>
-        <td>1/V</td></tr>
-    <tr><td><tt>x2u0</tt></td> <td>*</td>
-        <td>sens. of transverse field mobility degradation effect to
-          substrate bias</td>
-        <td>1/V<sup>2</sup></td></tr>
-    <tr><td><tt>x2u1</tt></td> <td>*</td>
-        <td>sens. of velocity saturation effect to substrate bias</td>
-        <td>&#181M/V<sup>2</sup></td></tr>
-    <tr><td><tt>mus</tt></td> <td>&nbsp;</td>
-        <td>mobility at zero substrate bias and at Vds=Vdd</td>
-        <td>cM<sup>2</sup>/V<sup>2</sup>S</td></tr>
-    <tr><td><tt>x2ms</tt></td> <td>*</td>
-        <td>sens. of mobility to substrate bias at Vds=Vdd</td>
-        <td>cM<sup>2</sup>/V<sup>2</sup>S</td></tr>
-    <tr><td><tt>x3ms</tt></td> <td>*</td>
-        <td>sens. of mobility to drain bias at Vds=Vdd</td>
-        <td>cM<sup>2</sup>/V<sup>2</sup>S</td></tr>
-    <tr><td><tt>x3u1</tt></td> <td>*</td>
-        <td>sens. of velocity saturation effect on drain bias at
-          Vds=Vdd</td>
-        <td>&#181M/V<sup>2</sup></td></tr>
-    <tr><td><tt>tox</tt></td> <td>&nbsp;</td>
-        <td>gate oxide thickness</td>
-        <td>&#181M</td></tr>
-    <tr><td><tt>temp</tt></td> <td>&nbsp;</td>
-        <td>temperature at which parameters were measured</td>
-        <td>C</td></tr>
-    <tr><td><tt>vdd</tt></td> <td>&nbsp;</td>
-        <td>measurement bias range</td>
-        <td>V</td></tr>
-    <tr><td><tt>cgdo</tt></td> <td>&nbsp;</td>
-        <td>gate-drain overlap capacitance were measured</td>
-        <td>F/M</td></tr>
-    <tr><td><tt>cgso</tt></td> <td>&nbsp;</td>
-        <td>gate-source overlap capacitance per meter channel width</td>
-        <td>F/M</td></tr>
-    <tr><td><tt>cgbo</tt></td> <td>&nbsp;</td>
-        <td>gate-bulk overlap capacitance per meter channel length</td>
-        <td>F/M</td></tr>
-    <tr><td><tt>xpart</tt></td> <td>&nbsp;</td>
-        <td>gate-oxide capacitance charge model flag</td>
-        <td>-</td></tr>
-    <tr><td><tt>n0</tt></td> <td>*</td>
-        <td>zero-bias subthreshold slope coefficient</td>
-        <td>-</td></tr>
-    <tr><td><tt>nb</tt></td> <td>*</td>
-        <td>sens. of subthreshold slope to substrate bias</td>
-        <td>-</td></tr>
-    <tr><td><tt>nd</tt></td> <td>*</td>
-        <td>sens. of subthreshold slope to drain bias</td>
-        <td>-</td></tr>
-    <tr><td><tt>rsh</tt></td> <td>&nbsp;</td>
-        <td>drain and source diffusion sheet resistance</td>
-        <td>O/sq</td></tr>
-    <tr><td><tt>js</tt></td> <td>&nbsp;</td>
-        <td>source drain junction current density</td>
-        <td>A/M<sup>2</sup></td></tr>
-    <tr><td><tt>pb</tt></td> <td>&nbsp;</td>
-        <td>built in potential of source drain junction</td>
-        <td>V</td></tr>
-    <tr><td><tt>mj</tt></td> <td>&nbsp;</td>
-        <td>grading coefficient of source drain junction</td>
-        <td>-</td></tr>
-    <tr><td><tt>pbsw</tt></td> <td>&nbsp;</td>
-        <td>built in potential of source drain junction sidewall</td>
-        <td>V</td></tr>
-    <tr><td><tt>mjsw</tt></td> <td>&nbsp;</td>
-        <td>grading coefficient of source drain junction sidewall</td>
-        <td>-</td></tr>
-    <tr><td><tt>cj</tt></td> <td>&nbsp;</td>
-        <td>source drain junction capacitance per unit area</td>
-        <td>F/M<sup>2</sup></td></tr>
-    <tr><td><tt>cjsw</tt></td> <td>&nbsp;</td>
-        <td>source drain junction sidewall capacitance per unit length</td>
-        <td>F/M</td></tr>
-    <tr><td><tt>wdf</tt></td> <td>&nbsp;</td>
-        <td>source drain junction default width</td>
-        <td>M</td></tr>
-    <tr><td><tt>dell</tt></td> <td>&nbsp;</td>
-        <td>source drain junction length reduction</td>
-        <td>M</td></tr>
-    </table>
-
-    <p>
-    The parameter <tt>xpart</tt> = 0 selects a 40/60 drain/source
-    charge partition in saturation, while <tt>xpart</tt> = 1 selects a
-    0/100 drain/source charge partition.
 !!LATEX mosmodel elements.tex
 {\cb Type Names:} {\vt nmos}, {\vt pmos}
 
@@ -3199,8 +3019,7 @@ will be aborted.
 This section describes the basic SPICE2/3 models.  The level 1--3 and
 6 models can be used for quick analysis and examples, but are probably
 not suitable for serious design work using modern deep-submicron
-devices.  The BSIM1 and BSIM2 models are for compatibility only, and
-are not likely to be useful except for analysis of legacy projects.
+devices.
 
 The dc characteristics of the level 1 through level 3 MOSFETs are
 defined by the device parameters {\vt vto}, {\vt kp}, {\vt lambda},
@@ -3308,106 +3127,6 @@ the device line.
 \vt tnom & \rr parameter measurement temperature & $C$ & 25 & 50\\ \hline
 \end{longtable}
 \end{quote}
-
-The level 4 (BSIM1) parameters are all values obtained from process
-characterization, and can be generated automatically.
-J. Pierret\cite{pierret} describes a means of generating a ``process''
-file, and the program {\vt proc2mod} provided with {\WRspice} will convert this
-file into a sequence of {\vt .model} lines suitable for inclusion in
-{\WRspice} input.  Parameters marked below with an * in the l/w column
-also have corresponding parameters with a length and width dependency.
-For example, {\vt vfb} is the basic parameter with units of volts, and
-{\vt lvfb} and {\vt wvfb} also exist and have units of
-volt-$\mu$meter.  The formula
-\begin{displaymath}
-P = P_0 + \frac{P_L}{L_{effective}} + \frac{P_W}{W_{effective}}
-\end{displaymath}
-is used to evaluate the parameter for the actual device specified with
-\begin{displaymath}
-L_{effective} = L_{input} - dl
-\end{displaymath}
-and
-\begin{displaymath}
-W_{effective} = W_{input} - dw .
-\end{displaymath}
-
-Note that unlike the other models in {\WRspice}, the BSIM model is
-designed for use with a process characterization system that provides
-all the parameters, thus there are no defaults for the parameters, and
-leaving one out is considered an error.  For an example set of
-parameters and the format of a process file, see the SPICE2
-implementation notes\cite{sheu}.
-\begin{quote}
-\begin{longtable}{|l|c|p{3in}|l|}\hline
-\multicolumn{4}{|c|}{\bf BSIM (Level 4) Parameters}\\ \hline
-\bf name & \bf l/w & \bf parameter & \bf units\\ \hline\hline
-\vt vfb & $*$ & \rr flat-band voltage & $V$\\ \hline
-\vt phi & $*$ & \rr surface inversion potential & $V$\\ \hline
-\vt k1 & $*$ & \rr body effect coefficient & $V^{1/2}$\\ \hline
-\vt k2 & $*$ & \rr drain/source depletion charge sharing coefficient & -\\
- \hline
-\vt eta & $*$ & \rr zero-bias drain-induced barrier lowering coefficient &
- -\\ \hline
-\vt muz & & \rr zero-bias mobility & $cM^2/VS$\\ \hline
-\vt dl & & \rr shortening of channel & ${\mu}M$\\ \hline
-\vt dw & & \rr narrowing of channel & ${\mu}M$\\ \hline
-\vt u0 & $*$ & \rr zero-bias transverse-field mobility degradation
- coefficient & $V^{-1}$\\ \hline
-\vt u1 & $*$ & \rr zero-bias velocity saturation coefficient & ${\mu}M/V$\\
- \hline
-\vt x2mz & $*$ & \rr sens. of mobility to substrate bias at Vds = 0 &
- $cM^2/V^2S$\\ \hline
-\vt x2e & $*$ & \rr sens. of drain-induced barrier lowering to substrate
- bias & $V^{-1}$\\ \hline
-\vt x3e & $*$ & \rr sens. of drain-induced barrier lowering to drain bias at
- Vds = Vdd & $V^{-1}$\\ \hline
-\vt x2u0 & $*$ & \rr sens. of transverse field mobility degradation to
- substrate bias & V$^{-2}$\\ \hline
-\vt x2u1 & $*$ & \rr sens. of velocity saturation effect to substrate
- bias & ${\mu}MV^{-2}$\\ \hline
-\vt mus & & \rr mobility at zero substrate bias and at Vds = Vdd &
- $cM^2/V^2S$\\ \hline
-\vt x2ms & $*$ & \rr sens. of mobility to substrate bias at Vds = Vdd &
- $cM^2/V^2S$\\ \hline
-\vt x3ms & $*$ & \rr sens. of mobility to drain bias at Vds = Vdd &
- $cM^2/V^2S$\\ \hline
-\vt x3u1 & $*$ & \rr sens. of velocity saturation effect on drain bias
- at Vds = Vdd & ${\mu}MV^{-2}$\\ \hline
-\vt tox & & \rr gate oxide thickness & ${\mu}M$\\ \hline
-\vt temp & & \rr temperature at which parameters were measured & $C$\\ \hline
-\vt vdd & & \rr measurement bias range & $V$\\ \hline
-\vt cgdo & & \rr gate-drain overlap capacitance per channel width & $F/M$\\
- \hline
-\vt cgso & & \rr gate-source overlap capacitance per channel
- width & $F/M$\\ \hline
-\vt cgbo & & \rr gate-bulk overlap capacitance per channel length & $F/M$\\
- \hline
-\vt xpart & & \rr gate-oxide capacitance charge model flag & -\\ \hline
-\vt n0 & $*$ & \rr zero-bias subthreshold slope coefficient & -\\ \hline
-\vt nb & $*$ & \rr sens. of subthreshold slope to substrate bias & -\\
- \hline
-\vt nd & $*$ & \rr sens. of subthreshold slope to drain bias & -\\ \hline
-\vt rsh & & \rr drain and source diffusion sheet resistance &
- $\Omega/\Box$\\ \hline
-\vt js & & \rr source drain junction current density & $A/M^2$\\ \hline
-\vt pb & & \rr built in potential of source drain junction & $V$\\ \hline
-\vt mj & & \rr grading coefficient of source drain junction & -\\ \hline
-\vt pbsw & & \rr built in potential of source,drain junction sidewall &
- $V$\\ \hline
-\vt mjsw & & \rr grading coefficient of source drain junction sidewall &
- -\\ \hline
-\vt cj & & \rr source drain junction capacitance per unit area & $F/M^2$\\
- \hline
-\vt cjsw & & \rr source drain junction sidewall capacitance per unit
- length & $F/M$\\ \hline
-\vt wdf & & \rr source drain junction default width & $M$\\ \hline
-\vt dell & & \rr source drain junction length reduction & $M$\\ \hline
-\end{longtable}
-\end{quote}
-
-The parameter {\vt xpart = 0} selects a 40/60 drain/source charge
-partition in saturation, while {\vt xpart = 1} selects a 0/100
-drain/source charge partition.
  
 !!SEEALSO
 .model

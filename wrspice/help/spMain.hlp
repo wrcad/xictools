@@ -51,7 +51,6 @@ utilities
 mmjco
 multidec
 printtoraw
-proc2mod
 wrspiced
 
 
@@ -5702,37 +5701,11 @@ References
     Berkeley, Oct. 1980.
 
     <p>
-    <li> <a name="sheu"></a>
-    B. J. Sheu, D. L. Scharfetter, and  P.  K.  Ko,  "SPICE2
-    Implementation of BSIM" ERL Memo No. ERL M85/42, Electronics
-    Research Laboratory, University of California, Berkeley, May
-    1985.
-
-    <p>
-    <li> <a name="pierret"></a>
-    J. R. Pierret, "A MOS Parameter Extraction  Program  for
-    the  BSIM Model" ERL Memo Nos. ERL M84/99 and M84/100,
-    Electronics  Research  Laboratory,  University  of   California,
-    Berkeley, Nov. 1984.
-
-    <p>
     <li> <a name="jeng"></a>
     Min-Chie Jeng, "Design and Modeling of Deep-Submicrometer
     MOSFETs", ERL Memo Nos.  ERL M84/99 and ERL M90/90, Electronics
     Research Laboratory, University of California, Berkeley, October
     1990.
-
-    <p>
-    <li> <a name="park"></a>
-    Soyeon Park, "Analysis and SPICE implementation of High
-    Temperature Effects on MOSFET", Master's Thesis, University of
-    California, Berkeley, December 1986.
-
-    <p>
-    <li> <a name="szeto"></a>
-    Clement Szeto, "Simulator of Temperature effects in MOSFETs
-    (STEIM)", Master's Thesis, University of California, Berkeley, May
-    1988.
 
     <p>
     <li> <a name="parker"></a>
@@ -5816,21 +5789,9 @@ References
 \bibitem{vlad}A. Vladimirescu and S. Liu, {\em The Simulation of MOS
  Integrated Circuits Using SPICE2},  ERL Memo No. ERL M80/7, Electronics
  Research Laboratory, University of  California,  Berkeley, Oct. 1980.
-\bibitem{sheu}B. J. Sheu, D. L. Scharfetter, and P. K. Ko,
- {\em SPICE2 Implementation of BSIM}, ERL Memo No. ERL M85/42, Electronics
- Research Laboratory, University of California, Berkeley, May 1985.
-\bibitem{pierret}J. R. Pierret, {\em A MOS Parameter Extraction Program
- for the BSIM Model},  ERL Memo Nos. ERL M84/99 and M84/100, Electronics
- Research Laboratory, University of  California, Berkeley, Nov. 1984.
 \bibitem{jeng} Min-Chie Jeng, {\em Design and Modeling of Deep-Submicrometer
  MOSFETs}, ERL Memo Nos. ERL M84/99 and ERL M90/90, Electronics
  Research Laboratory, University of California, Berkeley, October 1990.
-\bibitem{park}Soyeon Park, {\em Analysis and SPICE implementation of High
- Temperature Effects on MOSFET}, Master's Thesis, University of California,
- Berkeley, December 1986.
-\bibitem{szeto}Clement Szeto, {\em Simulator of Temperature effects in
- MOSFETs (STEIM)}, Master's Thesis, University of California, Berkeley,
- May 1988.
 \bibitem{parker}A. E. Parker and D. J. Skellern, {\em An Improved FET Model
  for Computer Simulators}, IEEE Trans. CAD, vol. 9, no.5, pp. 551-553,
  May 1990.
@@ -6485,7 +6446,6 @@ and accessory programs.
 mmjco
 multidec
 printtoraw
-proc2mod
 wrspiced
 
 !! utilities.tex 091524
@@ -7780,28 +7740,6 @@ Example:
 {\vt wrspice> load myfile.raw}\\
 {\vt wrspice> plot all}
 \end{quote}
-
-!!SEEALSO
-utilities
-
-!! utilities.tex 012609
-!!KEYWORD
-proc2mod
-!!TITLE
-The <tt>proc2mod</tt> Utility: BSIM1 Model Generation
-!!HTML
-    This utility, provided with SPICE3, produces a set of <a
-    href="mosmodel#bsim">BSIM1</a> models from process-dependent data
-    provided in a "process" file.  An example process (<tt>.pro</tt>)
-    file is provided with the <i>WRspice</i> examples.  This utility
-    was written by <a href="refs#pierret">J.  Pierret</a>, and the
-    reference presumably provides more information.
-!!LATEX proc2mod utilities.tex
-This utility, provided with SPICE3, produces a set of BSIM1 models
-from process-dependent data provided in a ``process'' file.  An
-example process ({\vt .pro}) file is provided with the {\WRspice}
-examples.  This utility was written by J.  Pierret \cite{pierret},
-and the reference presumably provides more information.
 
 !!SEEALSO
 utilities
