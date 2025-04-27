@@ -45,7 +45,6 @@ show
 stop
 unlet
 unset
-graphics
 spanalysis
 batchmode
 monte
@@ -425,14 +424,6 @@ unset command
     <p>
     See the <i>WRspice</i> documentation for a description of the
     <b>unset</b> command.
-
-!!KEYWORD
-graphics
-!!TITLE
-Graphical Interface
-!!HTML 
-    See the <i>WRspice</i> documentation for information about
-    the graphical interface.
 
 !!KEYWORD
 spanalysis

@@ -42,10 +42,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
-#if defined(__linux) || defined(__APPLE__)
-#ifdef __x86_64
+#if defined(__arm64) || defined(__x86_64)
 #include <execinfo.h>
-#endif
 #endif
 #include "local_malloc.h"
 
@@ -319,16 +317,14 @@ sMemory::mon_dump(const char *fname)
                     else
                         fputc(',', fp);
                 }
-#ifdef __linux
                 // The backtrace_symbols call seems to return an array
                 // of null strings in Red Hat EL5, i686, x86_64 is ok.
-#ifdef __x86_64
+#if defined(__arm64) || defined(__x86_64)
                 char **strings = backtrace_symbols(e->data, mem_mon_depth);
                 for (int k = 0; k < mem_mon_depth; k++) {
                     fprintf(fp, "%s\n", strings[k]);
                 }
                 free(strings);
-#endif
 #endif
             }
         }
@@ -378,7 +374,7 @@ sMemory::mem_mon_alloc_hook_prv(void *v)
     for (int i = 0; i < mem_mon_depth; i++)
         e->data[i] = 0;
 
-#ifdef __x86_64
+#if defined(__arm64) || defined(__x86_64)
     void *vtmp[16];
     int i = backtrace(vtmp, mem_mon_depth + 1) - 1;
     memcpy(e->data, vtmp + 1, i*sizeof(void*));

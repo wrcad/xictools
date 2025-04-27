@@ -102,6 +102,7 @@ Help
     <a href="startup_files">Initialization Files</a><br>
 
     <h4>Using <i>WRspice</i></h4>
+    <a href="graphics">Graphical Interface</a><br>
     <a href="toolbar">Tool Control Window</a><br>
     <a href="spshell">Shell Features</a><br>
     <a href="commands">Builtt-in Commands</a><br>

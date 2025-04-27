@@ -14,7 +14,6 @@ spToolbar.hlp
 !!HTML 
 
 !!SUBTOPICS
-graphics
 toolbar
 fontspanel
 filespanel
@@ -30,42 +29,6 @@ cmdopts
 runoppanel
 dbgopts
 
-
-!! useriface.tex 050414
-!!KEYWORD
-graphics
-!!TITLE
-Graphical Interface
-!!HTML
-    When the <b>DISPLAY</b> variable is found in the <a
-    href="environment">environment</a> upon program startup,
-    <i>WRspice</i> assumes that a graphical (X-window) server is
-    available, and will enable its graphical components.  If this
-    initialization fails, <i>WRspice</i> will terminate.  If the
-    <b>DISPLAY</b> variable is not set, and the <a
-    href="-d"><tt>-d</tt></a> option is not used to specify the
-    display, or the <a href="-dnone"><tt>-dnone</tt></a> command line
-    option is given, then <i>WRspice</i> will run in text-only mode. 
-    In this mode, the core functionality is available, but not the
-    graphical niceties such as plotting (other than the infamous crude
-    line-printer plots of yore).  Under Microsoft Windows, graphics is
-    (of course) always available.
-!!LATEX graphics useriface.tex
-When the {\et DISPLAY} variable is found in the environment upon
-program startup, {\WRspice} assumes that a graphical (X-window) server
-is available, and will enable its graphical components.  If this
-initialization fails, {\WRspice} will terminate.  If the {\et DISPLAY}
-variable is not set, and the {\vt -d} option is not used on the
-command line to specify the display, or the {\vt -dnone} command line
-option is given, then {\WRspice} will run in text-only mode.  In this
-mode, the core functionality is available, but not the graphical
-niceties such as plotting (other than the infamous crude line-printer
-plots of yore).  Under Microsoft Windows, graphics is (of course)
-always available.
-
-!!REFERENCES
-toolbar
-graphcmds
 
 !!REDIRECT dragdrop     toolbar#dragdrop
 !!REDIRECT wrbtn        toolbar#wrbtn
