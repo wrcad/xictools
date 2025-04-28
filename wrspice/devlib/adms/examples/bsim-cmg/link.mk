@@ -15,7 +15,7 @@ SRCFILE = BSIM-CMG_111.2.1_06062022.tar.gz
 #SRCFILE = BSIM-CMG_112.0.0beta3_09132024.tar.gz
 #######################################################################
 
-# Full URL to the file to download, or empth if none.
+# Full URL to the file to download, or empty if none.
 SRCPATH = $(SRCDIR)$(SRCFILE)
 
 ifeq ($(strip $(SRCPATH)),)

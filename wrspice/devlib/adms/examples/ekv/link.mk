@@ -15,7 +15,7 @@ SRCDIR  = http://github.com/ekv26/model/archive/
 SRCFILE = master.tar.gz
 #######################################################################
 
-# Full URL to the file to download, or empth if none.
+# Full URL to the file to download, or empty if none.
 SRCPATH = $(SRCDIR)$(SRCFILE)
 
 ifeq ($(strip $(SRCPATH)),)

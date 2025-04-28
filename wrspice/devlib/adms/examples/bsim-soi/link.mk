@@ -15,7 +15,7 @@ SRCFILE = BSIM-SOI_100.0.1_04202023.tar.gz
 #SRCFILE = BSIM-SOI_4.7.0_beta7_09092024.tar.gz
 #######################################################################
 
-# Full URL to the file to download, or empth if none.
+# Full URL to the file to download, or empty if none.
 SRCPATH = $(SRCDIR)$(SRCFILE)
 
 ifeq ($(strip $(SRCPATH)),)

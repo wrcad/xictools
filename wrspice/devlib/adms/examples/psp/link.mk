@@ -8,7 +8,6 @@
 #
 # URL of the directory that contains the distribution files.  This MUST
 # end with a directory separation character.
-# Translation error occurs in 104 and 103.8, 103.1 builds ok.
 SRCDIR  = https://www.cea.fr/cea-tech/leti/pspsupport/Documents/Level%20104/
 #SRCDIR = https://www.cea.fr/cea-tech/leti/pspsupport/Documents/Level%20103_8_2/
 #SRCDIR = https://www.cea.fr/cea-tech/leti/pspsupport/Documents/Level%20103.3.1/
@@ -18,8 +17,13 @@ SRCFILE = PSP104.0_vacode.tar.gz
 #SRCFILE = PSP103.8.2_vacode.tar.gz
 #SRCFILE = vacode_103.1.1.tar.gz
 #######################################################################
+# NOTE 04/28/2025
+# Download fails due to a bad certificate at the server.
+# To get around this, use "curl -k ..." below (i.e., add the "-k").
+# This is UNSAFE in production code.
+#######################################################################
 
-# Full URL to the file to download, or empth if none.
+# Full URL to the file to download, or empty if none.
 SRCPATH = $(SRCDIR)$(SRCFILE)
 
 ifeq ($(strip $(SRCPATH)),)
@@ -40,7 +44,7 @@ chkSOURCE:
 	fi
 
 SOURCE/$(SRCFILE):
-	cd SOURCE; curl -L -O $(SRCPATH); cd ..; \
+	cd SOURCE; curl -k -L -O $(SRCPATH); cd ..; \
 	if [ "$$?" == "0" ]; then \
 	    tar xzf $@ -C SOURCE; \
 	else \

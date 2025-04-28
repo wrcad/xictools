@@ -2146,10 +2146,6 @@ MOSFET Device Models
     <tr><td>6</td>     <td>MOS</td>
         <td>The SPICE3 mos6 model</td></tr>
 
-    <tr><td>7, 49</td> <td>BSIM3.2.0</td>
-         <td>U.C. Berkeley bsim3.2.0 model</td></tr>
-    <tr><td>8, 47</td> <td>BSIM3.2.4</td>
-        <td>U.C. Berkeley bsim3.2.4 model</td></tr>
     <tr><td>9, 53</td> <td>BSIM3.3.0</td>
         <td>U.C. Berkeley bsim3.3.0 model</td></tr>
 
@@ -2168,28 +2164,16 @@ MOSFET Device Models
     <tr><td>18, 60</td><td>BSIM4.8.2</td>
         <td>U.C. Berkeley bsim4.8.2 model</td></tr>
 
-    <tr><td>20</td>    <td>BSIMSOI-3.0</td>
-       <td>U.C. Berkeley bsimsoi-3.0 model</td></tr>
     <tr><td>21</td>    <td>BSIMSOI-3.2</td>
        <td>U.C. Berkeley bsimsoi-3.2 model</td></tr>
-    <tr><td>22, 57</td><td>BSIMSOI-4.0</td>
-       <td>U.C. Berkeley bsimsoi-4.0 model</td></tr>
-    <tr><td>23, 70</td><td>BSIMSOI-4.3</td>
-       <td>U.C. Berkeley bsimsoi-4.3 model</td></tr>
     <tr><td>24, 71</td><td>BSIMSOI-4.4</td>
        <td>U.C. Berkeley bsimsoi-4.4 model</td></tr>
 
     <tr><td>25, 55</td><td>EKV-2.6</td>
         <td>EKV-2.6 MOS model from EPFL, Lausanne, Switzerland</td></tr>
 
-    <tr><td>30</td>    <td>HiSIM-1.1.0</td>
-        <td>Hiroshima University hisim-1.1.0 model.</td></tr>
     <tr><td>31, 64</td><td>HiSIM-1.2.0</td>
         <td>Hiroshima University hisim-1.2.0 model.</td></tr>
-
-    <tr><td>33</td>    <td>Soi3</td>
-        <td>Southampton Thermal Analogue (STAG) release 2.6
-        SOI model</td></tr>
 
     <tr><td>36, 58</td><td>UFSOI-7.5</td>
         <td>U. Florida SOI model release 7.5</td></tr>
@@ -2201,33 +2185,18 @@ MOSFET Device Models
     <dl>
     <dt>BSIM models<dd>
     The home page for the Berkeley BSIM models is<br>
-    <a href="http://www-device.eecs.berkeley.edu/~bsim3">
-    <tt>http://www-device.eecs.berkeley.edu/~bsim3</tt></a>.<br>
-    The home page for the Berkeley BSIMSOI models is<br>
-    <a href="http://www-device.eecs.berkeley.edu/~bsimsoi">
-    <tt>http://www-device.eecs.berkeley.edu/~bsimsoi</tt></a>.
-
-    <p>
-    In <i>WRspice</i> release 3.2.5, MOS level 54 was changed to point
-    to the BSIM-4.6.5 model, which replaced the BSIM-4.6.1 model.  In
-    earlier releases, level 54 pointed to BSIM-4.3.0.  Going forward,
-    level 54 will point to the "latest and greatest" BSIM4 model
-    available.
+    <a href="http://bsim.berkeley.edu">
+    <tt>http://bsim.berkeley.edu</tt></a>.<br>
     </dl>
 
     <dl>
     <dt>EKV-2.6<dd>
     The level EKV-2.6 model installation has not been validated by
     EPFL, and by agreement until such validation is performed there is
-    no claim that this is <i>THE</i> EKV model.  The EKV home page is<br>
-    <a href="http://legwww.epfl.ch/ekv"><tt>http://legwww.epfl.ch/ekv</tt></a>.
-    </dl>
-
-    <dl>
-    <dt>STAG<dd>
-    The STAG (Southampton Thermal Analogue Model) does not appear to be
-    available from or supported by the author anymore.  This model will
-    likely be removed in a future release.
+    no claim that this is <i>THE</i> EKV model.  The model is available
+    as Verilog-A from <a href="https://github.com/ekv26/model">
+    <tt>https://github.com/ekv26/model</tt></a>.  I can't find a
+    source for C code presently.
     </dl>
 
     <dl>
@@ -2434,8 +2403,6 @@ The table below lists all of the MOS levels recognized in {\WRspice}.
 \bf 2 & MOS & The SPICE3 mos2 model described in \cite{vlad}\\ \hline
 \bf 3 & MOS & The SPICE3 mos3 semi-empirical model (see\cite{vlad})\\ \hline
 \bf 6 & MOS & The SPICE3 mos6 model\\ \hline
-\bf 7, 49 & BSIM3.2.0 & U.C. Berkeley bsim-3.2.0 model\\ \hline
-\bf 8, 47 & BSIM3.2.4 & U.C. Berkeley bsim-3.2.4 model\\ \hline
 \bf 9, 53 & BSIM3.3.0 & U.C. Berkeley bsim-3.3.0 model\\ \hline
 \bf 12 & BSIM4.2.1 & U.C. Berkeley bsim-4.2.1 model\\ \hline
 \bf 13 & BSIM4.3.0 & U.C. Berkeley bsim-4.3.0 model\\ \hline
@@ -2444,15 +2411,10 @@ The table below lists all of the MOS levels recognized in {\WRspice}.
 \bf 16, 56 & BSIM4.7.0 & U.C. Berkeley bsim-4.7.0 model\\ \hline
 \bf 17, 59 & BSIM4.8.0 & U.C. Berkeley bsim-4.8.0 model\\ \hline
 \bf 18, 60 & BSIM4.8.2 & U.C. Berkeley bsim-4.8.2 model\\ \hline
-\bf 20 & BSIMSOI-3.0 & U.C. Berkeley bsimsoi-3.0 SOI model\\ \hline
 \bf 21 & BSIMSOI-3.2 & U.C. Berkeley bsimsoi-3.2 SOI model\\ \hline
-\bf 22, 57 & BSIMSOI-4.0 & U.C. Berkeley bsimsoi-4.0 SOI model\\ \hline
-\bf 23, 70 & BSIMSOI-4.3 & U.C. Berkeley bsimsoi-4.3 SOI model\\ \hline
 \bf 24, 71 & BSIMSOI-4.4 & U.C. Berkeley bsimsoi-4.4 SOI model\\ \hline
 \bf 25, 55 & EKV-2.6 & EPFL (Switzerland) MOS model release 2.6\\ \hline
-\bf 30 & HISIM-1.1.0 & Hiroshima University hisim-1.1.0 model\\ \hline
 \bf 31, 64 & HISIM-1.2.0 & Hiroshima University hisim-1.2.0 model\\ \hline
-\bf 33 & Soi3 & Southampton Thermal Analogue (STAG-2.6) SOI model\\ \hline
 \bf 36, 58 & UFSOI-7.5 & U. Florida SOI model release 7.5\\ \hline
 \end{tabular}
 \end{quote}
@@ -2461,25 +2423,14 @@ Notes:\\
 \begin{description}
 \item{BSIM models}\\
 The home page for the Berkeley BSIM models is
-{\vt http://www-device.eecs.berkeley.edu/~bsim3}.
-The home page for the Berkeley BSIMSOI models is
-{\vt http://www-device.eecs.berkeley.edu/~bsimsoi}.
-
-In {\WRspice} release 3.2.5, MOS level 54 was changed to point to the
-BSIM-4.6.5 model, which replaced the BSIM-4.6.1 model.  In earlier
-releases, level 54 pointed to BSIM-4.3.0.  Going forward, level 54
-will point to the ``latest and greatest'' BSIM4 model available.
+{\vt http://bsim.berkeley.edu}.
 
 \item{EKV-2.6}\\
 The level EKV-2.6 model installation has not been validated by EPFL,
 and by agreement until such validation is performed there is no claim
-that this is {\it THE} EKV model.  The EKV home page is {\vt
-http://legwww.epfl.ch/ekv}.
-
-\item{STAG}\\
-The STAG (Southampton Thermal Analogue Model) does not appear to be
-available from or supported by the author anymore.  This model will
-likely be removed in a future release.
+that this is {\it THE} EKV model.  The model is available as Verilog-A
+from {\vt https://github.com/ekv26/model}.  I can't find a source for
+C code presently.
 
 \item{HiSIM}\\
 The HiSIM model source code is no longer generally available, and is

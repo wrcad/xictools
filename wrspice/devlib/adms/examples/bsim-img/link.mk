@@ -15,7 +15,7 @@ SRCFILE = BSIM-IMG_103.0.0_20200102.tar.gz
 #SRCFILE = BSIM-IMG_103.1.0beta1_06122024.tar.gz
 #######################################################################
 
-# Full URL to the file to download, or empth if none.
+# Full URL to the file to download, or empty if none.
 SRCPATH = $(SRCDIR)$(SRCFILE)
 
 ifeq ($(strip $(SRCPATH)),)

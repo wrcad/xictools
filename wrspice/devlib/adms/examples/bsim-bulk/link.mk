@@ -16,7 +16,7 @@ SRCFILE = BSIM-BULK107.2.0_08202024.tar.gz
 #SRCFILE = BSIM-BULK107.2.0beta2_04302024.tar.gz
 #######################################################################
 
-# Full URL to the file to download, or empth if none.
+# Full URL to the file to download, or empty if none.
 SRCPATH = $(SRCDIR)$(SRCFILE)
 
 ifeq ($(strip $(SRCPATH)),)

@@ -1,40 +1,58 @@
-$Id: README,v 1.3 2014/04/22 19:34:09 stevew Exp $
 
 ADMS Compilation Examples
 -------------------------
 
 This directory contains a few "popular" Verilog-A devices as examples
-for building loadable object modules for WRspice.
+for building loadable object modules for WRspice.  You should copy this
+directory tree to your personal directory.  You should be able to build
+the loadable modules from there by following the instructions given below.
 
-If you want the latest versions of these models, the link.mk file or
-google will yield the original distribution sites, where a newer
-revision may be available.  The Josephson junction model is a Whiteley
-Research original, and the latest version is provided here.
-
-You should copy this directory tree to your personal directory, as you
-will need write permission to build the modules.  From the directory
-above this one, give (for example)
-
-  cp -r examples ~
-
-to copy to your home directory.
-
-You should be able to build the loadable modules by following the
-instructions in the README files in the subdirectories.  The model
-levels specified in the Makefiles were chosen to match CMC QA scripts,
-or to match another simulator such as Hspice, spice3, or ngspice, or
-were just made up.  These can be set to other values if desired, but
-don't forget to also change the level parameters in the test files.
-
-After building, or using the pre-built modules, you can start WRspice,
-load the module, and run the test files.  The modules can be copied to
-the wrspice/startup/devices directory in the installation area to be
-loaded whenever WRspice starts.
+WRspice and ADMS must be installed before the modules can be built!
 
 Device modules are NOT COMPATIBLE with releases of WRspice other than
-the one under which they were built.  If you have custom modules, they
-must be rebuilt after a WRspice update.
+the one under which they were built.  If you have custom modules (such as
+those built from here), they must be rebuilt after a WRspice update.
 
-A complete CMC QA script set for most of these models is available
-from Whiteley Research as a separate download.
+In most cases, the actual Verilog-A code is retrieved from an archive on
+the internet.  The locations and file names may change, so entries in
+the link.mk files (in the subdirectories) may need to be updated.
+
+If you want the latest or a different version of these models, the
+link.mk file will yield the original distribution sites, where a newer
+revision may be available.  The Josephson junction models jj, tjm
+are local, and the latest general release versions are provided here.
+The cap and ind models are also local.
+
+The model levels specified in the subdirectory Makefiles were chosen to
+match CMC QA scripts, or to match another simulator such as HSPICE,
+Spice3, or ngspice, or were just made up.  These can be set to other
+values if desired, but don't forget to also change the level parameters
+in the test files.
+
+The procedure:
+
+1.  You must have installed at least the WRspice and ADMS tools from
+the same release of the XicTools as these examples.
+
+2.  If you are reading this from the WRspice installation area, copy
+this directory tree to a personal work area, and work from there.
+It is also best to copy to a private location if the source is in
+the WRspice source code.
+
+3.  Edit the Makefile to select the modules that you want to build.
+The default is to build all of the modules.  This may take 20 minutes
+or so, so you may want to skip what you don't need.
+
+4.  Edit the link.mk and mkmf files in the subdirectories if necessary.
+It is easiest to try building and see if the build is successful first.
+If not, do the editing as part of the troubleshooting.
+
+5.  Type "make".  This will create and compile the C++ files, eventually
+producing the loadable module in a file with a ".so" suffix in Linux,
+".dylib" in macOS.
+
+6.  After building, you can start WRspice with the -m command-line option
+or use the devload command to load a module.  You will then be able to
+run the test files.  The modules can be copied to the wrspice/startup/devices
+directory in the installation area to be loaded whenever WRspice starts.
 

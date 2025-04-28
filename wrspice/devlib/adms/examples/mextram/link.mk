@@ -14,7 +14,7 @@ SRCDIR  = https://www.eng.auburn.edu/~niuguof/mextram/_downloads/5a2636005b4ee2c
 SRCFILE = 505p2p0_vacode.zip
 #######################################################################
 
-# Full URL to the file to download, or empth if none.
+# Full URL to the file to download, or empty if none.
 SRCPATH = $(SRCDIR)$(SRCFILE)
 
 ifeq ($(strip $(SRCPATH)),)
