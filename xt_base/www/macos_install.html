@@ -1,0 +1,201 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<p>
+<HTML>
+<HEAD>
+<TITLE>Whiteley Research Incorporated</TITLE>
+<link rel="STYLESHEET" type="text/css" href="/wr.css">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<link rel="shortcut icon" href="/favicon.ico"
+ type="image/x-icon">
+</HEAD>
+
+<body background="/images/tmbg.gif" text="#000000" link="#9c009e" 
+ vlink="#551a8b" alink="#ff0000">
+
+<table border=1 bgcolor="#FFFFFF" cellpadding=0 width=792>
+<tr><td>
+<img align="left" src="/images/wrbannermain.gif" width=400>
+<br><br>
+<center>
+<font size=6 color="#dd0000">Linux, MacOS Installation</font>
+</center>
+</td></tr>
+<tr><td cellspacing=4>
+<center>
+<font color="#1c00cf" size=5 face="utopia">
+IC Design Software for Unix/Linux and Windows<br>
+</font>
+<font size=4 face="helvetica">
+Whiteley Research Inc., 456 Flora Vista Avenue, Sunnyvale CA 94086
+&nbsp;&nbsp;&nbsp;<a href="http://wrcad.com">wrcad.com</a><br>
+</font>
+</center>
+</td></tr>
+</table>
+
+<font face=helvetica>
+<table border=1 bgcolor="white" cellpadding=4 width=792>
+<tr><td bgcolor=#ffffe8>
+<font size=5 color="#1c00cf" face="utopia">
+MacOS Installation, Updating, and Removal</font>
+
+<p>
+Updating and installation is most conveniently handled by using the <a
+href="/installer.html#scripts"><tt>wr_install</tt></a> script,
+downloaded from the same location as the package files.  Unlike
+earlier releases, this script does not manage the <a
+href="/installer.html"><b>Safe Install</b></a> feature, so that users
+can use the underlying package manager commands for their operating
+system directly, if desired.  The <tt>wr_install</tt> script is just a
+wrapper around these native commands, but it detects which commands to
+use, and which options to give.
+
+<p>
+If is recommended that the initial installation of 4.3 tools, at least,
+be performed using <tt>wr_install</tt>.  Future updates of <i>Xic</i>
+and <i>WRspice</i> can be performed from within those programs.
+Other 4.3 <i>XicTools</i> programs will have a new checking/updating
+mechanism to be determined, so chances are that the tedious manual
+downloading and installing need only be done once.
+
+<p>
+<ol>
+<li>Download the necessary distribution files and scripts.
+Probably, the easiest course is to download everything in the
+distribution directory for your operating system, into a new, empty
+temporary directory.  Presently, there are eight package files and two
+scripts.
+
+<p>
+The installation method below uses the terminal window (sorry).
+When downloading completes, <tt>cd</tt> to the new directory.
+
+<p>
+<li>Make sure that the <tt>wr_install</tt> and <tt>wr_uninstall</tt>
+scripts are executable (they might not be after the download).  If
+not, use
+<blockquote>
+<tt>chmod 0755 wr_install wr_uninstall</tt>
+</blockquote>
+
+<p>
+<li> The installation location is under <tt>/usr/local/xictools</tt>,
+and can not be changed under MacOS.
+
+<p>
+<li>You will need to become 'root' in order to install packages.  For
+future use of the automated updating features of <i>Xic</i> and
+<i>WRspice</i>, you will need to have your account enabled for the
+"<tt>sudo</tt>" command, i.e., your account name should be listed in
+"<tt>/etc/sudoers</tt>".  If this is set up, the installer will ask
+for your password to enable installation.  Otherwise you will have to
+use the <tt>su</tt> command to become root (which may not be enabled).
+
+<p>
+<li>Run <tt>wr_install</tt> with the argument(s) being the names of
+the distribution files, or "all".
+<blockquote>
+<tt>./wr_install all</tt>
+</blockquote>
+The argument "all" is equivalent to <tt>*.pkg</tt>.  This automates
+the installation procedure.  Do NOT change the names of the files, or
+<tt>wr_install</tt> will probably fail.
+
+<p>
+<li>Add the <tt>/usr/local/xictools/bin</tt> directory to your shell
+search path, if you haven't done so.
+
+<p>
+Once <i>Xic</i> and <i>WRspice</i> have been installed, updating could
+not be simpler.  See the program documentation:<br> In <i>WRspice</i>,
+give the commands "<tt>help passwd</tt>" and "<tt>help wrupdate</tt>". 
+In <i>Xic</i> , with the mouse pointer in the main drawing window,
+type "<tt>?!passwd</tt>" and "<tt>?!update"</tt>".  These help topics
+explain how to set up and use the update features.  The programs will
+check for updates when started.  The user can download and install
+updates when available.
+
+<p>
+<li>
+For a first-time installation, you will need to install and set up <a
+href="https://www.macports.org">MacPorts</a>.  This provides the
+graphical libraries used by the programs.  Following the instructions,
+install MacPorts for your operating system.  Be sure to install the default
+package which installs in the default location (i.e., don't build from
+source and change the location).  Note that the procedure also requires
+installing Apple xcode from the App Store.
+
+Once the basic installation is done, run, as root, the following commands:
+
+<blockquote><tt>
+port -v selfupdate<br>
+port install gsl<br>
+port install python2_select<br>
+port install python27<br>
+port install autoconf<br>
+port install pkgconfig<br>
+port install gtk2<br>
+port install qt6
+</tt></blockquote>
+
+<p>
+<li>
+Finally, if you don't already have an X-server, you should install
+X-Quartz.  <a href="https://www.xquartz.org">XQuartz</a> is the
+"official" X server for MacOS and is recommended.
+
+<p>
+<li>
+You're done, and should be able to run the programs.  Furthermore,
+you should be able to build the <i>XicTools</i> from source, the
+MacPorts and xcode provide the necessary libraries.
+</ol>
+
+
+<!-- ------------------------------ -->
+<p>
+<a name="remove">
+<font size=4 color="#1c00cf" face="utopia">
+Removing the Installation</font>
+</a>
+
+<p>
+When performing an update, one should never have to remove any
+distribution files, unless specifically instructed to do so.  This
+section describes how to remove the distributions from the system.
+These operations must be done as root.
+
+<p>
+It is recommended to use the <tt>wr_uninstall</tt> script for package
+removal.  Users can also use their native packager commands to do
+this, except on MacOS where there is no such command.  There are
+probably only two reasons to uninstall a package:  if you no longer
+have any use for the program and want to get rid of it forever, or if
+somehow your installation is corrupted and you want to uninstall and
+then reinstall.
+
+<p>
+You need to have root privileges to uninstall packages, and therefor
+<tt>wr_uninstall</tt> should be run as root, or from a bash shell
+started under the <tt>sudo</tt> command.
+<blockquote>
+<tt>wr_uninstall</tt> <i>progname</i> ...
+</blockquote>
+The arguments are program names from among these:  <tt>adms, fastcap,
+fasthenry, mozy, mrouter, vl, wrspice, xic</tt>.  Actually, you only
+need the first few characters of eacn name, enough to make it
+unambiguous.  For each program, if a corresponding package is
+currently installed, it will be uninstalled.  The packages files will
+be completely deleted, there will be no saving for <b>Safe
+Install</b>.
+
+</td></tr>
+</table>
+</font>
+
+<center>
+<font size=1 face=helvetica>Copyright &#169 Whiteley Research Inc. 2022
+</font></center>
+
+</BODY>
+</HTML>

@@ -1,0 +1,372 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<p>
+<HTML>
+<HEAD>
+<TITLE>Whiteley Research Incorporated</TITLE>
+<link rel="STYLESHEET" type="text/css" href="/wr.css">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<link rel="shortcut icon" href="/favicon.ico"
+ type="image/x-icon">
+</HEAD>
+
+<body background="/images/tmbg.gif" text="#000000" link="#9c009e" 
+ vlink="#551a8b" alink="#ff0000">
+
+<table border=1 bgcolor="#FFFFFF" cellpadding=0 width=792>
+<tr><td>
+<img align="left" src="/images/wrbannermain.gif" width=400>
+<br><br>
+<center>
+<font size=6 color="#dd0000">Windows Installation</font>
+</center>
+</td></tr>
+<tr><td cellspacing=4>
+<center>
+<font color="#1c00cf" size=5 face="utopia">
+IC Design Software for Unix/Linux and Windows<br>
+</font>
+<font size=4 face="helvetica">
+Whiteley Research Inc., 456 Flora Vista Avenue, Sunnyvale CA 94086
+&nbsp;&nbsp;&nbsp;<a href="http://wrcad.com">wrcad.com</a><br>
+</font>
+</center>
+</td></tr>
+</table>
+
+<font face=helvetica>
+<table border=1 bgcolor="white" cellpadding=4 width=792>
+<tr><td bgcolor=#ffffe8>
+<font size=5 color="#1c00cf" face="utopia">
+Microsoft Windows Installation, Updating, and Removal</font>
+
+<h2>Installation</h2>
+
+<p>
+The <i>XicTools</i> for Windows are supported on Windows 10 and 11.
+They should run on Windows 8.1 and maybe 8.0 and 7, but I have no
+hardware to test this, or to diagnose/fix any problems.
+
+<p>
+The programs retain the "look and feel" of the Linux versions as much
+as possible, given the constraints of the Windows operating system. 
+The programs use the GTK2 or QT6  graphical interface toolkits, as used
+by the other releases.
+
+The graphical and other support libraries are now supplied by installing and
+running the programs under the <i>MSYS2</i> environment, which must be
+installed.  Previous releases used a "<tt>gtk2_bundle</tt>" to provide
+this support, which is no longer required.  <i>MSYS2</i> is a
+Linux-like environment similar to <i>Cygwin</i>.
+
+<p>
+The distribution files are self-extracting executable archives, as is
+common for Windows.  Simply execute the file, and a familiar install
+wizard will appear, guiding you through the process.  Executing the
+distribution file will either update an existing installation, or
+install a new installation.  When updating, the previous release will
+be saved using the <a href="/installer.html"><b>Safe Install</b></a>
+format.  The <b>Safe Install</b> feature, available with Windows
+starting with 4.3 releases, allows easy reversion to the earlier
+installation after an update, if needed.
+
+<p>
+However, Win32 packages will not be updated by MINGW packages, and may
+be installed in the same location, causing file conflicts.
+
+<p>
+WARNING<br>
+If you have Win32 <i>XicTools</i> programs installed, it is strongly
+recommended to manually uninstall the Win32 programs, including the
+<tt>gtk2_bundle</tt> before installing the MINGW packages.
+
+<p>
+Programs are uninstalled with the <b>Settings</b> (gear-shaped icon) in
+the <b>Start</b> window, select <b>Apps</b> and scroll down to the
+program to uninstall.  Click on the program icon and follow directions
+to uninstall.  Note, this location varies in different Windows versions.
+
+<p>
+<b>Registry Usage Warning</b><br>
+
+<p>
+The programs use an entry in the Windows Registry to find their
+startup files, etc.  This entry is created by the installer program. 
+Thus:
+
+<ol>
+<li>
+<b>Never copy installation directories to a different location and expect
+things to work!</b> They won't!
+
+<p>
+The correct way to move an existing installation to another location
+is to uninstall the program, then reinstall to the new location using
+the standard distribution file.  If you simply copy the files to a new
+location, the Registry won't be updated and the program won't run
+correctly.
+
+<li>You can not simply copy files from another machine when creating a
+new installation.  The files must be installed through the
+distribution ("<tt>.exe</tt>") files, or the Registry entry won't be
+set.
+</ol>
+
+<p>
+<b>Installation location</b><br>
+
+<p>
+The programs are installed by default under <tt>C:\usr\local</tt>,
+which will be created if necessary.  The structure of the tree is
+very similar to that under Linux, which simplifies compatibility.
+All executables will be found in <tt>C:\uer\local\xictools\bin</tt>.
+
+<p>
+Although the installation program allows the user to specify an
+alternative location for the installation, and an alternative name for
+the program group, life will be simpler if the defaults are selected. 
+In particular, installing in a place like <tt>C:\Program Files</tt>,
+with the space-containing path, will provide a guaranteed migraine.
+
+<p>
+<b>Selecting GTK2 or QT6 graphics</b>
+
+<p>
+Presently, two sets of executable files are provided in the packages, one
+that calls the GTK2 graphical toolkit, and one that calls Qt6.  Operation
+is very similar if not identical, though there are cosmetic differences and
+some other subtle differences.  Qt will eventually replace GTK2, but for
+now GTK2 is kept for comparison purposes and as a backup if there is
+trouble.
+
+<p>
+If you do nothing, the GTK2 programs are run.  To run the Qt6 versions
+instead, you will need to create a one-line file.  This file is named
+"<tt>.xtrc</tt>" and exists in your home directory, or the currrent
+directory.  You can create this file using the vim editor that was
+installed.
+
+<p>
+The text in the <tt>.xtrc</tt> file is
+<blockquote>
+{\vt grpref=QT6}
+</blockquote>
+to set the choice to Qt6.  To revert to GTK2 one can change the "<tt>QT6</tt>"
+to "<tt>GTK2</tt>", or comment the line by inserting a '<tt>#</tt>'
+charcter at the beginning.
+
+<p>
+<b>Installing <i>MSYS2</i></b>
+
+<p>
+Starting January 2021, all Windows binaries are 64-bit, compiled under
+the MINGW64 subsystem of <i>MSYS2</i> (64-bit version).
+
+<p>
+Although it may be possible to run the programs from other MINGW64
+installations, for example <i>Cygwin</i>, it is recommended
+<i>MSYS2</i> be installed.  This replaces the <tt>gtk_bundle</tt>
+package that was previously used to supply graphical interface dlls.
+
+<p>
+When installing <i>MSYS2</i> and <i>XicTools</i> programs, you are
+strongly advised to install in the default locations if possible.
+
+<p>
+Go to <a href="https://www.msys2.org"><tt>www.msys2.org</tt></a>.  Download
+and run the installer, and follow the directions.  It is easy.  When
+done, you will have a shell window on the screen.  You should type the
+following commands to load some things you'll need.
+
+<blockquote><tt>
+pacman -S vim<br>
+pacman -S winpty<br>
+pacman -S mingw-w64-x86_64-gsl<br>
+pacman -S mingw-w64-x86_64-gtk2<br>
+pacman -S mingw-w64-x86_64-qt6
+</tt></blockquote>
+
+<p>
+This provides the <tt>vim</tt> editor, the <tt>winpty</tt> program
+described below, the GTK2 and QT6 libraries and dependencies, and the Gnu
+Scientific Library.  These satisfy all references needed to run the
+<i>XicTools</i> programs.
+
+<p>
+Then, use the <tt>vim</tt> editor to edit the <tt>.bash_profile</tt>
+file that exists in the current (your home) directory.  Add the
+following lines to the bottom of the file:
+
+<blockquote><tt>
+mount c:/usr/local/xictools /usr/local/xictools<br>
+export PATH="/usr/local/xictools/bin:$PATH"<br>
+export XT_HOMEDIR=c:/msys64/home/<i>your_username</i>
+</tt></blockquote>
+
+<b>To run the programs in the future:</b><br>
+Click <b>MSYS2 64bit</b> in the <b>Start</b> menu, then <b>MSYS2 MinGW
+x64</b> in the sub-menu.  This brings up a shell window with the MinGW
+64-bit support enabled.  Note that there are multiple choices in the
+sub-menu so be sure to select the one specified, others may not work
+with the <i>XicTools</i> programs.
+
+<p>
+Take some time to learn about <i>MSYS2</i> and MINGW64, particularly
+the <tt>pacman</tt> package manager.  You can install lots of useful
+software that runs in this environment.
+
+<p>
+<b>The <tt>mintty</tt> Terminal Emulator Window</b><br>
+
+<p>
+The terminal window used in <i>MSYS2</i> is "<tt>mintty</tt>".  This
+does NOT work directly with native Windows programs that work with a
+console window, which includes the <i>XicTools</i> programs.  One must
+run <i>WRspice</i> and possibly <i>Xic</i> with the "<tt>winpty</tt>"
+program.  Just type <tt>winpty</tt> followed by the name and arguments
+of the program you want to run.
+
+<p>
+For example, the command to run <i>WRspice</i> is
+<blockquote><tt>
+winpty wrspice ...
+</tt></blockquote>
+where the ...  represents the command line arguments to
+<tt>wrspice</tt>.
+
+<p>
+The <tt>winpty</tt> program performs some magic that enables native
+Windows programs expecting to find a <tt>cmd.com</tt> type of window
+to work with the <tt>mintty</tt>.
+
+<p>
+<b><i>MSYS2</i> Basics</b><br>
+
+<p>
+The environment is a <tt>bash</tt> shell and environment very similar to
+Linux.
+
+<p>
+You bring up a new shell window from the <b>MSYS2 64bit</b> / <b>MSYS2
+MinGW x64</b> entry of the <b>Start</b> menu.  There are multiple
+selections for <i>MSYS2</i> in the <b>Start</b> menu, including
+<b>MSYS2 MinGW x86</b> which is the MINGW 32-bit subsystem, <b>MSYS2 MinGW
+x64</b> is the MINGW 64-bit subsystem used for <i>XicTools</i>, and
+<b>MSYS2 MSYS</b> is the <i>MSYS</i> subsystem without MinGW support. 
+MinGW is "minimal Gnu (for) Windows" and is a library that provides a
+limited Linux-like programming environment under Windows.  The
+<i>XicTools</i> programs use this environment and are thus
+Windows-native programs.
+
+<p>
+MSYS2 uses an underlying dll to provide a more complete Linux-like
+environment, similar to <i>Cygwin</i>.  Installed programs are
+available for all three subsystems, though the search order differs.
+The <i>XicTools</i> do not use the dll, but the MSYS2 environment
+is very convenient for use with the tools.
+The <i>MSYS</i> subsystem provides the shell and other Linux-emulation
+commands.  The <i>MinGW</i> subsystems provide libraries which enable
+porting of Linux programs to native Windows.
+
+<p>
+From the shell window, the file system installed under <tt>c:\msys64</tt>
+(or wherever the <tt>msys64</tt> directory is installed)
+is taken as root.  One can access the files and directories explicitly
+with a path starting with <tt>/c</tt> where the <tt>c</tt> can be any
+ existing drive letter.
+Your home directory is <tt>/home/yourname</tt>, or equivalently
+<tt>/c/msys64/home/yourname</tt>.
+
+<p>
+It is important to realize that within MINGW and other native Windows
+programs including <i>XicTools</i>, the paths used by the programs are
+expected to be Windows paths, though they may use forward slashes.
+For example, in the shell <tt>/usr/local</tt> is rooted to the <tt>msys64</tt>
+directory, but within <i>Xic</i> <tt>/usr/local</tt> is rooted to the current
+drive, e.g., <tt>c:/usr/local</tt>.
+<p>
+In <i>MSYS2</i>, the <tt>mount</tt> command can provide an alias between
+the file system as viewed from the shell and that of Windows.  The command
+<blockquote><tt>
+mount c:/usr/local/xictools /usr/local/xictools
+</tt></blockquote>
+will map the Windows directory <tt>c:/usr/local/xictools</tt> to the
+location <tt>/usr/local/xictools</tt> in the shell.  From a shell
+window, <tt>/usr/local/xictools</tt> is equjivalent to
+<tt>/c/usr/local/xictools</tt>, or in Windows
+<tt>c:/usr/local/xictools</tt>, the default <i>Xictools</i>
+installation location.
+
+<p>
+<b><i>XicTools</i> Installation procedure</b><br>
+
+<p>
+The easiest way to install/upgrade is to download and execute the
+package files.  The programs being upgrated should not be running
+during the update or the update will fail.  The files can also be saved
+and executed at some later time.
+
+<h2>Notes</h2>
+
+<b>Conformity</b><br>
+
+<p>
+Most basic features are available under Windows.  Some of the more
+advanced features are not.
+
+<p>
+<ul>
+<li>There is no support for plug-ins, so presently no Tcl/Tk or
+   Python script language support, and no OpenAccess connectivity.
+
+<p>
+<li>There is no provision for remote running of the programs as
+   with the X window system in Linux.
+
+<p>
+<li>Windows does not provide a reliable interface for internet
+   mail, so the email clients and crash-dump report in the
+   <i>XicTools</i> may not work.  The mail in <i>XicTools</i>
+   works by passing the message to a Windows interface called
+   "MAPI", which in turn relies on another installed program to
+   actually send the mail.
+
+   <p>
+   To get this working in Windows 8, I had to download and install
+   something called "live mail" from Microsoft, which eventually
+   worked.  This app supports MAPI, apparently the
+   Windows 8 Mail app does not(?).  The Windows 8 app also does
+   not work with POP3 servers.
+</ul>
+
+<h2>Removal</h2>
+
+Programs are uninstalled with the <b>Settings</b> (gear-shaped icon) in
+the <b>Start</b?  window, select <b>Apps</b> and scroll down to the
+program to uninstall.  Click on the program icon and follow directions
+to uninstall.
+
+<h2>Updating</h2>
+
+Once the <i>Xic</i> and <i>WRspice</i> have been installed, updating
+could not be simpler.  See the program documentation:<br>
+<ul>
+<li>In <i>WRspice</i>, give the commands "<tt>help passwd</tt>" and
+"<tt>help wrupdate</tt>".
+
+<li>In <i>Xic</i>, with the mouse pointer in the main drawing window,
+type "<tt>?!passwd</tt>" and "<tt>?!update"</tt>".
+</ul>
+These help topics explain how to set up and use the update features. 
+The programs will check for updates when started, and updates can be
+downloaded and installed.  Other programs will have a simplified
+update checking/installing mechanism to be determined.  The programs
+can also be updated manually by following the installation procedure.
+</td></tr>
+
+</table>
+<center>
+<font size=1 face=helvetica>Copyright &#169 Whiteley Research Inc. 2025
+</font></center>
+
+</BODY>
+</HTML>

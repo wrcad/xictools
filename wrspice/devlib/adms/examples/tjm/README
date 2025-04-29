@@ -1,0 +1,6 @@
+This is the open-source tunnel junction model evaluator Verilog-A code,
+developed by Steve Whiteley, borrowing from the mitmojco project
+(https://github.com/drgulevich/mitmojco).  Actual device models are
+created with thr mmjco utility provided with WRspice.
+
+It duplicates the functionality of the internal JJ level=2 model in WRspice.
