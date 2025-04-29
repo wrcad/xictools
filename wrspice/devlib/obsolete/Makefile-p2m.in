@@ -121,7 +121,7 @@ LOCAL_LIBS = \
 #######################################################################
 ####### Executable targets ############################################
 
-TARGETS = $(GRPKG)/wrspice wrspiced csvtoraw multidec printtoraw
+TARGETS = $(GRPKG)/wrspice wrspiced csvtoraw multidec proc2mod printtoraw
 MMJCO = mmjco/mmjco
 all: cptest $(TARGETS) $(MMJCO)
 
@@ -188,6 +188,11 @@ bin/multidec: bin/multidec.o src/sparse/sparse.a src/misc/misc.a
 	@echo $@: dynamic link
 	@$(LINKCC) -o bin/multidec bin/multidec.o src/sparse/sparse.a \
   src/misc/misc.a $(CURSES) $(STDCLIB) -lm $(WINPTHREADFIX)
+
+bin/proc2mod: bin/proc2mod.o src/cp/cp.a src/inp/inp.a src/misc/misc.a
+	@echo $@: dynamic link
+	@$(LINKCC) -o bin/proc2mod bin/proc2mod.o src/cp/cp.a \
+  src/inp/inp.a src/misc/misc.a $(STDCLIB) -lm $(WINPTHREADFIX)
 
 bin/printtoraw: bin/printtoraw.o $(BASE)/lib/miscutil.a
 	@echo $@: dynamic link
@@ -312,7 +317,8 @@ bin/wrspiced.o: bin/wrspiced.cc
 #######################################################################
 ####### Dependencies ##################################################
 
-CCFILES = bin/wrspice.cc bin/wrspiced.cc bin/multidec.cc bin/printtoraw.cc
+CCFILES = bin/wrspice.cc bin/wrspiced.cc bin/multidec.cc bin/proc2mod.cc \
+  bin/printtoraw.cc
 
 depend: syntaxlevel
 	@$(MAKE) -C devlib/adms/examples make ;
@@ -409,6 +415,8 @@ install_links::
   $(destn)/bin/csvtoraw$(EXESUFFIX); \
 	    $(BASE)/util/make_link $(toolbin)/multidec$(EXESUFFIX) \
   $(destn)/bin/multidec$(EXESUFFIX); \
+	    $(BASE)/util/make_link $(toolbin)/proc2mod$(EXESUFFIX) \
+  $(destn)/bin/proc2mod$(EXESUFFIX); \
 	    $(BASE)/util/make_link $(toolbin)/printtoraw$(EXESUFFIX) \
   $(destn)/bin/printtoraw$(EXESUFFIX); \
 	    $(BASE)/util/make_link $(toolbin)/mmjco$(EXESUFFIX) \
@@ -419,6 +427,7 @@ install_links::
 	    ln -s $(destn)/bin/wrspiced $(toolbin)/wrspiced; \
 	    ln -s $(destn)/bin/csvtoraw $(toolbin)/csvtoraw; \
 	    ln -s $(destn)/bin/multidec $(toolbin)/multidec; \
+	    ln -s $(destn)/bin/proc2mod $(toolbin)/proc2mod; \
 	    ln -s $(destn)/bin/printtoraw $(toolbin)/printtoraw; \
 	    ln -s $(destn)/bin/mmjco $(toolbin)/mmjco; \
 	fi
@@ -432,6 +441,7 @@ clean_links::
 	-@rm -f $(toolbin)/wrspiced$(EXESUFFIX)
 	-@rm -f $(toolbin)/csvtoraw$(EXESUFFIX)
 	-@rm -f $(toolbin)/multidec$(EXESUFFIX)
+	-@rm -f $(toolbin)/proc2mod$(EXESUFFIX)
 	-@rm -f $(toolbin)/printtoraw$(EXESUFFIX)
 	-@rm -f $(toolbin)/mmjco$(EXESUFFIX)
 	-@rm -f $(toolbin)/wrspice
@@ -444,7 +454,7 @@ install_clean::
 
 $(destn)/bin::
 	@$(BASE)/util/mkdirpth $@
-	@for aa in wrspiced csvtoraw multidec printtoraw; do \
+	@for aa in wrspiced csvtoraw multidec proc2mod printtoraw; do \
 	    $(INSTALL_BIN) bin/$$aa$(EXESUFFIX) $@; \
 	done
 	@$(INSTALL_BIN) mmjco/mmjco$(EXESUFFIX) $@

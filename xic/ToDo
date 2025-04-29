@@ -1,3 +1,60 @@
+-------------------------------------------------------------------------------
+This is the central list of things to address in Xic.
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+Half-baked things below.
+-------------------------------------------------------------------------------
+
+todo:  implement same-net DRC tests.
+
+TODO: make instance labels moveable by user in ext setup?
+
+TODO add property to prevent merging?
+
+TODO (maybe)
+Allow "9 1 library ....", will open library b4 read
+
+XXX Bug: "+" icon current fails for caps with .param value.
+
+TODO:
+add hash table script functions.
+add an InstanceCount() script func that returns a hash table handle..
+TODO: script interface to Lisp parser.
+
+todo (maybe): handle all-angle GDSII cell placements.
+gds reader would add a property to instances giving real angle.
+bottom-up traversal would reparent these instances into an ortho cell with
+rotated content.
+
+Idea:
+Somehow maybe make the spin operation applicable whever objects are
+being placed/moved/copied?
+
+Idea: string table, hash tab elements are kept in one big array.  Each
+string is associated with an int offset into the array.  Decorate this
+int with a struct with a type conversion operator to const char*, which
+returns the string.  I.e., CDname is an int instead of a char* saves space
+in 64-bit binaries.  Do this for other hashable objects?
+todo: write a template class implementing this.
+
+todo: report bad objects in info somehow.
+fix: long text incs mod count at wrong time.
+
+todo: make Push/Pop and Info work better with cell arrays.
+
+todo: implement net extraction with bloat from netex file.
+add vias
+
+TODO: use hash tables in dsp_marks.cc
+
+Long term ------
+TODO: look at more complete SPICE file extraction - for exjjiv.cir for
+example (.model lines retained?)
+TODO: extend spice parsing to support .param, .if/.else/.endif and perhaps
+model binning
+
+
 //// Andrew notes
 
 From: Andrew Wagner <awagner@bbn.com>
@@ -346,6 +403,4 @@ the dylib compiles successfully modulo a few warnings about unused variables.
 Cheers,
  
 Andrew
-
-
 
