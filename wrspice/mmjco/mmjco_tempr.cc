@@ -38,6 +38,7 @@ namespace {
 }
 #endif
 
+#define MAX_STEPS 20
 
 // Romberg numerical integration method from Wikipedia.
 //
@@ -50,7 +51,9 @@ namespace {
 double romberg(double (*f)(double, void*), void *ptr, double a, double b,
     size_t max_steps, double acc)
 {
-    double R1[max_steps], R2[max_steps]; // Buffers.
+    if (max_steps > MAX_STEPS)
+        max_steps = MAX_STEPS;
+    double R1[MAX_STEPS], R2[MAX_STEPS]; // Buffers.
     double *Rp = &R1[0], *Rc = &R2[0];   // Rp is prev row, Rc is current row.
     double h = (b-a);                    // Step size.
     Rp[0] = (f(a, ptr) + f(b, ptr))*h*0.5; // First trapezoidal step.
@@ -122,7 +125,7 @@ namespace {
 #else
     double func(mmjco_tempr::tprms *tp, double dbe)
     {
-        return (romberg(intfunc, tp, 0.0, dbe, 20, 1e-6));
+        return (romberg(intfunc, tp, 0.0, dbe, MAX_STEPS, 1e-6));
     }
 #endif  // USE_GSL
 }

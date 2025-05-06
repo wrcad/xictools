@@ -1,0 +1,17 @@
+-------------------------------------------------------------------------------
+This is the central list of things to address in the general XicTools.
+-------------------------------------------------------------------------------
+
+New versioning:
+Start a new sequence, 4.5.x
+The xictools version tag, and Xic and WRspice versions will always be the
+same.  A new tag applied to xictools will trigger new Xic and WRspice
+packages.  This will occur whenever Xic or WRspice (or both) is ready for
+release.  Start at 4.5.1.  When xictools tag changes, update new packages.
+flatten into master.
+The other tool will start with the minor advanced  4->5 but keep the
+present release numbers.
+If the other tools change, the tool release number will increment.  
+Upload new packages for the tool.
+Do NOT merge into master.
+Do NOT tag xictools.

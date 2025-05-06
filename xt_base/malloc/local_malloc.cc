@@ -46,7 +46,7 @@
 #include <errno.h>
 #include <sys/types.h>
 
-#if defined(__x86_64) || defined(__x86_64__)
+#if defined(__arm64) || defined(__x86_64)
 #include <execinfo.h>
 #endif
 
@@ -260,7 +260,7 @@ sMemory::mem_error(const char *string, void *chunk, int fatal)
     mem_busy = 0;
     memset(mem_stk, 0, MEM_ERR_DEPTH*sizeof(long));
 
-#if defined(__x86_64) || defined(__x86_64__)
+#if defined(__arm64) || defined(__x86_64)
     void *vtmp[MEM_ERR_DEPTH+1];
     // The backtrace function can call malloc, mem_busy must be zeroed.
     int i = backtrace(vtmp, MEM_ERR_DEPTH+1) - 1;

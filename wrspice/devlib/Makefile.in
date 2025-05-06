@@ -64,6 +64,17 @@ MODULES = \
   hisim-1.2.0 \
   ufsoi-7.5
 
+OBSOLETE = \
+  bsim1 \
+  bsim2 \
+  bsim3.2.0 \
+  bsim3.2.4 \
+  bsimsoi-3.0 \
+  bsimsoi-4.0 \
+  bsimsoi-4.3 \
+  hisim-1.1.0 \
+  stag
+
 # Devices provided in the static library.
 INDEVICES = \
   bjt \
@@ -196,6 +207,9 @@ distclean:
 	done
 	-@rm -f toc.cc *.o *.a Makefile devices modules
 	-@rm -f adms/Makefile
+	-@for a in $(OBSOLETE); do \
+	    rm -rf $$a; \
+	done
 
 #######################################################################
 ####### Install targets ###############################################

@@ -328,9 +328,9 @@ mmjco_fit::new_fit_parameters(const double *x,
     if (use_nterms > MAX_NTERMS)
         use_nterms = MAX_NTERMS;
 
-    complex<double> p[use_nterms];
-    complex<double> A[use_nterms];
-    complex<double> B[use_nterms];
+    complex<double> p[MAX_NTERMS];
+    complex<double> A[MAX_NTERMS];
+    complex<double> B[MAX_NTERMS];
     p[0] = complex<double>(-1.0, 0.0);
     A[0] = complex<double>(0.0, 0.0);
     B[0] = complex<double>(0.0, 0.0);

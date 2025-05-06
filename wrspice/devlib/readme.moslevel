@@ -1,27 +1,29 @@
 
-Level  Name         Subdirectory       Source
+Level  Name         Subdirectory       Source         Is Obsolete
 1      MOS          mos                Spice3
 2      MOS          mos                Spice3
 3      MOS          mos                Spice3
-4      BSIM1        bsim1              Spice3
-5      BSIM2        bsim2              Spice3
+4      BSIM1        bsim1              Spice3           *
+5      BSIM2        bsim2              Spice3           *
 6      MOS          mos                Spice3
-7,49   BSIM3.2.0    bsim32             U.C. Berkeley
-8,47   BSIM3.2.4    bsim3.2.4          U.C. Berkeley
+7,49   BSIM3.2.0    bsim3.2.0          U.C. Berkeley    *
+8,47   BSIM3.2.4    bsim3.2.4          U.C. Berkeley    *
 9,53   BSIM3.3.0    bsim3.3.0          U.C. Berkeley
 12     BSIM4.2.1    bsim4.2.1          U.C. Berkeley
 13,54  BSIM4.3.0    bsim4.3.0          U.C. Berkeley
 14     BSIM4.4.0    bsim4.4.0          U.C. Berkeley
 15     BSIM4.6.1    bsim4.6.1          U.C. Berkeley
 16,56  BSIM4.7.0    bsim4.7.0          U.C. Berkeley
-17,57  BSIM4.8.0    bsim4.7.0          U.C. Berkeley
-20     BSIMSOI3.0   b3soi-3.0          U.C. Berkeley
-21     BSIMSOI3.2   b3soi-3.2          U.C. Berkeley
-22,57  BSIMSOI4.0   bsimsoi-4.0        U.C. Berkeley
-23,70  BSIMSOI4.3   bsimsoi-4.3        U.C. Berkeley
-25,55  EKV-2.6      ekv                EPFL Switzerland
-30     HISIM-1.1.0  hisim-1.1.0        Hiroshima U.
+17,57  BSIM4.8.0    bsim4.8.0          U.C. Berkeley
+18,60  BSIM4.8.2    bsim4.8.2          U.C. Berkeley
+20     BSIMSOI3.0   bsimsoi-3.0        U.C. Berkeley    *
+21     BSIMSOI3.2   bsimsoi-3.2        U.C. Berkeley
+22,57  BSIMSOI4.0   bsimsoi-4.0        U.C. Berkeley    *
+23,70  BSIMSOI4.3   bsimsoi-4.3        U.C. Berkeley    *
+24,71  BSIMSOI4.4   bsimsoi-4.4        U.C. Berkeley
+25,55  EKV-2.6      ekv26              EPFL Switzerland
+30     HISIM-1.1.0  hisim-1.1.0        Hiroshima U.     *
 31,64  HISIM-1.2.0  hisim-1.2.0        Hiroshima U.
-33     Soi3         stag               U. Southampton
+33     Soi3         stag               U. Southampton   *
 36,58  UFS          ufsoi-7.5          U. Florida
 

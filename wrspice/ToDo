@@ -2,12 +2,8 @@
 This is the central list of things to address in WRspice.
 -------------------------------------------------------------------------------
 
-bin/rawtocsv.cc
-Finish this or rid this.  WRspice has an internal "csv" format so
-rawtocsv is not needed?
-
 Complaints that having a lot of coupled transmission lines slows down
-analysis substntially.
+analysis substantially.
 
 -------------------------------------------------------------------------------
 Half-baked things below.

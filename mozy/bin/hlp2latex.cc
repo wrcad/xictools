@@ -295,7 +295,7 @@ int
 cProcTmpl::do_subst(const char *infile)
 {
     printf("Processing %s\n", infile);
-    while (const char *s = fgets(pt_buf, PT_BSIZE, pt_in_fp)) {
+    while (fgets(pt_buf, PT_BSIZE, pt_in_fp)) {
         // The substittution token starts with "<<" in the first
         // column.  This may be followed by space, then the keyword.
         // The keyword must start with a letter, number, or period.
