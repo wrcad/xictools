@@ -1136,6 +1136,18 @@ namespace {
     }
 
 
+    // Return true if the next non-space character is a numerical operator.
+    //
+    bool next_is_op(const char *s)
+    {
+        while (isspace(*s))
+            s++;
+        return (*s == '+' || *s == '-' || *s == '*' || *s == '/' ||
+                *s == '%' || *s == '|' || *s == '&' || *s == '^' ||
+                *s == '=' || *s == '>' || *s == '<');
+    }
+
+
     // Extract and return a "value" token.  This is the RHS of a
     // name=value construct.  We have to deal with a range of
     // possibilities, including input to the "set" comand where we
@@ -1198,7 +1210,11 @@ namespace {
                     if (!pn)
                         break;
                     pn--;
-                    if (!pn) {
+                    // If this is a close paren and we started with an open
+                    // paren, and the next non-space character is not a
+                    // numerical operator, take the token as terminated.
+                    // This allows e.g. (a)*(b) and similar expressions.
+                    if (!pn && (*start == '(') && !next_is_op(str+1)) {
                         str++;
                         break;
                     }
