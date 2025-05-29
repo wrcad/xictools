@@ -26,7 +26,7 @@
 //#define WITH_CMINPACK
 
 #define MM_ECHG 1.602176634e-19     // Electron charge (SI units).
-#define MM_BOLTZ 1.380649-23        // Boltzmann constant (SI units).
+#define MM_BOLTZ 1.380649e-23       // Boltzmann constant (SI units).
 
 using namespace std;
 

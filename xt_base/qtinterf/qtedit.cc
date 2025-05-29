@@ -1375,7 +1375,7 @@ QTeditDlg::write_file(const char *fname, int startpos, int endpos)
 {
     FILE *fp = fopen(fname, "w");
     if (fp) {
-        int length = wb_textarea->get_length();
+        int length = ed_text_editor->get_length();
         if (endpos >= 0 && endpos < length)
             length = endpos;
 #ifdef WIN32
@@ -1388,7 +1388,7 @@ QTeditDlg::write_file(const char *fname, int startpos, int endpos)
                 end = length;
             if (end == start)
                 break;
-            char *s = wb_textarea->get_chars(start, end);
+            char *s = ed_text_editor->get_chars(start, end);
 #ifdef WIN32
             for (int i = 0; i < (end - start); i++) {
                 if (!QTdev::self()->GetCRLFtermination()) {

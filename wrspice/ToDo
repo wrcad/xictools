@@ -5,6 +5,20 @@ This is the central list of things to address in WRspice.
 Complaints that having a lot of coupled transmission lines slows down
 analysis substantially.
 
+Globally change flag parameter logic so that declaration in assignment
+form to 0 will NOT set the flag.
+
+Quentin:
+Increase the upper limit of vshunt to allow large value to effectively
+remove shunting.
+
+// Recent fixes
+WRspice Options/Source caused seg fault (fixed).
+mmjco is broken (fixed, missing 'e' in Boltzmann constant).
+Plot windows Separate and Single buttons missing (fixed).
+Dragging plot from file cabinet with only one trace showing didn't work (fixed).
+
+
 -------------------------------------------------------------------------------
 Half-baked things below.
 -------------------------------------------------------------------------------

@@ -552,6 +552,7 @@ SPgraphics::Init(sDvList *dl0, sGrInit *gr, cGraph *graph)
         return (0);
 
     graph->setup(dl0, gr);
+    graph->gr_init_btns();
 
     if (!reuse && graph->gr_dev_init()) {
         GRpkg::self()->ErrPrintf(ET_ERROR,

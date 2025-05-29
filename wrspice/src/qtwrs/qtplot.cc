@@ -418,6 +418,8 @@ QTplotDlg::init_gbuttons()
                 this, &QTplotDlg::marker_btn_slot);
         }
 
+        // When called in constructor, numtraces is zero, so call again
+        // after numtraces is known.
         if (pb_graph->numtraces() > 1 && pb_graph->numtraces() <= MAXNUMTR) {
             if (!pb_checkwins[pbtn_separate]) {
                 QPushButton *btn = new QPushButton(tr("Separate"));

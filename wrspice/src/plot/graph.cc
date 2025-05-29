@@ -1353,89 +1353,87 @@ cGraph::gr_bup_hdlr(int button, int x, int y, const char *new_keyed)
                     GP.SetSourceGraph(0);
                     return;
                 }
-                if (gr_numtraces > 1) {
-                    int i = gr_select_trace(x, y);
-                    if (i >= 0) {
-                        if (gr_cmd_data == gr_hidden_data) {
-                            // Recall hidden trace from this plot.
-                            graph->gr_set_ghost(0, 0, 0);
+                int i = gr_select_trace(x, y);
+                if (i >= 0) {
+                    if (gr_cmd_data == gr_hidden_data) {
+                        // Recall hidden trace from this plot.
+                        graph->gr_set_ghost(0, 0, 0);
 
-                            // Clear the Y-Units text string, if set.
-                            sKeyed *kp = 0;
-                            for (sKeyed *k = gr_keyed; k; k = k->next) {
-                                if (k->type == LAyunits) {
-                                    if (kp)
-                                        kp->next = k->next;
-                                    else
-                                        gr_keyed = k->next;
-                                    delete k;
-                                    break;
-                                }
-                                kp = k;
-                            }
-
-                            sDvList *nv = gr_hidden_data;
-                            gr_hidden_data = nv->dl_next;
-                            if (gr_add_trace(nv, i)) {
-                                gr_dev->Clear();
-                                gr_redraw();
-                            }
-                            return;
-                        }
-                        sDvList *dl = static_cast<sDvList*>(gr_plotdata);
-                        while (i-- && dl)
-                            dl = dl->dl_next;
-                        if (gr_cmd_data != dl) {
-                            struct zz { sDataVec *v; char *t; };
-                            zz *n = new zz[gr_numtraces];
-                            sDvList *dx = static_cast<sDvList*>(gr_plotdata);
-                            i = 0;
-                            while (dx) {
-                                n[i].t = get_txt(i);
-                                n[i++].v = dx->dl_dvec;
-                                dx = dx->dl_next;
-                            }
-                            int j;
-                            sDataVec *vf = gr_cmd_data->dl_dvec;
-                            char *t = 0;
-                            for (i = 0, j = 0; i < gr_numtraces; i++) {
-                                if (n[i].v != vf) {
-                                    if (i != j)
-                                        n[j] = n[i];
-                                    j++;
-                                }
+                        // Clear the Y-Units text string, if set.
+                        sKeyed *kp = 0;
+                        for (sKeyed *k = gr_keyed; k; k = k->next) {
+                            if (k->type == LAyunits) {
+                                if (kp)
+                                    kp->next = k->next;
                                 else
-                                    t = get_txt(i);
+                                    gr_keyed = k->next;
+                                delete k;
+                                break;
                             }
-                            if (!dl) {
-                                n[gr_numtraces - 1].v = vf;
-                                n[gr_numtraces - 1].t = t;
-                            }
-                            else {
-                                n[gr_numtraces - 1].v = 0;
-                                n[gr_numtraces - 1].t = 0;
-                                sDataVec *vt = dl->dl_dvec;
-                                for (i = 0; ; i++)
-                                    if (n[i].v == vt)
-                                        break;
-                                for (j = gr_numtraces - 1; j > i; j--)
-                                    n[j] = n[j-1];
-                                n[i].v = vf;
-                                n[i].t = t;
-                            }
-                                
-                            dx = static_cast<sDvList*>(gr_plotdata);
-                            i = 0;
-                            while (dx) {
-                                set_txt(i, n[i].t);
-                                dx->dl_dvec = n[i++].v;
-                                dx = dx->dl_next;
-                            }
-                            delete [] n;
+                            kp = k;
+                        }
 
+                        sDvList *nv = gr_hidden_data;
+                        gr_hidden_data = nv->dl_next;
+                        if (gr_add_trace(nv, i)) {
                             gr_dev->Clear();
                             gr_redraw();
                         }
+                        return;
+                    }
+                    sDvList *dl = static_cast<sDvList*>(gr_plotdata);
+                    while (i-- && dl)
+                        dl = dl->dl_next;
+                    if (gr_cmd_data != dl) {
+                        struct zz { sDataVec *v; char *t; };
+                        zz *n = new zz[gr_numtraces];
+                        sDvList *dx = static_cast<sDvList*>(gr_plotdata);
+                        i = 0;
+                        while (dx) {
+                            n[i].t = get_txt(i);
+                            n[i++].v = dx->dl_dvec;
+                            dx = dx->dl_next;
+                        }
+                        int j;
+                        sDataVec *vf = gr_cmd_data->dl_dvec;
+                        char *t = 0;
+                        for (i = 0, j = 0; i < gr_numtraces; i++) {
+                            if (n[i].v != vf) {
+                                if (i != j)
+                                    n[j] = n[i];
+                                j++;
+                            }
+                            else
+                                t = get_txt(i);
+                        }
+                        if (!dl) {
+                            n[gr_numtraces - 1].v = vf;
+                            n[gr_numtraces - 1].t = t;
+                        }
+                        else {
+                            n[gr_numtraces - 1].v = 0;
+                            n[gr_numtraces - 1].t = 0;
+                            sDataVec *vt = dl->dl_dvec;
+                            for (i = 0; ; i++)
+                                if (n[i].v == vt)
+                                    break;
+                            for (j = gr_numtraces - 1; j > i; j--)
+                                n[j] = n[j-1];
+                            n[i].v = vf;
+                            n[i].t = t;
+                        }
+                            
+                        dx = static_cast<sDvList*>(gr_plotdata);
+                        i = 0;
+                        while (dx) {
+                            set_txt(i, n[i].t);
+                            dx->dl_dvec = n[i++].v;
+                            dx = dx->dl_next;
+                        }
+                        delete [] n;
+
+                        gr_dev->Clear();
+                        gr_redraw();
                     }
                 }
             }
