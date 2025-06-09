@@ -4399,8 +4399,8 @@ Josephson Tunnel Junction Model
         <td>Conductance scaling parameter</td>
         <td>-</td>      <td>0.0</td></tr>
     <tr><td><tt>icfct</tt> or <tt>icfact</tt></td> <td>&nbsp;</td>
-        <td>Ratio of critical to step currents</td>
-        <td>-</td>      <td>pi/4</td></tr>
+        <td>Normal resistance control factor</td>
+        <td>-</td>      <td>1.65e-3/(vgap&nbsp;&pi;/4)</td></tr>
     <tr><td><tt>force</tt></td> <td>&nbsp;</td>
         <td>No limits imposed on VM, RSUB</td>
         <td>-</td>      <td>0</td></tr>
@@ -4440,12 +4440,12 @@ Josephson Tunnel Junction Model
 
     <dl>
     <dt><tt>coeffset</tt><dd>
-    This provides the name of the table of compressed tunnel current
+    This provides the file name of the table of compressed tunnel current
     amplitudes to use in the model.  These are provided as files as
     produced from the <a href="mmjco"><b>mmjco</b></a> utility
-    provided with <i>WRspice</i>.  Single temperature ".fit" files
+    provided with <i>WRspice</i>.  Single temperature "<tt>.fit</tt>" files
     will overrule any other temperatures provided to the model.  If a
-    tempature-swept ".swp" file is provided, the model is able to
+    temperature-swept "<tt>.swp</tt>" file is provided, the model is able to
     accommodate temperatures within the range of the sweep.  The files
     are searched for along a path provided by setting the <a
     href="tjm_path"><tt>tjm_path</tt></a> variable, or a path can be
@@ -4453,14 +4453,13 @@ Josephson Tunnel Junction Model
     and <tt>$HOME/.mmjco</tt> if that directory exists.
 
     <p>
-    These files are produced automatically as needed according to the
-    given model parameters and cached in the users <tt>.mmjco</tt>
-    directory.  Therefor it is not common to use this parameter to
-    load a set by name, except to supply a name for a sweep file that
-    the user has prepared with <tt>mmjco</tt> which would provide
-    precomputed data for all temperatures that might be of use,
-    thereby avoiding on-the-fly table creation which can take some
-    time.
+    The "<tt>.fit</tt>" files are produced automatically as needed
+    according to the given model parameters and cached in the user's
+    <tt>.mmjco</tt> directory.  Therefor it is not common to use this
+    parameter to load a set by name, except to supply a name for a sweep
+    file that the user has prepared with <tt>mmjco</tt> which would provide
+    precomputed data for all temperatures that might be of use, thereby
+    avoiding on-the-fly table creation which can take some time.
 
     <p>
     There are two built-in coefficient sets, "tjm1" (the default) and
@@ -4675,11 +4674,16 @@ Josephson Tunnel Junction Model
 
     <dl>
     <dt><tt>icfct</tt> or <tt>icfact</tt><dd>
-    <b>range:</b> 0.5 - &pi;/4<br>
-    This parameter sets the ratio of the critical current to the
-    quasiparticle step height.  Theory provides the default value of
-    &pi;/4 which is usually adequately close.  Characterization of
-    fabricated junctions would provide an improved number.
+    <b>range:</b> 0.25 - 1.25<br>
+    This is a scaling factor which sets the normal resistance of the
+    junction, as measured well above the gap.  This is the ratio of the
+    specified IcRn product to the calculated IcRn using the Ambegaokar
+    Baratoff formula.  The default is to use the Lincoln Laboratory
+    value of 1.65 mV as the specified IcRn.  In general, one would use
+    1.0 for the <tt>icfct</tt>  parameter to specify the Ambegaokar
+    Baratoff value of normal resistance at T=0.  Note that for identical
+    superconductors on either side of the junction, the Ambegaokar
+    Baratoff result is given by <i>IcRn</i> = (&pi;/4)<i>Vgap</i> .
     </dl>
 
     <dl>
@@ -4804,7 +4808,7 @@ Josephson Tunnel Junction Model
     operating and nominal temperatures.
 
     <blockquote>
-    <i>tcf<i> = (Vg/Vg<sub>nom</sub>) *
+    <i>tcf</i> = (Vg/Vg<sub>nom</sub>) *
      (<i>tanh</i>(<tt>eVg/4KT</tt>) /
      <i>tanh</i>(<tt>eVg</tt><sub>nom</sub><tt>/4KT</tt><sub>nom</sub>))
     </blockquote>
@@ -4892,8 +4896,8 @@ Josephson Tunnel Junction Model (Level 3) Parameters\\
  $\Omega$ & \vt vm/icrit\\ \hline
 \vt gmu & & \rr Conductance scaling parameter & & 0.0\\
 \hline
-\vt icfct or {\vt icfact} & & \rr Ratio of critical to step currents & - &
-${\pi}/4$\\ \hline
+\vt icfct or {\vt icfact} & & \rr Normal resistance control factor & - &
+$1.65e-3/(vgap*{\pi}/4)$\\ \hline
 \vt force & & \rr no limits imposed on {\vt vm}, {\vt rsub} & & 0\\
  \hline
 \vt vshunt & & \rr Voltage to specify external shunt resistance & $V$ & 0.0\\
@@ -4922,22 +4926,22 @@ Detailed information about these parameters is presented below.
 This specifies the model to use, which is 3 in the present case.
 
 \item{\vt coeffset}\\
-This provides the name of the table of compressed tunnel current
+This provides the file name of the table of compressed tunnel current
 amplitudes to use in the model.  These are provided as files as
 produced from the {\vt mmjco} utility provided with {\WRspice} (see
-\ref{mmjco}).  Single temperature ``.fit'' files will overrule any
-other temperatures provided to the model.  If a tempature-swept
-``.swp'' file is provided, the model is able to accommodate
+\ref{mmjco}).  Single temperature ``{\vt .fit}'' files will overrule any
+other temperatures provided to the model.  If a temperature-swept
+``{\vt .swp}'' file is provided, the model is able to accommodate
 temperatures within the range of the sweep.  The files are searched
 for along a path provided by setting the {\et tjm\_path} variable, or
 a path can be provided directly.  The default is to search the current
 directory and {\vt \$HOME/.mmjco} if that directory exists.
 
-These files are produced automatically as needed according to the
-given model parameters and cached in the users {\vt .mmjco} directory. 
-Therefor it is not common to use this parameter to load a set by name,
-except to supply a name for a sweep file that the user has prepared
-with {\vt mmjco} which would provide precomputed data for all
+The ``{\vt .fit}'' files are produced automatically as needed according
+to the given model parameters and cached in the user's {\vt .mmjco}
+directory.  Therefor it is not common to use this parameter to load a
+set by name, except to supply a name for a sweep file that the user has
+prepared with {\vt mmjco} which would provide precomputed data for all
 temperatures that might be of use, thereby avoiding on-the-fly table
 creation which can take some time.
 
@@ -5112,11 +5116,16 @@ have separate scaling parameters for subgap and above gap condutance,
 at which time a new model parameter may be added.
 
 \item{{\vt icfct} or {\vt icfact}}\\
-{\bf range:} 0.5 -- ${\pi}/4$\\
-This parameter sets the ratio of the critical current to the
-quasiparticle step height.  Theory provides the default value of
-$\pi/4$ which is usually adequately close.  Characterization of
-fabricated junctions would provide an improved number.
+{\bf range:} 0.25 -- 1.25\\
+This is a scaling factor which sets the normal resistance of the
+junction, as measured well above the gap.  This is the ratio of the
+specified IcRn product to the calculated IcRn using the Ambegaokar
+Baratoff formula.  The default is to use the Lincoln Laboratory
+value of 1.65 mV as the specified IcRn.  In general, one would use
+1.0 for for the {\vt icfct}  parameter to specify the Ambegaokar
+Baratoff value of normal resistance at T=0.  Note that for identical
+superconductors on either side of the junction, the Ambegaokar
+Baratoff result is given by $IcRn=(\pi/4)Vgap$ .
 
 \item{\vt force}\\
 {\bf range:} 0 or 1\\

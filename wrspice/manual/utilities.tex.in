@@ -34,10 +34,10 @@
 <<printtoraw spMain.hlp>>
 
 %------------------------------------------------------------------------------
-\section{The {\vt proc2mod} Utility: BSIM1 Model Generation}
-\index{proc2mod program}
+%\section{The {\vt proc2mod} Utility: BSIM1 Model Generation}
+%\index{proc2mod program}
 
-<<proc2mod spMain.hlp>>
+%<<proc2mod spMain.hlp>>
 
 %------------------------------------------------------------------------------
 \section{The {\vt wrspiced} Daemon: Remote SPICE Controller}

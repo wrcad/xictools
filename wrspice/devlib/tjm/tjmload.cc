@@ -474,7 +474,7 @@ sTJMinstance::tjm_init(double phi)
     tjm_cosphi_2_old = cosphi_2;
 
     sTJMmodel *model = (sTJMmodel*)GENmodPtr;
-    int narray = model->TJMnterms;;
+    int narray = model->TJMnterms;
     if (model->TJMrtype > 0)
         tjm_gcrit = tjm_alphaN * sqrt(TJMcap*TJMcriti/PHI0_2PI);
     else

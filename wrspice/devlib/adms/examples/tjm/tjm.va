@@ -48,6 +48,9 @@
 //   for conformity with WRspice internal tunnel junction model.
 // Version 1.2, Nov. 10, 2024
 //   Minor tweaks for ADMS build in WRspice.
+// Version 1.3, June 9, 2025
+//   Parameter icfct interpretation, value, and range change.  Can now
+//   be set to 1.0 for Ambegaokar-Baratoff Rn. 
 //
 // Stephen R. Whiteley          stevew@wrcad.com, whiteley@synopsys.com
 // Whiteley Research Inc.       http://wrcad.com
@@ -213,8 +216,9 @@ parameter real cap      = icrit*cpic from [0.0:1e-6*icrit]
 parameter real cmu      = 0.0 from [0.0:1.0]
     `P(type="model" info="Capacitance scaling factor");
 
-// Ratio of critical current to quasiparticle step height.
-parameter real icfct    = `M_PI_4 from [0.5:`M_PI_4]
+// Ratio of specified IcRn to Ambegaokar-Baratoff IcRn, using LL pafams.
+// 1.65m/((pi/4)*vgap), using vgap=2.739mV.
+parameter real icfct    = 0.767 from [0.25:1.25]
     `P(type="model" info="Ic to Istep ratio");
 aliasparam icfact       = icfct;
 

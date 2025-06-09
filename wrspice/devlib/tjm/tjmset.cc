@@ -41,9 +41,6 @@
 #include "tjmdefs.h"
 #include "tempr.h"
 
-//XXX
-#include <stdio.h>
-
 
 #ifndef M_PI_4
 #define M_PI_4      0.785398163397448309615660845819875721  // pi/4
@@ -112,9 +109,11 @@
 #define CPICmin 0.0         // Minimum CPIC F/A
 #define CPICmax 1e-6        // Maximum CPIC F/A
 #define CAP     CPIC*Icrit  // Reference capacitance, F
-#define ICfct   M_PI_4      // Igap/Ic factor for reference
-#define ICfctMin 0.5        // Min factor
-#define ICfctMax M_PI_4     // Max factor
+// For TJM, the factor is IcRn assumed / IcRn from Ambegaokar and Baratoff,
+// which defaults to IcR/(Vgap*pi/4).
+#define ICfct   IcR/(M_PI_4*model->TJMvgNom)
+#define ICfctMin 0.25       // Min factor
+#define ICfctMax 1.25       // Max factor
 #define NOI     1.0         // Noise scale for reference
 #define NOImin  0.0         // Min noise scale
 #define NOImax  10.0        // Max noise scale
@@ -817,8 +816,7 @@ sTJMmodel::tjm_initmod()
         return (E_PANIC);
     }
 
-//XXX    if (cs->norm_ip8() == 0.0) {
-    if (1) {
+    if (cs->norm_ip8() == 0.0) {
         // We get this from mmjco presently, older files will not contain
         // the value so we compute it here when necessary.
 
