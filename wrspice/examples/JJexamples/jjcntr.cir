@@ -19,7 +19,7 @@
 
 .control
 run
-plot v({4,8,12,16,4,8,12,16}) ysep
+plot v({4,8,12,16}) ysep
 edit
 .endc
 

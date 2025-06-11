@@ -194,10 +194,13 @@ sSPnumber::printnum(double num, const char *unitstr, bool fix, int numd)
                 if (tmp >= 100.0)
                     numd--;
             }
-            snprintf(t, SPN_BUFSIZ-2, "%.*f%s", numd, num, buf);
+            snprintf(t, SPN_BUFSIZ - (t - np_string) - 1, "%.*f%s", numd,
+ 		num, buf);
         }
-        else
-            snprintf(t, SPN_BUFSIZ-2, "%.*g%s", numd+1, num, buf);
+        else {
+            snprintf(t, SPN_BUFSIZ - (t - np_string) - 1, "%.*g%s", numd+1,
+ 		num, buf);
+        }
         return (fltbuf);
     }
 
@@ -214,9 +217,9 @@ sSPnumber::printnum(double num, const char *unitstr, bool fix, int numd)
 const char *
 sSPnumber::print_exp(double d, int n)
 {
-    char *fltbuf = newbuf();
-    snprintf(fltbuf, SPN_BUFSIZ, "%+.*e", n, d);
-    return (fixxp2(fltbuf));
+    char *t = newbuf();
+    snprintf(t, SPN_BUFSIZ - (t - np_string) - 1, "%+.*e", n, d);
+    return (fixxp2(t));
 }
 
 
