@@ -47,6 +47,7 @@
 #include "ginterf/graphics.h"
 
 #include <climits>
+#include <inttypes.h>
 
 
 //
@@ -272,7 +273,7 @@ variable::varwl(const char *unit) const
             double d = va.v_real;
             if ((!unit || !*unit) && d <= LLONG_MAX && d >= LLONG_MIN &&
                     d == (int64_t)d)
-                snprintf(buf, sizeof(buf), "%ld", (int64_t)d);
+                snprintf(buf, sizeof(buf), "%" PRId64, (int64_t)d);
             else
                 strcpy(buf, SPnum.printnum(d, unit));
         }
