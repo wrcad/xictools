@@ -93,8 +93,18 @@ void
 CommandTab::com_step(wordlist *wl)
 {
     int n;
-    if (wl)
-        n = atoi(wl->wl_word);
+    if (wl) {
+        // SRW 06/14/2025 -- Don't assume a pure integer passed.
+	const char *s = wl->wl_word;
+        double *d = SPnum.parse(&s, false);
+	if (!d)
+	    n = 1;
+	else {
+	    n = *d;
+	    if (n < 0)
+                n = 0;
+	}
+    }
     else
         n = 1;
     OP.runops()->set_step_count(n);

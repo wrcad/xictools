@@ -46,6 +46,8 @@
 #include "spnumber/spnumber.h"
 #include "ginterf/graphics.h"
 
+#include <climits>
+
 
 //
 // The "set" variables database.
@@ -263,7 +265,17 @@ variable::varwl(const char *unit) const
         // Old format:
         // snprintf(buf, sizeof(buf), "%.14g", va.v_real);
         // SPnum.fixxp2(buf);
-        strcpy(buf, SPnum.printnum(va.v_real, unit));
+        {
+            // SRW 06/14/2025 
+            // If the number represents an integer without units, print
+            // as an integer.
+            double d = va.v_real;
+            if ((!unit || !*unit) && d <= LLONG_MAX && d >= LLONG_MIN &&
+                    d == (int64_t)d)
+                snprintf(buf, sizeof(buf), "%ld", (int64_t)d);
+            else
+                strcpy(buf, SPnum.printnum(d, unit));
+        }
         break;
     case VTYP_STRING:
         if (va.v_string == 0)
