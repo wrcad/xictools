@@ -1258,9 +1258,10 @@ void
 sDevOut::printModDev(sGENmodel *mod, sGENinstance *inst, bool *chk)
 {
     if (!chk || !*chk) {
-        if (inst)
-            textOut(OUT_NONE, "Device %s (model %s):", (const char*)inst->GENname,
-                (const char*)mod->GENmodName);
+        if (inst) {
+            textOut(OUT_NONE, "Device %s (model %s):",
+                (const char*)inst->GENname, (const char*)mod->GENmodName);
+        }
         else if (mod)
             textOut(OUT_NONE, "Model %s:", (const char*)mod->GENmodName);
         if (chk)
@@ -1482,7 +1483,7 @@ sDevOut::fopen(const char *fname, const char *mode)
         textOut(OUT_WARNING, "too many open file descriptors.\n");
         return (fd);
     }
-    textOut(OUT_WARNING, "failed to open *s.\n", fname);
+    textOut(OUT_WARNING, "failed to open %s.\n", fname);
     return (0);
 }
 
@@ -1555,11 +1556,12 @@ namespace {
 
     bool get_double(int fd, double *dp)
     {
-        char bf[64];
-        int i = 0;
         const char *rchars = "-+.0123456789eE";
         const char *mchars = "afpnumkgte";
+        char bf[64];
+        int i = 0;
         char c;
+        off_t stloc = lseek(fd, 0, SEEK_CUR);
         for (;;) {
             int r = read(fd, &c, 1);
             if (!r)
@@ -1576,20 +1578,29 @@ namespace {
                 break;
             }
         }
-        if (!i)
-            return (false);
-        if (c && strchr(mchars, c))
-            bf[i++] = c;
-        else
-            lseek(fd, -1, SEEK_CUR);
-        bf[i] = 0;
-        
-        if (dp) {
+        // We've skipped white space and should have a valid number in
+        // bf.  If bf is not a valid number, move back to the start location
+        // and return false.
+
+        bool nogood = (i == 0);
+        if (i > 0) {
+            if (c) {
+                if (strchr(mchars, c))
+                    bf[i++] = c;
+                else
+                    lseek(fd, -1, SEEK_CUR);
+            }
+            bf[i] = 0;
             const char *cp = bf;
             double *d = SPnum.parse(&cp, false);
             if (!d)
-                return (false);
-            *dp = *d;
+                nogood = true;
+            else if (dp)
+                *dp = *d;
+        }
+        if (nogood) {
+            lseek(fd, stloc, SEEK_SET);
+            return (false);
         }
         return (true);
     }
@@ -1599,6 +1610,7 @@ namespace {
         char bf[64];
         int i = 0;
         char c;
+        off_t stloc = lseek(fd, 0, SEEK_CUR);
         for (;;) {
             int r = read(fd, &c, 1);
             if (!r)
@@ -1614,23 +1626,34 @@ namespace {
                 c = 0;
                 break;
             }
-
         }
-        if (!i)
+        // We've skipped white space and should have a valid number in
+        // bf.  If bf is not a valid number, move back to the start location
+        // and return false.
+
+        bool nogood = (i == 0);
+        if (i > 0) {
+            if (c)
+                lseek(fd, -1, SEEK_CUR);
+            bf[i] = 0;
+            if (i == 1 && !isdigit(bf[0]))
+                nogood = true;
+            else if (ip)
+                *ip = atoi(bf);
+        }
+        if (nogood) {
+            lseek(fd, stloc, SEEK_SET);
             return (false);
-        bf[i] = 0;
-        if (c)
-            lseek(fd, -1, SEEK_CUR);
-        if (ip)
-            *ip = atoi(bf);
+        }
         return (true);
     }
 
     bool get_string(int fd, char **cp)
     {
+        char bf[2048];
         int i = 0;
-        char bf[256];
         char c;
+        off_t stloc = lseek(fd, 0, SEEK_CUR);
         for (;;) {
             int r = read(fd, &c, 1);
             if (!r)
@@ -1647,10 +1670,22 @@ namespace {
                 break;
             }
         }
-        if (c)
-            lseek(fd, -1, SEEK_CUR);
-        if (cp)
-            *cp = lstring::copy(bf);;
+        // We've skipped white space and should have a something in
+        // bf.  If bf is empty, move back to the start location
+        // and return false.
+
+        bool nogood = (i == 0);
+        if (i > 0) {
+            if (c)
+                lseek(fd, -1, SEEK_CUR);
+            bf[i] = 0;
+            if (cp)
+                *cp = lstring::copy(bf);;
+        }
+        if (nogood) {
+            lseek(fd, stloc, SEEK_SET);
+            return (false);
+        }
         return (true);
     }
 
@@ -1667,11 +1702,10 @@ namespace {
 }
 
 
-// XXX Fix Me!
 int
 sDevOut::fscanf(int fd, const char *fmt, ...)
 {
-    if (!fmt)
+    if (!fd || !fmt)
         return (0);
     va_list args;
     va_start(args, fmt);
@@ -1686,42 +1720,48 @@ sDevOut::fscanf(int fd, const char *fmt, ...)
                 c = tok[2];
                 sk = true;
             }
-            delete [] tok;
             if (c == 'e' || c == 'f' || c == 'g' || c == 'r') {
-                if (get_double(fd, sk ? va_arg(args, double*) : 0)) {
+                if (get_double(fd, sk ? 0 : va_arg(args, double*))) {
                     if (!sk)
                         cnt++;
                 }
-                else
+                else {
+                    delete [] tok;
                     return (cnt);
+                }
             }
             else if (c == 'd') {
-                if (get_int(fd, sk ? va_arg(args, int*) : 0)) {
+                if (get_int(fd, sk ? 0 : va_arg(args, int*))) {
                     if (!sk)
                         cnt++;
                 }
-                else
+                else {
+                    delete [] tok;
                     return (cnt);
+                }
             }
             else if (c == 's') {
-                if (get_string(fd, sk ? va_arg(args, char **) : 0)) {
+                if (get_string(fd, sk ? 0 : va_arg(args, char **))) {
                     if (!sk)
                         cnt++;
                 }
-                else
+                else {
+                    delete [] tok;
                     return (cnt);
+                }
             }
             else if (c == 'c') {
-                if (get_achr(fd, sk ? va_arg(args, int*) : 0)) {
+                if (get_achr(fd, sk ? 0 : va_arg(args, int*))) {
                     if (!sk)
                         cnt++;
                 }
-                else
+                else {
+                    delete [] tok;
                     return (cnt);
+                }
             }
         }
         else if (isspace(*tok)) {
-            delete [] tok;
             for (;;) {
                 char c;
                 int r = read(fd, &c, 1);
@@ -1762,8 +1802,8 @@ sDevOut::fscanf(int fd, const char *fmt, ...)
                 }
                 break;
             }
-            delete [] tok;
         }
+        delete [] tok;
     }
     return (cnt);
 }
@@ -1772,7 +1812,10 @@ sDevOut::fscanf(int fd, const char *fmt, ...)
 int
 sDevOut::fseek(int fd, int offset, int whence)
 {
-    return (lseek(fd, offset, whence));
+    int ret = lseek(fd, offset, whence);
+    if (ret >= 0)
+        return (0);
+    return (-1);
 }
 
 
@@ -2132,7 +2175,9 @@ sDevOut::finish(sGENmodel *model, sGENinstance *inst, double time, int n)
         wl.wl_word = (char*)"all";
         CommandTab::com_rusage(&wl);
     }
-    return (E_PANIC);
+    throw E_VAEXIT;
+    // Exception caught in sCKT::doTask.
+    //return (E_VAEXIT);
 }
 
 

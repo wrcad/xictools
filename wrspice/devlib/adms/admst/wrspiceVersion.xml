@@ -2211,6 +2211,8 @@
 <admst:template match="mapply_binary">
   <admst:variable name="np" value="$noparens"/>
   <admst:variable name="noparens" value="no"/>
+  <admst:variable name="tp1" select="%(arg1/adms/datatypename)"/>
+  <admst:variable name="tp2" select="%(arg2/adms/datatypename)"/>
   <admst:apply-templates select="arg1" match="ddx"/>
   <admst:variable name="x" select="$e"/>
   <admst:variable name="xp" select="$ep"/>
@@ -2266,12 +2268,26 @@
     <admst:otherwise>
       <admst:choose>
         <admst:when test="[$np='yes']">
-          <admst:variable name="e"
-            select="$x%(bname(.)/[name='bname']/value)$y"/>
+          <admst:choose>  
+            <admst:when test="[$tp1='string' or $tp2='string']">
+              <admst:variable name="e" select="!strcmp($x,$y)"/>
+            </admst:when>
+            <admst:otherwise>
+              <admst:variable name="e"
+                select="$x%(bname(.)/[name='bname']/value)$y"/>
+            </admst:otherwise>
+          </admst:choose>
         </admst:when>
         <admst:otherwise>
-          <admst:variable name="e"
-            select="($x%(bname(.)/[name='bname']/value)$y)"/>
+          <admst:choose>  
+            <admst:when test="[$tp1='string' or $tp2='string']">
+              <admst:variable name="e" select="!strcmp($x,$y)"/>
+            </admst:when>
+            <admst:otherwise>
+              <admst:variable name="e"
+                select="($x%(bname(.)/[name='bname']/value)$y)"/>
+            </admst:otherwise>
+          </admst:choose>
         </admst:otherwise>
       </admst:choose>
     </admst:otherwise>

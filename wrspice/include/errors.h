@@ -72,6 +72,7 @@ Author: 1986 Thomas L. Quarles
 #define E_NODECON    18 // warning/error - bad node
 #define E_SYNTAX     19 // syntax error
 #define E_TOOMUCH    20 // some limit was exceeded
+#define E_VAEXIT     21 // Verilog-A finish() was called
 
 // Simulator run-time errors
 //

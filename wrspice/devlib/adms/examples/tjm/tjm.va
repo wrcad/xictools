@@ -51,6 +51,9 @@
 // Version 1.3, June 9, 2025
 //   Parameter icfct interpretation, value, and range change.  Can now
 //   be set to 1.0 for Ambegaokar-Baratoff Rn. 
+// Version 1.4, June 18, 2025
+//   Fixed a typo in the numeric constant used to set PHI0_2PI.  This
+//   code has been broken for a while!
 //
 // Stephen R. Whiteley          stevew@wrcad.com, whiteley@synopsys.com
 // Whiteley Research Inc.       http://wrcad.com
@@ -143,7 +146,7 @@
 //`define Vm      `Vm_HYP
 
 // Phi0/2pi = hbar over 2 e.
-`define PHI0_2PI    3.291059785-16
+`define PHI0_2PI    3.291059785e-16
 
 module tjm (n1, n2, ph);
 
@@ -438,10 +441,7 @@ analog begin
                 $display("XXX1 %d %f %f %f %d %d %f", nrec, tstrt, tdel,
                     tjm_sm, tjm_nxpts, tjm_narray, tjm_thr);
 
-            // Note: integer assignments are rounded so the logic here
-            // differs from c/c++ which use truncation.
-
-            ntemp = (temp - tstrt)/tdel + 1e-6 - 0.5;
+            ntemp = floor((temp - tstrt)/tdel + 1e-6);
 
             if (`debugpr)
                 $display("XXX2 %f %d", temp, ntemp);
@@ -611,7 +611,7 @@ analog begin
             vdpbak = halfvg;
         vth = vdpbak/tsaccel;
         if (`debugpr)
-            $display("YYY1 %f %f", vdpbak, omegaJ);
+            $display("YYY1 %e %e", vdpbak, omegaJ);
 
         tjm_kgap = (0.5*vgap/`PHI0_2PI)/omegaJ;
         tjm_rejpt = 0.0;

@@ -550,7 +550,12 @@ sCKT::doTask(bool reset)
                 int error;
                 if (reset) {
                     CKTcurJob = job;
-                    error = doTaskSetup();
+                    try {
+                        error = doTaskSetup();
+                    }
+                    catch (int e) {
+                        error = e;
+                    }
                     if (error != OK)
                         return (error);
                     GP.Checkup();
@@ -575,7 +580,13 @@ sCKT::doTask(bool reset)
                 CKTstat->STATloopThreads = 0;
 #endif
                 CKTstat->STATruns++;
-                error = IFanalysis::analysis(i)->anFunc(this, reset);
+                try {
+                    error = IFanalysis::analysis(i)->anFunc(this, reset);
+                }
+                catch (int e) {
+                    // The Verilog finish call sends e = E_PANIC.
+                    error = e;
+                }
 #ifdef HAVE_GETRUSAGE
                 getrusage(RUSAGE_SELF, &ruse2);
                 CKTstat->STATpageFaults = ruse2.ru_majflt - ruse.ru_majflt;

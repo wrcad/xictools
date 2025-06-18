@@ -77,6 +77,7 @@ Authors: 1985 Thomas L. Quarles
 #define nodecon       "Bad node"
 #define syntax        "Parse error"
 #define toomuch       "Resource limit exceeded"
+#define vaexit        "Verilog aborted, finish called"
 
 #define s_nodev       "(no device)"
 #define s_nomod       "(no model)"
@@ -210,6 +211,9 @@ SPinput::errMesg(int code, const char *badone)
         break;
     case E_TOOMUCH:
         strcpy(buf, toomuch);
+        break;
+    case E_VAEXIT:
+        strcpy(buf, vaexit);
         break;
     default:
         return (0);

@@ -28,29 +28,10 @@
  $Id:$
  *========================================================================*/
 
-// SuperTools Notice ------------------------------------------------------
-//
-//   GOVERNMENT PURPOSE RIGHTS
-// 
-//   Contract No. W911NF-17-9-0001
-// 
-//   Contractor Name: Synopsys Inc.
-// 
-//   Contractor Address: 690 E Middlefield Rd, Mountain View, CA 94043-4010
-// 
-//   Expiration Date: perpetual-no-expiration
-// 
-//   The Government's rights to use, modify, reproduce, release,
-//   perform, display, or disclose this software are restricted by
-//   paragraph (b)(2) of the Rights in Technical Data-Noncommercial
-//   Items clause contained in the above identified contract.  No
-//   restrictions apply after the expiration date shown above.  Any
-//   reproduction of technical data or portions thereof marked with this
-//   legend must also reproduce the markings.
-//-------------------------------------------------------------------------
-
 // Whiteley Research/Synopsys PWL-RCSJ Josephson Junction Model
 //
+// Version 1.42, June 18, 2025 fixed typos in PHI0_2PI and BOLTZ,
+//   this code was broken!
 // Version 1.41, March 2, 2024 updated constants PHI0_2PI, BOLTZ.
 // Version 1.40, January 10, 2023 increased range of vm, rsub,
 //   icrn, rn.
@@ -277,8 +258,8 @@
 //`define Vm      `Vm_HYP
 
 // Phi0/2pi = hbar over 2 e.
-`define PHI0_2PI    3.291059785-16
-`define BOLTZ       1.380649-23
+`define PHI0_2PI    3.291059785e-16
+`define BOLTZ       1.380649e-23
 `define ECHG        1.602176634e-19
 
 module jj (n1, n2, ph);
