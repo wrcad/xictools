@@ -6217,6 +6217,7 @@ the data types (top) table above as the ``SPICE2 Numeric Code''.
 nopadding
 filetype
 rawfileprec
+write
 
 !! appendix.tex 122924
 !!KEYWORD
@@ -6359,6 +6360,9 @@ set to 5, as an example of the format.
 6.00000e-10,1.35034e-11,-2.79655e-11,2.59221e-11,-9.65660e-12
 \end{verbatim}
 
+!!SEEALSO
+write
+
 !! appendix.tex 122924
 !!KEYWORD
 csdffilefmt
@@ -6425,6 +6429,7 @@ post-processing.
 SEEALSO
 csvfilefmt
 rawfilefmt
+write
 
 !! utilities.tex 012609
 !!KEYWORD

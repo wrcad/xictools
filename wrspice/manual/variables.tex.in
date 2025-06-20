@@ -37,6 +37,10 @@
 
 <<unused_vars spVars_sim.hlp>>
 
+\subsection{Syntax Control Variables}
+
+<<syntax_vars spVars_sim.hlp>>
+
 \subsection{Debugging Variables}
 
 <<debug_vars spVars_debug.hlp>>

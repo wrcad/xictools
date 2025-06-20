@@ -174,8 +174,116 @@ End of general info.
 
 
 ===============================================================================
-wrspice-4.3.22  1/31/2025
+wrspice-4.3.23  6/19/2025
 Current Release
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* The ADMS examples directory has been updated.
+  The model code files for most models are now automatically downloaded
+  from public web locations and no longer saved within the WRspice source
+  tree. There are no longer "fixes" applied to the source code for ADMS
+  compatibility, the present ADMS now handles all of the source without
+  modification.  The modules no longer come pre-built in packages.  The
+  user will need to follow the instructions (easy) to build the modules.
+  The user can also change the model file name to build a different
+  model than the default, if they need a more recent or particular
+  version of the device model.  The source web page url is provided.
+  These are found in the link.mk files in the subdirectories.
+
+* The argument to the "step" command can now be a standard SPICE number,
+  previously it was required to be a pure integer.
+
+* In expanding $&vec forms, if the vector value is an integer with no
+  units, it will be printed as a pure integer.  Previously it always
+  used a real value format.
+
+* The BSIM4.8.2 (latest production BSIM4) model was added at MOS Levels
+  18 and 60.
+
+* Added a new variable "tbontop".  When set in .wrspiceinit, the
+  toolbar will stay above other windows.
+ 
+* In the TJM model (levels 3/4 of Josephson junction), the "icfct"
+  parameter has a new interpretation, default, and acceptable range.
+  It is now the ratio of the assigned IcRn to the internally computed
+  IcRn from the Amgegaokar-Baratoff equation, defaulting to using the
+  assigned IcRn of 1.65 mV from Lincoln Laboratory.  Give 1.0 for this
+  parameter to set Rn to the Ambegaokar-Baratoff value (but this is
+  only strictly true as temperature goes to zero.  The range is 0.25
+  to 1.25.
+
+* Device cleanup.
+  The following devices have been removed from the default build,
+  but source is retained in the repository for now: bsim1, bsim2,
+  bsim3.2.0, bsim3.2.4, bsimsoi-3.0, bsimsoi-4.0, bsimsoi-4.3,
+  hisim-1.1.0, stag.  These are considered obsolete.  The bsim1/2
+  proc2mod utility was also removed.
+  A new source directory devlib/obsolete was created for old models
+  including bsim1 and bsim2, and moved bin/proc2mod.cc here,
+  deleting from make.
+
+* Support was added for a CSV file format (see "help csvfilefmt").
+
+* New arguments to the write command:
+    write [-a][-w][[-f] [filename][expr ...]
+    -a:     Append to output file if it exists.
+    -w:     Overwrite output file when appendwrite is set.
+    -f filename:  Explicitly define output file.
+    These must appear ahead of filename and vectors, previous syntax
+    is also supported.
+ 
+
+BUGS FIXED
+---- -----
+
+* Misc changes so that the tjm.va example will run.  The tjm.va and
+  jj.va files had a common typo in the PHI0_2PI constant so neither
+  has worked properly for a while.  Completed and debugged new
+  support functions needed for tjm.va.
+
+* The Verilog finish() command now actually stops analysis as it
+  should.
+
+* Fixed incorrect buffer length in snprintf calls in the printnum
+  function.  These are actually checked at run time in ubuntu 24.04
+  and caused the program to abort with a "buffer overrun" message.
+
+* Reverted test line in JJexamples/jjcntr.cir, which was plotting
+  the traces twice.
+
+* The mmjco utility was broken!
+  There was a typo in the value of Boltzmann's constant in mmjco.h.
+  This has been not working for a while.
+
+* Fixed a segmentation fault from the Options/Source menu operation
+  in the Editor window (QT only).
+
+* Fixed missing Separate and Single buttons in Plot windows (QT,
+  devel branch only).
+
+* Fixed inability to drop a trace from the file cabinet in Plot
+  windows when there was only one visible trace.
+
+* Fixed a .param parse error introduced in 4.3.14.  A RHS token could
+  be truncated at a closing paren, leaving behind part of the token
+  that would trigger a parse error.
+
+* Fixed broken toolbar WR logo button logic.
+  Fix logic around "opendir" calls to extend static filename storage
+  space to 1024 bytes.  In the file selection, this was only 64 bytes
+  in places and crashed.
+
+* Fixed nonfunctional Print/Plot/Save Plot functions in the
+  plot windows (Qt only). 
+
+* Bug fixed, comment lines being truncated to fit a terminal window
+  would generate spurions continuation lines.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.3.22  1/31/2025
 
 CHANGES AND NEW FEATURES
 ------- --- --- --------

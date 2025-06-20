@@ -3499,247 +3499,6 @@ not given, the search path is effectively ``{\vt ( .  \$HOME/.mmjco )}''.
 
 \end{description}
 
-%SU-------------------------------------
-\subsection{Syntax Control Variables}
-
-% spVars_debug.hlp:syntax_vars 030619
-
-These variables alter the expected syntax of various types of
-{\WRspice} input.  It may, on occasion, be useful or necessary to use
-one or more of these variables to provide compatibility with SPICE
-input intended for another simulator, or for compatibility with
-earlier releases of {\WRspice}.
- 
-\begin{description}
-\index{modelcard variable}
-\item{\et modelcard}\\
-This variable allows the keyword that specifies a model to be reset.
-If unset, the keyword is ``{\vt .model}''.
-
-\index{nobjthack variable}
-\item{\et nobjthack}\\
-If this boolean is set, bipolar transistors are assumed to have four
-nodes.  Otherwise, three nodes are acceptable.  This only affects
-subcircuit expansion.
-
-\index{pexnodes variable}
-\item{\et pexnodes}\\
-When this boolean variable is set, node names in device and subcircuit
-call lines will be parameter expanded as the circuit is read in.  In
-4.1.12 and later, node names are not parameter expanded by default, to
-save processing time and avoid unintended matches causing errors. 
-This variable can be set for backward compatibility, for files that
-actually used this feature.
-
-\index{plot\_catchar variable}
-\item{\et plot\_catchar}\\
-One can specify a fully qualified vector name as input to {\WRspice},
-where the default syntax is
-\begin{quote}
-{\it plotname\/}{\vt .}{\it vectorname}
-\end{quote}
-
-The character used to separate the {\it plotname} from the {\it
-vectorname}, which defaults to a period (`{\vt .}'), can be changed
-with this variable.  If this variable is set to a single-character
-string, then that character becomes the separation character.
-
-\index{spec\_catchar variable}
-\item{\et spec\_catchar}\\
-By default, vector names that begin with the character `{\vt @}' are
-interpreted as ``special'' vectors that provide the value of a model,
-device, or circuit parameter.  These have forms like
-
-\begin{quote}
-{\vt @}{\it devicename\/}[{\it paramname\/}] for a device parameter,\\
-{\vt @}{\it modelname\/}[{\it paramname\/}] for a model parameter, or\\
-{\vt @}{\it paramname\/} for a circuit parameter.
-\end{quote}
-
-The character used to indicate a special vector can be changed from
-the default `{\vt @}' with this variable.  If this variable is set to
-a single-character string, then that character is used to indicate a
-special vector.
-
-\index{strictnumparse variable}
-\item{\et strictnumparse}\\
-When this variable is set, {\WRspice} will not allow trailing
-characters after a number, unless they are separated from the number
-with an underscore (`\_').  This may prevent errors, for example
-writing ``{\vt 1meter}'' and expecting it to have a value of 1.
-
-\index{subc\_catchar variable}
-\item{\et subc\_catchar}\\
-When {\WRspice} processes an input circuit containing subcircuits, it
-internally generates a ``flat'' representation of the circuit through
-subcircuit expansion.  All subcircuit calls are replaced with the
-subcircuit body text, and the node and device names in the subcircuit
-are given new names that are unique in the overall circuit.  One can
-view this flattened representation with the {\cb listing e} command.
-
-This variable can be set to a string consisting of a single
-punctuation character, which will be used as the field separation
-character in names generated in subcircuit expansion.  It should be a
-character that is not likely to confuse the expression parser.  This
-requirement is rather ambiguous, but basically means that math
-operators, comma, semicolon, and probably others should be avoided.
-
-In release 3.2.15 and later the default is `{\vt .}' (period), which
-is also used in HSPICE, and provides nice-looking listings. 
-
-In releases 3.2.5 -- 3.2.14, the default was `{\vt \_}' (underscore).
-
-In release 3.2.4 and earlier, and in SPICE3, the concatenation
-character was `{\vt :}' (colon).
-
-This variable can appear in a {\vt .options} line in SPICE input,
-where is will set the concatenation character used for the circuit. 
-See also the description of the {\et subc\_catmode} variable below.
-
-\index{subc\_catmode variable}
-\item{\et subc\_catmode}\\
-When {\WRspice} processes an input circuit containing subcircuits, it
-internally generates a ``flat'' representation of the circuit through
-subcircuit expansion.  All subcircuit calls are replaced with the
-subcircuit body text, and the node and device names in the subcircuit
-are given new names that are unique in the overall circuit.  One can
-view this flattened representation with the {\cb listing e} command.
-
-Previous {\WRspice} versions used the SPICE3 algorithm for generating
-the new node and device names.  Release 3.2.15 and later have a new,
-simpler algorithm as the default, but support for the old algorithm is
-retained.
-
-This string variable can be set to one of the keywords ``{\vt
-wrspice}'' or ``{\vt spice3}''.  It sets the encoding mode for
-subcircuit node and device names.  In 3.2.15 and later, the ``{\vt
-wrspice}'' mode is the default.  In earlier releases, only the ``{\vt
-spice3}'' mode was available.
-
-A detailed discussion of the two mapping modes is provided in the
-description of subcircuit expansion in \ref{subexpand}.
-
-Typically, the user may not know or care about subcircuit mapping
-details, however in some SPICE input it may be necessary to reference
-subcircuit nodes in {\vt .save} lines and elsewhere.  In this case
-knowledge of, and control of, the mapping employed is necessary.
-
-There is also a compatibility issue with older {\WRspice} input files
-that explicitly reference subcircuit nodes, as both the default
-renaming algorithm and concatenation character have changed as
-{\WRspice} evolved.  The format of the subcircuit node names depends
-on the algorithm, so SPICE input that explicitly references subcircuit
-node names implicitly assuming a certain mapping algorithm will
-require either changes to the node names, or specification of the
-matching algorithm and concatenation character.  Such files can be
-easily updated to be compatible with newer {\WRspice} releases, but
-some familiarity with the renaming modes is needed.
-
-This variable can appear in a {\vt .options} line in SPICE input,
-where is will set the name mapping algorithm used for the circuit. 
-Typically, to ``fix'' an old input file, one would add a {\vt
-.options} line specifying the {\vt spice3} mapping algorithm, and
-either the colon or underscore (as appropriate) for the concatenation
-character.
-
-\index{subend variable}
-\item{\et subend}\\
-This variable allows the keyword which ends a subcircuit definition
-to be changed.  If unset, the keyword is ``{\vt .ends}''.
-
-\index{subinvoke variable}
-\item{\et subinvoke}\\
-This variable allows the prefix which invokes a subcircuit to be
-changed.  If unset, the prefix is ``{\vt x}''.
-
-\index{substart variable}
-\item{\et substart}\\
-This variable allows the keyword which begins a subcircuit definition
-to be changed.  If unset, the keyword is ``{\vt .subckt}''.  The
-equivalent ``{\vt .macro}'' keyword applies whether or not this
-variable is set.
-
-\index{submaps variable}
-\item{\et submaps}\\
-This is a string which can be set to a list of tokens of the form {\it
-name\/}[{\vt ,}{\it value\/}], separated by space.  The square
-brackets indicate that the value part and delimiting comma are
-optional.
-
-Before subcircuit expansion, if a line starts with {\vt x}{\it name}
-({\vt x} followed by a {\it name} given in the option), then if the
-corresponding {\it value} is given it will replace {\vt x}{\it name}. 
-If no {\it value} was given, the {\vt x} is simply stripped off.  This
-is all case insensitive.
-
-{\bf Example}:  {\vt set submaps j,b}\\
-In the deck, ``{\vt xj1 1 2 ...}'' would be replaced by ``{\vt b1 1 2
-...}''.
-
-This is fairly obscure, but may be useful for reading HSPICE netlists
-that contain Verilog-A devices.  HSPICE uses ``{\vt X}'' for these,
-{\WRspice} maps them to a standard letter for the device type.
-
-\index{units\_catchar variable}
-\item{\et units\_catchar}\\
-
-The units concatenation character may be used in the units string to
-identify the start of the units string, and to identify the start of
-the denominator units.  The units separation character (see below) can
-also be used to indicate the start of denominator units.  See the
-section about input numerical format and the units string
-(\ref{units}) for a complete syntax description.  If not given, the
-concatenation character is `{\vt \#}', but if this variable is set to
-a string containing a single punctuation character, that character
-will become the units concatenation character.
-
-Examples:
-
-\begin{tabular}{ll}
-\vt 1.0\#F\#S &  1 Farad per second\\
-\vt 1.0F\#S &   1 femtosecond (note that 'F' can
-  be a multiplier or a unit!)\\
-\vt 1.0FS &    1 femtosecond\\
-\vt 1.0\#FS &   1 Farad-second\\
-\vt 1.0S &     1 second\\
-\vt 1.0\#S &    1 second\\
-\vt 1.0\#\#S &   1 Hertz\\
-\end{tabular}
-
-\index{units\_sepchar variable}
-\item{\et units\_sepchar}\\
-
-The units separation character may be used in the units string to
-identify the start of the denominator units.  The units concatenation
-character can also be used to indicate the start of denominator units. 
-See the section about input numerical format and the units string
-(\ref{units}) for a complete syntax description.  If not given, the
-separation character is `{\vt \_}' (underscore), but if this variable
-is set to a string containing a single punctuation character, that
-character will become the units separation character.
-
-\index{var\_catchar variable}
-\item{\et var\_catchar}\\
-When expanding shell variables, i.e. replacing forms like ``{\vt
-\$var}'' in {\WRspice} input with the value that has been assigned to
-{\vt var}, it is sometimes useful to use the ``concatenation
-character'', which defaults to `{\vt \%}', to separate the variable
-name from surrounding text.
-
-For example, if ``{\vt set one = 1}'' is active, then ``{\vt
-\$one\%k}'' will expand to ``{\vt 1k}''.  Note that it is also
-possible to use the form ``{\vt \{\$one\}k}'' to achieve the same
-objective.
-
-The same applies when expanding parameters in SPICE input, using
-definitions from a {\vt .param} line.  If one has ``{\vt .param
-one=1}'' in scope, then ``{\vt one\%k}'' expands to ``{\vt 1k}''.
-
-This variable allows the default concatenation character `{\vt \%}' to
-be changed.  If this variable is set to a single-character string,
-then that character becomes the concatenation character.
-\end{description}
-
 !!SEEALSO
 variables
 batch_vars
@@ -4402,7 +4161,244 @@ Syntax Control Variables
     single-character string, then that character becomes the
     concatenation character.
     </dl>
+!!LATEX syntax_vars variables.tex
+% spVars_sim.hlp:syntax_vars 030619
 
+These variables alter the expected syntax of various types of
+{\WRspice} input.  It may, on occasion, be useful or necessary to use
+one or more of these variables to provide compatibility with SPICE
+input intended for another simulator, or for compatibility with
+earlier releases of {\WRspice}.
+ 
+\begin{description}
+\index{modelcard variable}
+\item{\et modelcard}\\
+This variable allows the keyword that specifies a model to be reset.
+If unset, the keyword is ``{\vt .model}''.
+
+\index{nobjthack variable}
+\item{\et nobjthack}\\
+If this boolean is set, bipolar transistors are assumed to have four
+nodes.  Otherwise, three nodes are acceptable.  This only affects
+subcircuit expansion.
+
+\index{pexnodes variable}
+\item{\et pexnodes}\\
+When this boolean variable is set, node names in device and subcircuit
+call lines will be parameter expanded as the circuit is read in.  In
+4.1.12 and later, node names are not parameter expanded by default, to
+save processing time and avoid unintended matches causing errors. 
+This variable can be set for backward compatibility, for files that
+actually used this feature.
+
+\index{plot\_catchar variable}
+\item{\et plot\_catchar}\\
+One can specify a fully qualified vector name as input to {\WRspice},
+where the default syntax is
+\begin{quote}
+{\it plotname\/}{\vt .}{\it vectorname}
+\end{quote}
+
+The character used to separate the {\it plotname} from the {\it
+vectorname}, which defaults to a period (`{\vt .}'), can be changed
+with this variable.  If this variable is set to a single-character
+string, then that character becomes the separation character.
+
+\index{spec\_catchar variable}
+\item{\et spec\_catchar}\\
+By default, vector names that begin with the character `{\vt @}' are
+interpreted as ``special'' vectors that provide the value of a model,
+device, or circuit parameter.  These have forms like
+
+\begin{quote}
+{\vt @}{\it devicename\/}[{\it paramname\/}] for a device parameter,\\
+{\vt @}{\it modelname\/}[{\it paramname\/}] for a model parameter, or\\
+{\vt @}{\it paramname\/} for a circuit parameter.
+\end{quote}
+
+The character used to indicate a special vector can be changed from
+the default `{\vt @}' with this variable.  If this variable is set to
+a single-character string, then that character is used to indicate a
+special vector.
+
+\index{strictnumparse variable}
+\item{\et strictnumparse}\\
+When this variable is set, {\WRspice} will not allow trailing
+characters after a number, unless they are separated from the number
+with an underscore (`\_').  This may prevent errors, for example
+writing ``{\vt 1meter}'' and expecting it to have a value of 1.
+
+\index{subc\_catchar variable}
+\item{\et subc\_catchar}\\
+When {\WRspice} processes an input circuit containing subcircuits, it
+internally generates a ``flat'' representation of the circuit through
+subcircuit expansion.  All subcircuit calls are replaced with the
+subcircuit body text, and the node and device names in the subcircuit
+are given new names that are unique in the overall circuit.  One can
+view this flattened representation with the {\cb listing e} command.
+
+This variable can be set to a string consisting of a single
+punctuation character, which will be used as the field separation
+character in names generated in subcircuit expansion.  It should be a
+character that is not likely to confuse the expression parser.  This
+requirement is rather ambiguous, but basically means that math
+operators, comma, semicolon, and probably others should be avoided.
+
+In release 3.2.15 and later the default is `{\vt .}' (period), which
+is also used in HSPICE, and provides nice-looking listings. 
+
+In releases 3.2.5 -- 3.2.14, the default was `{\vt \_}' (underscore).
+
+In release 3.2.4 and earlier, and in SPICE3, the concatenation
+character was `{\vt :}' (colon).
+
+This variable can appear in a {\vt .options} line in SPICE input,
+where is will set the concatenation character used for the circuit. 
+See also the description of the {\et subc\_catmode} variable below.
+
+\index{subc\_catmode variable}
+\item{\et subc\_catmode}\\
+When {\WRspice} processes an input circuit containing subcircuits, it
+internally generates a ``flat'' representation of the circuit through
+subcircuit expansion.  All subcircuit calls are replaced with the
+subcircuit body text, and the node and device names in the subcircuit
+are given new names that are unique in the overall circuit.  One can
+view this flattened representation with the {\cb listing e} command.
+
+Previous {\WRspice} versions used the SPICE3 algorithm for generating
+the new node and device names.  Release 3.2.15 and later have a new,
+simpler algorithm as the default, but support for the old algorithm is
+retained.
+
+This string variable can be set to one of the keywords ``{\vt
+wrspice}'' or ``{\vt spice3}''.  It sets the encoding mode for
+subcircuit node and device names.  In 3.2.15 and later, the ``{\vt
+wrspice}'' mode is the default.  In earlier releases, only the ``{\vt
+spice3}'' mode was available.
+
+A detailed discussion of the two mapping modes is provided in the
+description of subcircuit expansion in \ref{subexpand}.
+
+Typically, the user may not know or care about subcircuit mapping
+details, however in some SPICE input it may be necessary to reference
+subcircuit nodes in {\vt .save} lines and elsewhere.  In this case
+knowledge of, and control of, the mapping employed is necessary.
+
+There is also a compatibility issue with older {\WRspice} input files
+that explicitly reference subcircuit nodes, as both the default
+renaming algorithm and concatenation character have changed as
+{\WRspice} evolved.  The format of the subcircuit node names depends
+on the algorithm, so SPICE input that explicitly references subcircuit
+node names implicitly assuming a certain mapping algorithm will
+require either changes to the node names, or specification of the
+matching algorithm and concatenation character.  Such files can be
+easily updated to be compatible with newer {\WRspice} releases, but
+some familiarity with the renaming modes is needed.
+
+This variable can appear in a {\vt .options} line in SPICE input,
+where is will set the name mapping algorithm used for the circuit. 
+Typically, to ``fix'' an old input file, one would add a {\vt
+.options} line specifying the {\vt spice3} mapping algorithm, and
+either the colon or underscore (as appropriate) for the concatenation
+character.
+
+\index{subend variable}
+\item{\et subend}\\
+This variable allows the keyword which ends a subcircuit definition
+to be changed.  If unset, the keyword is ``{\vt .ends}''.
+
+\index{subinvoke variable}
+\item{\et subinvoke}\\
+This variable allows the prefix which invokes a subcircuit to be
+changed.  If unset, the prefix is ``{\vt x}''.
+
+\index{substart variable}
+\item{\et substart}\\
+This variable allows the keyword which begins a subcircuit definition
+to be changed.  If unset, the keyword is ``{\vt .subckt}''.  The
+equivalent ``{\vt .macro}'' keyword applies whether or not this
+variable is set.
+
+\index{submaps variable}
+\item{\et submaps}\\
+This is a string which can be set to a list of tokens of the form {\it
+name\/}[{\vt ,}{\it value\/}], separated by space.  The square
+brackets indicate that the value part and delimiting comma are
+optional.
+
+Before subcircuit expansion, if a line starts with {\vt x}{\it name}
+({\vt x} followed by a {\it name} given in the option), then if the
+corresponding {\it value} is given it will replace {\vt x}{\it name}. 
+If no {\it value} was given, the {\vt x} is simply stripped off.  This
+is all case insensitive.
+
+{\bf Example}:  {\vt set submaps j,b}\\
+In the deck, ``{\vt xj1 1 2 ...}'' would be replaced by ``{\vt b1 1 2
+...}''.
+
+This is fairly obscure, but may be useful for reading HSPICE netlists
+that contain Verilog-A devices.  HSPICE uses ``{\vt X}'' for these,
+{\WRspice} maps them to a standard letter for the device type.
+
+\index{units\_catchar variable}
+\item{\et units\_catchar}\\
+
+The units concatenation character may be used in the units string to
+identify the start of the units string, and to identify the start of
+the denominator units.  The units separation character (see below) can
+also be used to indicate the start of denominator units.  See the
+section about input numerical format and the units string
+(\ref{units}) for a complete syntax description.  If not given, the
+concatenation character is `{\vt \#}', but if this variable is set to
+a string containing a single punctuation character, that character
+will become the units concatenation character.
+
+Examples:
+
+\begin{tabular}{ll}
+\vt 1.0\#F\#S &  1 Farad per second\\
+\vt 1.0F\#S &   1 femtosecond (note that 'F' can
+  be a multiplier or a unit!)\\
+\vt 1.0FS &    1 femtosecond\\
+\vt 1.0\#FS &   1 Farad-second\\
+\vt 1.0S &     1 second\\
+\vt 1.0\#S &    1 second\\
+\vt 1.0\#\#S &   1 Hertz\\
+\end{tabular}
+
+\index{units\_sepchar variable}
+\item{\et units\_sepchar}\\
+
+The units separation character may be used in the units string to
+identify the start of the denominator units.  The units concatenation
+character can also be used to indicate the start of denominator units. 
+See the section about input numerical format and the units string
+(\ref{units}) for a complete syntax description.  If not given, the
+separation character is `{\vt \_}' (underscore), but if this variable
+is set to a string containing a single punctuation character, that
+character will become the units separation character.
+
+\index{var\_catchar variable}
+\item{\et var\_catchar}\\
+When expanding shell variables, i.e. replacing forms like ``{\vt
+\$var}'' in {\WRspice} input with the value that has been assigned to
+{\vt var}, it is sometimes useful to use the ``concatenation
+character'', which defaults to `{\vt \%}', to separate the variable
+name from surrounding text.
+
+For example, if ``{\vt set one = 1}'' is active, then ``{\vt
+\$one\%k}'' will expand to ``{\vt 1k}''.  Note that it is also
+possible to use the form ``{\vt \{\$one\}k}'' to achieve the same
+objective.
+
+The same applies when expanding parameters in SPICE input, using
+definitions from a {\vt .param} line.  If one has ``{\vt .param
+one=1}'' in scope, then ``{\vt one\%k}'' expands to ``{\vt 1k}''.
+
+This variable allows the default concatenation character `{\vt \%}' to
+be changed.  If this variable is set to a single-character string,
+then that character becomes the concatenation character.
+\end{description}
 !!SEEALSO
 variables
 
