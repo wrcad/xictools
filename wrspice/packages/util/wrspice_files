@@ -11,8 +11,6 @@ mmjco"
 examples="\
 README \
 bjtnoise.cir \
-bsim1tst.cir \
-bsim2tst.cir \
 bsim430-benchmarks.tar.gz \
 bsim465-benchmarks.tar.gz \
 bsoi43-benchmarks.tar.gz \
@@ -30,8 +28,6 @@ mosmem.cir \
 noise.cir \
 prbs.cir \
 precision.cir \
-process.mod \
-process.pro \
 pz2.cir \
 pzt.cir \
 rc.cir \

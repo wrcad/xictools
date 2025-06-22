@@ -1619,15 +1619,16 @@ Simulation Option Variables
     <a name="extprec"></a>
     <dl>
     <dt><tt>extprec</tt><dd>
+    <b>Extended precision is not available with Apple Silicon.<b><br>
     When this option is set, <i>WRspice</i> will use extended
-    precision arithmetic when setting up and solving the circuit
-    equations.  With Intel, this mode uses the 80-bit native floating
-    point format for all calculations, rather than the 64-bit "double
-    precision".  This requires that floating point numbers use 16
-    bytes rather than 8, however matrix space is allocated assuming
-    complex numbers, which are 16 bytes.  Thus, this mode has no
-    memory-use penalty, and may actually cause some circuits to
-    simulate faster.
+    precision arithmetic (if available) when setting up and solving
+    the circuit equations.  With Intel, this mode uses the 80-bit
+    native floating point format for all calculations, rather than
+    the 64-bit "double precision".  This requires that floating point
+    numbers use 16 bytes rather than 8, however matrix space is
+    allocated assuming complex numbers, which are 16 bytes.  Thus,
+    this mode has no memory-use penalty, and may actually cause some
+    circuits to simulate faster.
 
     <p>
     The mode applies to both KLU and Sparse matrix solvers.  It adds
@@ -2974,14 +2975,15 @@ dcoddstep} provides compatibility.
 \item{\et extprec}\\
 Where set: {\cb Simulation Options/General}
 
+{\bf Extended precision is not available with Apple Silicon.}\\
 When this option is set, {\WRspice} will use extended precision
-arithmetic when setting up and solving the circuit equations.  With
-Intel, this mode uses the 80-bit native floating point format for all
-calculations, rather than the 64-bit ``double precision''.  This
-requires that floating point numbers use 16 bytes rather than 8,
-however matrix space is allocated assuming complex numbers, which are
-16 bytes.  Thus, this mode has no memory-use penalty, and may actually
-cause some circuits to simulate faster.
+arithmetic (if available) when setting up and solving the circuit
+equations.  With Intel, this mode uses the 80-bit native floating
+point format for all calculations, rather than the 64-bit ``double
+precision''.  This requires that floating point numbers use 16 bytes
+rather than 8, however matrix space is allocated assuming complex
+numbers, which are 16 bytes.  Thus, this mode has no memory-use
+penalty, and may actually cause some circuits to simulate faster.
 
 The mode applies to both KLU and Sparse matrix solvers.  It adds about
 three decimal digits of precision to the calculations.  Using extended

@@ -1,5 +1,6 @@
 * Math Precision demo
 
+* NOTE: Extended precision is not available in Apple Silicon (09/2025).
 * This circuit illustrates a numerical precision problem often found
 * with MOSFET models.  The circuit consists of
 * 1. A 1-volt voltage source connected to the drain.

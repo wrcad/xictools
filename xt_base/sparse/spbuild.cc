@@ -230,7 +230,8 @@ spMatrixFrame::spMatrixFrame(int size, int flags)
     NoSort                          = ((flags & SP_NO_SORT) ? YES : NO);
     Trace                           = ((flags & SP_TRACE) ? YES : NO);
 #if SP_OPT_LONG_DBL_SOLVE
-    LongDoubles                     = ((flags & SP_EXT_PREC) ? YES : NO);
+    LongDoubles                     = ((flags & SP_EXT_PREC) &&
+                            (sizeof(long double) > sizeof(double)) ? YES : NO);
 #endif
     RemapInTranslate                = ((flags & SP_NOMAPTR) ? NO : YES);
 

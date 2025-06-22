@@ -4902,6 +4902,11 @@ struct KWent_extprec : public KWent
 
     void callback(bool isset, variable *v)
     {
+        if (isset && sizeof(long double) == sizeof(double)) {
+            // Apple Si doesn't support this.
+            GRpkg::self()->ErrPrintf(ET_WARN,
+                "extended precision is not available in this build version.\n");
+        }
         if (isset)
             v->set_boolean(true);
         if (checknset(word, isset, v))
