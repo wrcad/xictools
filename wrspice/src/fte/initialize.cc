@@ -438,6 +438,13 @@ IFsimulator::SetFPEmode(FPEmode mode)
         _MM_SET_EXCEPTION_MASK(_MM_GET_EXCEPTION_MASK() & ~_MM_MASK_OVERFLOW);
         _MM_SET_EXCEPTION_MASK(_MM_GET_EXCEPTION_MASK() & ~_MM_MASK_DIV_ZERO);
         _MM_SET_EXCEPTION_MASK(_MM_GET_EXCEPTION_MASK() & ~_MM_MASK_INVALID);
+#else
+        // Apple Si, this triggers SIGILL not SIGFPE.
+        fenv_t env;
+        fegetenv(&env);
+        env.__fpcr = env.__fpcr | __fpcr_trap_divbyzero;
+//        env.__fpcr = env.__fpcr | __fpcr_trap_invalid;
+        fesetenv(&env);
 #endif
 #else
 #ifdef WIN32
@@ -457,6 +464,12 @@ IFsimulator::SetFPEmode(FPEmode mode)
         _MM_SET_EXCEPTION_MASK(_MM_GET_EXCEPTION_MASK() | _MM_MASK_OVERFLOW);
         _MM_SET_EXCEPTION_MASK(_MM_GET_EXCEPTION_MASK() | _MM_MASK_DIV_ZERO);
         _MM_SET_EXCEPTION_MASK(_MM_GET_EXCEPTION_MASK() | _MM_MASK_INVALID);
+#else
+        fenv_t env;
+        fegetenv(&env);
+        env.__fpcr = env.__fpcr & ~__fpcr_trap_divbyzero;
+//        env.__fpcr = env.__fpcr & ~__fpcr_trap_invalid;
+        fesetenv(&env);
 #endif
 #else
 #ifdef WIN32

@@ -410,7 +410,7 @@ IFsimulator::SetOption(bool isset, const char *word, IFdata *val)
 }
 
 
-// This routine changes the state of the currently set spice options
+// This function changes the state of the currently set spice options
 // according to the pl_ftopts in the current plot.  Called when the
 // current plot changes to a different analysis plot.
 //
@@ -419,8 +419,12 @@ IFsimulator::OptUpdate()
 {
     variable *ovars = OP.curPlot()->options()->tovar();
     for (variable *v = ovars; v; v = v->next()) {
-        if (v->type() == VTYP_BOOL && !v->boolean())
-            RemVar(v->name());
+        if (v->type() == VTYP_BOOL && !v->boolean()) {
+            // The variable is not set in the new plot, unset it unless
+            // it is currently set in the shell.
+            if (!CP.RawVarGet(v->name()))
+                RemVar(v->name());
+        }
         else {
             switch (v->type()) {
             case VTYP_BOOL:

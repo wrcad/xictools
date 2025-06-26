@@ -77,6 +77,7 @@ Authors: 1985 Thomas L. Quarles
 #ifdef HAVE_GETRUSAGE
 #include <sys/resource.h>
 #endif
+#include "fpe_check.h"  // for check_fpe()
 
 #ifdef WITH_THREADS
 
@@ -2749,26 +2750,7 @@ sCKT::evalTranFunc(double **rvec, const char *string, double *scale, int len)
 int
 sCKT::checkFPE(bool noerrret)
 {
-    int err = OK;
-#ifdef HAVE_FENV_H
-    if (!noerrret && Sp.GetFPEmode() == FPEcheck) {
-        if (fetestexcept(FE_DIVBYZERO))
-            err = E_MATHDBZ;
-        else if (fetestexcept(FE_OVERFLOW))
-            err = E_MATHOVF;
-        // Ignore underflow, SOI models generate these with great
-        // frequency.  They really shouldn't be a problem.
-        // else if (fetestexcept(FE_UNDERFLOW))
-        //     err = E_MATHUNF;
-        //
-        else if (fetestexcept(FE_INVALID))
-            err = E_MATHINV;
-    }
-    feclearexcept(FE_ALL_EXCEPT);
-#else
-    (void)noerrret;
-#endif
-    return (err);
+    return (check_fpe(noerrret));
 }
 
 

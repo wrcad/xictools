@@ -64,6 +64,7 @@ Authors: 1987 Wayne A. Christopher
 #include "miscutil/errorrec.h"
 #include "miscutil/random.h"
 #include "ginterf/graphics.h"
+#include "fpe_check.h"  // for check_fpe()
 
 #ifndef	M_2_SQRTPI
 #define	M_2_SQRTPI  1.12837916709551257390  // 2/sqrt(pi)
@@ -347,31 +348,6 @@ bool
 IFparseTree::isConst()
 {
     return (IFparseNode::is_const(pt_tree));
-}
-
-
-namespace {
-    inline int check_fpe(bool noerrret)
-    {
-        int err = OK;
-#ifdef HAVE_FENV_H
-        if (!noerrret && Sp.GetFPEmode() == FPEcheck) {
-            if (fetestexcept(FE_DIVBYZERO))
-                err = E_MATHDBZ;
-            else if (fetestexcept(FE_OVERFLOW))
-                err = E_MATHOVF;
-            // Ignore underflow, really shouldn't be a problem, and
-            // these are generated rather frequently.
-            // else if (fetestexcept(FE_UNDERFLOW))
-            //     err = E_MATHUNF;
-            else if (fetestexcept(FE_INVALID))
-                err = E_MATHINV;
-        }
-        feclearexcept(FE_ALL_EXCEPT);
-        (void)noerrret;
-#endif
-        return (err);
-    }
 }
 
 
@@ -1679,7 +1655,7 @@ PTelement::userString(const char **s, bool in_source)
 
 IFparseNode::~IFparseNode()
 {
-    if (p_type == PT_TFUNC)
+    if (p_type == PT_TFUNC && p_valindx != PTF_tTABLE)
         delete v.td;
     else if (p_type == PT_PARAM) {
         delete [] p_valname;
@@ -2049,7 +2025,7 @@ double
 IFparseNode::time_limit(sCKT *ckt, double lim) 
 {
     if (p_type == PT_TFUNC) {
-        if (v.td)
+        if (v.td && p_valindx != PTF_tTABLE)
             v.td->time_limit(ckt, &lim);
 
         // No need to check args, all are constants.  In fact,
@@ -2159,8 +2135,19 @@ IFparseNode::print_string(sLstr &lstr, TokenType parent_type, bool rhs)
         lstr.add_c(')');
     }
     else if (p_type == PT_TFUNC) {
-        if (v.td)
-            v.td->print(p_valname, lstr);
+        if (p_valindx != PTF_tTABLE) {
+            if (v.td)
+                v.td->print(p_valname, lstr);
+        }
+        else {
+            if (v.table) {
+                lstr.add("table(");
+                lstr.add(v.table->name());
+                lstr.add_c(' ');
+                p_left->print_string(lstr);
+                lstr.add_c(')');
+            }
+        }
     }
     else if (p_type == PT_PLACEHOLDER || p_type == PT_MACROARG)
         lstr.add(p_valname);
@@ -2525,6 +2512,8 @@ IFparseNode::copy_prv(bool skip_nd)
     if (newp->p_type == PT_TFUNC) {
         if (p_valindx != PTF_tTABLE)
             newp->v.td = v.td ? v.td->dup() : 0;
+        else if (v.table)
+            IP.tablFind(v.table->name(), &newp->v.table, p_tree->ckt());
     }
     else if (p_type == PT_PARAM || p_type == PT_PLACEHOLDER ||
             p_type == PT_MACROARG) {
@@ -2568,7 +2557,7 @@ void
 IFparseNode::p_init_func(double step, double finaltime, bool skipbr)
 {
     // Only needed for "tran" funcs.
-    if (p_type == PT_TFUNC && v.td) {
+    if (p_type == PT_TFUNC && p_valindx != PTF_tTABLE && v.td) {
         // Skip breakpoint setting if time is not independent variable.
         if (p_valindx == PTF_tPWL && p_tree->num_xvars())
             skipbr = true;

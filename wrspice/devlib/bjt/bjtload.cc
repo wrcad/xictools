@@ -511,6 +511,11 @@ bjtstuff::bjt_iv(sCKT *ckt, sBJTmodel *model, sBJTinstance *inst)
 
     inst->BJTcb = cbe/inst->BJTtBetaF + cben + cbc/inst->BJTtBetaR + cbcn;
 
+    // Avoid a problem with Apple Si compiler optimizations that will
+    // divide by zero before the test for zero denominator.
+#ifdef __APPLE__
+inst->BJTgx = 0;
+#endif
     //
     //   determine dc incremental conductances
     //
@@ -523,10 +528,13 @@ bjtstuff::bjt_iv(sCKT *ckt, sBJTmodel *model, sBJTinstance *inst)
     }
     else
         temp = rbpr + rbpi*qb;
-    if (temp != 0)
+
+    if (temp != 0.0)
         inst->BJTgx = 1/temp;
+#ifndef __APPLE__
     else
         inst->BJTgx = 0;
+#endif
 
     inst->BJTgpi = gbe/inst->BJTtBetaF + gben;
     inst->BJTgmu = gbc/inst->BJTtBetaR + gbcn;

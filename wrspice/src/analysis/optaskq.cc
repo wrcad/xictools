@@ -142,9 +142,6 @@ sOPTIONS::dump()
     askOpt(OPT_FPEMODE, &value, &notset);
     if (!notset)
         TTY.printf(ifmt, spkw_fpemode, value.iValue);
-    askOpt(OPT_FPEMODE, &value, &notset);
-    if (!notset)
-        TTY.printf(ifmt, spkw_fpemode, value.iValue);
     askOpt(OPT_GMINSTEPS, &value, &notset);
     if (!notset)
         TTY.printf(ifmt, spkw_gminsteps, value.iValue);

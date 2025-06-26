@@ -422,7 +422,7 @@ QTsimParamDlg::QTsimParamDlg(int xx, int yy)
     grid->setSpacing(2);
 
     gb = new QGroupBox();
-    grid->addWidget(gb, 0, 0, 1, 4);
+    grid->addWidget(gb, 0, 0, 1, 2);
     hb = new QHBoxLayout(gb);
     label = new QLabel(tr("Convergence Parameters"));
     hb->addWidget(label);
@@ -521,7 +521,7 @@ QTsimParamDlg::QTsimParamDlg(int xx, int yy)
     entry = KWGET(spkw_rampup);
     if (entry) {
         dblpr(tbuf, 2, 0.0, true);
-        entry->ent = new QTkwent(KW_NO_SPIN, QTkwent::ke_real_func, entry,
+        entry->ent = new QTkwent(KW_FLOAT, QTkwent::ke_real_func, entry,
             tbuf);
         grid->addWidget(entry->qtent(), 7, 0);
         entry->qtent()->setup(0.0, 0.1, 0.0, 0.0, 2);
