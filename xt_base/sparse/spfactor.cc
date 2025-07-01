@@ -3679,7 +3679,8 @@ spMatrixFrame::CreateFillin(int row, int col)
     ba_setbit(row, col, 1);
 #endif
 #if SP_BUILDHASH
-    sph_add(IntToExtRowMap[row], IntToExtColMap[col], pElement);
+    if (BuildHash)
+        sph_add(IntToExtRowMap[row], IntToExtColMap[col], pElement);
 #endif
 
     // Update Markowitz counts and products.

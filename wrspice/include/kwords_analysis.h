@@ -173,6 +173,7 @@ extern const char *spkw_forcegmin;
 extern const char *spkw_gminfirst;
 extern const char *spkw_hspice;
 extern const char *spkw_jjaccel;
+extern const char *spkw_nocacheelts;
 extern const char *spkw_nodcop;
 extern const char *spkw_noiter;
 extern const char *spkw_nojjtp;

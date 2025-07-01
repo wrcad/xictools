@@ -69,6 +69,9 @@ Authors: 1985 Thomas L. Quarles
 // Use WRspice pre-loading of constant elements.
 #define USE_PRELOAD
 
+// Undocumented HSPICE compatibility fix.
+//#define USE_PWRMODE
+
 namespace SRC {
 
 struct sSRCinstance;
@@ -224,7 +227,9 @@ using namespace SRC;
 enum {
     SRC_I = GENSRC_I,  // GENSRC_I = 1
     SRC_V = GENSRC_V,
+#ifdef USE_PWRMODE
     SRC_PWRMODE,
+#endif
     SRC_DEP,
     SRC_DC,
     SRC_AC,

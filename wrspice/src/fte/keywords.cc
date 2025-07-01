@@ -4983,6 +4983,23 @@ struct KWent_jjaccel : public KWent
     }
 };
 
+struct KWent_nocacheelts : public KWent
+{
+    KWent_nocacheelts() { set(
+        spkw_nocacheelts,
+        VTYP_BOOL, 0.0, 0.0,
+        "Use legacy code to build sparse matrix."); }
+
+    void callback(bool isset, variable *v)
+    {
+        if (isset)
+            v->set_boolean(true);
+        if (checknset(word, isset, v))
+            return;
+        KWent::callback(isset, v);
+    }
+};
+
 struct KWent_noiter : public KWent
 {
     KWent_noiter() { set(
@@ -5593,6 +5610,7 @@ Kword *cKeyWords::KWsim[] = {
     new KWent_modelcard(),
     new KWent_pexnodes(),
     new KWent_nobjthack(),
+    new KWent_nocacheelts(),
     new KWent_noiter(),
     new KWent_nojjtp(),
     new KWent_noklu(),
@@ -5676,6 +5694,7 @@ Kword *cKeyWords::KWsim[] = {
     new KWent_gminfirst(),
     new KWent_hspice(),
     new KWent_jjaccel(),
+    new KWent_nocacheelts(),
     new KWent_noiter(),
     new KWent_nojjtp(),
     new KWent_noklu(),

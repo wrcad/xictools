@@ -58,8 +58,10 @@ IP("i",                 SRC_I,              IF_PARSETREE,
                 "Current source"),
 IP("v",                 SRC_V,              IF_PARSETREE,
                 "Voltage source"),
+#ifdef USE_PWRMODE
 IP("power",             SRC_PWRMODE,        IF_INTEGER,
                 "Power mode (unused)"),
+#endif
 IO("type",              SRC_DEP,            IF_INTEGER,
                 "Type of dependency"),
 IO("dc",                SRC_DC,             IF_REAL|IF_PRINCIPAL,

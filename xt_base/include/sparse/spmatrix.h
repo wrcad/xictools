@@ -357,7 +357,7 @@
 #define  SP_OPT_INTERRUPT                   0
 #define  SP_OPT_DEFAULT_PARTITION           spINDIRECT_PARTITION
 #define  SP_OPT_LONG_DBL_SOLVE              1
-#define  SP_BUILDHASH                       1
+#define  SP_BUILDHASH                       0
 #define  SP_BITFIELD                        0
 #define  SP_OPT_DEBUG                       0
 
@@ -483,6 +483,8 @@
 #define  spZERO_DIAG            E_SINGULAR
 #define  spSINGULAR             E_SINGULAR
 #define  spNO_MEMORY            E_NOMEM
+
+struct sCKT;
 
 #else
 
@@ -874,8 +876,8 @@ protected:
 #define SP_EXT_PREC     0x8
 #define SP_TRACE        0x10
 #define SP_NOMAPTR      0x20
+#define SP_NOCACHEELTS  0x40
 
-#if SP_BUILDHASH
 //
 // Implement a hash table for quick access of elements by row/col.
 //
@@ -884,7 +886,7 @@ struct spHelt
     int row;
     int col;
     spMatrixElement *eptr;
-    struct spHelt *next;
+    spHelt *next;
 };
 
 #define SP_HBLKSZ 1024
@@ -892,7 +894,7 @@ struct spHelt
 struct spHeltBlk
 {
     spHeltBlk *next;
-    struct spHelt elts[SP_HBLKSZ];
+    spHelt elts[SP_HBLKSZ];
 };
 
 struct spHtab
@@ -908,12 +910,11 @@ struct spHtab
 private:
     void rehash();
 
-    struct spHelt **entries;
+    spHelt **entries;
     unsigned int mask;
     unsigned int allocated;
     unsigned int getcalls;
 };
-#endif
 
 
 //  MATRIX FRAME CLASS
@@ -1210,9 +1211,9 @@ public:
     void     spSetBuildState(int);
     spREAL*  spGetElement(int, int);
 #if SP_OPT_QUAD_ELEMENT
-    int      spGetAdmittance(int, int, struct spTemplate*);
-    int      spGetQuad(int, int, int, int, struct spTemplate*);
-    int      spGetOnes(int, int, int, struct spTemplate*);
+    int      spGetAdmittance(int, int, spTemplate*);
+    int      spGetQuad(int, int, int, int, spTemplate*);
+    int      spGetOnes(int, int, int, spTemplate*);
 #endif
     void     spSetMatlabMatrix(spMatlabMatrix*);
     void     spSortElements();
@@ -1248,14 +1249,13 @@ public:
 
     // spspice.cc
 #ifdef WRSPICE
-    void     spSwitchMatrix();
     void     spSaveForInitialization();
     void     spLoadInitialization();
     void     spNegate();
     double   spLargest();
     double   spSmallest();
     bool     spLoadGmin(int, double, double, bool, bool);
-    bool     spCheckNode(int, struct sCKT*);
+    bool     spCheckNode(int, sCKT*);
     void     spGetStat(int*, int*, int*);
     int      spAddCol(int, int);
     int      spZeroCol(int);
@@ -1338,7 +1338,8 @@ private:
     spMatrixElement *FindElementInCol(spMatrixElement**, int, int, int);
     spMatrixElement *CreateElement(int, int, spMatrixElement**, int);
     void LinkRows();
-#if SP_BUILDHASH
+
+//XXX #if SP_BUILDHASH
     // Add data to the hash table, return true if added, false if
     // already there or null.  Note that the Row and Col in data are
     // actually ignored.
@@ -1388,7 +1389,7 @@ private:
     void sph_destroy()
         {
             while (HashElementBlocks) {
-                struct spHeltBlk *hx = HashElementBlocks;
+                spHeltBlk *hx = HashElementBlocks;
                 HashElementBlocks = HashElementBlocks->next;
                 delete hx;
             }
@@ -1397,7 +1398,7 @@ private:
         }
 
     spHelt *sph_newhelt(int, int, spMatrixElement*);
-#endif
+//XXX #endif
 
     // spfactor.cc
 #if SP_BITFIELD
@@ -1496,11 +1497,11 @@ private:
     spBOOLEAN*                  DoCmplxDirect;
     spBOOLEAN*                  DoRealDirect;
     spMatlabMatrix              *Matrix;
-#if SP_BUILDHASH
-    struct spHtab               *ElementHashTab;
-    struct spHeltBlk            *HashElementBlocks;
+//XXX #if SP_BUILDHASH
+    spHtab                      *ElementHashTab;
+    spHeltBlk                   *HashElementBlocks;
     unsigned int                HashElementCount;
-#endif
+//XXX #endif
 #if SP_BITFIELD
     unsigned int                **BitField;
 #endif
@@ -1535,6 +1536,9 @@ private:
     spBOOLEAN                   LongDoubles;
 #endif
     spBOOLEAN                   RemapInTranslate;
+//XXX #if SP_BUILDHASH
+    spBOOLEAN                   BuildHash;
+//XXX endif
 
     int                         PartitionMode;
     int                         PivotsOriginalCol;

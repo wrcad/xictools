@@ -156,7 +156,10 @@ sSENSint::setup(int sz, bool is_dc)
     size = sz;
 
     // Create the perturbation matrix.
-    dY = new spMatrixFrame(size, SP_COMPLEX | SP_NO_KLU | SP_NO_SORT);
+    // We can't use KLU, sorting, or cching here.
+    // XXX Check this, make it work with all flags?
+    dY = new spMatrixFrame(size,
+        SP_COMPLEX | SP_NO_KLU | SP_NO_SORT | SP_NOCACHEELTS);
     int error = dY->spError();
     if (error)
         return (error);

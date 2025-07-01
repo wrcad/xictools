@@ -168,21 +168,26 @@ QTsimParamDlg::QTsimParamDlg(int xx, int yy)
         grid->addWidget(entry->qtent(), 1, 3);
     }
 
+    entry = KWGET(spkw_nocacheelts);
+    if (entry) {
+        entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_bool_func, entry, 0);
+        grid->addWidget(entry->qtent(), 2, 0);
+    }
     entry = KWGET(spkw_fpemode);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_int_func, entry, "0");
-        grid->addWidget(entry->qtent(), 2, 0);
+        grid->addWidget(entry->qtent(), 2, 1);
         entry->qtent()->setup(0, 1.0, 0.0, 0.0, 0);
     }
     entry = KWGET(spkw_savecurrent);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_bool_func, entry, 0);
-        grid->addWidget(entry->qtent(), 2, 1);
+        grid->addWidget(entry->qtent(), 2, 2);
     }
     entry = KWGET(spkw_dcoddstep);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_bool_func, entry, 0);
-        grid->addWidget(entry->qtent(), 2, 2);
+        grid->addWidget(entry->qtent(), 2, 3);
     }
 
     entry = KWGET(spkw_loadthrds);
@@ -521,12 +526,14 @@ QTsimParamDlg::QTsimParamDlg(int xx, int yy)
     entry = KWGET(spkw_rampup);
     if (entry) {
         dblpr(tbuf, 2, 0.0, true);
-        entry->ent = new QTkwent(KW_FLOAT, QTkwent::ke_real_func, entry,
+        entry->ent = new QTkwent(KW_NO_SPIN, QTkwent::ke_real_func, entry,
             tbuf);
-        grid->addWidget(entry->qtent(), 7, 0);
+        QSizePolicy p(entry->qtent()->sizePolicy());
+        p.setHorizontalPolicy(QSizePolicy::Maximum);
+        entry->qtent()->setSizePolicy(p);
+        grid->addWidget(entry->qtent(), 7, 0, 1,2);
         entry->qtent()->setup(0.0, 0.1, 0.0, 0.0, 2);
     }
-    grid->setRowStretch(8, 1);
 
     // Devices page
     //

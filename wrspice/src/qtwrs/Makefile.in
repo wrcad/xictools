@@ -160,10 +160,10 @@ mocclean:
 	-@rm -f $(MOCFILES)
 
 clean: mocclean
-	-rm *.o $(LIB_TARGET)
+	-@rm *.o $(LIB_TARGET)
 
 distclean:
-	-rm *.o $(LIB_TARGET) Makefile
+	-@rm *.o $(LIB_TARGET) Makefile
 
 resource.o: ../msw/resource.cc ../msw/wrs.rc
 	vers=$(SPICE_VERSION); \

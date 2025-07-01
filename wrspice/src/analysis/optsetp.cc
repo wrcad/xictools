@@ -106,6 +106,7 @@ const char *spkw_forcegmin      = "forcegmin";
 const char *spkw_gminfirst      = "gminfirst";
 const char *spkw_hspice         = "hspice";
 const char *spkw_jjaccel        = "jjaccel";
+const char *spkw_nocacheelts    = "nocacheelts";
 const char *spkw_nodcop         = "nodcop";
 const char *spkw_noiter         = "noiter";
 const char *spkw_nojjtp         = "nojjtp";
@@ -381,6 +382,10 @@ sOPTIONS::setup(const sOPTIONS *opts, OMRG_TYPE mt)
     if (opts->OPTjjaccel_given && (mt == OMRG_GLOBAL || !OPTjjaccel_given)) {
         OPTjjaccel = opts->OPTjjaccel;
         OPTjjaccel_given = 1;
+    }
+    if (opts->OPTnocacheelts && (mt == OMRG_GLOBAL || !OPTnocacheelts_given)) {
+        OPTnocacheelts = opts->OPTnocacheelts;
+        OPTnocacheelts_given = 1;
     }
     if (opts->OPTnodcop_given && (mt == OMRG_GLOBAL || !OPTnodcop_given)) {
         OPTnodcop = opts->OPTnodcop;
@@ -905,6 +910,14 @@ OPTanalysis::setParm(sJOB *anal, int which, IFdata *data)
         else
             opt->OPTjjaccel_given = 0;
         break;
+    case OPT_NOCACHEELTS:
+        if (value) {
+            opt->OPTnocacheelts = value->iValue;
+            opt->OPTnocacheelts_given = 1;
+        }
+        else
+            opt->OPTnocacheelts_given = 0;
+        break;
     case OPT_NODCOP:
         if (value) {
             opt->OPTnodcop = value->iValue;
@@ -1239,6 +1252,8 @@ namespace {
             "suppress warning, promote Hspice compatibility"),
         IFparm(spkw_jjaccel,        OPT_JJACCEL,        IF_IO|IF_FLAG,
             "Accelerate Josephson-only simulation"),
+        IFparm(spkw_nocacheelts,    OPT_NOCACHEELTS,    IF_IO|IF_FLAG,
+            "Use legacy code when building sparse matrix"),
         IFparm(spkw_nodcop,         OPT_NODCOP,         IF_IO|IF_FLAG,
             "No DC operating point computation before AC analysis"),
         IFparm(spkw_noiter,         OPT_NOITER,         IF_IO|IF_FLAG,

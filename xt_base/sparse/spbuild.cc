@@ -152,6 +152,17 @@
 //        Another S. Whiteley extension, enables some tracing via printf
 //        statements, for debugging purposes.
 //
+//      SP_NOMAPTR
+//        Skip mapping of node numbers to matrix indices.  If the node
+//        numbers are already compact and start with 1, we can skip the
+//        mapping operation.
+//
+//      SP_NOCACHEELTS
+//        By default we create and use a cache for matrix entries when
+//        creating the sparse matrix structure.  This avoids walking
+//        linked-lists and can be much faster that the legacy method.
+//        This flag selects the legacy method instead.
+//
 //  >>> Local variables:
 //
 //  allocatedSize  (int)
@@ -234,6 +245,9 @@ spMatrixFrame::spMatrixFrame(int size, int flags)
                             (sizeof(long double) > sizeof(double)) ? YES : NO);
 #endif
     RemapInTranslate                = ((flags & SP_NOMAPTR) ? NO : YES);
+#if SP_BUILDHASH
+    BuildHash                       = ((flags & SP_NOCACHEELTS) ? NO : YES);
+#endif
 
     PartitionMode                   = spDEFAULT_PARTITION;
     PivotsOriginalCol               = 0;
@@ -336,7 +350,8 @@ spMatrixFrame::~spMatrixFrame()
     delete [] DoRealDirect;
     delete Matrix;
 #if SP_BUILDHASH
-    sph_destroy();
+    if (BuildHash)
+        sph_destroy();
 #endif
 #if SP_BITFIELD
     ba_destroy();
@@ -439,68 +454,70 @@ spMatrixFrame::spSetBuildState(int n)
         // Called when we've completed the first pass, and therefor
         // know the size of the matrix.
         
-#if SP_BUILDHASH
         // Link the hash table elements into a 2D linked list, and
         // fill in the row/col list head arrays.
 
-        EnlargeMatrix(ExtSize); // sets Size.
-        spMatrixElement *list = sph_list();
-        list = sortlist(list);
+#if SP_BUILDHASH
+        if (BuildHash) {
+            EnlargeMatrix(ExtSize); // sets Size.
+            spMatrixElement *list = sph_list();
+            list = sortlist(list);
 
-        unsigned int sp1 = Size+1;
-        spMatrixElement **lastInRow = new spMatrixElement*[sp1];
-        memset(lastInRow, 0, sp1*sizeof(spMatrixElement*));
-        memset(FirstInRow, 0, sp1*sizeof(spMatrixElement*));
-        spMatrixElement **lastInCol = new spMatrixElement*[sp1];
-        memset(lastInCol, 0, sp1*sizeof(spMatrixElement*));
-        memset(FirstInCol, 0, sp1*sizeof(spMatrixElement*));
+            unsigned int sp1 = Size+1;
+            spMatrixElement **lastInRow = new spMatrixElement*[sp1];
+            memset(lastInRow, 0, sp1*sizeof(spMatrixElement*));
+            memset(FirstInRow, 0, sp1*sizeof(spMatrixElement*));
+            spMatrixElement **lastInCol = new spMatrixElement*[sp1];
+            memset(lastInCol, 0, sp1*sizeof(spMatrixElement*));
+            memset(FirstInCol, 0, sp1*sizeof(spMatrixElement*));
 
-        Elements = 0;
-        spMatrixElement *pnxt;
-        for (spMatrixElement *p = list; p; p = pnxt) {
-            Elements++;
-            pnxt = p->NextInRow;
-            p->NextInRow = 0;
-            p->NextInCol = 0;
+            Elements = 0;
+            spMatrixElement *pnxt;
+            for (spMatrixElement *p = list; p; p = pnxt) {
+                Elements++;
+                pnxt = p->NextInRow;
+                p->NextInRow = 0;
+                p->NextInCol = 0;
 
-            if (!FirstInRow[p->Row]) {
-                FirstInRow[p->Row] = p;
-                lastInRow[p->Row] = p;
+                if (!FirstInRow[p->Row]) {
+                    FirstInRow[p->Row] = p;
+                    lastInRow[p->Row] = p;
+                }
+                else {
+                    lastInRow[p->Row]->NextInRow = p;
+                    lastInRow[p->Row] = p;
+                }
+
+                if (!FirstInCol[p->Col]) {
+                    FirstInCol[p->Col] = p;
+                    lastInCol[p->Col] = p;
+                }
+                else {
+                    lastInCol[p->Col]->NextInCol = p;
+                    lastInCol[p->Col] = p;
+                }
+
+                if (p->Row == p->Col)
+                    Diag[p->Row] = p;
             }
-            else {
-                lastInRow[p->Row]->NextInRow = p;
-                lastInRow[p->Row] = p;
-            }
-
-            if (!FirstInCol[p->Col]) {
-                FirstInCol[p->Col] = p;
-                lastInCol[p->Col] = p;
-            }
-            else {
-                lastInCol[p->Col]->NextInCol = p;
-                lastInCol[p->Col] = p;
-            }
-
-            if (p->Row == p->Col)
-                Diag[p->Row] = p;
-        }
-        delete [] lastInRow;
-        delete [] lastInCol;
-        RowsLinked = YES;
+            delete [] lastInRow;
+            delete [] lastInCol;
+            RowsLinked = YES;
 
 #if SP_OPT_TRANSLATE
-        if (NOT RemapInTranslate) {
-            // Build identity maps.
-            delete [] ExtToIntColMap;
-            delete [] ExtToIntRowMap;
-            ExtToIntColMap = new int[sp1];
-            ExtToIntRowMap = new int[sp1];
-            for (int i = 0; i <= Size; i++) {
-                ExtToIntColMap[i] = i;
-                ExtToIntRowMap[i] = i;
+            if (NOT RemapInTranslate) {
+                // Build identity maps.
+                delete [] ExtToIntColMap;
+                delete [] ExtToIntRowMap;
+                ExtToIntColMap = new int[sp1];
+                ExtToIntRowMap = new int[sp1];
+                for (int i = 0; i <= Size; i++) {
+                    ExtToIntColMap[i] = i;
+                    ExtToIntRowMap[i] = i;
+                }
             }
-        }
 #endif
+        }
 #endif
         BuildState = 1;
         return;
@@ -555,41 +572,48 @@ spMatrixFrame::spGetElement(int inrow, int incol)
 
     int row = inrow;
     int col = incol;
+#if SP_BUILDHASH
+    if (BuildHash) {
 #if SP_OPT_TRANSLATE
-    if (RemapInTranslate)
-        Translate(&row, &col);
+        if (RemapInTranslate)
+            Translate(&row, &col);
 #endif
 
-    spMatrixElement *pElement = 0;
-#if SP_BUILDHASH
-    if (BuildState == 0) {
-        // The first time we load the element nodes, we simply load
-        // them into a hash table, that keys off x,y.
+        spMatrixElement *pElement = 0;
+        if (BuildState == 0) {
+            // The first time we load the element nodes, we simply load
+            // them into a hash table, that keys off x,y.
 
-        pElement = sph_get(row, col);
-        if (pElement)
+            pElement = sph_get(row, col);
+            if (pElement)
+                return ((spREAL*)pElement);
+            pElement = GetElement();
+            pElement->Row = row;
+            pElement->Col = col;
+            sph_add(row, col, pElement);
+            if (row > ExtSize)
+                ExtSize = row;
+            if (col > ExtSize)
+                ExtSize = col;
             return ((spREAL*)pElement);
-        pElement = GetElement();
-        pElement->Row = row;
-        pElement->Col = col;
-        sph_add(row, col, pElement);
-        if (row > ExtSize)
-            ExtSize = row;
-        if (col > ExtSize)
-            ExtSize = col;
-        return ((spREAL*)pElement);
-    }
-    if (!Matrix) {
-        pElement = sph_get(row, col);
-        if (!pElement) {
-            // Something is messed up.
         }
+        if (!Matrix) {
+            pElement = sph_get(row, col);
+            if (!pElement) {
+                // Something is messed up.
+            }
+            return ((spREAL*)pElement);
+        }
+        if (Matrix)
+            return (Matrix->find(row-1, col-1));
+
         return ((spREAL*)pElement);
     }
-    if (Matrix)
-        return (Matrix->find(row-1, col-1));
+#endif // SP_BUILDHASH
 
-#else // SP_BUILDHASH
+#if SP_OPT_TRANSLATE
+    Translate(&row, &col);
+#endif
 
     if (Matrix)
         return (Matrix->find(row-1, col-1));
@@ -606,11 +630,11 @@ spMatrixFrame::spGetElement(int inrow, int incol)
 #endif
 #endif
 
+    spMatrixElement *pElement;
     if ((row == col) AND (Diag[row] != 0))
         pElement = Diag[row];
     else
         pElement = FindElementInCol(&FirstInCol[col], row, col, YES);
-#endif
     return ((spREAL*)pElement);
 }
 
@@ -799,7 +823,8 @@ spMatrixFrame::spSortElements()
     if (Matrix || NoSort)
         return;
 #if SP_BUILDHASH
-    sph_destroy();
+    if (BuildHash)
+        sph_destroy();
 #endif
 
     // Create the new array of elements.
@@ -834,12 +859,14 @@ spMatrixFrame::spSortElements()
             if (eptr->Row == eptr->Col)
                 Diag[i] = eptr;
 #if SP_BUILDHASH
-            // This is imperitive if SP_BITFIELD set, as the mapping
-            // is broken unless all elements are hashed.  It avoids
-            // the search traversals in spGetElement so is a good
-            // thing to do in any case.
-            sph_add(IntToExtRowMap[eptr->Row], IntToExtColMap[eptr->Col],
-                eptr);
+            if (BuildHash) {
+                // This is imperitive if SP_BITFIELD set, as the mapping
+                // is broken unless all elements are hashed.  It avoids
+                // the search traversals in spGetElement so is a good
+                // thing to do in any case.
+                sph_add(IntToExtRowMap[eptr->Row], IntToExtColMap[eptr->Col],
+                    eptr);
+            }
 #endif
 
             // Establish the pointer links.  The column link is trivial,

@@ -74,6 +74,8 @@ sCKT::NIinit()
             flags |= SP_TRACE;
         if (!CKTcurTask->TSKtranslate)
             flags |= SP_NOMAPTR;
+        if (CKTcurTask->TSKnocacheelts)
+            flags |= SP_NOCACHEELTS;
     }
     CKTmatrix = new spMatrixFrame(0, flags);
     return (CKTmatrix->spError());

@@ -57,29 +57,6 @@
 //
 
 
-// Switch to use of KLU for subsequent computation.
-//
-void
-spMatrixFrame::spSwitchMatrix()
-{
-#ifdef USE_KLU
-    ASSERT(IS_SPARSE(this));
-
-    if (BuildState == 1 AND (NOT NoKLU) AND klu_if.is_ok()) {
-        spSetMatlabMatrix(new KLUmatrix(Size, Elements, Complex, LongDoubles));
-        // We can now destroy all previous elements and fill-ins.
-        ElementAllocator.Clear();
-        FillinAllocator.Clear();
-        memset(FirstInCol, 0, (Size+1)*sizeof(void*));
-        memset(FirstInRow, 0, (Size+1)*sizeof(void*));
-        memset(Diag, 0, (Size+1)*sizeof(void*));
-        DataAddressChange = YES;
-        BuildState = 2;
-    }
-#endif
-}
-
-
 //  COPY REAL PART TO INITIALIZER PART OF MATRIX
 //
 // Sets the init component to the value of the real component for all
@@ -102,6 +79,22 @@ void
 spMatrixFrame::spSaveForInitialization()
 {
     ASSERT(IS_SPARSE(this));
+
+#if SP_BUILDHASH
+#ifdef USE_KLU
+    if (BuildState == 1 AND (NOT NoKLU) AND klu_if.is_ok()) {
+        spSetMatlabMatrix(new KLUmatrix(Size, Elements, Complex, LongDoubles));
+        // We can now destroy all previous elements and fill-ins.
+        ElementAllocator.Clear();
+        FillinAllocator.Clear();
+        memset(FirstInCol, 0, (Size+1)*sizeof(void*));
+        memset(FirstInRow, 0, (Size+1)*sizeof(void*));
+        memset(Diag, 0, (Size+1)*sizeof(void*));
+        DataAddressChange = YES;
+        BuildState = 2;
+    }
+#endif
+#endif
 
     if (Matrix)
         Matrix->toInit();

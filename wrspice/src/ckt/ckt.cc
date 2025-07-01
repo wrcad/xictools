@@ -660,22 +660,6 @@ sCKT::doTaskSetup()
         }
     }
 
-    // If using KLU, the KLUmatrix is created, the original struct
-    // cleared, and all further matrix operations will be done using
-    // KLU.
-    //
-    CKTmatrix->spSwitchMatrix();
-
-    // The unchanging (real) constants in the matrix are preloaded
-    // during setup.  For DC and TRAN analysis (including operating
-    // point for AC), we copy the real part of the matrix into an
-    // otherwise unused field.  The (dc) load function, rather than
-    // clearing the real matrix, loads it with this field.  This saves
-    // a bit of computation.
-
-    // This caches the real part for reinitializing the matrix with
-    // spLoadInitialization.
-    //
     CKTmatrix->spSaveForInitialization();
     if (CKTmatrix->spDataAddressChange()) {
         // We're using KLU, so all of the pointers into the
