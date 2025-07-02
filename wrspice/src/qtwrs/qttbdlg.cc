@@ -656,14 +656,13 @@ QTtbDlg::update(ResUpdType updt)
 void
 QTtbDlg::revert_focus()
 {
-    VTvalue vv;
 #ifdef Q_OS_MACOS
-    system(
-        "osascript -e \"tell application \\\"Terminal\\\" to activate\"");
-    if (!Sp.GetVar("tbontop", VTYP_BOOL, &vv))
+//    system(
+//        "osascript -e \"tell application \\\"Terminal\\\" to activate\"");
+    if (!Sp.GetVar("tbontop", VTYP_BOOL, 0))
         setWindowFlag(Qt::WindowStaysOnTopHint, false);
 #else
-    if (!Sp.GetVar("tbontop", VTYP_BOOL, &vv))
+    if (!Sp.GetVar("tbontop", VTYP_BOOL, 0))
         setWindowFlag(Qt::WindowStaysOnTopHint, false);
     setAttribute(Qt::WA_ShowWithoutActivating, false);
 #endif

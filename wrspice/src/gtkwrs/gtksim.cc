@@ -228,21 +228,21 @@ GTKtoolbar::PopUpSimDefs(ShowMode mode, int x, int y)
     }
 
     entrycount++;
-    entry = KWGET(spkw_nocacheelts);
+    entry = KWGET(spkw_fpemode);
     if (entry) {
-        entry->ent = new xEnt(kw_bool_func);
-        entry->xent()->create_widgets(entry, 0);
+        entry->ent = new xEnt(kw_int_func);
+        entry->xent()->setup(0, 1.0, 0.0, 0.0, 0);
+        entry->xent()->create_widgets(entry, "0");
 
         gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 0, 1,
             entrycount, entrycount + 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
     }
-    entry = KWGET(spkw_fpemode);
+    entry = KWGET(spkw_nocacheelts);
     if (entry) {
-        entry->ent = new xEnt(kw_int_func);
-        entry->xent()->setup(0, 1.0, 0.0, 0.0, 0);
-        entry->xent()->create_widgets(entry, "0");
+        entry->ent = new xEnt(kw_bool_func);
+        entry->xent()->create_widgets(entry, 0);
 
         gtk_table_attach(GTK_TABLE(form), entry->xent()->frame, 1, 2,
             entrycount, entrycount + 1,

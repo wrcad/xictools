@@ -168,16 +168,16 @@ QTsimParamDlg::QTsimParamDlg(int xx, int yy)
         grid->addWidget(entry->qtent(), 1, 3);
     }
 
-    entry = KWGET(spkw_nocacheelts);
-    if (entry) {
-        entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_bool_func, entry, 0);
-        grid->addWidget(entry->qtent(), 2, 0);
-    }
     entry = KWGET(spkw_fpemode);
     if (entry) {
         entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_int_func, entry, "0");
-        grid->addWidget(entry->qtent(), 2, 1);
+        grid->addWidget(entry->qtent(), 2, 0);
         entry->qtent()->setup(0, 1.0, 0.0, 0.0, 0);
+    }
+    entry = KWGET(spkw_nocacheelts);
+    if (entry) {
+        entry->ent = new QTkwent(KW_NORMAL, QTkwent::ke_bool_func, entry, 0);
+        grid->addWidget(entry->qtent(), 2, 1);
     }
     entry = KWGET(spkw_savecurrent);
     if (entry) {

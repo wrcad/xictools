@@ -37,9 +37,11 @@ shell_vars
 !!REDIRECT sourcepath   shell_vars#sourcepath
 !!REDIRECT unixcom      shell_vars#unixcom
 !!REDIRECT width        shell_vars#width
+
 !!REDIRECT wmfocusfix   shell_vars#wmfocusfix
 !!REDIRECT nototop      shell_vars#nototop
 !!REDIRECT tbontop      shell_vars#tbontop
+!!REDIRECT plrevert     shell_vars#plrevert
 
 !! variables.tex 052222
 !!KEYWORD
@@ -313,26 +315,28 @@ Shell Option Variables
     terminal window).  If not set, 80 columns will be assumed.
     </dl>
 
+    <p>
+    The remaining variables listed below are for fine-tuning the GUI
+    for different operating environments.  The desired behavior is
+    as follows.  When <i>WRspice</i> starts in interactive graphical
+    mode from a terminal window, the <a href="toolbar"><b>Tool
+    Control</b></a> window will appear above other windows, and the
+    keyboard focus should stay with the terminal window.  Similarly,
+    when the user types a command such as a plot command that brings
+    up another window, the new window should appear above existing
+    windows, and the terminal window should retain the keyboard focus.
+    Unfortunately, not all window managers are cooperative, or know
+    the protocols.  The best support is generally found under Linux
+    running the X-Window system.  Windows and macOS pose challenges.
+
     <a name="wmfocusfix"></a>
     <dl>
     <dt><tt>wmfocusfix</tt><dd>
-    When <i>WRspice</i> starts in interactive graphical mode from a
-    terminal window, the <a href="toolbar"><b>Tool Control</b></a>
-    window will appear above other windows, and the keyboard focus
-    should stay with the terminal window.  Similarly, when the user
-    types a command such as a plot command that brings up another
-    window, the new window should appear above existing windows, and
-    the terminal window should retain the keyboard focus.
-
-    <p>
-    Unfortunately, not all window managers are cooperative, or know
-    the protocols.  By setting this variable, a slightly more
-    brute-force approach is taken to keep the terminal window from
-    losing focus.  This may fix the problem, but in some cases this
-    may have side-effects, such as causing pop-up windows to appear
-    below existing windows.  Anyway, if the terminal window loses
-    focus when another window pops up, and the user finds this
-    annoying, then setting this boolean variable in the <a
+    This variable is recognized in GTK versions only.
+    By setting this variable, a slightly brute-force approach is taken
+    to keep the terminal window from losing focus.  If the terminal
+    window loses focus when another window pops up, and the user finds
+    this annoying, then setting this boolean variable in the <a
     href="startup_files"><tt>.wrspiceinit</tt></a> file might fix the
     problem.
     </dl>
@@ -340,6 +344,7 @@ Shell Option Variables
     <a name="nototop"></a>
     <dl>
     <dt><tt>nototop</tt><dd>
+    This variable is recognized in GTK versions only.
     Ordinarily, the window manager is asked to raise new windows to
     the top.  If this boolean variable is set, that will not happen. 
     This will probably be needed when using a Windows PC X-server to
@@ -352,11 +357,32 @@ Shell Option Variables
     <a name="tbontop"></a>
     <dl>
     <dt><tt>tbontop</tt><dd>
-    If this boolean variable is set in a
-    <a href=".wrspiceinit"><tt>.wrspiceinit</tt></a> file, the
+    If this boolean variable, recognized in Qt versions only, is set
+    in a <a href=".wrspiceinit"><tt>.wrspiceinit</tt></a> file, the
     <a href="toolbar"><b>Tool Control</b></a> window (if shown) will
     always appear on top of other windows, if the windowing system
     permits this.
+    </dl>
+
+    <a name="plrevert"></a>
+    <dl>
+    <dt><tt>plrevert</tt><dd>
+    This is recognized in Qt builds for Apple macOS only, and lets
+    the user choose between two less-than-perfect solutions to a
+    macOS design deficiency.  It seems not possible to pop-up a
+    new window and have it displayed above other windows, yet not
+    take the keyboard focus.  In particular, for the
+    <a href="plot"><b>plot</b></a> command when a new plot window is
+    produced, the default behavior is to raise the plot window to the
+    top, and it will have the keyboard focus.  The user will have to
+    click in the console to revert focus, which may cause the plot
+    window to disappear underneath the console.  But, at least you
+    know where to hunt for it!  By setting <tt>plrevert</tt>, the
+    behavior changes to keeping keyboard focus in the console, but
+    the plot window may be created underneath the console and not
+    be visible.  So, pick your poison.  Note that the GTK version
+    does not have this problem due to intervention by the X-Window
+    system.
     </dl>
 !!LATEX shell_vars variables.tex
 These variables control behavior of the {\WRspice} shell.  Most of
@@ -561,27 +587,34 @@ when output is being directed to a file.  This will also be used for
 standard output if for some reason {\WRspice} cannot determine the
 width of the terminal window (or has no terminal window).  If not set,
 80 columns will be assumed.
+\end{description}`
 
+The remaining variables listed below are for fine-tuning the GUI for
+different operating environments.  The desired behavior is as
+follows.  When {\WRspice} starts in interactive graphical mode from
+a terminal window, the {\cb Tool Control} window will appear above
+other windows, and the keyboard focus should stay with the terminal
+window.  Similarly, when the user types a command such as a plot
+command that brings up another window, the new window should appear
+above existing windows, and the terminal window should retain the
+keyboard focus.  Unfortunately, not all window managers are
+cooperative, or know the protocols.  The best support is generally
+found under Linux running the X-Window system.  Windows and macOS
+pose challenges.
+
+\begin{description}
 \index{wmfocusfix variable}
 \item{\et wmfocusfix}\\
-When {\WRspice} starts in interactive graphical mode from a terminal
-window, the tool control window will appear above other windows, and
-the keyboard focus should stay with the terminal window.  Similarly,
-when the user types a command such as a plot command that brings up
-another window, the new window should appear above existing windows,
-and the terminal window should retain the keyboard focus.
-
-Unfortunately, not all window managers are cooperative, or know the
-protocols.  By setting this variable, a slightly more brute-force
-approach is taken to keep the terminal window from losing focus.  This
-may fix the problem, but in some cases this may have side-effects,
-such as causing pop-up windows to appear below existing windows. 
-Anyway, if the terminal window loses focus when another window pops
-up, and the user finds this annoying, then setting this boolean
-variable in the {\vt .wrspiceinit} file might fix the problem.
+This variable is recognized in GTK versions only.
+By setting this variable, a slightly brute-force approach is taken
+to keep the terminal window from losing focus.  If the terminal
+window loses focus when another window pops up, and the user finds
+this annoying, then setting this boolean variable in the
+{\vt .wrspiceinit} file might fix the problem.
 
 \index{nototop variable}
 \item{\et nototop}\\
+This variable is recognized in GTK versions only.
 Ordinarily, the window manager is asked to raise new windows to the
 top.  If this boolean variable is set, that will not happen.  This
 will probably be needed when using a Windows PC X-server to run
@@ -591,10 +624,28 @@ some others will always be shown on top of other windows.
 
 \index{tbontop variable}
 \item{\et tbontop}\\
-If this boolean variable is set in a {\vt .wrspiceinit} file, the
-{\cb Tool Control} window (if shown) will always appear on top of other
-windows, if the windowing system permits this.
+If this boolean variable, recognized in Qt versions only, is set in a
+{\vt .wrspiceinit} file, the {\cb Tool Control} window (if shown)
+will always appear on top of other windows, if the windowing system
+permits this.
 
+\index{plrevert variable}
+\item{\et plrevert}\\
+This is recognized in Qt builds for Apple macOS only, and lets the
+user choose between two less-than-perfect solutions to a macOS
+design deficiency.  It seems not possible to pop-up a new window
+and have it displayed above other windows, yet not take the
+keyboard focus.  In particular, for the {\cb plot} command when a
+new plot window is produced, the default behavior is to raise the
+plot window to the top, and it will have the keyboard focus.  The
+user will have to click in the console to revert focus, which may
+cause the plot window to disappear underneath the console.  But,
+at least you know where to hunt for it!  By setting
+{\vt plrevert}, the behavior changes to keeping keyboard focus in
+the console, but the plot window may be created underneath the
+console and not be visible.  So, pick your poison.  Note that the
+GTK version does not have this problem due to intervention by the
+X-Window system.
 \end{description}
 
 !!SEEALSO

@@ -1373,6 +1373,7 @@ namespace {
             // since the terminal is Cocoa, not X (regular xterms work
             // fine).  The following AppleScript will revert focus to the
             // Cocoa terminal.
+/* Works better without this.
 #ifdef __APPLE__
 #ifdef WITH_X11
             if (GTKdev::self()->ConsoleXid() == 0)
@@ -1380,6 +1381,7 @@ namespace {
                 system(
             "osascript -e \"tell application \\\"Terminal\\\" to activate\"");
 #endif
+*/
             gtk_window_set_keep_above(GTK_WINDOW(arg), false);
         }
         else if (RevertMode == RVTrhel7)

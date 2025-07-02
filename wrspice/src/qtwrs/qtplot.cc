@@ -239,8 +239,11 @@ QTplotDlg::init(cGraph*)
 
     if (isatty(fileno(stdin))) {
 #ifdef Q_OS_MACOS
-        // Terminal keeps focus, uncomment to give focus to plot.
-        //raise();
+        // Raise and give focus to plot.  If this is not called, plot
+        // may be behind the console or other windows, but console keeps
+        // focus.
+        if (!Sp.GetVar("plrevert", VTYP_BOOL, 0))
+            raise();
 #else
         setWindowFlag(Qt::WindowStaysOnTopHint);
         setAttribute(Qt::WA_ShowWithoutActivating);

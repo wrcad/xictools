@@ -274,6 +274,8 @@ options
       <td>Suppress warnings from unsupported HSPICE input.</td></tr>
     <tr><td><a href="jjaccel"><tt>jjaccel</tt></a></td>
       <td>Attempt to speed up Josephson junction transient analysis.</td></tr>
+    <tr><td><a href="nocacheelts"><tt>nocacheelts</tt></a></td>
+      <td>Use legacy algorithm when building sparse matrix.</td></tr>
     <tr><td><a href="noiter"><tt>noiter</tt></a></td>
       <td>Don't Newton iterate.</td></tr>
     <tr><td><a href="nojjtp"><tt>nojjtp</tt></a></td>
@@ -672,6 +674,7 @@ unused_vars
 !!REDIRECT gminfirst    sim_vars#gminfirst
 !!REDIRECT hspice       sim_vars#hspice
 !!REDIRECT jjaccel      sim_vars#jjaccel
+!!REDIRECT nocacheelts  sim_vars#nocacheelts
 !!REDIRECT noiter       sim_vars#noiter
 !!REDIRECT nojjtp       sim_vars#nojjtp
 !!REDIRECT noklu        sim_vars#noklu
@@ -1822,6 +1825,20 @@ Simulation Option Variables
 
     <p>
     Where set: <b>Simulation Options/Timestep</b>
+    </dl>
+
+!! 070125
+    <a name="nocacheelts"></a>
+    <dl>
+    <dt><tt>nocacheelts</tt><dd>
+    This is for debugging and benchmarking.  It disables use of the
+    more recent caching code used when building the sparse circuit
+    matrix used in simulation.  When set, the legacy Spice3 method
+    is used instead, which requires multiple linked list traversals
+    which can be quite slow.
+
+    <p>
+    Where set: <b>Simulation Options/General</b>
     </dl>
 
 !! 082015
@@ -3127,6 +3144,17 @@ the circuit consists of Josephson junctions, passive elements, and
 sources only, then setting this option may provide a reduction in
 simulation time.  It probably should not be used if semiconductor
 devices are present.
+
+% 070125
+\index{nocacheelts variable}
+\item{\et nocacheelts}\\
+Where set: {\cb Simulation Options/General}
+
+This is for debugging and benchmarking.  It disables use of the
+more recent caching code used when building the sparse circuit
+matrix used in simulation.  When set, the legacy Spice3 method
+is used instead, which requires multiple linked list traversals
+which can be quite slow.
 
 % 082015
 \index{noiter variable}

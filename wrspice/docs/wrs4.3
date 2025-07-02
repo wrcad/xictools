@@ -174,7 +174,7 @@ End of general info.
 
 
 ===============================================================================
-wrspice-4.3.23  6/19/2025
+wrspice-4.3.23  7/1/2025
 Current Release
 
 CHANGES AND NEW FEATURES
@@ -219,10 +219,10 @@ CHANGES AND NEW FEATURES
   but source is retained in the repository for now: bsim1, bsim2,
   bsim3.2.0, bsim3.2.4, bsimsoi-3.0, bsimsoi-4.0, bsimsoi-4.3,
   hisim-1.1.0, stag.  These are considered obsolete.  The bsim1/2
-  proc2mod utility was also removed.
-  A new source directory devlib/obsolete was created for old models
-  including bsim1 and bsim2, and moved bin/proc2mod.cc here,
-  deleting from make.
+  proc2mod utility was also removed.  A new source directory
+  devlib/obsolete was created for old models including bsim1 and
+  bsim2, and bin/proc2mod.cc was moved here, and deleted from the
+  makefile.
 
 * Support was added for a CSV file format (see "help csvfilefmt").
 
@@ -233,10 +233,37 @@ CHANGES AND NEW FEATURES
     -f filename:  Explicitly define output file.
     These must appear ahead of filename and vectors, previous syntax
     is also supported.
+
+* New "nocacheelts" circuit option variable.
+  This can be set from the General page of the Simulation Options
+  tool, or from within input or from the command line.  When given,
+  the faster/newer code that is used to build the sparse circuit
+  matrix is skipped in lieu of the original Spice3 code, which may
+  be much slower.  This is for debugging purposes.
+
+* New "plrevert" variable.
+  This is recognized in Qt builds for Apple macOS only, and lets the
+  user choose between two less-than-perfect solutions to a macOS
+  design deficiency.  It seems not possible to pop-up a new window
+  and have it displayed above other windows, yet not take the
+  keyboard focus.  In particular, for the plot command when a new
+  plot window is produced, the default behavior is to raise the plot
+  window to the top, and it will have the keyboard focus.  The user
+  will have to click in the console to revert focus, which may cause
+  the plot window to disappear underneath the console.  But, at
+  least you know where to hunt for it!  By setting
+  <tt>plrevert</tt>, the behavior changes to keeping keyboard focus
+  in the console, but the plot window may be created underneath the
+  console and not be visible.  So, pick your poison.  Note that the
+  GTK version does not have this problem due to intervention by the
+  X-Window system.
  
 
 BUGS FIXED
 ---- -----
+
+* Sensitivity analysis works again, it has been dead for a while
+  due to a bug in code added long ago.
 
 * Misc changes so that the tjm.va example will run.  The tjm.va and
   jj.va files had a common typo in the PHI0_2PI constant so neither
