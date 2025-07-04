@@ -70,7 +70,7 @@ Authors: 1985 Thomas L. Quarles
 #define USE_PRELOAD
 
 // Undocumented HSPICE compatibility fix.
-//#define USE_PWRMODE
+#define USE_PWRMODE
 
 namespace SRC {
 

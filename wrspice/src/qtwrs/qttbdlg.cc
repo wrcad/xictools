@@ -657,8 +657,10 @@ void
 QTtbDlg::revert_focus()
 {
 #ifdef Q_OS_MACOS
-//    system(
-//        "osascript -e \"tell application \\\"Terminal\\\" to activate\"");
+    if (Sp.GetVar("tbrevert", VTYP_BOOL, 0)) {
+        system(
+            "osascript -e \"tell application \\\"Terminal\\\" to activate\"");
+    }
     if (!Sp.GetVar("tbontop", VTYP_BOOL, 0))
         setWindowFlag(Qt::WindowStaysOnTopHint, false);
 #else

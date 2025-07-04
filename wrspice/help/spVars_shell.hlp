@@ -42,6 +42,7 @@ shell_vars
 !!REDIRECT nototop      shell_vars#nototop
 !!REDIRECT tbontop      shell_vars#tbontop
 !!REDIRECT plrevert     shell_vars#plrevert
+!!REDIRECT tbrevert     shell_vars#tbrevert
 
 !! variables.tex 052222
 !!KEYWORD
@@ -384,6 +385,19 @@ Shell Option Variables
     does not have this problem due to intervention by the X-Window
     system.
     </dl>
+
+    <a name="tbrevert"></a>
+    <dl>
+    <dt><tt>tbrevert</tt><dd>
+    This is recognized in Qt builds for Apple macOS only, and has
+    analogous functionality to the <vt>plrevert</tt> variable, but
+    applies to the <a href="toolbar"><b>Tool Control</b></a> window.
+    When set in a <a href=".wrspiceinit"><tt>.wrspiceinit</tt></a>
+    file, on program startup from a terminal window the terminal
+    will retain keyboard focus, however the <b>Tool Control</b>
+    window may become obscured.  If not set, the terminal window will
+    lose focus but the <b>Tool Control</b> window will remain on top.
+    </dl>
 !!LATEX shell_vars variables.tex
 These variables control behavior of the {\WRspice} shell.  Most of
 these variables can be set indirectly from the {\cb Shell Options}
@@ -646,6 +660,17 @@ the console, but the plot window may be created underneath the
 console and not be visible.  So, pick your poison.  Note that the
 GTK version does not have this problem due to intervention by the
 X-Window system.
+
+\index{tbrevert variable}
+\item{\et tbrevert}\\
+This is recognized in Qt builds for Apple macOS only, and has
+analogous functionality to the {\et plrevert} variable, but
+applies to the {\cb Tool Control} window.  When set in a
+{\vt .wrspiceinit} file, on program startup from a terminal window
+the terminal will retain keyboard focus, however the {\cb Tool
+Control} window may become obscured.  If not set, the terminal
+window will lose focus but the {\cb Tool Control} window will
+remain on top.
 \end{description}
 
 !!SEEALSO

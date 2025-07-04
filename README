@@ -270,7 +270,7 @@ Ubuntu, Debian
    apt install build-essential autoconf automake flex bison gpp git
    apt install libgsl-dev libtiff-dev libjpeg-dev libncurses-dev
    apt install libgtk2.0-dev  (for GTK)
-   apt install qt5-qtbase-devel  (for Qt)
+   apt install qtbase5-dev (for Qt)
 
 Fedora 40
     In Fedora, the development tools are preinstalled, but you may have

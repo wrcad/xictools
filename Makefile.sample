@@ -29,12 +29,13 @@ PREFIX = --prefix=/usr/local
 ITOPOK = --enable-itopok=no
 
 # Graphics package.  The programs can build with GTK2, GTK3, Qt5, and
-# Qt6.  GTK2 is still the reference graphics system and is recommended
-# for actual work.  Qt support is in "beta test" and will replace GTK. 
-# Ignore GTK3, it can build but has serious flaws.  Virtually all GTK
-# functionality has been ported to Qt and at present fine tuning and
-# bug fixing is being done.  Bug reports and comments would be
-# appreciated!
+# Qt6.  GTK2 is the original graphics system and has the longest
+# history of use, but is considered to be obsolete and is being
+# replaced by Qt.  Ignore GTK3, it can build but has serious flaws.
+# Qt support is complete and probably post-beta.  Bug reports and
+# comments would be appreciated!  The present recommendation is to
+# build binaries for both QTK2 and Qt, see the README file in this
+# directory for instructions.
 #
 # If this variable is not set, the programs will be built without a
 # GUI toolkit.  Mozy will not build in this case, Xic can be used in
@@ -57,11 +58,11 @@ ITOPOK = --enable-itopok=no
 #GFXLOC = --enable-qt6=/opt/local/libexec/qt6
 #GFXLOC = --enable-gtk2=yes
 #
-# For CentOS/RedHat/Rocky/AlmaLinux (7 or 8), OpenSuSE 15, Fedora 40 Linux
+# For CentOS/RedHat/Rocky/AlmaLinux/OpenSuSE/Fedora Linux
 #GFXLOC = --enable-qt5=/usr/lib64/qt5
 #GFXLOC = --enable-gtk2=yes
 #
-# For Ubuntu-22.04, Debian 11
+# For Ubuntu-24.04, Debian 12
 #GFXLOC = --enable-qt5=/usr/lib/qt5
 #GFXLOC = --enable-gtk2=yes
 
