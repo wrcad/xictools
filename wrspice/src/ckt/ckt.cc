@@ -1207,6 +1207,17 @@ sCKT::load(bool noclear)
 }
 
 
+#ifdef NEW_FASTLIN
+
+int
+sCKT::loadRHS()
+{
+    return (OK);
+}
+
+#endif
+
+
 // This function adds diagGmin to voltage nodes when diagGmin is
 // nonzero.  Otherwise, if enabled, it will ensure that all of these
 // (diagonal) elements have a minimum value of the circuit gmin.  This

@@ -657,6 +657,87 @@ sTRANint::setbp(sCKT *ckt)
 int
 sTRANint::step(sCKT *ckt, sSTATS *stat)
 {
+#ifdef NEW_FASTLIN
+    if (ckt->CKTfastLin) {
+        if (t_firsttime) {
+            if (ckt->CKTcurTask->TSKrampUpTime > 0)
+                ckt->breakSet(ckt->CKTcurTask->TSKrampUpTime);
+            if (t_fixed_step > 0.0)
+                ckt->CKTdelta = t_fixed_step;
+            else {
+                return (E_PANIC);
+            }
+            ckt->CKTtime = ckt->CKTdelta;
+            ckt->CKTdeltaOld[0] = ckt->CKTdelta;
+            ckt->NIcomCof();
+            ckt->predict();
+        }
+        else {
+            ckt->CKTtime += ckt->CKTdelta;
+            ckt->CKTdeltaOld[0] = ckt->CKTdelta;
+        }
+        if (ckt->CKTcurTask->TSKrampUpTime > 0) {
+            if (ckt->CKTtime < ckt->CKTcurTask->TSKrampUpTime)
+                ckt->CKTsrcFact = ckt->CKTtime/ckt->CKTcurTask->TSKrampUpTime;
+            else
+                ckt->CKTsrcFact = 1.0;
+        }
+
+        ckt->CKTtrapCheck = false;
+        int niter = stat->STATnumIter;
+        int maxiters = ckt->CKTcurTask->TSKtranMaxIter;
+
+        int cverr = OK;
+        if (t_firsttime) {
+
+            cverr = ckt->NIiter(maxiters);
+        }
+        else {
+            // Load RHS
+
+            // solve();
+            startTime = OP.seconds();
+            CKTmatrix->spSolve(CKTrhs, CKTrhs, 0, 0);
+            double dt = OP.seconds() - startTime;;
+            CKTstat->STATsolveTime += dt;
+            if (!(CKTmode & MODEDC) && (CKTmode & MODETRAN))
+                CKTstat->STATtranSolveTime += dt;
+            error = check_fpe(false);
+            if (error) {
+                if (CKTstepDebug)
+                    TTY.err_printf("solve generated FP error\n");
+                break;
+            
+            }
+        }
+
+        stat->STATtimePts++;
+        int lastiters = stat->STATnumIter - niter;
+        stat->STATtranLastIter = lastiters;
+        ckt->CKTmode =
+            (ckt->CKTmode & (MODEUIC | MODESCROLL)) | MODETRAN | MODEINITPRED;
+        double startTime = OP.seconds();
+
+        if (t_firsttime) {
+            for (int i = 0; i < ckt->CKTnumStates; i++) {
+                *(ckt->CKTstate2+i) = *(ckt->CKTstate1+i);
+                if (ckt->CKTcurTask->TSKmaxOrder > 1)
+                    *(ckt->CKTstate3+i) = *(ckt->CKTstate1+i);
+            }
+        }
+        if (cverr) {
+            if (cverr != E_ITERLIM || t_fixed_step > 0.0) {
+                if (cverr == E_SINGULAR)
+                    ckt->warnSingular();
+                return (cverr);
+            }
+        }
+        if (t_firsttime)
+            t_firsttime = false;
+        stat->STATtranTsTime += (OP.seconds() - startTime);
+        return (OK);
+    }
+#endif
     /*****
     // This really isn't reliable enough, algorithm needs more work.
     if (t_firsttime && !t_delmin_given) {

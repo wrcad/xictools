@@ -385,6 +385,7 @@ QTtbDlg::QTtbDlg(int xx, int yy) : QTdraw(0)
 
     gd_viewport = new QTcanvas();
     vbox->addWidget(gd_viewport);
+    vbox->setStretch(1, 1);
 
     QFont *fnt;
     if (Fnt()->getFont(&fnt, FNT_SCREEN))
@@ -403,7 +404,7 @@ QTtbDlg::QTtbDlg(int xx, int yy) : QTdraw(0)
     TextExtent(0, &wid, &hei);
     wid = 40*wid + 6;
     hei = 6*hei + 6;
-    Viewport()->setFixedSize(QSize(wid, hei));
+    Viewport()->setMinimumSize(QSize(wid, hei));
 
     // drawing colors
     const char *c1 = 0;
@@ -1067,6 +1068,7 @@ QTtbDlg::font_changed_slot(int fnum)
             TextExtent(0, &fw, &fh);
             int wid = 40*fw + 6;
             int hei = 6*fh + 6;
+            Viewport()->setMinimumSize(QSize(wid, hei));
             Viewport()->resize(wid, hei);
             update();
         }

@@ -817,6 +817,10 @@ struct IFdevice
     // LOAD_SKIP_FLAG is returned, we can skip loading the remaining
     // devices in the model.
     virtual int load(sGENinstance*, sCKT*)              { return (OK); };
+#ifdef NEW_FASTLIN
+    // Special simple load function for thre fast linear solver.
+    virtual int loadRHS();                              { return (OK); }
+#endif
 
     // setup();        Initialize devices before soloution begins.
     virtual int setup(sGENmodel*, sCKT*, int*)          { return (OK); };

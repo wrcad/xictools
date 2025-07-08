@@ -5,6 +5,11 @@ This is the central list of things to address in WRspice.
 Complaints that having a lot of coupled transmission lines slows down
 analysis substantially.
 
+Saving fonts should be easier, the text in docs needs updating.
+  Add a "save fonts" button in font selection panel.
+  Make sure that all windows resize when fonts changed (toolbar doesn't).
+  Separate GTK2 and Qt fonts in .wrspiceinit?
+
 Globally change flag parameter logic so that declaration in assignment
 form to 0 will NOT set the flag.
 

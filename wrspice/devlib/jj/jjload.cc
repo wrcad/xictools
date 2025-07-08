@@ -592,6 +592,20 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
 }
 
 
+#ifdef NEW_FASTLIN
+
+int
+JJdev::loadRHS(sGENinstance *in_inst, sCKT *ckt)
+{
+    sJJinstance *inst = (sJJinstance*)in_inst;
+    sJJmodel *model = (sJJmodel*)inst->GENmodPtr;
+
+    return (OK);
+}
+
+#endif
+
+
 void
 jjstuff::jj_limiting(sCKT *ckt, sJJmodel*, sJJinstance *inst)
 {

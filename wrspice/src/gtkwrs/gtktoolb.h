@@ -199,7 +199,7 @@ public:
     GtkWidget *tb_plots, *pl_shell, *pl_text;
     GtkWidget *tb_shell, *sh_shell;
     GtkWidget *tb_simdefs, *sd_shell;
-    GtkWidget *tb_runop, *tr_shell, *tr_text;
+    GtkWidget *tb_runops, *tr_shell, *tr_text;
     GtkWidget *tb_variables, *va_shell, *va_text;
     GtkWidget *tb_vectors, *ve_shell, *ve_text;
 
@@ -218,7 +218,7 @@ public:
     const char *ntb_shell;
     const char *ntb_simdefs;
     const char *ntb_toolbar;
-    const char *ntb_runop;
+    const char *ntb_runops;
     const char *ntb_variables;
     const char *ntb_vectors;
 

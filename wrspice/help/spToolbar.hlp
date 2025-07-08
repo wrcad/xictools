@@ -26,7 +26,7 @@ variablespanel
 shellopts
 simopts
 cmdopts
-runoppanel
+runopspanel
 dbgopts
 
 
@@ -355,7 +355,7 @@ Tool Control Window
 
     <dl>
     <dt><b>Runops</b><dd>
-    Pop up the <a href="runoppanel"><b>Runops</b></a> panel which
+    Pop up the <a href="runopspanel"><b>Runops</b></a> panel which
     lists the "runops" currently in effect.  The runops are directives
     to interactively plot, or trace variables during simulation, or to
     pause the simulation when a condition is met.  The panel provides
@@ -639,7 +639,7 @@ customize the variables associated with the various commands.
 
 \item{\cb Runops}\\
 \index{Runops tool}
-Pop up the {\cb Runops} panel (see \ref{runoppanel}) which lists the
+Pop up the {\cb Runops} panel (see \ref{runopspanel}) which lists the
 ``runops'' currently in effect.  The runops are directives to
 interactively plot, or trace variables during simulation, or to pause
 the simulation when a condition is met.  The panel provides capability
@@ -1864,7 +1864,7 @@ graphics
 
 !! useriface.tex 022519
 !!KEYWORD
-runoppanel
+runopspanel runoppanel
 !!TITLE
 The Runops Tool
 !!HTML
@@ -1900,7 +1900,7 @@ The Runops Tool
     <dt><b>Dismiss</b>
     <dd>Remove the <b>Runops Tool</b> from the screen.
     </dl>
-!!LATEX runoppanel format.tex
+!!LATEX runopspanel format.tex
 This panel is available from the {\cb Runops} button in the {\cb Tools}
 menu of the {\cb Tool Control} window.  It provides a listing of the
 ``runops'' (i.e., traces, breakpoints, interactive plots) currently in

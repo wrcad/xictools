@@ -197,7 +197,8 @@ public:
     {
         if (str) {
             // Handle old "trace" keyword, now called "runops".
-            if (!strcmp(str, "trace"))
+            // Also handle a goof-up, recognize "runop" as "runops".
+            if (!strcmp(str, "trace") || !strcmp(str, "runop"))
                 str = "runops";
             for (tbent_t *tb = tb_entries; tb->name(); tb++) {
                 if (!strcmp(str, tb->name()))

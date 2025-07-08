@@ -65,7 +65,7 @@
 //  vectorspanel
 //  circuitspanel
 //  filespanel
-//  runoppanel
+//  runopspanel
 //  variablespanel
 
 // Default window size, assumes 6X13 chars, 80 cols, 16 rows
@@ -1199,20 +1199,20 @@ GTKtoolbar::PopUpRunops(ShowMode mode, int x, int y)
     if (mode == MODE_OFF) {
         if (!tr_shell)
             return;
-        SetLoc(ntb_runop, tr_shell);
+        SetLoc(ntb_runops, tr_shell);
 
         GtkWidget *confirm = (GtkWidget*)g_object_get_data(G_OBJECT(tr_shell),
             "confirm");
         if (confirm)
             gtk_widget_destroy(confirm);
 
-        GTKdev::SetStatus(tb_runop, false);
+        GTKdev::SetStatus(tb_runops, false);
         g_signal_handlers_disconnect_by_func(G_OBJECT(tr_shell),
             (gpointer)tp_cancel_proc, tr_shell);
         gtk_widget_destroy(tr_shell);
         tr_shell = 0;
 
-        SetActive(ntb_runop, false);
+        SetActive(ntb_runops, false);
         return;
     }
     if (tr_shell)
@@ -1221,11 +1221,11 @@ GTKtoolbar::PopUpRunops(ShowMode mode, int x, int y)
     sRunops runops(x, y, "");
     tr_text = (GtkWidget*)g_object_get_data(G_OBJECT(tr_shell), "text");
     sRunops::update();
-    SetActive(ntb_runop, true);
+    SetActive(ntb_runops, true);
 }
 
 
-// Update the runop list.  Called when runops are added or deleted.
+// Update the runops list.  Called when runops are added or deleted.
 //
 void
 GTKtoolbar::UpdateRunops()
@@ -1463,7 +1463,7 @@ sTextPop::tp_help_proc(GtkWidget*, void *client_data)
     else if (which == TB()->fi_shell)
         HLP()->word("filespanel");
     else if (which == TB()->tr_shell)
-        HLP()->word("runoppanel");
+        HLP()->word("runopspanel");
     else if (which == TB()->va_shell)
         HLP()->word("variablespanel");
 #else

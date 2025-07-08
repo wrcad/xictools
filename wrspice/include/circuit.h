@@ -67,6 +67,9 @@ Authors: 1985 Thomas L. Quarles
 #endif
 #endif
 
+// Enable support for fast solver for linear-only circuits.
+//#define NEW_FASTLIN
+
 // Enable new code to support a true DCOP with Josephson junctions.
 // See description in devlib/jj/jjload.cc.
 #define NEWJJDC
@@ -1694,6 +1697,9 @@ struct sCKT : sCKTPOD
     int ic();
     int inst2Node(sGENinstance*, int, sCKTnode**, IFuid*) const;
     int load(bool = false);
+#ifdef NEW_FASTLIN
+    int loadRHS();
+#endif
     int loadGmin();
     double computeMinDelta();
     int backup(DEV_BKMODE);
