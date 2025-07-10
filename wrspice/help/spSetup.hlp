@@ -1268,7 +1268,7 @@ tbsetup command
     files</a> only.  It is inserted into or updated in the
     <tt>.wrspiceinit</tt> file in the user's home directory in
     response to the <a href="tbupdate"><b>tbupdate</b></a> command, or
-    from pressing the <b>Update Tools</b> button in the <b>File</b>
+    from pressing the <b>Save Tools</b> button in the <b>File</b>
     menu of the <a href="toolbar"><b>Tool Control</b></a> window.  It
     is not likely that the user will need to work with <b>tbsetup</b>
     directly, though it can be used to customize the <b>Tools</b> menu
@@ -1286,7 +1286,7 @@ tbsetup command
 
     <p>
     By invoking the <b>tbupdate</b> command from the prompt line or
-    pressing the <b>Update Tools</b> button in the <b>File</b> menu of
+    pressing the <b>Save Tools</b> button in the <b>File</b> menu of
     the <b>Tool Control</b> window, a <tt>.wrspiceinit</tt> file is
     created in the user's home directory if necessary, and the
     <b>tbsetup</b> command will be added or updated.  This will save
@@ -1317,7 +1317,7 @@ tbsetup command
     Control</b> window will appear somewhere on-screen.  After opening
     some of the tools from the <b>Tools</b> menu and arranging them as
     necessary and/or moving the <b>Tool Control</b> window, the
-    <b>Update Tools</b> button in the <b>File</b> menu can be pressed. 
+    <b>Save Tools</b> button in the <b>File</b> menu can be pressed. 
     A <tt>.wrspiceinit</tt> file will be created, or an existing file
     updated, in the user's home directory.  Alternatively, the
     <b>tbupdate</b> command can be given from the command line.  Hand
@@ -1328,7 +1328,7 @@ tbsetup command
 This command can appear in the startup files only.  It is inserted
 into or updated in the {\vt .wrspiceinit} file in the user's home
 directory in response to the {\cb tbupdate} command, or from pressing
-the {\cb Update Tools} button in the {\cb File} menu of the {\cb Tool
+the {\cb Save Tools} button in the {\cb File} menu of the {\cb Tool
 Control window}.  It is not likely that the user will need to work
 with {\cb tbsetup} directly, though it can be used to customize the
 {\cb Tools} menu in the {\cb Tool Control} window.
@@ -1342,7 +1342,7 @@ The {\vt old} and {\vt vert} keywords are ignored.  They exist for
 backward compatibility.
 
 By invoking the {\cb tbupdate} command from the prompt line or
-pressing the {\cb Update Tools} button in the {\cb File} menu of the
+pressing the {\cb Save Tools} button in the {\cb File} menu of the
 {\cb Tool Control} window, a {\vt .wrspiceinit} file is created in the
 user's home directory if necessary, and the {\cb tbsetup} command will
 be added or updated.  This will save the current state of the windows
@@ -1368,7 +1368,7 @@ To generate an initial custom configuration, simply start {\WRspice}
 on a system that supports graphics, and the {\cb Tool Control} window
 will appear somewhere on-screen.  After opening some of the tools from
 the {\cb Tools} menu and arranging them as necessary and/or moving the
-{\cb Tool Control} window, the {\cb Update Tools} button in the {\cb
+{\cb Tool Control} window, the {\cb Save Tools} button in the {\cb
 File} menu can be pressed.  A {\vt .wrspiceinit} file will be created,
 or an existing file updated, in the user's home directory. 
 Alternatively, the {\cb tbupdate} command can be given from the

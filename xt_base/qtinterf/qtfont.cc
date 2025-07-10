@@ -588,6 +588,14 @@ QTfontDlg::QTfontDlg(QTbag *owner, int indx, void *arg) :
     connect(ft_apply, &QAbstractButton::clicked,
         this, &QTfontDlg::action_slot);
 
+#ifdef FNT_SAVE_BTN
+    ft_save = new QToolButton();
+    ft_save->setText(tr("Save"));
+    hbox->addWidget(ft_save);
+    connect(ft_save, &QAbstractButton::clicked,
+        this, &QTfontDlg::save_slot);
+#endif
+
     ft_menu = new QComboBox(this);
     hbox->addWidget(ft_menu);
     QSize qs = ft_apply->sizeHint();
@@ -920,6 +928,59 @@ QTfontDlg::action_slot()
         emit select_action(fnum, lstr.string(), p_cb_arg);
     }
 }
+
+
+#ifdef FNT_SAVE_BTN
+
+void
+QTfontDlg::save_slot()
+{
+    sLstr lstr;
+    char *face = current_face();
+    if (!face)
+        return;
+    if (strchr(face, ' ')) {
+        lstr.add_c('"');
+        lstr.add(face);
+        lstr.add_c('"');
+    }
+    else
+        lstr.add(face);
+    delete [] face;
+        
+    int sz = current_size();
+    if (sz <= 0)
+        return;
+    char *sty = current_style();
+    if (sty) {
+        if (!strcasecmp(sty, "normal")) {
+            delete [] sty;
+            sty = 0;
+        }
+    }
+    if (sty) {
+        lstr.add_c(' ');
+        lstr.add(sty);
+    }
+    lstr.add_c(' ');
+    lstr.add_d(sz);
+
+    if (ft_menu->isHidden()) {
+        QByteArray ba = ft_apply->text().toLatin1();
+        //if (p_callback)
+        //    (*p_callback)(ba.constData(), lstr.string(), p_cb_arg);
+        emit save_action(0, lstr.string(), p_cb_arg);
+    }
+    else {
+        int fnum = ft_menu->currentIndex() + 1;
+        Fnt()->setName(lstr.string(), fnum);
+        //if (p_callback)
+        //    (*p_callback)(Fnt()->getLabel(fnum), lstr.string(), p_cb_arg);
+        emit save_action(fnum, lstr.string(), p_cb_arg);
+    }
+}
+
+#endif
 
 
 void

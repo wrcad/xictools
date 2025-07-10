@@ -48,12 +48,6 @@
 <<graphics spToolbar.hlp>>
 
 %------------------------------------------------------------------------------
-\section{The Tool Control Window}
-\label{tcwin}
-
-<<toolbar spToolbar.hlp>>
-
-%------------------------------------------------------------------------------
 \section{Text Entry Windows}
 \index{text entry windows}
 
@@ -95,7 +89,13 @@
 <<mailclient TextEditor.hlp>>
 
 %------------------------------------------------------------------------------
-\section{The Tools Menu Tools and Panels}
+\section{The Tool Control Window}
+\label{tcwin}
+
+<<toolbar spToolbar.hlp>>
+
+%------------------------------------------------------------------------------
+\section{The {\cb Tools} Menu Tools and Panels}
 
 % not in help
 The sub-sections describe the tools and panels that are obtained from
@@ -103,86 +103,86 @@ buttons in the {\cb Tools} menu of the {\cb Tool Control} windows.
 These provide a graphical interface to list data and manipulate
 {\WRspice}, supplementing the traditional command line interface.
 
-\subsection{The Fonts Tool}
+\subsection{The {\cb Fonts} Tool}
 \label{fontspanel}
 \index{Fonts tool}
 
 <<fontspanel spToolbar.hlp>>
 
-\subsection{The Files Tool}
+\subsection{The {\cb Files} Tool}
 \label{filespanel}
 \index{Files tool}
 
 <<filespanel spToolbar.hlp>>
 
-\subsection{The Circuits Tool}
+\subsection{The {\cb Circuits} Tool}
 \label{circuitspanel}
 \index{Circuits tool}
 
 <<circuitspanel spToolbar.hlp>>
 
-\subsection{The Plots Tool}
+\subsection{The {\cb Plots} Tool}
 \label{plotspanel}
 \index{Plots tool}
 
 <<plotspanel spToolbar.hlp>>
 
-\subsection{Plot Options Panel}
+\subsection{The {\cb Plot Options} Panel}
 \label{plotopts}
 \index{Plot Options panel}
 
 <<plotopts spToolbar.hlp>>
 
-\subsection{Plot Colors Panel}
+\subsection{The {\cb Plot Colors} Panel}
 \label{colors}
 \index{Plot Colors panel}
 
 <<colors spToolbar.hlp>>
 
-\subsection{The Vectors Tool}
+\subsection{The {\cb Vectors} Tool}
 \label{vectorspanel}
 \index{Vectors tool}
 
 <<vectorspanel spToolbar.hlp>>
 
-\subsection{The Variables Tool}
+\subsection{The {\cb Variables} Tool}
 \label{variablespanel}
 \index{Variables tool}
 
 <<variablespanel spToolbar.hlp>>
 
-\subsection{Shell Options Panel}
+\subsection{The {\cb Shell Options} Panel}
 \label{shellopts}
 \index{Shell Options panel}
 
 <<shellopts spToolbar.hlp>>
 
-\subsection{Simulation Options Panel}
+\subsection{The {\cb Simulation Options} Panel}
 \label{simopts}
 \index{Simulation Options panel}
 
 <<simopts spToolbar.hlp>>
 
-\subsection{Command Options Panel}
+\subsection{The {\cb Command Options} Panel}
 \label{cmdopts}
 \index{Command Options panel}
 
 <<cmdopts spToolbar.hlp>>
 
-\subsection{The Runops Tool}
-\label{runoppanel}
+\subsection{The {\cb Runops} Tool}
+\label{runopspanel}
 \index{Runops tool}
 
-<<runoppanel spToolbar.hlp>>
+<<runopspanel spToolbar.hlp>>
 
-\subsection{Debug Options}
+\subsection{The {\cb Debug Options} Panel}
 \label{dbgopts}
 \index{Debug Options panel}
 
 <<dbgopts spToolbar.hlp>>
 
 %------------------------------------------------------------------------------
-\section{The Plot Panel}
+\section{The {\cb Plot} Panel}
 \label{plotpanel}
 \index{plot window}
 \index{plot panel}
@@ -190,13 +190,13 @@ These provide a graphical interface to list data and manipulate
 <<plotpanel PlotPanel.hlp>>
 
 %------------------------------------------------------------------------------
-\section{The Mplot Panel}
+\section{The {\cb Mplot} Panel}
 \index{mplot window}
 
 <<mplotpanel PlotPanel.hlp>>
 
 %------------------------------------------------------------------------------
-\section{The Print Control Panel}
+\section{The {\cb Print Control} Panel}
 \index{print panel}
 
 <<hcopypanel Hardcopy.hlp>>

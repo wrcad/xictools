@@ -69,7 +69,8 @@ public:
     // Menu codes.
     enum {
         // File menu.
-        MA_file_sel, MA_source, MA_load, MA_upd_tools, MA_upd_wrs, MA_dismiss,
+        MA_file_sel, MA_source, MA_load, MA_save_tools, MA_save_fonts,
+        MA_dismiss,
         // Edit menu.
         MA_txt_edit, MA_xic,
         // Help menu.

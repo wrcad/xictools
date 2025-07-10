@@ -64,6 +64,11 @@
 
 <<mapkey spCommands.hlp>>
 
+\subsection{\spcmd{savefonts}}
+\index{savefonts command}
+
+<<savefonts spCommands.hlp>>
+
 \subsection{\spcmd{setcase}}
 \index{setcase command}
 

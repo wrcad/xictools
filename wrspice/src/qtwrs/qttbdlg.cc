@@ -152,15 +152,22 @@ QTtbDlg::QTtbDlg(int xx, int yy) : QTdraw(0)
     a->setToolTip(tr("Load plot data file"));
     tb_load_btn = a;
 
-    // "/File/Update _Tools", 0
-    a = tb_file_menu->addAction(tr("Update &Tools"));
-    a->setData(MA_upd_tools);
-    a->setToolTip(tr("Update tool window locations"));
+    // "/File/Save _Tools", 0
+    a = tb_file_menu->addAction(tr("Save &Tools"));
+    a->setData(MA_save_tools);
+    a->setToolTip(tr("Save the current tool window locations and visibility"));
 
+    // "/File/Save Fonts", 0
+    a = tb_file_menu->addAction(tr("Save Fonts"));
+    a->setData(MA_save_fonts);
+    a->setToolTip(tr("Save the current fonts persistently"));
+
+    /*  Package update is not currently supported.
     // "/File/Update _WRspice", 0
     a = tb_file_menu->addAction(tr("Update &WRspice"));
     a->setData(MA_upd_wrs);
     a->setToolTip(tr("Update WRspice"));
+    */
 
     tb_file_menu->addSeparator();
 
@@ -798,15 +805,21 @@ QTtbDlg::file_menu_slot(QAction *a)
         TB()->PopUpInput("Name of rawfile to load?", buf, "Load",
             load_cb, 0);
     }
-    else if (tp == MA_upd_tools) {
-        // Update the tool configuration.
+    else if (tp == MA_save_tools) {
+        // Save the tool window locations and visibilities.
         CommandTab::com_tbupdate(0);
     }
+    else if (tp == MA_save_fonts) {
+        // Save the current fonts.
+        CommandTab::com_savefonts(0);
+    }
+/* Not currently supported.
     else if (tp == MA_upd_wrs) {
         // Check for updates, download/install update.
         CommandTab::com_wrupdate(0);
         ::raise(SIGINT);  // for new prompt, else it hangs
     }
+*/
     else if (tp == MA_dismiss) {
         // Quit the program, confirm if work is unsaved.
         if (CP.GetFlag(CP_NOTTYIO)) {

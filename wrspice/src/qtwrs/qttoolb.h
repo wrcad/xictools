@@ -213,6 +213,8 @@ public:
     static void SetActiveDlg(tid_id id, QDialog *d)
     {
         tb_entries[id].set_dialog(d);
+        if (tb_entries[id].action())
+            tb_entries[id].action()->setChecked(d != 0);
     }
 
     static void SetLoc(tid_id, QDialog*);

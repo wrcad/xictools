@@ -84,22 +84,129 @@ namespace { int dummy = ResourceModuleId; }
 void
 CommandTab::com_setfont(wordlist *wl)
 {
-    if (!Sp.GetFlag(FT_BATCHMODE) && CP.Display()) {
-        if (!wl || !wl->wl_next)
-            return;
-        int n = atoi(wl->wl_word);
-        char *fn = wordlist::flatten(wl->wl_next);
-        switch (n) {
-        case FNT_FIXED:
-        case FNT_PROP:
-        case FNT_SCREEN:
-        case FNT_EDITOR:
-        case FNT_MOZY:
-        case FNT_MOZY_FIXED:
-            Fnt()->setName(fn, n);
-        }
-        delete [] fn;
+    if (Sp.GetFlag(FT_BATCHMODE) || !CP.Display())
+        return;
+    if (!wl || !wl->wl_next)
+        return;
+    int n = atoi(wl->wl_word);
+    char *fn = wordlist::flatten(wl->wl_next);
+    switch (n) {
+    case FNT_FIXED:
+    case FNT_PROP:
+    case FNT_SCREEN:
+    case FNT_EDITOR:
+    case FNT_MOZY:
+    case FNT_MOZY_FIXED:
+        Fnt()->setName(fn, n);
     }
+    delete [] fn;
+}
+
+
+void
+CommandTab::com_savefonts(wordlist*)
+{
+    if (Sp.GetFlag(FT_BATCHMODE) || !CP.Display())
+        return;
+
+    // Set the fonts
+    sLstr lstr;
+    char buf[512];
+    const char *fn = Fnt()->getName(FNT_FIXED);
+    if (fn) {
+        snprintf(buf, sizeof(buf), "setfont 1 %s\n", fn);
+        lstr.add(buf);
+    }
+    fn = Fnt()->getName(FNT_PROP);
+    if (fn) {
+        snprintf(buf, sizeof(buf), "setfont 2 %s\n", fn);
+        lstr.add(buf);
+    }
+    fn = Fnt()->getName(FNT_SCREEN);
+    if (fn) {
+        snprintf(buf, sizeof(buf), "setfont 3 %s\n", fn);
+        lstr.add(buf);
+    }
+    fn = Fnt()->getName(FNT_EDITOR);
+    if (fn) {
+        snprintf(buf, sizeof(buf), "setfont 4 %s\n", fn);
+        lstr.add(buf);
+    }
+    fn = Fnt()->getName(FNT_MOZY);
+    if (fn) {
+        snprintf(buf, sizeof(buf), "setfont 5 %s\n", fn);
+        lstr.add(buf);
+    }
+    fn = Fnt()->getName(FNT_MOZY_FIXED);
+    if (fn) {
+        snprintf(buf, sizeof(buf), "setfont 6 %s\n", fn);
+        lstr.add(buf);
+    }
+
+    char *startup_filename;
+    bool found = IFsimulator::StartupFileName(&startup_filename);
+    char *bkfile = new char[strlen(startup_filename) + 5];
+    char *s = lstring::stpcpy(bkfile, startup_filename);
+    strcpy(s, ".bak");
+
+    s = 0;
+    if (found) {
+        if (!filestat::move_file_local(bkfile, startup_filename))
+            goto bad;
+        FILE *fp = fopen(startup_filename, "w");
+        if (!fp)
+            goto bad;
+        FILE *gp = fopen(bkfile, "r");
+        if (!gp)
+            goto bad;
+        bool contd = false;
+        bool wrote = false;
+        while (fgets(buf, 512, gp)) {
+            if (contd) {
+                s = buf + strlen(buf) - 1;
+                while (isspace(*s))
+                   s--;
+                if (*s != '\\') {
+                    contd = false;
+                    if (!wrote) {
+                        fputs(lstr.string(), fp);
+                        wrote = true;
+                    }
+                }
+                continue;
+            }
+            s = buf;
+            while (isspace(*s))
+                s++;
+            if (!strncmp("setfont", s, 7))
+                continue;
+            fputs(buf, fp);
+        }
+        if (!wrote) {
+            fputs(lstr.string(), fp);
+            wrote = true;
+        }
+        fclose(fp);
+        fclose(gp);
+    }
+    else {
+        FILE *fp = fopen(startup_filename, "w");
+        fputs("* title line, don't delete!\n", fp);
+        if (fp) {
+            fputs(lstr.string(), fp);
+            fclose(fp);
+        }
+        else
+            goto bad;
+    }
+    delete [] startup_filename;
+    delete [] bkfile;
+    return;
+bad:
+    GRpkg::self()->ErrPrintf(ET_WARN, "could not update %s.\n",
+        startup_filename);
+    delete [] startup_filename;
+    delete [] bkfile;
 }
 
 
@@ -486,7 +593,6 @@ QTtoolbar::tb_font_cb(const char *btn, const char *name, void*)
     if (!name && !btn) {
         SetLoc(tid_font, TB()->tb_fontsel);
         SetActiveDlg(tid_font, 0);
-        entries(tid_font)->action()->setChecked(false);;
     }
 }
 
@@ -630,19 +736,20 @@ QTtoolbar::ConfigString()
         lstr.add("tbsetup toolbar off");
     else {
         lstr.add("tbsetup");
-        QPoint pt = QTtbDlg::self()->mapToGlobal(QPoint(0, 0));
-        snprintf(buf, sizeof(buf), fmt, "toolbar", "on", pt.x(), pt.y());
+        int x = QTtbDlg::self()->pos().x();
+        int y = QTtbDlg::self()->pos().y();
+        FixLoc(&x, &y);
+        snprintf(buf, sizeof(buf), fmt, "toolbar", "on", x, y);
         lstr.add(buf);
         for (tbent_t *tb = tb_entries; tb && tb->name(); tb++) {
             if (tb->id() == tid_toolbar)
                 continue;
-            int x = tb->x();
-            int y = tb->y();
+            x = tb->x();
+            y = tb->y();
             QDialog *dlg = tb->dialog();
             if (dlg) {
-                pt = dlg->mapToGlobal(QPoint(0, 0));
-                x = pt.x();
-                y = pt.y();
+                x = dlg->pos().x();
+                y = dlg->pos().y();
                 FixLoc(&x, &y);
             }
             snprintf(buf, sizeof(buf), fmt, tb->name(),
@@ -651,38 +758,6 @@ QTtoolbar::ConfigString()
         }
     }
     lstr.add_c('\n');
-
-    // Add the fonts
-    const char *fn = Fnt()->getName(FNT_FIXED);
-    if (fn) {
-        snprintf(buf, sizeof(buf), "setfont 1 %s\n", fn);
-        lstr.add(buf);
-    }
-    fn = Fnt()->getName(FNT_PROP);
-    if (fn) {
-        snprintf(buf, sizeof(buf), "setfont 2 %s\n", fn);
-        lstr.add(buf);
-    }
-    fn = Fnt()->getName(FNT_SCREEN);
-    if (fn) {
-        snprintf(buf, sizeof(buf), "setfont 3 %s\n", fn);
-        lstr.add(buf);
-    }
-    fn = Fnt()->getName(FNT_EDITOR);
-    if (fn) {
-        snprintf(buf, sizeof(buf), "setfont 4 %s\n", fn);
-        lstr.add(buf);
-    }
-    fn = Fnt()->getName(FNT_MOZY);
-    if (fn) {
-        snprintf(buf, sizeof(buf), "setfont 5 %s\n", fn);
-        lstr.add(buf);
-    }
-    fn = Fnt()->getName(FNT_MOZY_FIXED);
-    if (fn) {
-        snprintf(buf, sizeof(buf), "setfont 6 %s\n", fn);
-        lstr.add(buf);
-    }
     return (lstr.string_trim());
 }
 

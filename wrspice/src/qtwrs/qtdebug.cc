@@ -286,7 +286,6 @@ QTdebugParamDlg::~QTdebugParamDlg()
     instPtr = 0;
     TB()->SetLoc(tid_debug, this);
     TB()->SetActiveDlg(tid_debug, 0);
-    QTtoolbar::entries(tid_debug)->action()->setChecked(false);
 }
 
 

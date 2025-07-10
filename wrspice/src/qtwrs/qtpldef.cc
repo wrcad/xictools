@@ -489,7 +489,6 @@ QTplotParamDlg::~QTplotParamDlg()
     instPtr = 0;
     TB()->SetLoc(tid_plotdefs, this);
     TB()->SetActiveDlg(tid_plotdefs, 0);
-    QTtoolbar::entries(tid_plotdefs)->action()->setChecked(false);
 }
 
 

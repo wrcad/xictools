@@ -260,7 +260,6 @@ QTfilesListDlg::~QTfilesListDlg()
     delete [] fl_selection;
     TB()->SetLoc(tid_files, this);
     TB()->SetActiveDlg(tid_files, 0);
-    QTtoolbar::entries(tid_files)->action()->setChecked(false);
 }
 
 

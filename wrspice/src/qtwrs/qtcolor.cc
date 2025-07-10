@@ -339,7 +339,6 @@ QTcolorParamDlg::~QTcolorParamDlg()
     instPtr = 0;
     TB()->SetLoc(tid_colors, this);
     TB()->SetActiveDlg(tid_colors, 0);
-    QTtoolbar::entries(tid_colors)->action()->setChecked(false);
 }
 
 

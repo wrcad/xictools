@@ -478,12 +478,12 @@ QTdev::Location(GRobject obj, int *xx, int *yy)
 void
 QTdev::SetPopupLocation(GRloc loc, QWidget *widget, QWidget *shell)
 {
-    if (!widget || !shell)
+    if (!widget)
         return;
     int x, y;
     ComputePopupLocation(loc, widget, shell, &x, &y);
 #if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
-    QScreen *sc = shell->screen();
+    QScreen *sc = widget->screen();
 #else
     QScreen *sc = QGuiApplication::primaryScreen();
 #endif
@@ -506,12 +506,53 @@ QTdev::ComputePopupLocation(GRloc loc, QWidget *widget, QWidget *shell,
 {
     *px = 0;
     *py = 0;
-    if (!widget || !shell)
+    if (!widget)
         return;
 
     // If the widget was just created and not shown yet, the size may
     // be off unless this is called.
     widget->adjustSize();
+
+    if (!shell) {
+        // Widget is a window.
+#if QT_VERSION >= QT_VERSION_CHECK(5,11,0)
+        QScreen *sc = widget->screen();
+#else
+        QScreen *sc = QGuiApplication::primaryScreen();
+#endif
+        QRect r = sc->availableGeometry();
+        QRect wg = widget->frameGeometry();
+
+        if (loc.code == LW_LL) {
+            *px = r.x();
+            *py = r.y() + r.height() - wg.height();
+        }
+        else if (loc.code == LW_LR) {
+            *px = r.x() + r.width() - wg.width();
+            *py = r.y() + r.height() - wg.height();
+        }
+        else if (loc.code == LW_UL) {
+            *px = r.x();
+            *py = r.y();
+        }
+        else if (loc.code == LW_UR) {
+            *px = r.x() + r.width() - wg.width();
+            *py = r.y();
+        }
+        else if (loc.code == LW_CENTER) {
+            *px = r.x() + (r.width() - wg.width())/2;
+            *py = r.y() + (r.height() - wg.height())/2;
+        }
+        else if (loc.code == LW_XYR) {
+            *px = r.x() + loc.xpos;
+            *py = r.y() + loc.ypos;
+        }
+        else if (loc.code == LW_XYA) {
+            *px = loc.xpos;
+            *py = loc.ypos;
+        }
+        return;
+    }
 
     if (shell->x() < 0) {
         // Seems to be a QT bug - sometimes shell->x()/y() return -1 until

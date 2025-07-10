@@ -240,7 +240,6 @@ QTplotListDlg::~QTplotListDlg()
     instPtr = 0;
     TB()->SetLoc(tid_plots, this);
     TB()->SetActiveDlg(tid_plots, 0);
-    QTtoolbar::entries(tid_plots)->action()->setChecked(false);
 }
 
 

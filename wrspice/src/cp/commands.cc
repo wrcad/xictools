@@ -210,6 +210,7 @@ namespace cmdnames {
     const char *cmd_run         = "run";
     const char *cmd_rusage      = "rusage";
     const char *cmd_save        = "save";
+    const char *cmd_savefonts   = "savefonts";
     const char *cmd_sced        = "sced";
     const char *cmd_seed        = "seed";
     const char *cmd_sens        = "sens";
@@ -504,6 +505,9 @@ sCommand CommandTab::ct_list[] = {
     sCommand( cmd_save, com_save, false, true, false,
       Bnode, Bnode, Bnode, Bnode, E_DEFHMASK, 0, LOTS, 0,
       "[all] [node ...] : Save a circuit output." ) ,
+    sCommand( cmd_savefonts, com_savefonts, false, true, false,
+      Bnone, Bnone, Bnone, Bnone, E_DEFHMASK, 0, LOTS, 0,
+      ": Save the current fonts to a startup file." ) ,
     sCommand( cmd_sced, com_sced, false, true, true,
       Bfile, Bfile, Bfile, Bfile, E_DEFHMASK, 0, 2, 0,
       "[-r/-n][filename] : Graphically edit a spice deck." ) ,

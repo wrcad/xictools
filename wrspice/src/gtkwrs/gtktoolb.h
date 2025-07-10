@@ -226,7 +226,6 @@ public:
 
 private:
     // gtktoolb.cc
-    void tbpop(bool);
     static void drag_data_received(GtkWidget*, GdkDragContext*, gint, gint,
         GtkSelectionData*, guint, guint);
     static gboolean target_drag_motion(GtkWidget*, GdkDragContext*, gint, gint,
@@ -236,7 +235,8 @@ private:
     static void open_proc(GtkWidget*, void*);
     static void source_proc(GtkWidget*, void*);
     static void load_proc(GtkWidget*, void*);
-    static void update_proc(GtkWidget*, void*);
+    static void save_tools_proc(GtkWidget*, void*);
+    static void save_fonts_proc(GtkWidget*, void*);
     static void wrupdate_proc(GtkWidget*, void*);
     static int quit_proc(GtkWidget*, void*);
     static void edit_proc(GtkWidget*, void*);

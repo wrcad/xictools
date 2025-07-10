@@ -186,7 +186,6 @@ QTvarListDlg::~QTvarListDlg()
     instPtr = 0;
     TB()->SetLoc(tid_variables, this);
     TB()->SetActiveDlg(tid_variables, 0);
-    QTtoolbar::entries(tid_variables)->action()->setChecked(false);
 }
 
 

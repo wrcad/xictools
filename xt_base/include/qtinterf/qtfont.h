@@ -53,6 +53,9 @@
 // Font handling
 //
 
+// Support for a Save button, not used.
+//#define FNT_SAVE_BTN
+
 class QFont;
 class QListWidget;
 class QListWidgetItem;
@@ -184,9 +187,15 @@ public:
 
 signals:
     void select_action(int, const char*, void*);
+#ifdef FNT_SAVE_BTN
+    void save_action(int, const char*, void*);
+#endif
 
 private slots:
     void action_slot();
+#ifdef FNT_SAVE_BTN
+    void save_slot();
+#endif
     void quit_slot();
     void cancel_action_slot(bool);
     void face_changed_slot(QListWidgetItem*, QListWidgetItem*);
@@ -200,6 +209,9 @@ private:
     QListWidget *ft_size_list;
     QTextEdit   *ft_preview;
     QToolButton *ft_apply;
+#ifdef FNT_SAVE_BTN
+    QToolButton *ft_save;
+#endif
     QComboBox   *ft_menu;
     QFontDatabase *ft_fdb;
 

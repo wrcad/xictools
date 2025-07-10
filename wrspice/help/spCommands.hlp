@@ -25,6 +25,8 @@ strciprefix
 retval
 uicmds
 mapkey
+savefonts
+setcase
 setfont
 setrdb
 tbupdate
@@ -213,6 +215,8 @@ Built-in Commands
     <tr><th colspan=2><a href="uicmds">User Interface Setup Commands</a></th>
     <tr><td><a href="mapkey"><b>mapkey</b></a></td>
       <td>Create keyboard mapping</td></tr>
+    <tr><td><a href="savefonts"><b>savefonts</b></a></td>
+      <td>Save current fonts to sgtrtup file</td></tr>
     <tr><td><a href="setcase"><b>setcase</b></a></td>
       <td>Check/set case sensitivity for name classes</td></tr>
     <tr><td><a href="setfont"><b>setfont</b></a></td>
@@ -507,6 +511,7 @@ The following table lists all built-in commands understood by
 \hline
 \multicolumn{2}{|c|}{\bf User Interface Setup Commands}\\ \hline
 \cb mapkey & Create keyboard mapping\\ \hline
+\cb savefonts & Save current fonts to startup file\\ \hline
 \cb setcase & Check/set case sensitivity for name classes\\ \hline
 \cb setfont & Set graphical interface fonts\\ \hline
 \cb setrdb & Set X resources\\ \hline
@@ -1327,6 +1332,8 @@ User Interface Setup Commands
     <tr><th colspan=2>User Interface Setup Commands</th></tr>
     <tr><td><a href="mapkey"><b>mapkey</b></a></td>
       <td>Create keyboard mapping</td></tr>
+    <tr><td><a href="savefonts"><b>savefonts</b></a></td>
+      <td>Save current fonts to startup file</td></tr>
     <tr><td><a href="setcase"><b>setcase</b></a></td>
       <td>Check/set case sensitivity for name classes</td></tr>
     <tr><td><a href="setfont"><b>setfont</b></a></td>
@@ -1345,6 +1352,7 @@ interface, both graphical and non-graphical.
 \begin{tabular}{|l|l|}\hline
 \multicolumn{2}{|c|}{Uset Interface Setup Commands}\\ \hline
 \cb mapkey & Create keyboard mapping\\ \hline
+\cb savefonts & Save current fonts to startup file\\ \hline
 \cb setcase & Check/set case sensitivity for name classes\\ \hline
 \cb setfont & Set graphical interface fonts\\ \hline
 \cb setrdb & Set X resources\\ \hline
@@ -1534,6 +1542,41 @@ startup file to read it when {\WRspice} starts.}
 !!SEEALSO
 uicmds
 
+!! commands.tex 070925
+!!KEYWORD
+savefonts
+!!TITLE
+savefonts command
+!!HTML
+    command: <tt>savefonts</tt>
+
+    <p>
+    This command will create or update the list of fonts currently
+    used by <i>WRspice</i> in the <a
+    href="startup_files"><tt>.wrpiceinit</tt></a> file in the user's
+    home directory, which will cause these fonts to be loaded in
+    subsequent <i>WRspice</i> sessions.  This is equivalent to
+    pressing the <b>Save Fonts</b> button in the <a
+    href="filemenu"><b>File</b></a> menu of the <a
+    href="toolbar"><b>Tool Control</b></a> window.  The needed <a
+    href="setfont"><b>setfont</b></a> commands are inserted or
+    replaced in the <tt>.wrspiceinit</tt> file.  The file is
+    created if it does not exist.
+!!LATEX savefonts commands.tex
+Syntax: {\vt savefonts}
+
+This command will create or update the list of fonts currently
+used by {\WRspice} in the {\vt .wrpiceinit} file in the user's
+home directory, which will cause these fonts to be loaded in
+subsequent {\WRspice} sessions.  This is equivalent to pressing
+the {\cb Save Fonts} button in the {\cb File} menu of the
+{\cb Tool Control} window.  The needed {\cb setfont} commands
+are inserted or replaced in the {\vt .wrspiceinit} file.  The
+file is created if it does not exist.
+
+!!SEEALSO
+uicmds
+
 !! commands.tex 121011
 !!KEYWORD
 setcase
@@ -1677,9 +1720,8 @@ setfont command
     You will probably never need to use the <b>setfont</b> command
     directly.  All settable fonts are saved in the
     <tt>.wrspiceinit</tt> <a href="startup_files">startup file</a>
-    when the <b>Update Tools</b> menu command in the <b>File</b> menu is
-    given, or the <a href="tbupdate"><b>tbupdate</b></a> command is
-    invoked.
+    when the <b>Save Fonts</b> menu command in the <b>File</b> menu is
+    given.
 !!LATEX setfont commands.tex
 Syntax: {\vt setfont} {\it font\_num} {\it font\_specifier}
 
@@ -1724,8 +1766,8 @@ The name is in one or the following formats:
 
 You will probably never need to use the {\cb setfont} command
 directly.  All settable fonts are saved in the {\vt .wrspiceinit}
-startup file when the {\cb Update Tools} menu command in the {\cb
-File} menu is given, or the {\cb tbupdate} command is invoked.
+startup file when the {\cb Save Fonts} menu command in the {\cb
+File} menu is given.
 
 !!SEEALSO
 uicmds
@@ -1794,7 +1836,7 @@ tbupdate command
     directory to reflect the current <a href="tbsetup">tool setup</a>. 
     The window arrangement should be the same the next time the user
     starts <i>WRspice</i>.  This command is also performed when the
-    user presses the <b>Update Tools</b> button in the <b>File</b>
+    user presses the <b>Save Tools</b> button in the <b>File</b>
     menu of the <a href="toolbar"><b>Tool Control</b></a> window.
 !!LATEX tbupdate commands.tex
 This command will update the user's {\vt .wrspiceinit} file in the
@@ -1804,7 +1846,7 @@ tbupdate
 \end{quote}
 The window arrangement should be the same the next time the user
 starts {\WRspice}.  This command is also performed when the user
-presses the {\cb Update Tools} button in the {\cb File} menu of the
+presses the {\cb Save Tools} button in the {\cb File} menu of the
 {\cb Tool Control} window.
 
 !!SEEALSO

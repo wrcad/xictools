@@ -251,7 +251,6 @@ QTshellParamDlg::~QTshellParamDlg()
     instPtr = 0;
     TB()->SetLoc(tid_shell, this);
     TB()->SetActiveDlg(tid_shell, 0);
-    QTtoolbar::entries(tid_shell)->action()->setChecked(false);
 }
 
 

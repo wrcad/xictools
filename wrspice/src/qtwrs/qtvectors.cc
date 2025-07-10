@@ -223,7 +223,6 @@ QTvectorListDlg::~QTvectorListDlg()
     instPtr = 0;
     TB()->SetLoc(tid_vectors, this);
     TB()->SetActiveDlg(tid_vectors, 0);
-    QTtoolbar::entries(tid_vectors)->action()->setChecked(false);
 }
 
 

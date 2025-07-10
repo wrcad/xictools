@@ -759,7 +759,6 @@ QTsimParamDlg::~QTsimParamDlg()
     instPtr = 0;
     TB()->SetLoc(tid_simdefs, this);
     TB()->SetActiveDlg(tid_simdefs, 0);
-    QTtoolbar::entries(tid_simdefs)->action()->setChecked(false);
 }
 
 

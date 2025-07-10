@@ -204,7 +204,6 @@ QTcircuitListDlg::~QTcircuitListDlg()
     instPtr = 0;
     TB()->SetLoc(tid_circuits, this);
     TB()->SetActiveDlg(tid_circuits, 0);
-    QTtoolbar::entries(tid_circuits)->action()->setChecked(false);
 }
 
 

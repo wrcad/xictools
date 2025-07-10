@@ -405,7 +405,6 @@ QTcmdParamDlg::QTcmdParamDlg(int xx, int yy)
         grid->addWidget(entry->qtent(), 3, 0);
     }
 
-
 #ifdef HAVE_MOZY
     // help page
     //
@@ -641,7 +640,6 @@ QTcmdParamDlg::~QTcmdParamDlg()
     instPtr = 0;
     TB()->SetLoc(tid_commands, this);
     TB()->SetActiveDlg(tid_commands, 0);
-    QTtoolbar::entries(tid_commands)->action()->setChecked(false);
 }
 
 

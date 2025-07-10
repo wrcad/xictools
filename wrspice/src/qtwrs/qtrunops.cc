@@ -202,7 +202,6 @@ QTrunopListDlg::~QTrunopListDlg()
     instPtr = 0;
     TB()->SetLoc(tid_runops, this);
     TB()->SetActiveDlg(tid_runops, 0);
-    QTtoolbar::entries(tid_runops)->action()->setChecked(false);
 }
 
 

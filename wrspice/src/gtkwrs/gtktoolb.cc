@@ -115,6 +115,113 @@ CommandTab::com_setfont(wordlist *wl)
 }
 
 
+void
+CommandTab::com_savefonts(wordlist*)
+{
+    if (Sp.GetFlag(FT_BATCHMODE) || !CP.Display())
+        return;
+
+    // Set the fonts
+    sLstr lstr;
+    char buf[512];
+    const char *fn = Fnt()->getName(FNT_FIXED);
+    if (fn) {
+        snprintf(buf, sizeof(buf), "setfont 1 %s\n", fn);
+        lstr.add(buf);
+    }
+    fn = Fnt()->getName(FNT_PROP);
+    if (fn) {
+        snprintf(buf, sizeof(buf), "setfont 2 %s\n", fn);
+        lstr.add(buf);
+    }
+    fn = Fnt()->getName(FNT_SCREEN);
+    if (fn) {
+        snprintf(buf, sizeof(buf), "setfont 3 %s\n", fn);
+        lstr.add(buf);
+    }
+    fn = Fnt()->getName(FNT_EDITOR);
+    if (fn) {
+        snprintf(buf, sizeof(buf), "setfont 4 %s\n", fn);
+        lstr.add(buf);
+    }
+    fn = Fnt()->getName(FNT_MOZY);
+    if (fn) {
+        snprintf(buf, sizeof(buf), "setfont 5 %s\n", fn);
+        lstr.add(buf);
+    }
+    fn = Fnt()->getName(FNT_MOZY_FIXED);
+    if (fn) {
+        snprintf(buf, sizeof(buf), "setfont 6 %s\n", fn);
+        lstr.add(buf);
+    }
+
+    char *startup_filename;
+    bool found = IFsimulator::StartupFileName(&startup_filename);
+    char *bkfile = new char[strlen(startup_filename) + 5];
+    char *s = lstring::stpcpy(bkfile, startup_filename);
+    strcpy(s, ".bak");
+
+    s = 0;
+    if (found) {
+        if (!filestat::move_file_local(bkfile, startup_filename))
+            goto bad;
+        FILE *fp = fopen(startup_filename, "w");
+        if (!fp)
+            goto bad;
+        FILE *gp = fopen(bkfile, "r");
+        if (!gp)
+            goto bad;
+        bool contd = false;
+        bool wrote = false;
+        while (fgets(buf, 512, gp)) {
+            if (contd) {
+                s = buf + strlen(buf) - 1;
+                while (isspace(*s))
+                   s--;
+                if (*s != '\\') {
+                    contd = false;
+                    if (!wrote) {
+                        fputs(lstr.string(), fp);
+                        wrote = true;
+                    }
+                }
+                continue;
+            }
+            s = buf;
+            while (isspace(*s))
+                s++;
+            if (!strncmp("setfont", s, 7))
+                continue;
+            fputs(buf, fp);
+        }
+        if (!wrote) {
+            fputs(lstr.string(), fp);
+            wrote = true;
+        }
+        fclose(fp);
+        fclose(gp);
+    }
+    else {
+        FILE *fp = fopen(startup_filename, "w");
+        fputs("* title line, don't delete!\n", fp);
+        if (fp) {
+            fputs(lstr.string(), fp);
+            fclose(fp);
+        }
+        else
+            goto bad;
+    }
+    delete [] startup_filename;
+    delete [] bkfile;
+    return;
+bad:
+    GRpkg::self()->ErrPrintf(ET_WARN, "could not update %s.\n",
+        startup_filename);
+    delete [] startup_filename;
+    delete [] bkfile;
+}
+
+
 //
 // The toolbar menus and widgets
 //
@@ -414,6 +521,746 @@ GTKtoolbar::on_null_ptr()
 }
 
 
+namespace {
+    // Whiteley Research Logo bitmap.
+    //    
+    // XPM
+    const char *tm30[] = {
+        // width height ncolors chars_per_pixel
+        "30 20 2 1",
+        // colors
+        "   c none",
+        ".  c blue",
+        // pixels
+        "                              ",
+        "                              ",
+        "   ..             ......      ",
+        "  ...      .      ........    ",
+        "  ....     ..    ..........   ",
+        "   ...     ..    ...  .....   ",
+        "   ....   ....   ...    ...   ",
+        "    ....  ....  ....    ...   ",
+        "    ....  ..... ...........   ",
+        "     .......... ...........   ",
+        "     .....................    ",
+        "      ...... ...........      ",
+        "      .....  .....  ....      ",
+        "       ....   ....   ....     ",
+        "       ....   ....   .....    ",
+        "        ..     ...    .....   ",
+        "        ..      .      ....   ",
+        "         .      .       ..    ",
+        "                              ",
+        "                              "};
+
+    const char *run_xpm[] = {
+        // width height ncolors chars_per_pixel
+        "20 20 3 1",
+        // colors
+        "   c none",
+        ".  c green",
+        "x  c darkgreen",
+        // pixels
+        "                    ",
+        "                    ",
+        "  x                 ",
+        "  x.x               ",
+        "  x...x             ",
+        "  x.....x           ",
+        "  x.......x         ",
+        "  x.........x       ",
+        "  x...........x     ",
+        "  x.............x   ",
+        "  x...........x     ",
+        "  x.........x       ",
+        "  x.......x         ",
+        "  x.....x           ",
+        "  x...x             ",
+        "  x.x               ",
+        "  x                 ",
+        "                    ",
+        "                    ",
+        "                    "};
+
+    const char *stop_xpm[] = {
+        // width height ncolors chars_per_pixel
+        "20 20 2 1",
+        // colors
+        "   c none",
+        ".  c red",
+        // pixels
+        "                    ",
+        "                    ",
+        "  ...          ...  ",
+        "   ...        ...   ",
+        "    ...      ...    ",
+        "     ...    ...     ",
+        "      ...  ...      ",
+        "       ......       ",
+        "        ....        ",
+        "        ....        ",
+        "       ......       ",
+        "      ...  ...      ",
+        "     ...    ...     ",
+        "    ...      ...    ",
+        "   ...        ...   ",
+        "  ...          ...  ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    "};
+
+    //
+    // Stuff to register the main window as a drop site.
+    //
+
+    GtkTargetEntry target_table[] = {
+        { (char*)"STRING",     0, 0 },
+        { (char*)"text/plain", 0, 1 }
+    };
+    guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
+    bool drag_active;
+
+
+    // Periodically update the resource listing in the toolbar widget.
+    //
+    int
+    res_timeout(void*)
+    {
+        TB()->UpdateMain(RES_UPD);
+        return (true);
+    }
+
+    // Redraw the resource listing
+    //
+    int
+#if GTK_CHECK_VERSION(3,0,0)
+    expose_hdlr(GtkWidget*, cairo_t*, void*)
+#else
+    expose_hdlr(GtkWidget*, GdkEvent*, void*)
+#endif
+    {
+        TB()->UpdateMain(RES_BEGIN);
+        return (true);
+    }
+
+    // Change the drawing area size on font change.
+    //
+    void
+    font_change_hdlr(GtkWidget*, void*, void*)
+    {
+        tb_bag *w = TB()->context;
+        if (w) {
+            int fw, fh;
+            w->TextExtent(0, &fw, &fh);
+            gtk_widget_set_size_request(w->Viewport(), 40*fw + 6, 6*fh + 6);
+        }
+    }
+
+    // Handler for the Run/Stop buttons
+    void
+    rs_btn_hdlr(GtkWidget*, void *arg)
+    {
+        if (arg == 0)
+            // Run button
+            CommandTab::com_resume(0);
+        else
+            raise(SIGINT);
+    }
+}
+
+
+// Create the main window and menus.
+//
+void
+GTKtoolbar::PopUpToolbar(ShowMode mode, int, int)
+{
+    // Unlike previous versions, this is not intended to be
+    // reconfigured, thus the directive to pop down is ignored
+    //
+    if (mode != MODE_ON || toolbar)
+        return;
+    tb_bag *w = new tb_bag(GR_TB);
+    GRpkg::self()->NewWbag(GR_TBstr, w);
+    context = w;
+    toolbar = w->Shell();
+
+    // Export the top level to the help system, so that the
+    // transient-for hint will be applied in help windows.  Skipping
+    // this may cause subtle things like help windows not being raised
+    // when mapped.
+#ifdef HAVE_MOZY
+    GTKhelpPopup::set_transient_for(GTK_WINDOW(toolbar));
+#endif
+    GTKeditPopup::set_transient_for(GTK_WINDOW(toolbar));
+
+#ifdef WIN32
+    // Icons are obtained from resources.
+#else
+    GList *g1 = new GList;
+    g1->data = gdk_pixbuf_new_from_xpm_data(wrs_48x48_xpm);
+    GList *g2 = new GList;
+    g2->data = gdk_pixbuf_new_from_xpm_data(wrs_32x32_xpm);
+    g1->next = g2; 
+    GList *g3 = new GList;
+    g3->data = gdk_pixbuf_new_from_xpm_data(wrs_16x16_xpm);
+    g3->next = 0;  
+    g2->next = g3;
+    gtk_window_set_icon_list(GTK_WINDOW(w->Shell()), g1);
+#endif
+
+    g_signal_connect(G_OBJECT(toolbar), "destroy",
+        G_CALLBACK(quit_proc), 0);
+    g_signal_connect(G_OBJECT(toolbar), "delete_event",
+        G_CALLBACK(quit_proc), 0);
+
+    GtkWidget *form = gtk_table_new(1, 2, false);
+    gtk_widget_show(form);
+    gtk_container_add(GTK_CONTAINER(toolbar), form);
+
+    // Menu bar.
+    //
+    GtkAccelGroup *accel_group = gtk_accel_group_new();
+    gtk_window_add_accel_group(GTK_WINDOW(w->Shell()), accel_group);
+    GtkWidget *menubar = gtk_menu_bar_new();
+    g_object_set_data(G_OBJECT(w->Shell()), "menubar", menubar);
+    gtk_widget_show(menubar);
+    GtkWidget *item;
+
+    // File menu.
+    item = gtk_menu_item_new_with_mnemonic("_File");
+    gtk_widget_set_name(item, "File");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    tb_file_menu = gtk_menu_new();
+    gtk_widget_show(tb_file_menu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), tb_file_menu);
+
+    // "/File/_File Select", "<control>O", open_proc, 0
+    item = gtk_menu_item_new_with_mnemonic("_File Select");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(tb_file_menu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(open_proc), this);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_o,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+    gtk_widget_set_tooltip_text(item, "Show File Selection panel");
+
+    // "/File/_Source", "<control>S", source_proc, 0
+    item = gtk_menu_item_new_with_mnemonic("_Source");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(tb_file_menu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(source_proc), this);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_s,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+    gtk_widget_set_tooltip_text(item, "Source input file");
+    tb_source_btn = item;
+
+    // "/File/_Load", "<control>L", load_proc, 0
+    item = gtk_menu_item_new_with_mnemonic("_Load");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(tb_file_menu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(load_proc), this);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_l,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+    gtk_widget_set_tooltip_text(item, "Load plot data file");
+    tb_load_btn = item;
+
+    // "/File/Save _Tools", 0, save_tools_proc, 0
+    item = gtk_menu_item_new_with_mnemonic("Save _Tools");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(tb_file_menu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(save_tools_proc), this);
+    gtk_widget_set_tooltip_text(item,
+        "Save the current tool window locations and visibility");
+
+    // "/File/Save Fonts", 0, save_fonts_proc, 0
+    item = gtk_menu_item_new_with_mnemonic("Save Fonts");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(tb_file_menu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(save_fonts_proc), this);
+    gtk_widget_set_tooltip_text(item,
+        "Save the current fonts persistently");
+
+    /* Package update presently not supported.
+    // "/File/Update _WRspice", 0, wrupdate_proc, 0
+    item = gtk_menu_item_new_with_mnemonic("Update _WRspice");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(tb_file_menu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(wrupdate_proc), this);
+    gtk_widget_set_tooltip_text(item, "Update WRspice");
+    */
+
+    item = gtk_separator_menu_item_new();
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(tb_file_menu), item);
+
+    if (CP.GetFlag(CP_NOTTYIO)) {
+        // "/File/_Close", "<control>Q", quit_proc, 0
+        item = gtk_menu_item_new_with_mnemonic("_Close");
+        gtk_widget_set_tooltip_text(item, "Close WRspice");
+    }
+    else {
+        // "/File/_Quit", "<control>Q", quit_proc, 0
+        item = gtk_menu_item_new_with_mnemonic("_Quit");
+        gtk_widget_set_tooltip_text(item, "Quit WRspice");
+    }
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(tb_file_menu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(quit_proc), this);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_q,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+
+    // Edit menu.
+    item = gtk_menu_item_new_with_mnemonic("_Edit");
+    gtk_widget_set_name(item, "Edit");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    tb_edit_menu = gtk_menu_new();
+    gtk_widget_show(tb_edit_menu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), tb_edit_menu);
+
+    // "/Edit/_Text Editor", "<control>T", edit_proc, 0
+    item = gtk_menu_item_new_with_mnemonic("_Text Editor");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(tb_edit_menu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(edit_proc), this);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_t,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+    gtk_widget_set_tooltip_text(item, "Pop up text editor");
+
+    if (!CP.GetFlag(CP_NOTTYIO)) {
+        // "/Edit/_Xic", "<control>X", xic_proc, 0
+        item = gtk_menu_item_new_with_mnemonic("_Xic");
+        gtk_widget_show(item);
+        gtk_menu_shell_append(GTK_MENU_SHELL(tb_edit_menu), item);
+        g_signal_connect(G_OBJECT(item), "activate",
+            G_CALLBACK(xic_proc), this);
+        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_x,
+            GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+        gtk_widget_set_tooltip_text(item, "Start Xic");
+    }
+
+    // Tools menu.
+    // Note that the tools order is alterable from tbsetup.
+    item = gtk_menu_item_new_with_mnemonic("_Tools");
+    gtk_widget_set_name(item, "Tools");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    tb_tools_menu = gtk_menu_new();
+    gtk_widget_show(tb_tools_menu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), tb_tools_menu);
+
+    unsigned long ix = 0;
+    for (tbent *tb = entries; tb && tb->name; tb++, ix++) {
+        if (tb->name == ntb_toolbar)
+            continue;
+        if (tb->name == ntb_bug)
+            continue;  // in WR button
+        else if (tb->name == ntb_circuits) {
+            // "/Tools/_Circuits", "<alt>C", menu_proc, ix, "<CheckItem>"
+            item = gtk_check_menu_item_new_with_mnemonic("_Circuits");
+            gtk_widget_show(item);
+            gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
+            g_signal_connect(G_OBJECT(item), "activate",
+                G_CALLBACK(menu_proc), (gpointer)(uintptr_t)ix);
+            gtk_widget_add_accelerator(item, "activate", accel_group,
+                GDK_KEY_c, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+                GTK_ACCEL_VISIBLE);
+            gtk_widget_set_tooltip_text(item, "List circuits");
+            tb_circuits = item;
+        }
+        else if (tb->name == ntb_colors) {
+            // "/Tools/C_olors", "<alt>O", menu_proc, ix, "<CheckItem>");
+            item = gtk_check_menu_item_new_with_mnemonic("C_olors");
+            gtk_widget_show(item);
+            gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
+            g_signal_connect(G_OBJECT(item), "activate",
+                G_CALLBACK(menu_proc), (gpointer)(uintptr_t)ix);
+            gtk_widget_add_accelerator(item, "activate", accel_group,
+                GDK_KEY_c, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+                GTK_ACCEL_VISIBLE);
+            gtk_widget_set_tooltip_text(item, "Set plot colors");
+            tb_colors = item;
+        }
+        else if (tb->name == ntb_commands) {
+            // "/Tools/Co_mmands", "<alt>M", menu_proc, ix, "<CheckItem>"
+            item = gtk_check_menu_item_new_with_mnemonic("Co_mmands");
+            gtk_widget_show(item);
+            gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
+            g_signal_connect(G_OBJECT(item), "activate",
+                G_CALLBACK(menu_proc), (gpointer)(uintptr_t)ix);
+            gtk_widget_add_accelerator(item, "activate", accel_group,
+                GDK_KEY_m, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+                GTK_ACCEL_VISIBLE);
+            gtk_widget_set_tooltip_text(item, "Set command options");
+            tb_commands = item;
+        }
+        else if (tb->name == ntb_debug) {
+            // "/Tools/_Debug", "<alt>D", menu_proc, ix, "<CheckItem>");
+            item = gtk_check_menu_item_new_with_mnemonic("_Debug");
+            gtk_widget_show(item);
+            gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
+            g_signal_connect(G_OBJECT(item), "activate",
+                G_CALLBACK(menu_proc), (gpointer)(uintptr_t)ix);
+            gtk_widget_add_accelerator(item, "activate", accel_group,
+                GDK_KEY_d, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+                GTK_ACCEL_VISIBLE);
+            gtk_widget_set_tooltip_text(item, "Set debugging options");
+            tb_debug = item;
+        }
+        else if (tb->name == ntb_files) {
+            // "/Tools/_Files", "<alt>Z", menu_proc, ix, "<CheckItem>"
+            item = gtk_check_menu_item_new_with_mnemonic("_Files");
+            gtk_widget_show(item);
+            gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
+            g_signal_connect(G_OBJECT(item), "activate",
+                G_CALLBACK(menu_proc), (gpointer)(uintptr_t)ix);
+            gtk_widget_add_accelerator(item, "activate", accel_group,
+                GDK_KEY_z, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+                GTK_ACCEL_VISIBLE);
+            gtk_widget_set_tooltip_text(item, "List search path files");
+            tb_files = item;
+        }
+        else if (tb->name == ntb_font) {
+            // "/Tools/Fo_nts", "<alt>N", menu_proc, ix, "<CheckItem>");
+            item = gtk_check_menu_item_new_with_mnemonic("Fo_nts");
+            gtk_widget_show(item);
+            gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
+            g_signal_connect(G_OBJECT(item), "activate",
+                G_CALLBACK(menu_proc), (gpointer)(uintptr_t)ix);
+            gtk_widget_add_accelerator(item, "activate", accel_group,
+                GDK_KEY_n, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+                GTK_ACCEL_VISIBLE);
+            gtk_widget_set_tooltip_text(item, "Set window fonts");
+            tb_font = item;
+        }
+        else if (tb->name == ntb_plotdefs) {
+            // "/Tools/P_lot Opts", "<alt>L", menu_proc, ix, "<CheckItem>"
+            item = gtk_check_menu_item_new_with_mnemonic("P_lot Opts");
+            gtk_widget_show(item);
+            gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
+            g_signal_connect(G_OBJECT(item), "activate",
+                G_CALLBACK(menu_proc), (gpointer)(uintptr_t)ix);
+            gtk_widget_add_accelerator(item, "activate", accel_group,
+                GDK_KEY_l, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+                GTK_ACCEL_VISIBLE);
+            gtk_widget_set_tooltip_text(item, "Set plot options");
+            tb_plotdefs = item;
+        }
+        else if (tb->name == ntb_plots) {
+            // "/Tools/_Plots", "<alt>P", menu_proc, ix, "<CheckItem>");
+            item = gtk_check_menu_item_new_with_mnemonic("_Plots");
+            gtk_widget_show(item);
+            gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
+            g_signal_connect(G_OBJECT(item), "activate",
+                G_CALLBACK(menu_proc), (gpointer)(uintptr_t)ix);
+            gtk_widget_add_accelerator(item, "activate", accel_group,
+                GDK_KEY_p, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+                GTK_ACCEL_VISIBLE);
+            gtk_widget_set_tooltip_text(item, "List result plot data");
+            tb_plots = item;
+        }
+        else if (tb->name == ntb_shell) {
+            // "/Tools/_Shell", "<alt>S", GIFC(menu_proc), ix, "<CheckItem>");
+            item = gtk_check_menu_item_new_with_mnemonic("_Shell");
+            gtk_widget_show(item);
+            gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
+            g_signal_connect(G_OBJECT(item), "activate",
+                G_CALLBACK(menu_proc), (gpointer)(uintptr_t)ix);
+            gtk_widget_add_accelerator(item, "activate", accel_group,
+                GDK_KEY_s, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+                GTK_ACCEL_VISIBLE);
+            gtk_widget_set_tooltip_text(item, "Set shell options");
+            tb_shell = item;
+        }
+        else if (tb->name == ntb_simdefs) {
+            // "/Tools/S_im Opts", "<alt>I", menu_proc, ix, "<CheckItem>"
+            item = gtk_check_menu_item_new_with_mnemonic("S_im Opts");
+            gtk_widget_show(item);
+            gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
+            g_signal_connect(G_OBJECT(item), "activate",
+                G_CALLBACK(menu_proc), (gpointer)(uintptr_t)ix);
+            gtk_widget_add_accelerator(item, "activate", accel_group,
+                GDK_KEY_i, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+                GTK_ACCEL_VISIBLE);
+            gtk_widget_set_tooltip_text(item, "Set simulation options");
+            tb_simdefs = item;
+        }
+        else if (tb->name == ntb_runops) {
+            // "/Tools/_Runops", "<alt>A", menu_proc, ix, "<CheckItem>");
+            item = gtk_check_menu_item_new_with_mnemonic("_Runops");
+            gtk_widget_show(item);
+            gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
+            g_signal_connect(G_OBJECT(item), "activate",
+                G_CALLBACK(menu_proc), (gpointer)(uintptr_t)ix);
+            gtk_widget_add_accelerator(item, "activate", accel_group,
+                GDK_KEY_a, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+                GTK_ACCEL_VISIBLE);
+            gtk_widget_set_tooltip_text(item, "List runops in effect");
+            tb_runops = item;
+        }
+        else if (tb->name == ntb_variables) {
+            // "/Tools/Va_riables", "<alt>R", menu_proc, ix, "<CheckItem>");
+            item = gtk_check_menu_item_new_with_mnemonic("Va_riables");
+            gtk_widget_show(item);
+            gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
+            g_signal_connect(G_OBJECT(item), "activate",
+                G_CALLBACK(menu_proc), (gpointer)(uintptr_t)ix);
+            gtk_widget_add_accelerator(item, "activate", accel_group,
+                GDK_KEY_r, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+                GTK_ACCEL_VISIBLE);
+            gtk_widget_set_tooltip_text(item, "List set shell variables");
+            tb_variables = item;
+        }
+        else if (tb->name == ntb_vectors) {
+            // "/Tools/_Vectors", "<alt>V", GIFC(menu_proc), ix, "<CheckItem>"
+            item = gtk_check_menu_item_new_with_mnemonic("_Vectors");
+            gtk_widget_show(item);
+            gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
+            g_signal_connect(G_OBJECT(item), "activate",
+                G_CALLBACK(menu_proc), (gpointer)(uintptr_t)ix);
+            gtk_widget_add_accelerator(item, "activate", accel_group,
+                GDK_KEY_v, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
+                GTK_ACCEL_VISIBLE);
+            gtk_widget_set_tooltip_text(item, "List vectors in current plot");
+            tb_vectors = item;
+        }
+    }
+
+    // Help menu.
+    item = gtk_menu_item_new_with_mnemonic("_Help");
+    gtk_widget_set_name(item, "Help");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
+    GtkWidget *helpMenu = gtk_menu_new();
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), helpMenu);
+
+    // "/Help/_Help", "<control>H", help_proc, 0
+    item = gtk_menu_item_new_with_mnemonic("_Help");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(helpMenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(help_proc), this);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_h,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+    gtk_widget_set_tooltip_text(item, "Pop up Help window");
+
+    // "/Help/_About", "<control>A", about_proc, 0
+    item = gtk_menu_item_new_with_mnemonic("_About");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(helpMenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(about_proc), this);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_a,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+    gtk_widget_set_tooltip_text(item, "Pop up About window");
+
+    // "/Help/_Notes", "<control>N", GIFC(notes_proc), 0
+    item = gtk_menu_item_new_with_mnemonic("_Notes");
+    gtk_widget_show(item);
+    gtk_menu_shell_append(GTK_MENU_SHELL(helpMenu), item);
+    g_signal_connect(G_OBJECT(item), "activate",
+        G_CALLBACK(notes_proc), this);
+    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_n,
+        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+    gtk_widget_set_tooltip_text(item, "Show release notes");
+
+    for (tbent *tb = entries; tb && tb->name; tb++) {
+        if (tb->name == ntb_toolbar)
+            continue;
+        if (tb->name == ntb_bug)
+            continue;  // in WR button
+        else if (tb->name == ntb_circuits) {
+            if (tb_circuits)
+                GTKdev::SetStatus(tb_circuits, tb->active);
+        }
+        else if (tb->name == ntb_colors) {
+            if (tb_colors)
+                GTKdev::SetStatus(tb_colors, tb->active);
+        }
+        else if (tb->name == ntb_commands) {
+            if (tb_commands)
+                GTKdev::SetStatus(tb_commands, tb->active);
+        }
+        else if (tb->name == ntb_debug) {
+            if (tb_debug)
+                GTKdev::SetStatus(tb_debug, tb->active);
+        }
+        else if (tb->name == ntb_files) {
+            if (tb_files)
+                GTKdev::SetStatus(tb_files, tb->active);
+        }
+        else if (tb->name == ntb_font) {
+            if (tb_font)
+                GTKdev::SetStatus(tb_font, tb->active);
+        }
+        else if (tb->name == ntb_plotdefs) {
+            if (tb_plotdefs)
+                GTKdev::SetStatus(tb_plotdefs, tb->active);
+        }
+        else if (tb->name == ntb_plots) {
+            if (tb_plots)
+                GTKdev::SetStatus(tb_plots, tb->active);
+        }
+        else if (tb->name == ntb_shell) {
+            if (tb_shell)
+                GTKdev::SetStatus(tb_shell, tb->active);
+        }
+        else if (tb->name == ntb_simdefs) {
+            if (tb_simdefs)
+                GTKdev::SetStatus(tb_simdefs, tb->active);
+        }
+        else if (tb->name == ntb_runops) {
+            if (tb_runops)
+                GTKdev::SetStatus(tb_runops, tb->active);
+        }
+        else if (tb->name == ntb_variables) {
+            if (tb_variables)
+                GTKdev::SetStatus(tb_variables, tb->active);
+        }
+        else if (tb->name == ntb_vectors) {
+            if (tb_vectors)
+                GTKdev::SetStatus(tb_vectors, tb->active);
+        }
+    }
+
+    GtkWidget *hbox = gtk_hbox_new(false, 2);
+    gtk_widget_show(hbox);
+
+    // the WR logo button
+    GtkWidget *pixbtn = gtk_NewPixmapButton(tm30, "WR", false);
+    gtk_widget_show(pixbtn);
+    tb_bug = pixbtn;
+    g_signal_connect(G_OBJECT(pixbtn), "clicked",
+        G_CALLBACK(wr_btn_hdlr), 0);
+    gtk_box_pack_start(GTK_BOX(hbox), pixbtn, false, false, 0);
+    gtk_widget_set_tooltip_text(pixbtn, "Pop up email client");
+
+    // the Run button
+    pixbtn = gtk_NewPixmapButton(run_xpm, "Run", false);
+    gtk_widget_show(pixbtn);
+    g_signal_connect(G_OBJECT(pixbtn), "clicked",
+        G_CALLBACK(rs_btn_hdlr), 0);
+    gtk_box_pack_start(GTK_BOX(hbox), pixbtn, false, false, 0);
+    gtk_widget_set_tooltip_text(pixbtn, "Run current circuit");
+
+    // the Stop button
+    pixbtn = gtk_NewPixmapButton(stop_xpm, "Stop", false);
+    gtk_widget_show(pixbtn);
+    g_signal_connect(G_OBJECT(pixbtn), "clicked",
+        G_CALLBACK(rs_btn_hdlr), (void*)1);
+    gtk_box_pack_start(GTK_BOX(hbox), pixbtn, false, false, 0);
+    gtk_widget_set_tooltip_text(pixbtn, "Pause current analysis");
+
+    gtk_box_pack_start(GTK_BOX(hbox), menubar, true, true, 0);
+
+    gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, 0, 1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+
+    w->SetViewport(gtk_drawing_area_new());
+    gtk_widget_show(w->Viewport());
+
+    GTKfont::setupFont(w->Viewport(), FNT_SCREEN, true);
+
+    int wid, hei;
+    w->TextExtent(0, &wid, &hei);
+    gtk_widget_set_size_request(w->Viewport(), 40*wid + 6, 6*hei + 6);
+
+    GtkWidget *frame = gtk_frame_new(0);
+    gtk_widget_show(frame);
+    gtk_container_add(GTK_CONTAINER(frame), w->Viewport());
+
+    // drop handler setup
+    gtk_drag_dest_set(frame,
+        (GtkDestDefaults)(GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_DROP),
+        target_table, n_targets, GDK_ACTION_COPY);
+    g_signal_connect(G_OBJECT(frame), "drag_data_received",
+        G_CALLBACK(drag_data_received), 0);
+    g_signal_connect(G_OBJECT(frame), "drag_leave",
+        G_CALLBACK(target_drag_leave), 0);
+    g_signal_connect(G_OBJECT(frame), "drag-motion",
+        G_CALLBACK(target_drag_motion), 0);
+
+#if GTK_CHECK_VERSION(3,0,0)
+    g_signal_connect(G_OBJECT(w->Viewport()), "draw",
+        G_CALLBACK(expose_hdlr), w);
+#else
+    g_signal_connect(G_OBJECT(w->Viewport()), "expose_event",
+        G_CALLBACK(expose_hdlr), w);
+#endif
+    g_signal_connect(G_OBJECT(w->Viewport()), "style_set",
+        G_CALLBACK(font_change_hdlr), 0);
+
+    gtk_table_attach(GTK_TABLE(form), frame, 0, 1, 1, 2,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL), 2, 2);
+
+    for (tbent *tb = entries; tb && tb->name; tb++) {
+        if (tb->name == ntb_toolbar) {
+            int x = tb->x;
+            int y = tb->y;
+            FixLoc(&x, &y);
+            gtk_window_move(GTK_WINDOW(toolbar), x, y);
+            continue;
+        }
+    }
+
+    // MSW seems to need this before gtk_window_show.
+    RevertFocus(toolbar);
+
+    gtk_widget_show(toolbar);
+#if GTK_CHECK_VERSION(3,0,0)
+    w->GetDrawable()->set_window(gtk_widget_get_window(w->Viewport()));
+#else
+    w->SetWindow(w->Viewport()->window);
+#endif
+    char tbuf[28];
+    snprintf(tbuf, sizeof(tbuf), "WRspice-%s", Global.Version());
+    w->Title(tbuf, "WRspice");
+
+    // set up initial xor color
+    GdkColor clr;
+    clr.pixel = SpGrPkg::DefColors[0].pixel ^ SpGrPkg::DefColors[1].pixel;
+#if GTK_CHECK_VERSION(3,0,0)
+    w->XorGC()->set_foreground(&clr);
+#else
+    gdk_gc_set_foreground(w->XorGC(), &clr);
+#endif
+
+    // drawing colors
+    const char *s = XRMgetFromDb("fgcolor1");
+    if (!s)
+        s = "sienna";
+    tb_clr_1 = GTKdev::self()->NameColor(s);
+    s = XRMgetFromDb("fgcolor2");
+    if (!s)
+        s = "black";
+    tb_clr_2 = GTKdev::self()->NameColor(s);
+    s = XRMgetFromDb("fgcolor3");
+    if (!s)
+        s = "red";
+    tb_clr_3 = GTKdev::self()->NameColor(s);
+    s = XRMgetFromDb("fgcolor4");
+    if (!s)
+        s = "blue";
+    tb_clr_4 = GTKdev::self()->NameColor(s);
+
+    w->SetWindowBackground(SpGrPkg::DefColors[0].pixel);
+    w->SetBackground(SpGrPkg::DefColors[0].pixel);
+    w->Clear();
+    g_timeout_add(2000, res_timeout, 0);
+}
+
+
 // Pop up the toolbar.
 //
 void
@@ -423,7 +1270,7 @@ GTKtoolbar::Toolbar()
         return;
 
     gtk_window_set_default_icon_name("wrspice");
-    tbpop(true);
+    PopUpToolbar(MODE_ON, 0, 0);
 
     // now launch the application windows that start realized
     for (tbent *tb = entries; tb && tb->name; tb++) {
@@ -434,11 +1281,6 @@ GTKtoolbar::Toolbar()
     }
 }
 
-// XXX fixme from QT
-void
-GTKtoolbar::PopUpToolbar(ShowMode, int, int)
-{
-}
 
 //==========================================================================
 //
@@ -1630,771 +2472,7 @@ GTKtoolbar::ConfigString()
         }
     }
     lstr.add_c('\n');
-
-    // Add the fonts
-    const char *fn = Fnt()->getName(FNT_FIXED);
-    if (fn) {
-        snprintf(buf, sizeof(buf), "setfont 1 %s\n", fn);
-        lstr.add(buf);
-    }
-    fn = Fnt()->getName(FNT_PROP);
-    if (fn) {
-        snprintf(buf, sizeof(buf), "setfont 2 %s\n", fn);
-        lstr.add(buf);
-    }
-    fn = Fnt()->getName(FNT_SCREEN);
-    if (fn) {
-        snprintf(buf, sizeof(buf), "setfont 3 %s\n", fn);
-        lstr.add(buf);
-    }
-    fn = Fnt()->getName(FNT_EDITOR);
-    if (fn) {
-        snprintf(buf, sizeof(buf), "setfont 4 %s\n", fn);
-        lstr.add(buf);
-    }
-    fn = Fnt()->getName(FNT_MOZY);
-    if (fn) {
-        snprintf(buf, sizeof(buf), "setfont 5 %s\n", fn);
-        lstr.add(buf);
-    }
-    fn = Fnt()->getName(FNT_MOZY_FIXED);
-    if (fn) {
-        snprintf(buf, sizeof(buf), "setfont 6 %s\n", fn);
-        lstr.add(buf);
-    }
     return (lstr.string_trim());
-}
-
-
-namespace {
-    // Whiteley Research Logo bitmap.
-    //    
-    // XPM
-    const char *tm30[] = {
-        // width height ncolors chars_per_pixel
-        "30 20 2 1",
-        // colors
-        "   c none",
-        ".  c blue",
-        // pixels
-        "                              ",
-        "                              ",
-        "   ..             ......      ",
-        "  ...      .      ........    ",
-        "  ....     ..    ..........   ",
-        "   ...     ..    ...  .....   ",
-        "   ....   ....   ...    ...   ",
-        "    ....  ....  ....    ...   ",
-        "    ....  ..... ...........   ",
-        "     .......... ...........   ",
-        "     .....................    ",
-        "      ...... ...........      ",
-        "      .....  .....  ....      ",
-        "       ....   ....   ....     ",
-        "       ....   ....   .....    ",
-        "        ..     ...    .....   ",
-        "        ..      .      ....   ",
-        "         .      .       ..    ",
-        "                              ",
-        "                              "};
-
-    const char *run_xpm[] = {
-        // width height ncolors chars_per_pixel
-        "20 20 3 1",
-        // colors
-        "   c none",
-        ".  c green",
-        "x  c darkgreen",
-        // pixels
-        "                    ",
-        "                    ",
-        "  x                 ",
-        "  x.x               ",
-        "  x...x             ",
-        "  x.....x           ",
-        "  x.......x         ",
-        "  x.........x       ",
-        "  x...........x     ",
-        "  x.............x   ",
-        "  x...........x     ",
-        "  x.........x       ",
-        "  x.......x         ",
-        "  x.....x           ",
-        "  x...x             ",
-        "  x.x               ",
-        "  x                 ",
-        "                    ",
-        "                    ",
-        "                    "};
-
-    const char *stop_xpm[] = {
-        // width height ncolors chars_per_pixel
-        "20 20 2 1",
-        // colors
-        "   c none",
-        ".  c red",
-        // pixels
-        "                    ",
-        "                    ",
-        "  ...          ...  ",
-        "   ...        ...   ",
-        "    ...      ...    ",
-        "     ...    ...     ",
-        "      ...  ...      ",
-        "       ......       ",
-        "        ....        ",
-        "        ....        ",
-        "       ......       ",
-        "      ...  ...      ",
-        "     ...    ...     ",
-        "    ...      ...    ",
-        "   ...        ...   ",
-        "  ...          ...  ",
-        "                    ",
-        "                    ",
-        "                    ",
-        "                    "};
-}
-
-
-namespace {
-    //
-    // Stuff to register the main window as a drop site
-    //
-
-    GtkTargetEntry target_table[] = {
-        { (char*)"STRING",     0, 0 },
-        { (char*)"text/plain", 0, 1 }
-    };
-    guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
-    bool drag_active;
-
-
-    // Periodically update the resource listing in the toolbar widget.
-    //
-    int
-    res_timeout(void*)
-    {
-        TB()->UpdateMain(RES_UPD);
-        return (true);
-    }
-
-
-    // Redraw the resource listing
-    //
-    int
-#if GTK_CHECK_VERSION(3,0,0)
-    expose_hdlr(GtkWidget*, cairo_t*, void*)
-#else
-    expose_hdlr(GtkWidget*, GdkEvent*, void*)
-#endif
-    {
-        TB()->UpdateMain(RES_BEGIN);
-        return (true);
-    }
-
-    // Change the drawing area size on font change.
-    //
-    void
-    font_change_hdlr(GtkWidget*, void*, void*)
-    {
-        tb_bag *w = TB()->context;
-        if (w) {
-            int fw, fh;
-            w->TextExtent(0, &fw, &fh);
-            gtk_widget_set_size_request(w->Viewport(), 40*fw + 6, 6*fh + 6);
-        }
-    }
-
-    // Handler for the Run/Stop buttons
-    void
-    rs_btn_hdlr(GtkWidget*, void *arg)
-    {
-        if (arg == 0)
-            // Run button
-            CommandTab::com_resume(0);
-        else
-            raise(SIGINT);
-    }
-}
-
-
-// Function to actually create the main window and menus
-//
-void
-GTKtoolbar::tbpop(bool up)
-{
-    // Unlike previous versions, this is not intended to be
-    // reconfigured, thus the directive to pop down is ignored
-    //
-    if (!up || toolbar)
-        return;
-    tb_bag *w = new tb_bag(GR_TB);
-    GRpkg::self()->NewWbag(GR_TBstr, w);
-    context = w;
-    toolbar = w->Shell();
-
-    // Export the top level to the help system, so that the
-    // transient-for hint will be applied in help windows.  Skipping
-    // this may cause subtle things like help windows not being raised
-    // when mapped.
-#ifdef HAVE_MOZY
-    GTKhelpPopup::set_transient_for(GTK_WINDOW(toolbar));
-#endif
-    GTKeditPopup::set_transient_for(GTK_WINDOW(toolbar));
-
-#ifdef WIN32
-    // Icons are obtained from resources.
-#else
-    GList *g1 = new GList;
-    g1->data = gdk_pixbuf_new_from_xpm_data(wrs_48x48_xpm);
-    GList *g2 = new GList;
-    g2->data = gdk_pixbuf_new_from_xpm_data(wrs_32x32_xpm);
-    g1->next = g2; 
-    GList *g3 = new GList;
-    g3->data = gdk_pixbuf_new_from_xpm_data(wrs_16x16_xpm);
-    g3->next = 0;  
-    g2->next = g3;
-    gtk_window_set_icon_list(GTK_WINDOW(w->Shell()), g1);
-#endif
-
-    g_signal_connect(G_OBJECT(toolbar), "destroy",
-        G_CALLBACK(quit_proc), 0);
-    g_signal_connect(G_OBJECT(toolbar), "delete_event",
-        G_CALLBACK(quit_proc), 0);
-
-    GtkWidget *form = gtk_table_new(1, 2, false);
-    gtk_widget_show(form);
-    gtk_container_add(GTK_CONTAINER(toolbar), form);
-
-    // Menu bar.
-    //
-    GtkAccelGroup *accel_group = gtk_accel_group_new();
-    gtk_window_add_accel_group(GTK_WINDOW(w->Shell()), accel_group);
-    GtkWidget *menubar = gtk_menu_bar_new();
-    g_object_set_data(G_OBJECT(w->Shell()), "menubar", menubar);
-    gtk_widget_show(menubar);
-    GtkWidget *item;
-
-    // File menu.
-    item = gtk_menu_item_new_with_mnemonic("_File");
-    gtk_widget_set_name(item, "File");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
-    tb_file_menu = gtk_menu_new();
-    gtk_widget_show(tb_file_menu);
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), tb_file_menu);
-
-    // "/File/_File Select", "<control>O", open_proc, 0
-    item = gtk_menu_item_new_with_mnemonic("_File Select");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(tb_file_menu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(open_proc), this);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_o,
-        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-    gtk_widget_set_tooltip_text(item, "Show File Selection panel");
-
-    // "/File/_Source", "<control>S", source_proc, 0
-    item = gtk_menu_item_new_with_mnemonic("_Source");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(tb_file_menu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(source_proc), this);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_s,
-        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-    gtk_widget_set_tooltip_text(item, "Source input file");
-    tb_source_btn = item;
-
-    // "/File/_Load", "<control>L", load_proc, 0
-    item = gtk_menu_item_new_with_mnemonic("_Load");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(tb_file_menu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(load_proc), this);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_l,
-        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-    gtk_widget_set_tooltip_text(item, "Load plot data file");
-    tb_load_btn = item;
-
-    // "/File/Update _Tools", 0, update_proc, 0
-    item = gtk_menu_item_new_with_mnemonic("Update _Tools");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(tb_file_menu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(update_proc), this);
-    gtk_widget_set_tooltip_text(item, "Update tool window locations");
-
-    // "/File/Update _WRspice", 0, wrupdate_proc, 0
-    item = gtk_menu_item_new_with_mnemonic("Update _WRspice");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(tb_file_menu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(wrupdate_proc), this);
-    gtk_widget_set_tooltip_text(item, "Update WRspice");
-
-    item = gtk_separator_menu_item_new();
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(tb_file_menu), item);
-
-    if (CP.GetFlag(CP_NOTTYIO)) {
-        // "/File/_Close", "<control>Q", quit_proc, 0
-        item = gtk_menu_item_new_with_mnemonic("_Close");
-        gtk_widget_set_tooltip_text(item, "Close WRspice");
-    }
-    else {
-        // "/File/_Quit", "<control>Q", quit_proc, 0
-        item = gtk_menu_item_new_with_mnemonic("_Quit");
-        gtk_widget_set_tooltip_text(item, "Quit WRspice");
-    }
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(tb_file_menu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(quit_proc), this);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_q,
-        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-
-    // Edit menu.
-    item = gtk_menu_item_new_with_mnemonic("_Edit");
-    gtk_widget_set_name(item, "Edit");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
-    tb_edit_menu = gtk_menu_new();
-    gtk_widget_show(tb_edit_menu);
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), tb_edit_menu);
-
-    // "/Edit/_Text Editor", "<control>T", edit_proc, 0
-    item = gtk_menu_item_new_with_mnemonic("_Text Editor");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(tb_edit_menu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(edit_proc), this);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_t,
-        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-    gtk_widget_set_tooltip_text(item, "Pop up text editor");
-
-    if (!CP.GetFlag(CP_NOTTYIO)) {
-        // "/Edit/_Xic", "<control>X", xic_proc, 0
-        item = gtk_menu_item_new_with_mnemonic("_Xic");
-        gtk_widget_show(item);
-        gtk_menu_shell_append(GTK_MENU_SHELL(tb_edit_menu), item);
-        g_signal_connect(G_OBJECT(item), "activate",
-            G_CALLBACK(xic_proc), this);
-        gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_x,
-            GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-        gtk_widget_set_tooltip_text(item, "Start Xic");
-    }
-
-    // Tools menu.
-    // Note that the tools order is alterable from tbsetup.
-    item = gtk_menu_item_new_with_mnemonic("_Tools");
-    gtk_widget_set_name(item, "Tools");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
-    tb_tools_menu = gtk_menu_new();
-    gtk_widget_show(tb_tools_menu);
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), tb_tools_menu);
-
-    unsigned long ix = 0;
-    for (tbent *tb = entries; tb && tb->name; tb++, ix++) {
-        if (tb->name == ntb_toolbar)
-            continue;
-        if (tb->name == ntb_bug)
-            continue;  // in WR button
-        else if (tb->name == ntb_circuits) {
-            // "/Tools/_Circuits", "<alt>C", menu_proc, ix, "<CheckItem>"
-            item = gtk_check_menu_item_new_with_mnemonic("_Circuits");
-            gtk_widget_show(item);
-            gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
-            g_signal_connect(G_OBJECT(item), "activate",
-                G_CALLBACK(menu_proc), (gpointer)(uintptr_t)ix);
-            gtk_widget_add_accelerator(item, "activate", accel_group,
-                GDK_KEY_c, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
-                GTK_ACCEL_VISIBLE);
-            gtk_widget_set_tooltip_text(item, "List circuits");
-            tb_circuits = item;
-        }
-        else if (tb->name == ntb_colors) {
-            // "/Tools/C_olors", "<alt>O", menu_proc, ix, "<CheckItem>");
-            item = gtk_check_menu_item_new_with_mnemonic("C_olors");
-            gtk_widget_show(item);
-            gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
-            g_signal_connect(G_OBJECT(item), "activate",
-                G_CALLBACK(menu_proc), (gpointer)(uintptr_t)ix);
-            gtk_widget_add_accelerator(item, "activate", accel_group,
-                GDK_KEY_c, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
-                GTK_ACCEL_VISIBLE);
-            gtk_widget_set_tooltip_text(item, "Set plot colors");
-            tb_colors = item;
-        }
-        else if (tb->name == ntb_commands) {
-            // "/Tools/Co_mmands", "<alt>M", menu_proc, ix, "<CheckItem>"
-            item = gtk_check_menu_item_new_with_mnemonic("Co_mmands");
-            gtk_widget_show(item);
-            gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
-            g_signal_connect(G_OBJECT(item), "activate",
-                G_CALLBACK(menu_proc), (gpointer)(uintptr_t)ix);
-            gtk_widget_add_accelerator(item, "activate", accel_group,
-                GDK_KEY_m, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
-                GTK_ACCEL_VISIBLE);
-            gtk_widget_set_tooltip_text(item, "Set command options");
-            tb_commands = item;
-        }
-        else if (tb->name == ntb_debug) {
-            // "/Tools/_Debug", "<alt>D", menu_proc, ix, "<CheckItem>");
-            item = gtk_check_menu_item_new_with_mnemonic("_Debug");
-            gtk_widget_show(item);
-            gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
-            g_signal_connect(G_OBJECT(item), "activate",
-                G_CALLBACK(menu_proc), (gpointer)(uintptr_t)ix);
-            gtk_widget_add_accelerator(item, "activate", accel_group,
-                GDK_KEY_d, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
-                GTK_ACCEL_VISIBLE);
-            gtk_widget_set_tooltip_text(item, "Set debugging options");
-            tb_debug = item;
-        }
-        else if (tb->name == ntb_files) {
-            // "/Tools/_Files", "<alt>Z", menu_proc, ix, "<CheckItem>"
-            item = gtk_check_menu_item_new_with_mnemonic("_Files");
-            gtk_widget_show(item);
-            gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
-            g_signal_connect(G_OBJECT(item), "activate",
-                G_CALLBACK(menu_proc), (gpointer)(uintptr_t)ix);
-            gtk_widget_add_accelerator(item, "activate", accel_group,
-                GDK_KEY_z, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
-                GTK_ACCEL_VISIBLE);
-            gtk_widget_set_tooltip_text(item, "List search path files");
-            tb_files = item;
-        }
-        else if (tb->name == ntb_font) {
-            // "/Tools/Fo_nts", "<alt>N", menu_proc, ix, "<CheckItem>");
-            item = gtk_check_menu_item_new_with_mnemonic("Fo_nts");
-            gtk_widget_show(item);
-            gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
-            g_signal_connect(G_OBJECT(item), "activate",
-                G_CALLBACK(menu_proc), (gpointer)(uintptr_t)ix);
-            gtk_widget_add_accelerator(item, "activate", accel_group,
-                GDK_KEY_n, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
-                GTK_ACCEL_VISIBLE);
-            gtk_widget_set_tooltip_text(item, "Set window fonts");
-            tb_font = item;
-        }
-        else if (tb->name == ntb_plotdefs) {
-            // "/Tools/P_lot Opts", "<alt>L", menu_proc, ix, "<CheckItem>"
-            item = gtk_check_menu_item_new_with_mnemonic("P_lot Opts");
-            gtk_widget_show(item);
-            gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
-            g_signal_connect(G_OBJECT(item), "activate",
-                G_CALLBACK(menu_proc), (gpointer)(uintptr_t)ix);
-            gtk_widget_add_accelerator(item, "activate", accel_group,
-                GDK_KEY_l, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
-                GTK_ACCEL_VISIBLE);
-            gtk_widget_set_tooltip_text(item, "Set plot options");
-            tb_plotdefs = item;
-        }
-        else if (tb->name == ntb_plots) {
-            // "/Tools/_Plots", "<alt>P", menu_proc, ix, "<CheckItem>");
-            item = gtk_check_menu_item_new_with_mnemonic("_Plots");
-            gtk_widget_show(item);
-            gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
-            g_signal_connect(G_OBJECT(item), "activate",
-                G_CALLBACK(menu_proc), (gpointer)(uintptr_t)ix);
-            gtk_widget_add_accelerator(item, "activate", accel_group,
-                GDK_KEY_p, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
-                GTK_ACCEL_VISIBLE);
-            gtk_widget_set_tooltip_text(item, "List result plot data");
-            tb_plots = item;
-        }
-        else if (tb->name == ntb_shell) {
-            // "/Tools/_Shell", "<alt>S", GIFC(menu_proc), ix, "<CheckItem>");
-            item = gtk_check_menu_item_new_with_mnemonic("_Shell");
-            gtk_widget_show(item);
-            gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
-            g_signal_connect(G_OBJECT(item), "activate",
-                G_CALLBACK(menu_proc), (gpointer)(uintptr_t)ix);
-            gtk_widget_add_accelerator(item, "activate", accel_group,
-                GDK_KEY_s, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
-                GTK_ACCEL_VISIBLE);
-            gtk_widget_set_tooltip_text(item, "Set shell options");
-            tb_shell = item;
-        }
-        else if (tb->name == ntb_simdefs) {
-            // "/Tools/S_im Opts", "<alt>I", menu_proc, ix, "<CheckItem>"
-            item = gtk_check_menu_item_new_with_mnemonic("S_im Opts");
-            gtk_widget_show(item);
-            gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
-            g_signal_connect(G_OBJECT(item), "activate",
-                G_CALLBACK(menu_proc), (gpointer)(uintptr_t)ix);
-            gtk_widget_add_accelerator(item, "activate", accel_group,
-                GDK_KEY_i, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
-                GTK_ACCEL_VISIBLE);
-            gtk_widget_set_tooltip_text(item, "Set simulation options");
-            tb_simdefs = item;
-        }
-        else if (tb->name == ntb_runops) {
-            // "/Tools/_Runops", "<alt>A", menu_proc, ix, "<CheckItem>");
-            item = gtk_check_menu_item_new_with_mnemonic("_Runops");
-            gtk_widget_show(item);
-            gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
-            g_signal_connect(G_OBJECT(item), "activate",
-                G_CALLBACK(menu_proc), (gpointer)(uintptr_t)ix);
-            gtk_widget_add_accelerator(item, "activate", accel_group,
-                GDK_KEY_a, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
-                GTK_ACCEL_VISIBLE);
-            gtk_widget_set_tooltip_text(item, "List runops in effect");
-            tb_runops = item;
-        }
-        else if (tb->name == ntb_variables) {
-            // "/Tools/Va_riables", "<alt>R", menu_proc, ix, "<CheckItem>");
-            item = gtk_check_menu_item_new_with_mnemonic("Va_riables");
-            gtk_widget_show(item);
-            gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
-            g_signal_connect(G_OBJECT(item), "activate",
-                G_CALLBACK(menu_proc), (gpointer)(uintptr_t)ix);
-            gtk_widget_add_accelerator(item, "activate", accel_group,
-                GDK_KEY_r, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
-                GTK_ACCEL_VISIBLE);
-            gtk_widget_set_tooltip_text(item, "List set shell variables");
-            tb_variables = item;
-        }
-        else if (tb->name == ntb_vectors) {
-            // "/Tools/_Vectors", "<alt>V", GIFC(menu_proc), ix, "<CheckItem>"
-            item = gtk_check_menu_item_new_with_mnemonic("_Vectors");
-            gtk_widget_show(item);
-            gtk_menu_shell_append(GTK_MENU_SHELL(tb_tools_menu), item);
-            g_signal_connect(G_OBJECT(item), "activate",
-                G_CALLBACK(menu_proc), (gpointer)(uintptr_t)ix);
-            gtk_widget_add_accelerator(item, "activate", accel_group,
-                GDK_KEY_v, (GdkModifierType)(GDK_CONTROL_MASK|GDK_SHIFT_MASK),
-                GTK_ACCEL_VISIBLE);
-            gtk_widget_set_tooltip_text(item, "List vectors in current plot");
-            tb_vectors = item;
-        }
-    }
-
-    // Help menu.
-    item = gtk_menu_item_new_with_mnemonic("_Help");
-    gtk_widget_set_name(item, "Help");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), item);
-    GtkWidget *helpMenu = gtk_menu_new();
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), helpMenu);
-
-    // "/Help/_Help", "<control>H", help_proc, 0
-    item = gtk_menu_item_new_with_mnemonic("_Help");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(helpMenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(help_proc), this);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_h,
-        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-    gtk_widget_set_tooltip_text(item, "Pop up Help window");
-
-    // "/Help/_About", "<control>A", about_proc, 0
-    item = gtk_menu_item_new_with_mnemonic("_About");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(helpMenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(about_proc), this);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_a,
-        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-    gtk_widget_set_tooltip_text(item, "Pop up About window");
-
-    // "/Help/_Notes", "<control>N", GIFC(notes_proc), 0
-    item = gtk_menu_item_new_with_mnemonic("_Notes");
-    gtk_widget_show(item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(helpMenu), item);
-    g_signal_connect(G_OBJECT(item), "activate",
-        G_CALLBACK(notes_proc), this);
-    gtk_widget_add_accelerator(item, "activate", accel_group, GDK_KEY_n,
-        GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
-    gtk_widget_set_tooltip_text(item, "Show release notes");
-
-    for (tbent *tb = entries; tb && tb->name; tb++) {
-        if (tb->name == ntb_toolbar)
-            continue;
-        if (tb->name == ntb_bug)
-            continue;  // in WR button
-        else if (tb->name == ntb_circuits) {
-            if (tb_circuits)
-                GTKdev::SetStatus(tb_circuits, tb->active);
-        }
-        else if (tb->name == ntb_colors) {
-            if (tb_colors)
-                GTKdev::SetStatus(tb_colors, tb->active);
-        }
-        else if (tb->name == ntb_commands) {
-            if (tb_commands)
-                GTKdev::SetStatus(tb_commands, tb->active);
-        }
-        else if (tb->name == ntb_debug) {
-            if (tb_debug)
-                GTKdev::SetStatus(tb_debug, tb->active);
-        }
-        else if (tb->name == ntb_files) {
-            if (tb_files)
-                GTKdev::SetStatus(tb_files, tb->active);
-        }
-        else if (tb->name == ntb_font) {
-            if (tb_font)
-                GTKdev::SetStatus(tb_font, tb->active);
-        }
-        else if (tb->name == ntb_plotdefs) {
-            if (tb_plotdefs)
-                GTKdev::SetStatus(tb_plotdefs, tb->active);
-        }
-        else if (tb->name == ntb_plots) {
-            if (tb_plots)
-                GTKdev::SetStatus(tb_plots, tb->active);
-        }
-        else if (tb->name == ntb_shell) {
-            if (tb_shell)
-                GTKdev::SetStatus(tb_shell, tb->active);
-        }
-        else if (tb->name == ntb_simdefs) {
-            if (tb_simdefs)
-                GTKdev::SetStatus(tb_simdefs, tb->active);
-        }
-        else if (tb->name == ntb_runops) {
-            if (tb_runops)
-                GTKdev::SetStatus(tb_runops, tb->active);
-        }
-        else if (tb->name == ntb_variables) {
-            if (tb_variables)
-                GTKdev::SetStatus(tb_variables, tb->active);
-        }
-        else if (tb->name == ntb_vectors) {
-            if (tb_vectors)
-                GTKdev::SetStatus(tb_vectors, tb->active);
-        }
-    }
-
-    GtkWidget *hbox = gtk_hbox_new(false, 2);
-    gtk_widget_show(hbox);
-
-    // the WR logo button
-    GtkWidget *pixbtn = gtk_NewPixmapButton(tm30, "WR", false);
-    gtk_widget_show(pixbtn);
-    tb_bug = pixbtn;
-    g_signal_connect(G_OBJECT(pixbtn), "clicked",
-        G_CALLBACK(wr_btn_hdlr), 0);
-    gtk_box_pack_start(GTK_BOX(hbox), pixbtn, false, false, 0);
-    gtk_widget_set_tooltip_text(pixbtn, "Pop up email client");
-
-    // the Run button
-    pixbtn = gtk_NewPixmapButton(run_xpm, "Run", false);
-    gtk_widget_show(pixbtn);
-    g_signal_connect(G_OBJECT(pixbtn), "clicked",
-        G_CALLBACK(rs_btn_hdlr), 0);
-    gtk_box_pack_start(GTK_BOX(hbox), pixbtn, false, false, 0);
-    gtk_widget_set_tooltip_text(pixbtn, "Run current circuit");
-
-    // the Stop button
-    pixbtn = gtk_NewPixmapButton(stop_xpm, "Stop", false);
-    gtk_widget_show(pixbtn);
-    g_signal_connect(G_OBJECT(pixbtn), "clicked",
-        G_CALLBACK(rs_btn_hdlr), (void*)1);
-    gtk_box_pack_start(GTK_BOX(hbox), pixbtn, false, false, 0);
-    gtk_widget_set_tooltip_text(pixbtn, "Pause current analysis");
-
-    gtk_box_pack_start(GTK_BOX(hbox), menubar, true, true, 0);
-
-    gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, 0, 1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-
-    w->SetViewport(gtk_drawing_area_new());
-    gtk_widget_show(w->Viewport());
-
-    GTKfont::setupFont(w->Viewport(), FNT_SCREEN, true);
-
-    int wid, hei;
-    w->TextExtent(0, &wid, &hei);
-    gtk_widget_set_size_request(w->Viewport(), 40*wid + 6, 6*hei + 6);
-
-    GtkWidget *frame = gtk_frame_new(0);
-    gtk_widget_show(frame);
-    gtk_container_add(GTK_CONTAINER(frame), w->Viewport());
-
-    // drop handler setup
-    gtk_drag_dest_set(frame,
-        (GtkDestDefaults)(GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_DROP),
-        target_table, n_targets, GDK_ACTION_COPY);
-    g_signal_connect(G_OBJECT(frame), "drag_data_received",
-        G_CALLBACK(drag_data_received), 0);
-    g_signal_connect(G_OBJECT(frame), "drag_leave",
-        G_CALLBACK(target_drag_leave), 0);
-    g_signal_connect(G_OBJECT(frame), "drag-motion",
-        G_CALLBACK(target_drag_motion), 0);
-
-#if GTK_CHECK_VERSION(3,0,0)
-    g_signal_connect(G_OBJECT(w->Viewport()), "draw",
-        G_CALLBACK(expose_hdlr), w);
-#else
-    g_signal_connect(G_OBJECT(w->Viewport()), "expose_event",
-        G_CALLBACK(expose_hdlr), w);
-#endif
-    g_signal_connect(G_OBJECT(w->Viewport()), "style_set",
-        G_CALLBACK(font_change_hdlr), 0);
-
-    gtk_table_attach(GTK_TABLE(form), frame, 0, 1, 1, 2,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL), 2, 2);
-
-    for (tbent *tb = entries; tb && tb->name; tb++) {
-        if (tb->name == ntb_toolbar) {
-            int x = tb->x;
-            int y = tb->y;
-            FixLoc(&x, &y);
-            gtk_window_move(GTK_WINDOW(toolbar), x, y);
-            continue;
-        }
-    }
-
-    // MSW seems to need this before gtk_window_show.
-    RevertFocus(toolbar);
-
-    gtk_widget_show(toolbar);
-#if GTK_CHECK_VERSION(3,0,0)
-    w->GetDrawable()->set_window(gtk_widget_get_window(w->Viewport()));
-#else
-    w->SetWindow(w->Viewport()->window);
-#endif
-    char tbuf[28];
-    snprintf(tbuf, sizeof(tbuf), "WRspice-%s", Global.Version());
-    w->Title(tbuf, "WRspice");
-
-    // set up initial xor color
-    GdkColor clr;
-    clr.pixel = SpGrPkg::DefColors[0].pixel ^ SpGrPkg::DefColors[1].pixel;
-#if GTK_CHECK_VERSION(3,0,0)
-    w->XorGC()->set_foreground(&clr);
-#else
-    gdk_gc_set_foreground(w->XorGC(), &clr);
-#endif
-
-    // drawing colors
-    const char *s = XRMgetFromDb("fgcolor1");
-    if (!s)
-        s = "sienna";
-    tb_clr_1 = GTKdev::self()->NameColor(s);
-    s = XRMgetFromDb("fgcolor2");
-    if (!s)
-        s = "black";
-    tb_clr_2 = GTKdev::self()->NameColor(s);
-    s = XRMgetFromDb("fgcolor3");
-    if (!s)
-        s = "red";
-    tb_clr_3 = GTKdev::self()->NameColor(s);
-    s = XRMgetFromDb("fgcolor4");
-    if (!s)
-        s = "blue";
-    tb_clr_4 = GTKdev::self()->NameColor(s);
-
-    w->SetWindowBackground(SpGrPkg::DefColors[0].pixel);
-    w->SetBackground(SpGrPkg::DefColors[0].pixel);
-    w->Clear();
-    g_timeout_add(2000, res_timeout, 0);
 }
 
 
@@ -2609,12 +2687,22 @@ GTKtoolbar::load_proc(GtkWidget*, void*)
 
 
 // Static Function
-// Update the tool configuration.
+// Save the tool visibility/location configuration.
 //
 void
-GTKtoolbar::update_proc(GtkWidget*, void*)
+GTKtoolbar::save_tools_proc(GtkWidget*, void*)
 {
     CommandTab::com_tbupdate(0);
+}
+
+
+// Static Function
+// Save the current fonts in the startup file (persistent).
+//
+void
+GTKtoolbar::save_fonts_proc(GtkWidget*, void*)
+{
+    CommandTab::com_savefonts(0);
 }
 
 

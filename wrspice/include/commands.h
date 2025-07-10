@@ -183,6 +183,7 @@ public:
     static void com_run(wordlist*);
     static void com_rusage(wordlist*);
     static void com_save(wordlist*);
+    static void com_savefonts(wordlist*);
     static void com_sced(wordlist*);
     static void com_seed(wordlist*);
     static void com_sens(wordlist*);
