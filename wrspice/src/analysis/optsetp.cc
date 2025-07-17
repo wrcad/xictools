@@ -61,6 +61,7 @@ const char *spkw_defad          = "defad";
 const char *spkw_defas          = "defas";
 const char *spkw_defl           = "defl";
 const char *spkw_defw           = "defw";
+const char *spkw_delfixed       = "delfixed";
 const char *spkw_delmin         = "delmin";
 const char *spkw_dphimax        = "dphimax";
 const char *spkw_jjdphimax      = "jjdphimax";  // alias
@@ -102,6 +103,7 @@ const char *spkw_vastep         = "vastep";
 // bools
 const char *spkw_dcoddstep      = "dcoddstep";
 const char *spkw_extprec        = "extprec";
+const char *spkw_fastlin        = "fastlin";
 const char *spkw_forcegmin      = "forcegmin";
 const char *spkw_gminfirst      = "gminfirst";
 const char *spkw_hspice         = "hspice";
@@ -222,6 +224,10 @@ sOPTIONS::setup(const sOPTIONS *opts, OMRG_TYPE mt)
     if (opts->OPTdefw_given && (mt == OMRG_GLOBAL || !OPTdefw_given)) {
         OPTdefw = opts->OPTdefw;
         OPTdefw_given = 1;
+    }
+    if (opts->OPTdelfixed_given && (mt == OMRG_GLOBAL || !OPTdelfixed_given)) {
+        OPTdelfixed = opts->OPTdelfixed;
+        OPTdelfixed_given = 1;
     }
     if (opts->OPTdelmin_given && (mt == OMRG_GLOBAL || !OPTdelmin_given)) {
         OPTdelmin = opts->OPTdelmin;
@@ -364,6 +370,10 @@ sOPTIONS::setup(const sOPTIONS *opts, OMRG_TYPE mt)
     if (opts->OPTextprec_given && (mt == OMRG_GLOBAL || !OPTextprec_given)) {
         OPTextprec = opts->OPTextprec;
         OPTextprec_given = 1;
+    }
+    if (opts->OPTfastlin_given && (mt == OMRG_GLOBAL || !OPTfastlin_given)) {
+        OPTfastlin = opts->OPTfastlin;
+        OPTfastlin_given = 1;
     }
     if (opts->OPTforcegmin_given && (mt == OMRG_GLOBAL ||
             !OPTforcegmin_given)) {
@@ -576,6 +586,15 @@ OPTanalysis::setParm(sJOB *anal, int which, IFdata *data)
         }
         else
             opt->OPTdefw_given = 0;
+        break;
+    case OPT_DELFIXED:
+        if (value) {
+            CHECKSET(spkw_delfixed, opt->OPTdelfixed, value->rValue,
+                DEF_delFixed_MIN, DEF_delFixed_MAX)
+            opt->OPTdelfixed_given = 1;
+        }
+        else
+            opt->OPTdelfixed_given = 0;
         break;
     case OPT_DELMIN:
         if (value) {
@@ -878,6 +897,14 @@ OPTanalysis::setParm(sJOB *anal, int which, IFdata *data)
         else
             opt->OPTextprec_given = 0;
         break;
+    case OPT_FASTLIN:
+        if (value) {
+            opt->OPTfastlin = value->iValue;
+            opt->OPTfastlin_given = 1;
+        }
+        else
+            opt->OPTfastlin_given = 0;
+        break;
     case OPT_FORCEGMIN:
         if (value) {
             opt->OPTforcegmin = value->iValue;
@@ -1170,6 +1197,8 @@ namespace {
             "Default MOSfet length"),
         IFparm(spkw_defw,           OPT_DEFW,           IF_IO|IF_REAL,
             "Default MOSfet width"),
+        IFparm(spkw_delfixed,       OPT_DELFIXED,       IF_IO|IF_REAL,
+            "Fixed transient internal time step"),
         IFparm(spkw_delmin,         OPT_DELMIN,         IF_IO|IF_REAL,
             "Minimum transient time step"),
         IFparm(spkw_dphimax,        OPT_DPHIMAX,        IF_IO|IF_REAL,
@@ -1244,6 +1273,8 @@ namespace {
             "DC sweep will include end of range point if off-step"),
         IFparm(spkw_extprec,        OPT_EXTPREC,        IF_IO|IF_FLAG,
             "Use extra precision when solving real matrix"),
+        IFparm(spkw_fastlin,        OPT_FASTLIN,        IF_IO|IF_FLAG,
+            "Use fast linear solver"),
         IFparm(spkw_forcegmin,      OPT_FORCEGMIN,      IF_IO|IF_FLAG,
             "Enforce min gmin conductivity to ground on all nodes, always"),
         IFparm(spkw_gminfirst,      OPT_GMINFIRST,      IF_IO|IF_FLAG,

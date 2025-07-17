@@ -326,3 +326,14 @@ SRCdev::load(sGENinstance *in_inst, sCKT *ckt)
     return (OK);
 }
 
+
+#ifdef NEW_FASTLIN
+
+int
+SRCdev::loadRHS(sGENinstance *in_inst, sCKT *ckt)
+{
+    return (load(in_inst, ckt));
+}
+
+#endif
+

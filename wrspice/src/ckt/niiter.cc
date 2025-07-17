@@ -49,6 +49,7 @@ Authors: 1985 Thomas L. Quarles
 #include "optdefs.h"
 #include "input.h"
 #include "simulator.h"
+#include "commands.h"
 #include "output.h"
 #include "graph.h"
 #include "misc.h"
@@ -553,4 +554,98 @@ sCKT::NIiter(int maxIter)
         DVO.dumpStrobe();
     return (error);
 }
+
+
+#ifdef NEW_FASTLIN
+
+int
+sCKT::NIfastIter()
+{
+    int iterno = 0;
+    CKTnoncon = 0;
+    int error;
+    double startTime;
+    double dt;
+
+    /*** This block creates,loads, and factors the A matrix, for debugging.
+     *** We should already have a factored matrix when NIfastIter is called,
+    CKTmatrix->spSetReal();
+    if (CKTmatrix->spDataAddressChange()) {
+        error = resetup();
+        if (error)
+            return (error);
+    }
+
+    check_fpe(true);
+
+    error = load();
+    if (error)
+        return (error);
+    error = check_fpe(false);
+    if (error)
+        return (error);
+
+    check_fpe(true);
+
+    startTime = OP.seconds();
+    error = loadGmin();
+    if (error)
+        return (error);
+
+    error = CKTmatrix->spFactor();
+    dt = OP.seconds() - startTime;
+    CKTstat->STATdecompTime += dt;
+    if (!(CKTmode & MODEDC) && (CKTmode & MODETRAN))
+        CKTstat->STATtranDecompTime += dt;
+    if (error)
+        return (error);
+    error = check_fpe(false);
+    if (error)
+        return (error);
+    startTime = OP.seconds();
+    ***/
+
+    //CommandTab::com_dump(0);  // commands.h
+
+    int size = CKTmatrix->spGetSize(1);
+    memset(CKTrhs, 0, (size+1)*sizeof(double));
+    loadRHS();
+
+    iterno++;
+    startTime = OP.seconds();
+    CKTmatrix->spSolve(CKTrhs, CKTrhs, 0, 0);
+    dt = OP.seconds() - startTime;;
+    CKTstat->STATsolveTime += dt;
+    if (!(CKTmode & MODEDC) && (CKTmode & MODETRAN))
+        CKTstat->STATtranSolveTime += dt;
+    error = check_fpe(false);
+    if (error) {
+        if (CKTstepDebug)
+            TTY.err_printf("solve generated FP error\n");
+        return (error);
+    }
+
+    double *tmp = CKTrhsOld;
+    CKTrhsOld = CKTrhs;
+    CKTrhs = tmp;
+
+    *CKTrhs = 0;
+    *CKTrhsSpare = 0;
+    *CKTrhsOld = 0;
+
+    loadRHS();
+    CKTstat->STATnumIter += iterno;
+    if (!(CKTmode & MODEDC) && (CKTmode & MODETRAN))
+        CKTstat->STATtranIter += iterno;
+    if (CKTstepDebug) {
+        const char *vtype = (CKTmode & MODEDCTRANCURVE) ? "dcval" : "time";
+        TTY.err_printf("%s=%15g, %d iters, %s\n", vtype, CKTtime, iterno,
+            (error==OK) ? "ok" : "fail");
+    }
+    if (error == OK)
+        DVO.dumpStrobe();
+    return (error);
+}
+
+#endif
 

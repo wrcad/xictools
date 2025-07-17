@@ -4053,6 +4053,33 @@ struct KWent_defw : public KWent
     }
 };
 
+struct KWent_delfixed : public KWent
+{
+    KWent_delfixed() { set(
+        spkw_delfixed,
+        VTYP_REAL, DEF_delFixed_MIN, DEF_delFixed_MAX,
+        "Fixed internal time step."); }
+
+    void callback(bool isset, variable *v)
+    {
+        if (isset) {
+            if (v->type() == VTYP_NUM && v->integer() >= min &&
+                    v->integer() <= max) {
+                double dval = v->integer();
+                v->set_real(dval);
+            }
+            else if (!(v->type() == VTYP_REAL && v->real() >= min &&
+                    v->real() <= max)) {
+                error_pr(word, 0, pr_real(min, max));
+                return;
+            }
+        }
+        if (checknset(word, isset, v))
+            return;
+        KWent::callback(isset, v);
+    }
+};
+
 struct KWent_delmin : public KWent
 {
     KWent_delmin() { set(
@@ -4893,6 +4920,23 @@ struct KWent_dcoddstep : public KWent
     }
 };
 
+struct KWent_fastlin : public KWent
+{
+    KWent_fastlin() { set(
+        spkw_fastlin,
+        VTYP_BOOL, 0.0, 0.0,
+        "Use fast solver, for linear circuits only."); }
+
+    void callback(bool isset, variable *v)
+    {
+        if (isset)
+            v->set_boolean(true);
+        if (checknset(word, isset, v))
+            return;
+        KWent::callback(isset, v);
+    }
+};
+
 struct KWent_extprec : public KWent
 {
     KWent_extprec() { set(
@@ -5583,9 +5627,11 @@ Kword *cKeyWords::KWsim[] = {
     new KWent_defas(),
     new KWent_defl(),
     new KWent_defw(),
+    new KWent_delfixed(),
     new KWent_delmin(),
     new KWent_dphimax(),
     new KWent_extprec(),
+    new KWent_fastlin(),
     new KWent_forcegmin(),
     new KWent_gmax(),
     new KWent_gmin(),
@@ -5655,6 +5701,7 @@ Kword *cKeyWords::KWsim[] = {
     new KWent_defas(),
     new KWent_defl(),
     new KWent_defw(),
+    new KWent_delfixed(),
     new KWent_delmin(),
     new KWent_dphimax(),
     new KWent_gmax(),
@@ -5690,6 +5737,7 @@ Kword *cKeyWords::KWsim[] = {
 
     new KWent_dcoddstep(),
     new KWent_extprec(),
+    new KWent_fastlin(),
     new KWent_forcegmin(),
     new KWent_gminfirst(),
     new KWent_hspice(),

@@ -1212,6 +1212,52 @@ sCKT::load(bool noclear)
 int
 sCKT::loadRHS()
 {
+    int size = CKTmatrix->spGetSize(1);
+    memset(CKTrhs, 0, (size+1)*sizeof(double));
+
+    CKTchargeCompNeeded =
+        ((CKTmode & (MODEAC | MODETRAN | MODEINITSMSIG)) ||
+            ((CKTmode & MODETRANOP) && (CKTmode & MODEUIC))) ? 1 : 0;
+    CKTextPrec = CKTcurTask->TSKextPrec;
+
+    bool tchk = CKTtrapCheck;
+    CKTtrapCheck = tchk && (CKTmode & MODEINITFLOAT) && (CKTmode & MODETRAN);
+    CKTtrapBad = false;
+
+    // Mutual inductors must be loaded before the inductor devices. 
+    // We'll load them now.  The order sensitivity could probably be
+    // fixed, but there is a thread sync issue that would need to be
+    // fixed as well.
+
+    int muttype = -1;
+    if (CKTmutModels) {
+        muttype = CKTmutModels->GENmodType;
+        for (sGENmodel *dm = CKTmutModels; dm; dm = dm->GENnextModel) {
+            for (sGENinstance *d = dm->GENinstances; d;
+                    d = d->GENnextInstance) {
+                DEV.device(muttype)->loadRHS(d, this);
+            }
+        }
+    }
+
+    sCKTmodGen mgen(CKTmodels);
+    for (sGENmodel *m = mgen.next(); m; m = mgen.next()) {
+        if (m->GENmodType == muttype)
+            continue;
+        for (sGENmodel *dm = m; dm; dm = dm->GENnextModel) {
+//            int noncon = CKTnoncon;
+            for (sGENinstance *d = dm->GENinstances; d;
+                    d = d->GENnextInstance) {
+                int error = DEV.device(m->GENmodType)->loadRHS(d, this);
+                if (error == LOAD_SKIP_FLAG)
+                    break;
+                if (error) {
+                    CKTtrapCheck = tchk;
+                    return (error);
+                }
+            }
+        }
+    }
     return (OK);
 }
 

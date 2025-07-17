@@ -51,7 +51,7 @@ Authors: 1985 Thomas L. Quarles
 
 namespace { int ni_gearcof(sCKT*); }
 
-// This routine calculates the timestep-dependent terms used in the
+// This function calculates the timestep-dependent terms used in the
 // numerical integration.
 // 
 int

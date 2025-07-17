@@ -173,7 +173,10 @@ sTRANAN::init(sCKT *ckt)
         TS.t_nointerp = true;
         break;
     case STEP_FIXEDSTEP:
-        TS.t_fixed_step = TS.t_step;
+        if (ckt->CKTcurTask->TSKdelFixed > 0.0)
+            TS.t_fixed_step = ckt->CKTcurTask->TSKdelFixed;
+        else
+            TS.t_fixed_step = TS.t_step;
         TS.t_nointerp = true;
         break;
     }
@@ -658,23 +661,32 @@ int
 sTRANint::step(sCKT *ckt, sSTATS *stat)
 {
 #ifdef NEW_FASTLIN
-    if (ckt->CKTfastLin) {
+    if (ckt->CKTcurTask->TSKfastLin) {
+        if (t_fixed_step <= 0.0) {
+            OP.error(ERR_FATAL,
+    "The fast linear solver requires that a fixed time step be specified.\n"
+    "See options \"steptype\" and \"delfixed\".\n");
+            return (E_BADPARM);
+        }
+        // XXX Need a function to check if circuit is compatible.
+
+        ckt->CKTorder = 2;
+        ckt->CKTcurTask->TSKintegrateMethod = TRAPEZOIDAL;
+        ckt->CKTag[0] = 2.0/t_fixed_step;
+        ckt->CKTag[1] = 1.0;
+        ckt->CKTdelta = t_fixed_step;
+
         if (t_firsttime) {
             if (ckt->CKTcurTask->TSKrampUpTime > 0)
                 ckt->breakSet(ckt->CKTcurTask->TSKrampUpTime);
-            if (t_fixed_step > 0.0)
-                ckt->CKTdelta = t_fixed_step;
-            else {
-                return (E_PANIC);
-            }
             ckt->CKTtime = ckt->CKTdelta;
             ckt->CKTdeltaOld[0] = ckt->CKTdelta;
-            ckt->NIcomCof();
-            ckt->predict();
         }
         else {
             ckt->CKTtime += ckt->CKTdelta;
             ckt->CKTdeltaOld[0] = ckt->CKTdelta;
+            ckt->CKTmode &= ~(MODEINITTRAN | MODEINITPRED);
+            ckt->CKTmode |= MODEINITFLOAT;
         }
         if (ckt->CKTcurTask->TSKrampUpTime > 0) {
             if (ckt->CKTtime < ckt->CKTcurTask->TSKrampUpTime)
@@ -687,29 +699,7 @@ sTRANint::step(sCKT *ckt, sSTATS *stat)
         int niter = stat->STATnumIter;
         int maxiters = ckt->CKTcurTask->TSKtranMaxIter;
 
-        int cverr = OK;
-        if (t_firsttime) {
-
-            cverr = ckt->NIiter(maxiters);
-        }
-        else {
-            // Load RHS
-
-            // solve();
-            startTime = OP.seconds();
-            CKTmatrix->spSolve(CKTrhs, CKTrhs, 0, 0);
-            double dt = OP.seconds() - startTime;;
-            CKTstat->STATsolveTime += dt;
-            if (!(CKTmode & MODEDC) && (CKTmode & MODETRAN))
-                CKTstat->STATtranSolveTime += dt;
-            error = check_fpe(false);
-            if (error) {
-                if (CKTstepDebug)
-                    TTY.err_printf("solve generated FP error\n");
-                break;
-            
-            }
-        }
+        int cverr = t_firsttime ? ckt->NIiter(maxiters) : ckt->NIfastIter();
 
         stat->STATtimePts++;
         int lastiters = stat->STATnumIter - niter;
@@ -738,6 +728,7 @@ sTRANint::step(sCKT *ckt, sSTATS *stat)
         return (OK);
     }
 #endif
+
     /*****
     // This really isn't reliable enough, algorithm needs more work.
     if (t_firsttime && !t_delmin_given) {

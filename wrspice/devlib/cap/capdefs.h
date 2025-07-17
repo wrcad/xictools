@@ -79,6 +79,9 @@ struct CAPdev : public IFdevice
     void parse(int, sCKT*, sLine*);
 //    int loadTest(sGENinstance*, sCKT*);   
     int load(sGENinstance*, sCKT*);   
+#ifdef NEW_FASTLIN
+    int loadRHS(sGENinstance*, sCKT*);   
+#endif
     int setup(sGENmodel*, sCKT*, int*);  
 //    int unsetup(sGENmodel*, sCKT*);
     int resetup(sGENmodel*, sCKT*);

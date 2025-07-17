@@ -1661,7 +1661,7 @@ This can be done from the {\WRspice} prompt.
 !!SEEALSO
 uicmds
 
-!! commands.tex 030518
+!! commands.tex 071025
 !!KEYWORD
 setfont
 !!TITLE
@@ -1675,53 +1675,31 @@ setfont command
     is intended to be invoked in a startup script.
 
     <p>
-    The first argument is an integer 1-6 (1-4 on Windows) which
-    designates the font category.  The index corresponds to the
-    entries in the drop-down menu of font categories found in the <a
-    href="fontspanel">Font Selection</a> panel.
+    The first argument is an integer 1-6 which designates the font
+    category.  The index corresponds to the entries in the drop-down
+    menu of font categories found in the <a
+    href="fontspanel"><b>Font Selection</b></a> panel from the
+    <a href="toolsmenu"><b>Tools</b></a> menu.
 
     <p>
-    The rest of the line is a font description string.  This varies
-    between graphics types.
-
-    <dl>
-    <dt>Unix/Linux<dd>
-    For GTK1 releases, the name is the X Logical Font Descriptor name
-    for a font available on the user's system, or an alias.  For GTK2
-    releases, the name is a Pango font description name.  There is a
-    very modest attempt to interpret a specification of the wrong
-    type.
-    </dl>
-
-    <dl>
-    <dt>Windows<dd>
-    The name is in one or the following formats:
-    <dl>
-    <dt>New standard (<i>WRspice</i> release 2.3.58 and later)<dd>
-    <i>face_name pixel_height</i>
+    The rest of the line is a font description string.  This may
+    vary somewhat between graphics types, but a basic description
+    consisting of a face name followed by a space-separated integer
+    pixel height should be portable to all supported systems.
     <blockquote>
     Example: <tt>Lucida Console 12</tt>
     </blockquote>
-    </dl>
-
-    <dl>
-    <dt>Old standard (deprecated)<dd>
-    (<i>pixel_height</i>)<i>face_name</i>
-    <blockquote>
-    Example: <tt>(12)Lucida Console</tt>
-    </blockquote>
-    </dl>
-
-    The <i>face_name</i> is the name of a font family installed on the
-    system, and the <i>pixel_height</i> is the on-screen size.
-    </dl>
+    The font face name should be that of a font installed on the system,
+    or a known alias.
 
     <p>
     You will probably never need to use the <b>setfont</b> command
-    directly.  All settable fonts are saved in the
-    <tt>.wrspiceinit</tt> <a href="startup_files">startup file</a>
-    when the <b>Save Fonts</b> menu command in the <b>File</b> menu is
-    given.
+    directly.  Lines containing <b>setfont</b> commands for all six
+    fonts are saved or updated in the <tt>.wrspiceinit</tt>
+    <a href="startup_files">startup file</a> when the <b>Save Fonts</b>
+    menu button in the <a href="filemenu"><b>File</b></a> menu is
+    pressed.  The <a href="savefonts"><b>savefonts</b></a> command
+    does the same thing.
 !!LATEX setfont commands.tex
 Syntax: {\vt setfont} {\it font\_num} {\it font\_specifier}
 
@@ -1729,45 +1707,26 @@ This command can be used to set the fonts employed in the graphical
 interface.  Although this can be given at a prompt, it is intended to
 be invoked in a startup script.
 
-The first argument is an integer 1--6 (1--4 on Windows) which
-designates the font category.  The index corresponds to the entries in
-the drop-down menu of font categories found in the Font Selection
-panel.
+The first argument is an integer 1--6 which designates the font
+category.  The index corresponds to the entries in the drop-down menu
+of font categories found in the {\cb Font Selection} panel from the
+{\cb Tools} menu.
 
-The rest of the line is a font description string.  This varies
-between graphics types.
-
-\begin{description}
-\item{Unix/Linux}\\
-For GTK1 releases, the name is the X Logical Font Descriptor name for
-a font available on the user's system, or an alias.  For GTK2
-releases, the name is a Pango font description name.  There is a very
-modest attempt to interpret a specification of the wrong type.
-  
-\item{Windows}
-The name is in one or the following formats:
- \begin{description}
- \item{New standard ({\WRspice} release 2.3.58 and later)}\\
- {\it face\_name} {\it pixel\_height}
- \begin{quote}
- Example: {\vt Lucida Console 12}
- \end{quote}
-
- \item{Old standard (deprecated)}\\
- ({\it pixel\_height\/}){\it face\_name}
- \begin{quote}
- Example: {\vt (12)Lucida Console}
- \end{quote}
- \end{description}
-
- The {\it face\_name} is the name of a font family installed on the
- system, and the {\it pixel\_height} is the on-screen size.
-\end{description}
+The rest of the line is a font description string.  This may vary
+somewhat between graphics types, but a basic description consisting
+of a face name followed by a space-separated integer pixel height
+should be portable to all supported systems.
+\begin{quote}
+Example: {\vt Lucida Console 12}
+</blockquote>
+The font face name should be that of a font installed on the system,
+or a known alias.
 
 You will probably never need to use the {\cb setfont} command
-directly.  All settable fonts are saved in the {\vt .wrspiceinit}
-startup file when the {\cb Save Fonts} menu command in the {\cb
-File} menu is given.
+directly.  Lines containing {\cb setfont} commands for all six
+fonts are saved or updated in the {\vt .wrspiceinit} startup
+file when the {\cb Save Fonts} menu button in the {\cb File}
+menu is pressed.  The {\cb savefonts} command does the same thing.
 
 !!SEEALSO
 uicmds

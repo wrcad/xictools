@@ -63,6 +63,7 @@ enum OPTtype
     OPT_DEFAS,
     OPT_DEFL,
     OPT_DEFW,
+    OPT_DELFIXED,
     OPT_DELMIN,
     OPT_DPHIMAX,
     OPT_GMAX,
@@ -102,6 +103,7 @@ enum OPTtype
     // flags
     OPT_DCODDSTEP,
     OPT_EXTPREC,
+    OPT_FASTLIN,
     OPT_FORCEGMIN,
     OPT_GMINFIRST,
     OPT_HSPICE,

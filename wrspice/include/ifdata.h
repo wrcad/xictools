@@ -58,6 +58,9 @@ Authors: 1985 Thomas L. Quarles
 // application.
 //
 
+// Enable support for fast solver for linear-only circuits.
+#define NEW_FASTLIN
+
 // A function for memory reallocation of various objects, used in the
 // device library and elsewhere.  allocated uninitialized memory is
 // zeroed.
@@ -819,7 +822,7 @@ struct IFdevice
     virtual int load(sGENinstance*, sCKT*)              { return (OK); };
 #ifdef NEW_FASTLIN
     // Special simple load function for thre fast linear solver.
-    virtual int loadRHS();                              { return (OK); }
+    virtual int loadRHS(sGENinstance*, sCKT*)           { return (OK); }
 #endif
 
     // setup();        Initialize devices before soloution begins.

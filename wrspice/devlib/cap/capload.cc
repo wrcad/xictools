@@ -209,6 +209,49 @@ CAPdev::load(sGENinstance *in_inst, sCKT *ckt)
     return (OK);
 }
 
+
+#ifdef NEW_FASTLIN
+
+int
+CAPdev::loadRHS(sGENinstance *in_inst, sCKT *ckt)
+{
+    if (ckt->CKTmode & MODEDC)
+        return (OK);
+
+    sCAPinstance *inst = (sCAPinstance*)in_inst;
+
+    if (ckt->CKTmode & MODEINITTRAN) {
+        double vcap;
+        if (ckt->CKTmode & MODEUIC)
+            vcap = inst->CAPinitCond;
+        else {
+            vcap = *(ckt->CKTrhsOld + inst->CAPposNode) -
+                    *(ckt->CKTrhsOld + inst->CAPnegNode);
+        }
+        *(ckt->CKTstate1 + inst->CAPqcap) = inst->CAPcapac * vcap;
+        inst->CAPgeq = ckt->CKTag[0] * inst->CAPcapac;
+        inst->CAPceq = ckt->find_ceq(inst->CAPqcap);
+    }
+    else if (ckt->CKTmode & (MODEINITFLOAT | MODEINITPRED)) {
+        double qcap = inst->CAPcapac * 
+            (*(ckt->CKTrhsOld + inst->CAPposNode) - 
+            *(ckt->CKTrhsOld + inst->CAPnegNode));
+        *(ckt->CKTstate0 + inst->CAPqcap) = qcap;
+
+        ckt->integrate(inst->CAPqcap, inst->CAPceq);
+        inst->CAPceq = ckt->find_ceq(inst->CAPqcap);
+    }
+
+    if (inst->CAPposNode > 0)
+        ckt->rhsadd(inst->CAPposNode, -inst->CAPceq);
+    if (inst->CAPnegNode > 0)
+        ckt->rhsadd(inst->CAPnegNode, inst->CAPceq);
+    return (OK);
+}
+
+#endif
+
+
 /*-----------------------------------------------------------------------------
 Theory:
 

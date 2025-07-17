@@ -141,3 +141,24 @@ MUTdev::load(sGENinstance *in_inst, sCKT *ckt)
     return (OK);
 }
 
+
+#ifdef NEW_FASTLIN
+
+int
+MUTdev::loadRHS(sGENinstance *in_inst, sCKT *ckt)
+{
+    if (ckt->CKTmode & MODEDC)
+        return (OK);
+
+    sMUTinstance *inst = (sMUTinstance*)in_inst;
+
+    if (ckt->CKTmode & MODEINITTRAN) {
+    }
+    else if (ckt->CKTmode & (MODEINITFLOAT | MODEINITPRED)) {
+    }
+
+    return (OK);
+}
+
+#endif
+

@@ -130,6 +130,7 @@ extern const char *spkw_defad;
 extern const char *spkw_defas;
 extern const char *spkw_defl;
 extern const char *spkw_defw;
+extern const char *spkw_delfixed;
 extern const char *spkw_delmin;
 extern const char *spkw_dphimax;
 extern const char *spkw_jjdphimax;
@@ -168,6 +169,7 @@ extern const char *spkw_vastep;
 
 // bools
 extern const char *spkw_dcoddstep;
+extern const char *spkw_fastlin;
 extern const char *spkw_extprec;
 extern const char *spkw_forcegmin;
 extern const char *spkw_gminfirst;

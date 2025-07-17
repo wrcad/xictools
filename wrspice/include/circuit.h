@@ -67,8 +67,6 @@ Authors: 1985 Thomas L. Quarles
 #endif
 #endif
 
-// Enable support for fast solver for linear-only circuits.
-//#define NEW_FASTLIN
 
 // Enable new code to support a true DCOP with Josephson junctions.
 // See description in devlib/jj/jjload.cc.
@@ -490,6 +488,10 @@ enum OMRG_TYPE { OMRG_GLOBAL, OMRG_LOCAL, OMRG_NOSHELL };
 #define DEF_defaultMosW_MAX     1e4
 // L/W defaults now set in model code.
 
+#define DEF_delFixed            0.0
+#define DEF_delFixed_MIN        0.0
+#define DEF_delFixed_MAX        1.0
+
 #define DEF_delMin              0.0
 #define DEF_delMin_MIN          0.0
 #define DEF_delMin_MAX          1.0
@@ -625,6 +627,7 @@ enum OMRG_TYPE { OMRG_GLOBAL, OMRG_LOCAL, OMRG_NOSHELL };
 //
 #define DEF_dcOddStep           false
 #define DEF_extPrec             false
+#define DEF_fastLin             false
 #define DEF_forceGmin           false
 #define DEF_gminFirst           false
 #define DEF_hspice              false
@@ -670,6 +673,7 @@ struct sOPTIONS : public sJOB
             OPTdefas        = DEF_defaultMosAS;
             OPTdefl         = DEF_defaultMosL;
             OPTdefw         = DEF_defaultMosW;
+            OPTdelfixed     = DEF_delFixed;
             OPTdelmin       = DEF_delMin;
             OPTdphimax      = DEF_dphiMax;
             OPTgmax         = DEF_gmax;
@@ -707,6 +711,7 @@ struct sOPTIONS : public sJOB
 
             OPTdcoddstep    = DEF_dcOddStep;
             OPTextprec      = DEF_extPrec;
+            OPTfastlin      = DEF_fastLin;
             OPTforcegmin    = DEF_forceGmin;
             OPTgminfirst    = DEF_gminFirst;
             OPThspice       = DEF_hspice;
@@ -742,6 +747,7 @@ struct sOPTIONS : public sJOB
             OPTdefas_given          = 0;
             OPTdefl_given           = 0;
             OPTdefw_given           = 0;
+            OPTdelfixed_given       = 0;
             OPTdelmin_given         = 0;
             OPTdphimax_given        = 0;
             OPTgmax_given           = 0;
@@ -779,6 +785,7 @@ struct sOPTIONS : public sJOB
 
             OPTdcoddstep_given      = 0;
             OPTextprec_given        = 0;
+            OPTfastlin_given        = 0;
             OPTforcegmin_given      = 0;
             OPTgminfirst_given      = 0;
             OPThspice_given         = 0;
@@ -825,6 +832,7 @@ struct sOPTIONS : public sJOB
     double OPTdefas;
     double OPTdefl;
     double OPTdefw;
+    double OPTdelfixed;
     double OPTdelmin;
     double OPTdphimax;
     double OPTgmax;
@@ -862,6 +870,7 @@ struct sOPTIONS : public sJOB
 
     bool OPTdcoddstep;
     bool OPTextprec;
+    bool OPTfastlin;
     bool OPTforcegmin;
     bool OPTgminfirst;
     bool OPThspice;
@@ -897,6 +906,7 @@ struct sOPTIONS : public sJOB
     unsigned int OPTdefas_given:1;
     unsigned int OPTdefl_given:1;
     unsigned int OPTdefw_given:1;
+    unsigned int OPTdelfixed_given:1;
     unsigned int OPTdelmin_given:1;
     unsigned int OPTdphimax_given:1;
     unsigned int OPTgmax_given:1;
@@ -934,6 +944,7 @@ struct sOPTIONS : public sJOB
 
     unsigned int OPTdcoddstep_given:1;
     unsigned int OPTextprec_given:1;
+    unsigned int OPTfastlin_given:1;
     unsigned int OPTforcegmin_given:1;
     unsigned int OPTgminfirst_given:1;
     unsigned int OPThspice_given:1;
@@ -1006,6 +1017,7 @@ struct sTASK : public cBase
 #define TSKdefaultMosAS     TSKopts.OPTdefas
 #define TSKdefaultMosL      TSKopts.OPTdefl
 #define TSKdefaultMosW      TSKopts.OPTdefw
+#define TSKdelFixed         TSKopts.OPTdelfixed
 #define TSKdelMin           TSKopts.OPTdelmin
 #define TSKdphiMax          TSKopts.OPTdphimax
 #define TSKgmax             TSKopts.OPTgmax
@@ -1043,6 +1055,7 @@ struct sTASK : public cBase
 
 #define TSKdcOddStep        TSKopts.OPTdcoddstep
 #define TSKextPrec          TSKopts.OPTextprec
+#define TSKfastLin          TSKopts.OPTfastlin
 #define TSKforceGmin        TSKopts.OPTforcegmin
 #define TSKgminFirst        TSKopts.OPTgminfirst
 #define TSKhspice           TSKopts.OPThspice
@@ -1644,6 +1657,9 @@ struct sCKTPOD
     bool CKTtrapCheck;      // check for non-convergence in TRAP
     bool CKTtrapBad;        // check found non-convergence
     bool CKTneedsRevertResetup;  // need to call resetup after dev restore
+#ifdef NEW_FASTLIN
+    bool CKTfastLin;        // use fast linear solver
+#endif
     bool CKTnogo;           // error found, circuit bad
 
     double CKTbreaks[2];          // breakpoint table
@@ -1771,6 +1787,9 @@ public:
 
     // niiter.cc
     int NIiter(int);
+#ifdef NEW_FASTLIN
+    int NIfastIter();
+#endif
 
     // niniter.cc
     void NInzIter(int, int);

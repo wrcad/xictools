@@ -46,6 +46,8 @@ Authors: 1985 Thomas L. Quarles
 ****************************************************************************/
 
 #include "inddefs.h"
+//XXX
+#include <stdio.h>
 
 
 namespace {
@@ -125,6 +127,7 @@ INDdev::load(sGENinstance *in_inst, sCKT *ckt)
             // There is no need to recompute the inductance,
             // it does not change during NR iterations.
         }
+        // What is INDprevFlux, is it needed?
         double flux = inst->INDinduct *
             *(ckt->CKTrhsOld + inst->INDbrEq) - inst->INDprevFlux;
         *(ckt->CKTstate0 + inst->INDflux) += flux;
@@ -261,4 +264,45 @@ INDdev::load(sGENinstance *in_inst, sCKT *ckt)
     }
     return (OK);
 }
+
+
+#ifdef NEW_FASTLIN
+
+int
+INDdev::loadRHS(sGENinstance *in_inst, sCKT *ckt)
+{
+    if (ckt->CKTmode & MODEDC)
+        return (OK);
+
+    sINDinstance *inst = (sINDinstance*)in_inst;
+
+    if (ckt->CKTmode & MODEINITTRAN) {
+        double ival;
+        if (ckt->CKTmode & MODEUIC)
+            ival =  inst->INDinitCond;
+        else
+            ival = *(ckt->CKTrhsOld + inst->INDbrEq);
+        *(ckt->CKTstate1 + inst->INDflux) += inst->INDinduct * ival;
+
+        inst->INDprevFlux = 0;
+        *(ckt->CKTstate0 + inst->INDflux) = 0;
+
+        inst->INDreq = ckt->CKTag[0] * inst->INDinduct;
+        inst->INDveq = ckt->find_ceq(inst->INDflux);
+        
+        ckt->rhsadd(inst->INDbrEq, inst->INDveq);
+    }
+    else if (ckt->CKTmode & (MODEINITFLOAT | MODEINITPRED)) {
+        double flux = inst->INDinduct * *(ckt->CKTrhsOld + inst->INDbrEq);
+        *(ckt->CKTstate0 + inst->INDflux) = flux;
+
+        ckt->integrate(inst->INDflux, inst->INDveq);
+        inst->INDveq = ckt->find_ceq(inst->INDflux);
+
+        ckt->rhsadd(inst->INDbrEq, inst->INDveq);
+    }
+    return (OK);
+}
+
+#endif
 

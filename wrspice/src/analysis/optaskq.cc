@@ -84,6 +84,9 @@ sOPTIONS::dump()
     askOpt(OPT_DEFW, &value, &notset);
     if (!notset)
         TTY.printf(dfmt, spkw_defw, nd, value.rValue);
+    askOpt(OPT_DELFIXED, &value, &notset);
+    if (!notset)
+        TTY.printf(dfmt, spkw_delfixed, nd, value.rValue);
     askOpt(OPT_DELMIN, &value, &notset);
     if (!notset)
         TTY.printf(dfmt, spkw_delmin, nd, value.rValue);
@@ -187,6 +190,9 @@ sOPTIONS::dump()
     askOpt(OPT_EXTPREC, &value, &notset);
     if (!notset)
         TTY.printf(ifmt, spkw_extprec, value.iValue);
+    askOpt(OPT_FASTLIN, &value, &notset);
+    if (!notset)
+        TTY.printf(ifmt, spkw_fastlin, value.iValue);
     askOpt(OPT_FORCEGMIN, &value, &notset);
     if (!notset)
         TTY.printf(ifmt, spkw_forcegmin, value.iValue);
@@ -315,6 +321,12 @@ sOPTIONS::askOpt(int which, IFvalue *value, int *notset)
     case OPT_DEFW:
         if (opt && OPTdefw_given)
             value->rValue = OPTdefw;
+        else
+            *notset = 1;
+        break;
+    case OPT_DELFIXED:
+        if (opt && OPTdelfixed_given)
+            value->rValue = OPTdelfixed;
         else
             *notset = 1;
         break;
@@ -518,6 +530,12 @@ sOPTIONS::askOpt(int which, IFvalue *value, int *notset)
     case OPT_EXTPREC:
         if (opt && OPTextprec_given)
             value->iValue = OPTextprec;
+        else
+            *notset = 1;
+        break;
+    case OPT_FASTLIN:
+        if (opt && OPTfastlin_given)
+            value->iValue = OPTfastlin;
         else
             *notset = 1;
         break;
