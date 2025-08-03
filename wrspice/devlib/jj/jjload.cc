@@ -80,7 +80,7 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
     sJJinstance *inst = (sJJinstance*)in_inst;
     sJJmodel *model = (sJJmodel*)inst->GENmodPtr;
 
-    struct jjstuff js;
+    jjstuff js;
 
 #ifdef NEWJJDC
     // For DC analysis, Josephson junctions require special treatment. 
@@ -599,6 +599,286 @@ JJdev::loadRHS(sGENinstance *in_inst, sCKT *ckt)
 {
     sJJinstance *inst = (sJJinstance*)in_inst;
     sJJmodel *model = (sJJmodel*)inst->GENmodPtr;
+    jjstuff js;
+
+    js.js_pfac = ckt->CKTdelta / PHI0_2PI;
+    if (ckt->CKTorder > 1)
+        js.js_pfac *= .5;
+
+#ifdef notdef
+    if (ckt->CKTmode & MODEINITTRAN) {
+        if (ckt->CKTmode & MODEUIC) {
+            js.js_vj  = inst->JJinitVoltage;
+            js.js_phi = inst->JJinitPhase;
+            js.js_ci  = inst->JJinitControl;
+            *(ckt->CKTstate1 + inst->JJvoltage) = js.js_vj;
+            *(ckt->CKTstate1 + inst->JJphase) = js.js_phi;
+            *(ckt->CKTstate1 + inst->JJconI) = js.js_ci;
+        }
+        else {
+            js.js_vj  = 0;
+#ifdef NEWJJDC
+            *(ckt->CKTstate1 + inst->JJvoltage) = 0.0;
+            // The RHS node voltage was set to zero in the doTask code.
+            js.js_phi = *(ckt->CKTstate1 + inst->JJphase);
+            js.js_ci  = (inst->JJcontrol) ?
+                *(ckt->CKTrhsOld + inst->JJbranch) : 0;
+            *(ckt->CKTstate1 + inst->JJconI) = js.js_ci;
+            *(ckt->CKTstate0 + inst->JJvoltage) = 0.0;
+#else
+            js.js_phi = 0;
+            js.js_ci  = 0;  // This isn't right?
+#endif
+        }
+
+        inst->JJdelVdelT = ckt->find_ceq(inst->JJvoltage);
+
+        js.js_crhs = 0;
+        js.js_dcrt = 0;
+        js.js_crt  = inst->JJcriti;
+
+        js.jj_iv(model, inst);
+        if (model->JJictype != 1)
+            js.jj_ic(model, inst);
+        js.jj_load(ckt, model, inst);
+
+        if (inst->JJgshunt > 1e-12) {
+            ckt->ldadd(inst->JJrshPosPosPtr, inst->JJgshunt);
+            ckt->ldadd(inst->JJrshPosNegPtr, -inst->JJgshunt);
+            ckt->ldadd(inst->JJrshNegPosPtr, -inst->JJgshunt);
+            ckt->ldadd(inst->JJrshNegNegPtr, inst->JJgshunt);
+#ifdef NEWLSH
+            if (inst->JJlsh > 0.0) {
+                double ival;
+                if (ckt->CKTmode & MODEUIC)
+                    ival =  0.0;
+                else
+                    ival = *(ckt->CKTrhsOld + inst->JJlshBr);
+                *(ckt->CKTstate1 + inst->JJlshFlux) += inst->JJlsh * ival;
+                *(ckt->CKTstate0 + inst->JJlshFlux) = 0;
+
+                inst->JJlshReq = ckt->CKTag[0] * inst->JJlsh;
+                inst->JJlshVeq = ckt->find_ceq(inst->JJlshFlux);
+
+                ckt->rhsadd(inst->JJlshBr, inst->JJlshVeq);
+                ckt->ldadd(inst->JJlshIbrIbrPtr, -inst->JJlshReq);
+            }
+#endif
+        }
+
+#ifdef NEWLSER
+        if (inst->JJlser > 0.0) {
+            double ival;
+            if (ckt->CKTmode & MODEUIC)
+                ival =  0.0;
+            else
+                ival = *(ckt->CKTrhsOld + inst->JJlserBr);
+            *(ckt->CKTstate1 + inst->JJlserFlux) += inst->JJlser * ival;
+            *(ckt->CKTstate0 + inst->JJlserFlux) = 0;
+
+            inst->JJlserReq = ckt->CKTag[0] * inst->JJlser;
+            inst->JJlserVeq = ckt->find_ceq(inst->JJlserFlux);
+
+            ckt->rhsadd(inst->JJlserBr, inst->JJlserVeq);
+            ckt->ldadd(inst->JJlserIbrIbrPtr, -inst->JJlserReq);
+        }
+#endif
+    }
+    else if (ckt->CKTmode & MODEINITPRED) {
+
+        double y0 = DEV.pred(ckt, inst->JJdvdt);
+        if (ckt->CKTorder != 1)
+            y0 += *(ckt->CKTstate1 + inst->JJdvdt);
+
+        double temp = *(ckt->CKTstate1 + inst->JJvoltage);
+        double rag0  = ckt->CKTorder == 1 ? ckt->CKTdelta : .5*ckt->CKTdelta;
+        js.js_vj  = temp + rag0*y0;
+
+        js.js_phi = *(ckt->CKTstate1 + inst->JJphase);
+        temp = js.js_vj;
+        if (ckt->CKTorder > 1)
+            temp += *(ckt->CKTstate1 + inst->JJvoltage);
+        js.js_phi += js.js_pfac*temp;
+
+        if (inst->JJcontrol)
+            js.js_ci = DEV.pred(ckt, inst->JJconI);
+        else
+            js.js_ci = 0;
+
+        inst->JJdelVdelT = ckt->find_ceq(inst->JJvoltage);
+
+        js.js_crhs = 0;
+        js.js_dcrt = 0;
+        js.js_crt  = inst->JJcriti;
+
+        js.jj_iv(model, inst);
+        if (model->JJictype != 1)
+            js.jj_ic(model, inst);
+        js.jj_load(ckt, model, inst);
+
+        // Load the shunt resistance implied if vshunt given.
+        if (inst->JJgshunt > 1e-12) {
+            ckt->ldadd(inst->JJrshPosPosPtr, inst->JJgshunt);
+            ckt->ldadd(inst->JJrshPosNegPtr, -inst->JJgshunt);
+            ckt->ldadd(inst->JJrshNegPosPtr, -inst->JJgshunt);
+            ckt->ldadd(inst->JJrshNegNegPtr, inst->JJgshunt);
+#ifdef NEWLSH
+            if (inst->JJlsh > 0.0) {
+                inst->JJlshReq = ckt->CKTag[0] * inst->JJlsh;
+                inst->JJlshVeq = ckt->find_ceq(inst->JJlshFlux);
+
+                ckt->rhsadd(inst->JJlshBr, inst->JJlshVeq);
+                ckt->ldadd(inst->JJlshIbrIbrPtr, -inst->JJlshReq);
+
+                *(ckt->CKTstate0 + inst->JJlshFlux) = 0;
+            }
+#endif
+        }
+#ifdef NEWLSER
+        if (inst->JJlser > 0.0) {
+            inst->JJlserReq = ckt->CKTag[0] * inst->JJlser;
+            inst->JJlserVeq = ckt->find_ceq(inst->JJlserFlux);
+
+            ckt->rhsadd(inst->JJlserBr, inst->JJlserVeq);
+            ckt->ldadd(inst->JJlserIbrIbrPtr, -inst->JJlserReq);
+
+            *(ckt->CKTstate0 + inst->JJlserFlux) = 0;
+        }
+#endif
+    }
+    else
+#endif
+
+    if (ckt->CKTmode & (MODEINITPRED | MODEINITFLOAT)) {
+        js.js_ci  = (inst->JJcontrol) ?
+                *(ckt->CKTrhsOld + inst->JJbranch) : 0;
+
+        js.js_vj  = *(ckt->CKTrhsOld + inst->JJposNode) -
+                *(ckt->CKTrhsOld + inst->JJnegNode);
+
+double temp;
+        /*
+        double absvj  = fabs(js.js_vj);
+        double temp   = *(ckt->CKTstate0 + inst->JJvoltage);
+        double absold = fabs(temp);
+        double maxvj  = SPMAX(absvj,absold);
+        temp  -= js.js_vj;
+        double absdvj = fabs(temp);
+        */
+
+        /*
+        if (maxvj >= inst->JJvless) {
+            temp = model->JJdelv * 0.5;
+            if (absdvj > temp) {
+                js.js_ddv = temp;
+                js.jj_limiting(ckt, model, inst);
+                absvj  = fabs(js.js_vj);
+                maxvj  = SPMAX(absvj, absold);
+                temp   = js.js_vj - *(ckt->CKTstate0 + inst->JJvoltage);
+                absdvj = fabs(temp);
+            }
+        }
+        */
+
+        js.js_phi = *(ckt->CKTstate1 + inst->JJphase);
+        temp = js.js_vj;
+        if (ckt->CKTorder > 1)
+            temp += *(ckt->CKTstate1 + inst->JJvoltage);
+        js.js_phi += js.js_pfac*temp;
+
+        js.js_crhs = 0;
+        js.js_dcrt = 0;
+        js.js_crt  = inst->JJcriti;
+    
+        //
+        // compute quasiparticle current and derivatives
+        //
+// Assume linear shunt conductance and standard critical current.
+// Allow control current magnetic coupling?
+//        js.jj_iv(model, inst);
+        js.js_gqt = inst->JJg0;
+//        if (model->JJictype != 1)
+//            js.jj_ic(model, inst);
+//        js.jj_load(ckt, model, inst);
+        {
+            double gqt  = js.js_gqt;
+            double crhs = js.js_crhs;
+            double crt  = js.js_crt;
+
+            *(ckt->CKTstate0 + inst->JJvoltage) = js.js_vj;
+            *(ckt->CKTstate0 + inst->JJphase)   = js.js_phi;
+            *(ckt->CKTstate0 + inst->JJconI)    = js.js_ci;
+            // these two for JJask()
+            *(ckt->CKTstate0 + inst->JJcrti)    = js.js_crt;
+#ifdef NEWJJDC
+            if (ckt->CKTmode & MODEDC)
+                *(ckt->CKTstate0 + inst->JJqpi) = 0.0;
+            else
+#endif
+            *(ckt->CKTstate0 + inst->JJqpi)     = crhs + gqt*js.js_vj;
+
+#ifdef zASM_SINCOS
+            double si, sctemp;
+            asm("fsincos" : "=t" (sctemp), "=u"  (si) : "0" (js.js_phi));
+            double gcs   = js.js_pfac*crt*sctemp;
+#else
+            double gcs   = js.js_pfac*crt*cos(js.js_phi);
+// Ignore cosine term.
+//double gcs = 0;
+            double si    = sin(js.js_phi);
+#endif
+
+            if (model->JJpi) {
+                si = -si;
+                gcs = -gcs;
+            }
+            crt  *= si;
+            crhs += crt - gcs*js.js_vj;
+            gqt  += gcs + ckt->CKTag[0]*inst->JJcap;
+        ckt->integrate(inst->JJvoltage, inst->JJdelVdelT);
+inst->JJdelVdelT = ckt->find_ceq(inst->JJvoltage);
+            crhs += inst->JJdelVdelT*inst->JJcap;
+
+            // load rhs vector
+            if (inst->JJphsNode > 0)
+                *(ckt->CKTrhs + inst->JJphsNode) = js.js_phi +
+                    (4*M_PI)* *(int*)(ckt->CKTstate1 + inst->JJphsInt);
+
+            if (inst->JJcontrol) {
+                temp = js.js_dcrt*si;
+                crhs -= temp*js.js_ci;
+            }
+            if (inst->JJposNode > 0)
+                ckt->rhsadd(inst->JJposNode, -crhs);
+            if (inst->JJnegNode > 0)
+                ckt->rhsadd(inst->JJnegNode, crhs);
+        }
+
+        // Load the shunt resistance implied if vshunt given.
+        if (inst->JJgshunt > 1e-12) {
+#ifdef NEWLSH
+            if (inst->JJlsh > 0.0) {
+                *(ckt->CKTstate0 + inst->JJlshFlux) = inst->JJlsh *
+                    *(ckt->CKTrhsOld + inst->JJlshBr);
+                ckt->integrate(inst->JJlshFlux, inst->JJlshVeq);
+
+                ckt->rhsadd(inst->JJlshBr, inst->JJlshVeq);
+            }
+#endif
+        }
+
+//        ckt->integrate(inst->JJvoltage, inst->JJdelVdelT);
+//inst->JJdelVdelT = ckt->find_ceq(inst->JJvoltage);
+#ifdef NEWLSER
+        if (inst->JJlser > 0.0) {
+            *(ckt->CKTstate0 + inst->JJlserFlux) = inst->JJlser *
+                *(ckt->CKTrhsOld + inst->JJlserBr);
+            ckt->integrate(inst->JJlserFlux, inst->JJlserVeq);
+
+            ckt->rhsadd(inst->JJlserBr, inst->JJlserVeq);
+        }
+#endif
+    }
 
     return (OK);
 }
@@ -811,12 +1091,15 @@ jjstuff::jj_load(sCKT *ckt, sJJmodel *model, sJJinstance *inst)
 #endif
     *(ckt->CKTstate0 + inst->JJqpi)     = crhs + gqt*js_vj;
 
-#ifdef ASM_SINCOS
+    //XXX
+#ifdef zASM_SINCOS
     double si, sctemp;
     asm("fsincos" : "=t" (sctemp), "=u"  (si) : "0" (js_phi));
     double gcs   = js_pfac*crt*sctemp;
 #else
     double gcs   = js_pfac*crt*cos(js_phi);
+if (!(ckt->CKTmode & MODEDC))
+    gcs *= 1;
     double si    = sin(js_phi);
 #endif
 
