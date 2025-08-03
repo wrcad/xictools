@@ -395,7 +395,7 @@ main (int argc, char **argv)
     options[0] = 0;
     for (int i = 1; i <= num; i++) {
         fprintf(stdout,
-".model mod%d_%s ltra %s r=%0.12g l=%0.12g g=%0.12g c=%0.12g len=%0.12g\n",
+".model mod%d_%s tra %s r=%0.12g l=%0.12g g=%0.12g c=%0.12g len=%0.12g\n",
             i, name, options, r, l+tpeigenvalues[i]*lm, g,
             ctot-tpeigenvalues[i]*cm, len);
     }
@@ -450,7 +450,7 @@ main (int argc, char **argv)
     fprintf(stdout, " m_%s\n", name);
 
     for (int i = 1; i <= num; i++) 
-        fprintf(stdout, "o%d %d 0 %d 0 mod%d_%s\n", i, 2*num+i, 3*num+i,
+        fprintf(stdout, "t%d %d 0 %d 0 mod%d_%s\n", i, 2*num+i, 3*num+i,
             i, name);
 
     fprintf(stdout, "x2");
