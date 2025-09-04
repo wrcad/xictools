@@ -605,150 +605,6 @@ JJdev::loadRHS(sGENinstance *in_inst, sCKT *ckt)
     if (ckt->CKTorder > 1)
         js.js_pfac *= .5;
 
-#ifdef notdef
-    if (ckt->CKTmode & MODEINITTRAN) {
-        if (ckt->CKTmode & MODEUIC) {
-            js.js_vj  = inst->JJinitVoltage;
-            js.js_phi = inst->JJinitPhase;
-            js.js_ci  = inst->JJinitControl;
-            *(ckt->CKTstate1 + inst->JJvoltage) = js.js_vj;
-            *(ckt->CKTstate1 + inst->JJphase) = js.js_phi;
-            *(ckt->CKTstate1 + inst->JJconI) = js.js_ci;
-        }
-        else {
-            js.js_vj  = 0;
-#ifdef NEWJJDC
-            *(ckt->CKTstate1 + inst->JJvoltage) = 0.0;
-            // The RHS node voltage was set to zero in the doTask code.
-            js.js_phi = *(ckt->CKTstate1 + inst->JJphase);
-            js.js_ci  = (inst->JJcontrol) ?
-                *(ckt->CKTrhsOld + inst->JJbranch) : 0;
-            *(ckt->CKTstate1 + inst->JJconI) = js.js_ci;
-            *(ckt->CKTstate0 + inst->JJvoltage) = 0.0;
-#else
-            js.js_phi = 0;
-            js.js_ci  = 0;  // This isn't right?
-#endif
-        }
-
-        inst->JJdelVdelT = ckt->find_ceq(inst->JJvoltage);
-
-        js.js_crhs = 0;
-        js.js_dcrt = 0;
-        js.js_crt  = inst->JJcriti;
-
-        js.jj_iv(model, inst);
-        if (model->JJictype != 1)
-            js.jj_ic(model, inst);
-        js.jj_load(ckt, model, inst);
-
-        if (inst->JJgshunt > 1e-12) {
-            ckt->ldadd(inst->JJrshPosPosPtr, inst->JJgshunt);
-            ckt->ldadd(inst->JJrshPosNegPtr, -inst->JJgshunt);
-            ckt->ldadd(inst->JJrshNegPosPtr, -inst->JJgshunt);
-            ckt->ldadd(inst->JJrshNegNegPtr, inst->JJgshunt);
-#ifdef NEWLSH
-            if (inst->JJlsh > 0.0) {
-                double ival;
-                if (ckt->CKTmode & MODEUIC)
-                    ival =  0.0;
-                else
-                    ival = *(ckt->CKTrhsOld + inst->JJlshBr);
-                *(ckt->CKTstate1 + inst->JJlshFlux) += inst->JJlsh * ival;
-                *(ckt->CKTstate0 + inst->JJlshFlux) = 0;
-
-                inst->JJlshReq = ckt->CKTag[0] * inst->JJlsh;
-                inst->JJlshVeq = ckt->find_ceq(inst->JJlshFlux);
-
-                ckt->rhsadd(inst->JJlshBr, inst->JJlshVeq);
-                ckt->ldadd(inst->JJlshIbrIbrPtr, -inst->JJlshReq);
-            }
-#endif
-        }
-
-#ifdef NEWLSER
-        if (inst->JJlser > 0.0) {
-            double ival;
-            if (ckt->CKTmode & MODEUIC)
-                ival =  0.0;
-            else
-                ival = *(ckt->CKTrhsOld + inst->JJlserBr);
-            *(ckt->CKTstate1 + inst->JJlserFlux) += inst->JJlser * ival;
-            *(ckt->CKTstate0 + inst->JJlserFlux) = 0;
-
-            inst->JJlserReq = ckt->CKTag[0] * inst->JJlser;
-            inst->JJlserVeq = ckt->find_ceq(inst->JJlserFlux);
-
-            ckt->rhsadd(inst->JJlserBr, inst->JJlserVeq);
-            ckt->ldadd(inst->JJlserIbrIbrPtr, -inst->JJlserReq);
-        }
-#endif
-    }
-    else if (ckt->CKTmode & MODEINITPRED) {
-
-        double y0 = DEV.pred(ckt, inst->JJdvdt);
-        if (ckt->CKTorder != 1)
-            y0 += *(ckt->CKTstate1 + inst->JJdvdt);
-
-        double temp = *(ckt->CKTstate1 + inst->JJvoltage);
-        double rag0  = ckt->CKTorder == 1 ? ckt->CKTdelta : .5*ckt->CKTdelta;
-        js.js_vj  = temp + rag0*y0;
-
-        js.js_phi = *(ckt->CKTstate1 + inst->JJphase);
-        temp = js.js_vj;
-        if (ckt->CKTorder > 1)
-            temp += *(ckt->CKTstate1 + inst->JJvoltage);
-        js.js_phi += js.js_pfac*temp;
-
-        if (inst->JJcontrol)
-            js.js_ci = DEV.pred(ckt, inst->JJconI);
-        else
-            js.js_ci = 0;
-
-        inst->JJdelVdelT = ckt->find_ceq(inst->JJvoltage);
-
-        js.js_crhs = 0;
-        js.js_dcrt = 0;
-        js.js_crt  = inst->JJcriti;
-
-        js.jj_iv(model, inst);
-        if (model->JJictype != 1)
-            js.jj_ic(model, inst);
-        js.jj_load(ckt, model, inst);
-
-        // Load the shunt resistance implied if vshunt given.
-        if (inst->JJgshunt > 1e-12) {
-            ckt->ldadd(inst->JJrshPosPosPtr, inst->JJgshunt);
-            ckt->ldadd(inst->JJrshPosNegPtr, -inst->JJgshunt);
-            ckt->ldadd(inst->JJrshNegPosPtr, -inst->JJgshunt);
-            ckt->ldadd(inst->JJrshNegNegPtr, inst->JJgshunt);
-#ifdef NEWLSH
-            if (inst->JJlsh > 0.0) {
-                inst->JJlshReq = ckt->CKTag[0] * inst->JJlsh;
-                inst->JJlshVeq = ckt->find_ceq(inst->JJlshFlux);
-
-                ckt->rhsadd(inst->JJlshBr, inst->JJlshVeq);
-                ckt->ldadd(inst->JJlshIbrIbrPtr, -inst->JJlshReq);
-
-                *(ckt->CKTstate0 + inst->JJlshFlux) = 0;
-            }
-#endif
-        }
-#ifdef NEWLSER
-        if (inst->JJlser > 0.0) {
-            inst->JJlserReq = ckt->CKTag[0] * inst->JJlser;
-            inst->JJlserVeq = ckt->find_ceq(inst->JJlserFlux);
-
-            ckt->rhsadd(inst->JJlserBr, inst->JJlserVeq);
-            ckt->ldadd(inst->JJlserIbrIbrPtr, -inst->JJlserReq);
-
-            *(ckt->CKTstate0 + inst->JJlserFlux) = 0;
-        }
-#endif
-    }
-    else
-#endif
-
     if (ckt->CKTmode & (MODEINITPRED | MODEINITFLOAT)) {
         js.js_ci  = (inst->JJcontrol) ?
                 *(ckt->CKTrhsOld + inst->JJbranch) : 0;
@@ -833,8 +689,11 @@ double temp;
                 gcs = -gcs;
             }
             crt  *= si;
-            crhs += crt - gcs*js.js_vj;
-            gqt  += gcs + ckt->CKTag[0]*inst->JJcap;
+//            crhs += crt - gcs*js.js_vj;
+crhs += crt - gcs*(js.js_vj -
+            0.0 * *(ckt->CKTstate1 + inst->JJvoltage))*1.0;
+//            gqt  += gcs + ckt->CKTag[0]*inst->JJcap;
+//gqt  += ckt->CKTag[0]*inst->JJcap;
         ckt->integrate(inst->JJvoltage, inst->JJdelVdelT);
 inst->JJdelVdelT = ckt->find_ceq(inst->JJvoltage);
             crhs += inst->JJdelVdelT*inst->JJcap;
