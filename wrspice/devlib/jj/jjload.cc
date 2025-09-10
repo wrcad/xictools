@@ -49,6 +49,8 @@ Author: 1993 Stephen R. Whiteley
 #ifdef JJ_DEBUG
 #include <stdio.h>
 #endif
+//XXX
+#include <stdio.h>
 
 
 #if defined(__GNUC__) && (defined(i386) || defined(__x86_64__))
@@ -593,6 +595,8 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
 
 
 #ifdef NEW_FASTLIN
+// Phi0
+#define PHI0        wrsCONSTphi0
 
 int
 JJdev::loadRHS(sGENinstance *in_inst, sCKT *ckt)
@@ -612,32 +616,11 @@ JJdev::loadRHS(sGENinstance *in_inst, sCKT *ckt)
         js.js_vj  = *(ckt->CKTrhsOld + inst->JJposNode) -
                 *(ckt->CKTrhsOld + inst->JJnegNode);
 
-double temp;
-        /*
-        double absvj  = fabs(js.js_vj);
-        double temp   = *(ckt->CKTstate0 + inst->JJvoltage);
-        double absold = fabs(temp);
-        double maxvj  = SPMAX(absvj,absold);
-        temp  -= js.js_vj;
-        double absdvj = fabs(temp);
-        */
-
-        /*
-        if (maxvj >= inst->JJvless) {
-            temp = model->JJdelv * 0.5;
-            if (absdvj > temp) {
-                js.js_ddv = temp;
-                js.jj_limiting(ckt, model, inst);
-                absvj  = fabs(js.js_vj);
-                maxvj  = SPMAX(absvj, absold);
-                temp   = js.js_vj - *(ckt->CKTstate0 + inst->JJvoltage);
-                absdvj = fabs(temp);
-            }
-        }
-        */
+        // Old phase for predictor, used below.
+        double op = *(ckt->CKTstate1 + inst->JJphase);
 
         js.js_phi = *(ckt->CKTstate1 + inst->JJphase);
-        temp = js.js_vj;
+        double temp = js.js_vj;
         if (ckt->CKTorder > 1)
             temp += *(ckt->CKTstate1 + inst->JJvoltage);
         js.js_phi += js.js_pfac*temp;
@@ -649,13 +632,10 @@ double temp;
         //
         // compute quasiparticle current and derivatives
         //
-// Assume linear shunt conductance and standard critical current.
-// Allow control current magnetic coupling?
-//        js.jj_iv(model, inst);
+        // Assume linear shunt conductance and standard critical current.
+        // Allow control current magnetic coupling?
         js.js_gqt = inst->JJg0;
-//        if (model->JJictype != 1)
-//            js.jj_ic(model, inst);
-//        js.jj_load(ckt, model, inst);
+
         {
             double gqt  = js.js_gqt;
             double crhs = js.js_crhs;
@@ -673,14 +653,12 @@ double temp;
 #endif
             *(ckt->CKTstate0 + inst->JJqpi)     = crhs + gqt*js.js_vj;
 
-#ifdef zASM_SINCOS
+#ifdef ASM_SINCOS
             double si, sctemp;
             asm("fsincos" : "=t" (sctemp), "=u"  (si) : "0" (js.js_phi));
             double gcs   = js.js_pfac*crt*sctemp;
 #else
             double gcs   = js.js_pfac*crt*cos(js.js_phi);
-// Ignore cosine term.
-//double gcs = 0;
             double si    = sin(js.js_phi);
 #endif
 
@@ -689,13 +667,16 @@ double temp;
                 gcs = -gcs;
             }
             crt  *= si;
-//            crhs += crt - gcs*js.js_vj;
-crhs += crt - gcs*(js.js_vj -
-            0.0 * *(ckt->CKTstate1 + inst->JJvoltage))*1.0;
-//            gqt  += gcs + ckt->CKTag[0]*inst->JJcap;
-//gqt  += ckt->CKTag[0]*inst->JJcap;
-        ckt->integrate(inst->JJvoltage, inst->JJdelVdelT);
-inst->JJdelVdelT = ckt->find_ceq(inst->JJvoltage);
+
+            // The predictor is added to the rhs here, this is the key
+            // element for FASTLIM support of JJs, i.e., instead of
+            // adding a term to the A matrix (making it non-constant) we
+            // add an extrapolated value to the rhs to approximate this.
+            double vprd = (js.js_phi - op)*PHI0_2PI/(2.0*M_PI*ckt->CKTdelta);
+            crhs += crt - gcs*(js.js_vj + vprd);
+
+            ckt->integrate(inst->JJvoltage, inst->JJdelVdelT);
+            inst->JJdelVdelT = ckt->find_ceq(inst->JJvoltage);
             crhs += inst->JJdelVdelT*inst->JJcap;
 
             // load rhs vector
@@ -726,8 +707,6 @@ inst->JJdelVdelT = ckt->find_ceq(inst->JJvoltage);
 #endif
         }
 
-//        ckt->integrate(inst->JJvoltage, inst->JJdelVdelT);
-//inst->JJdelVdelT = ckt->find_ceq(inst->JJvoltage);
 #ifdef NEWLSER
         if (inst->JJlser > 0.0) {
             *(ckt->CKTstate0 + inst->JJlserFlux) = inst->JJlser *
@@ -950,8 +929,7 @@ jjstuff::jj_load(sCKT *ckt, sJJmodel *model, sJJinstance *inst)
 #endif
     *(ckt->CKTstate0 + inst->JJqpi)     = crhs + gqt*js_vj;
 
-    //XXX
-#ifdef zASM_SINCOS
+#ifdef ASM_SINCOS
     double si, sctemp;
     asm("fsincos" : "=t" (sctemp), "=u"  (si) : "0" (js_phi));
     double gcs   = js_pfac*crt*sctemp;

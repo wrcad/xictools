@@ -392,6 +392,20 @@ packages, and to add any packages needed later.
     This is Apple's development package, available as a download from the
     App store.
 
+    Note from Andrew Wagner
+    ----
+    Doing a little more digging, type_traits and algorithm are low level
+    libraries that are normally included in the SDK on OSX. It seems there
+    is a common issue that when upgrading to Sequoia the command line SDK
+    can get corrupted and need a clean install. The fix is:
+
+      rm -rf /Library/Developer/CommandLineTools
+      xcode-select --install
+
+    If you encounter a bunch of missing header errors this is probably the
+    first thing to try.
+    ----
+
 2.  Install the "command line tools"
     Install this by giving the following command in a terminal window:
       xcode-select --install
@@ -516,6 +530,21 @@ The first time, you will need to set up the main Makefile.
 5. Make sure that your shell search path includes the main XicTools
    bin, which is by default /usr/local/xictools/bin.  Use the actual
    path if you changed PREFIX in the Makefile.
+
+*** Warning:
+1. This applies to Apple, Debian and Ubuntu or OS that uses apt packager,
+or any other OS that needs root access to build a package.
+2. If not building XicTools packages and installing using "make install"
+when the install target requires root access (true for the advised default).
+The problem is that make install will be run with sudo which will likely
+leave root-owned files in the source tree.  Then, subsequent builds with
+normal user permissions will likely fail since the root-owned files can't
+be modified.
+FIX (for now)
+Presently, the only recommended fix is to manually find the files that are
+root-owned and use chmod to make them user-owned, after running make install
+or whenever a make all/make app fails with a can't write error.
+***
 
 The present package releases of the XicTools contain separate binaries
 using the GTK2 and Qt graphics packages used for the GUI display.  This
