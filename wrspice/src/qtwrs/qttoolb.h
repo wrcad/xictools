@@ -44,6 +44,7 @@
 #include "qtinterf/qtinterf.h"
 #include "toolbar.h"
 
+#include <QAction>
 
 //-----------------------------------------------------------------------------
 // QTtoolbar:  main container class for application.

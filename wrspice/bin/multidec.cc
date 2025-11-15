@@ -172,7 +172,7 @@ main (int argc, char **argv)
 
     int num=0, errflg=0;
     char *name = 0;
-    double l=0.0, c, ctot, r=0.0, g=0.0, k=0.0, lm=0.0, cm=0.0, len;
+    double l=0.0, c=0.0, ctot, r=0.0, g=0.0, k=0.0, lm=0.0, cm=0.0, len=0.0;
     bool gotl=false, gotc=false, gotlen=false;
     bool gotname=false, gotnum=false;
     int ch;
