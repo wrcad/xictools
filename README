@@ -282,13 +282,16 @@ Fedora 40
     dnf install gtk2-devel  (for GTK)
     dnf install qt5-qtbase-devel  (for Qt)
 
-CentOS 8 Stream/ Rocky 8/ AlmaLinux8/ Red Hat 8
+CentOS 8,9 Stream/ Red Hat 8,9/ Rocky 8,9/ AlmaLinux 8,9
     The first line installs the development tools, including for C++.
 
     dnf group install "Development Tools"
     dnf install gsl-devel ncurses-devel libtiff-devel libjpeg-devel
     dnf install gtk2-devel  (for GTK)
     dnf install qt5-qtbase-devel  (for Qt)
+or
+    dnf install epel-release
+    dnf install qt6-qtbase-devel
 
 3.3.b  Installing MSYS2 and Needed Packages on Windows
 

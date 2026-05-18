@@ -167,6 +167,8 @@ options
       <td>The default value for MOS channel length.</td></tr>
     <tr><td><a href="defw"><tt>defw</tt></a></td>
       <td>The default value for MOS channel width.</td></tr>
+    <tr><td><a href="delfixed"><tt>delfixed</tt></a></td>
+      <td>Value to use as a fixed time increment.</td></tr>
     <tr><td><a href="delmin"><tt>delmin</tt></a></td>
       <td>The minimum time step allowed.</td></tr>
     <tr><td><a href="dphimax"><tt>dphimax</tt></a></td>
@@ -265,6 +267,8 @@ options
       <td>Always include range end point in dc sweep.</td></tr>
     <tr><td><a href="extprec"><tt>extprec</tt></a></td>
       <td>Use extended precision when solving circuit equations.</td></tr>
+    <tr><td><a href="fastlin"><tt>fastlin</tt></a></td>
+      <td>Use the FastLin solver for transient analysis..</td></tr>
     <tr><td><a href="forcegmin"><tt>forcegmin</tt></a></td>
       <td>Enforce all nodes mave at least gmin conductivity to
       ground.</td></tr>
@@ -490,6 +494,7 @@ description of each of these variables is provided in \ref{simvars}.
 {\vt defas} & \rr The default value for MOS source diffusion area.&\\ \hline
 {\vt defl} & \rr The value for MOS channel length.&\\ \hline
 {\vt defw} & \rr The value for MOS channel width.&\\ \hline
+{\vt delfixed} & \rr Value to use as a fixed time increment.&\\ \hline
 {\vt delmin} & \rr The minimum time step allowed.&\\ \hline
 {\vt dphimax} & \rr The maximum allowed phase change per time step.&\\ \hline
 {\vt jjdphimax} & \rr An alias for {\vt dphimax}.&\\ \hline
@@ -548,6 +553,7 @@ description of each of these variables is provided in \ref{simvars}.
 \multicolumn{3}{|l}{\bf Boolean Parameters}\\ \hline
 {\vt dcoddstep} & \rr Always include range end point in dc sweep.&\\ \hline
 {\vt extprec} & \rr Use extended precision when solving circuit equations.&\\ \hline
+{\vt fastlin} & \rr Use the FastLin solver in transient analysis.&\\ \hline
 {\vt forcegmin} & \rr Enforce all nodes mave at least gmin conductivity to
   ground.&\\ \hline
 {\vt gminfirst} & \rr Attempt gmin stepping before source stepping.&\\ \hline
@@ -633,6 +639,7 @@ unused_vars
 !!REDIRECT defas        sim_vars#defas
 !!REDIRECT defl         sim_vars#defl
 !!REDIRECT defw         sim_vars#defw
+!!REDIRECT delfixed     sim_vars#delfixed
 !!REDIRECT delmin       sim_vars#delmin
 !!REDIRECT dphimax      sim_vars#dphimax
 !!REDIRECT gmax         sim_vars#gmax
@@ -670,6 +677,7 @@ unused_vars
 !! booleans
 !!REDIRECT dcoddstep    sim_vars#dcoddstep
 !!REDIRECT extprec      sim_vars#extprec
+!!REDIRECT fastlin      sim_vars#fastlin
 !!REDIRECT forcegmin    sim_vars#forcegmin
 !!REDIRECT gminfirst    sim_vars#gminfirst
 !!REDIRECT hspice       sim_vars#hspice
@@ -855,6 +863,16 @@ Simulation Option Variables
     <tr><td>&nbsp;</td> <td>0.0</td> <td>1e4</td>
       <th>Simultion Defaults/Devices</th></tr>
     </table>
+    </dl>
+
+!! 051526
+    <a name="delfixed"></a>
+    <dl>
+    <dt><tt>delfixed</tt><dd>
+    This can be set to a value used as a fixed time step in transient
+    analysis when the <a href="steptype"><vt steptype></a> option is set
+    to "<tt>fixedstep</tt>".  When not given, the default value is the
+    user time increment set in the current transient analysis.
     </dl>
 
 !! 092716
@@ -1645,6 +1663,17 @@ Simulation Option Variables
     Where set: <b>Simulation Options/General</b>
     </dl>
 
+!! 051726
+    <a name="fastlin"></a>
+    <dl>
+    <dt><tt>fastlin</tt><dd>
+    When set, attempt to use the FastLin solver in transient analysis.
+    For this to work, all devices in the circuit must be linear or
+    Josephson junctions, and a fixed time step must be specified with
+    the <a href="steptype"><tt>steptype></a> option.  This avoids
+    needing to reload the circuit matrix for each iteration and time
+    point which should allow much faster analysis.  This is experimental.
+
 !! 082015
     <a name="forcegmin"></a>
     <dl>
@@ -2271,13 +2300,14 @@ Simulation Option Variables
     quite large.
 
     <p>
-    If set to "<tt>fixedstep</tt>", operation is similar to
-    "<tt>hitusertp</tt>", however the internal time step is
-    constrained to this value exactly.  No smaller time step is taken,
-    if convergence fails then the run terminates.  The time delta is
-    that given for the transient analysis.  This mode is only useful
-    for debugging as truncation error is ignored.  As a side-effect
-    the integration method will be rectangular.
+    If set to "<tt>fixedstep</tt>" a constant time step is used in
+    transient analysis.  The time step is constrained to this value and
+    is never cut or increased.  If convergence fails, then the run will
+    terminate.  The time step is given with the option
+    <a href="delfixed"><tt>delfixed>/tt></a>,
+    or if this is not given it defaults to the user time step as given
+    in the <a href="tran">transient analysis</a> specification for the
+    run.
 
     <p>
     <table border=1 cellpadding=2 bgcolor="#ffffee">
@@ -2405,6 +2435,14 @@ for other models.
  & 0.0 & 1e4 & \bf Simulation Options/Devices\\ \hline
 \end{tabular}
  
+% 051726
+\index{delfixed variable}
+\item{\et delfixed}\\
+This can be set to a value used as a fixed time step in transient
+analysis when the {\vt steptype} option is set to ``{\vt fixedstep)''.
+When not given, the default value is the user time increment set in
+the current transient analysis.
+
 % 092716
 \index{delmin variable}
 \item{\et delmin}\\
@@ -3008,6 +3046,16 @@ precision may avoid ``singular matrix'' and other convergence problems
 with some circuits.  See and run the ``{\vt precision.cir}'' file in
 the examples for more information.
 
+% 051726
+\index{fastlin variable}
+\item{\et fastlin}\\
+When set, attempt to use the FastLin solver in transient analysis.
+For this to work, all devices in the circuit must be linear or
+Josephson junctions, and a fixed time step must be specified with
+the {\vt steptype>} option.  This avoids needing to reload the circuit
+matrix for each iteration and time point which should allow much faster
+analysis. {\bf This is experimental}.
+
 % 082015
 \index{forcegmin variable}
 \item{\et forcegmin}\\
@@ -3505,13 +3553,12 @@ Setting to ``{\vt nousertp}'' will cause internal timepoint data to be
 saved, either in internal data structures in interactive mode or in
 the rawfile in batch mode.  The amount of data can grow quite large.
 
-If set to ``{\vt fixedstep}'', operation is similar to ``{\vt
-hitusertp}'', however the internal time step is constrained to this
-value exactly.  No smaller time step is taken, if convergence fails
-then the run terminates.  The time delta is that given for the
-transient analysis.  This mode is only useful for debugging as
-truncation error is ignored.  As a side-effect the integration method
-will be rectangular.
+If set to ``{\vt fixedstep}'' a constant time step is used in
+transient analysis.  The time step is constrained to this value and
+is never cut or increased.  If convergence fails, then the run will
+terminate.  The time step is given with the option ``{\vt delfixed}'',
+or if this is not given it defaults to the user time step as given
+in the transient analysis specification for the run.
 
 \begin{tabular}{|l|l|l|l|}\hline
 \bf Default & \bf Values & \bf Set From\\ \hline

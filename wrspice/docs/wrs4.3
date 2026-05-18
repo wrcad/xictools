@@ -174,8 +174,61 @@ End of general info.
 
 
 ===============================================================================
-wrspice-4.3.23  7/1/2025
+wrspice-4.3.24  5/16/2026
 Current Release
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Infrastructure for a new feature called "FastLin" was coded (alpha
+  level).  This is a solver for linear elements plus Josephson junctions
+  operated below the gap voltage.  A new boolean option "fastlin" enables
+  the FastLin solver.  A new real option "delfixed" sets the internal
+  fixed timestep when steptype=fixedstep.  This must be specified for
+  FastLin.  If delfixed is not set the tran print increment will be used.
+  The experimental FastLin solver may be faster than the normal
+  solver.
+
+  Complete information about this new mode will be provided soon.
+
+  In the multidec (coupled transmission line) utility, the real values
+  used in input can now be in the standard SPICE form, i.e.  the usual
+  suffix letter multipliers can be used in input.  The multidec output
+  now uses the currently preferred transmission line device model and
+  call prefix, i.e., ltra->tra and oN->tN.
+
+* The "Update Tools" and "Update WRspice" entries were removed from the
+  File menu.  A New entry Save Tools works like Update Tools but doesn't
+  save the fonts.  A new entry Save Fonts does this.  Save is to the
+  .wrspiceinit file in the user's home directory.  A new command
+  savefonts also saves fonts.  The package update function is no longer
+  supported and hidden.
+
+* Apple/Qt only.
+  There is a new startup variable "tbrevert".  When set, the console
+  window will have focus (but the toolbar might be obscured).  The
+  default is to not give focus to the console on program startup,
+  which is annoying.
+
+* Build verified on Alma Linux 9.7.
+
+
+BUGS FIXED
+---- -----
+
+* The toolbar keyword was "runop" for GTK, "runops" for Qt, now both
+  words are recognized (no error message), "runops" is used internally.
+
+* The toolbar font change and resizing should now work sensibly.
+
+* Refactored the multidec (coupled transmission line) utility.  The getopt
+  (command line utility) use was broken causing multidec to not work in
+  Windows.  This is no longer needed and was removed, now works in
+  Windows.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.3.23  7/1/2025
 
 CHANGES AND NEW FEATURES
 ------- --- --- --------
