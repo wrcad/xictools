@@ -499,7 +499,7 @@ diff -r -c source.lefdef/lef.orig/lef/crypt.cpp lef/lef/crypt.cpp
 ! 
 diff -r -c source.lefdef/lef.orig/lef/lef.y lef/lef/lef.y
 *** source.lefdef/lef.orig/lef/lef.y	Fri Feb  5 14:39:14 2016
---- lef/lef/lef.y	Sun Jan 14 11:44:35 2024
+--- lef/lef/lef.y	Mon Jun  1 15:19:43 2026
 ***************
 *** 2,7 ****
 --- 2,12 ----
@@ -1449,6 +1449,39 @@ diff -r -c source.lefdef/lef.orig/lef/lef.y lef/lef/lef.y
                     "DIAGMINEDGELENGTH statement is a version 5.6 and later syntax.\nYour lef file is defined with version %g.", lefData->versionNum);
                  lefError(1588, lefData->outMsg);
                  lefFree(lefData->outMsg);
+***************
+*** 2211,2225 ****
+      {
+        if (lefCallbacks->LayerCbk)
+           lefData->lefrLayer.addArraySpacingArray((int)$2, $4);
+!          if (lefData->arrayCutsVal > (int)$2) {
+!             // Mulitiple ARRAYCUTS value needs to me in ascending order 
+!             if (!lefData->arrayCutsWar) {
+!                if (lefData->layerWarnings++ < lefSettings->LayerWarnings)
+!                   lefWarning(2080, "The number of cut values in multiple ARRAYSPACING ARRAYCUTS are not in increasing order.\nTo be consistent with the documentation, update the cut values to increasing order.");
+!                lefData->arrayCutsWar = 1;
+!             }
+           }
+!          lefData->arrayCutsVal = (int)$2;
+      }
+  
+  sp_options:
+--- 2216,2230 ----
+      {
+        if (lefCallbacks->LayerCbk)
+           lefData->lefrLayer.addArraySpacingArray((int)$2, $4);
+!       if (lefData->arrayCutsVal > (int)$2) {
+!          // Mulitiple ARRAYCUTS value needs to me in ascending order 
+!          if (!lefData->arrayCutsWar) {
+!             if (lefData->layerWarnings++ < lefSettings->LayerWarnings)
+!                lefWarning(2080, "The number of cut values in multiple ARRAYSPACING ARRAYCUTS are not in increasing order.\nTo be consistent with the documentation, update the cut values to increasing order.");
+!             lefData->arrayCutsWar = 1;
+           }
+!       }
+!       lefData->arrayCutsVal = (int)$2;
+      }
+  
+  sp_options:
 ***************
 *** 2298,2304 ****
       {

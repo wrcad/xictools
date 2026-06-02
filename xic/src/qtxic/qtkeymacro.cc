@@ -360,7 +360,7 @@ cKbMacro::execBtn(sBtnEvent *b)
 // Event handler in effect while defining macro key..
 //
 bool
-qt_keyb::getkey_event_handler(QObject *obj, QEvent *ev, void *arg)
+qt_keyb::getkey_event_handler(QObject*, QEvent *ev, void *arg)
 {
     sGetKeyState *st = static_cast<sGetKeyState*>(arg);
     if (ev->type() == QEvent::KeyPress) {

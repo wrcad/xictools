@@ -1441,7 +1441,7 @@ sLx::initialize()
         //
         char *s = tigetstr((char*)"smkx");
         if (s && s != (char*)-1) {
-            putp(s);
+            tputs(s, 1, putchar);
             did_smkx = true;
         }
 
@@ -1521,7 +1521,7 @@ sLx::initialize()
             char *s = abuf;
             char *t = tgetstr((char*)"ks", &s);
             if (t && t != (char*)-1)
-                putp(t);
+                tputs(t, 1, putchar);
         }
 
         if (!tle) {
@@ -1645,14 +1645,14 @@ sLx::terminate()
 #ifdef HAVE_TIGETSTR
     char *s = tigetstr((char*)"rmkx");
     if (s && s != (char*)-1) {
-        putp(s);
+        tputs(s, 1, putchar);
         return;
     }
 #else
 #ifdef HAVE_TGETENT
     char *s = tgetstr((char*)"ke", 0);
     if (s && s != (char*)-1) {
-        putp(s);
+        tputs(s, 1, putchar);
         return;
     }
 #endif

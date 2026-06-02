@@ -429,6 +429,10 @@ dnl # Static link avoids libwinpthread-1.dll dependence.
     WINPTHREADFIX="-static"
 
     AC_PATH_PROG(WINDRES, windres, "")
+else
+    if test $sys_os = Darwin; then
+        CXX="g++ -std=gnu++23"
+    fi
 fi
 
 AC_SUBST(ACONF)
@@ -448,14 +452,17 @@ if test "$GCC" = yes; then
         CXX="$CXX $flags32"
     fi
     DEPEND_PROG='$(CC) -MM'
+    DEPEND_PROGXX='$(CXX) -MM'
     c_flags="-Wall -W -Wshadow -Wwrite-strings"
     if test $profiling = yes; then
         c_flags="-pg $c_flags"
     fi
 else
     DEPEND_PROG='gcc -MM'
+    DEPEND_PROGXX='g++ -MM'
 fi
 AC_SUBST(DEPEND_PROG)
+AC_SUBST(DEPEND_PROGXX)
 
 # Test whether a gcc option (-Wno-ignored-qualifiers) is valid.
 NO_IGNORED_QUALIFIERS=""
@@ -501,20 +508,22 @@ MINGW)
     oa_cflags="-DOA_WINDOWS -DOA_MINGW -DOA_NO_DLL_ATTR"
 ;;
 Darwin)
+dnl # uname -r is major.minor.release (3 integers), major is kernel release which is
+dnl # the operating system relese plus 10.
     kern=`uname -r`
     tifs=$IFS
     IFS="."
-    set $kern
+    set -- $kern
     IFS=$tifs
-dnl # uname -r returns the kernel release.
-    if test $1 -ge 13; then
+    macmaj=$(($1 + 1))
+    if test $macmaj -ge 13; then
         OSNAME="Darwin"
 dnl # uname -m is x86_64 or arm64.
         ARCH=`uname -m`
         DIST_SUFFIX="pkg"
         SDK="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
-dnl # support OSX 13.0 (Ventura) and later.
-        UFLAGS="-mmacosx-version-min=13.0 -arch $ARCH -isysroot $SDK"
+        echo Minimum MacOS version $macmaj.0
+        UFLAGS="-mmacos-version-min=$macmaj.0 -arch $ARCH -isysroot $SDK"
         MALLOC='$(BASE)/lib/malloc.a'
         oa_lpath=$oa_loc/lib/darwin_64/opt
     else

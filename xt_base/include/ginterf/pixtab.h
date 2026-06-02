@@ -56,7 +56,7 @@ namespace ginterf
     //
     struct pent
     {
-        pent(int k, int d, pent *n) { key = k; data = d; next = n; }
+        pent(int k, int d, pent *n): key(k), data(d), next(n) { }
 
         int key;
         int data;
@@ -67,7 +67,7 @@ namespace ginterf
     //
     struct ptab
     {
-        ptab() { memset(this, 0, sizeof(ptab)); }
+        ptab(): tab() {}
         ~ptab();
         void add(int, int);
         int get(int);

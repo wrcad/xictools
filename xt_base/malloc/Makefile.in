@@ -9,6 +9,7 @@ MALLOCFILE = malloc-2.8.6.c
 CXX = @CXX@
 CC = @CC@
 CFLAGS = @CFLAGSG@ @UFLAGS@
+DEPEND_PROGXX = @DEPEND_PROGXX@ @CFLAGSG@ -DMALLOCFILE=\"$(MALLOCFILE)\"
 DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ -DMALLOCFILE=\"$(MALLOCFILE)\"
 AR = @AR@
 RANLIB = @RANLIB@
@@ -48,7 +49,9 @@ depend:
 	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
-	    $(DEPEND_PROG) $(CCFILES) $(INCLUDE) malloc.c $(FILTER) \
+	    $(DEPEND_PROGXX) $(CCFILES) $(INCLUDE) $(FILTER) \
+ >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) malloc.c $(FILTER) \
  >> Makefile; \
 	fi
 

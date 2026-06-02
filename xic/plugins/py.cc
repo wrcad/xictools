@@ -42,6 +42,10 @@
 #undef HAVE_STAT // Clash in Python!
 
 #ifdef HAVE_PYTHON
+
+// Get rid ot this storage class in Python.h.
+#define register
+
 #include <Python.h>
 #include <setjmp.h>
 #include "main.h"

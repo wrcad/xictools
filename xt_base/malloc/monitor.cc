@@ -350,7 +350,7 @@ sMemory::mem_mon_enable(bool enable)
 }
 
 
-#ifdef __x86_64
+#if defined(__x86_64) || defined(__arm64)
 #else
 extern "C" { int main(int, char**); }
 #endif

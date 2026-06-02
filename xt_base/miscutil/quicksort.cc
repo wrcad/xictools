@@ -39,6 +39,7 @@
  *========================================================================*/
 
 #include "quicksort.h"
+#include <cstdint>
 
 
 // The following was lifted from FreeBSD 5.3.  The FreeBSD qsort is
@@ -66,7 +67,8 @@ namespace {
         } while (--i > 0);                  \
 }
 
-#define SWAPINIT(a, es) swaptype = ((char *)a - (char *)0) % sizeof(long) || \
+#define SWAPINIT(a, es) \
+    swaptype = reinterpret_cast<std::intptr_t>((char *)a) % sizeof(long) || \
     es % sizeof(long) ? 2 : es == sizeof(long)? 0 : 1;
 
 namespace {

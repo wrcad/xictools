@@ -108,7 +108,7 @@ ITOPOK = --enable-itopok=no
 # If you have an OpenAccess source tree, specify its location in this
 # variable and uncomment.  This enables OpenAccess support in Xic.
 #
-#OALOC  = --enable-oa=/usr/local/cad/OA-22.04
+#OALOC  = --enable-oa=/usr/local/xictools/techlibs/OA-22.04
 
 # If enabled and set to the installed location of the PyCellStudio
 # from Synopsys, the Python plug-in will link to the Python supplied

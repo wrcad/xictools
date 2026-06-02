@@ -935,8 +935,6 @@ jjstuff::jj_load(sCKT *ckt, sJJmodel *model, sJJinstance *inst)
     double gcs   = js_pfac*crt*sctemp;
 #else
     double gcs   = js_pfac*crt*cos(js_phi);
-if (!(ckt->CKTmode & MODEDC))
-    gcs *= 1;
     double si    = sin(js_phi);
 #endif
 
