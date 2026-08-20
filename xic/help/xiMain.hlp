@@ -4032,7 +4032,7 @@ xic:mail
 !!TITLE
 WR Button, Send Email
 !!HTML
-    <img src="wr.xpm">
+    <img src="wr.png">
     <b>Keyword</b>: <tt>mail</tt>
 
     <p>
@@ -4219,7 +4219,7 @@ xic:ltvis
 !!TITLE
 The ltvis Button: Show/Hide Layer Table
 !!HTML
-    <img src="ltvis.xpm">
+    <img src="ltvis.png">
     <b>Keyword</b>: <tt>ltvis</tt>
 
     <p>
@@ -4261,7 +4261,7 @@ xic:lpal
 !!TITLE
 The lpal Button: Show/Hide Layer Palette
 !!HTML
-    <img src="lpal.xpm">
+    <img src="lpal.png">
     <b>Keyword</b>: <tt>lpal</tt>
 
     <p>
@@ -4393,7 +4393,7 @@ xic:setcl
 !!TITLE
 The setcl Button: Set Current Layer from Clicked-On Object
 !!HTML
-    <img src="setcl.xpm">
+    <img src="setcl.png">
     <b>Keyword</b>: <tt>setcl</tt>
 
     <p>
@@ -4428,7 +4428,7 @@ xic:selcp
 !!TITLE
 The selcp Button: Show/Hide Selection Control Panel
 !!HTML
-    <img src="selcp.xpm">
+    <img src="selcp.png">
     <b>Keyword</b>: <tt>selcp</tt>
 
     <p>
@@ -4607,7 +4607,7 @@ xic:desel
 !!TITLE
 The desel Button: Deselect Objects
 !!HTML
-    <img src="desel.xpm">
+    <img src="desel.png">
     <b>Keyword</b>: <tt>desel</tt>
       
     <p>
@@ -4635,7 +4635,7 @@ xic:rdraw
 !!TITLE
 The rdraw Button: Redraw Windows
 !!HTML
-    <img src="rdraw.xpm">
+    <img src="rdraw.png">
     <b>Keyword</b>: <tt>rdraw</tt>
       
     <p>

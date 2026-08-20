@@ -8,6 +8,8 @@ XPMS = \
   sides.xpm spcmd.xpm spin.xpm style.xpm subct.xpm symbl.xpm terms.xpm \
   wire.xpm wr.xpm xform.xpm xor.xpm
 
+XPMPNGS = $(XPMS:.xpm=.png)
+
 BASEFILES = \
   FileSel.hlp Graphics.hlp Hardcopy.hlp TMsmall.gif wrbannermain.gif
 
@@ -23,11 +25,21 @@ BASE = ../../xt_base/help
 SPBASE = ../../xt_base/sphelp
 MOZY = ../../mozy/help
 
-depend: $(XPMS) $(BASEFILES) $(MOZYFILES) $(SPFILES) cptest
+depend: $(BASEFILES) $(MOZYFILES) $(SPFILES) cptest
 	cd screenshots; $(MAKE)
 
-$(XPMS): $(BITMAPS)/$@
-	@cp -fp $(BITMAPS)/$@ .
+# Most browsers don't handle xpm files anymore so the exported images
+# are changed to png, ImageMagick is used for this.  These are
+# permanent in git so this code need not be run unless there is a change.
+mkpng:
+	@for a in $(XPMS); do \
+	    png=$${a/.xpm/.png}; \
+	    echo $(BITMAPS)/$$a $$png; \
+	    convert $(BITMAPS)/$$a $$png; \
+	done 
+
+# $(XPMS): $(BITMAPS)/$@
+# 	@cp -fp $(BITMAPS)/$@ .
 
 $(BASEFILES):
 	cp -fp $(BASE)/$@ .
@@ -69,16 +81,6 @@ check::
 # Make sure that the copies are the same as the source, avoid local
 # updates that won't propagate!
 cptest::
-	@for a in $(XPMS); do \
-	    set -- $$(/usr/bin/sum $(BITMAPS)/$$a); s1=$$1; \
-	    set -- $$(/usr/bin/sum $$a); s2=$$1; \
-            if [ "$$s1" != "$$s2" ]; then \
-	        echo ; \
-	        echo  "ERROR!!! $$a differs in $(BITMAPS), FIXME"; \
-	        echo ; \
-	        exit 1; \
-	    fi; \
-	done
 	@for a in $(BASEFILES); do \
 	    set -- $$(/usr/bin/sum $(BASE)/$$a); s1=$$1; \
 	    set -- $$(/usr/bin/sum $$a); s2=$$1; \

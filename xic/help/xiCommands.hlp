@@ -146,106 +146,106 @@ Side Menu Commands
      <td colspan=3><b>Electrical Side Menu</b></td></tr>
     <tr><th>Icon</th> <th>Name</th> <th>Function</th>
      <th>Icon</th> <th>Name</th> <th>Function</th></tr>
-    <tr><td><img src="xform.xpm"></td>
+    <tr><td><img src="xform.png"></td>
      <td><a href="xic:xform"><b>xform</b></td>
      <td>Set current transform</td>
-     <td><img src="xform.xpm"></td>
+     <td><img src="xform.png"></td>
      <td><a href="xic:xform"><b>xform</b></td>
      <td>Set current transform</td></tr>
-    <tr><td><img src="place.xpm"></td>
+    <tr><td><img src="place.png"></td>
      <td><a href="xic:place"><b>place</b></td>
      <td>Place subcells</td>
-     <td><img src="place.xpm"></td>
+     <td><img src="place.png"></td>
      <td><a href="xic:place"><b>place</b></td>
      <td>Place subcells</td></tr>
-    <tr><td><img src="label.xpm"></td>
+    <tr><td><img src="label.png"></td>
      <td><a href="xic:label"><b>label</b></td>
      <td>Create/edit labels</td>
-     <td><img src="devs.xpm"></td>
+     <td><img src="devs.png"></td>
      <td><a href="xic:devs"><b>devs</b></td>
      <td>Show device menu</td></tr>
-    <tr><td><img src="logo.xpm"></td>
+    <tr><td><img src="logo.png"></td>
      <td><a href="xic:logo"><b>logo</b></td>
      <td>Create text object</td>
-     <td><img src="shapes.xpm"></td>
+     <td><img src="shapes.png"></td>
      <td><a href="xic:shapes"><b>shapes</b><br>menu</td>
      <td>Create outline object</td></tr>
-    <tr><td><img src="box.xpm"></td>
+    <tr><td><img src="box.png"></td>
      <td><a href="xic:box"><b>box</b></td>
      <td>Create rectangles</td>
-     <td><img src="wire.xpm"></td>
+     <td><img src="wire.png"></td>
      <td><a href="xic:wire"><b>wire</b></td>
      <td>Create wires</td></tr>
-    <tr><td><img src="polyg.xpm"></td>
+    <tr><td><img src="polyg.png"></td>
      <td><a href="xic:polyg"><b>polyg</b></td>
      <td>Create polygons</td>
-     <td><img src="label.xpm"></td>
+     <td><img src="label.png"></td>
      <td><a href="xic:label"><b>label</b></td>
      <td>Create/edit labels</td></tr>
-    <tr><td><img src="wire.xpm"></td>
+    <tr><td><img src="wire.png"></td>
      <td><a href="xic:wire"><b>wire</b></td>
      <td>Create wires</td>
-     <td><img src="erase.xpm"></td>
+     <td><img src="erase.png"></td>
      <td><a href="xic:erase"><b>erase</b></td>
      <td>Erase geometry</td></tr>
-    <tr><td><img src="style.xpm"></td>
+    <tr><td><img src="style.png"></td>
      <td><a href="xic:style"><b>style</b><br>menu</td>
      <td>Set wire style</td>
-     <td><img src="break.xpm"></td>
+     <td><img src="break.png"></td>
      <td><a href="xic:break"><b>break</b></td>
      <td>Cut objects</td></tr>
-    <tr><td><img src="round.xpm"></td>
+    <tr><td><img src="round.png"></td>
      <td><a href="xic:round"><b>round</b></td>
      <td>Create disk objects</td>
-     <td><img src="symbl.xpm"></td>
+     <td><img src="symbl.png"></td>
      <td><a href="xic:symbl"><b>symbl</b></td>
      <td>Set symbolic mode</td></tr>
-    <tr><td><img src="donut.xpm"></td>
+    <tr><td><img src="donut.png"></td>
      <td><a href="xic:donut"><b>donut</b></td>
      <td>Create disk with hole</td>
-     <td><img src="nodmp.xpm"></td>
+     <td><img src="nodmp.png"></td>
      <td><a href="xic:nodmp"><b>nodmp</b></td>
      <td>Name wire nets</td></tr>
-    <tr><td><img src="arc.xpm"></td>
+    <tr><td><img src="arc.png"></td>
      <td><a href="xic:arc"><b>arc</b></td>
      <td>Create arcs</td>
-     <td><img src="subct.xpm"></td>
+     <td><img src="subct.png"></td>
      <td><a href="xic:subct"><b>subct</b></td>
      <td>Set subcircuit contacts</td></tr>
-    <tr><td><img src="sides.xpm"></td>
+    <tr><td><img src="sides.png"></td>
      <td><a href="xic:sides"><b>sides</b></td>
      <td>Set rounded granularity</td>
-     <td><img src="terms.xpm"></td>
+     <td><img src="terms.png"></td>
      <td><a href="xic:terms"><b>terms</b></td>
      <td>Show terminals</td></tr>
-    <tr><td><img src="xor.xpm"></td>
+    <tr><td><img src="xor.png"></td>
      <td><a href="xic:xor"><b>xor</b></td>
      <td>Exclusive-OR objects</td>
-     <td><img src="spcmd.xpm"></td>
+     <td><img src="spcmd.png"></td>
      <td><a href="xic:spcmd"><b>spcmd</b></td>
      <td>Execute <i>WRspice</i> command</td></tr>
-    <tr><td><img src="break.xpm"></td>
+    <tr><td><img src="break.png"></td>
      <td><a href="xic:break"><b>break</b></td>
      <td>Cut objects</td>
-     <td><img src="run.xpm"></td>
+     <td><img src="run.png"></td>
      <td><a href="xic:run"><b>run</b></td>
      <td>Run <i>WRspice</i></td></tr>
-    <tr><td><img src="erase.xpm"></td>
+    <tr><td><img src="erase.png"></td>
      <td><a href="xic:erase"><b>erase</b></td>
      <td>Erase geometry</td>
-     <td><img src="deck.xpm"></td>
+     <td><img src="deck.png"></td>
      <td><a href="xic:deck"><b>deck</b></td>
      <td>Save SPICE file</td></tr>
-    <tr><td><img src="put.xpm"></td>
+    <tr><td><img src="put.png"></td>
      <td><a href="xic:put"><b>put</b></td>
      <td>Paste from yank buffer</td>
-     <td><img src="plot.xpm"></td>
+     <td><img src="plot.png"></td>
      <td><a href="xic:plot"><b>plot</b></td>
      <td>Plot SPICE results</td></tr>
-    <tr><td><img src="spin.xpm"></td>
+    <tr><td><img src="spin.png"></td>
      <td><a href="xic:spin"> <b>spin</b></td>
      <td>Rotate objects</td>
-     <td><img src="iplot.xpm"></td>
+     <td><img src="iplot.png"></td>
      <td><a href="xic:iplot"><b>iplot</b></td>
      <td>Set dynamic plotting</td></tr>
     </table>
@@ -412,7 +412,7 @@ xic:arc shapes:arc
 !!TITLE
 The arc Button: Create Arcs
 !!HTML
-    <img src="arc.xpm">
+    <img src="arc.png">
     <b>Keyword</b>: <tt>arc</tt>
 
     <p>
@@ -572,7 +572,7 @@ xic:box shapes:box
 !!TITLE
 The box Button: Create Rectangles
 !!HTML
-    <img src="box.xpm">
+    <img src="box.png">
     <b>Keyword</b>: <tt>box</tt>
 
     <p>
@@ -717,7 +717,7 @@ xic:break
 !!TITLE
 The break Button: Cut Objects
 !!HTML
-    <img src="break.xpm">
+    <img src="break.png">
     <b>Keyword</b>: <tt>break</tt>
 
     <p>
@@ -833,7 +833,7 @@ xic:deck
 !!TITLE
 The deck Button: Save SPICE File
 !!HTML
-    <img src="deck.xpm">
+    <img src="deck.png">
     <b>Keyword</b>: <tt>deck</tt>
 
     <p>
@@ -932,7 +932,7 @@ xic:devs devtoolbar
 !!TITLE
 The devs Button: Device Menu
 !!HTML
-    <img src="devs.xpm">
+    <img src="devs.png">
     <b>Keyword</b>: <tt>devs</tt>
 
     <p>
@@ -1228,7 +1228,7 @@ xic:donut
 !!TITLE
 The donut Button: Create Donut Object
 !!HTML
-    <img src="donut.xpm">
+    <img src="donut.png">
     <b>Keyword</b>: <tt>donut</tt>
 
     <p>
@@ -1353,7 +1353,7 @@ xic:erase
 !!TITLE
 The erase Button: Erase or Yank Geometry
 !!HTML
-    <img src="erase.xpm">
+    <img src="erase.png">
     <b>Keyword</b>: <tt>erase</tt>
 
     <p>
@@ -1515,7 +1515,7 @@ xic:iplot
 !!TITLE
 The iplot Button: Interactive Analysis Plotting
 !!HTML 
-    <img src="iplot.xpm">
+    <img src="iplot.png">
     <b>Keyword</b>: <tt>iplot</tt>
 
     <p>
@@ -1603,7 +1603,7 @@ The label Button: Create/Edit Labels
     </td></tr></table>
 
     <p>
-    <img src="label.xpm">
+    <img src="label.png">
     <b>Keyword</b>: <tt>label</tt>
 
     <p>
@@ -2463,7 +2463,7 @@ The logo Button: Create Physical Text
     Panel</b></a>
 
     <p>
-    <img src="logo.xpm">
+    <img src="logo.png">
     <b>Keyword</b>: <tt>logo</tt>
 
     <p>
@@ -2793,7 +2793,7 @@ The nodmp Button: Node (Net) Name Assignments
 !!HTML
     <img src="screenshots/nodemap.png" align=right>
     <table border=0>
-    <tr><td><img src="nodmp.xpm">
+    <tr><td><img src="nodmp.png">
     <b>Keyword</b>: <tt>nodmp</tt></td></tr>
     </table>
 
@@ -3501,7 +3501,7 @@ xic:place placepanel
 !!TITLE
 Cell Placement Control
 !!HTML 
-    <img src="place.xpm">
+    <img src="place.png">
     <img src="screenshots/place.png" align=right>
     <b>Keyword</b>: <tt>place</tt>
 
@@ -3968,7 +3968,7 @@ xic:plot
 !!TITLE
 The plot Button: Generate SPICE Plot
 !!HTML 
-    <img src="plot.xpm">
+    <img src="plot.png">
     <b>Keyword</b>: <tt>plot</tt>
 
     <p>
@@ -4211,7 +4211,7 @@ The polyg Button: Create/Edit Polygons
     </td></tr></table>
 
     <p>
-    <img src="polyg.xpm">
+    <img src="polyg.png">
     <b>Keyword</b>: <tt>polyg</tt>
 
     <p>
@@ -4533,7 +4533,7 @@ xic:put
 !!TITLE
 The put Button: Extract From Yank Buffer
 !!HTML
-    <img src="put.xpm">
+    <img src="put.png">
     <b>Keyword</b>: <tt>put</tt>
 
     <p>
@@ -4565,7 +4565,7 @@ xic:round
 !!TITLE
 The round Button: Create Disk Object
 !!HTML
-    <img src="round.xpm">
+    <img src="round.png">
     <b>Keyword</b>: <tt>round</tt>
 
     <p>
@@ -4679,7 +4679,7 @@ xic:run
 !!TITLE
 The run Button: Run SPICE Analysis
 !!HTML
-    <img src="run.xpm">
+    <img src="run.png">
     <b>Keyword</b>: <tt>run</tt>
 
     <p>
@@ -4978,7 +4978,7 @@ xic:shapes shapes:dot shapes:tri shapes:ttri shapes:and shapes:or
 !!TITLE
 The shapes Button: Add Predefined Features, Shapes Menu
 !!HTML
-    <img src="shapes.xpm">
+    <img src="shapes.png">
 
     <p>
     The <b>shapes</b> button appears in the electrical mode side menu. 
@@ -5123,7 +5123,7 @@ xic:sides shapes:sides
 !!TITLE
 The sides Button: Set Rounded Granularity
 !!HTML
-    <img src="sides.xpm">
+    <img src="sides.png">
     <b>Keyword</b>: <tt>sides</tt>
 
     <p>
@@ -5182,7 +5182,7 @@ xic:spcmd
 !!TITLE
 The spcmd Button: Execute <i>WRspice</i> Command
 !!HTML
-    <img src="spcmd.xpm">
+    <img src="spcmd.png">
     <b>Keyword</b>: <tt>spcmd</tt>
 
     <p>
@@ -5580,7 +5580,7 @@ xic:spin
 !!TITLE
 The spin Button: Rotate Objects
 !!HTML
-    <img src="spin.xpm">
+    <img src="spin.png">
     <b>Keyword</b>: <tt>spin</tt>
 
     <p>
@@ -5769,7 +5769,7 @@ xic:style
 !!TITLE
 The style Button: Set/Change Wire Style
 !!HTML 
-    <img src="style.xpm">
+    <img src="style.png">
 
     <p>
     The <b>style</b> button, available in physical mode, pops up a
@@ -5877,7 +5877,7 @@ The subct Button: Set Subcircuit Connections
     </td></tr></table>
 
     <p>
-    <img src="subct.xpm">
+    <img src="subct.png">
     <b>Keyword</b>: <tt>subct</tt>
 
     <p>
@@ -7019,7 +7019,7 @@ xic:symbl
 !!TITLE
 The symbl Button: Symbolic Representation
 !!HTML 
-    <img src="symbl.xpm">
+    <img src="symbl.png">
     <b>Keyword</b>: <tt>symbl</tt>
 
     <p>
@@ -7109,7 +7109,7 @@ xic:terms
 !!TITLE
 The terms Button: Show Subcircuit Connections
 !!HTML
-    <img src="terms.xpm">
+    <img src="terms.png">
     <b>Keyword</b>: <tt>terms</tt>
 
     <p>
@@ -7153,7 +7153,7 @@ The wire Button: Create/Edit Wires
     </td></tr></table>
 
     <p>
-    <img src="wire.xpm">
+    <img src="wire.png">
     <b>Keyword</b>: <tt>wire</tt>
 
     <p>
@@ -7565,7 +7565,7 @@ xic:xform
 !!TITLE
 Current Transform
 !!HTML 
-    <img src="xform.xpm">
+    <img src="xform.png">
     <img src="screenshots/curtrans.png" align=right>
     <b>Keyword</b>: <tt>xform</tt>
 
@@ -7790,7 +7790,7 @@ xic:xor
 !!TITLE
 The xor Button: Exclusive-OR Objects
 !!HTML
-    <img src="xor.xpm">
+    <img src="xor.png">
     <b>Keyword</b>: <tt>xor</tt>
 
     <p>
