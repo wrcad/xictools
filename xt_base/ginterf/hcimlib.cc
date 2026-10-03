@@ -486,6 +486,17 @@ IMparams::DefineViewport()
 
 
 #else
+
+// Stub for builds with no graphics toolkit (neither WIN32 nor WITH_X11):
+// IMdev::NewDraw is referenced by the IMdev vtable emitted in this
+// translation unit and must be defined to link.
+//
+GRdraw *
+IMdev::NewDraw(int)
+{
+    return (0);
+}
+
 #endif
 #endif
 #endif
