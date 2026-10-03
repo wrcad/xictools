@@ -512,7 +512,7 @@ dnl # uname -r returns the kernel release.
 dnl # uname -m is x86_64 or arm64.
         ARCH=`uname -m`
         DIST_SUFFIX="pkg"
-        SDK="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
+        SDK=`xcrun --sdk macosx --show-sdk-path 2>/dev/null || echo /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk`
 dnl # support OSX 13.0 (Ventura) and later.
         UFLAGS="-mmacosx-version-min=13.0 -arch $ARCH -isysroot $SDK"
         MALLOC='$(BASE)/lib/malloc.a'
