@@ -726,7 +726,7 @@ struct sBSIM4instance : sGENinstance, sBSIM4instancePOD
             }
             else if (m == DEV_RESTORE) {
                 if (BSIM4backing)
-                    memcpy(this, BSIM4backing, sizeof(sBSIM4instance));
+                    memcpy((void*)this, BSIM4backing, sizeof(sBSIM4instance));
             }
             else {
                 // DEV_CLEAR

@@ -148,7 +148,7 @@ public:
                 mode = m;
             }
 
-        bool operator==(const GhostCx &g)
+        bool operator==(const GhostCx &g) const
             {
                 return (type == g.type && func == g.func && x == g.x && y == g.y
                     && mode == g.mode);

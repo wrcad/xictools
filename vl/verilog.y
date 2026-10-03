@@ -3372,7 +3372,7 @@ edge_err(unsigned char a, unsigned char b)
     }
 
     char mesg[MAXSTRLEN];
-    sprintf(mesg, "Unknown edge symbol (%s%s)", as, bs);
+    snprintf(mesg, sizeof(mesg),  "Unknown edge symbol (%s%s)", as, bs);
     VP()->error(ERR_COMPILE, mesg);
 }
 

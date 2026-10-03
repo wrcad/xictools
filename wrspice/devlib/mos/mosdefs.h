@@ -392,7 +392,7 @@ struct sMOSinstance : sGENinstance, sMOSinstancePOD
             }
             else if (m == DEV_RESTORE) {
                 if (MOSbacking)
-                    memcpy(this, MOSbacking, sizeof(sMOSinstance));
+                    memcpy((void*)this, MOSbacking, sizeof(sMOSinstance));
             }
             else {
                 // DEV_CLEAR

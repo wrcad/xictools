@@ -50,11 +50,6 @@ depend:
 	            $(DEPEND_PROG) $(INCLUDE) $$a $(FILTER)>> Makefile; \
 	        done \
 	    fi; \
-	    if [ "z$(CFILES)" != "z" ]; then \
-	        for a in $(CFILES); do \
-	            $(DEPEND_PROG) $(INCLUDE) $$a $(FILTER)>> Makefile; \
-	        done \
-	    fi; \
 	fi
 
 clean:

@@ -451,7 +451,7 @@ struct sEKVinstance : sGENinstance, sEKVinstancePOD
             }
             else if (m == DEV_RESTORE) {
                 if (EKVbacking)
-                    memcpy(this, EKVbacking, sizeof(sEKVinstance));
+                    memcpy((void*)this, EKVbacking, sizeof(sEKVinstance));
             }
             else {
                 // DEV_CLEAR

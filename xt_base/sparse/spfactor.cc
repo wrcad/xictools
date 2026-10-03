@@ -1580,7 +1580,7 @@ spMatrixFrame::MarkowitzProducts(int step)
                 *pMarkowitzRow != 0)) {
             double fproduct =
                 (double)(*pMarkowitzRow++) * (double)(*pMarkowitzCol++);
-            if (fproduct >= LONG_MAX)
+            if (fproduct >= (double)LONG_MAX)
                 *pMarkowitzProduct++ = LONG_MAX;
             else
                 *pMarkowitzProduct++ = (long)fproduct;
@@ -3586,7 +3586,7 @@ spMatrixFrame::UpdateMarkowitzNumbers(spMatrixElement *pPivot)
                 (markoCol[row] > SHRT_MAX AND markoRow[row] != 0)) {
 
             double product = markoCol[row] * markoRow[row];
-            if (product >= LONG_MAX)
+            if (product >= (double)LONG_MAX)
                 MarkowitzProd[row] = LONG_MAX;
             else
                 MarkowitzProd[row] = (long)product;
@@ -3607,7 +3607,7 @@ spMatrixFrame::UpdateMarkowitzNumbers(spMatrixElement *pPivot)
             (markoCol[col] > SHRT_MAX AND markoRow[col] != 0)) {
 
             double product = markoCol[col] * markoRow[col];
-            if (product >= LONG_MAX)
+            if (product >= (double)LONG_MAX)
                 MarkowitzProd[col] = LONG_MAX;
             else
                 MarkowitzProd[col] = (long)product;

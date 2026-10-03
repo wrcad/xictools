@@ -532,26 +532,6 @@ QTviewer::tk_text_width(htmFont *fnt, const char *str, int len)
 }
 
 
-// Return a code specifying the type of visual.
-//
-CCXmode
-QTviewer::tk_visual_mode()
-{
-    QColormap::Mode m = QColormap::instance().mode();
-    if (m == QColormap::Direct)
-        return (MODE_TRUE);
-    if (m == QColormap::Indexed)
-        return (MODE_PALETTE);
-    if (m == QColormap::Gray) {
-        if (v_darea->depth() == 2)
-            return (MODE_BW);
-        else
-            return (MODE_MY_GRAY);
-    }
-    return (MODE_UNDEFINED);
-}
-
-
 // Return the color depth in use.
 //
 int

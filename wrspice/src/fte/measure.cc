@@ -1634,9 +1634,9 @@ namespace {
             Sp.ExecCmds(&wl);
             delete [] wl.wl_word;
             wl.wl_word = 0;
-            if (CP.ReturnVal() == CB_PAUSE)
+            if ((int)CP.ReturnVal() == CB_PAUSE)
                 return (RO_PAUSE);
-            if (CP.ReturnVal() == CB_ENDIT)
+            if ((int)CP.ReturnVal() == CB_ENDIT)
                 return (RO_ENDIT);
         }
         return (RO_OK);

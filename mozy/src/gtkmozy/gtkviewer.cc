@@ -998,27 +998,6 @@ gtk_viewer::tk_text_width(htmFont *font, const char *text, int len)
 }
 
 
-CCXmode
-gtk_viewer::tk_visual_mode()
-{
-    GdkVisual *vs = GTKdev::self()->Visual();
-    switch (gdk_visual_get_visual_type(vs)) {
-    case GDK_VISUAL_STATIC_GRAY:
-        return (MODE_BW);
-    case GDK_VISUAL_GRAYSCALE:
-        return (MODE_MY_GRAY);
-    case GDK_VISUAL_STATIC_COLOR:
-        return (MODE_STD_CMAP);
-    case GDK_VISUAL_PSEUDO_COLOR:
-        return (MODE_PALETTE);
-    case GDK_VISUAL_TRUE_COLOR:
-    case GDK_VISUAL_DIRECT_COLOR:
-        return (MODE_TRUE);
-    }
-    return (MODE_UNDEFINED);
-}
-
-
 int
 gtk_viewer::tk_visual_depth()
 {

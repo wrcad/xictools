@@ -1046,7 +1046,7 @@ htmWidget::drawAnchor(htmObjectTable *data, htmObjectTable *end, htmRect *rect)
         for (a_end = data; a_end && a_end != end &&
                 a_end->anchor == a_start->anchor; a_end = a_end->next)
             ;
-            return (a_end->prev);
+        return (a_end->prev);
     }
     return (data);
 }
@@ -1232,8 +1232,8 @@ htmWidget::drawTable(htmObjectTable *start, htmObjectTable *data_end,
         for (temp = start; temp && temp != data_end && temp != table->t_end;
                 temp = temp->next)
             ;
-            if (temp)
-                return (temp->prev);
+        if (temp)
+            return (temp->prev);
     }
     else if (table->t_end)
          return (table->t_end->prev);

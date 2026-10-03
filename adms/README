@@ -49,6 +49,10 @@ However, there were some changes made when building this package:
     Makefile is now configured with maintenance mode off.  Advanced
     users can turn this on in adms_wr/admsXml/Makefile.
 
+    Info: Some of the generated files, including adms.c,
+    preprocessorLex.c and preprocessorYacc.c) have been tweeked to
+    avoid some annoying compiler warnings.
+
 --------------------------------------------------------------------------
 Instructions for adding auto-generated dependencies.
 a.  In the Makefile, change the "REGEN = no" line to "REGEN = yes".

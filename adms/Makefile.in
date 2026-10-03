@@ -23,7 +23,7 @@ ADMS = ADMS-release-2.3.8.tar.gz
 ADMS_DIR = ADMS-release-2.3.8
 ADMS_SUB = adms_wr
 
-GIT := \"`git log --pretty=format:'%h' -n 1u`\"
+GIT := \"`git log --pretty=format:'%h' -n 1`\"
 IDSTR := "`./release.sh` `$(BASE)/info.sh osname` `$(BASE)/info.sh arch`"
 
 REGEN = no

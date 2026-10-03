@@ -150,6 +150,7 @@ MUTdev::loadRHS(sGENinstance *in_inst, sCKT *ckt)
     if (ckt->CKTmode & MODEDC)
         return (OK);
 
+    (void)in_inst;
     /*
     sMUTinstance *inst = (sMUTinstance*)in_inst;
 

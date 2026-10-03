@@ -1,6 +1,6 @@
 # Process this file with autoconf to produce a configure script.
 
-# AC_INIT(configure)
+AC_CONFIG_SRCDIR([configure])
 AC_INIT([xictools_adms],[VERSION],[stevew@wrcad.com])
 AC_CONFIG_SRCDIR([adms.xml])
 AC_CONFIG_AUX_DIR([auxconf])
@@ -122,6 +122,7 @@ AC_FUNC_STRTOD
 AC_CHECK_FUNCS([malloc realloc])
 AC_CHECK_FUNCS([floor memset pow putenv setenv sqrt strdup strstr strtol])
 
-AC_CONFIG_HEADER(admsXml/config.h)
-AC_OUTPUT(admsXml/Makefile)
+AC_CONFIG_HEADERS([admsXml/config.h])
+AC_CONFIG_FILES([admsXml/Makefile])
+AC_OUTPUT
 

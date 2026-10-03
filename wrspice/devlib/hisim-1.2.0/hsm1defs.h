@@ -374,7 +374,7 @@ struct sHSM1instance : sGENinstance, sHSM1instancePOD
             }
             else if (m == DEV_RESTORE) {
                 if (HSM1backing)
-                    memcpy(this, HSM1backing, sizeof(sHSM1instance));
+                    memcpy((void*)this, HSM1backing, sizeof(sHSM1instance));
             }
             else {
                 // DEV_CLEAR

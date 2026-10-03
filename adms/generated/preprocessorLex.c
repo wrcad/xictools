@@ -1533,26 +1533,26 @@ YY_DECL
         /* Create the reject buffer large enough to save one state per allowed character. */
         if ( ! (yy_state_buf) )
             (yy_state_buf) = (yy_state_type *)yyalloc(YY_STATE_BUF_SIZE  );
-            if ( ! (yy_state_buf) )
-                YY_FATAL_ERROR( "out of dynamic memory in yylex()" );
+        if ( ! (yy_state_buf) )
+            YY_FATAL_ERROR( "out of dynamic memory in yylex()" );
 
-		if ( ! (yy_start) )
-			(yy_start) = 1;	/* first start state */
+        if ( ! (yy_start) )
+                (yy_start) = 1;	/* first start state */
 
-		if ( ! yyin )
-			yyin = stdin;
+        if ( ! yyin )
+                yyin = stdin;
 
-		if ( ! yyout )
-			yyout = stdout;
+        if ( ! yyout )
+                yyout = stdout;
 
-		if ( ! YY_CURRENT_BUFFER ) {
-			yyensure_buffer_stack ();
-			YY_CURRENT_BUFFER_LVALUE =
-				yy_create_buffer( yyin, YY_BUF_SIZE );
-		}
+        if ( ! YY_CURRENT_BUFFER ) {
+                yyensure_buffer_stack ();
+                YY_CURRENT_BUFFER_LVALUE =
+                        yy_create_buffer( yyin, YY_BUF_SIZE );
+        }
 
-		yy_load_buffer_state(  );
-		}
+        yy_load_buffer_state(  );
+            }
 
 	{
 #line 255 "preprocessorLex.l"
@@ -2891,7 +2891,7 @@ static int yy_get_next_buffer (void)
 	if ( ! yy_is_jam )
 		*(yy_state_ptr)++ = yy_current_state;
 
-		return yy_is_jam ? 0 : yy_current_state;
+	return yy_is_jam ? 0 : yy_current_state;
 }
 
 #ifndef YY_NO_UNPUT

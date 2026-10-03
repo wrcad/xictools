@@ -14,6 +14,7 @@ LINKCC = @LINKCC@
 CFLAGS = @CFLAGS_S@ @UFLAGS@
 LSHFLAG = @LSHFLAG@
 DEPEND_PROG = @DEPEND_PROGXX@ @CFLAGS_S@
+DEPEND_CPROG = @DEPEND_PROG@ @CFLAGS_S@
 FILTER = @FILTER@
 PIC_OPT = @PIC_OPT@
 SOEXT = @SOEXT@
@@ -53,7 +54,7 @@ depend: $(COPYFILES)
 	    fi; \
 	    if [ "z$(CFILES)" != "z" ]; then \
 	        for a in $(CFILES); do \
-	            $(DEPEND_PROG) $(INCLUDE) $$a $(FILTER)>> Makefile; \
+	            $(DEPEND_CPROG) $(INCLUDE) $$a $(FILTER)>> Makefile; \
 	        done \
 	    fi; \
 	fi

@@ -447,7 +447,7 @@ struct sVBICinstance : sGENinstance, sVBICinstancePOD
             }
             else if (m == DEV_RESTORE) {
                 if (VBICbacking)
-                    memcpy(this, VBICbacking, sizeof(sVBICinstance));
+                    memcpy((void*)this, VBICbacking, sizeof(sVBICinstance));
             }
             else {
                 // DEV_CLEAR

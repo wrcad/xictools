@@ -516,6 +516,10 @@ dnl # the operating system relese plus 10.
     set -- $kern
     IFS=$tifs
     macmaj=$(($1 + 1))
+    if test $macmaj -ge 28; then
+        macmaj=$(($macmaj - 1))
+dnl #   Golden Gate, OS and Kernel release both 27.
+    fi
     if test $macmaj -ge 13; then
         OSNAME="Darwin"
 dnl # uname -m is x86_64 or arm64.

@@ -2183,8 +2183,10 @@ yyreduce:
   case 73: /* R_define_alternative: R_define TK_DEFINE_END  */
 #line 686 "preprocessorYacc.y"
           {
+            /*
             p_preprocessor_pragma_define Define;
             if(DONT_SKIPP) Define=adms_preprocessor_define_add((yyvsp[-1].mystr));
+            */
             (yyval.slist)=NULL;
           }
 #line 2191 "y.tab.c"
@@ -2193,8 +2195,10 @@ yyreduce:
   case 74: /* R_define_alternative: R_define R_define_text TK_DEFINE_END  */
 #line 692 "preprocessorYacc.y"
           {
+            /*
             p_preprocessor_pragma_define Define;
             if(DONT_SKIPP) Define=adms_preprocessor_define_add_with_text((yyvsp[-2].mystr), (yyvsp[-1].slist));
+            */
             (yyval.slist)=NULL;
           }
 #line 2201 "y.tab.c"
@@ -2203,8 +2207,10 @@ yyreduce:
   case 75: /* R_define_alternative: R_define TK_ARG_NULL TK_DEFINE_END  */
 #line 698 "preprocessorYacc.y"
           {
+            /*
             p_preprocessor_pragma_define Define;
             if(DONT_SKIPP) Define=adms_preprocessor_define_add_with_arg((yyvsp[-2].mystr), NULL);
+            */
             (yyval.slist)=NULL;
           }
 #line 2211 "y.tab.c"
@@ -2213,8 +2219,10 @@ yyreduce:
   case 76: /* R_define_alternative: R_define TK_ARG_NULL R_define_text TK_DEFINE_END  */
 #line 704 "preprocessorYacc.y"
           {
+            /*
             p_preprocessor_pragma_define Define;
             if(DONT_SKIPP) Define=adms_preprocessor_define_add_with_arg_and_text((yyvsp[-3].mystr), NULL, (yyvsp[-1].slist));
+            */
             (yyval.slist)=NULL;
           }
 #line 2221 "y.tab.c"
@@ -2223,8 +2231,10 @@ yyreduce:
   case 77: /* R_define_alternative: R_define R_define_list_of_arg TK_DEFINE_END  */
 #line 710 "preprocessorYacc.y"
           {
+            /*
             p_preprocessor_pragma_define Define;
             if(DONT_SKIPP) Define=adms_preprocessor_define_add_with_arg((yyvsp[-2].mystr), (yyvsp[-1].slist));
+            */
             (yyval.slist)=NULL;
           }
 #line 2231 "y.tab.c"
@@ -2233,8 +2243,10 @@ yyreduce:
   case 78: /* R_define_alternative: R_define R_define_list_of_arg R_define_text TK_DEFINE_END  */
 #line 716 "preprocessorYacc.y"
           {
+            /*
             p_preprocessor_pragma_define Define;
             if(DONT_SKIPP) Define=adms_preprocessor_define_add_with_arg_and_text((yyvsp[-3].mystr), (yyvsp[-2].slist), (yyvsp[-1].slist));
+            */
             (yyval.slist)=NULL;
           }
 #line 2241 "y.tab.c"

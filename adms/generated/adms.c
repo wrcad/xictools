@@ -1953,7 +1953,7 @@ p_blockvariable adms_module_list_blockvariable_lookup_by_id (p_module mymymodule
   p_slist list=mymymodule->_blockvariable;
   while(list) {
     p_blockvariable refblockvariable=(p_blockvariable)list->data;
-    if((refblockvariable->_block==myblock))
+    if(refblockvariable->_block==myblock)
       return refblockvariable;
     list=list->next;
   }

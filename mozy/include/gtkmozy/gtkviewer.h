@@ -204,7 +204,6 @@ namespace gtkinterf {
         void tk_set_font(htmFont*);
         int tk_text_width(htmFont*, const char*, int);
 
-        CCXmode tk_visual_mode();
         int tk_visual_depth();
         htmPixmap *tk_new_pixmap(int, int);
         void tk_release_pixmap(htmPixmap*);

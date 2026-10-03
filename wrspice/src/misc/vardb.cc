@@ -271,8 +271,8 @@ variable::varwl(const char *unit) const
             // If the number represents an integer without units, print
             // as an integer.
             double d = va.v_real;
-            if ((!unit || !*unit) && d <= LLONG_MAX && d >= LLONG_MIN &&
-                    d == (int64_t)d)
+            if ((!unit || !*unit) && d <= (double)LLONG_MAX &&
+                    d >= (double)LLONG_MIN && d == (double)(int64_t)d)
                 snprintf(buf, sizeof(buf), "%" PRId64, (int64_t)d);
             else
                 strcpy(buf, SPnum.printnum(d, unit));

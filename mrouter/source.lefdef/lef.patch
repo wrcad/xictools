@@ -499,7 +499,7 @@ diff -r -c source.lefdef/lef.orig/lef/crypt.cpp lef/lef/crypt.cpp
 ! 
 diff -r -c source.lefdef/lef.orig/lef/lef.y lef/lef/lef.y
 *** source.lefdef/lef.orig/lef/lef.y	Fri Feb  5 14:39:14 2016
---- lef/lef/lef.y	Mon Jun  1 15:19:43 2026
+--- lef/lef/lef.y	Wed Sep 30 14:59:19 2026
 ***************
 *** 2,7 ****
 --- 2,12 ----

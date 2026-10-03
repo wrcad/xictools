@@ -698,7 +698,7 @@ struct sB3SOIinstance : sGENinstance, sB3SOIinstancePOD
             }
             else if (m == DEV_RESTORE) {
                 if (B3SOIbacking)
-                    memcpy(this, B3SOIbacking, sizeof(sB3SOIinstance));
+                    memcpy((void*)this, B3SOIbacking, sizeof(sB3SOIinstance));
             }
             else {
                 // DEV_CLEAR

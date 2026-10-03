@@ -1755,11 +1755,11 @@ sCHECKprms::evaluate()
 
         // update windows first call only
         out_cir->controlBlk().exec(ch_evalcnt == 0 ? true : false);
-        if (CP.ReturnVal() == CB_PAUSE) {
+        if ((int)CP.ReturnVal() == CB_PAUSE) {
             // failure indication
             ;
         }
-        else if (CP.ReturnVal() == CB_ENDIT) {
+        else if ((int)CP.ReturnVal() == CB_ENDIT) {
             // end analysis
             ret = CBendit;
         }

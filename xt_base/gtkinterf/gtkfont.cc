@@ -159,23 +159,24 @@ GTKfont::setName(const char *name, int fnum)
                 stringlist::destroy(style);
                 style = 0;
             }
-            char buf[256];
-            char *s = lstring::stpcpy(buf, family);
+
+            sLstr lstr;
+            lstr.add(family);
             for (stringlist *sl = style; sl; sl = sl->next) {
-                *s++ = ' ';
-                s = lstring::stpcpy(s, sl->string);
+                lstr.add_c(' ');
+                lstr.add(sl->string);
             }
-            int len = strlen(s);
-            snprintf(s, sizeof(buf) - len, " %d", sz);
-            delete family;
+            lstr.add_c(' ');
+            lstr.add_i(sz);
+
+            delete [] family;
             stringlist::destroy(style);
-            name = buf;
 
             delete [] fonts[fnum].name;
             // Don't allow a proportional font in a fixed entry.
-            if (isFixed(fnum) && !is_fixed(name))
+            if (isFixed(fnum) && !is_fixed(lstr.string()))
                 return;
-            fonts[fnum].name = lstring::copy(name);
+            fonts[fnum].name = lstr.string_trim();
         }
         last_index = fnum;  // stupid thing for gtkviewer.cc
         refresh(fnum);

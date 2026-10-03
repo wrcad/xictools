@@ -881,7 +881,7 @@ struct sB4SOIinstance : sGENinstance, sB4SOIinstancePOD
             }
             else if (m == DEV_RESTORE) {
                 if (B4SOIbacking)
-                    memcpy(this, B4SOIbacking, sizeof(sB4SOIinstance));
+                    memcpy((void*)this, B4SOIbacking, sizeof(sB4SOIinstance));
             }
             else {
                 // DEV_CLEAR

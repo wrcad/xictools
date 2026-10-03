@@ -370,7 +370,7 @@ struct sBJTinstance : sGENinstance, sBJTinstancePOD
             }
             else if (m == DEV_RESTORE) {
                 if (BJTbacking)
-                    memcpy(this, BJTbacking, sizeof(sBJTinstance));
+                    memcpy((void*)this, BJTbacking, sizeof(sBJTinstance));
             }
             else {
                 // DEV_CLEAR

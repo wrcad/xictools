@@ -176,7 +176,7 @@ CC = /mingw64/bin/gcc
 LINKCC = /mingw64/bin/g++ -static-libgcc -static-libstdc++
 CFLAGS = -O2 -Wall -W -Wshadow -Wwrite-strings -pthread 
 LSHFLAG = -shared -Wl,--enable-auto-import,--export-all-symbols
-DEPEND_PROG = $(CC) -MM -O2 -Wall -W -Wshadow -Wwrite-strings -pthread
+DEPEND_PROG = $(CXX) -MM -O2 -Wall -W -Wshadow -Wwrite-strings -pthread
 FILTER = 
 PIC_OPT = 
 SOEXT = dll
@@ -190,7 +190,7 @@ CC = gcc
 LINKCC = $(CXX)
 CFLAGS = @CFLAGS_S@ @UFLAGS@
 LSHFLAG = -dynamiclib -undefined dynamic_lookup
-DEPEND_PROG = $(CC) -MM
+DEPEND_PROG = $(CXX) -MM -O3 -Wall -W -Wshadow -Wwrite-strings -pthread
 FILTER = 
 PIC_OPT = 
 SOEXT = dylib
@@ -204,7 +204,7 @@ CC = gcc
 LINKCC = $(CXX)
 CFLAGS = -O3 -Wall -W -Wshadow -Wwrite-strings -pthread 
 LSHFLAG = -shared
-DEPEND_PROG = $(CC) -MM
+DEPEND_PROG = $(CXX) -MM -O3 -Wall -W -Wshadow -Wwrite-strings -pthread
 FILTER = 
 PIC_OPT = -fPIC
 SOEXT = so
@@ -217,7 +217,7 @@ CC = gcc -m32 -march=$(ARCH)
 LINKCC = $(CXX)
 CFLAGS = -O3 -Wall -W -Wshadow -Wwrite-strings -pthread
 LSHFLAG = -shared
-DEPEND_PROG = $(CC) -MM -O3 -Wall -W -Wshadow -Wwrite-strings -pthread
+DEPEND_PROG = $(CXX) -MM -O3 -Wall -W -Wshadow -Wwrite-strings -pthread
 FILTER =
 PIC_OPT = -fPIC
 SOEXT = so
@@ -289,11 +289,6 @@ depend:
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    if [ "z$(CCFILES)" != "z" ]; then \
 	        for a in $(CCFILES); do \
-	            $(DEPEND_PROG) $(INCLUDE) $$a $(FILTER)>> Makefile; \
-	        done \
-	    fi; \
-	    if [ "z$(CFILES)" != "z" ]; then \
-	        for a in $(CFILES); do \
 	            $(DEPEND_PROG) $(INCLUDE) $$a $(FILTER)>> Makefile; \
 	        done \
 	    fi; \

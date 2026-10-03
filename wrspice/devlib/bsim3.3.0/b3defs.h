@@ -389,7 +389,7 @@ struct sBSIM3instance : sGENinstance, sBSIM3instancePOD
             }
             else if (m == DEV_RESTORE) {
                 if (BSIM3backing)
-                    memcpy(this, BSIM3backing, sizeof(sBSIM3instance));
+                    memcpy((void*)this, BSIM3backing, sizeof(sBSIM3instance));
             }
             else {
                 // DEV_CLEAR

@@ -176,18 +176,6 @@ namespace htm
         MARKER_CIRCLE
     };
 
-    // htmWidget::tk_visual_mode() return
-    //
-    enum CCXmode
-    {
-        MODE_UNDEFINED,     // unknown
-        MODE_BW,            // default B/W
-        MODE_STD_CMAP,      // has a standard colormap
-        MODE_TRUE,          // is a TrueColor/DirectColor visual
-        MODE_MY_GRAY,       // my grayramp
-        MODE_PALETTE        // has a pre-allocated palette
-    };
-
     // Mime code
     enum mimeID
     {
@@ -894,7 +882,6 @@ public:
     virtual void tk_set_font(htmFont*) = 0;
     virtual int tk_text_width(htmFont*, const char*, int) = 0;
 
-    virtual CCXmode tk_visual_mode() = 0;
     virtual int tk_visual_depth() = 0;
     virtual htmPixmap *tk_new_pixmap(int, int) = 0;
     virtual void tk_release_pixmap(htmPixmap*) = 0;
