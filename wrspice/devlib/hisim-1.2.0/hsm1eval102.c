@@ -469,7 +469,7 @@ double  vtol_pprv = 5.0e-2 ;
 double  Vbsc_dif , Vdsc_dif , Vgsc_dif , sum_vdif ;
 double  Rs , Rd ;
 double  Fbs , Fds , Fgs ;
-double  DJ , DJI ;
+double  DJ , DJI=0.0 ;
 double  JI11 , JI12 , JI13 , JI21 , JI22 , JI23 , JI31 , JI32 , JI33 ;
 double  dVbs=0.0 , dVds=0.0 , dVgs=0.0 ;
 double  dV_sum ;

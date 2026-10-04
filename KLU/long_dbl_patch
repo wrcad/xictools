@@ -19,6 +19,15 @@ diff -ru ../KLU.orig/COLAMD/Source/colamd.c ./COLAMD/Source/colamd.c
      Int stats [COLAMD_STATS]
  )
  {
+@@ -3221,7 +3221,7 @@
+                     method, INDEX (i1))) ;
+ 
+ 	    /* no break - fall through to next case instead */
+-
++        /* fall through */
+ 	case COLAMD_OK:
+ 
+             SUITESPARSE_PRINTF(("\n")) ;
 diff -ru ../KLU.orig/KLU/Include/klu.h ./KLU/Include/klu.h
 --- ../KLU.orig/KLU/Include/klu.h	2015-07-13 12:33:32.000000000 -0700
 +++ ./KLU/Include/klu.h	2019-02-02 13:24:24.507552399 -0800

@@ -326,8 +326,8 @@ B3SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double ExpVbsNVtm, dExpVbsNVtm_dVb, dExpVbsNVtm_dT;
     double ExpVbdNVtm, dExpVbdNVtm_dVb, dExpVbdNVtm_dVd, dExpVbdNVtm_dT;
     double Ien, dIen_dT, Iendif, dIendif_dT;
-    double Ibsdif, dIbsdif_dVb, dIbsdif_dT;
-    double Ibddif, dIbddif_dVb, dIbddif_dVd, dIbddif_dT;
+    double Ibsdif=0.0, dIbsdif_dVb=0.0, dIbsdif_dT=0.0;
+    double Ibddif=0.0, dIbddif_dVb=0.0, dIbddif_dVd=0.0, dIbddif_dT=0.0;
     double Ehlis, dEhlis_dVb, dEhlis_dT;
     double EhlisFactor, dEhlisFactor_dVb, dEhlisFactor_dT;
     double Ehlid, dEhlid_dVb, dEhlid_dVd, dEhlid_dT;
@@ -345,7 +345,7 @@ B3SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double Delt_vthzb, dDelt_vthzb_dT;
     double DeltVthwzb, dDeltVthwzb_dT;
     double DeltVthtempzb, dDeltVthtempzb_dT;
-    double Vthzb, dVthzb_dT, Vfbzb=0, dVfbzb_dT;
+    double Vthzb=0.0, dVthzb_dT=0.0, Vfbzb=0.0, dVfbzb_dT;
 
     /* v3.2 */
     double noff, dnoff_dVd, dnoff_dVb;

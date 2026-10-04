@@ -425,7 +425,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double delvges, delvgms;
 #endif
     double gcgmgmb=0.0, gcgmdb, gcgmsb, gcdgmb, gcsgmb;
-    double gcgmeb, gcegmb, qgme, qgmid, ceqqgmid;
+    double gcgmeb, gcegmb, qgme, qgmid=0.0, ceqqgmid;
     double gcgbb;
     double vgge, vggm;
 

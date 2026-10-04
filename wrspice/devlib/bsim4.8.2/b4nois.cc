@@ -204,8 +204,8 @@ BSIM4dev::noise(int mode, int operation, sGENmodel *genmod, sCKT *ckt,
     double tmp=0.0, gdpr, gspr, npart_theta=0.0, npart_beta=0.0, igsquare, bodymode;
 
     /* tnoiMod=2 (v4.7) */
-    double eta, Leff, Lvsat, gamma, delta, epsilon, GammaGd0;
-    double npart_c, sigrat, C0, omega, ctnoi/*, tau*/;
+    double eta, Leff, Lvsat, gamma, delta, epsilon, GammaGd0=0.0;
+    double npart_c, sigrat=0.0, C0, omega, ctnoi=0.0/*, tau*/;
 
     int /*error,*/ i;
 
