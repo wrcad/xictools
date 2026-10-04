@@ -223,6 +223,7 @@ install_test::
 # Settings/Update & Security/For Developers
 
 install_links::
+	@$(BASE)/util/mkdirpth $(toolbin)
 	@if [ -n "$(EXESUFFIX)" ]; then \
 	    $(BASE)/util/make_link $(toolbin)/hlp2latex$(EXESUFFIX) \
  $(dst_bin)/hlp2latex$(EXESUFFIX); \
