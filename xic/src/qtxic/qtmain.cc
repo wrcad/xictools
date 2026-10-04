@@ -72,7 +72,6 @@
 #include "cd_celldb.h"
 #include "miscutil/pathlist.h"
 #include "miscutil/tvals.h"
-#include "help/help_context.h"
 #include "qtinterf/qtidleproc.h"
 #ifdef HAVE_MOZY
 #include "editif.h"
