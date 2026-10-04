@@ -325,7 +325,7 @@ main(int argc, char **argv)
     // in 64-bit mode, 299 in 80-bit mode.  For this reason, we used
     // to use 64-bit mode.
 
-#ifdef __arm64__
+#if defined(__arm64__) || defined(__aarch64__)
 #define __control_word __fpcr
 #else
 #if defined(__FreeBSD__) || defined(__APPLE__)
