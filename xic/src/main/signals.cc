@@ -306,6 +306,10 @@ namespace {
                 if (uc)
                     DeathAddr =
                         (void*)((ucontext_t*)uc)->uc_mcontext.gregs[REG_RIP];
+#elif defined(__aarch64__)
+                // aarch64: mcontext_t has pc directly, no gregs
+                if (uc)
+                    DeathAddr = (void*)((ucontext_t*)uc)->uc_mcontext.pc;
 #else
                 // x86
 #ifndef REG_EIP
