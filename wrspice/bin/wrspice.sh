@@ -52,6 +52,12 @@ if [ $(basename $mypath) == bin ]; then
 fi 
 # Otherwise, as in installed area, go to ../wrspice/bin.
 mypath=$(dirname $mypath)/wrspice/bin
+# No-graphics build: fall back to the plain binary when no toolkit
+# subdirectory exists.
+if [ ! -x $mypath/$grpref/wrspice ]; then
+    $mypath/wrspice $*
+    exit $?
+fi
 $mypath/$grpref/wrspice $*
 exit $?
 
