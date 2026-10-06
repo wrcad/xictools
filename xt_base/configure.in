@@ -525,7 +525,9 @@ dnl #   Golden Gate, OS and Kernel release both 27.
 dnl # uname -m is x86_64 or arm64.
         ARCH=`uname -m`
         DIST_SUFFIX="pkg"
-        SDK="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
+dnl #   SDK="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
+        SDK=`xcrun --sdk macosx --show-sdk-path 2>/dev/null || \
+            echo /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk`
         echo Minimum MacOS version $macmaj.0
         UFLAGS="-mmacos-version-min=$macmaj.0 -arch $ARCH -isysroot $SDK"
         MALLOC='$(BASE)/lib/malloc.a'
