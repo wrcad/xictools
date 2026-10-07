@@ -174,6 +174,64 @@ End of general info.
 
 
 ===============================================================================
+xic-4.3.15  10/07/2026
+Current Release
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Added dots to the Josephson junction schematic symbol to match the
+  new official IEEE symbol.
+
+* Replaced all XPM image files that were exported with Xic/WRspice with
+  PNG format equivalents, since the XPM format is becoming obsolete.
+
+* New help file syntax allows Latex and HTML text blocks to be saved
+  in the same files.  Thus help system and manual text blocks are now
+  combined in the help files which is more convenient than separate
+  files for keeping text blocks in sync.  The new hlp2latex utility
+  can be used to extract Latex text from the help system.
+
+* The CSDF file format is no longer supported in HSPICE and WaveView.
+  WaveView can read rawfile format so this can be used when inter-
+  operability is needed.  Google says that The SIMetrex SIMPLIS
+  waveform viewer has CSDF support, as do InfineonSpice, TopSpice,
+  PSpice and Intusoft Intuscope.
+
+* A new prompt now appears when saving a cell after undoing symbolic
+  mode, to optionally revert symbolic mode.  It was too easy to forget
+  to do this.
+
+* Ported to macOS-27 Golden Gate.
+
+* Integration of executables using GTK and QT into the same package file
+  or installation location.  Set which graphical package to run using
+  a ".xtrc" file that you create using a text editor, either in the
+  home or current directories.  The .xtrc file contains a single line
+  that looks like
+
+  grpref=GTK2
+
+  Note that there is no white space around the '=' character.  The GTK2
+  is replaced by QT5 or QT6 when you want to run Qt.  The 5/6 corresponds
+  to the Qt version, either of which can be used if you build from source.
+  For the packages, the Qt versions included are
+  Windows     QT6
+  macOS       QT6
+  all Linux   QT5
+
+  You can change which version to run by modifying the .xtrc file with a
+  text editor.  This will take effect the next time a graphical tool is
+  started.
+
+
+BUGS FIXED
+---- -----
+
+* Many misc. small bugs fixed.
+
+
+-------------------------------------------------------------------------------
 xic-4.3.14  08/18/2024
 Current Release
 

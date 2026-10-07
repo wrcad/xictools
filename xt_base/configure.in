@@ -10,11 +10,6 @@ dnl ***
 AC_INIT
 AC_CONFIG_SRCDIR([configure])
 
-linux32=no
-if test "`uname -m`" = i686; then
-    linux32=yes;
-fi
-
 dnl --enable-toolroot=dirname
 dnl Set top of installation root directory name.
 toolroot="xictools"
@@ -35,6 +30,10 @@ if test $enable_itopok = yes; then
 fi
 )
 
+dnl Deal with building 32-bit executables on 64-bit linux installations.
+dnl This is probably obsolete - does anyone want this?
+dnl This is ignored except for Intel CPUs.
+
 dnl --enable-force32
 dnl Force 32-bit build on 64-bit systems.
 force32="no"
@@ -45,9 +44,15 @@ if test $enable_force32 = yes; then
 fi
 )
 
+uname_m=`uname -m`
+linux32=no
+if test $uname_m = i686 -o $uname_m = i386; then
+    linux32=yes;
+fi
+
 dnl Set the -m32 flag to build for 32-bits, which is GNU-specific.
 if test $linux32 = no; then
-    if test "`uname -m`" = x86_64; then
+    if test $uname_m = x86_64; then
         if test $force32 = yes; then
             flags32="-m32 -march=i686"
             linux32=yes
@@ -498,7 +503,7 @@ MINGW)
     fi
     MALLOC=
     OSNAME="MINGW"
-    ARCH=`uname -m`
+    ARCH=$uname_m
     DIST_SUFFIX="exe"
     INSTALL='$(BASE)/util/install-sh'
     lib_dirs="/usr/lib /usr/local/lib"
@@ -522,8 +527,8 @@ dnl #   Golden Gate, OS and Kernel release both 27.
     fi
     if test $macmaj -ge 13; then
         OSNAME="Darwin"
-dnl # uname -m is x86_64 or arm64.
-        ARCH=`uname -m`
+dnl # uname_m is x86_64 or arm64.
+        ARCH=$uname_m
         DIST_SUFFIX="pkg"
 dnl #   SDK="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
         SDK=`xcrun --sdk macosx --show-sdk-path 2>/dev/null || \
@@ -543,7 +548,7 @@ dnl #   SDK="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platfor
 ;;
 Linux)
     OSNAME="LinuxUnknown"
-    ARCH=`uname -m`
+    ARCH=$uname_m
     DIST_SUFFIX="unknown"
     if test -f /etc/redhat-release; then
         dst=`rpm -qf /etc/redhat-release`
