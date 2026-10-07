@@ -38,6 +38,7 @@
  $Id:$
  *========================================================================*/
 
+#include "config.h"
 #include "qtinterf.h"
 #include "qtfile.h"
 #include "qtfont.h"
@@ -1760,6 +1761,20 @@ QTbag::SetErrorLogName(const char *fname)
 {
     QTtextDlg::set_error_log(fname);
 }
+
+
+#ifndef HAVE_MOZY
+
+// Resolve help pop-up when mozy is not included.
+//
+bool
+QTbag::PopUpHelp(const char*)
+{
+    PopUpErr(MODE_ON, "Help system is not available in this executable.");
+    return (false);
+}
+
+#endif
 
 
 // Static function.
