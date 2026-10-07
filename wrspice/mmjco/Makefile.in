@@ -19,8 +19,11 @@ EXESUFFIX = @EXESUFFIX@
 FILTER = @FILTER@
 
 ifeq ($(OSNAME),Darwin)
-	GSL = -L/opt/local/lib
-	INCLUDE = -I/opt/local/include
+	# Default to the MacPorts prefix, but allow the build environment
+	# to override for non-MacPorts systems (Homebrew, Spack, custom
+	# prefixes): make GSL="-L/prefix/lib" INCLUDE="-I/prefix/include".
+	GSL ?= -L/opt/local/lib
+	INCLUDE ?= -I/opt/local/include
 endif
 
 CCFILES = mmjco.cc mmjco_cmds.cc mmjco_tempr.cc mmjco_tscale.cc
@@ -28,7 +31,7 @@ CCOBJS = $(CCFILES:.cc=.o)
 
 
 mmjco: ./cmpfit-1.4/libmpfit.a libmmjco.a main.cc
-	g++ $(CFLAGS) $(INCLUDE) -o mmjco main.cc -L. -lmmjco $(GSL) \
+	$(CXX) $(CFLAGS) $(INCLUDE) -o mmjco main.cc -L. -lmmjco $(GSL) \
  -lgsl -lgslcblas ../../xt_base/lib/miscutil.a -L./cmpfit-1.4 -lmpfit -lm
 
 libmmjco.a: $(CCOBJS)
@@ -36,16 +39,16 @@ libmmjco.a: $(CCOBJS)
 	ranlib libmmjco.a
 
 mmjco.o: mmjco.cc mmjco.h
-	g++ $(CFLAGS) $(INCLUDE) -I./cmpfit-1.4 -c mmjco.cc
+	$(CXX) $(CFLAGS) $(INCLUDE) -I./cmpfit-1.4 -c mmjco.cc
 
 mmjco_cmds.o: mmjco_cmds.cc mmjco_cmds.h mmjco.h mmjco_tempr.h mmjco_tscale.h
-	g++ $(CFLAGS) $(INCLUDE) -I./cmpfit-1.4 -c mmjco_cmds.cc
+	$(CXX) $(CFLAGS) $(INCLUDE) -I./cmpfit-1.4 -c mmjco_cmds.cc
 
 mmjco_tempr.o: mmjco_tempr.cc mmjco_tempr.h
-	g++ $(CFLAGS) $(INCLUDE) -c mmjco_tempr.cc
+	$(CXX) $(CFLAGS) $(INCLUDE) -c mmjco_tempr.cc
 
 mmjco_tscale.o: mmjco_tscale.cc mmjco_tscale.h
-	g++ $(CFLAGS) $(INCLUDE) -c mmjco_tscale.cc
+	$(CXX) $(CFLAGS) $(INCLUDE) -c mmjco_tscale.cc
 
 ./cmpfit-1.4/libmpfit.a:
 	$(MAKE) -C cmpfit-1.4
