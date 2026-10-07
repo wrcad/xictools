@@ -82,6 +82,11 @@ int main(int argc, char **argv)
         printf("mmjco> ");
         fflush(stdout);
         char *s = fgets(buf, 256, stdin);
+        if (!s) {
+            // Exit gracefully at end of file.
+            printf("\n");
+            break;
+        }
         mmjco_cmds::get_av(av, &ac, s);
         if (ac < 1)
             continue;
