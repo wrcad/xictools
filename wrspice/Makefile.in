@@ -449,6 +449,9 @@ $(destn)/bin::
 	done
 	@$(INSTALL_BIN) mmjco/mmjco$(EXESUFFIX) $@
 	@$(INSTALL_SCRIPT) bin/wrspice.sh $@
+	-@if [ -f bin/wrspice$(EXESUFFIX) ]; then \
+	    $(INSTALL_BIN) bin/wrspice$(EXESUFFIX) $@; \
+	fi
 	-@if [ -n "$(EXESUFFIX)" ]; then \
 	    cp -f $(BASE)/util/program.bat $@/wrspice.bat; \
 	fi
