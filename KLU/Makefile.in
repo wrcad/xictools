@@ -169,19 +169,24 @@ patch: unpack
 
 depend: unpack patch
 
-AMD/Lib/libamd.a ::
+# Ensure source is unpacked before building libraries.
+AMD/Lib/libamd.a: AMD/Lib
 	@$(MAKE) -C AMD/Lib CC="$(CC)" CF="$(CFLAGS)"
 
-BTF/Lib/libbtf.a ::
+BTF/Lib/libbtf.a: BTF/LIB
 	@$(MAKE) -C BTF/Lib CC="$(CC)" CF="$(CFLAGS)"
 
-COLAMD/Lib/libcolamd.a ::
+COLAMD/Lib/libcolamd.a: COLAMD/Lib
 	@$(MAKE) -C COLAMD/Lib CC="$(CC)" CF="$(CFLAGS)"
 
-KLU/Lib/libklu.a ::
+KLU/Lib/libklu.a: KLU/Lib
 	@$(MAKE) -C KLU/Lib CC="$(CC)" CF="$(CFLAGS)"
 
-SuiteSparse_config/SuiteSparse_config.o : \
+# These directory targets trigger unpack/patch if directories don't exist.
+AMD/Lib BTF/Lib COLAMD/Lib KLU/Lib SuiteSparse_config:
+	@$(MAKE) patch
+
+SuiteSparse_config/SuiteSparse_config.o : SuiteSparse_config \
  SuiteSparse_config/SuiteSparse_config.c
 	$(CC) $(CFLAGS) -c SuiteSparse_config/SuiteSparse_config.c -o $@
 
