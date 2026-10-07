@@ -11,7 +11,9 @@ MAINTAINER = @MAINTAINER@
 
 DEFS = -DHAVE_CONFIG_H  -DinsideElement -DinsidePreprocessor -DinsideVeriloga
 CPPFLAGS = -g -Wall
-CFLAGS = $(DEFS) $(CPPFLAGS) -I. -fcommon
+# admsXml is K&R-era C; autoconf 2.7x configure appends -std=gnu23, which
+# breaks the old prototype-less declarations.  Force gnu89 (last -std wins).
+CFLAGS = $(DEFS) $(CPPFLAGS) -I. -fcommon -std=gnu89
 
 CFILES = adms.c preprocessorLex.c preprocessorMain.c preprocessorYacc.c \
   verilogaYacc.c verilogaLex.c admstpathYacc.c
