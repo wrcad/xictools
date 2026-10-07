@@ -543,7 +543,7 @@ dnl #   SDK="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platfor
 ;;
 Linux)
     OSNAME="LinuxUnknown"
-    ARCH="x86_64"
+    ARCH=`uname -m`
     DIST_SUFFIX="unknown"
     if test -f /etc/redhat-release; then
         dst=`rpm -qf /etc/redhat-release`
@@ -593,7 +593,6 @@ dnl         # No number found in major, try minor.
                 ac_x_libraries=`echo $ac_libraries | sed -e s/lib64/lib/g`
                 lib_dirs="/usr/lib"
             else
-                ARCH="x86_64"
                 lib_dirs="/usr/lib64"
             fi
             case $major in
@@ -661,7 +660,6 @@ dnl         # First version number.  Have to strip quotes.
             ac_x_libraries=`echo $ac_libraries | sed -e s/lib64/lib/g`
             lib_dirs="/usr/lib"
         else
-            ARCH="x86_64"
             lib_dirs="/usr/lib64"
         fi
     fi
