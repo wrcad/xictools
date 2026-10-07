@@ -481,11 +481,20 @@ IMparams::DefineViewport()
     SetColor(GRappIf()->BackgroundPixel());
     Box(0, 0, pm_dev->width, pm_dev->height);
 }
-
 // End of IMparams functions
 
-
 #else
+
+// Stub for builds with no graphics toolkit (neither WIN32 nor WITH_X11):
+// IMdev::NewDraw is referenced by the IMdev vtable emitted in this
+// translation unit and must be defined to link.
+//
+GRdraw *
+IMdev::NewDraw(int)
+{
+    return (0);
+}
+
 #endif
 #endif
 #endif
