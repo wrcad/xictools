@@ -24,7 +24,7 @@ package::
 	        echo "Error: $$osname exists and is not a symbolic link"; \
 	        exit; \
 	    fi; \
-            if [ ! -L $$osname ]; then ln -s osxpkg $$osname; fi ;; \
+            if [ ! -L $$osname ]; then ln -s macOS $$osname; fi ;; \
 	Linux*) \
 	    if [ -e $$osname -a ! -L $$osname ]; then \
 	        echo "Error: $$osname exists and is not a symbolic link"; \
@@ -54,7 +54,7 @@ package::
 
 clean::
 	-@if [ -d dpkg ]; then cd dpkg; $(MAKE) clean; fi
-	-@if [ -d osxpkg ]; then cd osxpkg; $(MAKE) clean; fi
+	-@if [ -d macOS ]; then cd macOS; $(MAKE) clean; fi
 	-@if [ -d rpm ]; then cd rpm; $(MAKE) clean; fi
 	-@if [ -d MINGW ]; then cd MINGW; $(MAKE) clean; fi
 	-@rm -rf root

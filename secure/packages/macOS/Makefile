@@ -1,7 +1,7 @@
 BASE = ../../../xt_base
 
-APPNAME = xictools_fastcap
-SUBDIRS = bin fastcap
+APPNAME = xictools_xtlserv
+SUBDIRS = bin license
 
 VERSION = `../../release.sh`
 PKGFILE = $(APPNAME)-$(OSNAME)-$(VERSION)-$(ARCH).pkg
@@ -19,6 +19,12 @@ package::
 	fi
 	sudo $(MAKE) buildpkg
 
+#NOTE: https://community.cisco.com/t5/security-knowledge-base/deploying-the-cisco-secure-client-cm-deployment-on-macos-with/ta-p/5580661/jump-to/first-unread-message
+# "During the build, pkgbuild may display four “write: Permission denied”
+# messages. These are non-fatal — the package is still written successfully,
+# confirmed by the final “Wrote package to...” line. The resulting package
+# has also been confirmed to install correctly despite these messages."
+
 buildpkg::
 	-@rm -f $(PKGDIR)/$(APPNAME)-Darwin*
 	-@rm -rf contents
@@ -27,8 +33,11 @@ buildpkg::
 	    cp -R ../root/usr/local/xictools/$$a contents/xictools; \
 	done
 	chown -R root:admin contents
-	pkgbld="pkgbuild --identifier $(PKGNAME) --version $(VERSION) \
-  --root $(pd)/contents --install-location /usr/local"; \
+	pkgbld="pkgbuild \
+	       --root $(pd)/contents \
+	       --install-location /usr/local \
+	       --identifier $(PKGNAME) \
+	       --version $(VERSION)"; \
 	if [ -d $(pd)/resources ]; then \
 	    pkgbld="$$pkgbld --scripts $(pd)/resources"; \
         fi; \
@@ -43,5 +52,5 @@ buildpkg::
 	-@rm -rf contents
 
 clean::
-	-@rm -rf contents
+	-@rm -rf contents $(PKGFILE)
 
