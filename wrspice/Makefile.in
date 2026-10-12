@@ -117,31 +117,31 @@ srcQTwrs = src/$(QTPREF)wrs
 srcQTwrsLib = src/$(QTPREF)wrs/$(QTPREF)wrs.a
 baseQTinterfLib = $(BASE)/lib/$(QTPREF)interf.a
 binQTwrspice = bin/$(QTPKG)/wrspice
+
 ifeq ($(USEMOZY), yes)
 MOZYLIBS_QT = $(MOZY)/lib/$(QTPREF)mozy.a
 endif
+
 QT_LOCAL_LIBS = \
-  $(LOCAL_LIBS) $(srcQTwrsLib) $(MOZYLIBS_QT) $(baseQTinterfLib)
-#QT_LOCAL_LIBS = \
-#  src/cp/cp.a \
-#  src/fte/fte.a \
-#  $(DEVLIB_CALL) \
-#  src/analysis/analysis.a \
-#  src/inp/inp.a \
-#  src/ckt/ckt.a \
-#  src/sparse/sparse.a \
-#  src/plot/plot.a \
-#  $(srcQTwrsLib) \
-#  $(SECURELIB) \
-#  $(MOZYLIBS1) \
-#  $(MOZYLIBS_QT) \
-#  $(baseQTinterfLib) \
-#  $(BASE)/lib/ginterf.a \
-#  $(BASE)/lib/miscutil.a \
-#  $(MOZYLIBS2) \
-#  src/misc/misc.a \
-#  $(VLOG)/libvlog.a \
-#  $(REGEX)
+  src/cp/cp.a \
+  src/fte/fte.a \
+  $(DEVLIB_CALL) \
+  src/analysis/analysis.a \
+  src/inp/inp.a \
+  src/ckt/ckt.a \
+  src/sparse/sparse.a \
+  src/plot/plot.a \
+  $(srcQTwrsLib) \
+  $(SECURELIB) \
+  $(MOZYLIBS1) \
+  $(MOZYLIBS_QT) \
+  $(baseQTinterfLib) \
+  $(BASE)/lib/ginterf.a \
+  $(BASE)/lib/miscutil.a \
+  $(MOZYLIBS2) \
+  src/misc/misc.a \
+  $(VLOG)/libvlog.a \
+  $(REGEX)
 endif
 
 ifdef GTKPREF
@@ -149,31 +149,31 @@ srcGTKwrs = src/$(GTKPREF)wrs
 srcGTKwrsLib = src/$(GTKPREF)wrs/$(GTKPREF)wrs.a
 baseGTKinterfLib = $(BASE)/lib/$(GTKPREF)interf.a
 binGTKwrspice = bin/$(GTKPKG)/wrspice
+
 ifeq ($(USEMOZY), yes)
 MOZYLIBS_GTK = $(MOZY)/lib/$(GTKPREF)mozy.a
 endif
+
 GTK_LOCAL_LIBS = \
-  $(LOCAL_LIBS) $(srcGTKwrsLib) $(MOZYLIBS_GTK) $(baseGTKinterfLib)
-#GTK_LOCAL_LIBS = \
-#  src/cp/cp.a \
-#  src/fte/fte.a \
-#  $(DEVLIB_CALL) \
-#  src/analysis/analysis.a \
-#  src/inp/inp.a \
-#  src/ckt/ckt.a \
-#  src/sparse/sparse.a \
-#  src/plot/plot.a \
-#  $(srcGTKwrsLib) \
-#  $(SECURELIB) \
-#  $(MOZYLIBS1) \
-#  $(MOZYLIBS_GTK) \
-#  $(baseGTKinterfLib) \
-#  $(BASE)/lib/ginterf.a \
-#  $(BASE)/lib/miscutil.a \
-#  $(MOZYLIBS2) \
-#  src/misc/misc.a \
-#  $(VLOG)/libvlog.a \
-#  $(REGEX)
+  src/cp/cp.a \
+  src/fte/fte.a \
+  $(DEVLIB_CALL) \
+  src/analysis/analysis.a \
+  src/inp/inp.a \
+  src/ckt/ckt.a \
+  src/sparse/sparse.a \
+  src/plot/plot.a \
+  $(srcGTKwrsLib) \
+  $(SECURELIB) \
+  $(MOZYLIBS1) \
+  $(MOZYLIBS_GTK) \
+  $(baseGTKinterfLib) \
+  $(BASE)/lib/ginterf.a \
+  $(BASE)/lib/miscutil.a \
+  $(MOZYLIBS2) \
+  src/misc/misc.a \
+  $(VLOG)/libvlog.a \
+  $(REGEX)
 endif
 
 SUBDIRS = \

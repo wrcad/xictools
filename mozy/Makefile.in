@@ -57,19 +57,19 @@ libQTinterf = $(BASE)/lib/$(QTPREF)interf.a
 srcQTmozy = src/$(QTPREF)mozy
 binQTmozy = bin/$(QTPKG)/mozy
 binQTxeditor = bin/$(QTPKG)/xeditor
-QT_LOCAL_LIBS = $(LOCAL_LIBS) $(libQTmozy) $(libQTinterf)
-#QT_LOCAL_LIBS = \
-#  lib/htm.a \
-#  lib/help.a \
-#  $(libQTmozy) \
-#  lib/htm.a \
-#  lib/help.a \
-#  lib/httpget.a \
-#  lib/imsave.a \
-#  $(libQTinterf) \
-#  $(BASE)/lib/ginterf.a \
-#  $(BASE)/lib/miscutil.a \
-#  $(REGEX)
+
+QT_LOCAL_LIBS = \
+  lib/htm.a \
+  lib/help.a \
+  $(libQTmozy) \
+  lib/htm.a \
+  lib/help.a \
+  lib/httpget.a \
+  lib/imsave.a \
+  $(libQTinterf) \
+  $(BASE)/lib/ginterf.a \
+  $(BASE)/lib/miscutil.a \
+  $(REGEX)
 endif
 
 ifdef GTKPREF
@@ -78,21 +78,20 @@ libGTKinterf = $(BASE)/lib/$(GTKPREF)interf.a
 srcGTKmozy = src/$(GTKPREF)mozy
 binGTKmozy = bin/$(GTKPKG)/mozy
 binGTKxeditor = bin/$(GTKPKG)/xeditor
-GTK_LOCAL_LIBS = $(LOCAL_LIBS) $(libGTKmozy) $(libGTKinterf)
-#GTK_LOCAL_LIBS = \
-#  lib/htm.a \
-#  lib/help.a \
-#  $(libGTKmozy) \
-#  lib/htm.a \
-#  lib/help.a \
-#  lib/httpget.a \
-#  lib/imsave.a \
-#  $(libGTKinterf) \
-#  $(BASE)/lib/ginterf.a \
-#  $(BASE)/lib/miscutil.a \
-#  $(REGEX)
-endif
 
+GTK_LOCAL_LIBS = \
+  lib/htm.a \
+  lib/help.a \
+  $(libGTKmozy) \
+  lib/htm.a \
+  lib/help.a \
+  lib/httpget.a \
+  lib/imsave.a \
+  $(libGTKinterf) \
+  $(BASE)/lib/ginterf.a \
+  $(BASE)/lib/miscutil.a \
+  $(REGEX)
+endif
 
 INSTALL_BIN    = $(INSTALL) -s -c -m 0755
 INSTALL_SCRIPT = $(INSTALL) -c -m 0755

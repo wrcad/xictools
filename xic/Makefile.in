@@ -107,40 +107,40 @@ srcQTxic = src/$(QTPREF)xic
 srcQTxicLib = src/$(QTPREF)xic/$(QTPREF)xic.a
 baseQTinterfLib = $(BASE)/lib/$(QTPREF)interf.a
 binQTxic = bin/$(QTPKG)/xic
+
 ifeq ($(USEMOZY), yes)
 MOZYLIBS_QT = $(MOZY)/lib/$(QTPREF)mozy.a
 endif
+
 QT_LOCAL_LIBS = \
-  $(LOCAL_LIBS) $(srcQTxicLib) $(MOZYLIBS_QT) $(baseQTinterfLib)
-#QT_LOCAL_LIBS = \
-#  src/main/main.a \
-#  src/drc/drc.a \
-#  src/extract/extract.a \
-#  src/tech/tech.a \
-#  src/edit/edit.a \
-#  src/sced/sced.a \
-#  $(srcQTxicLib) \
-#  src/main/main.a \
-#  src/drc/drc.a \
-#  src/extract/extract.a \
-#  src/tech/tech.a \
-#  src/edit/edit.a \
-#  src/sced/sced.a \
-#  src/display/display.a \
-#  src/parser/parser.a \
-#  src/geom/geom.a  \
-#  src/fileio/fileio.a \
-#  src/cd/cd.a \
-#  src/sparse/sparse.a \
-#  src/wrspif/wrspif.a \
-#  $(SECURELIB) \
-#  $(MOZYLIBS1) \
-#  $(MOZYLIBS_QT) \
-#  $(baseQTinterfLib) \
-#  $(BASE)/lib/ginterf.a \
-#  $(BASE)/lib/miscutil.a \
-#  $(MOZYLIBS2) \
-#  $(REGEX)
+  src/main/main.a \
+  src/drc/drc.a \
+  src/extract/extract.a \
+  src/tech/tech.a \
+  src/edit/edit.a \
+  src/sced/sced.a \
+  $(srcQTxicLib) \
+  src/main/main.a \
+  src/drc/drc.a \
+  src/extract/extract.a \
+  src/tech/tech.a \
+  src/edit/edit.a \
+  src/sced/sced.a \
+  src/display/display.a \
+  src/parser/parser.a \
+  src/geom/geom.a  \
+  src/fileio/fileio.a \
+  src/cd/cd.a \
+  src/sparse/sparse.a \
+  src/wrspif/wrspif.a \
+  $(SECURELIB) \
+  $(MOZYLIBS1) \
+  $(MOZYLIBS_QT) \
+  $(baseQTinterfLib) \
+  $(BASE)/lib/ginterf.a \
+  $(BASE)/lib/miscutil.a \
+  $(MOZYLIBS2) \
+  $(REGEX)
 endif
 
 ifdef GTKPREF
@@ -148,40 +148,40 @@ srcGTKxic = src/$(GTKPREF)xic
 srcGTKxicLib = src/$(GTKPREF)xic/$(GTKPREF)xic.a
 baseGTKinterfLib = $(BASE)/lib/$(GTKPREF)interf.a
 binGTKxic = bin/$(GTKPKG)/xic
+
 ifeq ($(USEMOZY), yes)
 MOZYLIBS_GTK = $(MOZY)/lib/$(GTKPREF)mozy.a
 endif
+
 GTK_LOCAL_LIBS = \
-  $(LOCAL_LIBS) $(srcGTKxicLib) $(MOZYLIBS_GTK) $(baseGTKinterfLib)
-#GTK_LOCAL_LIBS = \
-#  src/main/main.a \
-#  src/drc/drc.a \
-#  src/extract/extract.a \
-#  src/tech/tech.a \
-#  src/edit/edit.a \
-#  src/sced/sced.a \
-#  $(srcGTKxicLib) \
-#  src/main/main.a \
-#  src/drc/drc.a \
-#  src/extract/extract.a \
-#  src/tech/tech.a \
-#  src/edit/edit.a \
-#  src/sced/sced.a \
-#  src/display/display.a \
-#  src/parser/parser.a \
-#  src/geom/geom.a  \
-#  src/fileio/fileio.a \
-#  src/cd/cd.a \
-#  src/sparse/sparse.a \
-#  src/wrspif/wrspif.a \
-#  $(SECURELIB) \
-#  $(MOZYLIBS1) \
-#  $(MOZYLIBS_GTK) \
-#  $(baseGTKinterfLib) \
-#  $(BASE)/lib/ginterf.a \
-#  $(BASE)/lib/miscutil.a \
-#  $(MOZYLIBS2) \
-#  $(REGEX)
+  src/main/main.a \
+  src/drc/drc.a \
+  src/extract/extract.a \
+  src/tech/tech.a \
+  src/edit/edit.a \
+  src/sced/sced.a \
+  $(srcGTKxicLib) \
+  src/main/main.a \
+  src/drc/drc.a \
+  src/extract/extract.a \
+  src/tech/tech.a \
+  src/edit/edit.a \
+  src/sced/sced.a \
+  src/display/display.a \
+  src/parser/parser.a \
+  src/geom/geom.a  \
+  src/fileio/fileio.a \
+  src/cd/cd.a \
+  src/sparse/sparse.a \
+  src/wrspif/wrspif.a \
+  $(SECURELIB) \
+  $(MOZYLIBS1) \
+  $(MOZYLIBS_GTK) \
+  $(baseGTKinterfLib) \
+  $(BASE)/lib/ginterf.a \
+  $(BASE)/lib/miscutil.a \
+  $(MOZYLIBS2) \
+  $(REGEX)
 endif
 
 SUBDIRS = \

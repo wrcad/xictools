@@ -173,7 +173,7 @@ depend: unpack patch
 AMD/Lib/libamd.a: AMD/Lib
 	@$(MAKE) -C AMD/Lib CC="$(CC)" CF="$(CFLAGS)"
 
-BTF/Lib/libbtf.a: BTF/LIB
+BTF/Lib/libbtf.a: BTF/Lib
 	@$(MAKE) -C BTF/Lib CC="$(CC)" CF="$(CFLAGS)"
 
 COLAMD/Lib/libcolamd.a: COLAMD/Lib
