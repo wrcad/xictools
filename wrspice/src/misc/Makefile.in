@@ -2,7 +2,7 @@
 LOCATION = wrspice/src/misc
 #######################################################################
 
-SPICE_VERSION = @SPICE_VERSION@
+WRSPICE_VERSION = @WRSPICE_VERSION@
 DATE = @DATE@
 
 CXX = @CXX@
@@ -61,7 +61,7 @@ depend: $(NFILES)
 	fi
 
 clean:
-	-@rm -f *.o $(LIB_TARGET) $(NFILES)
+	-@rm -f $(CCOBJS) $(LIB_TARGET) $(NFILES)
 
 distclean: clean
 	-@rm -f Makefile

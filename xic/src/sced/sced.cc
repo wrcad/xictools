@@ -81,10 +81,10 @@ cSced::cSced()
 }
 
 
-#ifndef WITH_GRFXTK
 
 // Stubs for functions defined in graphical toolkit, include when
 // not building with toolkit.
+#ifndef HAVE_GRAPHICS_PKG
 void cSced::PopUpDevEdit(   GRobject, ShowMode) { }
 void cSced::PopUpDevs(      GRobject, ShowMode) { }
 void cSced::DevsEscCallback() { }
@@ -94,7 +94,6 @@ void cSced::PopUpSim(SpType) { }
 void cSced::PopUpSpiceIf(   GRobject, ShowMode) { }
 void cSced::PopUpTermEdit(  GRobject, ShowMode, TermEditInfo*,
     void(*)(TermEditInfo*, CDp*), CDp*, int, int) { }
-
 #endif
 
 

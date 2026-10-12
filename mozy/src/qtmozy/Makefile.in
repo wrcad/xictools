@@ -6,16 +6,15 @@ DATE = @DATE@
 
 CXX = @CXX@
 CC = @CC@
-CFLAGS = @CFLAGSG@ @TOOLKITCFLAGS@ @UFLAGS@
-DEPEND_PROG = @DEPEND_PROGXX@ @CFLAGSG@ @TOOLKITCFLAGS@
+CFLAGS = @CFLAGSG@ @QTCFLAGS@ @UFLAGS@
+DEPEND_PROG = @DEPEND_PROGXX@ @CFLAGSG@ @QTCFLAGS@
 AR = @AR@
 RANLIB = @RANLIB@
 FILTER = @FILTER@
 MOC = @MOC@
 
 BASE = ../../../xt_base
-INCLUDE = -I../../include -I../../include/qtmozy -I$(BASE)/include \
-  @TOOLKITINC@
+INCLUDE = -I../../include -I../../include/qtmozy -I$(BASE)/include @QTINC@
 MOC_INCLUDE = ../../include/qtmozy
 
 LIB_TARGET = ../../lib/qtmozy.a

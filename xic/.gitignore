@@ -8,6 +8,9 @@ bin/wrencode
 bin/wrencode.exe
 bin/wrsetpass
 bin/wrsetpass.exe
+bin/xic
+bin/xic.exe
+bin/xic.dll
 help/Accessories.hlp
 help/FileSel.hlp
 help/Graphics.hlp

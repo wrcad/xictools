@@ -2,7 +2,7 @@
 LOCATION = wrspice/src/gtkwrs
 #######################################################################
 
-SPICE_VERSION = @SPICE_VERSION@
+WRSPICE_VERSION = @WRSPICE_VERSION@
 DATE = @DATE@
 
 XCFLAGS = -DGTK_DISABLE_SINGLE_INCLUDES -DGDK_DISABLE_DEPRECATED  \
@@ -10,16 +10,15 @@ XCFLAGS = -DGTK_DISABLE_SINGLE_INCLUDES -DGDK_DISABLE_DEPRECATED  \
 
 CXX = @CXX@
 CC = @CC@
-# Add to cflags and update code  -DGTK_DISABLE_DEPRECATED
-CFLAGS = @CFLAGSG@ @TOOLKITCFLAGS@ @UFLAGS@ @WITH_X11@ -DWRSPICE
-DEPEND_PROG = @DEPEND_PROGXX@ @CFLAGSG@ @TOOLKITCFLAGS@ -DWRSPICE
+CFLAGS = @CFLAGSG@ @GTKCFLAGS@ @UFLAGS@ @WITH_X11@ -DWRSPICE
+DEPEND_PROG = @DEPEND_PROGXX@ @CFLAGSG@ @GTKCFLAGS@ -DWRSPICE
 WINDRES = @WINDRES@
 AR = @AR@
 LD = @LD@
 RANLIB = @RANLIB@
 FILTER = @FILTER@
 USEMOZY = @USEMOZY@
-TOOLKITINC = @TOOLKITINC@
+GTKINC = @GTKINC@
 RESOURCE = @RESOURCE@
 
 LIB_TARGET = gtkwrs.a
@@ -45,28 +44,28 @@ MOZYINC = -I$(MOZY)/include
 MOBJS = gtkcmds.o gtkcolor.o gtkfte.o gtktoolb.o
 
 $(MOBJS):
-	$(CXX) $(CFLAGS) $(INCLUDE) $(MOZYINC) $(TOOLKITINC) -c $*.cc
+	$(CXX) $(CFLAGS) $(INCLUDE) $(MOZYINC) $(GTKINC) -c $*.cc
 endif
 
 .cc.o:
-	$(CXX) $(CFLAGS) $(INCLUDE) $(TOOLKITINC) -c $*.cc
+	$(CXX) $(CFLAGS) $(INCLUDE) $(GTKINC) -c $*.cc
 
-depend:
+depend::
 	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
-	    $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) $(TOOLKITINC) \
+	    $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) $(GTKINC) \
   $(CCFILES) $(FILTER) >> Makefile; \
 	fi
 
-clean:
-	-@rm -f *.o $(LIB_TARGET)
+clean::
+	-@rm -f $(CCOBJS) $(LIB_TARGET)
 
 distclean: clean
 	-@rm -f Makefile
 
 resource.o: ../msw/resource.cc ../msw/wrs.rc
-	vers=$(SPICE_VERSION); \
+	vers=$(WRSPICE_VERSION); \
 	IFS="$$IFS."; \
 	set $$vers; \
 	$(WINDRES) -DWRSPICE_RESOURCE -DWRS_BIN_VERSION="0,$$1,$$2,$$3" \

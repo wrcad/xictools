@@ -66,6 +66,7 @@ distclean:
 	-@$(MAKE) -C packages $@
 
 depend: unpack
+	@echo "depending in $(LOCATION) (unpacking)"
 
 #######################################################################
 ####### Installation ##################################################

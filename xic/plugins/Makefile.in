@@ -2,7 +2,7 @@
 LOCATION = xic/plugins
 #######################################################################
 
-GFX_VERSION = @GFX_VERSION@
+XIC_VERSION = @XIC_VERSION@
 DATE = @DATE@
 
 CXX = @CXX@

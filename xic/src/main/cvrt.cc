@@ -94,10 +94,10 @@ cConvert::on_null_ptr()
     exit(1);
 }
 
-#ifndef WITH_GRFXTK
 
 // Stubs for functions defined in graphical toolkit, include when
 // not building with toolkit.
+#ifndef HAVE_GRAPHICS_PKG
 void cConvert::PopUpAssemble(   GRobject, ShowMode) { }
 void cConvert::PopUpAuxTab(     GRobject, ShowMode) { }
 void cConvert::PopUpGeometries( GRobject, ShowMode) { }
@@ -119,12 +119,11 @@ void cConvert::PopUpExport(     GRobject, ShowMode,
 void cConvert::PopUpDisplayWindow(GRobject, ShowMode, const BBox*,
     bool(*)(bool, const BBox*, void*), void*) { }
 void cConvert::PopUpEmpties(stringlist*) { }
-void cConvert::PopUpFiles(      GRobject caller, ShowMode mode) { }
-void cConvert::PopUpLibraries(  GRobject caller, ShowMode mode) { }
+void cConvert::PopUpFiles(      GRobject, ShowMode) { }
+void cConvert::PopUpLibraries(  GRobject, ShowMode) { }
 bool cConvert::PopUpMergeControl(ShowMode, mitem_t*) { return (false); }
 void cConvert::PopUpOasAdv(     GRobject, ShowMode, int, int) { }
 void cConvert::PopUpPropertyFilter(GRobject, ShowMode) { }
-
 #endif
 
 

@@ -1,7 +1,5 @@
 #######################################################################
-# devlib/hisim-1.2.0/Makefile.in
-#######################################################################
-# $Id: Makefile.in,v 1.10 2015/10/04 20:05:29 stevew Exp $
+LOCATION = devlib/hisim-1.2.0
 #######################################################################
 
 DEVLIB_VERSION = @DEVLIB_VERSION@
@@ -44,7 +42,7 @@ $(TARGET): $(COBJS)
 	$(CC) $(CFLAGS) $(PIC_OPT) $(INCLUDE) $(DEFS) -c $*.c
 
 depend: $(COPYFILES)
-	@echo depending in devlib/hisim-1.2.0
+	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    if [ "z$(CCFILES)" != "z" ]; then \

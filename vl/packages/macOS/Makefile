@@ -52,5 +52,5 @@ buildpkg::
 	-@rm -rf contents
 
 clean::
-	-@rm -rf contents %(PKGFILE)
+	-@rm -rf contents $(PKGFILE)
 

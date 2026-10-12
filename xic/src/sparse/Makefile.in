@@ -2,7 +2,7 @@
 LOCATION = xic/src/sparse
 #######################################################################
 
-GFX_VERSION = @GFX_VERSION@
+XIC_VERSION = @XIC_VERSION@
 DATE = @DATE@
 
 CXX = @CXX@ -DXIC
@@ -48,7 +48,7 @@ depend: $(CCFILES)
 	fi
 
 clean:
-	-@rm -f *.o $(LIB_TARGET) $(CCFILES)
+	-@rm -f $(CCOBJS) $(LIB_TARGET) $(CCFILES)
 
 distclean: clean
 	-@rm -f Makefile

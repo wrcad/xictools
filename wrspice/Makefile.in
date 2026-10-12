@@ -3,7 +3,7 @@ LOCATION = wrspice
 #######################################################################
 
 DATE = @DATE@
-SPICE_VERSION = @SPICE_VERSION@
+WRSPICE_VERSION = @WRSPICE_VERSION@
 DEVLIB_VERSION = @DEVLIB_VERSION@
 
 prefix = @prefix@
@@ -11,20 +11,28 @@ itopok = @itopok@
 CXX = @CXX@
 CC = @CC@
 LINKCC = @LINKCC@
-CFLAGS = @CFLAGSG@ @DYNAMIC_LIBS@ @TOOLKITCFLAGS@ @UFLAGS@ @WITH_X11@ -DWRSPICE
-LFLAGS = @LFLAGS@ @TOOLKITLFLAGS@ @UFLAGS@
+CFLAGS = @CFLAGSG@ @DYNAMIC_LIBS@ @UFLAGS@ @WITH_X11@ -DWRSPICE
+LFLAGS = @LFLAGS@ @UFLAGS@
 PIC_OPT = @PIC_OPT@
 LSHFLAG = @LSHFLAG@
 CURSES = @CURSES@
-LIBS = $(CURSES) @LIBS@ @TOOLKITLIBS@ @EXTRALIBS@ $(X_LIB)
+LIBS = $(CURSES) @LIBS@ @EXTRALIBS@ $(X_LIB)
 STDCLIB = @STDCLIB@
 SLIBS = @SLIBS@
 OSNAME = @OSNAME@
 ARCH = @ARCH@
 DIST_SUFFIX = @DIST_SUFFIX@
-GRPREF = @GRPREF@
-GRPKG = @GRPKG@
-DEPEND_PROG = @DEPEND_PROGXX@ @CFLAGSG@ @DYNAMIC_LIBS@ @TOOLKITCFLAGS@ -DWRSPICE
+QTPREF = @QTPREF@
+QTPKG = @QTPKG@
+QTLIBS = @QTLIBS@
+QTCFLAGS = @QTCFLAGS@
+QTLFLAGS = @QTLFLAGS@
+GTKPREF = @GTKPREF@
+GTKPKG = @GTKPKG@
+GTKLIBS = @GTKLIBS@
+GTKCFLAGS = @GTKCFLAGS@
+GTKLFLAGS = @GTKLFLAGS@
+DEPEND_PROG = @DEPEND_PROGXX@ @CFLAGSG@ @DYNAMIC_LIBS@ -DWRSPICE
 INSTALL = @INSTALL@
 EXESUFFIX = @EXESUFFIX@
 FILTER = @FILTER@
@@ -43,13 +51,6 @@ TKTOOLS = @TKTOOLS@
 PSLIBS = @PSLIBS@
 WITH_X11 = @WITH_X11@
 
-# Where the binaries go, used to just be bin.
-BINDIR = bin/$(GRPKG)
-
-ifdef WITH_X11
-X_LIB = -lX11
-endif
-
 BUG_ADDR = wrspice@wrcad.com
 ANALYSES = op dc tf ac tran pz disto noise sense
 SPICE_HOST =
@@ -59,24 +60,14 @@ ASCII_RAWFILE = 1
 OPT_CHAR = -
 SPICE_NOTICE =
 
+ifdef WITH_X11
+X_LIB = -lX11
+endif
+
 INSTALL_BIN    = $(INSTALL) -s -c -m 0755
 INSTALL_SCRIPT = $(INSTALL) -c -m 0755
 INSTALL_LIB    = $(INSTALL) -c -m 0644
 INSTALL_LIB_RO = $(INSTALL) -c -m 0444
-
-ifdef GRPREF
-GRPREF_DIR = src/$(GRPREF)wrs
-GRPREF_LIB = src/$(GRPREF)wrs/$(GRPREF)wrs.a
-GRPREF_BASELIB = $(BASE)/lib/$(GRPREF)interf.a
-endif
-
-SUBDIRS = \
-  src/cp src/fte src/analysis src/inp src/ckt src/sparse src/plot \
-  $(GRPREF_DIR) src/misc
-SUBDIR_LIBS = \
-  src/cp/cp.a src/fte/fte.a src/analysis/analysis.a src/inp/inp.a \
-  src/ckt/ckt.a src/sparse/sparse.a src/plot/plot.a \
-  $(GRPREF_LIB) src/misc/misc.a
 
 BASE = ../xt_base
 VLOG = ../vl
@@ -89,13 +80,17 @@ else
 INCLUDE = -Iinclude -I$(BASE)/include
 endif
 
-ifdef GRPREF
+ifndef QTPREF
+ifndef GTKPREF
+USEMOZY = no
+binQTwrspice = bin/wrspice
+endif
+endif
 ifeq ($(USEMOZY), yes)
 MOZY = ../mozy
-MOZYLIBS1 = $(MOZY)/lib/htm.a $(MOZY)/lib/help.a $(MOZY)/lib/$(GRPREF)mozy.a
+MOZYLIBS1 = $(MOZY)/lib/htm.a $(MOZY)/lib/help.a
 MOZYLIBS2 = $(MOZY)/lib/htm.a $(MOZY)/lib/help.a $(MOZY)/lib/httpget.a \
   $(MOZY)/lib/imsave.a
-endif
 endif
 
 LOCAL_LIBS = \
@@ -107,10 +102,9 @@ LOCAL_LIBS = \
   src/ckt/ckt.a \
   src/sparse/sparse.a \
   src/plot/plot.a \
-  $(GRPREF_LIB) \
   $(SECURELIB) \
   $(MOZYLIBS1) \
-  $(GRPREF_BASELIB) \
+  $(MOZYLIBS_QT) \
   $(BASE)/lib/ginterf.a \
   $(BASE)/lib/miscutil.a \
   $(MOZYLIBS2) \
@@ -118,20 +112,94 @@ LOCAL_LIBS = \
   $(VLOG)/libvlog.a \
   $(REGEX)
 
+ifdef QTPREF
+srcQTwrs = src/$(QTPREF)wrs
+srcQTwrsLib = src/$(QTPREF)wrs/$(QTPREF)wrs.a
+baseQTinterfLib = $(BASE)/lib/$(QTPREF)interf.a
+binQTwrspice = bin/$(QTPKG)/wrspice
+ifeq ($(USEMOZY), yes)
+MOZYLIBS_QT = $(MOZY)/lib/$(QTPREF)mozy.a
+endif
+QT_LOCAL_LIBS = \
+  $(LOCAL_LIBS) $(srcQTwrsLib) $(MOZYLIBS_QT) $(baseQTinterfLib)
+#QT_LOCAL_LIBS = \
+#  src/cp/cp.a \
+#  src/fte/fte.a \
+#  $(DEVLIB_CALL) \
+#  src/analysis/analysis.a \
+#  src/inp/inp.a \
+#  src/ckt/ckt.a \
+#  src/sparse/sparse.a \
+#  src/plot/plot.a \
+#  $(srcQTwrsLib) \
+#  $(SECURELIB) \
+#  $(MOZYLIBS1) \
+#  $(MOZYLIBS_QT) \
+#  $(baseQTinterfLib) \
+#  $(BASE)/lib/ginterf.a \
+#  $(BASE)/lib/miscutil.a \
+#  $(MOZYLIBS2) \
+#  src/misc/misc.a \
+#  $(VLOG)/libvlog.a \
+#  $(REGEX)
+endif
+
+ifdef GTKPREF
+srcGTKwrs = src/$(GTKPREF)wrs
+srcGTKwrsLib = src/$(GTKPREF)wrs/$(GTKPREF)wrs.a
+baseGTKinterfLib = $(BASE)/lib/$(GTKPREF)interf.a
+binGTKwrspice = bin/$(GTKPKG)/wrspice
+ifeq ($(USEMOZY), yes)
+MOZYLIBS_GTK = $(MOZY)/lib/$(GTKPREF)mozy.a
+endif
+GTK_LOCAL_LIBS = \
+  $(LOCAL_LIBS) $(srcGTKwrsLib) $(MOZYLIBS_GTK) $(baseGTKinterfLib)
+#GTK_LOCAL_LIBS = \
+#  src/cp/cp.a \
+#  src/fte/fte.a \
+#  $(DEVLIB_CALL) \
+#  src/analysis/analysis.a \
+#  src/inp/inp.a \
+#  src/ckt/ckt.a \
+#  src/sparse/sparse.a \
+#  src/plot/plot.a \
+#  $(srcGTKwrsLib) \
+#  $(SECURELIB) \
+#  $(MOZYLIBS1) \
+#  $(MOZYLIBS_GTK) \
+#  $(baseGTKinterfLib) \
+#  $(BASE)/lib/ginterf.a \
+#  $(BASE)/lib/miscutil.a \
+#  $(MOZYLIBS2) \
+#  src/misc/misc.a \
+#  $(VLOG)/libvlog.a \
+#  $(REGEX)
+endif
+
+SUBDIRS = \
+  src/cp src/fte src/analysis src/inp src/ckt src/sparse src/plot \
+  $(srcQTwrs) $(srcGTKwrs)  src/misc
+SUBDIR_LIBS = \
+  src/cp/cp.a src/fte/fte.a src/analysis/analysis.a src/inp/inp.a \
+  src/ckt/ckt.a src/sparse/sparse.a src/plot/plot.a \
+  $(srcQTwrsLib) $(srcGTKwrsLib) src/misc/misc.a
+
 #######################################################################
 ####### Executable targets ############################################
 
-TARGETS = $(GRPKG)/wrspice wrspiced csvtoraw multidec printtoraw
+TARGETS = mdir $(binQTwrspice) $(binGTKwrspice) bin/wrspiced \
+  bin/csvtoraw bin/multidec bin/printtoraw
+
 MMJCO = mmjco/mmjco
 all: cptest $(TARGETS) $(MMJCO)
 
 cptest:
-	$(MAKE) -C help cptest
-	$(MAKE) -C ipc_demo cptest
-	$(MAKE) -C src/misc cptest
-	$(MAKE) -C src/sparse cptest
-	$(MAKE) -C devlib/include cptest
-	$(MAKE) -C devlib/adms/include cptest
+	@$(MAKE) -C help cptest
+	@$(MAKE) -C ipc_demo cptest
+	@$(MAKE) -C src/misc cptest
+	@$(MAKE) -C src/sparse cptest
+	@$(MAKE) -C devlib/include cptest
+	@$(MAKE) -C devlib/adms/include cptest
 
 # Target to edit ADMS files for correct SyntaxLevel (same as release level).
 syntaxlevel:
@@ -145,32 +213,81 @@ syntaxlevel:
 	f2=devlib/adms/admst/device.xml; \
 	sed -e s/"SyntaxLevel 0"/"$$lvlstr2"/ < $$f2.sed > $$f2; \
 
-$(TARGETS)::
-	if [ ! -d $(BINDIR) ]; then \
-	    mkdir $(BINDIR); \
-	fi    
-	$(MAKE) bin/$@
+mdir::
+	@if [ -n "$(QTPKG)" ]; then \
+	    if [ ! -d bin/$(QTPKG) ]; then \
+	        mkdir bin/$(QTPKG); \
+	    fi; \
+	fi
+	@if [ -n "$(GTKPKG)" ]; then \
+	    if [ ! -d bin/$(GTKPKG) ]; then \
+	        mkdir bin/$(GTKPKG); \
+	    fi; \
+	fi
 
 ifeq ($(OSNAME), MINGW)
 
 # For Windows, create wrspice with everything in a DLL, so that we can
 # link plugins against the DLL.
 
-$(BINDIR)/wrspice: bin/main.cc $(BINDIR)/wrspice.dll
-	$(CC) -o $(BINDIR)/wrspice bin/main.cc src/$(GRPREF)wrs/resource.o \
-  -L$(BINDIR) -lwrspice
+ifdef QTPKG
+bin/$(QTPKG)/wrspice: bin/main.cc bin/$(QTPKG)/wrspice.dll
+	$(CC) -o bin/$(QTPKG)/wrspice bin/main.cc \
+  src/$(QTPREF)wrs/resource.o -Lbin/$(QTPKG) -lwrspice
 
-$(BINDIR)/wrspice.dll: bin/wrspice.o $(LOCAL_LIBS) $(MALLOC)
+bin/$(QTPKG)/wrspice.dll: bin/wrspice.o $(QT_LOCAL_LIBS) $(MALLOC)
 	@echo $@: dynamic link
-	@$(LINKCC) $(LSHFLAG) -o $(BINDIR)/wrspice.dll $(LFLAGS) bin/wrspice.o \
+	@$(LINKCC) $(LSHFLAG) -o bin/$(QTPKG)/wrspice.dll $(QTLFLAGS) \
+  $(LFLAGS) bin/wrspice.o $(QT_LOCAL_LIBS) $(LIBS) $(QTLIBS) \
+  $(MALLOC) $(STDCLIB)
+endif
+ifdef GTKPKG
+bin/$(GTKPKG)/wrspice: bin/main.cc bin/$(GTKPKG)/wrspice.dll
+	$(CC) -o bin/$(GTKPKG)/wrspice bin/main.cc \
+  src/$(GTKPREF)wrs/resource.o -Lbin/$(GTKPKG) -lwrspice
+
+bin/$(GTKPKG)/wrspice.dll: bin/wrspice.o $(GTK_LOCAL_LIBS) $(MALLOC)
+	@echo $@: dynamic link
+	@$(LINKCC) $(LSHFLAG) -o bin/$(GTKPKG)/wrspice.dll $(GTKLFLAGS) \
+  $(LFLAGS) bin/wrspice.o $(GTK_LOCAL_LIBS) $(LIBS) $(GTKLIBS) \
+  $(MALLOC) $(STDCLIB)
+endif
+ifndef QTPKG
+ifndef GTKPKG
+bin/wrspice: bin/main.cc bin/wrspice.dll
+	$(CC) -o bin/wrspice bin/main.cc -Lbin -lwrspice
+
+bin/wrspice.dll: bin/wrspice.o $(LOCAL_LIBS) $(MALLOC)
+	@echo $@: dynamic link
+	@$(LINKCC) $(LSHFLAG) -o bin/wrspice.dll $(LFLAGS) bin/wrspice.o \
   $(LOCAL_LIBS) $(LIBS) $(MALLOC) $(STDCLIB)
+endif
+endif
 
 else
 
-$(BINDIR)/wrspice: bin/wrspice.o $(LOCAL_LIBS) $(MALLOC)
+ifdef QTPKG
+bin/$(QTPKG)/wrspice: bin/wrspice.o $(QT_LOCAL_LIBS) $(MALLOC)
 	@echo $@: dynamic link
-	@$(LINKCC) -o $(BINDIR)/wrspice $(LFLAGS) bin/wrspice.o \
-  $(LOCAL_LIBS) $(LIBS) $(MALLOC) $(STDCLIB) $(PSLIBS)
+	@$(LINKCC) -o bin/$(QTPKG)/wrspice $(QTLFLAGS) $(LFLAGS) \
+  bin/wrspice.o $(QT_LOCAL_LIBS) $(LIBS) $(QTLIBS) $(MALLOC) \
+  $(STDCLIB) $(PSLIBS)
+endif
+ifdef GTKPKG
+bin/$(GTKPKG)/wrspice: bin/wrspice.o $(GTK_LOCAL_LIBS) $(MALLOC)
+	@echo $@: dynamic link
+	@$(LINKCC) -o bin/$(GTKPKG)/wrspice $(GTKLFLAGS) $(LFLAGS) \
+  bin/wrspice.o $(GTK_LOCAL_LIBS) $(LIBS) $(GTKLIBS) $(MALLOC) \
+  $(STDCLIB) $(PSLIBS)
+endif
+ifndef QTPKG
+ifndef GTKPKG
+bin/wrspice: bin/wrspice.o $(LOCAL_LIBS) $(MALLOC)
+	@echo $@: dynamic link
+	@$(LINKCC) -o bin/wrspice $(LFLAGS) bin/wrspice.o $(LOCAL_LIBS) \
+  $(LIBS) $(MALLOC) $(STDCLIB) $(PSLIBS)
+endif
+endif
 
 endif
 
@@ -220,22 +337,51 @@ $(MALLOC)::
 $(BASE)/lib/ginterf.a::
 	$(MAKE) -C $(BASE)/ginterf
 
-ifdef GRPREF
-$(BASE)/lib/$(GRPREF)interf.a::
-	$(MAKE) -C $(BASE)/$(GRPREF)interf
-endif
-
 $(BASE)/lib/miscutil.a::
 	$(MAKE) -C $(BASE)/miscutil
 
 $(BASE)/lib/libregex.a::
 	$(MAKE) -C $(BASE)/regex
 
-ifdef GRPREF
+ifdef QTPREF
+$(BASE)/lib/$(QTPREF)interf.a::
+	$(MAKE) -C $(BASE)/$(QTPREF)interf
+
 ifeq ($(USEMOZY), yes)
-$(MOZY)/lib/$(GRPREF)mozy.a::
-	if [ -d $(MOZY)/src/$(GRPREF)mozy ]; then \
-	    $(MAKE) -C $(MOZY)/src/$(GRPREF)mozy ; \
+$(MOZY)/lib/$(QTPREF)mozy.a::
+	if [ -d $(MOZY)/src/$(QTPREF)mozy ]; then \
+	    $(MAKE) -C $(MOZY)/src/$(QTPREF)mozy ; \
+	fi
+
+$(MOZY)/lib/help.a::
+	if [ -d $(MOZY)/src/help ]; then \
+	    $(MAKE) -C $(MOZY)/src/help ; \
+	fi
+
+$(MOZY)/lib/htm.a::
+	if [ -d $(MOZY)/src/htm ]; then \
+	    $(MAKE) -C $(MOZY)/src/htm ; \
+	fi
+
+$(MOZY)/lib/httpget.a::
+	if [ -d $(MOZY)/src/httpget ]; then \
+	    $(MAKE) -C $(MOZY)/src/httpget ; \
+	fi
+
+$(MOZY)/lib/imsave.a::
+	if [ -d $(MOZY)/src/imsave ] ; then \
+	    $(MAKE) -C $(MOZY)/src/imsave ; \
+	fi
+endif
+endif
+ifdef GTKPREF
+$(BASE)/lib/$(GTKPREF)interf.a::
+	$(MAKE) -C $(BASE)/$(QTPREF)interf
+
+ifeq ($(USEMOZY), yes)
+$(MOZY)/lib/$(GTKPREF)mozy.a::
+	if [ -d $(MOZY)/src/$(GTKPREF)mozy ]; then \
+	    $(MAKE) -C $(MOZY)/src/$(GTKPREF)mozy ; \
 	fi
 
 $(MOZY)/lib/help.a::
@@ -274,7 +420,7 @@ DARGS = \
   -DARCH="\"$(ARCH)\"" \
   -DDIST_SUFFIX="\"$(DIST_SUFFIX)\"" \
   -DTOOLS_ROOT="\"$(TOOLROOT)\"" \
-  -DSPICE_VERSION="\"$(SPICE_VERSION)\"" \
+  -DSPICE_VERSION="\"$(WRSPICE_VERSION)\"" \
   -DDEVLIB_VERSION="\"$(DEVLIB_VERSION)\"" \
   -DSPICE_BUILD_DATE="\"$(DATE)\"" \
   -DSPICE_PROG=\"wrspice\" \
@@ -323,12 +469,12 @@ depend: syntaxlevel
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    for a in $(CCFILES); do \
-	      $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) $$a -MT bin/`basename $$a .cc`.o \
-  $(FILTER) >> Makefile; \
+	        $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) $$a -MT \
+  bin/`basename $$a .cc`.o $(FILTER) >> Makefile; \
 	    done; \
 	    if [ -n "$(EXESUFFIX)" ]; then \
-	      $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) bin/main.cc -MT bin/main.o \
-  $(FILTER) >> Makefile; \
+	        $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) bin/main.cc -MT \
+  bin/main.o $(FILTER) >> Makefile; \
 	    fi; \
 	fi
 
@@ -336,33 +482,44 @@ depend: syntaxlevel
 ####### Clean up ######################################################
 
 eclean:
-	-@for a in $(TARGETS); do \
-	    rm -f bin/$$a$(EXESUFFIX); \
+	-@for a in $(TARGETS) bin/wrspice bin/wrspice.dll; do \
+	    if [ -d $$a ]; then \
+	        rm -rf $$a; \
+	    elif [ -f $$a$(EXESUFFIX) ]; then \
+	        rm -rf $$a$(EXESUFFIX); \
+	    fi; \
 	done
-	-@rm -rf $(BINDIR) bin/wrspice$(EXESUFFIX)
 
 clean: eclean
-	-@for a in $(SUBDIRS) devlib; do \
-	    $(MAKE) -C $$a $@; \
+	-@for a in $(SUBDIRS) devlib mmjco; do \
+	    if [ -d $$a -a -f $$a/Makefile ]; then \
+	        $(MAKE) -C $$a $@; \
+	    fi; \
 	done
-	$(MAKE) -C mmjco clean
 	-@rm -f bin/*.o
 
 distclean: eclean
-	-@for a in $(SUBDIRS) include devlib packages help startup \
+	-@for a in $(SUBDIRS) include devlib mmjco packages help startup \
   ipc_demo; do \
-	    $(MAKE) -C $$a $@; \
+	    if [ -d $$a -a -f $$a/Makefile ]; then \
+	  echo "  $$a"; \
+	        $(MAKE) -C $$a $@; \
+	    fi; \
 	done
-	-@$(MAKE) -C mmjco distclean
 	-@rm -f bin/*.o Makefile
 	-@rm -f devlib/adms/admst/device.xml
-	-@rm -rf bin/QT5 bin/QT6 bin/GTK2 bin/GTK3
 
-ifdef GRPREF
-grclean:
-	$(MAKE) -C src/$(GRPREF)wrs clean
-	$(MAKE) -C ../mozy/src/$(GRPREF)mozy clean
-	$(MAKE) -C ../xt_base/$(GRPREF)interf clean
+ifdef QTPREF
+qtclean:
+	$(MAKE) -C src/$(QTPREF)wrs clean
+	$(MAKE) -C ../mozy/src/$(QTPREF)mozy clean
+	$(MAKE) -C ../xt_base/$(QTPREF)interf clean
+endif
+ifdef GTKPREF
+gtkclean:
+	$(MAKE) -C src/$(GTKPREF)wrs clean
+	$(MAKE) -C ../mozy/src/$(GTKPREF)mozy clean
+	$(MAKE) -C ../xt_base/$(GTKPREF)interf clean
 endif
 
 #######################################################################
@@ -547,7 +704,7 @@ $(destn)/docs::
 	    cp docs/$$a $@; \
 	done
 	IFS="."; \
-	tmp=$(SPICE_VERSION); \
+	tmp=$(WRSPICE_VERSION); \
 	set -- $$tmp; \
 	cp docs/wrs$$1.$$2 $@
 

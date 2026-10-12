@@ -2,7 +2,7 @@
 LOCATION = wrspice/src/fte
 #######################################################################
 
-SPICE_VERSION = @SPICE_VERSION@
+WRSPICE_VERSION = @WRSPICE_VERSION@
 DEVLIB_VERSION = @DEVLIB_VERSION@
 DATE = @DATE@
 
@@ -65,7 +65,7 @@ depend: paramsub.cc
 	fi
 
 clean:
-	-@rm -f *.o $(LIB_TARGET) paramsub.cc
+	-@rm -f $(CCOBJS) $(LIB_TARGET) paramsub.cc
 
 distclean: clean
 	-@rm -f Makefile
@@ -76,7 +76,7 @@ cptest: paramsub.cc
 	@for a in paramsub.cc; do \
 	    set -- $$(/usr/bin/sum $(BASE)/spnumber/$$a); s1=$$1; \
 	    set -- $$(/usr/bin/sum $$a); s2=$$1; \
-            if [ "$$s1" != "$$s2" ]; then \
+	    if [ "$$s1" != "$$s2" ]; then \
 	        echo ; \
 	        echo  "ERROR!!! $$a differs in $(BASE)/spnumber, FIXME"; \
 	        echo ; \

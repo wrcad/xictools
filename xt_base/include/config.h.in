@@ -95,12 +95,12 @@ Copyright (c) Whiteley Research Inc 1996
 #undef HAVE_VSNPRINTF
 #undef HAVE_VASPRINTF
 
-#undef WITH_GRFXTK
-
 #undef HAVE_OA
 #undef HAVE_PYTHON
 #undef HAVE_TCL
 #undef HAVE_TK
+
+#undef HAVE_GRAPHICS_PKG
 
 #undef socklen_t
 

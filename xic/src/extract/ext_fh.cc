@@ -95,13 +95,11 @@ cFH::on_null_ptr()
 }
 
 
-#ifndef WITH_GRFXTK
-
 // Stubs for functions defined in graphical toolkit, include when
 // not building with toolkit.
+#ifndef HAVE_GRAPHICS_PKG
 void cFH::PopUpExtIf(GRobject, ShowMode) { }
 void cFH::updateString() { }
-
 #endif
 
 

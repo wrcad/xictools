@@ -2,7 +2,7 @@
 LOCATION = xic/src/gtkxic
 #######################################################################
 
-GFX_VERSION = @GFX_VERSION@
+XIC_VERSION = @XIC_VERSION@
 DATE = @DATE@
 
 XCFLAGS = -DGTK_DISABLE_SINGLE_INCLUDES -DGDK_DISABLE_DEPRECATED  \
@@ -10,15 +10,15 @@ XCFLAGS = -DGTK_DISABLE_SINGLE_INCLUDES -DGDK_DISABLE_DEPRECATED  \
 
 CXX = @CXX@
 CC = @CC@
-CFLAGS = @CFLAGSG@ @NEEDINT64@ @TOOLKITCFLAGS@ @UFLAGS@ @WITH_X11@
-DEPEND_PROG = @DEPEND_PROGXX@ @CFLAGSG@ @NEEDINT64@ @TOOLKITCFLAGS@
+CFLAGS = @CFLAGSG@ @NEEDINT64@ @GTKCFLAGS@ @UFLAGS@ @WITH_X11@
+DEPEND_PROG = @DEPEND_PROGXX@ @CFLAGSG@ @NEEDINT64@ @GTKCFLAGS@
 WINDRES = @WINDRES@
 AR = @AR@
 LD = @LD@
 RANLIB = @RANLIB@
 FILTER = @FILTER@
 USEMOZY = @USEMOZY@
-TOOLKITINC = @TOOLKITINC@
+GTKINC = @GTKINC@
 RESOURCE = @RESOURCE@
 
 LIB_TARGET = gtkxic.a
@@ -65,28 +65,28 @@ MOZYINC = -I$(MOZY)/include
 MOBJS = gtkmain.o
 
 $(MOBJS):
-	$(CXX) $(CFLAGS) $(INCLUDE) $(MOZYINC) $(TOOLKITINC) -c $*.cc
+	$(CXX) $(CFLAGS) $(INCLUDE) $(MOZYINC) $(GTKINC) -c $*.cc
 endif
 
 .cc.o:
-	$(CXX) $(CFLAGS) $(INCLUDE) $(TOOLKITINC) -c $*.cc
+	$(CXX) $(CFLAGS) $(INCLUDE) $(GTKINC) -c $*.cc
 
 depend:
 	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
-	    $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) $(TOOLKITINC) $(CCFILES) \
+	    $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) $(GTKINC) $(CCFILES) \
   $(FILTER) >> Makefile; \
 	fi
 
 clean:
-	-@rm -f *.o $(LIB_TARGET)
+	-@rm -f $(CCOBJS) $(LIB_TARGET)
 
 distclean: clean
 	-@rm -f Makefile
 
 resource.o: ../msw/resource.cc ../msw/xic.rc
-	vers=$(GFX_VERSION); \
+	vers=$(XIC_VERSION); \
 	IFS="$$IFS."; \
 	set $$vers; \
 	$(WINDRES) -DXIC_BIN_VERSION="0,$$1,$$2,$$3" \

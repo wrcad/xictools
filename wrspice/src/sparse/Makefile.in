@@ -2,7 +2,7 @@
 LOCATION = wrspice/src/sparse
 #######################################################################
 
-SPICE_VERSION = @SPICE_VERSION@
+WRSPICE_VERSION = @WRSPICE_VERSION@
 DATE = @DATE@
 
 CXX = @CXX@
@@ -52,7 +52,7 @@ depend: $(CCFILES)
 	fi
 
 clean:
-	-@rm -f *.o $(LIB_TARGET) $(SP_CCFILES)
+	-@rm -f $(CCOBJS) $(LIB_TARGET) $(SP_CCFILES)
 
 distclean: clean
 	-@rm -f Makefile

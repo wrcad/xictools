@@ -74,7 +74,7 @@ $(MR_VERS_H):
 	$(CXX) $(CFLAGS) $(PIC_OPT) $(INCLUDE) -c $*.cc
 
 depend: $(MR_VERS_H)
-	$(MAKE) -C ../lddb depend
+	@$(MAKE) -C ../lddb depend
 	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \

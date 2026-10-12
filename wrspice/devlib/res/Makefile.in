@@ -1,7 +1,5 @@
 #######################################################################
-# devlib/res/Makefile.in
-#######################################################################
-# $Id: Makefile.in,v 2.23 2015/10/04 20:05:29 stevew Exp $
+LOCATION = devlib/res
 #######################################################################
 
 DEVLIB_VERSION = @DEVLIB_VERSION@
@@ -42,7 +40,7 @@ $(TARGET): $(COBJS)
 	$(CC) $(CFLAGS) $(PIC_OPT) $(INCLUDE) $(DEFS) -c $*.c
 
 depend:
-	@echo depending in devlib/res
+	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    if [ "z$(CCFILES)" != "z" ]; then \

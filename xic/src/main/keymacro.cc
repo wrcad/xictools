@@ -411,10 +411,9 @@ cKbMacro::on_null_ptr()
 }
 
 
-#ifndef WITH_GRFXTK
-
 // Stubs for functions defined in graphical toolkit, include when
 // not building with toolkit.
+#ifndef HAVE_GRAPHICS_PKG
 sKeyMap *cKbMacro::getKeyToMap() { return (0); }
 bool cKbMacro::isModifier(unsigned int) { return (false); }
 bool cKbMacro::isControl(unsigned int) { return (false); }
@@ -426,7 +425,6 @@ bool cKbMacro::isModifierDown() { return (false); }
 bool cKbMacro::notMappable(unsigned int, unsigned int) { return (false); }
 bool cKbMacro::execKey(sKeyEvent*) { return (false); }
 bool cKbMacro::execBtn(sBtnEvent*) { return (false); }
-
 #endif
 
 

@@ -1,4 +1,6 @@
-# wrspice/lib/help/Makefile
+#######################################################################
+LOCATION = wrspice/help
+#######################################################################
 
 BASEFILES = FileSel.hlp Graphics.hlp Hardcopy.hlp TMsmall.gif
 MOZYFILES = HelpSys.hlp TextEditor.hlp Accessories.hlp
@@ -12,7 +14,8 @@ SPBASE = ../../xt_base/sphelp
 MOZY = ../../mozy/help
 
 depend: $(BASEFILES) $(MOZYFILES) $(SPFILES) cptest
-	cd screenshots; $(MAKE)
+	@echo depending in $(LOCATION)
+	@cd screenshots; $(MAKE)
 
 $(BASEFILES):
 	cp -fp $(BASE)/$@ .

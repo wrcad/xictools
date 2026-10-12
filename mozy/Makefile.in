@@ -10,13 +10,19 @@ CXX = @CXX@
 CC = @CC@
 LINKCC = @LINKCC@
 CFLAGS = @CFLAGSG@ @DYNAMIC_LIBS@ @UFLAGS@ -DXICTOOLS
-LFLAGS = @LFLAGS@ @TOOLKITLFLAGS@ @UFLAGS@
+LFLAGS = @LFLAGS@ @UFLAGS@
 MSLIBS = @MSLIBS@
-LIBS = @LIBS@ @TOOLKITLIBS@ @EXTRALIBS@
+LIBS = @LIBS@ @EXTRALIBS@
 OSNAME = @OSNAME@
 ARCH = @ARCH@
-GRPREF = @GRPREF@
-GRPKG = @GRPKG@
+QTPREF = @QTPREF@
+QTPKG = @QTPKG@
+QTLIBS = @QTLIBS@
+QTLFLAGS = @QTLFLAGS@
+GTKPREF = @GTKPREF@
+GTKPKG = @GTKPKG@
+GTKLIBS = @GTKLIBS@
+GTKLFLAGS = @GTKLFLAGS@
 DEPEND_PROG = @DEPEND_PROGXX@ @CFLAGSG@ @DYNAMIC_LIBS@ -DXICTOOLS
 RANLIB = @RANLIB@
 STDCLIB = @STDCLIB@
@@ -29,9 +35,6 @@ XEDRES = @XEDRES@
 TOOLROOT = @TOOLROOT@
 WINPTHREADFIX = @WINPTHREADFIX@
 
-# Where the binaries go, used to just be bin.
-BINDIR = bin/$(GRPKG)
-
 BASE = ../xt_base
 INCLUDE = -Iinclude -I$(BASE)/include
 
@@ -40,45 +43,104 @@ MOZY_VERSION := `./release.sh`
 LOCAL_LIBS = \
   lib/htm.a \
   lib/help.a \
-  lib/$(GRPREF)mozy.a \
   lib/htm.a \
   lib/help.a \
   lib/httpget.a \
   lib/imsave.a \
-  $(BASE)/lib/$(GRPREF)interf.a  \
   $(BASE)/lib/ginterf.a \
   $(BASE)/lib/miscutil.a \
   $(REGEX)
+
+ifdef QTPREF
+libQTmozy = lib/$(QTPREF)mozy.a
+libQTinterf = $(BASE)/lib/$(QTPREF)interf.a
+srcQTmozy = src/$(QTPREF)mozy
+binQTmozy = bin/$(QTPKG)/mozy
+binQTxeditor = bin/$(QTPKG)/xeditor
+QT_LOCAL_LIBS = $(LOCAL_LIBS) $(libQTmozy) $(libQTinterf)
+#QT_LOCAL_LIBS = \
+#  lib/htm.a \
+#  lib/help.a \
+#  $(libQTmozy) \
+#  lib/htm.a \
+#  lib/help.a \
+#  lib/httpget.a \
+#  lib/imsave.a \
+#  $(libQTinterf) \
+#  $(BASE)/lib/ginterf.a \
+#  $(BASE)/lib/miscutil.a \
+#  $(REGEX)
+endif
+
+ifdef GTKPREF
+libGTKmozy = lib/$(GTKPREF)mozy.a
+libGTKinterf = $(BASE)/lib/$(GTKPREF)interf.a
+srcGTKmozy = src/$(GTKPREF)mozy
+binGTKmozy = bin/$(GTKPKG)/mozy
+binGTKxeditor = bin/$(GTKPKG)/xeditor
+GTK_LOCAL_LIBS = $(LOCAL_LIBS) $(libGTKmozy) $(libGTKinterf)
+#GTK_LOCAL_LIBS = \
+#  lib/htm.a \
+#  lib/help.a \
+#  $(libGTKmozy) \
+#  lib/htm.a \
+#  lib/help.a \
+#  lib/httpget.a \
+#  lib/imsave.a \
+#  $(libGTKinterf) \
+#  $(BASE)/lib/ginterf.a \
+#  $(BASE)/lib/miscutil.a \
+#  $(REGEX)
+endif
+
 
 INSTALL_BIN    = $(INSTALL) -s -c -m 0755
 INSTALL_SCRIPT = $(INSTALL) -c -m 0755
 INSTALL_LIB    = $(INSTALL) -c -m 0644
 INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 
-SUBDIRS = src/$(GRPREF)mozy src/help src/htm src/httpget src/imsave
+SUBDIRS = $(srcQTmozy) $(srcGTKmozy) src/help src/htm src/httpget src/imsave
 
-#######################################################################
-####### Executable and related targets ################################
-
-TARGETS = $(GRPKG)/mozy $(GRPKG)/xeditor hlp2latex hlpsrv hlp2html httpget
+TARGETS = mdir $(binQTmozy) $(binQTxeditor) $(binGTKmozy) $(binGTKxeditor) \
+  bin/hlp2latex bin/hlpsrv bin/hlp2html bin/httpget
 
 all:  $(TARGETS)
 
-$(TARGETS)::
-	if [ ! -d $(BINDIR) ]; then \
-	    mkdir $(BINDIR); \
+mdir::
+	@if [ -n "$(QTPKG)" ]; then \
+	    if [ ! -d bin/$(QTPKG) ]; then \
+	        mkdir bin/$(QTPKG); \
+	    fi; \
 	fi    
-	$(MAKE) bin/$@
+	@if [ -n "$(GTKPKG)" ]; then \
+	    if [ ! -d bin/$(GTKPKG) ]; then \
+	        mkdir bin/$(GTKPKG); \
+	    fi; \
+	fi    
 
-$(BINDIR)/mozy: bin/mozy.o $(LOCAL_LIBS) $(MOZYRES)
+ifdef QTPKG
+bin/$(QTPKG)/mozy: bin/mozy.o $(QT_LOCAL_LIBS) $(MOZYRES)
 	@echo $@: dynamic link mozy
-	@$(LINKCC) -o $(BINDIR)/mozy $(LFLAGS) bin/mozy.o $(LOCAL_LIBS) \
-  $(LIBS) $(MOZYRES) $(STDCLIB)
+	@$(LINKCC) -o bin/$(QTPKG)/mozy $(QTLFLAGS) $(LFLAGS) \
+  bin/mozy.o $(QT_LOCAL_LIBS) $(LIBS) $(QTLIBS) $(MOZYRES) $(STDCLIB)
 
-$(BINDIR)/xeditor: bin/xeditor.o $(LOCAL_LIBS) $(XEDRES)
+bin/$(QTPKG)/xeditor: bin/xeditor.o $(QT_LOCAL_LIBS) $(XEDRES)
 	@echo $@: dynamic link
-	@$(LINKCC) -o $(BINDIR)/xeditor $(LFLAGS) bin/xeditor.o $(LOCAL_LIBS) \
-  $(LIBS) $(XEDRES) $(STDCLIB)
+	@$(LINKCC) -o bin/$(QTPKG)/xeditor $(QTLFLAGS) $(LFLAGS) \
+  bin/xeditor.o $(QT_LOCAL_LIBS) $(LIBS) $(QTLIBS) $(XEDRES) $(STDCLIB)
+endif
+
+ifdef GTKPKG
+bin/$(GTKPKG)/mozy: bin/mozy.o $(GTK_LOCAL_LIBS) $(MOZYRES)
+	@echo $@: dynamic link mozy
+	@$(LINKCC) -o bin/$(GTKPKG)/mozy $(GTKLFLAGS) $(LFLAGS) \
+  bin/mozy.o $(GTK_LOCAL_LIBS) $(LIBS) $(GTKLIBS) $(MOZYRES) $(STDCLIB)
+
+bin/$(GTKPKG)/xeditor: bin/xeditor.o $(GTK_LOCAL_LIBS) $(XEDRES)
+	@echo $@: dynamic link
+	@$(LINKCC) -o bin/$(GTKPKG)/xeditor $(GTKLFLAGS) $(LFLAGS) \
+  bin/xeditor.o $(GTK_LOCAL_LIBS) $(LIBS) $(GTKLIBS) $(XEDRES) $(STDCLIB)
+endif
 
 bin/hlp2latex: bin/hlp2latex.o lib/help.a $(BASE)/lib/ginterf.a \
   $(BASE)/lib/miscutil.a
@@ -101,7 +163,7 @@ bin/hlp2html: bin/hlp2html.o lib/help.a $(BASE)/lib/ginterf.a \
 bin/httpget: bin/httpget.o $(LOCAL_LIBS)
 	@echo $@: dynamic link httpget
 	@$(LINKCC) -o bin/httpget $(LFLAGS) bin/httpget.o lib/httpget.a \
-  $(LOCAL_LIBS) $(LIBS) $(STDCLIB)
+  $(LOCAL_LIBS) $(STDCLIB)
 
 bin/httpget.o: bin/httpget.cc
 	$(CXX) $(CFLAGS) $(INCLUDE) -DNO_GRAPHICS -c $*.cc -o $*.o
@@ -122,9 +184,6 @@ bin/xeditor.o: bin/xeditor.cc
 #######################################################################
 ####### Recursively generate libraries ################################
 
-lib/$(GRPREF)mozy.a::
-	$(MAKE) -C src/$(GRPREF)mozy
-
 lib/help.a::
 	$(MAKE) -C src/help
 
@@ -140,8 +199,21 @@ lib/imsave.a::
 $(BASE)/lib/ginterf.a::
 	$(MAKE) -C $(BASE)/ginterf
 
-$(BASE)/lib/$(GRPREF)interf.a::
-	$(MAKE) -C $(BASE)/$(GRPREF)interf
+ifdef QTPREF
+lib/$(QTPREF)mozy.a::
+	$(MAKE) -C src/$(QTPREF)mozy
+
+$(BASE)/lib/$(QTPREF)interf.a::
+	$(MAKE) -C $(BASE)/$(QTPREF)interf
+endif
+
+ifdef GTKPREF
+lib/$(GTKPREF)mozy.a::
+	$(MAKE) -C src/$(GTKPREF)mozy
+
+$(BASE)/lib/$(GTKPREF)interf.a::
+	$(MAKE) -C $(BASE)/$(GTKPREF)interf
+endif
 
 $(BASE)/lib/miscutil.a::
 	$(MAKE) -C $(BASE)/miscutil
@@ -176,23 +248,29 @@ depend::
 
 eclean::
 	-@for a in $(TARGETS); do \
-	    rm -f bin/$$a$(EXESUFFIX); \
+	    if [ -d $$a ]; then \
+	        rm -rf $$a; \
+	    elif [ -f $$a$(EXESUFFIX) ]; then \
+	        rm -rf $$a$(EXESUFFIX); \
+	    fi; \
 	done
-	-@rm -rf $(BINDIR) bin/mozy$(EXESUFFIX) bin/xeditor$(EXESUFFIX)
 
 clean:: eclean
-	-@rm -f bin/*.o
 	-@for a in $(SUBDIRS); do \
-	    $(MAKE) -C $$a $@; \
+	    if [ -d $$a -a -f $$a/Makefile ]; then \
+	        $(MAKE) -C $$a $@; \
+	    fi; \
 	done
+	-@rm -f bin/*.o
 
 distclean:: eclean
-	-@rm -f bin/*.o Makefile
-	-@for a in $(SUBDIRS); do \
-	    $(MAKE) -C $$a distclean; \
+	-@for a in $(SUBDIRS) packages; do \
+	    if [ -d $$a -a -f $$a/Makefile ]; then \
+	        echo "  $$a"; \
+	        $(MAKE) -C $$a $@; \
+	    fi; \
 	done
-	-@$(MAKE) -C packages $@
-	-@rm -rf bin/QT5 bin/QT6 bin/GTK2 bin/GTK3
+	-@rm -f bin/*.o Makefile
 
 #######################################################################
 ####### Installation ##################################################

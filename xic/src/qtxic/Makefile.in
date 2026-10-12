@@ -2,20 +2,20 @@
 LOCATION = xic/src/qtxic
 #######################################################################
 
-GFX_VERSION = @GFX_VERSION@
+XIC_VERSION = @XIC_VERSION@
 DATE = @DATE@
 
 CXX = @CXX@
 CC = @CC@
-CFLAGS = @CFLAGSG@ @NEEDINT64@ @TOOLKITCFLAGS@ @UFLAGS@ @WITH_X11@
-DEPEND_PROG = @DEPEND_PROGXX@ @CFLAGSG@ @NEEDINT64@ @TOOLKITCFLAGS@
+CFLAGS = @CFLAGSG@ @NEEDINT64@ @QTCFLAGS@ @UFLAGS@
+DEPEND_PROG = @DEPEND_PROGXX@ @CFLAGSG@ @NEEDINT64@ @QTCFLAGS@
 WINDRES = @WINDRES@
 AR = @AR@
 LD = @LD@
 RANLIB = @RANLIB@
 FILTER = @FILTER@
 USEMOZY = @USEMOZY@
-TOOLKITINC = @TOOLKITINC@
+TOOLKITINC = @QTINC@
 RESOURCE = @RESOURCE@
 MOC = @MOC@
 
@@ -512,13 +512,13 @@ mocclean:
 	-@rm -f $(MOCFILES)
 
 clean: mocclean
-	-@rm -f *.o $(LIB_TARGET)
+	-@rm -f $(CCOBJS) $(LIB_TARGET)
 
 distclean: clean
 	-@rm -f Makefile
 
 resource.o: ../msw/resource.cc ../msw/xic.rc
-	vers=$(GFX_VERSION); \
+	vers=$(XIC_VERSION); \
 	IFS="$$IFS."; \
 	set $$vers; \
 	$(WINDRES) -DXIC_BIN_VERSION="0,$$1,$$2,$$3" \

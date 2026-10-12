@@ -2,7 +2,7 @@
 LOCATION = wrspice/src/analysis
 #######################################################################
 
-SPICE_VERSION = @SPICE_VERSION@
+WRSPICE_VERSION = @WRSPICE_VERSION@
 DATE = @DATE@
 
 CXX = @CXX@
@@ -48,7 +48,7 @@ depend:
 	fi
 
 clean:
-	-@rm -f *.o $(LIB_TARGET)
+	-@rm -f $(CCOBJS) $(LIB_TARGET)
 
 distclean: clean
 	-@rm -f Makefile

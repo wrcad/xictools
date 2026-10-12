@@ -34,37 +34,43 @@ ITOPOK = --enable-itopok=no
 # replaced by Qt.  Ignore GTK3, it can build but has serious flaws.
 # Qt support is complete and probably post-beta.  Bug reports and
 # comments would be appreciated!  The present recommendation is to
-# build binaries for both QTK2 and Qt, see the README file in this
+# build binaries for both GTK2 and Qt, see the README file in this
 # directory for instructions.
 #
-# If this variable is not set, the programs will be built without a
-# GUI toolkit.  Mozy will not build in this case, Xic can be used in
-# server-mode only, and WRspice will be command-line only.
+# It is currently possible to build the programs with both Qt and
+# GTK packages active, and the user is able to select which package
+# to use at program run-time.  If neither graphics package is set,
+# the programs will be built without a GUI toolkit.  Mozy will not
+# build in this case, Xic can be used in server-mode only, and
+# WRspice will be command-line only.
 #
-# To select a graphics library, uncomment exactly one of the examples
-# below, or create your own assignment appropriate for your computer. 
-# Most of the time this variable can be set to something like
-# "--enable-gtk2=yes", which should always be true for GTK if the
-# pkg-config utility is working.  If can be set to the directory
-# containing pkg-config for GTK.  Otherwise, the value can be the
-# installation location for Qt5/6.  If the qmake program is in your
-# search path "yes" should work here as well.
-#
+# To select a graphics toolkit, uncomment one or both variables in
+# the examples below, or create your own assignment appropriate for
+# your computer. Most of the time the variables can be set to
+# something like "--enable-gtk2=yes", which should always be true
+# for GTK if the pkg-config utility is working.  It can be set to
+# the directory containing pkg-config for GTK.  For Qt, the values
+# can be the installation location for Qt5/6.  If the qmake program
+# is in your search path "yes" should work as well.
+
 # For Windows (MSYS2/MinGW64)
-#GFXLOC = --enable-qt6=/mingw64
-#GFXLOC = --enable-gtk2=/mingw64/bin
+#QTLOC = --enable-qt6=/mingw64
+#GTKLOC = --enable-gtk2=/mingw64/bin
 #
-# For macOS
-#GFXLOC = --enable-qt6=/opt/local/libexec/qt6
-#GFXLOC = --enable-gtk2=yes
+# For macOS (MacPorts)
+#QTLOC = --enable-qt6=/opt/local/libexec/qt6
+#GTKLOC = --enable-gtk2=yes
 #
-# For CentOS/RedHat/Rocky/AlmaLinux/OpenSuSE/Fedora Linux
-#GFXLOC = --enable-qt5=/usr/lib64/qt5
-#GFXLOC = --enable-gtk2=yes
+# Qt6 seems to work fine on recent Linux.  Generally, you just need
+# to replace "qt5" with "qt6" in the examples below.
+#
+# For CentOS/RedHat/Rocky/AlmaLinux/OpenSuSE/Fedora
+#QTLOC = --enable-qt5=/usr/lib64/qt5
+#GTKLOC = --enable-gtk2=yes
 #
 # For Ubuntu-24.04, Debian 12
-#GFXLOC = --enable-qt5=/usr/lib/qt5
-#GFXLOC = --enable-gtk2=yes
+#QTLOC = --enable-qt5=/usr/lib/qt5
+#GTKLOC = --enable-gtk2=yes
 
 # Windows setup.  UNCOMMENT for Windows!  Currently, the programs are
 # built under the MinGW64 environment in MSYS2.  Set this to the
@@ -114,14 +120,18 @@ ITOPOK = --enable-itopok=no
 # from Synopsys, the Python plug-in will link to the Python supplied
 # with PyCellStudio.  OpenAccess above must point to a version "close
 # to" that provided in PyCellStudio, but we need the source for the
-# include files not provided with PyCellStudio.
+# include files not provided with PyCellStudio.  Unfortunately,
+# it seems that the PyCellStudo is no longer available as a free
+# download from Synopsys.
 #
 #CNILOC = \
 #  --enable-cni=/global/apps/customcompiler_2021.09-2/linux64/PyCellStudio
 
 # PSF support in WRspice (for Cadence ADE integration), Linux RHEL6/7
 # only.  If you have this Cadence product, PSF file support can be
-# enabled by setting and uncommenting this variable.
+# enabled by setting and uncommenting this variable.  I have no idea
+# if this has any current value, or if Cadence libraries are still
+# compatible.
 #
 #KITLOC = --enable-psf=/home/stevew/cadence/oasis-kit/tools.lnx86
 
@@ -137,7 +147,10 @@ ifdef HVSECURE
 SECURE = secure
 endif
 ifndef NOMOZY 
-ifdef GFXLOC
+ifdef QTLOC
+MOZY = mozy
+endif
+ifdef GTKLOC
 MOZY = mozy
 endif
 endif
@@ -148,7 +161,8 @@ SUBDIRS = xt_base $(SECURE) $(MOZY) $(WRSPICE) $(XIC) fastcap fasthenry
 #
 #######################################################################
 CFARGS = $(PREFIX) $(TOOLROOT) $(ITOPOK) $(HVSECURE) $(NOMOZY) $(32BIT) \
-  $(OALOC) $(CNILOC) $(KITLOC) $(MINGW) $(GFXLOC) $(PYTHON) $(TCL) $(TK)
+  $(OALOC) $(CNILOC) $(KITLOC) $(MINGW) $(QTLOC) $(GTKLOC)  $(PYTHON) \
+  $(TCL) $(TK)
 
 FLAGFILE = .configured
 
@@ -216,6 +230,7 @@ uninstall::
 depend clean:
 	-@for a in $(SUBDIRS); do \
 	    if [ -d $$a ]; then \
+	        echo $$a; \
 	        (cd $$a; $(MAKE) $@); \
 	    fi; \
 	done
@@ -224,6 +239,7 @@ distclean:
 	-@rm -f $(FLAGFILE)
 	-@for a in $(SUBDIRS); do \
 	    if [ -d $$a ]; then \
+	        echo $$a; \
 	        (cd $$a; $(MAKE) $@); \
 	    fi; \
 	done

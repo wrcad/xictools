@@ -1,5 +1,5 @@
 #######################################################################
-# wrspice/devlib/include
+LOCATION = devlib/include
 #######################################################################
 
 HFILES = gencurrent.h tempr.h
@@ -7,6 +7,7 @@ SPHFILES = circuit.h device.h acdefs.h dctdefs.h distdefs.h noisdefs.h \
     errors.h ifcx.h ifdata.h inpline.h input.h stab.h
 
 depend: $(SPHFILES)
+	@echo depending in $(LOCATION)
 
 $(SPHFILES):
 	cp -fp ../../include/$@ .

@@ -758,7 +758,7 @@ CommandTab::arg_display(wordlist*, sCommand*)
 }
 
 
-#ifndef WITH_GRFXTK
+#ifndef HAVE_GRAPHICS_PKG
 
 // Stubs for commands provided by graphics code for linking without
 // a graphics toolkit.
@@ -768,6 +768,9 @@ CommandTab::com_setrdb(wordlist*) { }
 
 void
 CommandTab::com_setfont(wordlist*) { }
+
+void
+CommandTab::com_savefonts(wordlist*) { }
 
 void
 CommandTab::com_tbsetup(wordlist*) { }

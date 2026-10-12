@@ -5,7 +5,8 @@ LOCATION = xt_base
 DATE = @DATE@
 MALLOC = @MALLOC@
 REGEX = @REGEX@
-GRPREF = @GRPREF@
+QTPREF = @QTPREF@
+GTKPREF = @GTKPREF@
 MSW = @MSW@
 
 ifdef MALLOC
@@ -16,8 +17,11 @@ ifdef REGEX
 REGEX_DIR = regex
 endif
 
-ifdef GRPREF
-GRPREF_DIR = $(GRPREF)interf
+ifdef QTPREF
+QTPREF_DIR = $(QTPREF)interf
+endif
+ifdef GTKPREF
+GTKPREF_DIR = $(GTKPREF)interf
 endif
 
 ifdef MSW
@@ -28,7 +32,8 @@ SUBDIRS = \
   miscutil \
   ginterf \
   util \
-  $(GRPREF_DIR) \
+  $(QTPREF_DIR) \
+  $(GTKPREF_DIR) \
   $(MSW_DIR) \
   $(MALLOC_DIR) \
   $(REGEX_DIR)
@@ -51,11 +56,16 @@ depend clean:
 	done
 
 distclean:
-	-@for a in $(SUBDIRS) packages; do \
-	    if [ -d $$a ]; then \
+	-@for a in $(SUBDIRS); do \
+	    if [ -d $$a -a -e $$a/Makefile ]; then \
+	        echo "  $$a"; \
 	        $(MAKE) -C $$a $@; \
 	    fi; \
 	done
+	-@mv -f packages/pkgfiles/README packages
+	-@rm -rf packages/pkgfiles
+	-@mkdir packages/pkgfiles
+	-@mv packages/README packages/pkgfiles
 	-@rm -f config.cache config.log config.status configure Makefile
 	-@rm -rf lib autom4te.cache
 	-@rm -f include/config.h include/grconfig.h

@@ -17,7 +17,7 @@ ARCH = $(word 3, $(VSTR))
 DLL_LOC = c:/usr/local/xictools/bin
 
 # This Makefile originated from this distribution:
-#GFX_VERSION = @GFX_VERSION@
+#XIC_VERSION = @XIC_VERSION@
 #OSNAME = @OSNAME@
 #CXX = @CXX@
 #CC = @CC@

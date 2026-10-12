@@ -110,8 +110,7 @@
 #include "miscutil/miscutil.h"
 #endif
 
-#ifndef WITH_GRFXTK
-
+#ifndef HAVE_GRAPHICS_PKG
 // Running without a graphics toolkit, define stubs at the top level.
 class NULLpkg : public DSPpkg
 {
@@ -156,8 +155,8 @@ void
 GRpkg::DevDepInit(unsigned int)
 {
 }
-
 #endif
+
 
 // Set up the ginterf package, include all drivers.
 //

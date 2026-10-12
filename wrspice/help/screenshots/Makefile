@@ -1,5 +1,6 @@
-# wrspice/lib/help/screenshots/Makefile
-# $Id:$
+#######################################################################
+LOCATION = wrspice/help/screenshots
+#######################################################################
 
 BASESSFILES = \
   filesel.png print.png
@@ -11,6 +12,7 @@ BASESSHOTS = ../../../xt_base/help/screenshots
 MOZYSSHOTS = ../../../mozy/help/screenshots
 
 depend: $(BASESSFILES) $(MOZYSSFILES)
+	@echo depending in $(LOCATION)
 
 $(BASESSFILES):
 	cp -fp $(BASESSHOTS)/$@ .

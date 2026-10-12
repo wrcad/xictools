@@ -1,4 +1,6 @@
-# xic/lib/help/Makefile
+#######################################################################
+LOCATION = xic/help
+#######################################################################
 
 XPMS = \
   arc.xpm box.xpm break.xpm deck.xpm desel.xpm devs.xpm donut.xpm \
@@ -26,7 +28,8 @@ SPBASE = ../../xt_base/sphelp
 MOZY = ../../mozy/help
 
 depend: $(BASEFILES) $(MOZYFILES) $(SPFILES) cptest
-	cd screenshots; $(MAKE)
+	@echo depending in $(LOCATION)
+	@cd screenshots; $(MAKE)
 
 # Most browsers don't handle xpm files anymore so the exported images
 # are changed to png, ImageMagick is used for this.  These are

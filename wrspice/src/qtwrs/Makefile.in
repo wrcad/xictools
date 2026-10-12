@@ -4,20 +4,20 @@
 # $Id: Makefile.in,v 1.4 2008/10/28 02:39:22 stevew Exp $
 #######################################################################
 
-SPICE_VERSION = @SPICE_VERSION@
+WRSPICE_VERSION = @WRSPICE_VERSION@
 DATE = @DATE@
 
 CXX = @CXX@
 CC = @CC@
-CFLAGS = @CFLAGSG@ @NEEDINT64@ @TOOLKITCFLAGS@ @UFLAGS@ -DWRSPICE
-DEPEND_PROG = @DEPEND_PROGXX@ @CFLAGSG@ @NEEDINT64@ @TOOLKITCFLAGS@ -DWRSPICE
+CFLAGS = @CFLAGSG@ @NEEDINT64@ @QTCFLAGS@ @UFLAGS@ -DWRSPICE
+DEPEND_PROG = @DEPEND_PROGXX@ @CFLAGSG@ @NEEDINT64@ @QTCFLAGS@ -DWRSPICE
 WINDRES = @WINDRES@
 AR = @AR@
 LD = @LD@
 RANLIB = @RANLIB@
 FILTER = @FILTER@
 USEMOZY = @USEMOZY@
-TOOLKITINC = @TOOLKITINC@
+QTINC = @QTINC@
 RESOURCE = @RESOURCE@
 MOC = @MOC@
 
@@ -86,10 +86,10 @@ $(LIB_TARGET): $(LIBOBJS)
 	$(RANLIB) $(LIB_TARGET)
 
 .cpp.o:
-	$(CXX) -c $(CFLAGS) $(INCLUDE) $(TOOLKITINC) -o $@ $<
+	$(CXX) -c $(CFLAGS) $(INCLUDE) $(QTINC) -o $@ $<
 
 .cc.o:
-	$(CXX) -c $(CFLAGS) $(INCLUDE) $(TOOLKITINC) $*.cc
+	$(CXX) -c $(CFLAGS) $(INCLUDE) $(QTINC) $*.cc
 
 moc_circuits.o: moc_circuits.cpp
 moc_cmds.o: moc_cmds.cpp
@@ -151,7 +151,7 @@ depend:
 	@echo depending in wrspice/gtkwrs
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
-	    $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) $(TOOLKITINC) $(CCFILES) \
+	    $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) $(QTINC) $(CCFILES) \
   $(FILTER) >> Makefile; \
 	fi
 
@@ -160,13 +160,13 @@ mocclean:
 	-@rm -f $(MOCFILES)
 
 clean: mocclean
-	-@rm *.o $(LIB_TARGET)
+	-@rm -f $(CCOBJS) $(LIB_TARGET)
 
-distclean:
-	-@rm *.o $(LIB_TARGET) Makefile
+distclean: clean
+	-@rm -f Makefile
 
 resource.o: ../msw/resource.cc ../msw/wrs.rc
-	vers=$(SPICE_VERSION); \
+	vers=$(WRSPICE_VERSION); \
 	IFS="$$IFS."; \
 	set $$vers; \
 	$(WINDRES) -DWRSPICE_RESOURCE -DWRS_BIN_VERSION="0,$$1,$$2,$$3" \

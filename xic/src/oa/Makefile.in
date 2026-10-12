@@ -2,7 +2,7 @@
 LOCATION = xic/src/oa
 #######################################################################
 
-GFX_VERSION = @GFX_VERSION@
+XIC_VERSION = @XIC_VERSION@
 DATE = @DATE@
 
 CXX = @CXX@
@@ -58,7 +58,7 @@ depend:
 	fi
 
 clean:
-	-@rm -f *.o $(LIB_TARGET) $(SHLIB_TARGET)
+	-@rm -f $(CCOBJS) $(LIB_TARGET) $(SHLIB_TARGET)
 
 distclean: clean
 	-@rm -f Makefile

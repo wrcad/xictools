@@ -1,7 +1,5 @@
 #######################################################################
-# devlib/ufsoi/Makefile.in
-#######################################################################
-# $Id: Makefile.in,v 2.28 2015/10/04 20:05:29 stevew Exp $
+LOCATION = devlib/ufsoi-7.5
 #######################################################################
 
 DEVLIB_VERSION = @DEVLIB_VERSION@
@@ -44,7 +42,7 @@ $(TARGET): $(COBJS)
 	$(CC) $(CFLAGS) $(PIC_OPT) $(INCLUDE) $(DEFS) -c $*.c
 
 depend: $(COPYFILES)
-	@echo depending in devlib/ufsoi-7.5
+	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    if [ "z$(CCFILES)" != "z" ]; then \

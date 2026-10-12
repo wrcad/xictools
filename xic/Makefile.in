@@ -3,7 +3,7 @@ LOCATION = xic
 #######################################################################
 
 DATE = @DATE@
-GFX_VERSION = @GFX_VERSION@
+XIC_VERSION = @XIC_VERSION@
 
 prefix = @prefix@
 itopok = @itopok@
@@ -11,16 +11,22 @@ CXX = @CXX@
 CC = @CC@
 LINKCC = @LINKCC@
 CFLAGS = @CFLAGSG@ @DYNAMIC_LIBS@ @NEEDINT64@ @UFLAGS@ @WITH_X11@
-LFLAGS = @LFLAGS@ @TOOLKITLFLAGS@ @UFLAGS@
+LFLAGS = @LFLAGS@ @UFLAGS@
 LSHFLAG = @LSHFLAG@
-LIBS = @LIBS@ @TOOLKITLIBS@ @EXTRALIBS@ $(X_LIB)
+LIBS = @LIBS@ @EXTRALIBS@ $(X_LIB)
 LIBDL = @LIBDL@
 STDCLIB = @STDCLIB@
 OSNAME = @OSNAME@
 ARCH = @ARCH@
 DIST_SUFFIX = @DIST_SUFFIX@
-GRPREF = @GRPREF@
-GRPKG = @GRPKG@
+QTPREF = @QTPREF@
+QTPKG = @QTPKG@
+QTLIBS = @QTLIBS@
+QTLFLAGS = @QTLFLAGS@
+GTKPREF = @GTKPREF@
+GTKPKG = @GTKPKG@
+GTKLIBS = @GTKLIBS@
+GTKLFLAGS = @GTKLFLAGS@
 DEPEND_PROG = @DEPEND_PROGXX@ @CFLAGSG@ @DYNAMIC_LIBS@ @NEEDINT64@
 INSTALL = @INSTALL@
 SOEXT = @SOEXT@
@@ -35,35 +41,16 @@ TOOLROOT = @TOOLROOT@
 WINPTHREADFIX = @WINPTHREADFIX@
 WITH_X11 = @WITH_X11@
 
-# Where the binaries go, used to just be bin.
-BINDIR = bin/$(GRPKG)
+BUG_ADDR = xic@wrcad.com
 
 ifdef WITH_X11
 X_LIB = -lX11
 endif
 
-BUG_ADDR = xic@wrcad.com
-
 INSTALL_BIN    = $(INSTALL) -s -c -m 0755
 INSTALL_SCRIPT = $(INSTALL) -c -m 0755
 INSTALL_LIB    = $(INSTALL) -c -m 0644
 INSTALL_LIB_RO = $(INSTALL) -c -m 0444
-
-ifdef GRPREF
-GRPREF_DIR = src/$(GRPREF)xic
-GRPREF_LIB = src/$(GRPREF)xic/$(GRPREF)xic.a
-GRPREF_BASELIB = $(BASE)/lib/$(GRPREF)interf.a
-endif
-
-SUBDIRS = \
-  $(GRPREF_DIR) src/cd src/display src/drc src/edit src/extract src/fileio \
-  src/geom src/main src/parser src/sced src/wrspif src/sparse src/tech \
-  $(OA_SUBDIR)
-SUBDIR_LIBS = \
-  $(GRPREF_LIB) src/cd/cd.a src/display/display.a \
-  src/fileio/fileio.a src/geom/geom.a src/main/main.a src/parser/parser.a \
-  src/sparse/sparse.a src/wrspif/wrspif.a src/tech/tech.a src/edit/edit.a \
-  src/sced/sced.a src/drc/drc.a src/extract/extract.a
 
 BASE = ../xt_base
 
@@ -75,13 +62,17 @@ else
 INCLUDE = -Iinclude -I$(BASE)/include
 endif
 
-ifdef GRPREF
+ifndef QTPREF
+ifndef GTKPREF
+USEMOZY = no
+binQTxic = bin/xic
+endif
+endif
 ifeq ($(USEMOZY), yes)
 MOZY = ../mozy
-MOZYLIBS1 = $(MOZY)/lib/htm.a $(MOZY)/lib/help.a $(MOZY)/lib/$(GRPREF)mozy.a
+MOZYLIBS1 = $(MOZY)/lib/htm.a $(MOZY)/lib/help.a
 MOZYLIBS2 = $(MOZY)/lib/htm.a $(MOZY)/lib/help.a $(MOZY)/lib/httpget.a \
   $(MOZY)/lib/imsave.a
-endif
 endif
 
 LOCAL_LIBS = \
@@ -91,7 +82,6 @@ LOCAL_LIBS = \
   src/tech/tech.a \
   src/edit/edit.a \
   src/sced/sced.a \
-  $(GRPREF_LIB) \
   src/main/main.a \
   src/drc/drc.a \
   src/extract/extract.a \
@@ -107,49 +97,187 @@ LOCAL_LIBS = \
   src/wrspif/wrspif.a \
   $(SECURELIB) \
   $(MOZYLIBS1) \
-  $(GRPREF_BASELIB) \
   $(BASE)/lib/ginterf.a \
   $(BASE)/lib/miscutil.a \
   $(MOZYLIBS2) \
   $(REGEX)
 
+ifdef QTPREF
+srcQTxic = src/$(QTPREF)xic
+srcQTxicLib = src/$(QTPREF)xic/$(QTPREF)xic.a
+baseQTinterfLib = $(BASE)/lib/$(QTPREF)interf.a
+binQTxic = bin/$(QTPKG)/xic
+ifeq ($(USEMOZY), yes)
+MOZYLIBS_QT = $(MOZY)/lib/$(QTPREF)mozy.a
+endif
+QT_LOCAL_LIBS = \
+  $(LOCAL_LIBS) $(srcQTxicLib) $(MOZYLIBS_QT) $(baseQTinterfLib)
+#QT_LOCAL_LIBS = \
+#  src/main/main.a \
+#  src/drc/drc.a \
+#  src/extract/extract.a \
+#  src/tech/tech.a \
+#  src/edit/edit.a \
+#  src/sced/sced.a \
+#  $(srcQTxicLib) \
+#  src/main/main.a \
+#  src/drc/drc.a \
+#  src/extract/extract.a \
+#  src/tech/tech.a \
+#  src/edit/edit.a \
+#  src/sced/sced.a \
+#  src/display/display.a \
+#  src/parser/parser.a \
+#  src/geom/geom.a  \
+#  src/fileio/fileio.a \
+#  src/cd/cd.a \
+#  src/sparse/sparse.a \
+#  src/wrspif/wrspif.a \
+#  $(SECURELIB) \
+#  $(MOZYLIBS1) \
+#  $(MOZYLIBS_QT) \
+#  $(baseQTinterfLib) \
+#  $(BASE)/lib/ginterf.a \
+#  $(BASE)/lib/miscutil.a \
+#  $(MOZYLIBS2) \
+#  $(REGEX)
+endif
+
+ifdef GTKPREF
+srcGTKxic = src/$(GTKPREF)xic
+srcGTKxicLib = src/$(GTKPREF)xic/$(GTKPREF)xic.a
+baseGTKinterfLib = $(BASE)/lib/$(GTKPREF)interf.a
+binGTKxic = bin/$(GTKPKG)/xic
+ifeq ($(USEMOZY), yes)
+MOZYLIBS_GTK = $(MOZY)/lib/$(GTKPREF)mozy.a
+endif
+GTK_LOCAL_LIBS = \
+  $(LOCAL_LIBS) $(srcGTKxicLib) $(MOZYLIBS_GTK) $(baseGTKinterfLib)
+#GTK_LOCAL_LIBS = \
+#  src/main/main.a \
+#  src/drc/drc.a \
+#  src/extract/extract.a \
+#  src/tech/tech.a \
+#  src/edit/edit.a \
+#  src/sced/sced.a \
+#  $(srcGTKxicLib) \
+#  src/main/main.a \
+#  src/drc/drc.a \
+#  src/extract/extract.a \
+#  src/tech/tech.a \
+#  src/edit/edit.a \
+#  src/sced/sced.a \
+#  src/display/display.a \
+#  src/parser/parser.a \
+#  src/geom/geom.a  \
+#  src/fileio/fileio.a \
+#  src/cd/cd.a \
+#  src/sparse/sparse.a \
+#  src/wrspif/wrspif.a \
+#  $(SECURELIB) \
+#  $(MOZYLIBS1) \
+#  $(MOZYLIBS_GTK) \
+#  $(baseGTKinterfLib) \
+#  $(BASE)/lib/ginterf.a \
+#  $(BASE)/lib/miscutil.a \
+#  $(MOZYLIBS2) \
+#  $(REGEX)
+endif
+
+SUBDIRS = \
+  $(srcQTxic) $(srcGTKxic) src/cd src/display src/drc src/edit \
+  src/extract src/fileio src/geom src/main src/parser src/sced src/wrspif \
+  src/sparse src/tech $(OA_SUBDIR)
+SUBDIR_LIBS = \
+  $(srcQTxicLib) $(srcGTKxicLib) src/cd/cd.a src/display/display.a \
+  src/fileio/fileio.a src/geom/geom.a src/main/main.a src/parser/parser.a \
+  src/sparse/sparse.a src/wrspif/wrspif.a src/tech/tech.a src/edit/edit.a \
+  src/sced/sced.a src/drc/drc.a src/extract/extract.a
+
 #######################################################################
 ####### Executable targets ############################################
 
-TARGETS = $(GRPKG)/xic wrencode wrdecode wrsetpass
+TARGETS = mdir $(binQTxic) $(binGTKxic) bin/wrencode bin/wrdecode bin/wrsetpass
 all:  cptest $(TARGETS) plugins
 
 cptest:
-	$(MAKE) -C help cptest
-	$(MAKE) -C src/sparse cptest
-	$(MAKE) -C src/wrspif cptest
+	@$(MAKE) -C help cptest
+	@$(MAKE) -C src/sparse cptest
+	@$(MAKE) -C src/wrspif cptest
 
-$(TARGETS)::
-	if [ ! -d $(BINDIR) ]; then \
-	    mkdir $(BINDIR); \
-	fi    
-	$(MAKE) bin/$@
+mdir::
+	@if [ -n "$(QTPKG)" ]; then \
+	    if [ ! -d bin/$(QTPKG) ]; then \
+	        mkdir bin/$(QTPKG); \
+	    fi; \
+	fi
+	@if [ -n "$(GTKPKG)" ]; then \
+	    if [ ! -d bin/$(GTKPKG) ]; then \
+	        mkdir bin/$(GTKPKG); \
+	    fi; \
+	fi
 
 ifeq ($(OSNAME), MINGW)
 
 # For Windows, create xic with everything in a DLL, so that we can
 # link plugins against the DLL.
 
-$(BINDIR)/xic: bin/main.cc $(BINDIR)/xic.dll
-	$(CC) -o $(BINDIR)/xic bin/main.cc src/$(GRPREF)xic/resource.o \
-  -L$(BINDIR) -lxic
+ifdef QTPKG
+bin/$(QTPKG)/xic: bin/main.cc bin/$(QTPKG)/xic.dll
+	$(CC) -o bin/$(QTPKG)/xic bin/main.cc \
+  src/$(QTPREF)xic/resource.o -Lbin/$(QTPKG) -lxic
 
-$(BINDIR)/xic.dll: bin/xic.o $(LOCAL_LIBS) $(MALLOC)
+bin/$(QTPKG)/xic.dll: bin/xic.o $(QT_LOCAL_LIBS) $(MALLOC)
 	@echo $@: dynamic link
-	@$(LINKCC) $(LSHFLAG) -o $(BINDIR)/xic.dll $(LFLAGS) bin/xic.o \
+	@$(LINKCC) $(LSHFLAG) -o bin/$(QTPKG)/xic.dll $(QTLFLAGS) \
+  $(LFLAGS) bin/xic.o $(QT_LOCAL_LIBS) $(LIBS) $(QTLIBS) \
+  $(MALLOC) $(STDCLIB)
+endif
+ifdef GTKPKG
+bin/$(GTKPKG)/xic: bin/main.cc bin/$(GTKPKG)/xic.dll
+	$(CC) -o bin/$(GTKPKG)/xic bin/main.cc \
+  src/$(GTKPREF)xic/resource.o -Lbin/$(GTKPKG) -lxic
+
+bin/$(QTPKG)/xic.dll: bin/xic.o $(GTK_LOCAL_LIBS) $(MALLOC)
+	@echo $@: dynamic link
+	@$(LINKCC) $(LSHFLAG) -o bin/$(GTKPKG)/xic.dll $(GTKLFLAGS) \
+  $(LFLAGS) bin/xic.o $(GTK_LOCAL_LIBS) $(LIBS) $(GTKLIBS) \
+  $(MALLOC) $(STDCLIB)
+endif
+ifndef QTPKG
+ifndef GTKPKG
+bin/xic: bin/main.cc bin/xic.dll
+	$(CC) -o bin/xic bin/main.cc -Lbin -lxic
+
+bin/xic.dll: bin/xic.o $(LOCAL_LIBS) $(MALLOC)
+	@echo $@: dynamic link
+	@$(LINKCC) $(LSHFLAG) -o bin/xic.dll $(LFLAGS) bin/xic.o \
   $(LOCAL_LIBS) $(LIBS) $(MALLOC) $(STDCLIB)
+endif
+endif
 
 else
 
-$(BINDIR)/xic: bin/xic.o $(LOCAL_LIBS) $(MALLOC) $(OA_SUBDIR)
+ifdef QTPKG
+bin/$(QTPKG)/xic: bin/xic.o $(QT_LOCAL_LIBS) $(MALLOC) $(OA_SUBDIR)
 	-@echo $@: dynamic link;
-	-@$(LINKCC) -o $(BINDIR)/xic $(LFLAGS) bin/xic.o \
-  $(LOCAL_LIBS) $(LIBS) $(MALLOC) $(STDCLIB)
+	-@$(LINKCC) -o bin/$(QTPKG)/xic $(QTLFLAGS) $(LFLAGS) bin/xic.o \
+  $(QT_LOCAL_LIBS) $(LIBS) $(QTLIBS) $(MALLOC) $(STDCLIB)
+endif
+ifdef GTKPKG
+bin/$(GTKPKG)/xic: bin/xic.o $(GTK_LOCAL_LIBS) $(MALLOC) $(OA_SUBDIR)
+	-@echo $@: dynamic link;
+	-@$(LINKCC) -o bin/$(GTKPKG)/xic $(GTKLFLAGS) $(LFLAGS) bin/xic.o \
+  $(GTK_LOCAL_LIBS) $(LIBS) $(GTKLIBS) $(MALLOC) $(STDCLIB)
+endif
+ifndef QTPKG
+ifndef GTKPKG
+bin/xic: bin/xic.o $(LOCAL_LIBS) $(MALLOC) $(OA_SUBDIR)
+	-@echo $@: dynamic link;
+	-@$(LINKCC) -o bin/xic $(LFLAGS) bin/xic.o $(LOCAL_LIBS) \
+  $(LIBS) $(MALLOC) $(STDCLIB)
+endif
+endif
 
 endif
 
@@ -212,22 +340,52 @@ $(MALLOC)::
 $(BASE)/lib/ginterf.a::
 	$(MAKE) -C $(BASE)/ginterf
 
-ifdef GRPREF
-$(BASE)/lib/$(GRPREF)interf.a::
-	$(MAKE) -C $(BASE)/$(GRPREF)interf
-endif
-
 $(BASE)/lib/miscutil.a::
 	$(MAKE) -C $(BASE)/miscutil
 
 $(BASE)/lib/libregex.a::
 	$(MAKE) -C $(BASE)/regex
 
-ifdef GRPREF
+ifdef QTPREF
+$(BASE)/lib/$(GRPREF)interf.a::
+	$(MAKE) -C $(BASE)/$(GRPREF)interf
+
 ifeq ($(USEMOZY), yes)
-$(MOZY)/lib/$(GRPREF)mozy.a::
-	if [ -d $(MOZY)/src/$(GRPREF)mozy ]; then \
-	    $(MAKE) -C $(MOZY)/src/$(GRPREF)mozy ; \
+$(MOZY)/lib/$(QTPREF)mozy.a::
+	if [ -d $(MOZY)/src/$(QTPREF)mozy ]; then \
+	    $(MAKE) -C $(MOZY)/src/$(QTPREF)mozy ; \
+	fi
+
+$(MOZY)/lib/help.a::
+	if [ -d $(MOZY)/src/help ]; then \
+	    $(MAKE) -C $(MOZY)/src/help ; \
+	fi
+
+$(MOZY)/lib/htm.a::
+	if [ -d $(MOZY)/src/htm ]; then \
+	    $(MAKE) -C $(MOZY)/src/htm ; \
+	fi
+
+$(MOZY)/lib/httpget.a::
+	if [ -d $(MOZY)/src/httpget ]; then \
+	    $(MAKE) -C $(MOZY)/src/httpget ; \
+	fi
+
+$(MOZY)/lib/imsave.a::
+	if [ -d $(MOZY)/src/imsave ] ; then \
+	    $(MAKE) -C $(MOZY)/src/imsave ; \
+	fi
+endif
+endif
+
+ifdef GTKPREF
+$(BASE)/lib/$(GRPREF)interf.a::
+	$(MAKE) -C $(BASE)/$(GRPREF)interf
+
+ifeq ($(USEMOZY), yes)
+$(MOZY)/lib/$(GTKPREF)mozy.a::
+	if [ -d $(MOZY)/src/$(GTKPREF)mozy ]; then \
+	    $(MAKE) -C $(MOZY)/src/$(GTKPREF)mozy ; \
 	fi
 
 $(MOZY)/lib/help.a::
@@ -270,7 +428,7 @@ DARGS = \
   -DARCH="\"$(ARCH)\"" \
   -DDIST_SUFFIX="\"$(DIST_SUFFIX)\"" \
   -DTOOLS_ROOT="\"$(TOOLROOT)\"" \
-  -DVERSION_STR=\"$(GFX_VERSION)\" \
+  -DVERSION_STR=\"$(XIC_VERSION)\" \
   -DSPICE_PROG=\"wrspice\" \
   -DBUG_ADDR=\"$(BUG_ADDR)\" \
   -DBUILD_DATE="\"$(DATE)\""
@@ -301,12 +459,12 @@ depend:
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    for a in $(CCFILES); do \
-	      $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) $$a -MT bin/`basename $$a .cc`.o \
-  $(FILTER) >> Makefile; \
+	        $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) $$a -MT \
+  bin/`basename $$a .cc`.o $(FILTER) >> Makefile; \
 	    done; \
 	    if [ -n "$(EXESUFFIX)" ]; then \
-	      $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) bin/main.cc -MT bin/main.o \
-  $(FILTER) >> Makefile; \
+	        $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) bin/main.cc -MT \
+  bin/main.o $(FILTER) >> Makefile; \
 	    fi; \
 	fi
 
@@ -314,31 +472,43 @@ depend:
 ####### Clean up ######################################################
 
 eclean:
-	-@for a in $(TARGETS); do \
-	    rm -f bin/$$a$(EXESUFFIX); \
+	-@for a in $(TARGETS) bin/xic bin/xic.dll bin/sa-filetool; do \
+	    if [ -d $$a ]; then \
+	        rm -rf $$a; \
+	    elif [ -f $$a$(EXESUFFIX) ]; then \
+	        rm -f $$a$(EXESUFFIX); \
+	    fi; \
 	done
-	-@rm -f bin/sa-filetool$(EXESUFFIX)
-	-@rm -rf $(BINDIR) bin/xic$(EXESUFFIX)
 
 clean: eclean
 	-@for a in $(SUBDIRS) plugins; do \
-	    $(MAKE) -C $$a $@; \
+	    if [ -d $$a -a -f $$a/Makefile ]; then \
+	        $(MAKE) -C $$a $@; \
+	    fi; \
 	done
 	-@rm -f bin/*.o
 
 distclean: eclean
 	-@for a in $(SUBDIRS) src/scrkit include help startup  plugins \
   packages; do \
-	    $(MAKE) -C $$a $@; \
+	    if [ -d $$a -a -f $$a/Makefile ]; then \
+	        echo "  $$a"; \
+	        $(MAKE) -C $$a $@; \
+	    fi; \
 	done
 	-@rm -f bin/*.o Makefile
-	-@rm -rf bin/QT5 bin/QT6 bin/GTK2 bin/GTK3
 
-ifdef GRPREF
-grclean:
-	$(MAKE) -C src/$(GRPREF)xic clean
-	$(MAKE) -C ../mozy/src/$(GRPREF)mozy clean
-	$(MAKE) -C ../xt_base/$(GRPREF)interf clean
+ifdef QTPREF
+qtclean:
+	$(MAKE) -C src/$(QTPREF)xic clean
+	$(MAKE) -C ../mozy/src/$(QTPREF)mozy clean
+	$(MAKE) -C ../xt_base/$(QTPREF)interf clean
+endif
+ifdef GTKPREF
+gtkclean:
+	$(MAKE) -C src/$(GTKPREF)xic clean
+	$(MAKE) -C ../mozy/src/$(GTKPREF)mozy clean
+	$(MAKE) -C ../xt_base/$(GTKPREF)interf clean
 endif
 
 #######################################################################
@@ -531,7 +701,7 @@ $(destn)/docs::
 	    cp docs/$$a $@; \
 	done
 	IFS="."; \
-	tmp=$(GFX_VERSION); \
+	tmp=$(XIC_VERSION); \
 	set -- $$tmp; \
 	cp docs/xic$$1.$$2 $@
 

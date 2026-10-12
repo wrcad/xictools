@@ -2,7 +2,7 @@
 LOCATION = xic/src/wrspif
 #######################################################################
 
-GFX_VERSION = @GFX_VERSION@
+XIC_VERSION = @XIC_VERSION@
 DATE = @DATE@
 
 CXX = @CXX@
@@ -49,7 +49,7 @@ depend: $(SPFILES)
 	fi
 
 clean:
-	-@rm -f *.o $(LIB_TARGET) $(SPFILES)
+	-@rm -f $(CCOBJS) $(LIB_TARGET) $(SPFILES)
 
 distclean: clean
 	-@rm -f Makefile

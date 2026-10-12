@@ -209,16 +209,14 @@ cKsMap::on_null_ptr()
 }
 
 
-#ifndef WITH_GRFXTK
-
 // Stubs for functions defined in graphical toolkit, include when
 // not building with toolkit.
+#ifndef HAVE_GRAPHICS_PKG
 void cKsMap::SetMap(int, unsigned) { }
 char *cKsMap::KeyvalToString(unsigned int) { return (0); }
 unsigned int cKsMap::StringToKeyval(const char*) { return (0); }
 void cKsMap::init() { }
 int cKsMap::filter_key(unsigned) { return (0); }
-
 #endif
 
 

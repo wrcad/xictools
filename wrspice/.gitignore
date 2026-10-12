@@ -12,6 +12,9 @@ bin/proc2mod
 bin/proc2mod.exe
 bin/wrspiced
 bin/wrspiced.exe
+bin/wrspice
+bin/wrspice.exe
+bin/wrspice.dll
 help/Accessories.hlp
 help/FileSel.hlp
 help/Graphics.hlp

@@ -1,5 +1,5 @@
 #######################################################################
-# wrspice/devlib/adms/include
+LOCATION = devlib/adms/include
 #######################################################################
 
 SPHFILES = circuit.h device.h acdefs.h dctdefs.h distdefs.h noisdefs.h \
@@ -7,6 +7,7 @@ SPHFILES = circuit.h device.h acdefs.h dctdefs.h distdefs.h noisdefs.h \
 INCL = ../../..
 
 depend: $(SPHFILES)
+	@echo depending in $(LOCATION)
 
 $(SPHFILES):
 	cp -fp $(INCL)/include/$@ .

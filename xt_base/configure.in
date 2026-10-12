@@ -63,23 +63,23 @@ fi
 
 DATE=`/bin/date`
 if test -d ../wrspice; then
-    SPICE_VERSION=`../wrspice/release.sh wrspice`
+    WRSPICE_VERSION=`../wrspice/release.sh wrspice`
     DEVLIB_VERSION=`../wrspice/release.sh devlib`
     DEVLIB_SHARED_FILE=libwrsdev.so.2.0
     DEVLIB_STATIC_FILE=libwrsdev.a
 fi
 if test -d ../xic; then
-    GFX_VERSION=`../xic/release.sh xic`
+    XIC_VERSION=`../xic/release.sh xic`
 fi
 TOOLROOT=$toolroot
 AC_SUBST(prefix)
 AC_SUBST(itopok)
 AC_SUBST(DATE)
-AC_SUBST(SPICE_VERSION)
+AC_SUBST(WRSPICE_VERSION)
 AC_SUBST(DEVLIB_VERSION)
 AC_SUBST(DEVLIB_SHARED_FILE)
 AC_SUBST(DEVLIB_STATIC_FILE)
-AC_SUBST(GFX_VERSION)
+AC_SUBST(XIC_VERSION)
 AC_SUBST(TOOLROOT)
 
 dnl ***
@@ -282,77 +282,71 @@ if test $enable_profiling = yes; then
 fi
 )
 
-GRPKG=""
-
 dnl --enable-qt5[=config_dir]
 dnl link with qt5
 AC_ARG_ENABLE(qt5,   [  ]--enable-qt5[[=config_dir]]            link with qt5,
 if test $enable_qt5 != yes -a $enable_qt5 != no; then
     qtloc=$enable_qt5
     qtlocd="$enable_qt5/"
-    GRPKG="QT5"
+    QTPKG="QT5"
 elif test $enable_qt5 == yes; then
-    GRPKG="QT5"
+    QTPKG="QT5"
 fi
 )
 
-if test -z $GRPKG; then
 dnl --enable-qt6[=config_dir]
 dnl link with qt6
 AC_ARG_ENABLE(qt6,   [  ]--enable-qt6[[=config_dir]]            link with qt6,
 if test $enable_qt6 != yes -a $enable_qt6 != no; then
     qtloc=$enable_qt6
     qtlocd="$enable_qt6/"
-    GRPKG="QT6"
+    QTPKG="QT6"
 elif test $enable_qt6 == yes; then
-    GRPKG="QT6"
+    QTPKG="QT6"
 fi
 )
-fi
 
-if test -z $GRPKG; then
 dnl --enable-gtk2[=config_dir]
 dnl redundant except for giving pkg-config path
 AC_ARG_ENABLE(gtk2,  [  ]--enable-gtk2[[=config_dir]]           link with gtk2,
 if test $enable_gtk2 != yes -a $enable_gtk2 != no; then
     gtkloc="$enable_gtk2"
     gtklocd="$enable_gtk2/"
-    GRPKG="GTK2"
+    GTKPKG="GTK2"
 elif test $enable_gtk2 == yes; then
-    GRPKG="GTK2"
+    GTKPKG="GTK2"
 fi
 )
-fi
 
-if test -z $GRPKG; then
 dnl --enable-gtk3[=config_dir]
 dnl redundant except for giving pkg-config path
 AC_ARG_ENABLE(gtk3,  [  ]--enable-gtk3[[=config_dir]]           link with gtk3,
 if test $enable_gtk3 != yes -a $enable_gtk3 != no; then
     gtkloc="$enable_gtk3"
     gtklocd="$enable_gtk3/"
-    GRPKG="GTK3"
+    GTKPKG="GTK3"
 elif test $enable_gtk3 == yes; then
-    GRPKG="GTK3"
+    GTKPKG="GTK3"
 fi
 )
-fi
 
 dnl --enable-quartz
 dnl use OS X GTK-2 Quartz backend
 dnl NOT CURRENTLY SUPPORTED
 with_quartz="no"
-AC_ARG_ENABLE(quartz, [  ]--enable-quartz   use Quartz backend for OS X,
-if test $enable_quartz = yes; then
-    with_quartz=yes
-fi
-)
+dnl AC_ARG_ENABLE(quartz, [  ]--enable-quartz   use Quartz backend for OS X,
+dnl if test $enable_quartz = yes; then
+dnl     with_quartz=yes
+dnl fi
+dnl )
 
-if test -z $GRPKG; then
-    nomozy=yes
+if test -n "$QTPKG" -o -n "$GTKPKG"; then
+    // Building with at least one graphical toolkit package, set a
+    // flag to record this.
+    echo "#define HAVE_GRAPHICS_PKG 1">> confdefs.h
 else
-    echo "#define WITH_$GRPKG 1">> confdefs.h
-    echo "#define WITH_GRFXTK 1">> confdefs.h
+    // No graphics, make sure mozy is disabled/
+    nomozy=yes
 fi
 if test $nomozy = no; then
     echo '#define HAVE_MOZY 1'>> confdefs.h
@@ -708,7 +702,9 @@ if test $profiling = yes; then
    LFLAGS="-pg $LFLAGS"
 fi
 
+dnl # XXX x11?
 AC_SUBST(WITH_X11)
+AC_SUBST(INCLXTRA)
 AC_SUBST(SDK)
 AC_SUBST(UFLAGS)
 AC_SUBST(MSW)
@@ -718,7 +714,6 @@ AC_SUBST(MALLOC)
 AC_SUBST(OSNAME)
 AC_SUBST(ARCH)
 AC_SUBST(DIST_SUFFIX)
-AC_SUBST(INCLXTRA)
 AC_SUBST(SOEXT)
 
 if test $with_oa = yes; then
@@ -738,6 +733,7 @@ AC_SUBST(OA_SUBDIR)
 dnl # Always enable pthreads, supported on all platforms.
 c_flags="$c_flags -pthread"
 
+dnl # XXX this may need to go
 if test x$with_psf = xyes -a x$with_psf_ok = xyes; then
 TKTOOLS=$psf_loc
 PSINCL=" \\
@@ -805,9 +801,10 @@ dnl ***
 dnl *** Graphical interface configuration
 dnl ***
 
-if test -z "$GRPKG"; then
+if test -z "$QTPKG" -a -z "$GTKPKG"; then
    echo "No graphics toolkit specified, building tools without one."
-elif test $GRPKG == QT5 -o $GRPKG == QT6 ; then
+fi
+if test "$QTPKG" == QT5 -o "$QTPKG" == QT6 ; then
     QTBASE=$qtloc
 
     # Msys Bug?  If tmpdir is in /tmp, the include paths are relative
@@ -822,11 +819,11 @@ elif test $GRPKG == QT5 -o $GRPKG == QT6 ; then
     mkdir $tmpdir
     cd $tmpdir
     touch empty.cc
-    if test $GRPKG == QT5; then
+    if test "$QTPKG" == QT5; then
         if test -f $QTBASE/bin/qmake5.exe; then
             qmake=$QTBASE/bin/qmake5
         fi
-    elif test $GRPKG == QT6 ; then
+    elif test "$QTPKG" == QT6 ; then
         if test -f $QTBASE/bin/qmake6.exe; then
             qmake=$QTBASE/bin/qmake6
         fi
@@ -885,19 +882,19 @@ elif test $GRPKG == QT5 -o $GRPKG == QT6 ; then
         set $incpath
         QT_INCLUDE="-I$QTBASE/include"
         if test $OSNAME == Darwin ; then
-dnl MacPorts, needed to find X11.
+            # MacPorts, needed to find X11.
             QT_INCLUDE="$QT_INCLUDE -I/opt/local/include"
         fi
         shift
         shift
         QT_INCLUDE="$QT_INCLUDE $*"
-dnl        while test x"$1" != x; do
-dnl            y=`echo $1 |grep "^-I"`
-dnl            if test x"$y" != x -a $1 != "-I."; then
-dnl                QT_INCLUDE="$QT_INCLUDE $1"
-dnl            fi
-dnl            shift
-dnl        done
+        #  while test x"$1" != x; do
+        #      y=`echo $1 |grep "^-I"`
+        #      if test x"$y" != x -a $1 != "-I."; then
+        #          QT_INCLUDE="$QT_INCLUDE $1"
+        #      fi
+        #      shift
+        #  done
         echo "QT_INCLUDE=$QT_INCLUDE"
 
         lflags=`grep '^LFLAGS' $makefile`
@@ -928,10 +925,10 @@ dnl        done
         exit
     fi
 
-    GRPREF=qt
-    if test $GRPKG == QT5 ; then
+    QTPREF=qt
+    if test "$QTPKG" == QT5 ; then
         MOC="$QTBASE/bin/moc"
-    elif test $GRPKG == QT6 ; then
+    elif test "$QTPKG" == QT6 ; then
         if test -f "$QTBASE/share/qt6/bin/moc.exe"; then
             MOC="$QTBASE/share/qt6/bin/moc"
         elif test -f "$QTBASE/libexec/moc"; then
@@ -940,34 +937,34 @@ dnl        done
             MOC="$QTBASE/bin/moc"
         fi
     fi
-    TOOLKITINC="$QT_INCLUDE"
-    TOOLKITLIBS="$QT_LIBS"
-    TOOLKITCFLAGS="$QT_CFLAGS $QT_DEFINES"
-    TOOLKITLFLAGS="$QT_LFLAGS"
+    QTINC="$QT_INCLUDE"
+    QTLIBS="$QT_LIBS"
+    QTCFLAGS="$QT_CFLAGS $QT_DEFINES"
+    QTLFLAGS="$QT_LFLAGS"
+elif test -n "$QTPKG"; then
+   echo "Unknown graphics toolkit $QTPKG specified, fatal error."
+   exit 1;
+fi
 
-elif test $GRPKG == "GTK2"; then
+if test "$GTKPKG" == "GTK2"; then
     AC_CHECK_PROG(have_cfg, pkg-config, "yes", "no", $PATH:$gtkloc)
     if test $have_cfg = yes; then
         ${gtklocd}pkg-config --exists gtk+-2.0
         if test $? = 0; then
-            GRPREF=gtk
+            GTKPREF=gtk
             if test -n "$EXESUFFIX" -a $NEED_FILTER = yes; then
-dnl             # Filter needed in Windows, pkg-config adds ^M that chokes g++.
+                # Filter needed in Windows, pkg-config adds ^M that chokes g++.
                 tkcf="`${gtklocd}pkg-config --cflags gtk+-2.0 |sed -e s///g`"
                 tkl="`${gtklocd}pkg-config --libs gtk+-2.0 |sed -e s///g`"
             else
                 tkcf="`${gtklocd}pkg-config --cflags gtk+-2.0`"
                 tkl="`${gtklocd}pkg-config --libs gtk+-2.0`"
             fi
-            TOOLKITINC="-DUSE_GTK $tkcf -Wno-deprecated-declarations"
-	    dnl  Avoid a bunch of compiler warnings from GTK code.
-	    TOOLKITCFLAGS="-Wno-parentheses"
-dnl            TOOLKITCFLAGS="$TOOLKITCFLAGS -DGTK_DISABLE_SINGLE_INCLUDES \
-dnl     -DGDK_DISABLE_DEPRECATED -DGTK_DISABLE_DEPRECATED -DGSEAL_ENABLE"
-            if test $OSNAME = "Darwin" -a $with_quartz = yes; then
-                TOOLKITCFLAGS="TOOLKITCFLAGS -DWITH_QUARTZ"
-            fi
-            TOOLKITLIBS="$tkl"
+            GTKINC="-DUSE_GTK $tkcf -Wno-deprecated-declarations"
+            GTKLIBS="$tkl"
+	    #  Avoid a bunch of compiler warnings from GTK code.
+	    GTKCFLAGS="-Wno-parentheses"
+            GTKLFLAGS=""
         else
             echo "gtk2 not found"
             exit
@@ -977,16 +974,16 @@ dnl     -DGDK_DISABLE_DEPRECATED -DGTK_DISABLE_DEPRECATED -DGSEAL_ENABLE"
         exit
     fi
 
-elif test $GRPKG == "GTK3"; then
+elif test "$GTKPKG" == "GTK3"; then
     AC_CHECK_PROG(have_cfg, pkg-config, "yes", "no", $PATH:$gtkloc)
     if test $have_cfg = yes; then
         XLIBS="-lXrender -lXinerama -lXi -lXrandr -lXcursor -lXcomposite \
 -lXdamage -lXfixes -lX11 -lXext"
         ${gtklocd}pkg-config --exists gtk+-3.0
         if test $? = 0; then
-            GRPREF=gtk
+            GTKPREF=gtk
             if test -n "$EXESUFFIX" -a $NEED_FILTER = yes; then
-dnl             # Filter needed in Windows, pkg-config adds ^M that chokes g++.
+                # Filter needed in Windows, pkg-config adds ^M that chokes g++.
                 tkcf="`${gtklocd}pkg-config --cflags gtk+-3.0 |sed -e s///g`"
                 tkl="`${gtklocd}pkg-config --libs gtk+-3.0 |sed -e s///g`"
             else
@@ -994,14 +991,10 @@ dnl             # Filter needed in Windows, pkg-config adds ^M that chokes g++.
                 tkl="`${gtklocd}pkg-config --libs gtk+-3.0`"
                 tkl="$tkl $XLIBS"
             fi
-            TOOLKITINC="-DUSE_GTK $tkcf -Wno-deprecated-declarations"
-dnl            TOOLKITCFLAGS="-DGTK_DISABLE_SINGLE_INCLUDES -DGDK_DISABLE_DEPRECATED \
-dnl     -DGTK_DISABLE_DEPRECATED \
-dnl     -DGSEAL_ENABLE"
-            if test $OSNAME = "Darwin" -a $with_quartz = yes; then
-                TOOLKITCFLAGS+="-DWITH_QUARTZ"
-            fi
-            TOOLKITLIBS="$tkl"
+            GTKINC="-DUSE_GTK $tkcf -Wno-deprecated-declarations"
+            GTKLIBS="$tkl"
+            GTKCFLAGS=""
+            GTKLFLAGS=""
         else
             echo "gtk3 not found"
             exit
@@ -1010,17 +1003,23 @@ dnl     -DGSEAL_ENABLE"
         echo "pkg-config not found"
         exit
     fi
-else
-   echo "Unknown graphics toolkit \$GRPKG specified, fatal error."
-   exit 1;
+elif test -n "$GTKPKG"; then
+    echo "Unknown graphics toolkit $GTKPKG specified, fatal error."
+    exit 1;
 fi
 
-AC_SUBST(GRPREF)
-AC_SUBST(GRPKG)
-AC_SUBST(TOOLKITINC)
-AC_SUBST(TOOLKITLIBS)
-AC_SUBST(TOOLKITCFLAGS)
-AC_SUBST(TOOLKITLFLAGS)
+AC_SUBST(QTPREF)
+AC_SUBST(QTPKG)
+AC_SUBST(QTINC)
+AC_SUBST(QTLIBS)
+AC_SUBST(QTCFLAGS)
+AC_SUBST(QTLFLAGS)
+AC_SUBST(GTKPREF)
+AC_SUBST(GTKPKG)
+AC_SUBST(GTKINC)
+AC_SUBST(GTKLIBS)
+AC_SUBST(GTKCFLAGS)
+AC_SUBST(GTKLFLAGS)
 AC_SUBST(MOC)
 AC_SUBST(QTBASE)
 AC_SUBST(XLIBS)
@@ -1208,7 +1207,7 @@ if test $OSNAME = "MINGW"; then
 
 elif test $OSNAME = "Darwin"; then
 dnl  assume libraries/includes are under /opt (MacPorts).
-    if test $with_quartz = yes; then
+    if test "$with_quartz" = yes; then
         echo "NO QUARTZ SUPPORT";
         exit 1
     else
@@ -1512,9 +1511,14 @@ fi
 if test -d ginterf; then
     makefiles="$makefiles ginterf/Makefile"
 fi
-if test -n "$GRPREF"; then
-    if test -d ${GRPREF}interf; then
-        makefiles="$makefiles ${GRPREF}interf/Makefile"
+if test -n "$QTPREF"; then
+    if test -d ${QTPREF}interf; then
+        makefiles="$makefiles ${QTPREF}interf/Makefile"
+    fi
+fi
+if test -n "$GTKPREF"; then
+    if test -d ${GTKPREF}interf; then
+        makefiles="$makefiles ${GTKPREF}interf/Makefile"
     fi
 fi
 if test -d miscutil; then
@@ -1531,8 +1535,13 @@ if test -d ../secure; then
     makefiles="$makefiles ../secure/Makefile"
 fi
 if test $nomozy = no; then
+    if test -n "${QTPREF}"; then
+        makefiles="$makefiles ../mozy/src/${QTPREF}mozy/Makefile"
+    fi
+    if test -n "${GTKPREF}"; then
+        makefiles="$makefiles ../mozy/src/${GTKPREF}mozy/Makefile"
+    fi
     makefiles="$makefiles \
-        ../mozy/src/${GRPREF}mozy/Makefile \
         ../mozy/src/help/Makefile \
         ../mozy/src/htm/Makefile \
         ../mozy/src/httpget/Makefile \
@@ -1546,8 +1555,11 @@ if test -d ../mrouter; then
     makefiles="$makefiles ../mrouter/examples/Makefile"
 fi
 if test -d ../xic; then
-    if test -n "$GRPREF"; then
-        GRPREF_XIC_MK=../xic/src/${GRPREF}xic/Makefile
+    if test -n "$QTPREF"; then
+        QTPREF_XIC_MK=../xic/src/${QTPREF}xic/Makefile
+    fi
+    if test -n "$GTKPREF"; then
+        GTKPREF_XIC_MK=../xic/src/${GTKPREF}xic/Makefile
     fi
     if test $with_oa = yes; then
         oa=../xic/src/oa/Makefile
@@ -1560,7 +1572,8 @@ if test -d ../xic; then
         ../xic/src/extract/Makefile \
         ../xic/src/fileio/Makefile \
         ../xic/src/geom/Makefile \
-        ${GRPREF_XIC_MK} \
+        ${QTPREF_XIC_MK} \
+        ${GTKPREF_XIC_MK} \
         ../xic/src/main/Makefile \
         $oa \
         ../xic/src/parser/Makefile \
@@ -1579,17 +1592,20 @@ if test -d ../vl; then
     makefiles="$makefiles ../vl/Makefile"
 fi
 if test -d ../wrspice; then
-    if test -n "$GRPREF"; then
-        GRPREF_WRS_MK=../wrspice/src/${GRPREF}wrs/Makefile
+    if test -n "$QTPREF"; then
+        QTPREF_WRS_MK=../wrspice/src/${QTPREF}wrs/Makefile
+    fi
+    if test -n "$GTKPREF"; then
+        GTKPREF_WRS_MK=../wrspice/src/${GTKPREF}wrs/Makefile
     fi
     makefiles="$makefiles \
         ../wrspice/src/analysis/Makefile \
         ../wrspice/src/ckt/Makefile \
         ../wrspice/src/cp/Makefile \
         ../wrspice/src/fte/Makefile \
-        ${GRPREF_WRS_MK} \
+        ${QTPREF_WRS_MK} \
+        ${GTKPREF_WRS_MK} \
         ../wrspice/src/inp/Makefile \
-        ../wrspice/src/malt/Makefile \
         ../wrspice/src/misc/Makefile \
         ../wrspice/src/plot/Makefile \
         ../wrspice/src/sparse/Makefile \
