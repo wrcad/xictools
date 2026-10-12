@@ -842,7 +842,6 @@ main(int argc, char **argv)
     // Something for Cadence PSF writer.
     cPSFout::vo_init(&argc, argv);
 
-/* XXX this is obsolete?
 #ifdef HAVE_FENV_H
     // This sets the x87 precision mode.  The default under Linux is
     // to use 80-bit mode, which produces subtle differences from
@@ -850,8 +849,16 @@ main(int argc, char **argv)
     // in 64-bit mode, 299 in 80-bit mode.  For this reason, we used
     // to use 64-bit mode.
 
+#if defined(__arm64__) || defined(__aarch64__)
+#define __control_word __fpcr
+#else
 #if defined(__FreeBSD__) || defined(__APPLE__)
 #define __control_word __control
+#else
+#if defined(__MINGW64__)
+#define __control_word _Fe_ctl
+#endif
+#endif
 #endif
 
     // THIS IS x87-SPECIFIC!!!
@@ -878,7 +885,6 @@ main(int argc, char **argv)
         fesetenv(&env);
     }
 #endif
-*/
 
     // Set default FPE handling.
     Sp.SetFPEmode(FPEdefault);

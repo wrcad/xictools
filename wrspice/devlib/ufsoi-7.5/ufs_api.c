@@ -2449,7 +2449,7 @@ nfdEvalMod(double Vds, double Vgfs, double Vbs, double Vgbs,
 {
 /*register*/ struct ufsTDModelData *pTempModel;
 //struct ufsDebugData *pDebug;
-double Xnin, Xnin2, Arg, Sqrt_s, Sqrt_d, Dell, Dshare, Qshare, Delqc;
+double Xnin, Xnin2, Arg, Sqrt_s, Sqrt_d, Dell=0.0, Dshare, Qshare, Delqc;
 double Vtm, Qc, Qc0, Qcs, Vths, Vthw, Vfbf, /*Vfbb,*/ Qbeff, Leff, Weff;
 double Vbi, Ldd, /*Lds,*/ Vdss, Qc1, Qc2, Psis, Psiw, Coeffa, Mobfac1;
 double T0, T1, T2, T3, T4, T5=0.0, T6, T7, T8, T9, T10, T11, T12, T13/*, T14*/;
@@ -2468,7 +2468,7 @@ double Ibjtf, Ibjtr, Ibjt, Itot, Eslope, Igts0, Igtd0, Irs0, Ird0, Dell_f;
 double Irs1, Ird1, Rgtd, Rgts, Igt_g, Igt_r, Igt, Ir_g, Ir_r, Ir, Igi=0.0, Igb;      /* 7.0Y */
 double Xecf, Xemf, Betap, Te_ch, Mult_ch, Mult_dep, Mult_qnr, Mult_drn;
 double Mult, Mult_st1=0.0, Mult_wk=0.0, Te_ldd, Ldep, Tempdell, Xstart, Xend, Te_dep;    /* 4.5 */
-double /*Lcf,*/ Power, CoxWL, Qd, Qn=0.0, Qgf, Qby, /*Xingvsf,*/ Psiwk;
+double /*Lcf,*/ Power, CoxWL, Qd, Qn=0.0, Qgf, Qby, /*Xingvsf,*/ Psiwk=0.0;
 //double Xco0, Xco1, Xco2, Vgfsacc, Vgfseff, Qgfwk;
 double /*Qnqsh, Qdqsh,*/ Covf, Vdsx, /*Arg2,*/ Dnmgf, Args;
 double Qdeta, Xp, Argu, Argz, Xfactd, Tzm1, Qcfle, Qns, Zfact, Qgfst1;
@@ -2483,15 +2483,15 @@ double Igidl, Rmass, h, Eg;                                                     
 double Pdj, Psj, /*Qnwk,*/ Ueff, Qc01, Qc02, Igtb0, Eo;                              /* 4.5 */
 double T11pd, Alphap, Psigf1, Alphap1, Psigf2, Alphap2, Psigf;                   /* 4.5pd */
 double toc, Btrev, E_dbm, /*E_dbo,*/ E_sbm, /*E_sbo,*/ Ituns, Itund;                     /* 4.5 */
-double Mult_st2=0.0, Qnwk1, Qnwk2, Psiwk1, Psiwk2, Mobrefwk1, Qgfwk1, Qgfwk2;        /* 4.5F */
+double Mult_st2=0.0, Qnwk1, Qnwk2, Psiwk1, Psiwk2, Mobrefwk1=0.0, Qgfwk1, Qgfwk2;        /* 4.5F */
 double /*VthsOld,*/ Ess, DelEg, PhibQM, XniFac, XniFac2, Coeffz, Psis_str, Psis_bjt; /* 4.5F */
 double DelEgQM, DelEgEx, QinvEx, NinvEx, NvlyEx;                                 /* 7.0Y */
 double Vths_bjt, Esw, Psis1, Psis2, QmT00, QmT0, QmT1, QmT2, QmT3, QmT4, Exf02;  /* 4.5F */
-double Coeffz0, ExfLim, QmT5, DVgfs, Iwk1, Iwk2=0.0;                                 /* 4.5F */
+double Coeffz0, ExfLim, QmT5, DVgfs, Iwk1=0.0, Iwk2=0.0;                                 /* 4.5F */
 double Exf_Vthw, Coeffb, Coeffb2, Coeffb3, QmT2_Vths, Exf02_Vths;                /* 7.0Y */
 double Dvtol, dVbd_bjtds, dPsigfgfs, Dicefac, CbbyCof;                           /* 5.0 */
 double dVbdeffhds, dVdsxds, dLefacds, Gm1, Go1, Giigfs, Giids;                   /* 5.0 */
-double dPsigfgfs1, dVdsxds1, dLefacds1, Go2, Gichds, Gow1, Gmw1, Gow2=0.0;           /* 5.0 */
+double dPsigfgfs1, dVdsxds1, dLefacds1, Go2, Gichds, Gow1=0.0, Gmw1=0.0, Gow2=0.0;           /* 5.0 */
 double dGst, dGwk, Gom, Gichgfs, Gibjtds, Gidds, Gigtds;                         /* 5.0 */
 double Gitundds, Gigidlgfs, Gigidlds, Gigigfs=0.0, Gigids=0.0;                           /* 5.0 */
 double Gigbds, Gigbgfs, Vdsx_gb, Vgfsx_gb, Igb_ds, Igb_gfs;                      /* 7.0Y */

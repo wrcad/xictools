@@ -268,6 +268,7 @@ namespace {
     void
     memfault(const char*)
     {
+        // The errors here are intended!
         int *p = new int;
         delete p;
         delete p;

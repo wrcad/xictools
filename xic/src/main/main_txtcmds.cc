@@ -1519,6 +1519,7 @@ bangcmds::segfault(const char*)
 void
 bangcmds::memerr(const char*)
 {
+    // The double-call error here is intended!
     char *t = (char*)malloc(100);
     free(t);
     free(t);

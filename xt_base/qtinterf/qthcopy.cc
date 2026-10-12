@@ -542,8 +542,7 @@ QTprintDlg::QTprintDlg(GRobject caller, HCcb *cb, HCmode textmode, QTbag *wbag) 
 
         pd_pgsmenu = new QComboBox();
         hbox->addWidget(pd_pgsmenu);
-        int i = 0;
-        for (sMedia *m = pagesizes; m->name; m++, i++)
+        for (sMedia *m = pagesizes; m->name; m++)
             pd_pgsmenu->addItem(m->name);
         connect(pd_pgsmenu, QOverload<int>::of(&QComboBox::activated),
             this, &QTprintDlg::pagesize_slot);

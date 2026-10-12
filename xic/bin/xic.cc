@@ -317,6 +317,7 @@ cSelections Selections;             // selections package
 int
 main(int argc, char **argv)
 {
+    /*
 #ifdef HAVE_FENV_H
     // This sets the x87 precision mode.  The default under Linux is
     // to use 80-bit mode, which produces subtle differences from
@@ -329,6 +330,10 @@ main(int argc, char **argv)
 #else
 #if defined(__FreeBSD__) || defined(__APPLE__)
 #define __control_word __control
+#else
+#if defined(__MINGW64__)
+#define __control_word _Fe_ctl
+#endif
 #endif
 #endif
 
@@ -356,6 +361,7 @@ main(int argc, char **argv)
         fesetenv(&env);
     }
 #endif
+*/
 
     // Configure temp filename generator.
     filestat::make_temp_conf("xic", "XIC_TMP_DIR");

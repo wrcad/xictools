@@ -238,7 +238,7 @@ bin/$(GTKPKG)/xic: bin/main.cc bin/$(GTKPKG)/xic.dll
 	$(CC) -o bin/$(GTKPKG)/xic bin/main.cc \
   src/$(GTKPREF)xic/resource.o -Lbin/$(GTKPKG) -lxic
 
-bin/$(QTPKG)/xic.dll: bin/xic.o $(GTK_LOCAL_LIBS) $(MALLOC)
+bin/$(GTKPKG)/xic.dll: bin/xic.o $(GTK_LOCAL_LIBS) $(MALLOC)
 	@echo $@: dynamic link
 	@$(LINKCC) $(LSHFLAG) -o bin/$(GTKPKG)/xic.dll $(GTKLFLAGS) \
   $(LFLAGS) bin/xic.o $(GTK_LOCAL_LIBS) $(LIBS) $(GTKLIBS) \

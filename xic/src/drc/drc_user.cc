@@ -495,8 +495,7 @@ DRCtest::init()
         if (!e->setup())
             return (lstring::copy(Errs()->get_error()));
     }
-    int numtests = 0;
-    for (DRCtestCnd *t = t_tests; t; t = t->next(), numtests++) {
+    for (DRCtestCnd *t = t_tests; t; t = t->next()) {
         char *err = t->init();
         if (err)
             return (err);
