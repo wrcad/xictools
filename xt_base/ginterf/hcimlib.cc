@@ -39,7 +39,7 @@
  *========================================================================*/
 
 #include "config.h"
-#if !defined(WITH_QT5) && !defined(WITH_QT6)
+#if defined(WITH_GTK2) || defined(WITH_GTK3)
 #include "graphics.h"
 #include "hcimlib.h"
 #include "miscutil/texttf.h"

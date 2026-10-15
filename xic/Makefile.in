@@ -347,8 +347,8 @@ $(BASE)/lib/libregex.a::
 	$(MAKE) -C $(BASE)/regex
 
 ifdef QTPREF
-$(BASE)/lib/$(GRPREF)interf.a::
-	$(MAKE) -C $(BASE)/$(GRPREF)interf
+$(BASE)/lib/$(QTPREF)interf.a::
+	$(MAKE) -C $(BASE)/$(QTPREF)interf
 
 ifeq ($(USEMOZY), yes)
 $(MOZY)/lib/$(QTPREF)mozy.a::
@@ -379,8 +379,8 @@ endif
 endif
 
 ifdef GTKPREF
-$(BASE)/lib/$(GRPREF)interf.a::
-	$(MAKE) -C $(BASE)/$(GRPREF)interf
+$(BASE)/lib/$(GTKPREF)interf.a::
+	$(MAKE) -C $(BASE)/$(GTKPREF)interf
 
 ifeq ($(USEMOZY), yes)
 $(MOZY)/lib/$(GTKPREF)mozy.a::

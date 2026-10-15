@@ -344,6 +344,12 @@ if test -n "$QTPKG" -o -n "$GTKPKG"; then
     // Building with at least one graphical toolkit package, set a
     // flag to record this.
     echo "#define HAVE_GRAPHICS_PKG 1">> confdefs.h
+    if test -n "$QTPKG"; then
+        echo "#define WITH_$QTPKG 1">> confdefs.h
+    fi
+    if test -n "$GTKPKG"; then
+        echo "#define WITH_$GTKPKG 1">> confdefs.h
+    fi
 else
     // No graphics, make sure mozy is disabled/
     nomozy=yes
