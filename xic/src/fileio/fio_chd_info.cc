@@ -96,7 +96,7 @@ namespace {
 char *
 cCHD::prInfo(FILE *fp, DisplayMode mode, int dflags)
 {
-    char buf[256];
+    char buf[256 + 16 + 2];
     cv_info *info = pcInfo(mode);
     sLstr lstr;
     if (!dflags)

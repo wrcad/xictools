@@ -429,7 +429,12 @@ DRCresultParser::open_file(const char *name)
 
         fseek(fp, BACKNCHARS, SEEK_END);
         // Should be ahead of "End check" line, read to next newline.
-        fgets(buf, 512, fp);
+        s = fgets(buf, 512, fp);
+        if (!s) {
+            Errs()->add_error("open_file: premature end of file.");
+            fclose(fp);
+            return (RPerror);
+        }
         while ((s = fgets(buf, 512, fp)) != 0) {
             if (lstring::prefix("End", buf)) {
                 while (*s && !isdigit(*s))

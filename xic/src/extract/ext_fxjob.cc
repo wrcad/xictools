@@ -209,9 +209,10 @@ namespace{
         if (!fp)
             return (false);
         char buf[256];
-        fgets(buf, 256, fp);
+        const char *s = fgets(buf, 256, fp);
         pclose(fp);
-        const char *s = buf;
+        if (s != buf)
+            return (false);
         lstring::advtok(&s);   // "Running"
         lstring::advtok(&s);   // "Fast..."
         while (isspace(*s) || isdigit(*s) || *s == '.')

@@ -1465,8 +1465,12 @@ IFsimulator::ReadDeck(FILE *fp, char *title, bool *err, sParamTab **ptab,
                                 "From file %s.\n", filename);
                         }
                         sLine::destroy(deck);
-                        if (path)
-                            chdir(cwd);
+                        if (path) {
+                            if (chdir(cwd) != 0) {
+                                GRpkg::self()->ErrPrintf(ET_ERROR,
+                                    "chdir failed to revert");
+                            }
+                        }
                         delete [] path;
                         delete [] init_tok;
                         delete [] file;
@@ -1506,8 +1510,12 @@ IFsimulator::ReadDeck(FILE *fp, char *title, bool *err, sParamTab **ptab,
                     }
                     *err = true;
                     sLine::destroy(deck);
-                    if (path)
-                        chdir(cwd);
+                    if (path) {
+                        if (chdir(cwd) != 0) {
+                            GRpkg::self()->ErrPrintf(ET_ERROR,
+                                "chdir failed to revert");
+                        }
+                    }
                     delete [] path;
                     delete [] init_tok;
                     delete [] file;
@@ -1515,8 +1523,12 @@ IFsimulator::ReadDeck(FILE *fp, char *title, bool *err, sParamTab **ptab,
                     return (0);
                 }
 
-                if (path)
-                    chdir(cwd);
+                if (path) {
+                    if (chdir(cwd) != 0) {
+                        GRpkg::self()->ErrPrintf(ET_ERROR,
+                            "chdir failed to revert");
+                    }
+                }
                 delete [] file;
                 delete [] cwd;
             }
@@ -1601,8 +1613,12 @@ IFsimulator::ReadDeck(FILE *fp, char *title, bool *err, sParamTab **ptab,
                     }
                     *err = true;
                     sLine::destroy(deck);
-                    if (path)
-                        chdir(cwd);
+                    if (path) {
+                        if (chdir(cwd) != 0) {
+                            GRpkg::self()->ErrPrintf(ET_ERROR,
+                                "chdir failed to revert");
+                        }
+                    }
                     delete [] path;
                     delete [] name;
                     delete [] init_tok;
@@ -1622,8 +1638,12 @@ IFsimulator::ReadDeck(FILE *fp, char *title, bool *err, sParamTab **ptab,
                     }
                     *err = true;
                     sLine::destroy(deck);
-                    if (path)
-                        chdir(cwd);
+                    if (path) {
+                        if (chdir(cwd) != 0) {
+                            GRpkg::self()->ErrPrintf(ET_ERROR,
+                                "chdir failed to revert");
+                        }
+                    }
                     delete [] path;
                     delete [] name;
                     delete [] init_tok;
@@ -1642,8 +1662,12 @@ IFsimulator::ReadDeck(FILE *fp, char *title, bool *err, sParamTab **ptab,
                     }
                     *err = true;
                     sLine::destroy(deck);
-                    if (path)
-                        chdir(cwd);
+                    if (path) {
+                        if (chdir(cwd) != 0) {
+                            GRpkg::self()->ErrPrintf(ET_ERROR,
+                                "chdir failed to revert");
+                        }
+                    }
                     fclose(newfp);
                     delete [] path;
                     delete [] name;
@@ -1664,8 +1688,12 @@ IFsimulator::ReadDeck(FILE *fp, char *title, bool *err, sParamTab **ptab,
                             "From file %s.\n", filename);
                     }
                     sLine::destroy(deck);
-                    if (path)
-                        chdir(cwd);
+                    if (path) {
+                        if (chdir(cwd) != 0) {
+                            GRpkg::self()->ErrPrintf(ET_ERROR,
+                                "chdir failed to revert");
+                        }
+                    }
                     delete [] path;
                     delete [] name;
                     delete [] init_tok;
@@ -1697,8 +1725,12 @@ IFsimulator::ReadDeck(FILE *fp, char *title, bool *err, sParamTab **ptab,
                 for (end = newcard; end; end = end->next())
                     end->set_line_num(line++);
 
-                if (path)
-                    chdir(cwd);
+                if (path) {
+                    if (chdir(cwd) != 0) {
+                        GRpkg::self()->ErrPrintf(ET_ERROR,
+                            "chdir failed to revert");
+                    }
+                }
                 delete [] file;
                 delete [] cwd;
             }

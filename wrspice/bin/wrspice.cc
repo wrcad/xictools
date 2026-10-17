@@ -331,14 +331,23 @@ namespace {
             char buf[256];
             snprintf(buf, sizeof(buf), "%s %s\n", Global.Version(),
                 datestring());
-            write(fd, buf, strlen(buf));
+            int len = strlen(buf);
+            bool err = false;
+            if (write(fd, buf, len) != len)
+                err = true;
             snprintf(buf, sizeof(buf), "%s 0x%lx\n", what, (long)chunk);
-            write(fd, buf, strlen(buf));
+            len = strlen(buf);
+            if (write(fd, buf, len) != len)
+                err = true;
             for (int i = 0; i < stsz; i++) {
                 snprintf(buf, sizeof(buf), "#%d 0x%lx\n", i, stack[i]);
-                write(fd, buf, strlen(buf));
+                len = strlen(buf);
+                if (write(fd, buf, len) != len)
+                    err = true;
             }
             close(fd);
+            if (err)
+                fprintf(stderr, "Warning: write failed in memory_err_log.");
         }
         // Flag used in fatal() function.
         Global.SetMemError(true);
@@ -1909,8 +1918,10 @@ fatal(int error)
                     printf("%s-%s done\n", Sp.Simulator(), Sp.Version());
                     printf("Thanks for using WRspice!\n");
                 }
-                else
-                    system(cmd);
+                else {
+                    if (system(cmd) == -1)
+                        fprintf(stderr, "Exit function returned error code.");
+                }
             }
         }
     }

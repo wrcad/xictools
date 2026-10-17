@@ -169,8 +169,12 @@ sLibMap::append_file_rc(stringlist *se, const char *line, bool hs_compat,
                 path = 0;
             }
             char *cwd = getcwd(0, 0);
-            if (path)
-                chdir(path);
+            if (path) {
+                if (chdir(path) != 0) {
+                    Errs()->add_error("directory change to %s failed.", cwd);
+                    *error = true;
+                }
+            }
 
             FILE *fp = fopen(file, "r");
             if (fp) {
@@ -215,7 +219,10 @@ sLibMap::append_file_rc(stringlist *se, const char *line, bool hs_compat,
             }
 
             if (path) {
-                chdir(cwd);
+                if (chdir(cwd) != 0) {
+                    Errs()->add_error("directory change to %s failed.", cwd);
+                    *error = true;
+                }
                 delete [] path;
             }
             else
@@ -338,7 +345,10 @@ sLibMap::append_file_rc(stringlist *se, const char *line, bool hs_compat,
                 fclose(fp);
 
             if (path) {
-                chdir(cwd);
+                if (chdir(cwd) != 0) {
+                    Errs()->add_error("directory change to %s failed.", cwd);
+                    *error = true;
+                }
                 delete [] path;
             }
             else

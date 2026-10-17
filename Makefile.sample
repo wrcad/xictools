@@ -128,12 +128,7 @@ ITOPOK = --enable-itopok=no
 #  --enable-cni=/global/apps/customcompiler_2021.09-2/linux64/PyCellStudio
 
 # PSF support in WRspice (for Cadence ADE integration), Linux RHEL6/7
-# only.  If you have this Cadence product, PSF file support can be
-# enabled by setting and uncommenting this variable.  I have no idea
-# if this has any current value, or if Cadence libraries are still
-# compatible.
-#
-#KITLOC = --enable-psf=/home/stevew/cadence/oasis-kit/tools.lnx86
+# only.  Discontinued.
 
 # If you don't want to build all the tools, you can choose what to
 # build below.  The xt_base is required for everything, other

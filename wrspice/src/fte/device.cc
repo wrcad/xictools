@@ -1834,10 +1834,15 @@ namespace {
         else if (fd <= 1) {
             if (Sp.GetRawVar(spkw_vasilent, Sp.CurCircuit()))
                 return;
-            write(fileno(stdout), str, strlen(str));
+            int len = strlen(str);
+            if (write(fileno(stdout), str, len) != len)
+                GRpkg::self()->ErrPrintf(ET_ERROR, "write failed");
         }
-        else
-            write(fd, str, strlen(str));
+        else {
+            int len = strlen(str);
+            if (write(fd, str, len) != len)
+                GRpkg::self()->ErrPrintf(ET_ERROR, "write failed");
+        }
     }
 }
 

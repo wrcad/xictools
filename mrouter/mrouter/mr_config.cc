@@ -132,8 +132,9 @@ cMRouter::readConfig(const char *filename, bool is_info, bool incr)
     int count = 0;
 
     while (!feof(fconfig)) {
-        fgets(line, MAX_LINE_LEN, fconfig);
-        char *lineptr = line;
+        char *lineptr = fgets(line, MAX_LINE_LEN, fconfig);
+        if (!lineptr)
+            break;
         while (isspace(*lineptr))
             lineptr++;
 

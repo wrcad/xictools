@@ -66,9 +66,9 @@ cFIO::IsLibrary(FILE *fp)
 {
     char buf[16];
     memset(buf, 0, 16);  // for valgrind
-    fread(buf, 1, 16, fp);
+    size_t sz = fread(buf, 1, 16, fp);
     rewind(fp);
-    if (!strncmp(buf, "(Library ", 9))
+    if (sz > 9 && !strncmp(buf, "(Library ", 9))
         return (true);
     return (false);
 }

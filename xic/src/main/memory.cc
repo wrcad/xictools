@@ -154,12 +154,16 @@ sCore::memory_error_log(const char *what, void *chunk, long *stack, int stsz)
         snprintf(buf, sizeof(buf), "%s-%s %s (%s) %s\n", XM()->Product(),
             XM()->VersionString(), XM()->OSname(),
             XM()->TagString(), miscutil::dateString());
-        write(fd, buf, strlen(buf));
-        snprintf(buf, sizeof(buf), "%s 0x%lx\n", what, (unsigned long)chunk);
-        write(fd, buf, strlen(buf));
-        for (int i = 0; i < stsz; i++) {
-            snprintf(buf, sizeof(buf), "#%d 0x%lx\n", i, stack[i]);
-            write(fd, buf, strlen(buf));
+        if (write(fd, buf, strlen(buf)) != -1) {
+            snprintf(buf, sizeof(buf), "%s 0x%lx\n", what,
+                (unsigned long)chunk);
+            if (write(fd, buf, strlen(buf)) != -1) {
+                for (int i = 0; i < stsz; i++) {
+                    snprintf(buf, sizeof(buf), "#%d 0x%lx\n", i, stack[i]);
+                    if (write(fd, buf, strlen(buf)) == -1)
+                        break;
+                }
+            }
         }
         close(fd);
     }

@@ -647,8 +647,9 @@ cRawIn::raw_read(const char *name)
             char *s = buf;
             skip(&s);
             if (!*s) {
-                fgets(buf, BSIZE_SP, ri_fp);
-                s = buf;
+                s = fgets(buf, BSIZE_SP, ri_fp);
+                if (s == 0)
+                    s = buf;
             }
             if (ri_numdims == 0) {
                 ri_numdims = 1;
@@ -671,8 +672,9 @@ cRawIn::raw_read(const char *name)
                 if (!i)
                     curpl->set_scale(v);
                 else {
-                    fgets(buf, BSIZE_SP, ri_fp);
-                    s = buf;
+                    s = fgets(buf, BSIZE_SP, ri_fp);
+                    if (s == 0)
+                        s = buf;
                 }
                 lstring::advtok(&s);  // The index field
                 char *t;

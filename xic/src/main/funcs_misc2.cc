@@ -7090,12 +7090,14 @@ misc2_funcs::IFprintLog(Variable *res, Variable *args, void*)
             if (hdl->data) {
                 if (write(id, s, n) != n)
                     return (BAD);
-                write(id, "\n", 1);
+                if (write(id, "\n", 1) != 1)
+                    return (BAD);
             }
             else {
                 if (send(id, s, n, 0) != n)
                     return (BAD);
-                send(id, "\n", 1, 0);
+                if (send(id, "\n", 1, 0) != 1)
+                    return (BAD);
             }
             res->content.value = n+1;
         }

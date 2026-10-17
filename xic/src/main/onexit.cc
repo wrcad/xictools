@@ -147,7 +147,9 @@ cMain::Exit(ExitType exit_type)
         char *s = getenv("XIC_EXIT_CMD");
         if (s) {
             s = lstring::copy(s);
-            system(s);
+            if (system(s) == -1)
+                fputs("Exit command invocation returned error status.\n",
+                    stderr);
         }
 #ifdef HAVE_SECURE
         Auth()->closeValidation();

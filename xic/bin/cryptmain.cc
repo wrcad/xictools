@@ -224,12 +224,21 @@ main(int argc, char **argv)
         if (!nogo) {
             unlink(argv[i]);
 #ifdef WIN32
-            rename(tmpf, argv[i]);
+            if (rename(tmpf, argv[i]) != 0) {
+                fprintf(stderr, "%s->%s: rename failed.\n", tmpf, argv[i]);
+                nogo = true;
+            }
 #else
-            link(tmpf, argv[i]);
+            if (link(tmpf, argv[i]) != 0) {
+                fprintf(stderr, "%s->%s: link failed.\n", argv[i], tmpf);
+                nogo = true;
+            }
+            else if (unlink(tmpf) != 0) {
+                fprintf(stderr, "%s: unlink failed.\n", tmpf);
+                // Not really an error, leave nogo alone.
+            }
 #endif
         }
-        unlink(tmpf);
         delete [] tmpf;
         if (argc == 2)
             return (nogo);

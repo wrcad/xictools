@@ -2571,10 +2571,10 @@ namespace {
         FILE *fp = fopen(fname, "r");
         if (fp) {
             char buf[128];
-            fgets(buf, 128, fp);
-            if (lstring::prefix("Title:", buf)) {
-                fgets(buf, 128, fp);
-                if (lstring::prefix("Date:", buf)) {
+            char *s = fgets(buf, 128, fp);
+            if (s == buf && lstring::prefix("Title:", s)) {
+                s = fgets(buf, 128, fp);
+                if (s == buf && lstring::prefix("Date:", s)) {
                     fclose(fp);
                     TTY.monitor();
                     CommandTab::com_load(&wl);
