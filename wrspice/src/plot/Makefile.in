@@ -8,10 +8,18 @@ DATE = @DATE@
 CXX = @CXX@
 CC = @CC@
 CFLAGS = @CFLAGSG@ @UFLAGS@ -DWRSPICE
+QTPREF = @QTPREF@
+GTKPREF = @GTKPREF@
 DEPEND_PROG = @DEPEND_PROGXX@ @CFLAGSG@ -DWRSPICE
 AR = @AR@
 RANLIB = @RANLIB@
 FILTER = @FILTER@
+
+# Compile graph.cc here only if no toolkit.  The file is otherwise
+# copied to toolkit-specific directories for compilation.
+ifeq ($(QTPREF)$(GTKPREF),)
+    GRAPH = graph.cc
+endif
 
 LIB_TARGET = plot.a
 
@@ -19,7 +27,7 @@ BASE = ../../../xt_base
 INCLUDE = -I../../include -I$(BASE)/include
 
 HFILES =
-CCFILES = asciplot.cc clip.cc doplot.cc fourier.cc graph.cc graphdb.cc \
+CCFILES = asciplot.cc clip.cc doplot.cc fourier.cc $(GRAPH) graphdb.cc \
   grid.cc grsetup.cc hardcopy.cc mplot.cc plotutil.cc xgplot.cc
 CCOBJS = $(CCFILES:.cc=.o)
 

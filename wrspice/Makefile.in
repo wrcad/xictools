@@ -318,89 +318,89 @@ mmjco/mmjco::
 ####### Recursively generate libraries ################################
 
 $(DEVLIB_CALL)::
-	$(MAKE) -C $(@D)
+	@$(MAKE) -C $(@D)
 
 $(SUBDIR_LIBS)::
-	$(MAKE) -C $(@D)
+	@$(MAKE) -C $(@D)
 
 $(VLOG)::
-	$(MAKE) -C $(@D)
+	@$(MAKE) -C $(@D)
 
 ifeq ($(USESECURE), yes)
 $(SECURE)/secure.a::
-	$(MAKE) -C $(@D)
+	@$(MAKE) -C $(@D)
 endif
 
 $(MALLOC)::
-	$(MAKE) -C $(@D)/../malloc
+	@$(MAKE) -C $(@D)/../malloc
 
 $(BASE)/lib/ginterf.a::
-	$(MAKE) -C $(BASE)/ginterf
+	@$(MAKE) -C $(BASE)/ginterf
 
 $(BASE)/lib/miscutil.a::
-	$(MAKE) -C $(BASE)/miscutil
+	@$(MAKE) -C $(BASE)/miscutil
 
 $(BASE)/lib/libregex.a::
-	$(MAKE) -C $(BASE)/regex
+	@$(MAKE) -C $(BASE)/regex
 
 ifdef QTPREF
 $(BASE)/lib/$(QTPREF)interf.a::
-	$(MAKE) -C $(BASE)/$(QTPREF)interf
+	@$(MAKE) -C $(BASE)/$(QTPREF)interf
 
 ifeq ($(USEMOZY), yes)
 $(MOZY)/lib/$(QTPREF)mozy.a::
-	if [ -d $(MOZY)/src/$(QTPREF)mozy ]; then \
+	@if [ -d $(MOZY)/src/$(QTPREF)mozy ]; then \
 	    $(MAKE) -C $(MOZY)/src/$(QTPREF)mozy ; \
 	fi
 
 $(MOZY)/lib/help.a::
-	if [ -d $(MOZY)/src/help ]; then \
+	@if [ -d $(MOZY)/src/help ]; then \
 	    $(MAKE) -C $(MOZY)/src/help ; \
 	fi
 
 $(MOZY)/lib/htm.a::
-	if [ -d $(MOZY)/src/htm ]; then \
+	@if [ -d $(MOZY)/src/htm ]; then \
 	    $(MAKE) -C $(MOZY)/src/htm ; \
 	fi
 
 $(MOZY)/lib/httpget.a::
-	if [ -d $(MOZY)/src/httpget ]; then \
+	@if [ -d $(MOZY)/src/httpget ]; then \
 	    $(MAKE) -C $(MOZY)/src/httpget ; \
 	fi
 
 $(MOZY)/lib/imsave.a::
-	if [ -d $(MOZY)/src/imsave ] ; then \
+	@if [ -d $(MOZY)/src/imsave ] ; then \
 	    $(MAKE) -C $(MOZY)/src/imsave ; \
 	fi
 endif
 endif
 ifdef GTKPREF
 $(BASE)/lib/$(GTKPREF)interf.a::
-	$(MAKE) -C $(BASE)/$(QTPREF)interf
+	@$(MAKE) -C $(BASE)/$(QTPREF)interf
 
 ifeq ($(USEMOZY), yes)
 $(MOZY)/lib/$(GTKPREF)mozy.a::
-	if [ -d $(MOZY)/src/$(GTKPREF)mozy ]; then \
+	@if [ -d $(MOZY)/src/$(GTKPREF)mozy ]; then \
 	    $(MAKE) -C $(MOZY)/src/$(GTKPREF)mozy ; \
 	fi
 
 $(MOZY)/lib/help.a::
-	if [ -d $(MOZY)/src/help ]; then \
+	@if [ -d $(MOZY)/src/help ]; then \
 	    $(MAKE) -C $(MOZY)/src/help ; \
 	fi
 
 $(MOZY)/lib/htm.a::
-	if [ -d $(MOZY)/src/htm ]; then \
+	@if [ -d $(MOZY)/src/htm ]; then \
 	    $(MAKE) -C $(MOZY)/src/htm ; \
 	fi
 
 $(MOZY)/lib/httpget.a::
-	if [ -d $(MOZY)/src/httpget ]; then \
+	@if [ -d $(MOZY)/src/httpget ]; then \
 	    $(MAKE) -C $(MOZY)/src/httpget ; \
 	fi
 
 $(MOZY)/lib/imsave.a::
-	if [ -d $(MOZY)/src/imsave ] ; then \
+	@if [ -d $(MOZY)/src/imsave ] ; then \
 	    $(MAKE) -C $(MOZY)/src/imsave ; \
 	fi
 endif

@@ -38,21 +38,21 @@ all: unpack
 unpack: $(FASTHENRY_SUB)
 
 $(FASTHENRY_SUB): $(FASTHENRY)
-	if [ -d $(FASTHENRY_SUB) ]; then \
+	@if [ -d $(FASTHENRY_SUB) ]; then \
 	    rm -rf $(FASTHENRY_SUB); \
 	fi
-	tar xzf $(FASTHENRY)
-	touch $(FASTHENRY_SUB)
-	if [ -n "$(EXESUFFIX)" ]; then \
+	@tar xzf $(FASTHENRY)
+	@touch $(FASTHENRY_SUB)
+	@if [ -n "$(EXESUFFIX)" ]; then \
 	    (cd $(FASTHENRY_SUB); ./config mingw); \
 	fi
-	mv -f $(SRCDIR)/release.h $(SRCDIR)/release.h.orig
-	sed -e "s/FHVERSION .*$$/FHVERSION $(VERS)/" \
+	@mv -f $(SRCDIR)/release.h $(SRCDIR)/release.h.orig
+	@sed -e "s/FHVERSION .*$$/FHVERSION $(VERS)/" \
 	  -e "s/FHDATE .*$$/FHDATE \"xictools\"/" \
           -e "s/ID_STRING .*$$/ID_STRING $(IDSTR)/" \
 	  < $(SRCDIR)/release.h.orig > $(SRCDIR)/release.h
-	mv -f $(SRCDIR)/mk_klu.inc $(SRCDIR)/mk_klu.inc.orig
-	sed -e "s^KLU_HOME .*$$^KLU_HOME = ../../../../KLU^" \
+	@mv -f $(SRCDIR)/mk_klu.inc $(SRCDIR)/mk_klu.inc.orig
+	@sed -e "s^KLU_HOME .*$$^KLU_HOME = ../../../../KLU^" \
 	  -e "s^#RTLIB .*$$^RTLIB = $(LIBRT)^" \
 	  < $(SRCDIR)/mk_klu.inc.orig > $(SRCDIR)/mk_klu.inc
 

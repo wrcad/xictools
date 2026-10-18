@@ -2,6 +2,7 @@
                          October 1, 2017
                        Revised May 29, 2022
                        Revised June 18, 2024
+                       New build procedure Oct 18, 2026
 
 Whiteley Research is pleased to offer the XicTools programs:  Xic
 (graphical editor) and WRspice (circuit simulator) as open-source. 
@@ -44,7 +45,8 @@ question as to whether the full terms of the Apache-2.0 license apply
 in some cases.  This shall presumably be clarified in the future.  All
 old headers have been retained, so users can make their own judgement
 about the constraints on a given set of files.  Incorporating a better
-HTML viewer, that understands CSS, should be a priority.
+HTML viewer, that understands modern HTML and scripting, would be a
+nice improvement.
 
 
 1. Overview - What's Here
@@ -508,6 +510,13 @@ README file in your xictools git repository.  It assumes that you have
 installed the software build tools and development libraries as listed
 above, or a best guess depending on your system.
 
+Earlier (than about Oct 18, 2026) build systems used a two-pass approach
+when creating an executable tree or package that would support both Qt
+and GTK.  This required running the configuration procedure twice, and
+hand editing the Makefile, and was somewhat complicated and time
+consuming.  The present build system will build everything in one pass,
+which is much more user friendly.
+
 The basic procedure is as follows.
 
 The first time, you will need to set up the main Makefile.
@@ -519,11 +528,26 @@ The first time, you will need to set up the main Makefile.
 2.  Give the command "make config" to configure the source tree to
     your build environment.  You may see errors and early termination
     if there are missing utilities or libraries.  This should take
-    maybe 5 minutes.
+    maybe 5 minutes.  Examine the printed output and correct any
+    errors that are reported.
 
-3.  Give "make all" to build all of the programs.  If everything went
-    correctly for Xic and WRspice, there should be files present:
-    xic/bin/xic and wrspice/bin/wrspice
+    There are actually two configuration targets:  "config" and
+    "reconfig".  The "config" target can work only on a fresh
+    source tree, meanong that it is either just created, or
+    "make distclean", which cleans everything back to distribution
+    files only, has just been run.  Use "make reconfig" after the
+    first time when you need to reconfigure, such as after doing
+    a "git pull" to get new changes, or a system library has been
+    updated.  You could use reconfig instead of config the first
+    time, too, it would have the same effect.
+
+3.  Give "make all" to build all of the programs.
+
+4.  This is optional, but give "make packages" to create package
+    files for the programs.  These can be found in
+    ./xt_base/packages/pkgfiles.  If you attempted to build all
+    of the programs, there should be 8 package filles.  You can
+    use the package files to install the programs on your system.
 
 4.  in the future, after changes, do "make reconfig" followed by
     "make all" to rebuild the programs.  Alternatively, if you
@@ -556,25 +580,6 @@ versions, as the GTK2 library is considered to be obsolete.  For now,
 both version are included for comparison purposes, and possibly as a
 work around if there is trouble with one or the other.
 
-When building the source, you can use the following procedure to build
-both versions.
-
-1. After setting up the top-level Makefile as normal, run
-   make reconfig
-   make all
-   (Note: if this is the first time building, or you have run "make distclean"
-   run "make config" rather than "make reconfig".)
-
-2. Edit the top-level Makefile to switch the chosen graphical toolkit
-   to Qt from GTK2 or vice-versa.  If doesn't matter which you start with.
-
-3. Give the commands
-   make reconfig
-   make all
-   (Note: only the parts that change will be rebuilt, not the whole thing!
-
-This completes the build procedure.
-
 
 3.6  The Installation Procedure.
 
@@ -582,7 +587,7 @@ The present default installation procedure assumes that the intended
 installation procedure is to first build a binary package (e.g., RPM)
 for each program, then install the packages on your system using the
 wr_install script.  The wr_install script is available in the source
-tree under xictools/xt_base/packages/util/wr_install.  The Makefiles
+tree under xt_base/packages/util/wr_install.  The Makefiles
 will actually prevent running "make install" to the default location
 (typically under /usr/local).  However, you can modify the top-level
 Makefile (in this directory) to allow this (see the ITOPOK variable),

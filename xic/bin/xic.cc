@@ -553,7 +553,6 @@ main(int argc, char **argv)
         PAUSE();
         return (1);
     }
-
     cmdLine.process_args(argc, argv, false);
 
     if (DSPpkg::self()->InitColormap(48,

@@ -27,11 +27,11 @@ BASE = ../../../xt_base
 INCLUDE = -I. -I../../include -I$(BASE)/include
 
 HFILES = gtktoolb.h
-CCFILES = gtkcmds.cc gtkcolor.cc gtkdebug.cc gtkfte.cc gtkpldef.cc \
-  gtkplot.cc gtkshell.cc gtksim.cc gtktoolb.cc
+CCFILES = graph.cc gtkcmds.cc gtkcolor.cc gtkdebug.cc gtkfte.cc \
+  gtkpldef.cc gtkplot.cc gtkshell.cc gtksim.cc gtktoolb.cc
 CCOBJS = $(CCFILES:.cc=.o) $(RESOURCE)
 
-$(LIB_TARGET): $(CCOBJS)
+$(LIB_TARGET): cptest $(CCOBJS)
 	@if [ -f $(LIB_TARGET) ]; then \
 	    rm -f $(LIB_TARGET); \
 	fi
@@ -50,7 +50,13 @@ endif
 .cc.o:
 	$(CXX) $(CFLAGS) $(INCLUDE) $(GTKINC) -c $*.cc
 
-depend::
+graph.o:
+	$(CXX) -c $(CFLAGS) $(INCLUDE) -DRUN_GTK graph.cc
+
+graph.cc: ../plot/graph.cc
+	cp -f ../plot/graph.cc .
+
+depend:: graph.cc
 	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
@@ -58,8 +64,8 @@ depend::
   $(CCFILES) $(FILTER) >> Makefile; \
 	fi
 
-clean::
-	-@rm -f $(CCOBJS) $(LIB_TARGET)
+clean:: 
+	-@rm -f $(CCOBJS) $(LIB_TARGET) graph.cc
 
 distclean: clean
 	-@rm -f Makefile
@@ -74,5 +80,19 @@ resource.o: ../msw/resource.cc ../msw/wrs.rc
 	$(CC) -c -o restmp.o ../msw/resource.cc
 	$(LD) -r -o resource.o resource_temp.o restmp.o
 	rm -f resource_temp.o restmp.o
+
+# Make sure that the copies are the same as the source, avoid local
+# updates that won't propagate!
+cptest: graph.cc
+	@for a in graph.cc; do \
+	    set -- $$(/usr/bin/sum ../plot/$$a); s1=$$1; \
+	    set -- $$(/usr/bin/sum $$a); s2=$$1; \
+	    if [ "$$s1" != "$$s2" ]; then \
+	        echo ; \
+	        echo  "ERROR!!! $$a differs in wrspice/src/plot, FIXME"; \
+	        echo ; \
+	        exit 1; \
+	    fi; \
+	done
 
 #######################################################################

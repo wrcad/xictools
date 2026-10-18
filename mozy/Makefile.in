@@ -184,44 +184,44 @@ bin/xeditor.o: bin/xeditor.cc
 ####### Recursively generate libraries ################################
 
 lib/help.a::
-	$(MAKE) -C src/help
+	@$(MAKE) -C src/help
 
 lib/htm.a::
-	$(MAKE) -C src/htm
+	@$(MAKE) -C src/htm
 
 lib/httpget.a::
-	$(MAKE) -C src/httpget
+	@$(MAKE) -C src/httpget
 
 lib/imsave.a::
-	$(MAKE) -C src/imsave
+	@$(MAKE) -C src/imsave
 
 $(BASE)/lib/ginterf.a::
-	$(MAKE) -C $(BASE)/ginterf
+	@$(MAKE) -C $(BASE)/ginterf
 
 ifdef QTPREF
 lib/$(QTPREF)mozy.a::
-	$(MAKE) -C src/$(QTPREF)mozy
+	@$(MAKE) -C src/$(QTPREF)mozy
 
 $(BASE)/lib/$(QTPREF)interf.a::
-	$(MAKE) -C $(BASE)/$(QTPREF)interf
+	@$(MAKE) -C $(BASE)/$(QTPREF)interf
 endif
 
 ifdef GTKPREF
 lib/$(GTKPREF)mozy.a::
-	$(MAKE) -C src/$(GTKPREF)mozy
+	@$(MAKE) -C src/$(GTKPREF)mozy
 
 $(BASE)/lib/$(GTKPREF)interf.a::
-	$(MAKE) -C $(BASE)/$(GTKPREF)interf
+	@$(MAKE) -C $(BASE)/$(GTKPREF)interf
 endif
 
 $(BASE)/lib/miscutil.a::
-	$(MAKE) -C $(BASE)/miscutil
+	@$(MAKE) -C $(BASE)/miscutil
 
 $(BASE)/lib/libregex.a::
-	$(MAKE) -C $(BASE)/regex
+	@$(MAKE) -C $(BASE)/regex
 
 foo $(MOZYRES) $(XEDRES):
-	$(MAKE) -C $(@D) $(@F)
+	@$(MAKE) -C $(@D) $(@F)
 
 #######################################################################
 ####### Dependencies in this directory ################################

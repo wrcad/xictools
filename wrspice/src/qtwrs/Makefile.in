@@ -33,6 +33,7 @@ endif
 INCLUDE = -I. -I../../include -I$(BASE)/include -I$(SECURE)/include $(MOZYINC)
 
 CCFILES = \
+    graph.cc \
     qtcircuits.cc \
     qtcmds.cc \
     qtcolor.cc \
@@ -78,7 +79,7 @@ CCOBJS = $(CCFILES:.cc=.o) $(RESOURCE)
 MOCOBJS = $(MOCFILES:.cpp=.o)
 LIBOBJS = $(CCOBJS) $(MOCOBJS)
 
-$(LIB_TARGET): $(LIBOBJS)
+$(LIB_TARGET): cptest $(LIBOBJS)
 	@if [ -f $(LIB_TARGET) ]; then \
 	    rm -f $(LIB_TARGET); \
 	fi
@@ -90,6 +91,9 @@ $(LIB_TARGET): $(LIBOBJS)
 
 .cc.o:
 	$(CXX) -c $(CFLAGS) $(INCLUDE) $(QTINC) $*.cc
+
+graph.o:
+	$(CXX) -c $(CFLAGS) $(INCLUDE) -DRUN_QT graph.cc
 
 moc_circuits.o: moc_circuits.cpp
 moc_cmds.o: moc_cmds.cpp
@@ -147,7 +151,10 @@ moc_variables.cpp: $(MOC) qtvariables.o
 moc_vectors.cpp: $(MOC) qtvectors.o
 	$(MOC) qtvectors.h -o moc_vectors.cpp
 
-depend:
+graph.cc: ../plot/graph.cc
+	cp -f ../plot/graph.cc .
+
+depend: graph.cc
 	@echo depending in wrspice/gtkwrs
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
@@ -160,7 +167,7 @@ mocclean:
 	-@rm -f $(MOCFILES)
 
 clean: mocclean
-	-@rm -f $(CCOBJS) $(LIB_TARGET)
+	-@rm -f $(CCOBJS) $(LIB_TARGET) graph.cc
 
 distclean: clean
 	-@rm -f Makefile
@@ -175,5 +182,19 @@ resource.o: ../msw/resource.cc ../msw/wrs.rc
 	$(CC) -c -o restmp.o ../msw/resource.cc
 	$(LD) -r -o resource.o resource_temp.o restmp.o
 	rm -f resource_temp.o restmp.o
+
+# Make sure that the copies are the same as the source, avoid local
+# updates that won't propagate!
+cptest: graph.cc
+	@for a in graph.cc; do \
+	    set -- $$(/usr/bin/sum ../plot/$$a); s1=$$1; \
+	    set -- $$(/usr/bin/sum $$a); s2=$$1; \
+	    if [ "$$s1" != "$$s2" ]; then \
+	        echo ; \
+	        echo  "ERROR!!! $$a differs in wrspice/src/plot, FIXME"; \
+	        echo ; \
+	        exit 1; \
+	    fi; \
+	done
 
 #######################################################################

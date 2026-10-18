@@ -39,27 +39,27 @@ all: unpack
 unpack: $(ADMS_SUB)
 
 $(ADMS_SUB): $(ADMS)
-	if [ -d $(ADMS_SUB) ]; then \
+	@if [ -d $(ADMS_SUB) ]; then \
 	    rm -rf $(ADMS_SUB); \
 	fi
-	tar xzf $(ADMS);
-	mv -f $(ADMS_DIR) $(ADMS_SUB)
-	sed -e s/VERSION/$$(./release.sh)/ < files/configure.in.sed \
+	@tar xzf $(ADMS);
+	@mv -f $(ADMS_DIR) $(ADMS_SUB)
+	@sed -e s/VERSION/$$(./release.sh)/ < files/configure.in.sed \
 	  > $(ADMS_SUB)/configure.in
-	sed -e s/GIT/$(GIT)/ -e s/XT_IDSTRING/$(IDSTR)/ \
+	@sed -e s/GIT/$(GIT)/ -e s/XT_IDSTRING/$(IDSTR)/ \
 	  < files/admsXml.c.sed > $(ADMS_SUB)/admsXml/admsXml.c
-	mv -f $(ADMS_SUB)/configure.ac $(ADMS_SUB)/configure.ac.notused
-	cp -f files/install-sh $(ADMS_SUB)/auxconf
-	cp -f files/Makefile.in $(ADMS_SUB)/admsXml
-	cp -f files/config.h.in $(ADMS_SUB)/admsXml
-	cp -f files/constants.vams $(ADMS_SUB)/admsXml
-	cp -f files/disciplines.vams $(ADMS_SUB)/admsXml
-	cp -f files/admsPreprocessor.h $(ADMS_SUB)/admsXml
-	cp -f files/mkelements.pl $(ADMS_SUB)/admsXml
-	cp -f files/admsPreprocessor.h $(ADMS_SUB)/admsXml
-	cp -f files/admsVeriloga.h $(ADMS_SUB)/admsXml
-	cp -f files/verilogaYacc.y.in $(ADMS_SUB)/admsXml
-	if [ $(REGEN) = yes ]; then \
+	@mv -f $(ADMS_SUB)/configure.ac $(ADMS_SUB)/configure.ac.notused
+	@cp -f files/install-sh $(ADMS_SUB)/auxconf
+	@cp -f files/Makefile.in $(ADMS_SUB)/admsXml
+	@cp -f files/config.h.in $(ADMS_SUB)/admsXml
+	@cp -f files/constants.vams $(ADMS_SUB)/admsXml
+	@cp -f files/disciplines.vams $(ADMS_SUB)/admsXml
+	@cp -f files/admsPreprocessor.h $(ADMS_SUB)/admsXml
+	@cp -f files/mkelements.pl $(ADMS_SUB)/admsXml
+	@cp -f files/admsPreprocessor.h $(ADMS_SUB)/admsXml
+	@cp -f files/admsVeriloga.h $(ADMS_SUB)/admsXml
+	@cp -f files/verilogaYacc.y.in $(ADMS_SUB)/admsXml
+	@if [ $(REGEN) = yes ]; then \
 	    cd $(ADMS_SUB); $(ACONF); ./configure --enable-maint=yes; \
 	else \
 	    cp -f generated/*.c generated/*.h $(ADMS_SUB)/admsXml; \

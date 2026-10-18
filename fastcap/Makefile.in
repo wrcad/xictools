@@ -34,16 +34,16 @@ all: unpack
 unpack: $(FASTCAP_SUB)
 
 $(FASTCAP_SUB): $(FASTCAP)
-	if [ -d $(FASTCAP_SUB) ]; then \
+	@if [ -d $(FASTCAP_SUB) ]; then \
 	    rm -rf $(FASTCAP_SUB); \
 	fi
-	tar xzf $(FASTCAP)
-	touch $(FASTCAP_SUB)
-	if [ -n "$(EXESUFFIX)" ]; then \
+	@tar xzf $(FASTCAP)
+	@touch $(FASTCAP_SUB)
+	@if [ -n "$(EXESUFFIX)" ]; then \
 	    (cd $(FASTCAP_SUB); ./config mingw); \
 	fi
-	mv -f $(SRCDIR)/release.h $(SRCDIR)/release.h.orig
-	sed -e "s/FCVERSION .*$$/FCVERSION $(VERS)/" \
+	@mv -f $(SRCDIR)/release.h $(SRCDIR)/release.h.orig
+	@sed -e "s/FCVERSION .*$$/FCVERSION $(VERS)/" \
 	  -e "s/ID_STRING .*$$/ID_STRING $(IDSTR)/" \
 	  < $(SRCDIR)/release.h.orig > $(SRCDIR)/release.h
 

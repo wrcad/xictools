@@ -7,11 +7,19 @@ DATE = @DATE@
 CXX = @CXX@
 CC = @CC@
 CFLAGS = @CFLAGSG@ @UFLAGS@ @WITH_X11@
+QTPREF = @QTPREF@
+GTKPREF = @GTKPREF@
 DEPEND_PROG = @DEPEND_PROGXX@ @CFLAGSG@
 AR = @AR@
 RANLIB = @RANLIB@
 FILTER = @FILTER@
 MSW = @MSW@
+
+# Compile hcimlib.cc here only if no toolkit.  The file is otherwise
+# copied to toolkit-specific directories for compilation.
+ifeq ($(QTPREF)$(GTKPREF),)
+    HCIMLIB = hcimlib.cc
+endif
 
 INCLUDE = -I../include -I../include/ginterf -I../../mozy/include @IMG_INCLUDES@
 
@@ -23,7 +31,7 @@ MSWHCDEV = hcmswpdev.cc
 endif
 
 HCFILES = \
-  hcimlib.cc hchpgl.cc hcpcl.cc hcpsbc.cc hcpsbm.cc hcpslindrw.cc hcxfig.cc \
+  $(HCIMLIB) hchpgl.cc hcpcl.cc hcpsbc.cc hcpsbm.cc hcpslindrw.cc hcxfig.cc \
   $(MSWHCDEV)
 
 HFILES =

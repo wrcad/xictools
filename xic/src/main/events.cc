@@ -685,7 +685,7 @@ cEventHdlr::KeyActions(WindowDesc *wdesc, eKeyAction action, int *code)
         // menu only, leaving out subwindow support.  In that case
         // handle ctrl-g here, and leave out the ctrl-g menu accelerator.
 #ifdef __APPLE__
-#if defined(WITH_QT5) || defined(WITH_QT6)
+#ifdef WITH_qt
         PL()->SetKeys(wdesc, "grid");
         PL()->CheckExec(wdesc, true);
 #endif

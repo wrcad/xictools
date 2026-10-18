@@ -454,7 +454,7 @@ cGraph::gr_redraw_keyed(int bbx, int bby, int bbw, int bbh)
     // Important for Windows, text update delayed otherwise, screws
     // things up in QT.
 #ifdef WIN32
-#if defined(WITH_GTK2) || defined(WITH_GTK3)
+#ifdef RUN_GTK
     gr_dev->Update();
 #endif
 #endif
@@ -684,7 +684,7 @@ void
 cGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
 {
     sKeyed *k = gr_keyed;
-#if (defined (WITH_GTK2) || defined (WITH_GTK3))
+#ifdef RUN_GTK
     if (gr_cmdmode & grMoving) {
         if (code == UP_KEY || code == RIGHT_KEY) {
             gr_show_ghost(false);
@@ -748,7 +748,7 @@ cGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
             if (k->inspos > 0) {
                 gr_show_sel_text(false);
                 k->inspos--;
-#if defined (WITH_QT5) || defined (WITH_QT6)
+#ifdef RUN_QT
                 int xl, yb, xr, yt;
                 if (gr_get_keyed_bb(k, &xl, &yb, &xr, &yt)) {
                     gr_refresh(xl, yinv(yb)+1, xr, yinv(yt), true);
@@ -766,7 +766,7 @@ cGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
 #endif
                 gr_show_sel_text(true);
             }
-#if defined (WITH_QT5) || defined (WITH_QT6)
+#ifdef RUN_QT
             else {
                 gr_show_sel_text(false);
                 if (gr_xform & TXTF_HJR) {
@@ -802,7 +802,7 @@ cGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
             if (k->inspos < (int)strlen(k->text)) {
                 gr_show_sel_text(false);
                 k->inspos++;
-#if defined (WITH_QT5) || defined (WITH_QT6)
+#ifdef RUN_QT
                 int xl, yb, xr, yt;
                 if (gr_get_keyed_bb(k, &xl, &yb, &xr, &yt)) {
                     gr_refresh(xl, yinv(yb)+1, xr, yinv(yt), true);
@@ -820,7 +820,7 @@ cGraph::gr_key_hdlr(const char *text, int code, int tx, int ty)
 #endif
                 gr_show_sel_text(true);
             }
-#if defined (WITH_QT5) || defined (WITH_QT6)
+#ifdef RUN_QT
             else {
                 gr_show_sel_text(false);
                 if (gr_xform & TXTF_HJR)
@@ -1048,11 +1048,11 @@ cGraph::gr_bdown_hdlr(int button, int x, int y)
     bool was_seltext = gr_seltext;
     if (button == 1) {
         gr_seltext = false;
-#if defined (WITH_QT5) || defined (WITH_QT6)
+#ifdef RUN_QT
         gr_dev->SetOverlayMode(true);
 #endif
         gr_show_sel_text(false);
-#if defined (WITH_QT5) || defined (WITH_QT6)
+#ifdef RUN_QT
         gr_dev->SetOverlayMode(false);
 #endif
     }
@@ -1259,7 +1259,7 @@ cGraph::gr_bup_hdlr(int button, int x, int y, const char *new_keyed)
                             kk = new sKeyed(*k);
                             kk->text = lstring::copy(kk->text);
                         }
-#if (defined (WITH_QT5) || defined (WITH_QT6))
+#ifdef RUN_QT
                         kk->xform &= ~(TXTF_HJC | TXTF_HJR);
                         kk->xform |= (graph->gr_xform & TXTF_HJC);
                         kk->xform |= (graph->gr_xform & TXTF_HJR);
@@ -1286,17 +1286,17 @@ cGraph::gr_bup_hdlr(int button, int x, int y, const char *new_keyed)
                         gr_dev->TextExtent(k->text, &w, &h);
                         yy = yinv(yy);
 
-#if (defined (WITH_QT5) || defined (WITH_QT6))
+#ifdef RUN_QT
                         k->xform &= ~(TXTF_HJC | TXTF_HJR);
                         k->xform |= (gr_xform & TXTF_HJC);
                         k->xform |= (gr_xform & TXTF_HJR);
 #endif
                         // The justification may have changed!
-#if defined (WITH_QT5) || defined (WITH_QT6)
+#ifdef RUN_QT
                         gr_dev->SetOverlayMode(true);
 #endif
                         gr_refresh(xx-w, yy+2, xx+2*w, yy-h, true);
-#if defined (WITH_QT5) || defined (WITH_QT6)
+#ifdef RUN_QT
                         gr_dev->SetOverlayMode(false);
 #endif
 
@@ -1787,7 +1787,7 @@ void
 cGraph::gr_refmark(bool erase)
 {
     if (gr_reference.set) {
-#if defined (WITH_QT5) || defined (WITH_QT6)
+#ifdef RUN_QT
         if (erase) {
             gr_dev->SetOverlayMode(true);
             if (gr_xmono) {
@@ -2221,7 +2221,7 @@ void
 cGraph::gr_ghost_mark(int x, int y, bool erase)
 {
     if (erase) {
-#if defined (WITH_QT5) || defined (WITH_QT6)
+#ifdef RUN_QT
         dv_erase_factors();
 #else
         gr_dev->SetXOR(GRxNone);
@@ -2514,7 +2514,7 @@ cGraph::gr_show_sel_text(bool show)
                 int xx = xl-1 + k->inspos*gr_fontwid;
                 gr_dev->Line(xx, yinv(yb), xx, yinv(yt));
             }
-#if (defined (WITH_QT5) || defined (WITH_QT6))
+#ifdef RUN_QT
             // Update the justification indicator, QT only.
             gr_dev->SetColor(gr_colors[4].pixel);
             if (gr_xform & TXTF_HJC) {
@@ -4965,7 +4965,7 @@ cGraph::dv_find_selections()
 }
 
 
-#if (defined (WITH_GTK2) || defined (WITH_GTK3))
+#ifdef RUN_GTK
 namespace {
     // Show an outline box of the selected text
     //
@@ -4986,13 +4986,13 @@ namespace {
 int
 cGraph::start_drag_trace(void *arg)
 {
-#if (defined (WITH_QT5) || defined (WITH_QT6))
+#ifdef RUN_QT
     // In QT, start in QT's drag mode.
     cGraph *graph = (cGraph*)arg;
     graph->gr_timer_id = 0;
     cGraph::drag_trace(graph);
 #else
-#if (defined (WITH_GTK2) || defined (WITH_GTK3))
+#ifdef RUN_GTK
     // In GTK, use the local drag mode, which works between windows,
     // unlike this mode in QT.  For QT6, it is also possible to start
     // in local mode and switch to QT mode in the leave event handler,
@@ -5015,13 +5015,13 @@ int
 cGraph::start_drag_text(void *arg)
 {
     cGraph *graph = (cGraph*)arg;
-#if (defined (WITH_QT5) || defined (WITH_QT6))
+#ifdef RUN_QT
     // In QT, start in QT's drag mode.
     graph->gr_timer_id = 0;
     cGraph::drag_text(graph);
     graph->gr_cmdmode &= ~grMoving;
 #else
-#if (defined (WITH_GTK2) || defined (WITH_GTK3))
+#ifdef RUN_GTK
     // In GTK, use the local drag mode, which works between windows,
     // unlike this mode in QT.  For QT6, it is also possible to start
     // in local mode and switch to QT mode in the leave event handler,

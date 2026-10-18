@@ -38,8 +38,9 @@
  $Id:$
  *========================================================================*/
 
-#include "config.h"
-#if defined(WITH_GTK2) || defined(WITH_GTK3)
+#include "grconfig.h"
+#if !defined(WITH_qt)
+
 #include "graphics.h"
 #include "hcimlib.h"
 #include "miscutil/texttf.h"
