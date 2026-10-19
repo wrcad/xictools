@@ -237,11 +237,13 @@ namespace {
         delete [] err_msg;
 #ifdef HAVE_VASPRINTF
         va_start(args, fmt);
-        vasprintf(&err_msg, fmt, args);
+        int r = vasprintf(&err_msg, fmt, args);
+        (void)r;  // shutup compiler warning
 #else
         char buf[1024];
         va_start(args, fmt);
-        vsnprintf(buf, 1024, fmt, args);
+        int r = vsnprintf(buf, 1024, fmt, args);
+        (void)r;  // shutup compiler warning
         err_msg = new char[strlen(buf)+1];
         strcpy(err_msg, buf);
 #endif

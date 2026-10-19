@@ -466,7 +466,8 @@ miscutil::send_mail(const char *mailaddr, const char *subject,
         *s++ = '<';
         *s++ = ' ';
         strcpy(s, file);
-        system(buf);
+        int r = system(buf);
+        (void)r;  // Avoid compiler warning.
     }
     else {
         FILE *fp = popen(buf, "w");

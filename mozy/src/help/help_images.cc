@@ -124,7 +124,8 @@ HLPcontext::checkImage(const char *fname, ViewerWidget *w)
             FILE *fp = fopen(cent->filename, "rb");
             if (fp) {
                 char data[32];
-                fread(data, 1, 32, fp);
+                if (fread(data, 1, 32, fp) != 32)
+                    return (0);
                 bool ret = isImage(data);
                 fclose(fp);
                 if (ret)
@@ -137,7 +138,8 @@ HLPcontext::checkImage(const char *fname, ViewerWidget *w)
     FILE *fp = fopen(fname, "rb");
     if (fp) {
         char data[32];
-        fread(data, 1, 32, fp);
+        if (fread(data, 1, 32, fp) != 32)
+            return (0);
         bool ret = isImage(data);
         fclose(fp);
         if (ret)
@@ -514,8 +516,8 @@ HLPcontext::getImageData(HLPimageList *im, htmPLCStream *stream, void *buffer)
         // Make sure that this is an image file.  In particular, avoid
         // reading a relocation return
         char bf[10];
-        read(fd, bf, 8);
-        if (!isImage(bf)) {
+        int sz = read(fd, bf, 8);
+        if (sz == 8 && !isImage(bf)) {
             close(fd);
             if (im->status == HLPimageList::IMdone)
                 return (STREAM_ABORT);

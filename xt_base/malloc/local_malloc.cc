@@ -72,7 +72,7 @@
 extern "C" {
 #ifndef HAVE_USR_INCLUDE_MALLOC_H
 #ifndef _MALLOC_H
-    struct mallinfo {
+    struct mallinfo2 {
         size_t arena;    // non-mmapped space allocated from system
         size_t ordblks;  // number of free chunks
         size_t smblks;   // always 0
@@ -95,7 +95,7 @@ extern "C" {
     extern void *dlmemalign(size_t, size_t);
     extern int dlposix_memalign(void**, size_t, size_t);
     extern void dlfree(void*);
-    extern struct mallinfo dlmallinfo();
+    extern struct mallinfo2 dlmallinfo();
 }
 #endif
 
@@ -117,17 +117,17 @@ sMemory::in_use()
     return (st.size_in_use);
 #else
     if (mem_use_local_malloc) {
-        struct mallinfo m = dlmallinfo();
+        struct mallinfo2 m = dlmallinfo();
         if (m.uordblks)
-            return ((unsigned int)m.uordblks);
-        return ((unsigned int)m.arena + (unsigned int)m.hblkhd);
+            return (m.uordblks);
+        return (m.arena + m.hblkhd);
     }
     else {
 #ifdef __linux
-        struct mallinfo m = mallinfo();
+        struct mallinfo2 m = mallinfo2();
         if (m.uordblks)
-            return ((unsigned int)m.uordblks);
-        return ((unsigned int)m.arena + (unsigned int)m.hblkhd);
+            return (m.uordblks);
+        return (m.arena + m.hblkhd);
 #endif
     }
 #endif

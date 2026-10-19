@@ -1401,14 +1401,16 @@ GTKeditPopup::ed_mail_proc(GtkWidget*, void *client_data)
         if (!state.nfiles) {
             snprintf(buf, sizeof(buf),
                 "mail -s \"%s\" %s < %s", subject, mailaddr, descname);
-            system(buf);
+            int r = system(buf);
+            (void)r;  // Avoid compiler warning.
         }
         else {
             for (int i = 0; i < state.nfiles; i++) {
                 // What is "-oi"?  took this from mpack
                 snprintf(buf, sizeof(buf), "sendmail -oi %s < %s", mailaddr,
                     state.fnames[i]);
-                system(buf);
+                int r = system(buf);
+                (void)r;  // Avoid compiler warning.
             }
         }
     }

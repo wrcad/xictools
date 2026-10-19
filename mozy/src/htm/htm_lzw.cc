@@ -357,7 +357,13 @@ lzwStream::uncompress(int *size)
     unsigned char *data = new unsigned char[*size];
 
     // read it all
-    fread(data, *size, 1, lz_zPipe);
+    int sz = fread(data, *size, 1, lz_zPipe);
+    if (sz != *size) {
+        snprintf(msg_buf, sizeof(msg_buf),
+            "lzwStream Error: read failed.");
+        lz_err_msg = lstring::copy(msg_buf);
+        return (0);
+    }
 
     // close and remove file
     if (lz_zPipe) {

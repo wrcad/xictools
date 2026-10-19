@@ -2118,9 +2118,13 @@ HLPcontext::bookmarkUpdate(const char *title, const char *url)
             int len = ftell(fp);
             char *s = new char[len+1];
             rewind(fp);
-            fread(s, 1, len, fp);
+            int sz = fread(s, 1, len, fp);
             fclose(fp);
             s[len] = 0;
+            if (sz != len) {
+                delete [] s;
+                return (0);
+            }
             fp = fopen(buf, "w");
             if (!fp) {
                 delete [] s;

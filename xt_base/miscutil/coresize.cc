@@ -81,7 +81,11 @@ double coresize()
     sz = st.size_in_use;
 #else
 #ifdef __linux
+#if __GLIBC_PREREQ(2, 33)
+    struct mallinfo2 m = mallinfo2();
+#else
     struct mallinfo m = mallinfo();
+#endif
     sz = m.arena + m.hblkhd;
 #endif
 #endif

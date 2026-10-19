@@ -195,7 +195,8 @@ namespace {
                 sLstr tlstr;
                 tlstr.add(cmd);
                 tlstr.add(" --p &");
-                system(tlstr.string());
+                int r = system(tlstr.string());
+                (void)r;  // avoid warning, don't trust this value
 
                 // Wait until the FIFO appears.
                 int cnt = 0;

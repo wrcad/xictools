@@ -63,7 +63,7 @@ extern void *dlcalloc(size_t, size_t);
 extern void *dlrealloc(void*, size_t);
 extern void *dlmemalign(size_t, size_t);
 extern void dlfree(void*);
-extern struct mallinfo dlmallinfo();
+extern struct mallinfo2 dlmallinfo();
 */
 
 /*
