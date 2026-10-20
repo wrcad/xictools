@@ -376,7 +376,7 @@ endif
 endif
 ifdef GTKPREF
 $(BASE)/lib/$(GTKPREF)interf.a::
-	@$(MAKE) -C $(BASE)/$(QTPREF)interf
+	@$(MAKE) -C $(BASE)/$(GTKPREF)interf
 
 ifeq ($(USEMOZY), yes)
 $(MOZY)/lib/$(GTKPREF)mozy.a::
