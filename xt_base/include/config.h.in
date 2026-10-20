@@ -64,6 +64,7 @@ Copyright (c) Whiteley Research Inc 1996
 #undef HAVE_ISATTY
 #undef HAVE_KILL
 #undef HAVE_LGAMMA
+#undef HAVE_MALLINFO2
 #undef HAVE_MKSTEMPS
 #undef HAVE_PERROR
 #undef HAVE_POPEN

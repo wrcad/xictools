@@ -1392,11 +1392,11 @@ AC_CHECK_LIB(m, main)
 AC_CHECK_FUNCS(
     access acosh atexit cbrt chdir clearerr dup2 erf erfc fork fseeko \
     ftime getcwd getenv gethostname gethostbyname getpid getpwuid \
-    getrlimit getrusage getwd hstrerror isatty kill lgamma mkstemp \
-    mkstemps perror popen posix_memalign posix_openpt qsort raise \
-    re_comp select shmget sigaction signal socket srand stat strchr \
-    strcasecmp strcasestr strerror strtok_r system tcgetpgrp ulimit \
-    unlink)
+    getrlimit getrusage getwd hstrerror isatty kill lgamma mallinfo2 \
+    mkstemp mkstemps perror popen posix_memalign posix_openpt qsort \
+    raise re_comp select shmget sigaction signal socket srand stat \
+    strchr strcasecmp strcasestr strerror strtok_r system tcgetpgrp \
+    ulimit unlink)
 
 tmplibs=$LIBS
 LIBS="$LIBS $CURSES" 

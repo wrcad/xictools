@@ -59,6 +59,7 @@
 #endif
 
 #include <dlfcn.h>
+#include "config.h"
 #include "local_malloc.h"
 
 // Uncomment to enable allocation monitoring.  This now has very low
@@ -70,8 +71,8 @@
 
 #ifndef __APPLE__
 extern "C" {
-#ifndef HAVE_USR_INCLUDE_MALLOC_H
-#ifndef _MALLOC_H
+#if !defined(HAVE_MALLINFO2) || \
+        (!defined(HAVE_USR_INCLUDE_MALLOC_H) || !defined(_MALLOC_H))
     struct mallinfo2 {
         size_t arena;    // non-mmapped space allocated from system
         size_t ordblks;  // number of free chunks
@@ -84,7 +85,6 @@ extern "C" {
         size_t fordblks; // total free space
         size_t keepcost; // releasable (via malloc_trim) space
     };
-#endif
 #endif
 
     // malloc.c
@@ -124,10 +124,17 @@ sMemory::in_use()
     }
     else {
 #ifdef __linux
+#ifdef HAVE_MALLINFO2
         struct mallinfo2 m = mallinfo2();
         if (m.uordblks)
             return (m.uordblks);
         return (m.arena + m.hblkhd);
+#else
+        struct mallinfo m = mallinfo();
+        if (m.uordblks)
+            return (m.uordblks);
+        return (m.arena + m.hblkhd);
+#endif
 #endif
     }
 #endif
