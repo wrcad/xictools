@@ -773,7 +773,9 @@ MAX_RELEASE_CHECK_RATE   default: 4095 unless not HAVE_MMAP
 
 #ifdef HAVE_USR_INCLUDE_MALLOC_H
 #include "/usr/include/malloc.h"
-#else /* HAVE_USR_INCLUDE_MALLOC_H */
+#endif /* HAVE_USR_INCLUDE_MALLOC_H */
+
+#ifndef HAVE_MALINFO2
 #ifndef STRUCT_MALLINFO_DECLARED
 /* HP-UX (and others?) redefines mallinfo unless _STRUCT_MALLINFO is defined */
 #define _STRUCT_MALLINFO
@@ -791,7 +793,7 @@ struct mallinfo2 {
   MALLINFO_FIELD_TYPE keepcost; /* releasable (via malloc_trim) space */
 };
 #endif /* STRUCT_MALLINFO_DECLARED */
-#endif /* HAVE_USR_INCLUDE_MALLOC_H */
+#endif /* HAVE_MALINFO2 */
 #endif /* NO_MALLINFO */
 
 /*

@@ -83,6 +83,7 @@ extern struct mallinfo2 dlmallinfo();
 #define SRW_HACKS
 
 #if defined(__FreeBSD__) || defined(__linux)
+#include "config.h"
 #include MALLOCFILE
 #else
 // This isn't used, avoids linker warnings about no symbols.
