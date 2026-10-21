@@ -38,15 +38,16 @@
  $Id:$
  *========================================================================*/
 
-#include "grconfig.h"
-#if !defined(WITH_qt)
+#include "config.h"
+#if !defined(RUN_QT) && defined(HAVE_MOZY)
+// The Imsave code is part of Mozy and not available if Mozy is not
+// being linked.  Also, we don't use this under Qt, which has alternative
+// functions.  Define only a stub in these cases.
 
 #include "graphics.h"
 #include "hcimlib.h"
 #include "miscutil/texttf.h"
-#ifdef HAVE_MOZY
 #include "imsave/imsave.h"
-#endif
 
 #ifdef WIN32
 #include "mswdraw.h"

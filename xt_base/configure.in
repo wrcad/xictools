@@ -335,10 +335,10 @@ if test -n "$QTPKG" -o -n "$GTKPKG"; then
     # flag to record this.
     echo "#define HAVE_GRAPHICS_PKG 1">> confdefs.h
     if test -n "$QTPKG"; then
-        echo "#define WITH_$QTPKG 1">> confdefs.h
+        echo "#define WITH_ANY_QT 1">> confdefs.h
     fi
     if test -n "$GTKPKG"; then
-        echo "#define WITH_$GTKPKG 1">> confdefs.h
+        echo "#define WITH_ANY_GTK 1">> confdefs.h
     fi
 else
     # No graphics, make sure mozy is disabled.
@@ -1475,11 +1475,6 @@ if test -f config.h.in; then
     AC_CONFIG_HEADERS([config.h])
 elif test -f include/config.h.in; then
     AC_CONFIG_HEADERS([include/config.h])
-fi
-if test -f grconfig.h.in; then
-    AC_CONFIG_HEADERS([grconfig.h])
-elif test -f include/grconfig.h.in; then
-    AC_CONFIG_HEADERS([include/grconfig.h])
 fi
 
 makefiles="Makefile"

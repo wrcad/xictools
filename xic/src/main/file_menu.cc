@@ -38,7 +38,7 @@
  $Id:$
  *========================================================================*/
 
-#include "grconfig.h"
+#include "config.h"
 #include "main.h"
 #include "cvrt.h"
 #include "editif.h"
@@ -231,7 +231,7 @@ cMain::ReplaceOpenCellName(const CDtptr *nname, const CDtptr *oname)
 // The OPEN command.
 //
 
-#ifdef WITH_gtk
+#ifdef WITH_ANY_GTK
 namespace {
     // Not sure whether it is necessary to enclose the EditCell call
     // in an idle proc, but it doesn't hurt.
@@ -259,7 +259,7 @@ cMain::HandleOpenCellMenu(const char *entry, bool shift)
     if (!strcmp(entry, menu_list[0])) {
         // new
         // Prompt to open a new cell.
-#ifdef WITH_gtk
+#ifdef WITH_ANY_GTK
         if (shift) {
             // Open a unique new cell.
             char *s = XM()->NewCellName();

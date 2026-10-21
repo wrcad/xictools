@@ -101,19 +101,26 @@ Copyright (c) Whiteley Research Inc 1996
 #undef HAVE_TCL
 #undef HAVE_TK
 
-#undef HAVE_GRAPHICS_PKG
-
 #undef socklen_t
 
 #undef HAVE_LIBZ
+
+#undef HAVE_COMPUTED_GOTO
+#undef HAVE_LOCAL_ALLOCATOR
+#undef HAVE_SECURE
+
 #undef HAVE_LIBPNG
 #undef HAVE_LIBJPEG
 #undef HAVE_LIBTIFF
 
-#undef HAVE_COMPUTED_GOTO
-#undef HAVE_LOCAL_ALLOCATOR
 #undef HAVE_MOZY
-#undef HAVE_SECURE
+#undef HAVE_GRAPHICS_PKG
+#undef WITH_ANY_QT
+#undef WITH_ANY_GTK
+#undef WITH_QT5
+#undef WITH_QT6
+#undef WITH_GTK2
+#undef WITH_GTK3
 
 #endif
 

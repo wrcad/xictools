@@ -656,9 +656,13 @@ Transaction::do_transaction()
         int len = ftell(fp);
         char *bf = new char [len + 1];
         rewind(fp);
-        fread(bf, len, 1, fp);
+        int r = fread(bf, len, 1, fp);
         bf[len] = 0;
         fclose(fp);
+        if (r != len) {
+            emit_error("Read failed!", 0);
+            return;
+        }
 
         char *t = bf;
         int size = 0;

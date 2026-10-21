@@ -69,7 +69,7 @@
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *------------------------------------------------------------------------*/
 
-#include "grconfig.h"
+#include "config.h"
 #include "htm_widget.h"
 #include "htm_font.h"
 #include "htm_format.h"
@@ -1097,7 +1097,7 @@ htmWidget::drawBullet(htmObjectTable *data, htmRect *rect)
     int yv = viewportY(data->area.y);
 
     // Tweek for toolkit drawing functions.
-#ifdef WITH_qt
+#ifdef WITH_ANY_QT
     int w2 = 2*w;
     switch (data->marker) {
     case MARKER_DISC:

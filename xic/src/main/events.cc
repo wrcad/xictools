@@ -38,7 +38,7 @@
  $Id:$
  *========================================================================*/
 
-#include "grconfig.h"
+#include "config.h"
 #include "main.h"
 #include "editif.h"
 #include "drcif.h"
@@ -685,7 +685,7 @@ cEventHdlr::KeyActions(WindowDesc *wdesc, eKeyAction action, int *code)
         // menu only, leaving out subwindow support.  In that case
         // handle ctrl-g here, and leave out the ctrl-g menu accelerator.
 #ifdef __APPLE__
-#ifdef WITH_qt
+#ifdef WITH_ANY_QT
         PL()->SetKeys(wdesc, "grid");
         PL()->CheckExec(wdesc, true);
 #endif

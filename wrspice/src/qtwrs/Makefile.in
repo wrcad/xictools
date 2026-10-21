@@ -9,8 +9,8 @@ DATE = @DATE@
 
 CXX = @CXX@
 CC = @CC@
-CFLAGS = @CFLAGSG@ @NEEDINT64@ @QTCFLAGS@ @UFLAGS@ -DWRSPICE
-DEPEND_PROG = @DEPEND_PROGXX@ @CFLAGSG@ @NEEDINT64@ @QTCFLAGS@ -DWRSPICE
+CFLAGS = @CFLAGSG@ @NEEDINT64@ @QTCFLAGS@ @UFLAGS@ -DWRSPICE -DRUN_QT
+DEPEND_PROG = @DEPEND_PROGXX@ @CFLAGSG@ @NEEDINT64@ @QTCFLAGS@ -DWRSPICE -DRUN_QT
 WINDRES = @WINDRES@
 AR = @AR@
 LD = @LD@
@@ -92,8 +92,8 @@ $(LIB_TARGET): cptest $(LIBOBJS)
 .cc.o:
 	$(CXX) -c $(CFLAGS) $(INCLUDE) $(QTINC) $*.cc
 
-graph.o:
-	$(CXX) -c $(CFLAGS) $(INCLUDE) -DRUN_QT graph.cc
+graph.cc: ../plot/graph.cc
+	cp -f ../plot/graph.cc .
 
 moc_circuits.o: moc_circuits.cpp
 moc_cmds.o: moc_cmds.cpp
@@ -150,9 +150,6 @@ moc_variables.cpp: $(MOC) qtvariables.o
 	$(MOC) qtvariables.h -o moc_variables.cpp
 moc_vectors.cpp: $(MOC) qtvectors.o
 	$(MOC) qtvectors.h -o moc_vectors.cpp
-
-graph.cc: ../plot/graph.cc
-	cp -f ../plot/graph.cc .
 
 depend: graph.cc
 	@echo depending in wrspice/gtkwrs

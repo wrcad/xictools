@@ -6,8 +6,8 @@ DATE = @DATE@
 
 CXX = @CXX@
 CC = @CC@
-CFLAGS = @CFLAGSG@ @QTCFLAGS@ @UFLAGS@
-DEPEND_PROG = @DEPEND_PROGXX@ @CFLAGSG@ @QTCFLAGS@
+CFLAGS = @CFLAGSG@ @QTCFLAGS@ @UFLAGS@ -DRUN_QT
+DEPEND_PROG = @DEPEND_PROGXX@ @CFLAGSG@ @QTCFLAGS@ -DRUN_QT
 AR = @AR@
 RANLIB = @RANLIB@
 FILTER = @FILTER@
@@ -70,7 +70,7 @@ CCOBJS = $(CCFILES:.cc=.o)
 MOCOBJS = $(MOCFILES:.cpp=.o)
 LIBOBJS = $(CCOBJS) $(MOCOBJS)
 
-$(LIB_TARGET): $(LIBOBJS)
+$(LIB_TARGET): cptest $(LIBOBJS)
 	-@rm -f $(LIB_TARGET); \
 	$(AR) cr $(LIB_TARGET) $(LIBOBJS)
 	$(RANLIB) $(LIB_TARGET)
@@ -80,6 +80,9 @@ $(LIB_TARGET): $(LIBOBJS)
 
 .cc.o:
 	$(CXX) -c $(CFLAGS) $(INCLUDE) -o $@ $<
+
+hcimlib.cc: ../ginterf/hcimlib.cc
+	cp -f ../ginterf/hcimlib.cc .
 
 moc_activity.o: moc_activity.cpp  $(MOC_INCLUDE)/qtactivity.h 
 moc_affirm.o: moc_affirm.cpp  $(MOC_INCLUDE)/qtaffirm.h 
@@ -148,12 +151,12 @@ mocclean:
 	-@rm -f $(MOCFILES)
 
 clean: mocclean
-	-@rm -f $(CCOBJS) $(LIB_TARGET)
+	-@rm -f $(CCOBJS) $(LIB_TARGET) hcimlib.cc
 
 distclean: clean
 	-@rm -f Makefile
 
-depend:
+depend: hcimlib.cc
 	@echo depending in xt_base/qtinterf
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
@@ -163,5 +166,19 @@ depend:
 install:
 
 uninstall:
+
+# Make sure that the copies are the same as the source, avoid local
+# updates that won't propagate!
+cptest: hcimlib.cc
+	@for a in hcimlib.cc; do \
+	    set -- $$(/usr/bin/sum ../ginterf/$$a); s1=$$1; \
+	    set -- $$(/usr/bin/sum $$a); s2=$$1; \
+	    if [ "$$s1" != "$$s2" ]; then \
+	        echo ; \
+	        echo  "ERROR!!! $$a differs in xt_base/ginterf, FIXME"; \
+	        echo ; \
+	        exit 1; \
+	    fi; \
+	done
 
 #######################################################################

@@ -51,7 +51,6 @@ Authors: 1985 Thomas L. Quarles
 
 
 #include "config.h"
-#include "grconfig.h"
 #ifdef HAVE_SECURE
 #include "secure.h"
 #endif
