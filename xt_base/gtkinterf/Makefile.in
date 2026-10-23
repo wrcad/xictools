@@ -24,12 +24,11 @@ HFILES =
 CCFILES = \
   gtkdraw.cc gtkedit.cc gtkfile.cc gtkfont.cc gtkhcopy.cc gtkinterf.cc \
   gtklist.cc gtkmcol.cc gtkpfiles.cc gtksearch.cc gtkspinbtn.cc \
-  gtkutil.cc hcimlib.cc ndkcursor.cc ndkdrawable.cc ndkgc.cc ndkimage.cc \
-  ndkpixmap.cc
+  gtkutil.cc ndkcursor.cc ndkdrawable.cc ndkgc.cc ndkimage.cc ndkpixmap.cc
 
 CCOBJS = $(CCFILES:.cc=.o)
 
-$(LIB_TARGET): cptest $(CCOBJS)
+$(LIB_TARGET): $(CCOBJS)
 	-@rm -f $(LIB_TARGET); \
 	$(AR) cr $(LIB_TARGET) $(CCOBJS)
 	$(RANLIB) $(LIB_TARGET)
@@ -37,16 +36,13 @@ $(LIB_TARGET): cptest $(CCOBJS)
 .cc.o:
 	$(CXX) -c $(CFLAGS) $(INCLUDE) -o $@ $<
 
-hcimlib.cc: ../ginterf/hcimlib.cc
-	cp -f ../ginterf/hcimlib.cc .
-
 clean:
-	-@rm -f $(CCOBJS) $(LIB_TARGET) hcimlib.cc
+	-@rm -f $(CCOBJS) $(LIB_TARGET)
 
 distclean: clean
 	-@rm -f Makefile
 
-depend: hcimlib.cc
+depend:
 	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
@@ -56,19 +52,5 @@ depend: hcimlib.cc
 install:
 
 uninstall:
-
-# Make sure that the copies are the same as the source, avoid local
-# updates that won't propagate!
-cptest: hcimlib.cc
-	@for a in hcimlib.cc; do \
-	    set -- $$(/usr/bin/sum ../ginterf/$$a); s1=$$1; \
-	    set -- $$(/usr/bin/sum $$a); s2=$$1; \
-	    if [ "$$s1" != "$$s2" ]; then \
-	        echo ; \
-	        echo  "ERROR!!! $$a differs in xt_base/ginterf, FIXME"; \
-	        echo ; \
-	        exit 1; \
-	    fi; \
-	done
 
 #######################################################################

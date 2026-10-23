@@ -39,10 +39,9 @@
  *========================================================================*/
 
 #include "config.h"
-#if !defined(RUN_QT) && defined(HAVE_MOZY)
+#ifdef HAVE_MOZY
 // The Imsave code is part of Mozy and not available if Mozy is not
-// being linked.  Also, we don't use this under Qt, which has alternative
-// functions.  Define only a stub in these cases.
+// being linked.
 
 #include "graphics.h"
 #include "hcimlib.h"

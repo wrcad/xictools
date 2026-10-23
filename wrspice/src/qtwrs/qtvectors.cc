@@ -240,7 +240,9 @@ QTvectorListDlg::sizeHint() const
 void
 QTvectorListDlg::help_btn_slot()
 {
+#ifdef HAVE_MOZY
     HLP()->word("vectorspanel");
+#endif
 }
 
 

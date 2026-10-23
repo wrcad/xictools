@@ -106,7 +106,7 @@ cDRC::cDRC()
 
 // Stubs for functions defined in graphical toolkit, include when
 // not building with toolkit.
-#ifndef HAVE_GRAPHICS_PKG
+#ifndef WITH_GRAPHICS_PKG
 void cDRC::PopUpRules(      GRobject, ShowMode) { }
 void cDRC::PopUpDrcLimits(  GRobject, ShowMode) { }
 void cDRC::PopUpDrcRun(     GRobject, ShowMode) { }

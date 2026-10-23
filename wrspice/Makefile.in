@@ -39,6 +39,7 @@ FILTER = @FILTER@
 MALLOC = @MALLOC@
 USESECURE = @USESECURE@
 USEMOZY = @USEMOZY@
+USEIMSAVE = @USEIMSAVE@
 REGEX = @REGEX@
 #DEVLIB_SHARED = @DEVLIB_SHARED_FILE@
 DEVLIB_STATIC = @DEVLIB_STATIC_FILE@
@@ -72,7 +73,7 @@ INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 BASE = ../xt_base
 VLOG = ../vl
 
-ifeq ($(USESECURE), yes)
+ifdef USESECURE
 SECURE = ../secure
 SECURELIB = $(SECURE)/secure.a
 INCLUDE = -Iinclude -I$(BASE)/include -I$(SECURE)/include
@@ -82,15 +83,16 @@ endif
 
 ifndef QTPREF
 ifndef GTKPREF
-USEMOZY = no
 binQTwrspice = bin/wrspice
 endif
 endif
-ifeq ($(USEMOZY), yes)
+ifdef USEMOZY
 MOZY = ../mozy
 MOZYLIBS1 = $(MOZY)/lib/htm.a $(MOZY)/lib/help.a
-MOZYLIBS2 = $(MOZY)/lib/htm.a $(MOZY)/lib/help.a $(MOZY)/lib/httpget.a \
-  $(MOZY)/lib/imsave.a
+MOZYLIBS2 = $(MOZY)/lib/htm.a $(MOZY)/lib/help.a $(MOZY)/lib/httpget.a
+endif
+ifdef USEIMSAVE
+IMSAVELIB = $(BASE)/lib/imsave.a
 endif
 
 LOCAL_LIBS = \
@@ -108,6 +110,7 @@ LOCAL_LIBS = \
   $(BASE)/lib/ginterf.a \
   $(BASE)/lib/miscutil.a \
   $(MOZYLIBS2) \
+  $(IMSAVELIB) \
   src/misc/misc.a \
   $(VLOG)/libvlog.a \
   $(REGEX)
@@ -118,7 +121,7 @@ srcQTwrsLib = src/$(QTPREF)wrs/$(QTPREF)wrs.a
 baseQTinterfLib = $(BASE)/lib/$(QTPREF)interf.a
 binQTwrspice = bin/$(QTPKG)/wrspice
 
-ifeq ($(USEMOZY), yes)
+ifdef USEMOZY
 MOZYLIBS_QT = $(MOZY)/lib/$(QTPREF)mozy.a
 endif
 
@@ -139,6 +142,7 @@ QT_LOCAL_LIBS = \
   $(BASE)/lib/ginterf.a \
   $(BASE)/lib/miscutil.a \
   $(MOZYLIBS2) \
+  $(IMSAVELIB) \
   src/misc/misc.a \
   $(VLOG)/libvlog.a \
   $(REGEX)
@@ -150,7 +154,7 @@ srcGTKwrsLib = src/$(GTKPREF)wrs/$(GTKPREF)wrs.a
 baseGTKinterfLib = $(BASE)/lib/$(GTKPREF)interf.a
 binGTKwrspice = bin/$(GTKPKG)/wrspice
 
-ifeq ($(USEMOZY), yes)
+ifdef USEMOZY
 MOZYLIBS_GTK = $(MOZY)/lib/$(GTKPREF)mozy.a
 endif
 
@@ -171,6 +175,7 @@ GTK_LOCAL_LIBS = \
   $(BASE)/lib/ginterf.a \
   $(BASE)/lib/miscutil.a \
   $(MOZYLIBS2) \
+  $(IMSAVELIB) \
   src/misc/misc.a \
   $(VLOG)/libvlog.a \
   $(REGEX)
@@ -326,7 +331,7 @@ $(SUBDIR_LIBS)::
 $(VLOG)::
 	@$(MAKE) -C $(@D)
 
-ifeq ($(USESECURE), yes)
+ifdef USESECURE
 $(SECURE)/secure.a::
 	@$(MAKE) -C $(@D)
 endif
@@ -343,11 +348,18 @@ $(BASE)/lib/miscutil.a::
 $(BASE)/lib/libregex.a::
 	@$(MAKE) -C $(BASE)/regex
 
+ifdef USEMOZY
+$(BASE)/lib/imsave.a::
+	@if [ -d $(BASE)/ginterf/imsave ] ; then \
+	    $(MAKE) -C $(BASE)/ginterf/imsave ; \
+	fi
+endif
+
 ifdef QTPREF
 $(BASE)/lib/$(QTPREF)interf.a::
 	@$(MAKE) -C $(BASE)/$(QTPREF)interf
 
-ifeq ($(USEMOZY), yes)
+ifdef USEMOZY
 $(MOZY)/lib/$(QTPREF)mozy.a::
 	@if [ -d $(MOZY)/src/$(QTPREF)mozy ]; then \
 	    $(MAKE) -C $(MOZY)/src/$(QTPREF)mozy ; \
@@ -367,18 +379,14 @@ $(MOZY)/lib/httpget.a::
 	@if [ -d $(MOZY)/src/httpget ]; then \
 	    $(MAKE) -C $(MOZY)/src/httpget ; \
 	fi
+endif
+endif
 
-$(MOZY)/lib/imsave.a::
-	@if [ -d $(MOZY)/src/imsave ] ; then \
-	    $(MAKE) -C $(MOZY)/src/imsave ; \
-	fi
-endif
-endif
 ifdef GTKPREF
 $(BASE)/lib/$(GTKPREF)interf.a::
 	@$(MAKE) -C $(BASE)/$(GTKPREF)interf
 
-ifeq ($(USEMOZY), yes)
+ifdef USEMOZY
 $(MOZY)/lib/$(GTKPREF)mozy.a::
 	@if [ -d $(MOZY)/src/$(GTKPREF)mozy ]; then \
 	    $(MAKE) -C $(MOZY)/src/$(GTKPREF)mozy ; \
@@ -398,18 +406,13 @@ $(MOZY)/lib/httpget.a::
 	@if [ -d $(MOZY)/src/httpget ]; then \
 	    $(MAKE) -C $(MOZY)/src/httpget ; \
 	fi
-
-$(MOZY)/lib/imsave.a::
-	@if [ -d $(MOZY)/src/imsave ] ; then \
-	    $(MAKE) -C $(MOZY)/src/imsave ; \
-	fi
 endif
 endif
 
 #######################################################################
 ####### Object file targets ###########################################
 
-ifeq ($(USEMOZY), yes)
+ifdef USEMOZY
 MOZYINC = -I$(MOZY)/include
 endif
 

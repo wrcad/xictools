@@ -25,7 +25,7 @@ LIB_TARGET = qtwrs.a
 
 BASE = ../../../xt_base
 SECURE = ../../../secure
-ifeq ($(USEMOZY), yes)
+ifdef USEMOZY
 MOZY = ../../../mozy
 MOZYINC = -I$(MOZY)/include
 endif

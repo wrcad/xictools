@@ -46,7 +46,6 @@ LOCAL_LIBS = \
   lib/htm.a \
   lib/help.a \
   lib/httpget.a \
-  lib/imsave.a \
   $(BASE)/lib/ginterf.a \
   $(BASE)/lib/miscutil.a \
   $(REGEX)
@@ -65,7 +64,6 @@ QT_LOCAL_LIBS = \
   lib/htm.a \
   lib/help.a \
   lib/httpget.a \
-  lib/imsave.a \
   $(libQTinterf) \
   $(BASE)/lib/ginterf.a \
   $(BASE)/lib/miscutil.a \
@@ -86,7 +84,6 @@ GTK_LOCAL_LIBS = \
   lib/htm.a \
   lib/help.a \
   lib/httpget.a \
-  lib/imsave.a \
   $(libGTKinterf) \
   $(BASE)/lib/ginterf.a \
   $(BASE)/lib/miscutil.a \
@@ -98,7 +95,7 @@ INSTALL_SCRIPT = $(INSTALL) -c -m 0755
 INSTALL_LIB    = $(INSTALL) -c -m 0644
 INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 
-SUBDIRS = $(srcQTmozy) $(srcGTKmozy) src/help src/htm src/httpget src/imsave
+SUBDIRS = $(srcQTmozy) $(srcGTKmozy) src/help src/htm src/httpget
 
 TARGETS = mdir $(binQTmozy) $(binQTxeditor) $(binGTKmozy) $(binGTKxeditor) \
   bin/hlp2latex bin/hlpsrv bin/hlp2html bin/httpget
@@ -191,9 +188,6 @@ lib/htm.a::
 
 lib/httpget.a::
 	@$(MAKE) -C src/httpget
-
-lib/imsave.a::
-	@$(MAKE) -C src/imsave
 
 $(BASE)/lib/ginterf.a::
 	@$(MAKE) -C $(BASE)/ginterf

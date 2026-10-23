@@ -201,7 +201,7 @@ Authors: 1985 Thomas L. Quarles
 #define SPICE_NOTICE ""
 #endif
 
-#ifndef HAVE_GRAPHICS_PKG
+#ifndef WITH_GRAPHICS_PKG
 // No graphics, provide a phony toolbar.
 namespace { sNullToolbar _dummy_tb_; }
 sToolbar *ToolBar() { return (&_dummy_tb_); }
@@ -295,9 +295,14 @@ IFoutput OP;
 SPgraphics GP;
 CshPar CP;
 
-// Set up the ginterf package, include all drivers except Versatec.
+// Set up the ginterf package, include all drivers unless
+// the Imlib driver is disabled.
 //
+#ifdef HAVE_IMSAVE
 #define GR_CONFIG (GR_ALL_PKGS | GR_ALL_DRIVERS)
+#else
+#define GR_CONFIG ((GR_ALL_PKGS | GR_ALL_DRIVERS) & ~_devIM_)
+#endif
 #include "ginterf/gr_pkg_setup.h"
 
 // Declare the graphics package.

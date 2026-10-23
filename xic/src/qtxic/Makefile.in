@@ -221,7 +221,7 @@ $(LIB_TARGET): $(LIBOBJS)
 	$(AR) cr $(LIB_TARGET) $(LIBOBJS)
 	$(RANLIB) $(LIB_TARGET)
 
-ifeq ($(USEMOZY), yes)
+ifdef USEMOZY
 MOZY = ../../../mozy
 MOZYINC = -I$(MOZY)/include
 MOBJS = qtmain.o

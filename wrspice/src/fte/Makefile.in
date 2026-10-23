@@ -41,7 +41,7 @@ $(LIB_TARGET): cptest $(CCOBJS)
 	$(AR) cr $(LIB_TARGET) $(CCOBJS)
 	$(RANLIB) $(LIB_TARGET)
 
-ifeq ($(USEMOZY), yes)
+ifdef USEMOZY
 MOZY = ../../../mozy
 MOZYINC = -I$(MOZY)/include
 MOBJS = initialize.o inpcom.o keywords.o misccoms.o

@@ -13,13 +13,13 @@ RANLIB = @RANLIB@
 FILTER = @FILTER@
 MOC = @MOC@
 
-INCLUDE = -I../include -I../include/qtinterf -I../../mozy/include @QTINC@
+INCLUDE = -I../include -I../include/ginterf -I../include/qtinterf \
+  -I../../mozy/include @QTINC@
 MOC_INCLUDE = ../include/qtinterf
 
 LIB_TARGET = ../lib/qtinterf.a
 
 CCFILES = \
-    hcimlib.cc \
     polysplit.cc \
     qtactivity.cc \
     qtaffirm.cc \
@@ -70,7 +70,7 @@ CCOBJS = $(CCFILES:.cc=.o)
 MOCOBJS = $(MOCFILES:.cpp=.o)
 LIBOBJS = $(CCOBJS) $(MOCOBJS)
 
-$(LIB_TARGET): cptest $(LIBOBJS)
+$(LIB_TARGET): $(LIBOBJS)
 	-@rm -f $(LIB_TARGET); \
 	$(AR) cr $(LIB_TARGET) $(LIBOBJS)
 	$(RANLIB) $(LIB_TARGET)
@@ -80,9 +80,6 @@ $(LIB_TARGET): cptest $(LIBOBJS)
 
 .cc.o:
 	$(CXX) -c $(CFLAGS) $(INCLUDE) -o $@ $<
-
-hcimlib.cc: ../ginterf/hcimlib.cc
-	cp -f ../ginterf/hcimlib.cc .
 
 moc_activity.o: moc_activity.cpp  $(MOC_INCLUDE)/qtactivity.h 
 moc_affirm.o: moc_affirm.cpp  $(MOC_INCLUDE)/qtaffirm.h 
@@ -151,12 +148,12 @@ mocclean:
 	-@rm -f $(MOCFILES)
 
 clean: mocclean
-	-@rm -f $(CCOBJS) $(LIB_TARGET) hcimlib.cc
+	-@rm -f $(CCOBJS) $(LIB_TARGET)
 
 distclean: clean
 	-@rm -f Makefile
 
-depend: hcimlib.cc
+depend:
 	@echo depending in xt_base/qtinterf
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
@@ -166,19 +163,5 @@ depend: hcimlib.cc
 install:
 
 uninstall:
-
-# Make sure that the copies are the same as the source, avoid local
-# updates that won't propagate!
-cptest: hcimlib.cc
-	@for a in hcimlib.cc; do \
-	    set -- $$(/usr/bin/sum ../ginterf/$$a); s1=$$1; \
-	    set -- $$(/usr/bin/sum $$a); s2=$$1; \
-	    if [ "$$s1" != "$$s2" ]; then \
-	        echo ; \
-	        echo  "ERROR!!! $$a differs in xt_base/ginterf, FIXME"; \
-	        echo ; \
-	        exit 1; \
-	    fi; \
-	done
 
 #######################################################################

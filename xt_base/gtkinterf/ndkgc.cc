@@ -201,7 +201,7 @@ ndkGC::ndkGC(GdkWindow *window, ndkGCvalues *values,
 
 ndkGC::~ndkGC()
 {
-#ifdef HAVE_X11
+#ifdef WITH_X11
     if (gc_gc)
         XFreeGC(get_xdisplay(), gc_gc);
     if (gc_pango_renderer)

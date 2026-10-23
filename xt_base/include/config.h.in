@@ -113,8 +113,10 @@ Copyright (c) Whiteley Research Inc 1996
 #undef HAVE_LIBJPEG
 #undef HAVE_LIBTIFF
 
+#undef HAVE_IMSAVE
 #undef HAVE_MOZY
-#undef HAVE_GRAPHICS_PKG
+#undef WITH_X11
+#undef WITH_GRAPHICS_PKG
 #undef WITH_ANY_QT
 #undef WITH_ANY_GTK
 #undef WITH_QT5

@@ -264,7 +264,7 @@ cOAif::on_null_ptr()
 
 // Stubs for functions defined in graphical toolkit, include when
 // not building with toolkit.
-#ifndef HAVE_GRAPHICS_PKG
+#ifndef WITH_GRAPHICS_PKG
 void cOAif::PopUpOAdefs(        GRobject, ShowMode, int, int) { }
 void cOAif::PopUpOAlibraries(   GRobject, ShowMode) { }
 void cOAif::GetSelection(const char**, const char**) { }

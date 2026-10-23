@@ -65,7 +65,7 @@
 #include "ginterf/nulldev.h"
 #include "miscutil/timer.h"
 #ifdef HAVE_MOZY
-#include "imsave/imsave.h"
+#include "ginterf/imsave/imsave.h"
 #include "help/help_defs.h"
 #include "help/help_context.h"
 #include "htm/htm_widget.h"

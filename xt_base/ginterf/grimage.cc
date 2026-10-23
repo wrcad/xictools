@@ -40,7 +40,7 @@
 
 #include "config.h"
 #include "graphics.h"
-#ifdef HAVE_MOZY
+#ifdef HAVE_IMSAVE
 #include "imsave/imsave.h"
 #endif
 
@@ -56,7 +56,7 @@ GRimage::create_image_file(GRpkg *pkg, const char *filename)
     if (!pkg || !filename)
         return (false);
 
-#ifdef HAVE_MOZY
+#ifdef HAVE_IMSAVE
     unsigned char *rgbdata = new unsigned char[im_width*im_height * 3];
     Image img(im_width, im_height, rgbdata);
     // rgbdata freed im Image destructor.

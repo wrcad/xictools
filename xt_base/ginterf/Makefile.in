@@ -14,16 +14,16 @@ AR = @AR@
 RANLIB = @RANLIB@
 FILTER = @FILTER@
 MSW = @MSW@
+USEIMSAVE = @USEIMSAVE@
 
-# Compile hcimlib.cc here only if no toolkit.  The file is otherwise
-# copied to toolkit-specific directories for compilation.
-ifeq ($(QTPREF)$(GTKPREF),)
-    HCIMLIB = hcimlib.cc
-endif
-
-INCLUDE = -I../include -I../include/ginterf -I../../mozy/include @IMG_INCLUDES@
+INCLUDE = -I../include -I../include/ginterf @IMG_INCLUDES@
 
 LIB_TARGET = ../lib/ginterf.a
+
+ifdef USEIMSAVE
+IMSAVE = imsave
+HCIMLIB = hcimlib.cc
+endif
 
 ifdef MSW
 MSWDRAW = mswdraw.cc
@@ -42,19 +42,28 @@ CCFILES = \
 
 CCOBJS = $(CCFILES:.cc=.o)
 
-$(LIB_TARGET): $(CCOBJS)
+$(LIB_TARGET): $(IMSAVE) $(CCOBJS)
 	-@rm -f $(LIB_TARGET); \
 	$(AR) cr $(LIB_TARGET) $(CCOBJS)
 	$(RANLIB) $(LIB_TARGET)
+	-@if [ -n "$(IMSAVE)" ]; then \
+	    $(MAKE) -C $(IMSAVE); \
+	fi
 
 .cc.o:
 	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
 
 clean:
 	-@rm -f $(CCOBJS) $(LIB_TARGET)
+	-@if [ -n "$(IMSAVE)" ]; then \
+	    $(MAKE) -C $(IMSAVE) clean; \
+	fi
 
 distclean: clean
 	-@rm -f Makefile
+	-@if [ -n "$(IMSAVE)" ]; then \
+	    $(MAKE) -C $(IMSAVE) distclean; \
+	fi
 
 depend:
 	@echo depending in $(LOCATION)
@@ -62,6 +71,9 @@ depend:
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) \
   $(FILTER) >> Makefile; \
+	fi
+	@if [ -n "$(IMSAVE)" ]; then \
+	    $(MAKE) -C $(IMSAVE) depend; \
 	fi
 
 #######################################################################

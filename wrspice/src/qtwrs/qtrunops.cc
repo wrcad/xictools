@@ -219,7 +219,9 @@ QTrunopListDlg::sizeHint() const
 void
 QTrunopListDlg::help_btn_slot()
 {
+#ifdef HAVE_MOZY
     HLP()->word("plotspanel");
+#endif
 }
 
 

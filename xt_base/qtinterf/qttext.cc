@@ -399,6 +399,8 @@ QTtextDlg::anchor_clicked_slot(const QUrl &url)
     // Xic.
 #ifdef HAVE_MOZY
     HLP()->word(url.toString().toLatin1().constData());
+#else
+    (void)url;
 #endif
 }
 

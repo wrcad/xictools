@@ -189,7 +189,7 @@ cMain::on_null_ptr()
 
 // Stubs for functions defined in graphical toolkit, include when
 // not building with toolkit.
-#ifndef HAVE_GRAPHICS_PKG
+#ifndef WITH_GRAPHICS_PKG
 CursorType cMain::GetCursor() { return (CursorDefault); }
 void cMain::UpdateCursor(WindowDesc*, CursorType, bool) { }
 void cMain::PopUpAttributes(GRobject, ShowMode) { }

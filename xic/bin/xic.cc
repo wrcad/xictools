@@ -110,7 +110,7 @@
 #include "miscutil/miscutil.h"
 #endif
 
-#ifndef HAVE_GRAPHICS_PKG
+#ifndef WITH_GRAPHICS_PKG
 // Running without a graphics toolkit, define stubs at the top level.
 class NULLpkg : public DSPpkg
 {
@@ -158,9 +158,14 @@ GRpkg::DevDepInit(unsigned int)
 #endif
 
 
-// Set up the ginterf package, include all drivers.
+// Set up the ginterf package, include all drivers unless
+// the Imlib driver is disabled.
 //
+#ifdef HAVE_IMSAVE
 #define GR_CONFIG (GR_ALL_PKGS | GR_ALL_DRIVERS)
+#else
+#define GR_CONFIG ((GR_ALL_PKGS | GR_ALL_DRIVERS) & ~_devIM_)
+#endif
 #include "ginterf/gr_pkg_setup.h"
 
 // FreeBSD malloc resets memory allocated/freed to 0x0a.

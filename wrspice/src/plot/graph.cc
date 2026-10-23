@@ -5060,13 +5060,14 @@ cGraph::start_drag_zoom(void *arg)
 // Below are stubs needed to link without a graphics package.  The
 // functions below are generally implemented in graphics code.
 
-#ifndef HAVE_GRAPHICS_PKG
+#ifndef WITH_GRAPHICS_PKG
 
 // Return a new graphics context struct.
 //
 GRwbag *
 cGraph::gr_new_gx(int type)
 {
+    (void)type;
     return (0);
 }
 
@@ -5122,6 +5123,11 @@ cGraph::gr_redraw()
 void
 cGraph::gr_refresh(int left, int bottom, int right, int top, bool notxt)
 {
+    (void)left;
+    (void)bottom;
+    (void)right;
+    (void)top;
+    (void)notxt;
 }
 
 
@@ -5139,6 +5145,7 @@ cGraph::gr_popdown()
 int
 cGraph::drag_trace(void *arg)
 {
+    (void)arg;
     return (0);
 }
 
@@ -5149,6 +5156,7 @@ cGraph::drag_trace(void *arg)
 int
 cGraph::drag_text(void *arg)
 {
+    (void)arg;
     return (0);
 }
 

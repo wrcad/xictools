@@ -211,7 +211,7 @@ cKsMap::on_null_ptr()
 
 // Stubs for functions defined in graphical toolkit, include when
 // not building with toolkit.
-#ifndef HAVE_GRAPHICS_PKG
+#ifndef WITH_GRAPHICS_PKG
 void cKsMap::SetMap(int, unsigned) { }
 char *cKsMap::KeyvalToString(unsigned int) { return (0); }
 unsigned int cKsMap::StringToKeyval(const char*) { return (0); }

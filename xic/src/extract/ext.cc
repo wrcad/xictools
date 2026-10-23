@@ -135,7 +135,7 @@ cExt::cExt()
 
 // Stubs for functions defined in graphical toolkit, include when
 // not building with toolkit.
-#ifndef HAVE_GRAPHICS_PKG
+#ifndef WITH_GRAPHICS_PKG
 void cExt::PopUpExtCmd(     GRobject, ShowMode, sExtCmd*,
     bool (*)(const char*, void*, bool, const char*, int, int), void*, int) { }
 void cExt::PopUpDevices(    GRobject, ShowMode) { }

@@ -42,6 +42,7 @@
 // ahead of pango includes.
 #define PANGO_ENABLE_BACKEND
 
+#include "config.h"
 #include "gtkinterf/gtkinterf.h"
 #include "gtkviewer.h"
 #include "gtkinterf/gtkfile.h"
@@ -2680,7 +2681,7 @@ gtk_viewer::selection_get_handler(GtkWidget*,
         gtk_selection_data_set(data, GDK_SELECTION_TYPE_STRING,
             8*sizeof(char), (unsigned char*)str, length);
     }
-#ifdef HAVE_X11
+#ifdef WITH_X11
     else if (info == TARGET_TEXT || info == TARGET_COMPOUND_TEXT) {
 
         GdkAtom encoding;

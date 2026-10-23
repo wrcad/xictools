@@ -203,7 +203,9 @@ QTvarListDlg::sizeHint() const
 void
 QTvarListDlg::help_btn_slot()
 {
+#ifdef HAVE_MOZY
     HLP()->word("variablespanel");
+#endif
 }
 
 

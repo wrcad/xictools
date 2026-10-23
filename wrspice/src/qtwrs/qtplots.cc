@@ -257,7 +257,9 @@ QTplotListDlg::sizeHint() const
 void
 QTplotListDlg::help_btn_slot()
 {
+#ifdef HAVE_MOZY
     HLP()->word("plotspanel");
+#endif
 }
 
 

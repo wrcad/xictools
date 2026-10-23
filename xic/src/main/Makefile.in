@@ -44,7 +44,7 @@ $(LIB_TARGET): $(CCOBJS)
 	$(AR) cr $(LIB_TARGET) $(CCOBJS)
 	$(RANLIB) $(LIB_TARGET)
 
-ifeq ($(USEMOZY), yes)
+ifdef USEMOZY
 MOZY = ../../../mozy
 MOZYINC = -I$(MOZY)/include
 MOBJS = help_menu.o init.o main_txtcmds.o main_variables.o oa_if.o

@@ -1,5 +1,5 @@
 #######################################################################
-LOCATION = mozy/src/imsave
+LOCATION = xt_base/ginterf/imsave
 #######################################################################
 
 # Each of the defines in the CFLAGS can be removed if you don't have
@@ -24,7 +24,7 @@ AR = @AR@
 RANLIB = @RANLIB@
 FILTER = @FILTER@
 
-INCLUDE = -I../../include/imsave @IMG_INCLUDES@
+INCLUDE = -I../../include/ginterf/imsave @IMG_INCLUDES@
 
 LIB_TARGET = ../../lib/imsave.a
 
@@ -45,6 +45,7 @@ clean:
 	-@rm -f $(CCOBJS) $(LIB_TARGET)
 
 distclean: clean
+	echo "    imsave"
 	-@rm -f Makefile
 
 depend: $(CCFILES)

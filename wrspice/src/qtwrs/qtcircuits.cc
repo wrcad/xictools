@@ -221,7 +221,9 @@ QTcircuitListDlg::sizeHint() const
 void
 QTcircuitListDlg::help_btn_slot()
 {
+#ifdef HAVE_MOZY
     HLP()->word("circuitspanel");
+#endif
 }
 
 

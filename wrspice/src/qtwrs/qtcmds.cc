@@ -656,13 +656,15 @@ QTcmdParamDlg::get_helppath(char **path)
         *path = lstring::copy(vv.get_string());
         return (true);
     }
+    *path = 0;
+#ifdef HAVE_MOZY
     // helppath not found in variable database.  find out what is really
     // being used from the help system.
     //
-    *path = 0;
     HLP()->get_path(path);
     if (!*path)
         *path = lstring::copy("");
+#endif
     return (false);
 }
 

@@ -758,7 +758,7 @@ CommandTab::arg_display(wordlist*, sCommand*)
 }
 
 
-#ifndef HAVE_GRAPHICS_PKG
+#ifndef WITH_GRAPHICS_PKG
 
 // Stubs for commands provided by graphics code for linking without
 // a graphics toolkit.

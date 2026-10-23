@@ -58,7 +58,8 @@
 #include "graphics.h"
 #include "miscutil/lstring.h"
 #include "miscutil/filestat.h"
-#ifdef HAVE_MOZY
+
+#ifdef HAVE_IMSAVE
 #include "imsave/imsave.h"
 #endif
 

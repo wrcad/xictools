@@ -54,6 +54,9 @@
 // Version 1.4, June 18, 2025
 //   Fixed a typo in the numeric constant used to set PHI0_2PI.  This
 //   code has been broken for a while!
+// Version 1.5, Oct 23, 2026
+//   Fixed incorrect vgap calculation on line 535 reported by
+//   JuChun Cheng.
 //
 // Stephen R. Whiteley          stevew@wrcad.com, whiteley@synopsys.com
 // Whiteley Research Inc.       http://wrcad.com
@@ -529,7 +532,7 @@ analog begin
                 del1 = del1 + f2*d1;
                 del2 = del2 + f2*d2;
                 ip8 = ip8 + f2*xx;
-                vgap = del2 + del2;
+                vgap = del1 + del2;
                 if (`debugpr)
                     $display("XXX9 %f %f %f", del1, del2, vgap);
                 

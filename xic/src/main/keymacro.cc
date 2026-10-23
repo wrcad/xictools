@@ -413,7 +413,7 @@ cKbMacro::on_null_ptr()
 
 // Stubs for functions defined in graphical toolkit, include when
 // not building with toolkit.
-#ifndef HAVE_GRAPHICS_PKG
+#ifndef WITH_GRAPHICS_PKG
 sKeyMap *cKbMacro::getKeyToMap() { return (0); }
 bool cKbMacro::isModifier(unsigned int) { return (false); }
 bool cKbMacro::isControl(unsigned int) { return (false); }

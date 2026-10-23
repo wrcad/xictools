@@ -92,7 +92,7 @@ cFC::on_null_ptr()
 
 // Stubs for functions defined in graphical toolkit, include when
 // not building with toolkit.
-#ifndef HAVE_GRAPHICS_PKG
+#ifndef WITH_GRAPHICS_PKG
 void cFC::PopUpExtIf(GRobject, ShowMode) { }
 void cFC::updateString() { }
 void cFC::updateMarks() { }

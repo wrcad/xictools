@@ -104,6 +104,25 @@ ITOPOK = --enable-itopok=no
 #
 #NOMOZY = --enable-nomozy=yes
 
+# Imsave is a library for generating graphics files in various formats,
+# which used to be part of Mozy.  We now enable/disable this separately
+# as it can be useful without Mozy, but the code has the same license
+# restrictions as Mozy.
+#
+#NOIMSAVE = --enable-noimsave=yes
+
+# Certain functions use the X-Window system for screen dumps, print
+# drivers, and similar.  This is not true for Windows, It is trivially
+# satisfied when using GTK since GTK also uses X.  Qt may or may not,
+# so it is possible that the user will have to explicitly install X11
+# for a successful build.  An effort to eliminate all X11 usage outside
+# of the toolkits is being made, and this keyword is for associated
+# testing.  When enabled, any existing X library set is ignored.  The
+# programs probably will not build with this set, so it is not of use
+# to the general user.
+#
+#NOX11 = --enable-nox11=yes
+
 # Force 32-bit build on x86_64 Linux systems.  This may not work
 # anymore, and in any case requires 32-bit versions of all libraries
 # to be present.
@@ -155,9 +174,9 @@ SUBDIRS = xt_base $(SECURE) $(MOZY) $(WRSPICE) $(XIC) fastcap fasthenry
 # END of user configuration section.
 #
 #######################################################################
-CFARGS = $(PREFIX) $(TOOLROOT) $(ITOPOK) $(HVSECURE) $(NOMOZY) $(32BIT) \
-  $(OALOC) $(CNILOC) $(KITLOC) $(MINGW) $(QTLOC) $(GTKLOC)  $(PYTHON) \
-  $(TCL) $(TK)
+CFARGS = $(PREFIX) $(TOOLROOT) $(ITOPOK) $(HVSECURE) $(NOMOZY) $(NOIMSAVE) \
+  $(NOX11) $(32BIT) $(OALOC) $(CNILOC) $(KITLOC) $(MINGW) $(QTLOC) $(GTKLOC) \
+  $(PYTHON) $(TCL) $(TK)
 
 FLAGFILE = .configured
 
