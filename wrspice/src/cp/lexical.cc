@@ -76,7 +76,10 @@ Authors: 1985 Wayne A. Christopher
 // If defined, a line editing option similar to the GNU readline() will
 // be included.
 //
-#define USE_RDLINE
+#ifdef WIN32
+#define WINCURS
+#define NOMAPKEYS
+#endif
 
 #ifdef HAVE_TERM_H
 #include <curses.h>
@@ -206,7 +209,7 @@ enum KCode
     KC_foo
 };
 
-#ifndef WIN32
+#ifndef NOMAPKEYS
 
 struct sKmap
 {
@@ -496,7 +499,7 @@ sKmap::km_code(const char *str)
     return (0);
 }
 
-#endif // WIN32
+#endif // NOMAPKEYS
 
 
 namespace {
@@ -532,7 +535,7 @@ CommandTab::com_pause(wordlist*)
 void
 CommandTab::com_mapkey(wordlist *wl)
 {
-#ifdef WIN32
+#ifdef NOMAPKEYS
     (void)wl;
     GRpkg::self()->ErrPrintf(ET_ERROR,
         "The mapkey commamd is not available under Windows.\n");
@@ -597,12 +600,7 @@ namespace {
 }
 
 
-//
-// NOTE: in Win32, cp_noedit is always false.
-//
-
 #define FILENO(fp) ((fp) ? fileno(fp) : -1)
-
 
 wordlist *
 CshPar::Lexer(const char *string)
@@ -611,7 +609,8 @@ CshPar::Lexer(const char *string)
         cp_input = TTY.infile();
 
     char linebuf[LEX_MAXLINE + 10];
-    if (!string && cp_flags[CP_INTERACTIVE]) {
+    bool nullstr_intr = (!string && cp_flags[CP_INTERACTIVE]);
+    if (nullstr_intr) {
         if (!cp_flags[CP_NOEDIT]) {
             string = Lx.rdline(FILENO(cp_input));
             if (!string)
@@ -620,8 +619,20 @@ CshPar::Lexer(const char *string)
             delete [] string;
             return (wlist);
         }
-        else
+        else {
+// Avoid a compiler warning about storing a local variable pointer,
+// which is perfectly ok here (cleared before function edit).  We can
+// access this buffer while in scope, since it is safely in the stack.
+// Clang doesn't have this warning.
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdangling-pointer"
+#endif
             Lx.LineBuf = linebuf;
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
+        }
     }
 
     wordlist *wlist = 0;
@@ -890,7 +901,8 @@ CshPar::Lexer(const char *string)
             }
         }
     }
-    if (!string && cp_flags[CP_INTERACTIVE])
+    // Don't leave a "real" dangling pointer.
+    if (nullstr_intr)
         Lx.LineBuf = 0;
     return (wlist);
 }
@@ -1377,7 +1389,7 @@ namespace {
 const char*
 sLx::initialize()
 {
-#ifdef WIN32
+#ifdef WINCURS
     return (0);
 #endif
     const char *term = 0;
@@ -2129,7 +2141,7 @@ sLx::cpos_rev()
 void
 sLx::mv_l()
 {
-#ifdef WIN32
+#ifdef WINCURS
     HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
     CONSOLE_SCREEN_BUFFER_INFO info;
     GetConsoleScreenBufferInfo(h, &info);
@@ -2149,7 +2161,7 @@ sLx::mv_l()
 void
 sLx::mv_d()
 {
-#ifdef WIN32
+#ifdef WINCURS
     HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
     CONSOLE_SCREEN_BUFFER_INFO info;
     GetConsoleScreenBufferInfo(h, &info);
@@ -2167,7 +2179,7 @@ sLx::mv_d()
 void
 sLx::mv_r()
 {
-#ifdef WIN32
+#ifdef WINCURS
     HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
     CONSOLE_SCREEN_BUFFER_INFO info;
     GetConsoleScreenBufferInfo(h, &info);
@@ -2185,7 +2197,7 @@ sLx::mv_r()
 void
 sLx::mv_u()
 {
-#ifdef WIN32
+#ifdef WINCURS
     HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
     CONSOLE_SCREEN_BUFFER_INFO info;
     GetConsoleScreenBufferInfo(h, &info);
@@ -2270,7 +2282,7 @@ namespace {
         tty_set = clear;
 #else
 
-#ifdef WIN32
+#ifdef WINCURS
         if (clear) {
             HANDLE h = GetStdHandle(STD_INPUT_HANDLE);
             SetConsoleMode(h,
@@ -2353,7 +2365,7 @@ namespace {
         tty_set = clear;
 #else
 
-#ifdef WIN32
+#ifdef WINCURS
         tty_set = clear;
 #else
         Bogus;

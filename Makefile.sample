@@ -28,6 +28,12 @@ PREFIX = --prefix=/usr/local
 #
 ITOPOK = --enable-itopok=no
 
+# Windows setup.  UNCOMMENT for Windows!  Currently, the programs are
+# built under the MinGW64 environment in MSYS2.  Set this to the
+# mingw64 root and uncomment.
+#
+#MINGW  = --enable-mingw=/mingw64
+
 # Graphics package.  The programs can build with GTK2, GTK3, Qt5, and
 # Qt6.  GTK2 is the original graphics system and has the longest
 # history of use, but is considered to be obsolete and is being
@@ -68,15 +74,9 @@ ITOPOK = --enable-itopok=no
 #QTLOC = --enable-qt5=/usr/lib64/qt5
 #GTKLOC = --enable-gtk2=yes
 #
-# For Ubuntu-24.04, Debian 12
+# For Ubuntu-26.04, Debian 12
 #QTLOC = --enable-qt5=/usr/lib/qt5
 #GTKLOC = --enable-gtk2=yes
-
-# Windows setup.  UNCOMMENT for Windows!  Currently, the programs are
-# built under the MinGW64 environment in MSYS2.  Set this to the
-# mingw64 root and uncomment.
-#
-#MINGW  = --enable-mingw=/mingw64
 
 # The system will attempt to set the paths to Python and Tcl, but
 # this may not be reliable.  These can be uncommented and set to

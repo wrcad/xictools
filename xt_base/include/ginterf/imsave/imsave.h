@@ -57,6 +57,8 @@
  * (Rasterdude :-) <raster@redhat.com>)
  *------------------------------------------------------------------------*/
 
+#ifndef IMSAVE_H
+#define IMSAVE_H
 
 #define PAGE_SIZE_EXECUTIVE    0
 #define PAGE_SIZE_LETTER       1
@@ -113,4 +115,6 @@ private:
 
 extern Image *create_image_from_drawable(void*, unsigned long, int, int, int,
     int);
+
+#endif
 

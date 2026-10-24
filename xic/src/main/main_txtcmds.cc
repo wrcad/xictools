@@ -1521,8 +1521,15 @@ bangcmds::memerr(const char*)
 {
     // The double-call error here is intended!
     char *t = (char*)malloc(100);
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuse-after-free"
+#endif
     free(t);
     free(t);
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
 }
 
 

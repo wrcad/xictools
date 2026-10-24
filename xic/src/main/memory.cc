@@ -274,11 +274,15 @@ namespace {
     {
         // The errors here are intended!
         int *p = new int;
+// Clang recognizes this one.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wfree-nonheap-object"
         delete p;
         delete p;
         uintptr_t a = 5;
         delete &a;
         delete (int*)a;
+#pragma GCC diagnostic pop
     }
 
 

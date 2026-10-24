@@ -159,7 +159,7 @@ bin/hlp2html: bin/hlp2html.o lib/help.a $(BASE)/lib/ginterf.a \
 bin/httpget: bin/httpget.o $(LOCAL_LIBS)
 	@echo $@: dynamic link httpget
 	@$(LINKCC) -o bin/httpget $(LFLAGS) bin/httpget.o lib/httpget.a \
-  $(LOCAL_LIBS) $(STDCLIB)
+  $(LOCAL_LIBS) $(MSLIBS) $(STDCLIB) $(WINTHREADPREFIX)
 
 bin/httpget.o: bin/httpget.cc
 	$(CXX) $(CFLAGS) $(INCLUDE) -DNO_GRAPHICS -c $*.cc -o $*.o
