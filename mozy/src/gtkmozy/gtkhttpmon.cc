@@ -54,7 +54,9 @@
 
 #include "httpget/transact.h"
 #include <gtk/gtk.h>
+#ifdef GDK_WINDOWING_X11
 #include <gdk/gdkx.h>
+#endif
 #include <setjmp.h>
 #include <stdlib.h>
 #include <string.h>
