@@ -54,7 +54,7 @@
 #include "bitmaps/lsearch.xpm"
 #include "bitmaps/lsearchn.xpm"
 
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
 #include <windows.h>
 #include <windowsx.h>
 #include <gdk/gdkwin32.h>
@@ -232,7 +232,7 @@ GTKltab::setup_drawable()
 
 #define DIMPIXVAL 5
 
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
 
 // Since the gtk implementation doesn't work as of 2.24.10, do it
 // in Win32.  Some pretty ugly stuff here.

@@ -450,7 +450,7 @@ sDbg::sDbg(GRobject c)
 //        GDK_ALT_MASK, GTK_ACCEL_VISIBLE);
     db_saveas = item;
 
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
     // _Write CRLF, 0, db_action_proc, CRLFcode, <CheckItem>"
     item = gtk_check_menu_item_new_with_mnemonic("_Write CRLF");
     gtk_widget_set_name(item, "Write CRLF");
@@ -1086,12 +1086,12 @@ sDbg::write_file(const char *fname)
         PopUpMessage("Can't open file, text not saved", true);
         return (false);
     }
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
     char lastc = 0;
 #endif
     char *string = text_get_chars(wb_textarea, 0, -1);
     if (db_mode == DBedit) {
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
         char *s = string;
         while (*s) {
             if (!GTKdev::self()->GetCRLFtermination()) {
@@ -1113,7 +1113,7 @@ sDbg::write_file(const char *fname)
         char *s = string;
         if (*s && *(s+1)) {
             s += 2;
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
             while (*s) {
                 if (!GTKdev::self()->GetCRLFtermination()) {
                     if (s[0] == '\r' && s[1] == '\n') {
@@ -1877,7 +1877,7 @@ sDbg::db_action_proc(GtkWidget *caller, void *client_data)
         }
         break;
     case CRLFcode:
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
         GTKdev::self()->SetCRLFtermination(GTKdev::GetStatus(caller));
 #endif
         break;

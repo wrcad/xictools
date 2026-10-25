@@ -59,7 +59,7 @@ struct ndkCursor
 private:
     ndkPixmap   *c_datapm;
     ndkPixmap   *c_maskpm;
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     Cursor      c_xcursor;
 #endif
 };

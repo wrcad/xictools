@@ -367,7 +367,7 @@ ndkImage::ndkImage(GdkWindow *window, int src_x, int src_y,
 
 ndkImage::~ndkImage()
 {
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     if (im_ximage) {
         // Deal with failure of creation.
         switch(im_type) {

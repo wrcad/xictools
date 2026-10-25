@@ -76,7 +76,7 @@
 #include "view_menu.h"
 
 #include <gdk/gdkkeysyms.h>
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
 #include "gtkinterf/gtkx11.h"
 #include <X11/Xresource.h>
 #endif
@@ -84,7 +84,7 @@
 #ifdef HAVE_PWD_H
 #include <pwd.h>
 #endif
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
 #include <winsock2.h>
 #include <gdk/gdkwin32.h>
 #else
@@ -94,7 +94,7 @@
 #include "../../icons/xic_48x48.xpm"
 #endif
 
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
 // Reference a symbol in the resource module so the resources are linked.
 extern int ResourceModuleId;
 namespace { int dummy = ResourceModuleId; }
@@ -121,7 +121,7 @@ namespace { GTKpkg _gtk_; }
 void
 cMain::SetNoToTop(bool b)
 {
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     if (GTKdev::exists())
         GTKdev::self()->SetNoToTop(b);
 #else
@@ -781,7 +781,7 @@ GTKpkg::GetMainWinIdentifier(char *buf)
     *buf = 0;
     if (!MainDev() || MainDev()->ident != _devGTK_)
         return (false);
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     if (GTKmainwin::exists() && GTKmainwin::self()->Shell() &&
             gtk_widget_get_window(GTKmainwin::self()->Shell())) {
         snprintf(buf, 16, "%ld", (long)gr_x_window(
@@ -796,7 +796,7 @@ GTKpkg::GetMainWinIdentifier(char *buf)
 bool
 GTKpkg::UsingX11()
 {
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     return (true);
 #else
     return (false);
@@ -824,7 +824,7 @@ GTKpkg::GetDisplayString()
     if (!MainDev() || MainDev()->ident != _devGTK_)
         return (0);
 
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     if (gr_x_display())
         return (DisplayString(gr_x_display()));
 #endif
@@ -832,7 +832,7 @@ GTKpkg::GetDisplayString()
 }
 
 
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
 namespace {
     // Return true if addr matches an address in hent.
     //
@@ -863,7 +863,7 @@ GTKpkg::CheckScreenAccess(hostent *hent, const char *host,
     if (!hent)
          return (true);
 
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     bool foundit = false;
     int nhosts;
     int state;
@@ -1451,8 +1451,8 @@ GTKsubwin::PixmapOk()
 bool
 GTKsubwin::DumpWindow(const char *filename, const BBox *AOI = 0)
 {
-#ifdef HAVE_MOZY
-// This uses the imsave package from mozy.
+#ifdef HAVE_IMSAVE
+// This uses the imsave package.
 
     // Note that the bounding values are included in the display.
     if (!wib_windesc)
@@ -1503,7 +1503,7 @@ GTKsubwin::DumpWindow(const char *filename, const BBox *AOI = 0)
         gd_window = tmpw;
 #endif
     }
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
     GdkGCValuesMask Win32GCvalues = (GdkGCValuesMask)(
         GDK_GC_FOREGROUND |
         GDK_GC_BACKGROUND);
@@ -1522,7 +1522,7 @@ GTKsubwin::DumpWindow(const char *filename, const BBox *AOI = 0)
         BB.left, BB.top, BB.width() + 1, abs(BB.height()) + 1);
     gdk_win32_hdc_release(gd_window, GC(), Win32GCvalues);
 #else
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
 #if GTK_CHECK_VERSION(3,0,0)
     Image *im = create_image_from_drawable(gr_x_display(),
         pm->get_xid(), BB.left, BB.top, BB.width() + 1, abs(BB.height()) + 1);
@@ -1532,12 +1532,12 @@ GTKsubwin::DumpWindow(const char *filename, const BBox *AOI = 0)
         BB.left, BB.top, BB.width() + 1, abs(BB.height()) + 1);
 #endif
 #else
-#ifdef WITH_QUARTZ
+#ifdef GDK_WINDOWING_QUARTZ
 //XXX Need equiv. code for Quartz.
     Image *im = 0;
-#endif  // WITH_QUARTZ
-#endif  // WITH_X11
-#endif  // WIN32
+#endif  // GDK_WINDOWING_QUARTZ
+#endif  // GDK_WINDOWING_X11
+#endif  // GDK_WINDOWING_WIN32
 
     if (!native)
 #if GTK_CHECK_VERSION(3,0,0)
@@ -1957,7 +1957,7 @@ GTKsubwin::redraw_hdlr(GtkWidget *widget, GdkEvent *event, void *client_data)
     for (int i = 0; i < nrects; i++) {
         GdkRectangle *r = rects + i;
 #endif
-#ifdef WITH_QUARTZ
+#ifdef GDK_WINDOWING_QUARTZ
         // The Update method updates a single pixel at 0,0, which
         // triggers an expose event which is needed internally to
         // show the rendering.  Here we filter and ignore this
@@ -2283,7 +2283,7 @@ GTKsubwin::motion_hdlr(GtkWidget*, GdkEvent *event, void *client_data)
             if (!skipit) {
                 w->UndrawGhost();
                 w->DrawGhost((int)mev->x, (int)mev->y);
-#ifdef WITH_QUARTZ
+#ifdef GDK_WINDOWING_QUARTZ
                 // This has some extra magic to get around broken Quartz
                 // back-end.
                 WindowDesc *wd;
@@ -2329,7 +2329,7 @@ GTKsubwin::motion_idle(void *arg)
             if (!skipit) {
                 w->UndrawGhost();
                 w->DrawGhost(w->wib_x, w->wib_y);
-#ifdef WITH_QUARTZ
+#ifdef GDK_WINDOWING_QUARTZ
                 // This has some extra magic to get around broken Quartz
                 // back-end.
                 WindowDesc *wd;
@@ -2435,7 +2435,7 @@ GTKsubwin::leave_hdlr(GtkWidget*, GdkEvent *event, void *client_data)
 
     EV()->MotionCallback(w->wib_windesc, cev->state);
     w->UndrawGhost(true);
-#ifdef WITH_QUARTZ
+#ifdef GDK_WINDOWING_QUARTZ
     // This has some extra magic to get around broken Quartz
     // back-end.
     WindowDesc *wd;
@@ -2619,7 +2619,7 @@ GTKsubwin::keys_hdlr(GtkWidget*, GdkEvent *event, void*)
 void
 GTKmainwin::initialize()
 {
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
     // Icons are obtained from resources.
 #else
     // I don't know which release this function arrived in.
@@ -2954,7 +2954,7 @@ GTKmainwin::initialize()
     gdk_gc_set_values(XorGC(), &gcvalues,
         (GdkGCValuesMask)(GDK_GC_FUNCTION | GDK_GC_CAP_STYLE));
     // Growl... GTK doesn't have this
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     XGCValues xval;
     xval.fill_rule = WindingRule;
     XChangeGC(gr_x_display(), gdk_x11_gc_get_xgc(GC()), GCFillRule, &xval);
@@ -3040,7 +3040,7 @@ GTKmainwin::main_destroy_proc(GtkWidget*, GdkEvent*, void*)
 void
 GTKmainwin::xrm_load_colors()
 {
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     // load string resource color names
     static bool doneit;
     if (!doneit) {

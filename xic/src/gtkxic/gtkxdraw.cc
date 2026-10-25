@@ -43,10 +43,10 @@
 #include "dsp_color.h"
 #include "gtkmain.h"
 #include "ginterf/x11draw.h"
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
 #include "gtkinterf/gtkx11.h"
 #endif
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
 #include <windows.h>
 #include <windowsx.h>
 #endif
@@ -122,15 +122,15 @@ cMain::SetupLayers(void *dp, GRdraw *cx, void *scxptr)
             CDl *ld = CDldb()->layer(i, Physical);
             if (ld) {
                 DspLayerParams *lp = dsp_prm(ld);
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
                 if (lp->fill()->xPixmap())
                     XFreePixmap((Display*)dp, (Pixmap)lp->fill()->xPixmap());
 #else
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
                 if (lp->fill()->xPixmap())
                     DeleteBitmap((HBITMAP)lp->fill()->xPixmap());
 #endif
-#ifdef WITH_QUARTZ
+#ifdef GDK_WINDOWING_QUARTZ
 //XXX Need equiv. code for Quartz.
 #endif
 #endif
@@ -144,14 +144,14 @@ cMain::SetupLayers(void *dp, GRdraw *cx, void *scxptr)
             CDl *ld = CDldb()->layer(i, Electrical);
             if (ld && ld->physIndex() < 0) {
                 DspLayerParams *lp = dsp_prm(ld);
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
                 if (lp->fill()->xPixmap())
                     XFreePixmap((Display*)dp, (Pixmap)lp->fill()->xPixmap());
 #else
-#ifdef WITH_QUARTZ
+#ifdef GDK_WINDOWING_QUARTZ
 //XXX Need equiv. code for Quartz.
 #endif
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
                 if (lp->fill()->xPixmap())
                     DeleteBitmap((HBITMAP)lp->fill()->xPixmap());
 #endif

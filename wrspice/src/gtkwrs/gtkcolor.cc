@@ -56,7 +56,7 @@
 
 // This is for the Xrm stuff
 #include <gdk/gdkprivate.h>
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
 #include "gtkinterf/gtkx11.h"
 #include <X11/Xresource.h>
 #ifdef HAVE_PWD_H
@@ -249,7 +249,7 @@ namespace {
 void
 GTKtoolbar::LoadResourceColors()
 {
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     // load resource values into DefColorNames
     static bool doneit;
     if (!doneit) {
@@ -309,7 +309,7 @@ GTKtoolbar::LoadResourceColors()
 const char*
 GTKtoolbar::XRMgetFromDb(const char *rname)
 {
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     XrmDatabase database = XrmGetDatabase(gr_x_display());
     if (!database)
         return (0);
@@ -346,7 +346,7 @@ GTKtoolbar::XRMgetFromDb(const char *rname)
 void
 CommandTab::com_setrdb(wordlist *wl)
 {
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     if (!CP.Display()) {
         GRpkg::self()->ErrPrintf(ET_ERROR, "X system not available.\n");
         return;

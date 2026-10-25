@@ -48,10 +48,10 @@
 #include "gtkmain.h"
 
 #include <gdk/gdkkeysyms.h>
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
 #include "gtkinterf/gtkx11.h"
 #else
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
 #include <windows.h>
 #endif
 #endif

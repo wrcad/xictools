@@ -43,7 +43,7 @@
 #include "gtkfont.h"
 #include "gtkhcopy.h"
 #include "ginterf/grlinedb.h"
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
 #include <winsock2.h>
 #include <windowsx.h>
 #include <gdk/gdkwin32.h>
@@ -57,7 +57,7 @@ using namespace mswinterf;
 //#define USE_XSHM
 
 #include <gdk/gdkkeysyms.h>
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
 #include <X11/Xproto.h>
 #ifdef USE_XSHM
 #ifdef HAVE_SHMGET
@@ -74,7 +74,7 @@ GRpkg::DevDepInit(unsigned int cfg)
 {
     if (cfg & _devGTK_)
         GRpkg::self()->RegisterDevice(new GTKdev);
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
     if (cfg && _devMSP_) {
         GRpkg::self()->RegisterDevice(new MSPdev);
         GRpkg::self()->RegisterHcopyDesc(&MSPdesc);
@@ -129,14 +129,14 @@ GTKdev::GTKdev()
 #endif
     dv_visual = 0;
     dv_lower_win_offset = 0;
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     dv_silence_xerrors = false;
     dv_no_to_top = false;
     dv_screen = 0;
     dv_console_xid = 0;
     dv_big_window_xid = 0;
 #endif
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
     dv_crlf_terminate = true;
 #endif
 }
@@ -158,7 +158,7 @@ GTKdev::on_null_ptr()
 }
 
 
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
 
 // The handler below replaces the default gtk2 x error handler.  Since
 // gtk2 internally uses error_trap_push/pop, we get what we need:
@@ -271,7 +271,7 @@ GTKdev::Init(int *argc, char **argv)
     gdk_threads_init();
     ***/
 
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     // Start with this set.
     XSetErrorHandler(x_error_handler);
 #endif
@@ -294,7 +294,7 @@ GTKdev::Init(int *argc, char **argv)
 #endif
 
     if (!gtk_init_check(argc, &argv)) {
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
         const char *dsp = gdk_get_display();
         if (dsp)
             g_warning("cannot open display: %s", gdk_get_display());
@@ -321,7 +321,7 @@ GTKdev::Init(int *argc, char **argv)
         gtk_rc_parse_string(c_str);
     }
 
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     // Set again, since GTK-2 has reset the handler.
     XSetErrorHandler(x_error_handler);
 #endif
@@ -329,7 +329,7 @@ GTKdev::Init(int *argc, char **argv)
     // We want the window ID of the controlling terminal.  Assume that
     // it has the focus when this function is called, this is not
     // really good.
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     int foc;
     Window xwin;
     XGetInputFocus(gr_x_display(), &xwin, &foc);
@@ -618,7 +618,7 @@ GTKdev::CheckForEvents()
         gtk_main_do_event(ev);
         gdk_event_free(ev);
     }
-#ifdef WITH_QUARTZ
+#ifdef GDK_WINDOWING_QUARTZ
     // gtk_events_pending seems to always return true.
     int cnt = 0;
     do {
@@ -649,7 +649,7 @@ GTKdev::Input(int fd1, int fd2, int *keyret)
         // First read off the queue before doing the select.
         gtk_DoEvents(100);
 
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
         int nfds = ConnectionNumber(gr_x_display());
 #else
         int nfds = 0;
@@ -660,7 +660,7 @@ GTKdev::Input(int fd1, int fd2, int *keyret)
             nfds = fd2;
         fd_set readfds;
         FD_ZERO(&readfds);
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
         FD_SET(ConnectionNumber(gr_x_display()), &readfds);
 #endif
         if (fd1 >= 0)
@@ -680,7 +680,7 @@ GTKdev::Input(int fd1, int fd2, int *keyret)
             continue;
 
         // handle X events first
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
         if (FD_ISSET(ConnectionNumber(gr_x_display()), &readfds)) {
             // handle ALL X events
             GdkEvent *ev;
@@ -734,7 +734,7 @@ GTKdev::MainLoop(bool init)
 int
 GTKdev::UseSHM()
 {
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
 #ifdef USE_XSHM
 #ifdef HAVE_SHMGET
     if (!gdk_get_use_xshm())
@@ -821,7 +821,7 @@ GTKdev::SetPopupLocation(GRloc loc, GtkWidget *sub, GtkWidget *parent)
     static int dec_ht = 0;
     static int dec_wd = 0;
     if (dec_ht == 0) {
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
         // The code below gives 16,43 for the values, which are not
         // good visually.  The following values look about right for
         // Windows 10.
@@ -844,7 +844,7 @@ GTKdev::SetPopupLocation(GRloc loc, GtkWidget *sub, GtkWidget *parent)
     // displays, we may want to move this windows up to avoid the
     // "shadow" falling over a text input line (as in Xic).
 
-#ifdef WITH_QUARTZ
+#ifdef GDK_WINDOWING_QUARTZ
     if (loc.code == LW_LL)
         y -= dv_lower_win_offset;
     else if (loc.code == LW_UL)
@@ -892,7 +892,7 @@ GTKdev::ComputePopupLocation(GRloc loc, GtkWidget *sub, GtkWidget *parent,
     int mwidth = gdk_window_get_width(win);
     int mheight = gdk_window_get_height(win);
 
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
     // There seems to be a GTK bug that causes a difference in
     // placement of resizable vs non-resizable windows.
     
@@ -1041,7 +1041,7 @@ GTKdev::SetDoubleClickExit(GtkWidget *widget, GtkWidget *cancel)
 void
 GTKdev::RegisterBigWindow(GtkWidget *window)
 {
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     dv_big_window_xid = 0;
     if (window && gtk_widget_get_window(window))
         dv_big_window_xid = gr_x_window(gtk_widget_get_window(window));
@@ -1054,7 +1054,7 @@ GTKdev::RegisterBigWindow(GtkWidget *window)
 void
 GTKdev::RegisterBigForeignWindow(unsigned int xid)
 {
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     dv_big_window_xid = xid;
 #else
     (void)xid;
@@ -1305,12 +1305,12 @@ void
 GTKdev::SetFocus(GtkWidget *window)
 {
     if (window && gtk_widget_get_window(window)) {
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
         XSetInputFocus(gr_x_display(),
             gr_x_window(gtk_widget_get_window(window)),
             RevertToPointerRoot, CurrentTime);
 #else
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
         ::SetFocus((HWND)GDK_WINDOW_HWND(gtk_widget_get_window(window)));
 #endif
 #endif
@@ -1323,7 +1323,7 @@ GTKdev::SetFocus(GtkWidget *window)
 int
 GTKdev::ConnectFd()
 {
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     if (gr_x_display())
         return (ConnectionNumber(gr_x_display()));
 #endif

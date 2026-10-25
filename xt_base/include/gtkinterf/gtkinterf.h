@@ -133,7 +133,7 @@ namespace gtkinterf {
         void SetLowerWinOffset(int o) { dv_lower_win_offset = o; }
         void SetDefaultFocusWin(GdkWindow *w) { dv_default_focus_win = w; }
         GdkWindow *DefaultFocusWin() { return (dv_default_focus_win); }
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
         void SetSilenceErrs(bool b) { dv_silence_xerrors = b; }
         bool IsSilenceErrs()        { return (dv_silence_xerrors); }
         void SetNoToTop(bool b)     { dv_no_to_top = b; }
@@ -145,7 +145,7 @@ namespace gtkinterf {
         bool IsSilenceErrs()        { return (false); }
 #endif
 
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
         // Flag for DOS/UNIX line termination in output.
         bool GetCRLFtermination()       { return (dv_crlf_terminate); }
         void SetCRLFtermination(bool b) { dv_crlf_terminate = b; }
@@ -203,14 +203,14 @@ namespace gtkinterf {
 #endif
         GdkVisual       *dv_visual;
         int             dv_lower_win_offset;
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
         bool            dv_silence_xerrors;
         bool            dv_no_to_top;
         int             dv_screen;
         unsigned int    dv_console_xid;
         unsigned int    dv_big_window_xid;
 #endif
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
         bool            dv_crlf_terminate;
 #endif
         static GTKdev   *instancePtr;

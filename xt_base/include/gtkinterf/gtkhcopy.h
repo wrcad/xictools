@@ -66,7 +66,7 @@ namespace gtkinterf {
 
         static void hc_hcpopup(GRobject, GTKbag*, HCcb*, HCmode, GRdraw*);
         static void hc_pop_up_text(GTKbag*, const char*, bool);
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
         static void hc_set_printer(GTKbag*);
 #endif
         static void hc_set_format(GTKbag*, int, bool);
@@ -75,7 +75,7 @@ namespace gtkinterf {
         static void hc_update_menu(GTKprintPopup*);
         static void hc_menu_proc(GtkWidget*, void*);
         static void hc_formenu_proc(GtkWidget*, void*);
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
         static void hc_prntmenu_proc(GtkWidget*, void*);
 #endif
         static void hc_pagesize_proc(GtkWidget*, void*);
@@ -109,7 +109,7 @@ namespace gtkinterf {
         GtkWidget *hc_popup;
         GtkWidget *hc_cmdlab;
         GtkWidget *hc_cmdtxtbox;
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
         GtkWidget *hc_prntmenu;
 #endif
         GtkWidget *hc_wlabel;
@@ -154,7 +154,7 @@ namespace gtkinterf {
         float hc_lft_val;
         float hc_top_val;
 
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
         char **hc_printers;
         int hc_numprinters;
 

@@ -43,11 +43,11 @@
 #include "dsp_layer.h"
 #include "dsp_color.h"
 #include "gtkmain.h"
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
 #include "gtkinterf/gtkx11.h"
 #endif
 
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
 #include <windows.h>
 #else
 
@@ -70,7 +70,7 @@ cMain::FixupColors(void *dp)
         return;
     static enum { enc_none, enc_x, enc_triples } encoding;
 
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     bool use_triples = false;
     Display *display = (Display*)dp;
     // If a display was passed, the pixels will be X values, otherwise the
@@ -92,7 +92,7 @@ cMain::FixupColors(void *dp)
         return;
     encoding = (use_triples ? enc_triples : enc_x);
 
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     for (unsigned i = 0; i < ColorTableEnd; i++) {
         sColorTab::sColorTabEnt *c = DSP()->ColorTab()->color_ent(i);
         if (!c)

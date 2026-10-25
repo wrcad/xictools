@@ -134,7 +134,7 @@ private:
     GdkColormap     *im_colormap;
 #endif
 
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     XImage          *im_ximage;
     GdkScreen       *im_screen;
     gpointer        im_x_shm_info;

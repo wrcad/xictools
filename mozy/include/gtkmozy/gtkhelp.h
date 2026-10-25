@@ -124,7 +124,7 @@ namespace gtkinterf {
         static GtkWindow *transient_for()       { return (h_transient_for); }
 
     private:
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
         static void pipe_thread_proc(void*);
 #endif
         static int fifo_check_proc(void*);
@@ -190,7 +190,7 @@ namespace gtkinterf {
         const char *h_fifo_name;        // pipe name
         int h_fifo_fd;                  // pipe fd
         int h_fifo_tid;                 // poll timer id
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
         void *h_fifo_pipe;              // pipe to fifo for MSW
         stringlist *h_fifo_tfiles;      // list of temp files
 #endif

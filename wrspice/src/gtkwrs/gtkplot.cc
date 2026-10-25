@@ -62,7 +62,7 @@ Authors: 1988 Jeffrey M. Hsu
 #include "spnumber/spnumber.h"
 
 #include <gdk/gdkkeysyms.h>
-#ifndef WIN32
+#ifndef GDK_WINDOWING_WIN32
 #include "../../icons/wrspice_16x16.xpm"
 #include "../../icons/wrspice_32x32.xpm"
 #include "../../icons/wrspice_48x48.xpm"
@@ -189,7 +189,7 @@ plot_bag::init(cGraph *gr)
 {
     wb_sens_set = sens_set;
 
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
     // Icons are obtained from resources.
 #else
     GList *g1 = new GList;

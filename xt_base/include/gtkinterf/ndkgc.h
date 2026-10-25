@@ -181,7 +181,7 @@ enum
     ndkGC_JOIN_STYLE    = 1 << 18
 };
 
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
 enum ndkGCdirtyValues
 {
     ndkGC_DIRTY_CLIP = 1 << 0,
@@ -440,14 +440,14 @@ struct ndkGC
     // many pixels into the dash-list the pattern should actually begin.
     //
     void set_dashes(int dash_offset, unsigned char dash_list[], int n) {
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
         XSetDashes(get_xdisplay(), gc_gc, dash_offset, (char *)dash_list, n);
 #endif
     }
 
 
     GdkScreen *get_screen()         { return (gc_screen); }
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     GC get_xgc() {
         if (gc_dirty_mask)
             gc_x11_flush();
@@ -526,7 +526,7 @@ struct ndkGC
     void clear(ndkPixmap*);
 
 private:
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     void draw_line(XID, int, int, int, int);
     void draw_arc(XID, bool, int, int, int, int, int, int);
     void draw_rectangle(XID, bool, int, int, int, int);
@@ -553,7 +553,7 @@ private:
     void gc_remove_drawable_clip();
     void gc_update_context(cairo_t*, const GdkColor*, ndkPixmap*, bool,
         ndkDrawable*);
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     void gc_x11_flush();
 #if GTK_CHECK_VERSION(3,0,0)
     void gc_windowing_set_clip_region(const cairo_region_t*, bool);
@@ -591,7 +591,7 @@ private:
     ndkGCfunction   gc_function;
 
     GdkScreen       *gc_screen;
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     GC              gc_gc;
     unsigned char   gc_dirty_mask;
     bool            gc_have_clip_region;

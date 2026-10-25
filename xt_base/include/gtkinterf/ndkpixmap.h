@@ -94,7 +94,7 @@ struct ndkPixmap
     int get_depth()     { return (pm_depth); }
     GdkScreen *get_screen() { return (pm_screen); }
     GdkVisual *get_visual() { return (pm_visual); }
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     Pixmap get_xid()    { return (pm_xid); }
 #endif
 
@@ -105,7 +105,7 @@ private:
     int pm_refcnt;
     GdkScreen *pm_screen;
     GdkVisual *pm_visual;
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     Pixmap pm_xid;
 #endif
 };

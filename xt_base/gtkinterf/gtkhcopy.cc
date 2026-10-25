@@ -44,7 +44,7 @@
 #include "miscutil/lstring.h"
 #include "miscutil/filestat.h"
 #include "miscutil/childproc.h"
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
 #include "miscutil/msw.h"
 #include "ginterf/mswdraw.h"
 #include "ginterf/hcmswpdev.h"
@@ -342,7 +342,7 @@ GTKbag::HCupdate(HCcb *cb)
         cb->command = wb_hc->hc_cmdtext;
     }
     else {
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
         cb->command = wb_hc->hc_printers[wb_hc->curprinter];
 #else
         if (wb_hc->hc_cmdtxtbox)
@@ -415,7 +415,7 @@ GTKbag::HcopyDisableMsgs()
 // End of GTKbag functions.
 
 
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
 int GTKprintPopup::curprinter;
 #endif
 
@@ -447,7 +447,7 @@ GTKprintPopup::GTKprintPopup()
     hc_lft_val = 0.0;
     hc_top_val = 0.0;
 
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
     hc_numprinters = msw::ListPrinters(&curprinter, &hc_printers);
     if (curprinter >= hc_numprinters)
         curprinter = 0;
@@ -460,7 +460,7 @@ GTKprintPopup::~GTKprintPopup()
     delete [] hc_cmdtext;
     delete [] hc_tofilename;
     delete [] hc_clobber_str;
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
     if (hc_printers) {
         for (int i = 0; i < hc_numprinters; i++)
             delete [] hc_printers[i];
@@ -482,7 +482,7 @@ GTKprintPopup::destroy_widgets()
     hc_popup = 0;
     hc_cmdlab = 0;
     hc_cmdtxtbox = 0;
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
     hc_prntmenu = 0;
 #endif
     hc_wlabel = 0;
@@ -507,7 +507,7 @@ GTKprintPopup::destroy_widgets()
 }
 
 
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
 namespace {
     const char *no_printer_msg = "NO PRINTERS FOUND!";
 }
@@ -692,7 +692,7 @@ GTKprintPopup::hc_hcpopup(GRobject caller, GTKbag *wb, HCcb *cb,
 
     hc->hc_cmdlab = 0;
     hc->hc_cmdtxtbox = 0;
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
     hc->hc_prntmenu = 0;
 #endif
     hc->hc_wlabel = 0;
@@ -827,7 +827,7 @@ GTKprintPopup::hc_hcpopup(GRobject caller, GTKbag *wb, HCcb *cb,
     GtkWidget *row = gtk_hbox_new(false, 2);
     gtk_widget_show(row);
 
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
     hc->hc_cmdlab = gtk_label_new(
         hc->hc_tofile ? "File Name" : "Printer Name");
 #else
@@ -876,7 +876,7 @@ GTKprintPopup::hc_hcpopup(GRobject caller, GTKbag *wb, HCcb *cb,
     gtk_entry_set_text(GTK_ENTRY(hc->hc_cmdtxtbox),
         hc->hc_tofile ? hc->hc_tofilename : hc->hc_cmdtext);
     gtk_box_pack_start(GTK_BOX(row), hc->hc_cmdtxtbox, true, true, 0);
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
     hc->hc_prntmenu = gtk_combo_box_text_new();
     gtk_widget_show(hc->hc_prntmenu);
     gtk_box_pack_start(GTK_BOX(row), hc->hc_prntmenu, true, true, 0);
@@ -1269,7 +1269,7 @@ GTKprintPopup::hc_hcpopup(GRobject caller, GTKbag *wb, HCcb *cb,
         }
     }
 
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
     if (hc->hc_tofile) {
         gtk_widget_show(hc->hc_cmdtxtbox);
         gtk_widget_hide(hc->hc_prntmenu);
@@ -1317,7 +1317,7 @@ GTKprintPopup::hc_pop_up_text(GTKbag *w, const char *message, bool error)
 }
 
 
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
 namespace {
     inline bool ncomp(const char *s1, const char *s2)
     {
@@ -1702,7 +1702,7 @@ GTKprintPopup::hc_formenu_proc(GtkWidget*, void *client_data)
 }
 
 
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
 // Static function.
 // Handler for the printers menu.
 //
@@ -1925,13 +1925,13 @@ GTKprintPopup::hc_tofile_proc(GtkWidget *caller, void *client_data)
             delete [] hc->hc_cmdtext;
             hc->hc_cmdtext = lstring::copy(s);
             gtk_entry_set_text(GTK_ENTRY(hc->hc_cmdtxtbox), hc->hc_tofilename);
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
             gtk_widget_show(hc->hc_cmdtxtbox);
             gtk_widget_hide(hc->hc_prntmenu);
 #endif
         }
         else {
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
             gtk_label_set_text(GTK_LABEL(hc->hc_cmdlab), "Printer Name");
             gtk_widget_hide(hc->hc_cmdtxtbox);
             gtk_widget_show(hc->hc_prntmenu);
@@ -2078,7 +2078,7 @@ GTKprintPopup::hc_do_go(GTKbag *wb)
     static bool in_do_go;
     GTKprintPopup *hc = wb->HC();
 
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
     if (!hc->hc_printers && !hc->hc_tofile) {
         hc_pop_up_text(wb, "No default printer!", true);
         return;
@@ -2099,7 +2099,7 @@ GTKprintPopup::hc_do_go(GTKbag *wb)
         if (hc->hc_tofile)
             hc_pop_up_text(wb, "No filename given!", true);
         else
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
             hc_pop_up_text(wb, "No printer given!", true);
 #else
             hc_pop_up_text(wb, "No command given!", true);
@@ -2317,7 +2317,7 @@ GTKprintPopup::hc_do_go(GTKbag *wb)
     if (hc->hc_orient & HClandscape)
         strcat(buf, " -l");
 
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
     int media = gtk_combo_box_get_active(GTK_COMBO_BOX(hc->hc_pgsmenu));
     int prnt = gtk_combo_box_get_active(GTK_COMBO_BOX(hc->hc_prntmenu));
     if (!strcmp(hcdesc->keyword, "windows_native")) {
@@ -2347,7 +2347,7 @@ GTKprintPopup::hc_do_go(GTKbag *wb)
         // hc might be freed during hcgo
         bool tofile = hc->hc_tofile;
         char *cmd =
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
             lstring::copy(tmpstr);
 #else
             lstring::copy(gtk_entry_get_text(GTK_ENTRY(hc->hc_cmdtxtbox)));
@@ -2414,7 +2414,7 @@ GTKprintPopup::hc_printit(const char *str, const char *filename, GTKbag *wb)
     if (!str || !*filename)
         return (-1);
 
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
     const char *err = msw::RawFileToPrinter(str, filename);
     char buf[256];
     if (err) {
@@ -2761,7 +2761,7 @@ GTKprintPopup::hc_set_sens(GTKprintPopup *hc, unsigned int word)
                 true);
             // hc->hc_tofile is now true
             gtk_widget_set_sensitive(hc->hc_tofbtn, false);
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
             gtk_widget_show(hc->hc_cmdtxtbox);
             gtk_widget_hide(hc->hc_prntmenu);
 #endif
@@ -2774,7 +2774,7 @@ GTKprintPopup::hc_set_sens(GTKprintPopup *hc, unsigned int word)
             gtk_widget_set_sensitive(hc->hc_tofbtn, true);
             gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(hc->hc_tofbtn),
                 hc->hc_tofile);
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
             if (hc->hc_tofile) {
                 gtk_widget_show(hc->hc_cmdtxtbox);
                 gtk_widget_hide(hc->hc_prntmenu);

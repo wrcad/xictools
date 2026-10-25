@@ -57,7 +57,8 @@
  * (Rasterdude :-) <raster@redhat.com>)
  *------------------------------------------------------------------------*/
 
-#include "imsave.h"
+#include "config.h"
+#include "ginterf/imsave/imsave.h"
 
 #ifdef WIN32
 

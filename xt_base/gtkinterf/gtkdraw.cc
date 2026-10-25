@@ -44,7 +44,7 @@
 #include "ginterf/grlinedb.h"
 #include "miscutil/texttf.h"
 #include "miscutil/lstring.h"
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
 #include <winsock2.h>
 #include <windowsx.h>
 #include <gdk/gdkwin32.h>
@@ -56,7 +56,7 @@ using namespace mswinterf;
 //#define USE_XSHM
 
 #include <gdk/gdkkeysyms.h>
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
 #include <X11/Xproto.h>
 #ifdef USE_XSHM
 #ifdef HAVE_SHMGET
@@ -67,7 +67,7 @@ using namespace mswinterf;
 
 
 #if GTK_CHECK_VERSION(3,0,0)
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
 // XPoint, XSegment, XRectangle all use shorts.  This sets GRmultiPt
 // to use shorts as well.
 
@@ -125,7 +125,7 @@ sGbag::sGbag()
     gdk_gc_set_values(gb_xorgc, &gcvalues, GDK_GC_CAP_STYLE);
 #endif
     gb_gcbak = 0;
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
     gb_fillpattern = 0;
 #endif
     gb_cursor_type = 0;
@@ -369,7 +369,7 @@ GTKdraw::Clear()
 }
 
 
-#if defined(WIN32) && defined(DIRECT_TO_GDI)
+#if defined(GDK_WINDOWING_WIN32) && defined(DIRECT_TO_GDI)
 // The current gdk-win32 does not handle stippled rendering.  Thus, we
 // do our own rendering using native Win32 functions.  At least for
 // now, we leave line and text rendering to gdk.
@@ -398,7 +398,7 @@ namespace {
 void
 GTKdraw::Pixel(int x, int y)
 {
-#if defined(WIN32) && defined(DIRECT_TO_GDI)
+#if defined(GDK_WINDOWING_WIN32) && defined(DIRECT_TO_GDI)
     if (GDK_IS_WINDOW(gd_window)) {
         // Need this correction for windows without implementation.
 
@@ -448,7 +448,7 @@ GTKdraw::Pixels(GRmultiPt *data, int n)
 {
     if (n < 1)
         return;
-#if defined(WIN32) && defined(DIRECT_TO_GDI)
+#if defined(GDK_WINDOWING_WIN32) && defined(DIRECT_TO_GDI)
     POINT *p = (POINT*)data->data();
     if (GDK_IS_WINDOW(gd_window)) {
         // Need this correction for windows without implementation.
@@ -733,7 +733,7 @@ GTKdraw::Box(int x1, int y1, int x2, int y2)
         y1 = y2;
         y2 = temp;
     }
-#if defined(WIN32) && defined(DIRECT_TO_GDI)
+#if defined(GDK_WINDOWING_WIN32) && defined(DIRECT_TO_GDI)
     if (GDK_IS_WINDOW(gd_window)) {
         // Need this correction for windows without implementation.
 
@@ -795,7 +795,7 @@ GTKdraw::Boxes(GRmultiPt *data, int n)
     if (n < 1)
         return;
     // order: x, y, width, height
-#if defined(WIN32) && defined(DIRECT_TO_GDI)
+#if defined(GDK_WINDOWING_WIN32) && defined(DIRECT_TO_GDI)
     POINT *points = (POINT*)data->data();
     if (GDK_IS_WINDOW(gd_window)) {
         // Need this correction for windows without implementation.
@@ -922,7 +922,7 @@ GTKdraw::Polygon(GRmultiPt *data, int numv)
 {
     if (numv < 4)
         return;
-#if defined(WIN32) && defined(DIRECT_TO_GDI)
+#if defined(GDK_WINDOWING_WIN32) && defined(DIRECT_TO_GDI)
     POINT *points = (POINT*)data->data();
     if (GDK_IS_WINDOW(gd_window)) {
         // Need this correction for windows without implementation.
@@ -998,7 +998,7 @@ GTKdraw::Zoid(int yl, int yu, int xll, int xul, int xlr, int xur)
 {
     if (yl >= yu)
         return;
-#if defined(WIN32) && defined(DIRECT_TO_GDI)
+#if defined(GDK_WINDOWING_WIN32) && defined(DIRECT_TO_GDI)
     POINT points[5];
 #else
 #if GTK_CHECK_VERSION(3,0,0)
@@ -1030,7 +1030,7 @@ GTKdraw::Zoid(int yl, int yu, int xll, int xul, int xlr, int xur)
     if (n < 4)
         return;
 
-#if defined(WIN32) && defined(DIRECT_TO_GDI)
+#if defined(GDK_WINDOWING_WIN32) && defined(DIRECT_TO_GDI)
     if (GDK_IS_WINDOW(gd_window)) {
         // Need this correction for windows without implementation.
 
@@ -1414,7 +1414,7 @@ GTKdraw::SetLinestyle(const GRlineType *lineptr)
 }
 
 
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
 namespace {
     // Reverse bit order and complement.
     //
@@ -1444,7 +1444,7 @@ GTKdraw::DefineFillpattern(GRfillType *fillp)
 {
     if (!fillp)
         return;
-#if defined(WIN32) && defined(DIRECT_TO_GDI)
+#if defined(GDK_WINDOWING_WIN32) && defined(DIRECT_TO_GDI)
     if (fillp->xPixmap()) {
         DeleteBitmap((HBITMAP)fillp->xPixmap());
         fillp->setXpixmap(0);
@@ -1515,7 +1515,7 @@ GTKdraw::DefineFillpattern(GRfillType *fillp)
 void
 GTKdraw::SetFillpattern(const GRfillType *fillp)
 {
-#if defined(WIN32) && defined(DIRECT_TO_GDI)
+#if defined(GDK_WINDOWING_WIN32) && defined(DIRECT_TO_GDI)
     // Alas, gdk-win32 currently does not support stippled drawing,
     // which apparently got lost in the switch to cairo.  So, we roll
     // our own.
@@ -1549,7 +1549,7 @@ GTKdraw::SetFillpattern(const GRfillType *fillp)
 void
 GTKdraw::Update()
 {
-#ifdef WITH_QUARTZ
+#ifdef GDK_WINDOWING_QUARTZ
     // This is a horrible thing that forces the broken Quartz back end
     // to actually draw something.
 
@@ -1669,7 +1669,7 @@ GTKdraw::SetXOR(int val)
 namespace {
     struct stmap
     {
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
         HBITMAP pmap;
 #else
 #if GTK_CHECK_VERSION(3,0,0)
@@ -1701,7 +1701,7 @@ GTKdraw::ShowGlyph(int gnum, int x, int y)
     y -= GlyphWidth/2;
     gnum = gnum % (sizeof(glyphs)/sizeof(stmap));
     stmap *st = &glyphs[gnum];
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
     if (GDK_IS_WINDOW(gd_window)) {
         // Need this correction for windows without implementation.
 
@@ -1851,7 +1851,7 @@ GTKdraw::DisplayImage(const GRimage *image, int x, int y,
     delete im;
 #else
     // GTK-2 only
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
 #ifdef USE_XSHM
 #ifdef HAVE_SHMGET
     // Use MIT-SHM if available.  If an error occurs, fall through and
@@ -2006,7 +2006,7 @@ normal:
             if ((unsigned int)xd >= image->width())
                 break;
             unsigned int px = image->data()[xd + yd*image->width()];
-#ifdef WITH_QUARTZ
+#ifdef GDK_WINDOWING_QUARTZ
             // Hmmmm, seems that Quartz requires byte reversal.
             unsigned int qpx;
             unsigned char *c1 = ((unsigned char*)&px) + 3;

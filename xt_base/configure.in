@@ -504,9 +504,9 @@ AC_SUBST([NO_IGNORED_QUALIFIERS])
 AC_PROG_MAKE_SET
 AC_PATH_XTRA
 
-echo XXXXX $nox11  $no_x
 if test "$nox11" != yes -a "$no_x" != yes; then
-    WITH_X11=-DWITH_X11
+    echo '#define WITH_X11 1'>> confdefs.h
+    WITH_X11=yes
 fi
 
 case $sys_os in
@@ -1508,7 +1508,7 @@ if test -d util; then
 fi
 if test -d ginterf; then
     makefiles="$makefiles ginterf/Makefile"
-    if test $nomozy != yes; then
+    if test $noimsave == no; then
         makefiles="$makefiles ginterf/imsave/Makefile"
     fi
 fi

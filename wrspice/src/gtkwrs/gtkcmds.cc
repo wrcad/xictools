@@ -482,7 +482,7 @@ GTKtoolbar::PopUpCmdConfig(ShowMode mode, int x, int y)
         const char *prefix = getenv("XT_PREFIX");
         if (!prefix || !lstring::is_rooted(prefix))
             prefix = "/usr/local";
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
         char *tpath = pathlist::mk_path("xictools/bin", progname);
 #else
         char *tpath = pathlist::mk_path("xictools/xic/bin", progname);

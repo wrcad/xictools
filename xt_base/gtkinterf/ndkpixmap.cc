@@ -74,7 +74,7 @@
 #ifdef NDKPIXMAP_H
 
 
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
 namespace {
     int xid_hash(XID *xid)          { return (*xid); }
     bool xid_equal(XID *a, XID *b)  { return (*a == *b); }
@@ -106,7 +106,7 @@ ndkPixmap::ndkPixmap(GdkWindow *window, int width, int height, bool bitmap)
         pm_depth = gdk_visual_get_depth(pm_visual);
     }
 
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
 #if GTK_CHECK_VERSION(3,0,0)
     pm_xid = XCreatePixmap(
         gdk_x11_display_get_xdisplay(gdk_window_get_display(window)),
@@ -146,7 +146,7 @@ ndkPixmap::ndkPixmap(GdkWindow *window, const char *data,
     pm_visual = 0;
     pm_depth = 1;
 
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
 #if GTK_CHECK_VERSION(3,0,0)
     pm_xid = XCreateBitmapFromData(
         gdk_x11_display_get_xdisplay(gdk_window_get_display(window)),
@@ -186,7 +186,7 @@ ndkPixmap::ndkPixmap(GdkWindow *window, const char *data,
     pm_visual = gdk_window_get_visual(window);
     pm_depth = gdk_visual_get_depth(pm_visual);
 
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
 #if GTK_CHECK_VERSION(3,0,0)
     pm_xid = XCreatePixmapFromBitmapData(
         gdk_x11_display_get_xdisplay(gdk_window_get_display(window)),
@@ -226,7 +226,7 @@ ndkPixmap::ndkPixmap(ndkPixmap *pm, int width, int height, bool bitmap)
         pm_height = 0;
         pm_depth = 0;
         pm_screen = 0;
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
         pm_xid = None;
 #endif
         return;
@@ -243,7 +243,7 @@ ndkPixmap::ndkPixmap(ndkPixmap *pm, int width, int height, bool bitmap)
         pm_visual = pm->get_visual();
         pm_depth = pm->get_depth();
     }
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     pm_xid = XCreatePixmap(
         gdk_x11_display_get_xdisplay(gdk_screen_get_display(pm_screen)),
         pm->get_xid(), pm_width, pm_height, pm_depth);

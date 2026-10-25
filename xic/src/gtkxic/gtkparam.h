@@ -167,7 +167,7 @@ private:
     void select_word(int);
     bool deselect();
 
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
     static void primary_get_cb(GtkClipboard*, GtkSelectionData*,
         unsigned int, void*);
     static void primary_clear_cb(GtkClipboard*, void*);

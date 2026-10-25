@@ -41,7 +41,7 @@
 #ifndef GTKDRAW_H
 #define GTKDRAW_H
 
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
 #include "gtkinterf/gtkx11.h"
 #endif
 #if GTK_CHECK_VERSION(3,0,0)
@@ -195,7 +195,7 @@ namespace gtkinterf {
 #define NUMGCS 10
         static sGbag *app_gbags[NUMGCS];
 
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
         void set_fillpattern(const GRfillType *fp) { gb_fillpattern = fp; }
         const GRfillType *get_fillpattern()     { return (gb_fillpattern); }
 #endif
@@ -212,7 +212,7 @@ namespace gtkinterf {
         GdkGC *gb_xorgc;
         GdkGC *gb_gcbak;
 #endif
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
         const GRfillType *gb_fillpattern;
 #endif
         unsigned int gb_cursor_type;

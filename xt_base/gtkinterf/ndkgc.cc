@@ -101,7 +101,7 @@ ndkGC::ndkGC(GdkWindow *window, ndkGCvalues *values,
     gc_bg_pixel             = 1;
     gc_function             = ndkGC_COPY;
 
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     gc_gc                   = 0;
     gc_screen               = 0;
     gc_dirty_mask           = 0;
@@ -157,7 +157,7 @@ ndkGC::ndkGC(GdkWindow *window, ndkGCvalues *values,
             gc_exposures = true;
     }
 
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     if (!window)
         window = gdk_get_default_root_window();
     gc_screen = gdk_window_get_screen(window);
@@ -201,7 +201,7 @@ ndkGC::ndkGC(GdkWindow *window, ndkGCvalues *values,
 
 ndkGC::~ndkGC()
 {
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     if (gc_gc)
         XFreeGC(get_xdisplay(), gc_gc);
     if (gc_pango_renderer)
@@ -308,7 +308,7 @@ ndkGC::set_values(ndkGCvalues *values, ndkGCvaluesMask values_mask)
     if (values_mask & ndkGC_EXPOSURES)
         gc_exposures = values->v_graphics_exposures;
   
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     if (gc_gc)
         gc_x11_set_values(values, values_mask);
 #endif
@@ -318,7 +318,7 @@ ndkGC::set_values(ndkGCvalues *values, ndkGCvaluesMask values_mask)
 void
 ndkGC::get_values(ndkGCvalues *values)
 {
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     if (gc_gc)
         gc_x11_get_values(values);
 #endif
@@ -549,7 +549,7 @@ ndkGC::clear(ndkPixmap *pixmap)
 // END of public methods.
 
 
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
 
 void
 ndkGC::draw_line(XID xid, int x1, int y1, int x2, int y2)
@@ -1367,7 +1367,7 @@ ndkGC::gc_update_context(cairo_t *cr, const GdkColor *override_foreground,
 }
 
 
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
 
 namespace {
     // Adapted this from _gdk_region_get_xrectangles from GDK source.
@@ -1495,7 +1495,7 @@ ndkGC::gc_windowing_copy(ndkGC *dst_gc, ndkGC *src_gc)
     dst_gc->gc_have_clip_mask = src_gc->gc_have_clip_mask;
 }
 
-#endif  // WITH_X11
+#endif  // GDK_WINDOWING_X11
 
 #endif  // GDK_IMPORTS
 

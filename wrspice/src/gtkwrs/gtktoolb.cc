@@ -68,10 +68,10 @@
 #endif
 #include <signal.h>
 
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
 #include <gdk/gdkx.h>
 #endif
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
 #include <windows.h>
 #else
 #include "../../icons/wrspice_16x16.xpm"
@@ -81,7 +81,7 @@
 
 #include <gdk/gdkkeysyms.h>
 
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
 // Reference a symbol in the resource module so the resources are linked.
 extern int ResourceModuleId;
 namespace { int dummy = ResourceModuleId; }
@@ -694,7 +694,7 @@ GTKtoolbar::PopUpToolbar(ShowMode mode, int, int)
 #endif
     GTKeditPopup::set_transient_for(GTK_WINDOW(toolbar));
 
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
     // Icons are obtained from resources.
 #else
     GList *g1 = new GList;
@@ -2217,7 +2217,7 @@ namespace {
             // Cocoa terminal.
 /* Works better without this.
 #ifdef __APPLE__
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
             if (GTKdev::self()->ConsoleXid() == 0)
 #endif
                 system(
@@ -2232,7 +2232,7 @@ namespace {
             gtk_window_set_keep_above(GTK_WINDOW(arg), false);
             gtk_window_set_accept_focus(GTK_WINDOW(arg), true);
         }
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
         // This is probably crap.
         if (GTKdev::self()->ConsoleXid() &&
                 Sp.GetVar("wmfocusfix", VTYP_BOOL, 0)) {
@@ -2274,7 +2274,7 @@ GTKtoolbar::RevertFocus(GtkWidget *widget)
 #ifdef __APPLE__
         RevertMode = RVTmac;
 #else
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
         RevertMode = RVTmsw;
 #endif
 #endif

@@ -53,7 +53,7 @@ ndkDrawable::ndkDrawable()
     d_window = 0;
     d_pixmap = 0;
     d_state = DW_NONE;
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     d_xid = None;
 #endif
 }
@@ -84,7 +84,7 @@ ndkDrawable::set_window(GdkWindow *window)
     if (window && GDK_IS_WINDOW(window)) {
         d_window = window;
         d_state = DW_WINDOW;
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
 #if GTK_CHECK_VERSION(3,0,0)
         d_xid = gdk_x11_window_get_xid(d_window);
 #else
@@ -95,7 +95,7 @@ ndkDrawable::set_window(GdkWindow *window)
     else {
         d_window = 0;
         d_state = DW_NONE;
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
         d_xid = None;
 #endif
     }
@@ -183,7 +183,7 @@ ndkDrawable::set_pixmap(ndkPixmap *pixmap)
 void
 ndkDrawable::set_draw_to_window()
 {
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     if (d_window) {
 #if GTK_CHECK_VERSION(3,0,0)
         d_xid = gdk_x11_window_get_xid(d_window);
@@ -204,7 +204,7 @@ bool
 ndkDrawable::set_draw_to_pixmap()
 {
     bool dirty = check_compatible_pixmap();
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     if (d_pixmap) {
         d_xid = d_pixmap->get_xid();
         d_state = DW_PIXMAP;

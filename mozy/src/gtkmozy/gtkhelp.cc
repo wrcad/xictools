@@ -70,7 +70,7 @@
 #include <sys/wait.h>
 #endif
 #include <fcntl.h>
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
 #include <windows.h>
 #endif
 
@@ -423,7 +423,7 @@ GTKhelpPopup::GTKhelpPopup(bool has_menu, int xpos, int ypos,
     h_fifo_name = 0;
     h_fifo_fd = -1;
     h_fifo_tid = 0;
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
     h_fifo_pipe = 0;
     h_fifo_tfiles = 0;
 #endif
@@ -2703,7 +2703,7 @@ GTKhelpPopup::register_fifo(const char *fname)
         fname = MOZY_FIFO;
         
     bool ret = false;
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
     if (fname)
         fname = lstring::strip_path(fname);
     sLstr lstr;
@@ -2790,7 +2790,7 @@ GTKhelpPopup::unregister_fifo()
         h_fifo_tid = 0;
     }
     if (h_fifo_name) {
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
         unlink(h_fifo_name);
         delete [] h_fifo_name;
         h_fifo_name = 0;
@@ -2807,7 +2807,7 @@ GTKhelpPopup::unregister_fifo()
         h_fifo_name = 0;
 #endif
     }
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
     stringlist *sl = h_fifo_tfiles;
     h_fifo_tfiles = 0;
     while (sl) {
@@ -2821,7 +2821,7 @@ GTKhelpPopup::unregister_fifo()
 }
 
 
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
 
 // Static function.
 // Thread procedure to listen on the named pipe.
@@ -2884,7 +2884,7 @@ GTKhelpPopup::fifo_check_proc(void *arg)
     if (!hw)
         return (0);
 
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
     if (hw->h_fifo_tfiles) {
         stringlist *sl = hw->h_fifo_tfiles;
         hw->h_fifo_tfiles = sl->next;

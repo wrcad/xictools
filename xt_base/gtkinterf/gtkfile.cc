@@ -56,7 +56,7 @@
 #ifdef HAVE_FNMATCH_H
 #include <fnmatch.h>
 #else
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
 // This is in the mingw library, but there is no prototype.
 extern "C" { extern int fnmatch(const char*, const char*, int); }
 #endif
@@ -338,7 +338,7 @@ namespace {
     // Return the name of the current root directory.
     const char *cur_root()
     {
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
         static char *msw_curdir;
 
         // In Windows, this can be a drive letter followed by a colon
@@ -374,7 +374,7 @@ namespace {
     //
     bool is_root(const char *dir)
     {
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
         if (isalpha(dir[0]) && dir[1] == ':') {
             if (!dir[2])
                 return (true);
@@ -402,7 +402,7 @@ namespace {
     //
     void fix_root(char **p)
     {
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
         char *dir = *p;
         if (isalpha(dir[0]) && dir[1] == ':') {
             if (!dir[2]) {
@@ -1521,7 +1521,7 @@ namespace {
         char *root = *p;
         if (lstring::is_dirsep(root[0]) && !root[1])
             return;
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
         if (isalpha(root[0]) && root[1] == ':' &&
                 lstring::is_dirsep(root[2]) && !root[3])
             return;
@@ -1597,7 +1597,7 @@ is_match(stringlist *s0, const char *fname)
 {
     if (!s0)
         return (true);
-#if defined(HAVE_FNMATCH_H) || defined(WIN32)
+#if defined(HAVE_FNMATCH_H) || defined(GDK_WINDOWING_WIN32)
     for (stringlist *s = s0; s; s = s->next) {
         if (!fnmatch(s->string, fname, 0))
             return (true);
@@ -2897,7 +2897,7 @@ GTKfilePopup::fs_new_cb(const char *string, void *arg)
         data->fs->PopUpMessage("Invalid name.", true);
     else {
         char *dir = fs_make_dir(data->string, string);
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
         if (mkdir(dir) != 0)
 #else
         if (mkdir(dir, 0755) != 0)
@@ -3205,7 +3205,7 @@ namespace {
         delete [] tok;
         if (nt)
             lstr.add_c('"');
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
         for (p = path; *p; p++) {
             if (*p == '/')
                 lstr.add_c('\\');
@@ -3255,7 +3255,7 @@ gtkinterf::gtk_DoFileAction(GtkWidget *shell, const char *src, const char *dst,
     switch (gdk_drag_context_get_suggested_action(context)) {
     default:
     case GDK_ACTION_COPY:
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
         lstr.add("xcopy ");
 #else
         lstr.add("cp ");
@@ -3265,7 +3265,7 @@ gtkinterf::gtk_DoFileAction(GtkWidget *shell, const char *src, const char *dst,
         add_path(lstr, src);
         lstr.add_c(' ');
         add_path(lstr, dst);
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
         lstr.add(" /y /q");
         if (isdir)
             lstr.add(" /s /e");
@@ -3275,7 +3275,7 @@ gtkinterf::gtk_DoFileAction(GtkWidget *shell, const char *src, const char *dst,
         doit(lstr);
         break;
     case GDK_ACTION_MOVE:
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
         lstr.add("move /y ");
 #else
         lstr.add("mv ");
@@ -3288,7 +3288,7 @@ gtkinterf::gtk_DoFileAction(GtkWidget *shell, const char *src, const char *dst,
         doit(lstr);
         break;
     case GDK_ACTION_LINK:
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
         lstr.add("mklink ");
         if (isdir)
             lstr.add("/D ");

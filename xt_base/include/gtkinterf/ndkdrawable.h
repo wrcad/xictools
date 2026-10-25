@@ -62,7 +62,7 @@ struct ndkDrawable
     GdkWindow *get_window()         { return (d_window); }
     ndkPixmap *get_pixmap()         { return (d_pixmap); }
     DW_STATE get_state()            { return (d_state); }
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     Drawable get_xid()              { return (d_xid); }
 #endif
 
@@ -89,7 +89,7 @@ private:
     GdkWindow *d_window;
     ndkPixmap *d_pixmap;
 
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     Window d_xid;
 #endif
     DW_STATE d_state;

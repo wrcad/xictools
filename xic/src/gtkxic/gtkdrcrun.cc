@@ -51,7 +51,7 @@
 #include "promptline.h"
 #include "gtkmain.h"
 #include "gtkinterf/gtkspinbtn.h"
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
 #include "windows.h"
 #endif
 #include <signal.h>
@@ -905,7 +905,7 @@ sDC::dc_action_proc(GtkWidget *caller, void*)
     else if (!strcmp(name, "abort")) {
         int pid = DC->get_pid();
         if (pid > 0) {
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
             HANDLE h = OpenProcess(PROCESS_TERMINATE, 0, pid);
             TerminateProcess(h, 1);
 #else

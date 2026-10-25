@@ -1058,7 +1058,7 @@ gtk_viewer::tk_pixmap_from_info(htmImage *image, htmImageInfo *info,
         int y = i/wid;
         int x = i%wid;
         unsigned int px = color_map[info->data[i]];
-#ifdef WITH_QUARTZ
+#ifdef GDK_WINDOWING_QUARTZ
         // Hmmmm, seems that Quartz requires byte reversal.
         unsigned int qpx;
         unsigned char *c1 = ((unsigned char*)&px) + 3;
@@ -1174,7 +1174,7 @@ gtk_viewer::tk_fill_image(htmXImage *ximage, unsigned char *data,
         int y = i/wid;
         int x = i%wid;
         unsigned int px = color_map[data[i]];
-#ifdef WITH_QUARTZ
+#ifdef GDK_WINDOWING_QUARTZ
         // Hmmmm, seems that Quartz requires byte reversal.
         unsigned int qpx;
         unsigned char *c1 = ((unsigned char*)&px) + 3;
@@ -1429,7 +1429,7 @@ gtk_viewer::tk_tile_draw_pixmap(int org_x, int org_y, htmPixmap *pm,
     if (!GDK_IS_PIXMAP(pm))
 #endif
         return;
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
     // The GC tiling feature is not supported in the Windows GTK2
     // port.
 
@@ -2454,7 +2454,7 @@ gtk_range_set_range(GTK_RANGE(vsb), 0.0,
         int x = htm_viewarea.x;
         int y = htm_viewarea.y;
         htmWidget::resize();
-#ifndef WIN32
+#ifndef GDK_WINDOWING_WIN32
         // This hangs up badly in MSW for some reason.
         if (gtk_widget_get_realized(v_draw_area)) {
             // Flush the redraw queue.  If this isn't done, scrollbars
@@ -2481,7 +2481,7 @@ gtk_viewer::form_resize_handler(GtkAllocation*)
     int x = htm_viewarea.x;
     int y = htm_viewarea.y;
     htmWidget::resize();
-#ifndef WIN32
+#ifndef GDK_WINDOWING_WIN32
     // This hangs up badly in MSW for some reason.
     if (gtk_widget_get_realized(v_draw_area)) {
         // Flush the redraw queue.  If this isn't done, scrollbars
@@ -2681,7 +2681,7 @@ gtk_viewer::selection_get_handler(GtkWidget*,
         gtk_selection_data_set(data, GDK_SELECTION_TYPE_STRING,
             8*sizeof(char), (unsigned char*)str, length);
     }
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     else if (info == TARGET_TEXT || info == TARGET_COMPOUND_TEXT) {
 
         GdkAtom encoding;

@@ -132,7 +132,7 @@ cParam::cParam() : GTKdraw(XW_TEXT)
         G_CALLBACK(readout_motion_hdlr), 0);
     gtk_selection_add_targets(Viewport(), GDK_SELECTION_PRIMARY, targets,
         n_targets);
-#ifndef WIN32
+#ifndef GDK_WINDOWING_WIN32
     g_signal_connect(G_OBJECT(Viewport()), "selection-clear-event",
         G_CALLBACK(readout_selection_clear), 0);
     g_signal_connect(G_OBJECT(Viewport()), "selection-get",
@@ -364,7 +364,7 @@ cParam::select(int x1, int x2)
                 if (xo2 > xend)
                     xend = xo2;
             }
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
             // For some reason the owner_set code doesn't work in
             // Windows.
 
@@ -400,7 +400,7 @@ cParam::select_word(int x)
     if (p_text.select_word(x)) {
         unsigned int xstart, xend;
         if (p_text.has_sel(&xstart, &xend)) {
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
             // For some reason the owner_set code doesn't work in
             // Windows.
 
@@ -440,7 +440,7 @@ cParam::deselect()
 }
 
 
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
 // Static function.
 void
 cParam::primary_get_cb(GtkClipboard*, GtkSelectionData *data,

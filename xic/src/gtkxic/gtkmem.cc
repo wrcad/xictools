@@ -57,7 +57,7 @@
 #ifdef HAVE_SYS_RESOURCE_H
 #include <sys/resource.h>
 #else
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
 #include <windows.h>
 #endif
 #endif
@@ -327,7 +327,7 @@ sMem::update()
         Text(str, x, y, 0);
     }
 #else
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
     MEMORYSTATUS mem;
     memset(&mem, 0, sizeof(MEMORYSTATUS));
     mem.dwLength = sizeof(MEMORYSTATUS);

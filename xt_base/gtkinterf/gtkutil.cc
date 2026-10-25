@@ -62,10 +62,10 @@
 #endif
 
 #include <gdk/gdkkeysyms.h>
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
 #include <X11/Xproto.h>
 #else
-#ifdef WIN32
+#ifdef GDK_WINDOWING_X11
 #include <gdk/gdkwin32.h>
 #endif
 #endif
@@ -2309,7 +2309,7 @@ gtkinterf::gtk_Btn1MoveHdlr(GtkWidget *caller, GdkEvent *event, void*)
 int
 gtkinterf::gtk_ToTop(GtkWidget *caller, GdkEvent *event, void *client_data)
 {
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     // Warning, dragons here.  The parent widget (overshell) might have
     // just been deleted, and the pointer is trash.
 

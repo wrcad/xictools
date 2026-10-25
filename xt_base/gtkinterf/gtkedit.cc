@@ -52,7 +52,7 @@
 #include "miscutil/filestat.h"
 #include "miscutil/timer.h"
 #include "miscutil/encode.h"
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
 #include "miscutil/msw.h"
 #endif
 
@@ -252,7 +252,7 @@ GTKbag::PopUpMail(const char *subject, const char *mailaddr,
 }
 // End of GTKbag functions
 
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
 namespace {
     void crlf_proc(GtkWidget *w, void*)
     {
@@ -418,7 +418,7 @@ GTKeditPopup::GTKeditPopup(GTKbag *owner, GTKeditPopup::WidgetType type,
             GTK_ACCEL_VISIBLE);
     }
 
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
     if (ed_widget_type == Editor) {
         item = gtk_check_menu_item_new_with_mnemonic("_Write CRLF");
         gtk_widget_show(item);
@@ -856,7 +856,7 @@ GTKeditPopup::write_file(const char *fname, int startpos, int endpos)
         int length = text_get_length(wb_textarea);
         if (endpos >= 0 && endpos < length)
             length = endpos;
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
         char lastc = 0;
 #endif
         int start = startpos;
@@ -867,7 +867,7 @@ GTKeditPopup::write_file(const char *fname, int startpos, int endpos)
             if (end == start)
                 break;
             char *s = text_get_chars(wb_textarea, start, end);
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
             for (int i = 0; i < (end - start); i++) {
                 if (!GTKdev::self()->GetCRLFtermination()) {
                     if (s[i] == '\r' && s[i+1] == '\n') {
@@ -1285,7 +1285,7 @@ GTKeditPopup::ed_mail_proc(GtkWidget*, void *client_data)
 
     char *body = text_get_chars(w->wb_textarea, 0, -1);
 
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
     int anum = 0;
     const char **attach_ary = 0;
     GtkWidget *menubar =

@@ -276,7 +276,7 @@ GTKedit::GTKedit(bool nogr) : GTKdraw(XW_TEXT)
     // selections
     gtk_selection_add_targets(gd_viewport, GDK_SELECTION_PRIMARY, sel_targets,
         n_sel_targets);
-#ifndef WIN32
+#ifndef GDK_WINDOWING_WIN32
     g_signal_connect(G_OBJECT(gd_viewport), "selection-clear-event",
         G_CALLBACK(pe_selection_clear), 0);
     g_signal_connect(G_OBJECT(gd_viewport), "selection-get",
@@ -566,7 +566,7 @@ GTKedit::check_pixmap()
 }
 
 
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
 namespace {
     void primary_get_cb(GtkClipboard*, GtkSelectionData *data,
         unsigned int, void*)
@@ -595,7 +595,7 @@ void
 GTKedit::init_selection(bool selected)
 {
     if (selected) {
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
         // For some reaon the owner_set code doesn't work in
         // Windows.
 
@@ -817,7 +817,7 @@ GTKedit::pe_resize_hdlr(GtkWidget*, GdkEvent *event, void*)
 }
 
 
-#ifdef WITH_QUARTZ
+#ifdef GDK_WINDOWING_QUARTZ
 
 // Static function.
 // Redraw callback.

@@ -49,10 +49,10 @@
 #include "gtkmain.h"
 
 #include <gdk/gdkkeysyms.h>
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
 #include "gtkinterf/gtkx11.h"
 #else
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
 #include <windows.h>
 #endif
 #endif
@@ -239,7 +239,7 @@ char *
 cKbMacro::keyText(unsigned key, unsigned state)
 {
     static char text[8];
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
     if (gr_x_display()) {
         XKeyEvent kev;
         memset(&kev, 0, sizeof(XKeyEvent));
@@ -252,7 +252,7 @@ cKbMacro::keyText(unsigned key, unsigned state)
         text[n] = 0;
     }
 #else
-#ifdef WIN32
+#ifdef GDK_WINDOWING_WIN32
     unsigned char kstate[256];
     memset(kstate, 0, 256);
     if (state & GR_CONTROL_MASK)

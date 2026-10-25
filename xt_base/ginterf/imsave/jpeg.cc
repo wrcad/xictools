@@ -57,7 +57,7 @@
  * (Rasterdude :-) <raster@redhat.com>)
  *------------------------------------------------------------------------*/
 
-#include "imsave.h"
+#include "ginterf/imsave/imsave.h"
 
 #ifdef HAVE_LIBJPEG
 #include <stdio.h>

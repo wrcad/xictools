@@ -54,9 +54,7 @@
 
 #include "httpget/transact.h"
 #include <gtk/gtk.h>
-#ifdef WITH_X11
 #include <gdk/gdkx.h>
-#endif
 #include <setjmp.h>
 #include <stdlib.h>
 #include <string.h>
@@ -159,7 +157,7 @@ struct grbits : public http_monitor
 
     void setup_comm(cComm *comm)
         {
-#ifdef WITH_X11
+#ifdef GDK_WINDOWING_X11
             comm->comm_set_gfd(ConnectionNumber(gdk_display), event_cb);
 #else
             comm->comm_set_gfd(-1, event_cb);

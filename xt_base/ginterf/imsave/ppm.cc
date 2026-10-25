@@ -57,7 +57,7 @@
  * (Rasterdude :-) <raster@redhat.com>)
  *------------------------------------------------------------------------*/
 
-#include "imsave.h"
+#include "ginterf/imsave/imsave.h"
 #include <stdio.h>
 #include <string.h>
 #include <setjmp.h>
