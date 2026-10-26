@@ -72,9 +72,9 @@ help/xform.xpm
 help/xor.xpm
 include/reltag.h
 lib
-plugins/py27.dylib
-plugins/py27.so
-plugins/py27.dll
+plugins/py.dylib
+plugins/py.so
+plugins/py.dll
 plugins/tcl.dylib
 plugins/tcl.so
 plugins/tcl.dll

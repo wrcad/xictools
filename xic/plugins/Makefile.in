@@ -33,21 +33,13 @@ CCFILES = \
   py.cc tcltk.cc
 CCOBJS = $(CCFILES:.cc=.o)
 
-TARGETS : @PY_TARGETS@ tcltk.$(SOEXT) tcl.$(SOEXT)
+TARGETS : py.$(SOEXT)  tcltk.$(SOEXT) tcl.$(SOEXT)
 
 DARGS = -DOSNAME="\"$(OSNAME)\""
 
-py26.$(SOEXT) : py.o
-	@echo py26.$(SOEXT): linking
-	@$(CXX) $(LSHFLAG) -o py26.$(SOEXT) py.o $(PY_LIBS)
-
-py27.$(SOEXT) : py.o
-	@echo py27.$(SOEXT): linking
-	@$(CXX) $(LSHFLAG) -o py27.$(SOEXT) py.o $(PY_LIBS)
-
-py.o: py.cc
-	$(CXX) $(CFLAGS) $(DARGS) $(PIC_OPT) $(INCLUDE) $(PY_INCLUDE) \
-  -c py.cc
+py.$(SOEXT) : py.o
+	@echo py.$(SOEXT): linking
+	@$(CXX) $(LSHFLAG) -o py.$(SOEXT) py.o $(PY_LIBS)
 
 tcltk.$(SOEXT) : tcltk.o
 	@echo tcltk.$(SOEXT): linking
@@ -56,6 +48,10 @@ tcltk.$(SOEXT) : tcltk.o
 tcl.$(SOEXT) : tcl.o
 	@echo tcl.$(SOEXT): linking
 	@$(CXX) $(LSHFLAG) -o tcl.$(SOEXT) tcl.o $(TCL_LIBS)
+
+py.o: py.cc
+	$(CXX) $(CFLAGS) $(DARGS) $(PIC_OPT) $(INCLUDE) $(PY_INCLUDE) \
+  -c py.cc
 
 tcltk.o: tcltk.cc
 	$(CXX) $(CFLAGS) $(DARGS) $(PIC_OPT) $(INCLUDE) $(TCL_INCLUDE) \

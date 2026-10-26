@@ -105,37 +105,18 @@ namespace {
             sLstr lstr;
             lstr.add(XM()->ProgramRoot());
             lstr.add("/plugins/");
-            lstr.add("py27.");
+            lstr.add("py.");
 #ifdef __APPLE__
             lstr.add("dylib");
 #else
             lstr.add("so");
 #endif
-            path = lstr.string_trim();    // py27.so
+            path = lstr.string_trim();    // py.so
         }
 
         cPy_base *py = open_py(path);
         if (py) {
-            // found py27
-            if (lname)
-                *lname = lstring::copy(lstring::strip_path(path));
-            delete [] path;
-            return (py);
-        }
-        char *t = strrchr(path, '.');
-        *--t = '6';
-        py = open_py(path);
-        if (py) {
-            // found py26
-            if (lname)
-                *lname = lstring::copy(lstring::strip_path(path));
-            delete [] path;
-            return (py);
-        }
-        t = strrchr(path, '.');
-        *--t = '4';
-        if (py) {
-            // found py24
+            // found py
             if (lname)
                 *lname = lstring::copy(lstring::strip_path(path));
             delete [] path;

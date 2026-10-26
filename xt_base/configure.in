@@ -1033,11 +1033,11 @@ dnl *** Python and Tcl/Tk configuration
 dnl ***
 
 if test $OSNAME = "Darwin"; then
-dnl *** Apple prevents us from linking to python27 within the platform.
-dnl *** We now include a skeletal python27 in the gtk2-bundle.
-    PY_INCLUDE=-I/opt/local/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7
-    PY_LIBS="-L/opt/local/lib -lpython2.7"
-    PY_TARGETS="py27.dylib"
+    #PY_INCLUDE=-I/opt/local/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7
+    #PY_LIBS="-L/opt/local/lib -lpython2.7"
+    frmw39="/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9"; \
+    PY_INCLUDE="-I$frmw39/Headers"; \
+    PY_LIBS="-L$frmw39/lib -lpython3.9"; \
     echo '#define HAVE_PYTHON 1'>> confdefs.h
     if test -f /usr/include/tcl.h; then
         TCL_INCLUDE=
@@ -1053,17 +1053,31 @@ elif test ${OSNAME:0:5} = "Linux"; then
     if test [ $with_cni == yes ]; then
         PY_INCLUDE="-I$cni_loc/linux64/3rd/Python/include/python2.6"
         PY_LIBS="-L$cni_loc/linux64/3rd/Python/lib -lpython2.6"
-        PY_TARGETS="py26.so"
+        echo '#define HAVE_PYTHON 1'>> confdefs.h
+    elif test -f /usr/include/python3.9/Python.h; then
+        // Alma 9
+        PY_INCLUDE="-I/usr/include/python3.9"
+        PY_LIBS="-lpython3.9"
+        echo '#define HAVE_PYTHON 1'>> confdefs.h
+    elif test -f /usr/include/python3.14/Python.h; then
+        // Ubuntu 26
+        PY_INCLUDE="-I/usr/include/python3.14"
+        PY_LIBS="-lpython3.14"
+        echo '#define HAVE_PYTHON 1'>> confdefs.h
+    elif test -f /usr/include/python3.13/Python.h; then
+        // OpenSUsE 16
+        PY_INCLUDE="-I/usr/include/python3.13"
+        PY_LIBS="-lpython3.13"
+        echo '#define HAVE_PYTHON 1'>> confdefs.h
+    elif test -f /usr/include/python3.12/Python.h; then
+        // Alma 8
+        PY_INCLUDE="-I/usr/include/python3.12"
+        PY_LIBS="-lpython3.12"
         echo '#define HAVE_PYTHON 1'>> confdefs.h
     elif test -f /usr/include/python2.7/Python.h; then
+        // Alma 8
         PY_INCLUDE="-I/usr/include/python2.7"
         PY_LIBS="-lpython2.7"
-        PY_TARGETS="py27.so"
-        echo '#define HAVE_PYTHON 1'>> confdefs.h
-    elif test -f /usr/include/python2.6/Python.h; then
-        PY_INCLUDE="-I/usr/include/python2.6"
-        PY_LIBS="-lpython2.6"
-        PY_TARGETS="py26.so"
         echo '#define HAVE_PYTHON 1'>> confdefs.h
     fi
     if test -f /usr/include/tcl.h; then
@@ -1101,7 +1115,6 @@ if test -n "$tklib"; then
     TK_LIBS="$tklib"
 fi
 
-AC_SUBST(PY_TARGETS)
 AC_SUBST(PY_INCLUDE)
 AC_SUBST(PY_LIBS)
 AC_SUBST(TCL_INCLUDE)
