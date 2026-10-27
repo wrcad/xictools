@@ -55,11 +55,10 @@
 
 // This is for the Xrm stuff
 #ifdef WITH_X11
-#include <gdk/gdkprivate.h>
-#include "gtkinterf/gtkx11.h"
-#include <X11/Xresource.h>
 #ifdef HAVE_PWD_H
+#include <X11/Xresource.h>
 #include <pwd.h>
+#define USE_XRM
 #endif
 #endif
 
@@ -138,13 +137,39 @@ QTtoolbar::UpdateColors(const char *s)
 //=========================================================================
 //
 // Xrm interface functions - deprecated
+//
+
+#ifdef USE_XRM
+namespace {
+    Display *x_dsp;
+
+    Display *x_display()
+    {
+        if (!x_dsp) {
+            x_dsp = XOpenDisplay(nullptr);
+            if (!x_dsp) {
+                x_dsp = (Display*)(intptr_t)-1;
+                GRpkg::self()->ErrPrintf(ET_ERROR, "X system not available.\n");
+            }
+        }
+        if (x_dsp == (Display*)(intptr_t)-1)
+            return (nullptr);
+        return (x_dsp);
+    }
+}
+#endif
+
 
 // Called from SetDefaultColors() in grsetup.cc.
 //
 void
 QTtoolbar::LoadResourceColors()
 {
-#ifdef WITH_X11
+#ifdef USE_XRM
+    Display *dsp = x_display();
+    if (!dsp)
+        return;
+
     // load resource values into DefColorNames
     static bool doneit;
     if (!doneit) {
@@ -160,7 +185,7 @@ QTtoolbar::LoadResourceColors()
                     return;
             }
             XrmDatabase rdb = XrmGetFileDatabase(buf);
-            XrmSetDatabase(gr_x_display(), rdb);
+            XrmSetDatabase(dsp, rdb);
         }
     }
 
@@ -176,7 +201,7 @@ QTtoolbar::LoadResourceColors()
         *clss = toupper(*clss);
     char *n = name + strlen(name);
     char *c = clss + strlen(clss);
-    XrmDatabase db = XrmGetDatabase(gr_x_display());
+    XrmDatabase db = XrmGetDatabase(dsp);
     for (int i = 0; i < NUMPLOTCOLORS; i++) {
         snprintf(n, 4, "%d", i);
         snprintf(c, 4, "%d", i);
@@ -204,8 +229,11 @@ QTtoolbar::LoadResourceColors()
 const char*
 QTtoolbar::XRMgetFromDb(const char *rname)
 {
-#ifdef WITH_X11
-    XrmDatabase database = XrmGetDatabase(gr_x_display());
+#ifdef USE_XRM
+    Display *dsp = x_display();
+    if (!dsp)
+        return (0);
+    XrmDatabase database = XrmGetDatabase(dsp);
     if (!database)
         return (0);
     const char *s = strrchr(CP.Program(), '/');
@@ -241,13 +269,12 @@ QTtoolbar::XRMgetFromDb(const char *rname)
 void
 CommandTab::com_setrdb(wordlist *wl)
 {
-#ifdef WITH_X11
-    if (!CP.Display()) {
-        GRpkg::self()->ErrPrintf(ET_ERROR, "X system not available.\n");
+#ifdef USE_XRM
+    Display *dsp = x_display();
+    if (!dsp)
         return;
-    }
     char *str = wordlist::flatten(wl);
-    XrmDatabase db = XrmGetDatabase(gr_x_display());
+    XrmDatabase db = XrmGetDatabase(dsp);
     CP.Unquote(str);
     XrmPutLineResource(&db, str);
     TB()->UpdateColors(str);

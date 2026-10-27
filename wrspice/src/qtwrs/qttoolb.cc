@@ -482,7 +482,7 @@ QTtoolbar::RegisterBigForeignWindow(unsigned int w)
 {
 #ifdef WITH_X11
     if (QTdev::exists())
-        QTdev::self()->RegisterBigForeignWindow(w);
+        TB()->RegisterBigForeignWindow(w);
 #else
     (void)w;
 #endif

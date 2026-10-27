@@ -39,12 +39,17 @@
  *========================================================================*/
 
 #include "config.h"
-#undef HAVE_STAT // Clash in Python!
 
 #ifdef HAVE_PYTHON
+#define FOR_PY3
 
+
+#ifndef FOR_PY3
+// Assume python2.7
+#undef HAVE_STAT // Clash in Python!
 // Get rid ot this storage class in Python.h.
 #define register
+#endif
 
 #include <Python.h>
 #include <setjmp.h>
@@ -57,9 +62,11 @@
 #include "py_base.h"
 #include "reltag.h"
 
-class cPy *Py();
-
+#ifndef FOR_PY3
 #define Py_ssize_t ssize_t
+#endif
+
+class cPy *Py();
 
 class cPy : public cPy_base
 {
@@ -82,7 +89,6 @@ private:
     PyObject *wrap_setjmp(PyObject*, PyObject*);
     static PyObject *eval(PyObject*, PyObject*);
 
-    PyMethodDef *methods;
     const char *idstr;
     int level;
     int exit_status;
@@ -109,7 +115,6 @@ cPy *cPy::ptr = 0;
 
 cPy::cPy()
 {
-    methods = 0;
     idstr = OSNAME " " XIC_RELEASE_TAG;
     level = 0;
     exit_status = 0;
@@ -135,17 +140,29 @@ namespace {
         sLstr lstr;
         for (int i = 0; i < sz; i++) {
             PyObject *o = PyTuple_GetItem(args, i);
+#ifdef FOR_PY3
+            if (PyBytes_Check(o)) {
+#else
             if (PyString_Check(o)) {
+#endif
                 if (lstr.string())
                     lstr.add_c(' ');
+#ifdef FOR_PY3
+                lstr.add(PyBytes_AsString(o));
+#else
                 lstr.add(PyString_AsString(o));
+#endif
             }
             else {
                 PyObject *pstr = PyObject_Str(o);
                 if (pstr) {
                     if (lstr.string())
                         lstr.add_c(' ');
+#ifdef FOR_PY3
+                    lstr.add(PyBytes_AsString(pstr));
+#else
                     lstr.add(PyString_AsString(pstr));
+#endif
                     Py_DECREF(pstr);
                 }
                 else
@@ -165,6 +182,41 @@ namespace {
         { (char*)"write", write, METH_VARARGS, 0 },
         { 0, 0, 0, 0 }
     };
+
+    PyMethodDef *methods;
+
+#ifdef FOR_PY3
+    static struct PyModuleDef xicerr = {
+        PyModuleDef_HEAD_INIT,
+        ERRMOD_NAME,   // name of module
+        NULL,          // module documentation, may be NULL
+        -1,            // size of per-interpreter state of the module, or -1
+                       // if the module keeps state in global variables.
+        mdef,
+        NULL, NULL, NULL, NULL
+    };
+
+    // Initialize using PyInit_<name> and PyModule_Create.
+    PyMODINIT_FUNC PyInit_xicerr(void) {
+        return PyModule_Create(&xicerr);
+    }
+
+    // Define the module structure.
+    static struct PyModuleDef xic = {
+        PyModuleDef_HEAD_INIT,
+        MODULE_NAME,   // name of module
+        NULL,          // module documentation, may be NULL
+        -1,            // size of per-interpreter state of the module, or -1
+                       // if the module keeps state in global variables.
+        methods,
+        NULL, NULL, NULL, NULL
+    };
+
+    // Initialize using PyInit_<name> and PyModule_Create.
+    PyMODINIT_FUNC PyInit_xic(void) {
+        return PyModule_Create(&xic);
+    }
+#endif
 }
 
 
@@ -215,6 +267,54 @@ cPy::init(SymTab *tab)
         methods[cnt].ml_doc = 0;
     }
 
+#ifdef FOR_PY3
+    // Initialize a default Python configuration.
+    PyConfig config;
+    PyConfig_InitPythonConfig(&config);
+
+    // Set the program_name field in the PyConfig struct.
+    char appname[] = PROGRAM_NAME;
+    PyStatus status =
+        PyConfig_SetBytesString(&config, &config.program_name, appname);
+    if (PyStatus_Exception(status)) {
+        PyConfig_Clear(&config);
+        PyErr_Print();
+        PyErr_Clear();
+        Errs()->add_error("PyConfig_SetString generated exception.");
+        return (false);
+    }
+
+    // Initialize Python with the custom configuration.
+    status = Py_InitializeFromConfig(&config);
+    if (PyStatus_Exception(status)) {
+        PyConfig_Clear(&config);
+        PyErr_Print();
+        PyErr_Clear();
+        Errs()->add_error("Py_InitializeFromConfig generated exception.");
+        return (false);
+    }
+
+    // Clean up the config structure.
+    PyConfig_Clear(&config);
+
+    PyInit_xicerr();
+    if (PyErr_Occurred()) {
+        PyErr_Print();
+        PyErr_Clear();
+        Errs()->add_error("Py_InitModule generated exception.");
+        return (false);
+    }
+
+    PyInit_xic();
+    if (PyErr_Occurred()) {
+        PyErr_Print();
+        PyErr_Clear();
+        Errs()->add_error("Py_InitModule generated exception.");
+        return (false);
+    }
+
+#else
+    // Define the module structure.
     char appname[] = PROGRAM_NAME;
     Py_SetProgramName(appname);
     Py_Initialize();
@@ -238,6 +338,7 @@ cPy::init(SymTab *tab)
         Errs()->add_error("Py_InitModule generated exception.");
         return (false);
     }
+#endif
     return (true);
 }
 
@@ -257,7 +358,11 @@ cPy::run(int argc, char **argv)
         if (!setjmp(jbuf)) {
             level++;
             SI()->PushLexprCx();
+#ifdef FOR_PY3
+            ret = Py_BytesMain(argc, argv);
+#else
             ret = Py_Main(argc, argv);
+#endif
             SI()->PopLexprCx();
             level--;
         }
@@ -281,7 +386,11 @@ cPy::run(int argc, char **argv)
     else {
         level++;
         SI()->PushLexprCx();
+#ifdef FOR_PY3
+        ret = Py_BytesMain(argc, argv);
+#else
         ret = Py_Main(argc, argv);
+#endif
         SI()->PopLexprCx();
         level--;
     }
@@ -374,9 +483,17 @@ namespace {
         if (v->type == TYP_STRING || v->type == TYP_NOTYPE) {
             if (!v->content.string)
                 // Return int 0 instead
+#ifdef FOR_PY3
+                *pret = PyLong_FromLong(0);
+#else
                 *pret = PyInt_FromLong(0);
+#endif
             else
+#ifdef FOR_PY3
+                *pret = PyBytes_FromString(v->content.string);
+#else
                 *pret = PyString_FromString(v->content.string);
+#endif
             return (0);
         }
         if (v->type == TYP_SCALAR) {
@@ -397,15 +514,28 @@ namespace {
             Zlist *zl = v->content.zlist;
             int len = Zlist::length(zl);
             PyObject *list = PyList_New(len + 1);
+#ifdef FOR_PY3
+            PyList_SetItem(list, 0, PyBytes_FromString("zlist"));
+#else
             PyList_SetItem(list, 0, PyString_FromString("zlist"));
+#endif
             for (int i = 1; i <= len; i++) {
                 PyObject *lz = PyList_New(6);
+#ifdef FOR_PY3
+                PyList_SetItem(lz, 0, PyLong_FromLong(zl->Z.xll));
+                PyList_SetItem(lz, 1, PyLong_FromLong(zl->Z.xlr));
+                PyList_SetItem(lz, 2, PyLong_FromLong(zl->Z.yl));
+                PyList_SetItem(lz, 3, PyLong_FromLong(zl->Z.xul));
+                PyList_SetItem(lz, 4, PyLong_FromLong(zl->Z.xur));
+                PyList_SetItem(lz, 5, PyLong_FromLong(zl->Z.yu));
+#else
                 PyList_SetItem(lz, 0, PyInt_FromLong(zl->Z.xll));
                 PyList_SetItem(lz, 1, PyInt_FromLong(zl->Z.xlr));
                 PyList_SetItem(lz, 2, PyInt_FromLong(zl->Z.yl));
                 PyList_SetItem(lz, 3, PyInt_FromLong(zl->Z.xul));
                 PyList_SetItem(lz, 4, PyInt_FromLong(zl->Z.xur));
                 PyList_SetItem(lz, 5, PyInt_FromLong(zl->Z.yu));
+#endif
                 PyList_SetItem(list, i, lz);
             }
             *pret = list;
@@ -425,14 +555,26 @@ namespace {
                     len += stringlist::length(s0);
                 }
                 PyObject *list = PyList_New(len);
+#ifdef FOR_PY3
+                PyList_SetItem(list, 0, PyBytes_FromString("xic_handle"));
+#else
                 PyList_SetItem(list, 0, PyString_FromString("xic_handle"));
+#endif
+#ifdef FOR_PY3
+                PyList_SetItem(list, 1, PyLong_FromLong(id));
+#else
                 PyList_SetItem(list, 1, PyInt_FromLong(id));
+#endif
                 if (hdl->type == HDLstring) {
                     stringlist *s0 = (stringlist*)hdl->data;
                     int cnt = 2;
                     for (stringlist *sl = s0; sl; sl = sl->next) {
                         PyList_SetItem(list, cnt,
+#ifdef FOR_PY3
+                            PyBytes_FromString(sl->string));
+#else
                             PyString_FromString(sl->string));
+#endif
                         cnt++;
                     }
                 }
@@ -440,8 +582,16 @@ namespace {
             }
             else {
                 PyObject *list = PyList_New(2);
+#ifdef FOR_PY3
+                PyList_SetItem(list, 0, PyBytes_FromString("xic_handle"));
+#else
                 PyList_SetItem(list, 0, PyString_FromString("xic_handle"));
+#endif
+#ifdef FOR_PY3
+                PyList_SetItem(list, 1, PyLong_FromLong(0));
+#else
                 PyList_SetItem(list, 1, PyInt_FromLong(0));
+#endif
                 *pret = list;
             }
             return (0);
@@ -484,8 +634,13 @@ namespace {
     //
     const char *obj_to_var(PyObject *pval, Variable *v)
     {
+#ifdef FOR_PY3
+        if (PyBytes_Check(pval)) {
+            const char *str = PyBytes_AsString(pval);
+#else
         if (PyString_Check(pval)) {
             const char *str = PyString_AsString(pval);
+#endif
             v->type = TYP_STRING;
             v->content.string = lstring::copy(str);
             v->flags |= VF_ORIGINAL;
@@ -509,8 +664,13 @@ namespace {
             v->content.value = b ? 1.0 : 0.0;
             return (0);
         }
+#ifdef FOR_PY3
+        if (PyLong_Check(pval)) {
+            long l = PyLong_AsLong(pval);
+#else
         if (PyInt_Check(pval)) {
             long l = PyInt_AsLong(pval);
+#endif
             v->type = TYP_SCALAR;
             v->content.value = (double)l;
             return (0);
@@ -518,8 +678,13 @@ namespace {
         if (PyList_Check(pval)) {
             PyObject *o = PyList_GetItem(pval, 0);
             Py_ssize_t size = PyList_Size(pval);
+#ifdef FOR_PY3
+            if (PyBytes_Check(o)) {
+                const char *str = PyBytes_AsString(o);
+#else
             if (PyString_Check(o)) {
                 const char *str = PyString_AsString(o);
+#endif
                 if (str && !strcmp(str, "zlist")) {
                     // This is a zlist, the remaining elements are
                     // zoids as six-integer lists.
@@ -530,12 +695,21 @@ namespace {
                         if (!PyList_Check(o) || PyList_Size(o) != 6)
                             return  ("Zlist translation error.");
 
+#ifdef FOR_PY3
+                        int xll = PyLong_AsLong(PyList_GetItem(o, 0));
+                        int xlr = PyLong_AsLong(PyList_GetItem(o, 1));
+                        int yl = PyLong_AsLong(PyList_GetItem(o, 2));
+                        int xul = PyLong_AsLong(PyList_GetItem(o, 3));
+                        int xur = PyLong_AsLong(PyList_GetItem(o, 4));
+                        int yu = PyLong_AsLong(PyList_GetItem(o, 5));
+#else
                         int xll = PyInt_AsLong(PyList_GetItem(o, 0));
                         int xlr = PyInt_AsLong(PyList_GetItem(o, 1));
                         int yl = PyInt_AsLong(PyList_GetItem(o, 2));
                         int xul = PyInt_AsLong(PyList_GetItem(o, 3));
                         int xur = PyInt_AsLong(PyList_GetItem(o, 4));
                         int yu = PyInt_AsLong(PyList_GetItem(o, 5));
+#endif
                         Zlist *z = new Zlist(xll, xlr, yl, xul, xur, yu, 0);
                         if (!z0)
                             z0 = ze = z;
@@ -551,10 +725,18 @@ namespace {
                 if (str && !strcmp(str, "xic_handle")) {
                     o = PyList_GetItem(pval, 1);
 
+#ifdef FOR_PY3
+                    if (!PyLong_Check(o))
+#else
                     if (!PyInt_Check(o))
+#endif
                         return ("Handle translation error.");
 
+#ifdef FOR_PY3
+                    int id = PyLong_AsLong(o);
+#else
                     int id = PyInt_AsLong(o);
+#endif
                     sHdl *hdl = sHdl::get(id);
                     if (hdl) {
                         v->type = TYP_HANDLE;
@@ -584,8 +766,13 @@ namespace {
                     vals[j] = (double)PyLong_AsLong(o);
                 else if (PyBool_Check(o))
                     vals[j] = (o == Py_True) ? 1.0 : 0.0;
+#ifdef FOR_PY3
+                else if (PyLong_Check(o))
+                    vals[j] = (double)PyLong_AsLong(o);
+#else
                 else if (PyInt_Check(o))
                     vals[j] = (double)PyInt_AsLong(o);
+#endif
                 else
                     return ("Non-numeric list data type in array.");
             }
@@ -636,7 +823,11 @@ cPy::runModuleFunc(const char *modname, const char *funcname, Variable *res,
     Variable *args)
 {
     Errs()->init_error();
+#ifdef FOR_PY3
+    PyObject *pmodname = PyBytes_FromString(modname);
+#else
     PyObject *pmodname = PyString_FromString(modname);
+#endif
     if (PyErr_Occurred()) {
         PyErr_Print();
         PyErr_Clear();
@@ -841,7 +1032,11 @@ cPy::eval(PyObject*, PyObject *args)
     }
 
     PyObject *funcname = PyTuple_GetItem(args, 0);
+#ifdef FOR_PY3
+    if (!PyBytes_Check(funcname)) {
+#else
     if (!PyString_Check(funcname)) {
+#endif
         PyErr_SetString(PyExc_RuntimeError,
             "First argument is not Xic function name.");
         return (0);
@@ -849,7 +1044,11 @@ cPy::eval(PyObject*, PyObject *args)
 
     char buf[256];
     ac--;
+#ifdef FOR_PY3
+    const char *fname = PyBytes_AsString(funcname);
+#else
     const char *fname = PyString_AsString(funcname);
+#endif
 
     // First check the user-defined function table.
     int argc;
@@ -948,6 +1147,9 @@ cPy::eval(PyObject*, PyObject *args)
 }
 
 
+#ifdef FOR_PY3
+// XXX Need something here.
+#else
 // C overrides for Python to avoid exiting the process.
 //
 extern "C" {
@@ -962,6 +1164,7 @@ extern "C" {
         Py()->exit(1);
     }
 }
+#endif
 
 #endif  // HAVE_PYTHON
 

@@ -419,10 +419,10 @@ QTtbDlg::QTtbDlg(int xx, int yy) : QTdraw(0)
     const char *c3 = 0;
     const char *c4 = 0;
 #ifdef WITH_X11
-    c1 = XRMgetFromDb("fgcolor1");
-    c2 = XRMgetFromDb("fgcolor2");
-    c3 = XRMgetFromDb("fgcolor3");
-    c4 = XRMgetFromDb("fgcolor4");
+    c1 = TB()->XRMgetFromDb("fgcolor1");
+    c2 = TB()->XRMgetFromDb("fgcolor2");
+    c3 = TB()->XRMgetFromDb("fgcolor3");
+    c4 = TB()->XRMgetFromDb("fgcolor4");
 #endif
     if (!c1)
         c1 = "sienna";
