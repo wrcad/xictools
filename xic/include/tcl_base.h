@@ -54,6 +54,7 @@ class cTcl_base
 public:
     virtual ~cTcl_base() { }
     virtual const char *id_string() = 0;
+    virtual const char *version(bool) = 0;
     virtual bool init(SymTab*) = 0;
     virtual bool run(const char*, bool) = 0;
     virtual bool runString(const char*, const char*) = 0;

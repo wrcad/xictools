@@ -50,10 +50,10 @@ h = xic.BoxH(left, bottom, right, top)
 if h != 0:
     xic.PrptyAdd(h, 7195, "name:xx0(||sc||) stretchType:absolute,\
       direction:EAST_WEST, parameter:left, minVal:-1000.0, maxVal:-1.0,\
-      location:CENTER_LEFT, userScale:-1.0, userSnap:0.1, key:None")
+      location:CENTER_LEFT, userScale:1.0, userSnap:0.1, key:None")
     xic.PrptyAdd(h, 7195, "name:xx1(||sc||) stretchType:absolute,\
       direction:NORTH_SOUTH, parameter:bottom, minVal:-1000.0, maxVal:-1.0,\
-      location:LOWER_CENTER, userScale:-1.0, userSnap:0.1, key:None")
+      location:LOWER_CENTER, userScale:1.0, userSnap:0.1, key:None")
     xic.PrptyAdd(h, 7195, "name:xx2(||sc||) stretchType:absolute,\
       direction:EAST_WEST, parameter:right, minVal:1.0, maxVal:1000.0,\
       location:CENTER_RIGHT, userScale:1.0, userSnap:0.1, key:None")

@@ -54,6 +54,7 @@ namespace {
 class cTcl_nogo : public cTcl_base
 {
     const char *id_string() { return (notavail); }
+    const char *version(bool) { return ("none"); }
     bool init(SymTab*)      { Errs()->add_error(notavail); return (false); }
     bool run(const char*, bool)
                             { Errs()->add_error(notavail); return (false); }

@@ -43,9 +43,10 @@
 #ifdef HAVE_PYTHON
 #define FOR_PY3
 
-
-#ifndef FOR_PY3
-// Assume python2.7
+#ifdef FOR_PY3
+#define PY_SSIZE_T_CLEAN
+#else
+// Assume python2.6
 #undef HAVE_STAT // Clash in Python!
 // Get rid ot this storage class in Python.h.
 #define register
@@ -75,6 +76,7 @@ public:
 
     cPy();
     const char *id_string();
+    const char *version();
     bool init(SymTab*);
     bool run(int, char**);
     bool runString(const char*, const char*);
@@ -118,7 +120,6 @@ cPy::cPy()
     idstr = OSNAME " " XIC_RELEASE_TAG;
     level = 0;
     exit_status = 0;
-
     ptr = this;
 }
 
@@ -141,25 +142,35 @@ namespace {
         for (int i = 0; i < sz; i++) {
             PyObject *o = PyTuple_GetItem(args, i);
 #ifdef FOR_PY3
-            if (PyBytes_Check(o)) {
-#else
-            if (PyString_Check(o)) {
-#endif
+            if (PyUnicode_Check(o)) {
                 if (lstr.string())
                     lstr.add_c(' ');
-#ifdef FOR_PY3
-                lstr.add(PyBytes_AsString(o));
-#else
-                lstr.add(PyString_AsString(o));
-#endif
+                lstr.add(PyUnicode_AsUTF8(o));
             }
+            else if (PyBytes_Check(o)) {
+                if (lstr.string())
+                    lstr.add_c(' ');
+                lstr.add(PyBytes_AsString(o));
+            }
+            else if (PyByteArray_Check(o)) {
+                if (lstr.string())
+                    lstr.add_c(' ');
+                lstr.add(PyByteArray_AsString(o));
+            }
+#else
+            if (PyString_Check(o)) {
+                if (lstr.string())
+                    lstr.add_c(' ');
+                lstr.add(PyString_AsString(o));
+            }
+#endif
             else {
                 PyObject *pstr = PyObject_Str(o);
                 if (pstr) {
                     if (lstr.string())
                         lstr.add_c(' ');
 #ifdef FOR_PY3
-                    lstr.add(PyBytes_AsString(pstr));
+                    lstr.add(PyUnicode_AsUTF8(pstr));
 #else
                     lstr.add(PyString_AsString(pstr));
 #endif
@@ -183,50 +194,60 @@ namespace {
         { 0, 0, 0, 0 }
     };
 
-    PyMethodDef *methods;
-
 #ifdef FOR_PY3
-    static struct PyModuleDef xicerr = {
+    struct PyModuleDef xicerr_defn = {
         PyModuleDef_HEAD_INIT,
         ERRMOD_NAME,   // name of module
-        NULL,          // module documentation, may be NULL
-        -1,            // size of per-interpreter state of the module, or -1
-                       // if the module keeps state in global variables.
+        "Run-time injected xic module error handling.",
+                       // Module documentation, may be NULL.
+        -1,            // Size of per-interpreter state of the module, or -1
+                       //  if the module keeps state in global variables.
         mdef,
         NULL, NULL, NULL, NULL
     };
 
     // Initialize using PyInit_<name> and PyModule_Create.
     PyMODINIT_FUNC PyInit_xicerr(void) {
-        return PyModule_Create(&xicerr);
+        return PyModule_Create(&xicerr_defn);
     }
 
     // Define the module structure.
-    static struct PyModuleDef xic = {
+    struct PyModuleDef xic_defn = {
         PyModuleDef_HEAD_INIT,
         MODULE_NAME,   // name of module
-        NULL,          // module documentation, may be NULL
-        -1,            // size of per-interpreter state of the module, or -1
-                       // if the module keeps state in global variables.
-        methods,
+        "Module for wrapped Xic library functions.",
+                       // Module documentation, may be NULL.
+        -1,            // Size of per-interpreter state of the module, or -1
+                       //  if the module keeps state in global variables.
+        0,
         NULL, NULL, NULL, NULL
     };
 
     // Initialize using PyInit_<name> and PyModule_Create.
     PyMODINIT_FUNC PyInit_xic(void) {
-        return PyModule_Create(&xic);
+        return PyModule_Create(&xic_defn);
     }
 #endif
 }
 
 
 // Return the id string which is in the form OSNAME CVSTAG.  This must
-// match the application.
+// match that in the Xic program which hosts the plugin or the plugin
+// won't become active.
 //
 const char *
 cPy::id_string()
 {
     return (idstr);
+}
+
+
+// Wrap the version string of the Python in use.
+//
+const char *
+cPy::version()
+{
+    return (PY_VERSION);
 }
 
 
@@ -239,11 +260,12 @@ cPy::init(SymTab *tab)
     if (Py_IsInitialized())
         return (true);
 
-    if (!methods) {
+    if (!xic_defn.m_methods) {
         int sz = 2;
         if (tab)
             sz += tab->allocated();
-        methods = new PyMethodDef[sz];
+        PyMethodDef *methods = new PyMethodDef[sz];
+        xic_defn.m_methods = methods;
         int cnt = 0;
         if (tab) {
             SymTabGen gen(tab);
@@ -284,32 +306,28 @@ cPy::init(SymTab *tab)
         return (false);
     }
 
+    // Register the module in the interpreter's built-in init table.
+    // Must be called BEFORE Py_Initialize().
+    if (PyImport_AppendInittab(ERRMOD_NAME, PyInit_xicerr) == -1) {
+        PyErr_Print();
+        PyErr_Clear();
+        Errs()->add_error("Py_InitModule generated exception.");
+        return false;
+    }
+    if (PyImport_AppendInittab(MODULE_NAME, PyInit_xic) == -1) {
+        PyErr_Print();
+        PyErr_Clear();
+        Errs()->add_error("Py_InitModule generated exception.");
+        return (false);
+    }
+
     // Initialize Python with the custom configuration.
     status = Py_InitializeFromConfig(&config);
+    PyConfig_Clear(&config);
     if (PyStatus_Exception(status)) {
-        PyConfig_Clear(&config);
         PyErr_Print();
         PyErr_Clear();
         Errs()->add_error("Py_InitializeFromConfig generated exception.");
-        return (false);
-    }
-
-    // Clean up the config structure.
-    PyConfig_Clear(&config);
-
-    PyInit_xicerr();
-    if (PyErr_Occurred()) {
-        PyErr_Print();
-        PyErr_Clear();
-        Errs()->add_error("Py_InitModule generated exception.");
-        return (false);
-    }
-
-    PyInit_xic();
-    if (PyErr_Occurred()) {
-        PyErr_Print();
-        PyErr_Clear();
-        Errs()->add_error("Py_InitModule generated exception.");
         return (false);
     }
 
@@ -635,17 +653,36 @@ namespace {
     const char *obj_to_var(PyObject *pval, Variable *v)
     {
 #ifdef FOR_PY3
-        if (PyBytes_Check(pval)) {
-            const char *str = PyBytes_AsString(pval);
-#else
-        if (PyString_Check(pval)) {
-            const char *str = PyString_AsString(pval);
-#endif
+        if (PyUnicode_Check(pval)) {
+            const char *str = PyUnicode_AsUTF8(pval);
             v->type = TYP_STRING;
             v->content.string = lstring::copy(str);
             v->flags |= VF_ORIGINAL;
             return (0);
         }
+        if (PyBytes_Check(pval)) {
+            const char *str = PyBytes_AsString(pval);
+            v->type = TYP_STRING;
+            v->content.string = lstring::copy(str);
+            v->flags |= VF_ORIGINAL;
+            return (0);
+        }
+        if (PyByteArray_Check(pval)) {
+            const char *str = PyByteArray_AsString(pval);
+            v->type = TYP_STRING;
+            v->content.string = lstring::copy(str);
+            v->flags |= VF_ORIGINAL;
+            return (0);
+        }
+#else
+        if (PyString_Check(pval)) {
+            const char *str = PyString_AsString(pval);
+            v->type = TYP_STRING;
+            v->content.string = lstring::copy(str);
+            v->flags |= VF_ORIGINAL;
+            return (0);
+        }
+#endif
         if (PyFloat_Check(pval)) {
             double d = PyFloat_AsDouble(pval);
             v->type = TYP_SCALAR;
@@ -658,29 +695,32 @@ namespace {
             v->content.value = (double)l;
             return (0);
         }
+#ifndef FOR_PY3
+        if (PyInt_Check(pval)) {
+            long l = PyInt_AsLong(pval);
+            v->type = TYP_SCALAR;
+            v->content.value = (double)l;
+            return (0);
+        }
+#endif
         if (PyBool_Check(pval)) {
             bool b = (pval == Py_True);
             v->type = TYP_SCALAR;
             v->content.value = b ? 1.0 : 0.0;
             return (0);
         }
-#ifdef FOR_PY3
-        if (PyLong_Check(pval)) {
-            long l = PyLong_AsLong(pval);
-#else
-        if (PyInt_Check(pval)) {
-            long l = PyInt_AsLong(pval);
-#endif
-            v->type = TYP_SCALAR;
-            v->content.value = (double)l;
-            return (0);
-        }
         if (PyList_Check(pval)) {
             PyObject *o = PyList_GetItem(pval, 0);
             Py_ssize_t size = PyList_Size(pval);
 #ifdef FOR_PY3
-            if (PyBytes_Check(o)) {
-                const char *str = PyBytes_AsString(o);
+            const char *str = 0;
+            if (PyUnicode_Check(o))
+                str = PyUnicode_AsUTF8(o);
+            else if (PyBytes_Check(o))
+                str = PyBytes_AsString(o);
+            else if (PyByteArray_Check(o))
+                str = PyByteArray_AsString(o);
+            {
 #else
             if (PyString_Check(o)) {
                 const char *str = PyString_AsString(o);
@@ -1027,28 +1067,31 @@ cPy::eval(PyObject*, PyObject *args)
     int ac = PyTuple_Size(args);
     if (ac < 1) {
         PyErr_SetString(PyExc_RuntimeError,
-            "First argument is not Xic function name.");
+            "No arguments in list.");
         return (0);
     }
 
     PyObject *funcname = PyTuple_GetItem(args, 0);
+    const char *fname = 0;
 #ifdef FOR_PY3
-    if (!PyBytes_Check(funcname)) {
+    if (PyUnicode_Check(funcname))
+        fname = PyUnicode_AsUTF8(funcname);
+    else if (PyBytes_Check(funcname))
+        fname = PyBytes_AsString(funcname);
+    else if (PyByteArray_Check(funcname))
+        fname = PyByteArray_AsString(funcname);
 #else
-    if (!PyString_Check(funcname)) {
+    if (PyString_Check(funcname))
+        fname = PyString_AsString(funcname);
 #endif
+    else {
         PyErr_SetString(PyExc_RuntimeError,
-            "First argument is not Xic function name.");
+            "First argument is not a string (Xic function name).");
         return (0);
     }
 
     char buf[256];
     ac--;
-#ifdef FOR_PY3
-    const char *fname = PyBytes_AsString(funcname);
-#else
-    const char *fname = PyString_AsString(funcname);
-#endif
 
     // First check the user-defined function table.
     int argc;

@@ -51,6 +51,7 @@ class cPy_base
 public:
     virtual ~cPy_base() { }
     virtual const char *id_string() = 0;
+    virtual const char *version() = 0;
     virtual bool init(SymTab*) = 0;
     virtual bool run(int, char**) = 0;
     virtual bool runString(const char*, const char*) = 0;

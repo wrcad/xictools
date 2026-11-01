@@ -56,7 +56,7 @@ namespace {
     // Dynamically open our helper lib, and return a pointer to the
     // interface if successful.
     //
-    cTcl_base *find_tcl(bool with_tk, char **lname)
+    cTcl_base *find_tcl(bool with_tk)
     {
         bool verbose = (getenv("XIC_PLUGIN_DBG") != 0);
         sLstr lstr;
@@ -110,8 +110,6 @@ namespace {
                     with_tk ? "Tcl/Tk" : "Tcl");
             return (0);
         }
-        if (lname)
-            *lname = lstring::copy(lstring::strip_path(lstr.string()));
         return (tcl);
     }
 
@@ -135,19 +133,18 @@ cMain::openTclTk()
 {
     cTcl_base *tcl = 0;
 #ifdef HAVE_TCL
-    char *lname = 0;
-    tcl = find_tcl(true, &lname);  // First try with Tk.
+    tcl = find_tcl(true);  // First try with Tk.
     if (!tcl)
-        tcl = find_tcl(false, &lname);  // Try again without Tk.
+        tcl = find_tcl(false);  // Try again without Tk.
     if (tcl) {
         RegisterBangCmd("tcl", &bang_tcl);
         if (tcl->hasTk()) {
             RegisterBangCmd("tk", &bang_tcl);
-            printf("Using Tcl/Tk (%s).\n", lname);
+            printf("Using Tcl/Tk %s/%s.\n", tcl->version(false),
+                tcl->version(true));
         }
         else
-            printf("Using Tcl (%s).\n", lname);
-        delete [] lname;
+            printf("Using Tcl (%s).\n", tcl->version(false));
     }
 #endif
     return (new cTclIf(tcl));

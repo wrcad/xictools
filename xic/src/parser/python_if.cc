@@ -53,6 +53,8 @@ namespace {
 class cPy_nogo : public cPy_base
 {
     const char *id_string() { return (notavail); }
+    const char *version()
+        { return ("stub interface, Python not available."); }
     bool init(SymTab*)      { Errs()->add_error(notavail); return (false); }
     bool run(int, char**)   { Errs()->add_error(notavail); return (false); }
     bool runString(const char*, const char*)

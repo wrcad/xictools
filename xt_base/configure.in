@@ -356,9 +356,11 @@ if test -n "$QTPKG" -o -n "$GTKPKG"; then
     # flag to record this.
     echo "#define WITH_GRAPHICS_PKG 1">> confdefs.h
     if test -n "$QTPKG"; then
+        echo "#define WITH_$QTPKG 1">> confdefs.h
         echo "#define WITH_ANY_QT 1">> confdefs.h
     fi
     if test -n "$GTKPKG"; then
+        echo "#define WITH_$GTKPKG 1">> confdefs.h
         echo "#define WITH_ANY_GTK 1">> confdefs.h
     fi
 else
@@ -740,7 +742,7 @@ AC_SUBST(SOEXT)
 
 if test $with_oa = yes; then
     OA_INCLUDE=$oa_loc/include/oa
-    OA_LIBS="-L$oa_lpath -loaCommon -loaBase -loaPlugIn -loaDM -loaTech \
+    OA_LIBS="-Wl,-rpath,$oa_lpath -L$oa_lpath -loaCommon -loaBase -loaPlugIn -loaDM -loaTech \
  -loaDesign"
     # no_deprecated_copy avoids many compiler warnings.
     OA_CFLAGS="-O -g -Wall -W -Wwrite-strings $oa_cflags -Wno-deprecated-copy"
@@ -1033,21 +1035,52 @@ dnl *** Python and Tcl/Tk configuration
 dnl ***
 
 if test $OSNAME = "Darwin"; then
-    #PY_INCLUDE=-I/opt/local/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7
-    #PY_LIBS="-L/opt/local/lib -lpython2.7"
-    frmw39="/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9"; \
-    PY_INCLUDE="-I$frmw39/Headers"; \
-    PY_LIBS="-L$frmw39/lib -lpython3.9"; \
-    echo '#define HAVE_PYTHON 1'>> confdefs.h
-    if test -f /usr/include/tcl.h; then
+    # Apple Python support.  Uncomment exactly one of these.
+    pysel="mp314"	# Python 3.14 installed in MacPorts.
+    #pysel="clt39"	# Native Python 3.9 from Command Line Tools.
+    #pysel="xc39"	# Native Python 3.9 from Xcode.
+    #pysel="none"	# Np python support.
+
+    if test $pysel = mp314; then
+        # Python3.14 installed in MacPorts.
+        py314=/opt/local/Library/Frameworks/Python.framework/Versions/3.14
+        PY_INCLUDE="-I$py314/Headers"
+        PY_LIBS="-L$py314/lib -lpython3.14"
+        echo '#define HAVE_PYTHON 1'>> confdefs.h
+    elif test $pysel = clt39; then
+        # Python3.9 from Command Line Tools.
+        py39=/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9
+        pyr=/Library/Developer/CommandLineTools/Library/Frameworks
+        PY_INCLUDE="-I$py39/Headers"
+        PY_LIBS="-L$py39/lib -Wl,-rpath,$pyr -lpython3.9"
+        echo '#define HAVE_PYTHON 1'>> confdefs.h
+    elif test $pysel = xc39; then
+        # Python 3.9 from Xcode.
+        py39=/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9
+        pyr=/Applications/Xcode.app/Contents/Developer/Library/Frameworks
+        PY_INCLUDE="-I$py39/Headers"
+        PY_LIBS="-L$py39/lib -Wl,-rpath,$pyr -lpython3.9"
+        echo '#define HAVE_PYTHON 1'>> confdefs.h
+    else
+        # No python support.
+        PY_INCLUDE=
+        PY_LIBS=
+    fi
+
+    echo '#define HAVE_TCL 1'>> confdefs.h
+    echo '#define HAVE_TK 1'>> confdefs.h
+    if test -f /opt/local/include/tcl.h; then
+        # MacPorts tcl/tk 8.6 (recommended)
+        TCL_INCLUDE="-isystem /opt/local/include"
+        TCL_LIBS="-L/opt/local/lib -ltcl"
+        TK_INCLUDE="-isystem /opt/X11/include"
+        TK_LIBS="-ltk"
+    else
+        # Buggy deprecated Apple-supplied version.
         TCL_INCLUDE=
         TCL_LIBS="-ltcl"
-        echo '#define HAVE_TCL 1'>> confdefs.h
-    fi
-    if test -f /usr/include/tk.h; then
-        TK_INCLUDE="$X_CFLAGS"
+        TK_INCLUDE="-isystem /opt/X11/include"
         TK_LIBS="-ltk"
-        echo '#define HAVE_TK 1'>> confdefs.h
     fi
 elif test ${OSNAME:0:5} = "Linux"; then
     if test [ $with_cni == yes ]; then
@@ -1055,30 +1088,39 @@ elif test ${OSNAME:0:5} = "Linux"; then
         PY_LIBS="-L$cni_loc/linux64/3rd/Python/lib -lpython2.6"
         echo '#define HAVE_PYTHON 1'>> confdefs.h
     elif test -f /usr/include/python3.9/Python.h; then
-        // Alma 9
+        # Alma 9
         PY_INCLUDE="-I/usr/include/python3.9"
         PY_LIBS="-lpython3.9"
         echo '#define HAVE_PYTHON 1'>> confdefs.h
+    elif test -f /usr/include/python3.15/Python.h; then
+        # Latest Python release
+        PY_INCLUDE="-I/usr/include/python3.15"
+        PY_LIBS="-lpython3.15"
+        echo '#define HAVE_PYTHON 1'>> confdefs.h
     elif test -f /usr/include/python3.14/Python.h; then
-        // Ubuntu 26
+        # Ubuntu 26
         PY_INCLUDE="-I/usr/include/python3.14"
         PY_LIBS="-lpython3.14"
         echo '#define HAVE_PYTHON 1'>> confdefs.h
     elif test -f /usr/include/python3.13/Python.h; then
-        // OpenSUsE 16
+        # OpenSUsE 16
         PY_INCLUDE="-I/usr/include/python3.13"
         PY_LIBS="-lpython3.13"
         echo '#define HAVE_PYTHON 1'>> confdefs.h
     elif test -f /usr/include/python3.12/Python.h; then
-        // Alma 8
+        # Alma 8
         PY_INCLUDE="-I/usr/include/python3.12"
         PY_LIBS="-lpython3.12"
         echo '#define HAVE_PYTHON 1'>> confdefs.h
-    elif test -f /usr/include/python2.7/Python.h; then
-        // Alma 8
-        PY_INCLUDE="-I/usr/include/python2.7"
-        PY_LIBS="-lpython2.7"
+    elif test -f /usr/include/python3.11/Python.h; then
+        # Alma 8
+        PY_INCLUDE="-I/usr/include/python3.11"
+        PY_LIBS="-lpython3.11"
         echo '#define HAVE_PYTHON 1'>> confdefs.h
+    #elif test -f /usr/include/python2.7/Python.h; then
+    #    PY_INCLUDE="-I/usr/include/python2.7"
+    #    PY_LIBS="-lpython2.7"
+    #    echo '#define HAVE_PYTHON 1'>> confdefs.h
     fi
     if test -f /usr/include/tcl.h; then
         vrs=`echo 'puts $tcl_version; exit 0' | tclsh`

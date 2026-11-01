@@ -47,9 +47,7 @@
 
 #ifdef HAVE_PYTHON
 #include <dlfcn.h>
-#endif
 
-#ifdef HAVE_PYTHON
 namespace {
     cPy_base *open_py(const char *path)
     {
@@ -149,12 +147,10 @@ cMain::openPY()
 {
     cPy_base *py = 0;
 #ifdef HAVE_PYTHON
-    char *lname = 0;
-    py = find_py(&lname);
+    py = find_py(0);
     if (py) {
         RegisterBangCmd("py", &bang_py);
-        printf("Using Python (%s).\n", lname);
-        delete [] lname;
+        printf("Using Python %s.\n", py->version());
     }
 #endif
     return (new cPyIf(py));

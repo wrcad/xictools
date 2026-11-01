@@ -61,6 +61,7 @@
 #include "tcl_base.h"
 #include "reltag.h"
 
+//XXX Get rid of setjmp/longjmp, use exceptions.
 
 class cTclTk *TclTk();
 
@@ -80,6 +81,7 @@ public:
     cTclTk();
 
     const char *id_string();
+    const char *version(bool);
     bool init(SymTab*);
     bool run(const char*, bool);
     bool runString(const char*, const char*);
@@ -230,6 +232,20 @@ const char *
 cTclTk::id_string()
 {
     return (idstr);
+}
+
+
+const char *
+cTclTk::version(bool do_tk)
+{
+    if (do_tk)
+#ifdef HAVE_TK
+        return (TK_PATCH_LEVEL);
+#else
+        return (0);
+#endif
+    else
+        return (TCL_PATCH_LEVEL);
 }
 
 

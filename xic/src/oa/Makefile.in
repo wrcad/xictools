@@ -36,9 +36,18 @@ CCOBJS = $(CCFILES:.cc=.o)
 
 DARGS = -DOSNAME="\"$(OSNAME)\""
 
-SHLIB_TARGET: $(CCOBJS)
+SHLIB_TARGET: $(CCOBJS) Makefile
 	@echo $(SHLIB_TARGET): linking
 	@$(CXX) $(LSHFLAG) -o $(SHLIB_TARGET) $(CCOBJS) $(OA_LIBS)
+	# FIXME Apple oddity, Apple only
+ifeq ($(shell uname -s),Darwin)
+	install_name_tool -change "../../lib/common/darwin_64/opt/liboaCommon.dylib" "@rpath/liboaCommon.dylib" oa.dylib
+	install_name_tool -change "../../lib/base/darwin_64/opt/liboaBase.dylib" "@rpath/liboaBase.dylib" oa.dylib
+	install_name_tool -change "../../lib/plugIn/darwin_64/opt/liboaPlugIn.dylib" "@rpath/liboaPlugIn.dylib" oa.dylib
+	install_name_tool -change "../../lib/dm/darwin_64/opt/liboaDM.dylib" "@rpath/liboaDM.dylib" oa.dylib
+	install_name_tool -change "../../lib/tech/darwin_64/opt/liboaTech.dylib" "@rpath/liboaTech.dylib" oa.dylib
+	install_name_tool -change "../../lib/design/darwin_64/opt/liboaDesign.dylib" "@rpath/liboaDesign.dylib" oa.dylib
+endif
 
 $(LIB_TARGET): $(CCOBJS)
 	@if [ -f $(LIB_TARGET) ]; then \

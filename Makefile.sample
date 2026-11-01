@@ -78,11 +78,30 @@ ITOPOK = --enable-itopok=no
 #QTLOC = --enable-qt5=/usr/lib/qt5
 #GTKLOC = --enable-gtk2=yes
 
-# The system will attempt to set the paths to Python and Tcl, but
-# this may not be reliable.  These can be uncommented and set to
-# provide the correct paths on your system.
+# The system will attempt to set the path to Python used by the py.so
+# (py.dylib on Mac) plug-in, to use while puilding py.so and for access
+# when running Xic with the py.so plug-in. This works for Mac and most
+# Linux, but you can change the default path here if necessary.  You
+# can also choose the Python library to link to at run time with the
+# XIC_PYSO_PATH environment variable, set to the full path to a Python
+# shared library.  Python is not supported for Windows.
 #
-#PYTHON = --enable-pylib="/usr/lib64 -lpython2.7"  --enable-pyinc="-I/usr/include/python2.7"
+#PYTHON = --enable-pylib="-lpython3.9" --enable-pyinc="-I/usr/include/python3.9"
+
+# Similarly, the default paths to TCL and TK can be set here.  Unlike
+# Python, these are commonly not installed with the operating system,
+# but can be installed by the user, for Alma Linux 9 the commands are
+# sudo dnf install tcl-devel
+# sudo dnf install tk-devel
+# The same or similar commands can be used for other Linux systems.
+# For MacPoets on Apple,
+# sudo port install tcl
+# sudo port install tk
+#
+# There is no default locations,
+# These can be uncommented and set to provide the correct paths on
+# your system.
+#
 #TCL = --enable-tcllib=no  --enable-tclinc=no
 #TK = --enable-tklib=no  --enable-tkinc=no
 

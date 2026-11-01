@@ -240,8 +240,7 @@ cOAif::cOAif()
         // related text and topics.
         HLP()->define("OpenAccess");
 #endif
-
-        printf("Using OpenAccess (%s).\n", lname);
+        printf("Using OpenAccess %s.\n", oaPtr->version());
         delete [] lname;
         return;
     }

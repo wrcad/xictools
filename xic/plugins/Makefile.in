@@ -37,15 +37,15 @@ TARGETS : py.$(SOEXT)  tcltk.$(SOEXT) tcl.$(SOEXT)
 
 DARGS = -DOSNAME="\"$(OSNAME)\""
 
-py.$(SOEXT) : py.o
+py.$(SOEXT) : py.o Makefile
 	@echo py.$(SOEXT): linking
 	@$(CXX) $(LSHFLAG) -o py.$(SOEXT) py.o $(PY_LIBS)
 
-tcltk.$(SOEXT) : tcltk.o
+tcltk.$(SOEXT) : tcltk.o Makefile
 	@echo tcltk.$(SOEXT): linking
 	@$(CXX) $(LSHFLAG) -o tcltk.$(SOEXT) tcltk.o $(TCL_LIBS) $(TK_LIBS)
 
-tcl.$(SOEXT) : tcl.o
+tcl.$(SOEXT) : tcl.o Makefile
 	@echo tcl.$(SOEXT): linking
 	@$(CXX) $(LSHFLAG) -o tcl.$(SOEXT) tcl.o $(TCL_LIBS)
 
