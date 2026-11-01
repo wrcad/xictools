@@ -165,7 +165,7 @@ Status as of April 27, 2024
 
 Status as of September 17, 2024
 - The build and packaging systems can generate and contain separate
-  binaries for GTK2, Qt-5, and Qt-6 toolkits.  This is temporary,
+  binaries for GTK2, QT5, and QT6 toolkits.  This is temporary,
   as GTK2 will go away at some point.
 - Pre-built packages contain GTK2 and Qt binaries.
 
@@ -228,8 +228,8 @@ There may be a meta-package containing the development toolchain,
 which should be installed.  These programs may be missing and would
 require installation.
 
-  git, autoconf, flex, bison,
-  pkg-config (GTK only)
+    git, autoconf, flex, bison,
+    pkg-config (GTK only)
 
 Libraries and Development Packages:
 Often, the basic libraries are provided, but a separate "devel"
@@ -241,9 +241,10 @@ both the library and development packages should be installed.
 Install the devel version, which will also install the bare library if
 necessary.
 
-  libgsl, libjpeg, libtiff, ncurses
-  gtk2 (GTK only)
-  Qt5  (For Qt.  You can alternatively install the newer Qt6 if available)
+    libgsl, libjpeg, libtiff, ncurses
+    gtk2 (GTK only)
+    qt5  (For Qt.  You can alternatively install the newer qt6 if
+          available)
 
 The gtk2 and Qt packages will bring in a large number of dependent
 packages.
@@ -259,8 +260,8 @@ I've indicated the requirements for GTK and Qt below. You can choose
 either one or both, depending on the tools version(s) you intend to
 build.
 
-Note:  It doesn't hurt to attempt to install software that is already
-installed with the commands below.  If the software is alredy installed.
+Note:  With the commands below, it doesn't hurt to attempt to install
+software that is already installed.  If the software is alredy installed,
 you will get a message indicating this.
 
 Ubuntu, Debian
@@ -444,10 +445,15 @@ packages, and to add any packages needed later.
 
     sudo port -v selfupdate
     sudo port install autoconf
-    sudo port install python27
     sudo port install gsl
     sudo port install gtk2  (for GTK)
     sudo port install qt6  (for Qt)
+
+    These are optional, Apple provides older versions of these
+    programs
+    sudo port install python314
+    sudo port install tcl
+    sudo port install tk
 
     (This is for adms maintenance mode, you won't need it unless you
     work on adms.)
@@ -524,6 +530,13 @@ The first time, you will need to set up the main Makefile.
 1.  Copy Makefile.sample into "Makefile", edit Makefile to set the
     configuration flags, as described by the comments in the Makefile.
     Crucial for Windows:  uncomment the MINGW define.
+    
+    WARNING:  IN FUTURE AFTER YOU UPDATE THE SOURCE TREE, YOU SHOULD
+    CAREFULLY CHECK THE NEW MAKEFILE.SAMPLE AGAINST YOUR EXISTING
+    MAKEFILE.  If the Makefile.sample has changed, a new Makefile
+    should be prepared (you can cut/paste from the old one).  Most
+    of the time you can reuse your existing Makefile, except when
+    you can't and everything is broken!
 
 2.  Give the command "make config" to configure the source tree to
     your build environment.  You may see errors and early termination
@@ -541,44 +554,19 @@ The first time, you will need to set up the main Makefile.
     updated.  You could use reconfig instead of config the first
     time, too, it would have the same effect.
 
-3.  Give "make all" to build all of the programs.
+3.  Give "make all" to build all of the programs.  The next section
+    describes how to create packages and/or install the programs
+    for use.
 
-4.  This is optional, but give "make packages" to create package
-    files for the programs.  These can be found in
-    ./xt_base/packages/pkgfiles.  If you attempted to build all
-    of the programs, there should be 8 package filles.  You can
-    use the package files to install the programs on your system.
+4.  in the future, you can periodically download and merge the
+    latest changes to the source tree by giving
 
-4.  in the future, after changes, do "make reconfig" followed by
-    "make all" to rebuild the programs.  Alternatively, if you
-    want to start over from a fresh environment, give
-    "make distclean", then "make config" and "make all".
+      git pull
 
-5. Make sure that your shell search path includes the main XicTools
-   bin, which is by default /usr/local/xictools/bin.  Use the actual
-   path if you changed PREFIX in the Makefile.
-
-*** Warning:
-1. This applies to Apple, Debian and Ubuntu or OS that uses apt packager,
-or any other OS that needs root access to build a package.
-2. If not building XicTools packages and installing using "make install"
-when the install target requires root access (true for the advised default).
-The problem is that make install will be run with sudo which will likely
-leave root-owned files in the source tree.  Then, subsequent builds with
-normal user permissions will likely fail since the root-owned files can't
-be modified.
-FIX (for now)
-Presently, the only recommended fix is to manually find the files that are
-root-owned and use chmod to make them user-owned, after running make install
-or whenever a make all/make app fails with a can't write error.
-***
-
-The present package releases of the XicTools contain separate binaries
-using the GTK2 and Qt graphics packages used for the GUI display.  This
-is likely to be temporary as the Qt versions will replace the GTK
-versions, as the GTK2 library is considered to be obsolete.  For now,
-both version are included for comparison purposes, and possibly as a
-work around if there is trouble with one or the other.
+    After this, do "make reconfig" followed by "make all" to rebuild
+    the programs.  Alternatively, if you want to start over from a
+    fresh environment, give "make distclean", then "make config" and
+    "make all".
 
 
 3.6  The Installation Procedure.
@@ -594,34 +582,68 @@ Makefile (in this directory) to allow this (see the ITOPOK variable),
 and skip the packaging step entirely if you wish.
 
 If you are building/installing packages:
-1. "make packages" will create all of the package files.
-   Packages are left in xictools/xt_base/packages/pkgfiles.  It may
-   take half an hour or so, since this builds the example Verilog-A
-   models for WRspice which takes a while.
+1. Giving the command "make packages" will create all of the package
+   files.  Packages are left in xictools/xt_base/packages/pkgfiles.
+   It takes only a few minutes to create the eight packages when all
+   programs are enabled.
+
+   When building packages for Apple, Debian, and Ubuntu (and
+   likely others), during package creation you will be prompted for
+   your password.  Internally sudo is used to write the package
+   files as root-owned, which is necessary for these systems.
+   Other packages can be created by normal users.
 
 2. cd to xt_base/packages/pkgfiles, then give
-   "../util/wr_install all". This will install the programs from
-   the package files.  If you are installing to a system location
-   such as the default under /usr/local, you need to have sudo
-   privileges.  The wr_install script will ask for your password. 
-   It doesn't matter if this fails if you are installing to a
-   location where you have write permission.
+   "../util/wr_install all".  Alternatively, the "all" can be a list
+   of program names, if you don't need to install the complete set.
+   This command will install the programs from the package files.
+   If you are installing to a system location such as the default
+   under /usr/local, you need to have sudo privileges.  The
+   wr_install script will ask for your password.  It doesn't matter
+   if this fails if you are installing to a location where you have
+   write permission.
 
-Otherwise:
-1,2.  If you are installing to a system location like the default
-   under /usr/local, you must get root privileges somehow.  On
-   Current Linux systems this means that you will probably use the
-   sudo command and your account will be listed in the
-   /etc/sudoers file.  If at work, you may have to get help from
-   IT.  However you can install to a directory where you have
-   write permission without becoming root.  Next, give "make
-   install".  It may take half an hour or so, since this builds
-   the example Verilog-A models for WRspice which takes a while.
+Otherwise, installing with "make install"
+1. If you are installing to a system location like the default
+   under /usr/local, you must run this command with root privileges.
+   On current linux systems this means that you will probably use
+   the sudo command and your account will be enabled for sudo.
+   If at work, you may have to get help from IT.  However you can
+   install to a directory where you have write permission without
+   becoming root.  Give "make install" to perform the operation.
+
+Warning
+   If you use "make install" as root to install the programs on
+   your system, there is a known issue.  An effective "make all"
+   is done before the install operation, so that any files
+   generated will be root-owned.
+   These will cause trouble when you subsequently try to build the
+   programs as a normal user, as the root-owned files can not be
+   edited, overwritten, or removed except by root.  This is
+   annoying and will require repair by hand, perhaps by using
+   "chown -R".  To avoid this, You should do "make all" as a normal
+   user before running "make install" as root.
+
+   Building packages, then installing the package files is the
+   safest method of provisioning or updating a system, though it
+   is a bit more time consuming than "make install".
+
+If you have not done so, Make sure that your shell search path
+includes the main XicTools bin, which is by default
+/usr/local/xictools/bin.  Use the actual path if you changed
+PREFIX in the Makefile or relocated the packages.
 
 You should now be able to use the programs.  Have fun!
 
 
 3.7  Switching between running GTK2 and Qt-based tools.
+
+The present package releases of the XicTools contain separate binaries
+using the GTK2 and Qt graphics packages used for the GUI display.  This
+is likely to be temporary as the Qt versions will replace the GTK
+versions, as the GTK2 library is considered to be obsolete.  For now,
+both version are included for comparison purposes, and possibly as a
+work around if there is trouble with one or the other.
 
 You can switch between the two versions using a .xtrc file which is
 found either in the current directory or your home directory.  You
@@ -630,15 +652,15 @@ done with a text editor.  If this file is not found, GTK2 is the
 default.
 
 The .xtrc file contains a single line that looks like
-grpref=GTK2
+    grpref=GTK2
 
 Note that there is no white space around the '=' character.  The GTK2
 is replaced by QT5 or QT6 when you want to run Qt.  The 5/6 corresponds
 to the Qt version, either of which can be used if you build from source.
 For the packages, the Qt versions included are
-Windows     QT6
-macOS       QT6
-all Linux   QT5
+    Windows     QT6
+    macOS       QT6
+    all Linux   QT5
 
 You can change which version to run by modifying the .xtrc file with a
 text editor.  This will take effect the next time a graphical tool is
@@ -655,6 +677,9 @@ You should track this if you are helping develop the programs, or just
 want the latest.  However, programs may not build and other transient
 problems may be encountered.
 
+The git commands can be given in any directory within the repository,
+meaning the top directory that contains this README file and below.
+
 To check out the devel branch, give the command
     git checkout devel
 To revert to the master branch
@@ -669,12 +694,16 @@ repository:
 You should do this every so often to update your source code so as
 to not get too out of date.
 
+The see a list of code change "check-ins" with descriptions:
+    git log
+
 On Windows and macOS, you should periodically upgrade the packages you
-have installed to support XicTools.  For Windows the command is
+have installed to support XicTools.  For Windows the command to
+update MSYS2 is
 
     pacman -Syu
 
-For macOS the commands are
+For macOS the commands to update MacPorts are
 
     sudo port selfupdate
     sudo port upgrade outdated 
@@ -690,6 +719,7 @@ If your operating system is updated, you may also want to rebuild the
 programs, however this is only required if a program no longer works. 
 This can happen if a system library is updated, and no backwards
 compatibility library is provided.  In this case, run the same
-commands as above to rebuild/reinstall the tools.
+commands as above to rebuild/reinstall the tools.  It may be necessary
+to give "make distclean" before rebuilding to start with a fresh state.
 
 End of document.

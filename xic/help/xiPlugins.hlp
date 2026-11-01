@@ -59,10 +59,7 @@ Plug-Ins
 
     <p>
     At present, plug-ins are supported on all platforms except for
-    Microsoft Windows.  Windows does not provide the type of shared
-    library technology needed for plug-ins.  Although a similar
-    capability could be instituted, there are many substantial issues
-    and it is not clear if it is worth the development effort.
+    Microsoft Windows.
 
     <p>
     Plug-ins are distributed as shared library code, and are found in
@@ -87,7 +84,7 @@ Plug-Ins
     success.
 
     <p>
-    Lack of success loading a plug-in and generally due to the
+    Lack of success loading a plug-in is generally due to the
     inability of the plug-in code to find the shared libraries needed
     on the host computer.  Unless the library is "standard" on the
     system, which may be true of Python, then it will be necessary to
@@ -114,10 +111,7 @@ loaded, but {\Xic} will run normally except that the plug-in's
 features will be absent.
 
 At present, plug-ins are supported on all platforms except for
-Microsoft Windows.  Windows does not provide the type of shared
-library technology needed for plug-ins.  Although a similar capability
-could be instituted, there are many substantial issues and it is not
-clear if it is worth the development effort.
+Microsoft Windows.
 
 Plug-ins are distributed as shared library code, and are found in the
 {\vt plugins} sub-directory in the distribution area, i.e.,
@@ -137,7 +131,7 @@ diagnostic messages will be printed.  These can help identify why the
 plug-in is not being loaded, and are instrumental in tracking down
 problems when the user expects success.
 
-Lack of success loading a plug-in and generally due to the inability
+Lack of success loading a plug-in is generally due to the inability
 of the plug-in code to find the shared libraries needed on the host
 computer.  Unless the library is ``standard'' on the system, which may
 be true of Python, then it will be necessary to use the {\et
@@ -486,47 +480,19 @@ Python Support
 !!ENDIF
 
     <p>
-    Python is made available, when Python-2.6 or newer is found on
-    the user's computer, via the Python <a
-    href="plugins">plug-in</a>.  Red Hat Enterprise Linux 6 and 7
-    provide a compatible native Python.  Presently, only Python
-    release 2.6 is supported on Red Hat Enterprise Linux 5, so
-    installation of an updated package is required on that operating
-    system.
+    Python is made available when Python3 is found on the user's
+    computer, via the Python <a href="plugins">plug-in</a>.  Most
+    recent Linux distributions provide a compatible native Python.
 
 !!IFDEF OpenAccess
     <p>
-    The Ciranova <a href="pycell">PCell Studio</a> provides Python
-    2.6, as well as OpenAccess.  If using Ciranova, the
-    Ciranova-supplied Python should be used.
+    The Synopsys <a href="pycell">PyCell Studio</a> provides Python3
+    as well as OpenAccess.  If using this, the Synopsys-supplied
+    Python should be used.
 !!ENDIF
-
-    <dl>
-    <dt>Red Hat Enterprise Linux 6,7<dd>
-    This supplies a native Python-2.6/2.7, which will work with the
-    plug-in without any configuration.
-!!IFDEF OpenAccess
-    Unfortunately, this is not compatible with the Python-2.6
-    provided by Ciranova.  <i>Xic</i> can use either one.  The
-    Python-2.6 provided by Ciranova was built with different setup
-    flags for handling UTF8 text than the stock Python-2.6.
-!!ENDIF
-    </dl>
-
-    <dl>
-    <dt>Red Hat Enterprise Linux 5<dd>
-    The operating system provides Python-2.4, which is not supported. 
-    The Ciranova PyCell Studio provides Python-2.6, which is one
-    source for a compatible Python.  Another is to install the
-    python26 extension package.  Using the <b>Package Manager</b> or
-    <tt>yum</tt>, install "<tt>epel-release-5-4.noarch</tt>".  This
-    will add additional repositories.  Then, in the <tt>epel</tt>
-    repository, find and install a release like
-    "<tt>python26-2.6.8-2.el5.x86_64</tt>".
-    </dl>
 
     <p>
-    To use a non-default Python such as that supplied by Ciranova, one
+    To use a non-default Python such as that supplied by Synopsys, one
     will need to set the <b>LD_LIBRARY_PATH</b> variable to include
     the alternative shared library location.
 !!IFDEF OpenAccess
@@ -662,43 +628,16 @@ favors this approach, and will integrate Ciranova standards as tightly
 as possible.
 %\fi
 
-Python is made available, when Python-2.6 or newer is found on the
-user's computer, via the Python plug-in.  Red Hat Enterprise Linux 6
-and 7 provide a compatible native Python.  Presently, only Python
-release 2.6 is supported on Red Hat Enterprise Linux 5, so
-installation of an updated package is required on that operating
-system.
+Python is made available when Python3 is found on the user's computer,
+via the Python plug-in.  Most recent Linux distributions provide a
+compatible native Python.
 
 %\ifoa
-The Ciranova PCell Studio provides Python 2.6, as well as OpenAccess. 
-If using Ciranova, the Ciranova-supplied Python should be used.
+The Synopsys PyCell Studio provides Python3, as well as OpenAccess. 
+If using this, the Synopsys-supplied Python should be used.
 %\fi
 
-\begin{description}
-\item{Red Hat Enterprise Linux 6,7}\\
-This supplies a native Python-2.6/2.7, which will work with the
-plug-in without any configuration.
-%\ifoa
-Unfortunately, this is not compatible with the Python-2.6 provided by
-Ciranova.  {\Xic} can use either one.  The Python-2.6 provided by
-Ciranova was built with different setup flags for handling UTF8 text
-than the stock Python-2.6.
-%\fi
-
-\item{Red Hat Enterprise Linux 5}\\
-The operating system provides Python-2.4, which is not supported.  The
-Ciranova PyCell Studio provides Python-2.6, which is one source for a
-compatible Python.  Another is to install the {\vt python26} extension
-package.  Using the {\cb Package Manager} or {\vt yum}, install
-\begin{quote}
-{\vt epel-release-5-4.noarch}.
-\end{quote}
-This will add additional repositories.  Then, in the {\vt epel}
-repository, find and install a release like ``{\vt
-python26-2.6.8-2.el5.x86\_64}''.
-\end{description}
-
-To use a non-default Python such as that supplied by Ciranova in the
+To use a non-default Python such as that supplied by Synopsys in the
 PyCell Studio, one will need to set the {\et LD\_LIBRARY\_PATH}
 variable to include the alternative shared library location.
 %\ifoa

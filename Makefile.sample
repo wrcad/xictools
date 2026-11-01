@@ -3,6 +3,14 @@
 #######################################################################
 
 # Configuration
+#
+# Copy the Makefile.sample file into a new file named "Makefile".
+# Edit Makefile according to the instructions below.
+#
+# CRITICAL:
+# After a software change (like "git pull") and there is an
+# existing Makefile, make sure that any changes to Makefile.sample
+# are reflected in Makefile.
 
 # The tools will be installed under $(PREFIX)/$(TOOLROOT) where by
 # default PREFIX = /usr/local and TOOLROOT = xictools.  This can be
@@ -94,7 +102,7 @@ ITOPOK = --enable-itopok=no
 # sudo dnf install tcl-devel
 # sudo dnf install tk-devel
 # The same or similar commands can be used for other Linux systems.
-# For MacPoets on Apple,
+# For MacPorts on Apple,
 # sudo port install tcl
 # sudo port install tk
 #

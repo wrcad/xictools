@@ -742,8 +742,8 @@ AC_SUBST(SOEXT)
 
 if test $with_oa = yes; then
     OA_INCLUDE=$oa_loc/include/oa
-    OA_LIBS="-Wl,-rpath,$oa_lpath -L$oa_lpath -loaCommon -loaBase -loaPlugIn -loaDM -loaTech \
- -loaDesign"
+    OA_LIBS="-Wl,-rpath,$oa_lpath -L$oa_lpath -loaCommon -loaBase \
+  -loaPlugIn -loaDM -loaTech -loaDesign"
     # no_deprecated_copy avoids many compiler warnings.
     OA_CFLAGS="-O -g -Wall -W -Wwrite-strings $oa_cflags -Wno-deprecated-copy"
     OA_SUBDIR="src/oa"
