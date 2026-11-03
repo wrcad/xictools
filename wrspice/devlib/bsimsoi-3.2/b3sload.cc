@@ -191,7 +191,7 @@ B3SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double T0=0.0, dT0_dVg, dT0_dVd, dT0_dVb, /*dT0_dVrg,*/ dT0_dT;
     double T1, dT1_dVg, dT1_dVd, dT1_dVb, dT1_dT;
     double T2, dT2_dVg, dT2_dVd, dT2_dVb, dT2_dT;
-    double T3, dT3_dVg, dT3_dVd, dT3_dVb, dT3_dT;
+    double T3, dT3_dVg, dT3_dVd, dT3_dVb, dT3_dT=0.0;
     double T4, /*dT4_dVg,*/ dT4_dVd, dT4_dVb, dT4_dT;
     double T5, dT5_dVg, dT5_dVd, dT5_dVb, dT5_dT;
     double T6, dT6_dVg, dT6_dVd, dT6_dVb, dT6_dT;

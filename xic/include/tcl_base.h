@@ -64,5 +64,8 @@ public:
     virtual bool hasTk() = 0;
 };
 
+// Increment this when the interface changes.
+#define TCL_IF_ID "2"
+
 #endif
 

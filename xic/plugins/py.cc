@@ -117,7 +117,7 @@ cPy *cPy::ptr = 0;
 
 cPy::cPy()
 {
-    idstr = OSNAME " " XIC_RELEASE_TAG;
+    idstr = OSNAME " " XIC_RELEASE_TAG " " PY_IF_ID;
     level = 0;
     exit_status = 0;
     ptr = this;

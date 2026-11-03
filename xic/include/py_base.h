@@ -62,5 +62,8 @@ public:
             SIscriptFunc) = 0;
 };
 
+// Increment this when the interface changes.
+#define PY_IF_ID "2"
+
 #endif
 

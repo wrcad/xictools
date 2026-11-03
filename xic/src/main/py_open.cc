@@ -88,8 +88,8 @@ namespace {
         }
 
         char idstr[64];
-        snprintf(idstr, sizeof(idstr), "%s %s", XM()->OSname(),
-            XIC_RELEASE_TAG);
+        snprintf(idstr, sizeof(idstr), "%s %s %s", XM()->OSname(),
+            XIC_RELEASE_TAG, PY_IF_ID);
         cPy_base *py = (*pyptr)();
         if (py && (!py->id_string() || strcmp(idstr, py->id_string()))) {
             if (verbose) {

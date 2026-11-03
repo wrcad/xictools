@@ -49,7 +49,6 @@
 #ifdef HAVE_TK
 #include <tk.h>
 #endif
-#include <setjmp.h>
 #include <sys/stat.h>
 #include <dlfcn.h>
 
@@ -61,7 +60,6 @@
 #include "tcl_base.h"
 #include "reltag.h"
 
-//XXX Get rid of setjmp/longjmp, use exceptions.
 
 class cTclTk *TclTk();
 
@@ -100,13 +98,9 @@ private:
                 in_main = false;
         }
 
-    void tcl_Exit(int status)
+    [[noreturn]] void tcl_Exit(int status)
         {
-printf("longjmp\n");
-            if (status != 0) {
-                // uh-oh, fatal error
-                longjmp(jbuf, status);
-            }
+            throw status;
         }
 
     void tk_MainLoop()
@@ -114,8 +108,7 @@ printf("longjmp\n");
             in_main = true;
         }
 
-
-    static int app_init(const char*, Tcl_Interp*);
+    static int app_init(const char*, Tcl_Interp**);
 
     static int exit_proc(ClientData, Tcl_Interp*, int, char**);
     static int xic_proc(ClientData, Tcl_Interp*, int, char**);
@@ -127,25 +120,10 @@ printf("longjmp\n");
     const char *idstr;
     bool in_main;
     bool has_tk;
-    jmp_buf jbuf;
 
     static fTcl_DeleteInterp tcl_delete_interp;
     static cTclTk *ptr;
 };
-
-
-namespace {
-    // Calling this instead of setjmp directly eliminates the GCC
-    // warning about variables "clobbered by longjmp or vfork".
-    // Explained nicely at
-    // "http://stackoverflow.com/questions/2024933/"
-    // "warning-might-be-clobbered-on-c-object-with-setjmp"
-    //
-    inline int wrap_setjmp(jmp_buf bf)
-    {
-        return (setjmp(bf));
-    }
-}
 
 
 extern "C" {
@@ -184,7 +162,8 @@ extern "C" {
     //
     int Tcl_AppInit(Tcl_Interp *interp)
     {
-        return (TclTk()->app_init(0, interp));
+        Tcl_Interp *ti = interp;
+        return (TclTk()->app_init(0, &ti));
     }
 
 
@@ -193,8 +172,6 @@ extern "C" {
     //
     void Tcl_Exit(int status)
     {
-printf("xxxxxxit\n");
-fflush(stdout);
         TclTk()->tcl_Exit(status);
     }
 
@@ -217,7 +194,7 @@ cTclTk::cTclTk()
 {
     interp_exiting = 0;
     functions = 0;
-    idstr = OSNAME " " XIC_RELEASE_TAG;
+    idstr = OSNAME " " XIC_RELEASE_TAG " " TCL_IF_ID;
     in_main = false;
 #ifdef HAVE_TK
     has_tk = true;
@@ -275,49 +252,45 @@ cTclTk::run(const char *s, bool is_tk)
 {
     Errs()->init_error();
 
+    Tcl_Interp *interp = 0;
     try {
-        if (!wrap_setjmp(jbuf)) {
-            if (!is_tk) {
-                SI()->PushLexprCx();
-                app_init(s, 0);
-                SI()->PopLexprCx();
-            }
-            /*
-            else {
-#ifdef HAVE_TK
-                SI()->PushLexprCx();
-                Tcl_Interp *interp = Tcl_CreateInterp();
-                if (!wrap_setjmp(jbuf)) {
-                    app_init(s);
-                    // Tk_MainEx(argc, argv, app_init, interp);
-
-                    while (Tk_GetNumMainWindows() > 0) {
-                        if (wrap_setjmp(jbuf))
-                            break;
-                        while (Tcl_DoOneEvent(TCL_DONT_WAIT)) ;
-                        if (interp_exiting == interp) {
-                            interp_exiting = 0;
-                            break;
-                        }
-                        if (SIparse()->ifCheckInterrupt())
-                            break;
-                    }
-                }
-                Tcl_DeleteInterp(interp);
-                SI()->PopLexprCx();
-#else
-                free_args(argv);
-                Errs()->add_error("Tk is not available.");
-                return (false);
-#endif
-            }
-            */
+        if (!is_tk) {
+            SI()->PushLexprCx();
+            app_init(s, &interp);
+            Tcl_DeleteInterp(interp);
+            SI()->PopLexprCx();
         }
-printf("y2\n");
+        else {
+#ifdef HAVE_TK
+            SI()->PushLexprCx();
+            app_init(s, &interp);
+            while (Tk_GetNumMainWindows() > 0) {
+                while (Tcl_DoOneEvent(TCL_DONT_WAIT)) ;
+                if (interp_exiting == interp) {
+                    interp_exiting = 0;
+                    break;
+                }
+                if (SIparse()->ifCheckInterrupt())
+                    break;
+            }
+            Tcl_DeleteInterp(interp);
+            SI()->PopLexprCx();
+#else
+            Errs()->add_error("Tk is not available.");
+#endif
+        }
         return (!Errs()->has_error());
     }
+    catch (int status) {
+        Errs()->add_error("Exit called with status %d.\n", status);
+        Tcl_DeleteInterp(interp);
+        SI()->PopLexprCx();
+        return (true);
+    }
     catch (...) {
-        Errs()->add_error("Caught an exception...");
+        Errs()->add_error("Caught an unexpected exception, resetting.\n");
+        Tcl_DeleteInterp(interp);
+        SI()->PopLexprCx();
         return (false);
     }
 }
@@ -329,20 +302,33 @@ bool
 cTclTk::runString(const char *prmstr, const char *cmds)
 {
     Errs()->init_error();
-    if (!wrap_setjmp(jbuf)) {
-        SI()->PushLexprCx();
-        Tcl_Interp *interp = Tcl_CreateInterp();
+    SI()->PushLexprCx();
+    Tcl_Interp *interp = Tcl_CreateInterp();
+    int ret = TCL_OK;
+    try {
         Tcl_AppInit(interp);
-        int ret = TCL_OK;
         if (prmstr)
             ret = Tcl_Eval(interp, prmstr);
         if (ret == TCL_OK)
             ret = Tcl_Eval(interp, cmds);
-        if (ret == TCL_ERROR)
-            Errs()->add_error(Tcl_GetStringResult(interp));
+    }
+    catch (int status) {
+        if (status != 0)
+	    Errs()->add_error("Exit called with status %d.\n", status);
         Tcl_DeleteInterp(interp);
         SI()->PopLexprCx();
+        return (true);
     }
+    catch (...) {
+        Errs()->add_error("Caught an unexpected exception, resetting.\n");
+        Tcl_DeleteInterp(interp);
+        SI()->PopLexprCx();
+        return (false);
+    }
+    if (ret == TCL_ERROR)
+        Errs()->add_error(Tcl_GetStringResult(interp));
+    Tcl_DeleteInterp(interp);
+    SI()->PopLexprCx();
     return (!Errs()->has_error());
 }
 
@@ -434,17 +420,26 @@ namespace {
                 }
                 else {
                     v[i].type = TYP_STRING;
-                    char *stmp = av[i];
-                    if (*stmp == '"')
-                        stmp++;
-                    stmp = lstring::copy(stmp);
-                    v[i].content.string = stmp;
-                    if (*av[i] == '"') {
-                        stmp += strlen(stmp) - 1;
-                        if (*stmp == '"')
-                            *stmp = 0;
+                    const char *sval = 0;
+                    char c0 = av[i][0];
+                    if (c0 == '"' || c0 == '{')
+                        sval = av[i]+1;
+                    else {
+                        sval = Tcl_GetVar(interp, av[i], 0);
+                        if (!sval)
+                            sval = av[i];
                     }
-                    v[i].flags |= VF_ORIGINAL;
+                    if (sval) {
+                        char *stmp = lstring::copy(sval);
+                        v[i].content.string = stmp;
+                        if (c0 == '"' || c0 == '{') {
+                            stmp += strlen(stmp) - 1;
+                            if ((c0 == '"' && *stmp == '"') ||
+                                    (c0 == '{' && *stmp == '}'))
+                                *stmp = 0;
+                        }
+                        v[i].flags |= VF_ORIGINAL;
+                    }
                 }
             }
         }
@@ -483,6 +478,28 @@ namespace {
                 }
                 else {
                     v[i].type = TYP_STRING;
+                    const char *sval = 0;
+                    char c0 = s[0];
+                    if (c0 == '"' || c0 == '{')
+                        sval = s+1;
+                    else {
+                        sval = Tcl_GetVar(interp, s, 0);
+                        if (!sval)
+                            sval = s;
+                    }
+                    if (sval) {
+                        char *stmp = lstring::copy(sval);
+                        v[i].content.string = stmp;
+                        if (c0 == '"' || c0 == '{') {
+                            stmp += strlen(stmp) - 1;
+                            if ((c0 == '"' && *stmp == '"') ||
+                                    (c0 == '{' && *stmp == '}'))
+                                *stmp = 0;
+                        }
+                        v[i].flags |= VF_ORIGINAL;
+                    }
+/*
+                    v[i].type = TYP_STRING;
                     v[i].content.string = lstring::copy(*s == '"' ? s+1 : s);
                     if (*s == '"') {
                         char *stmp = v[i].content.string;
@@ -491,6 +508,7 @@ namespace {
                             *stmp = 0;
                     }
                     v[i].flags |= VF_ORIGINAL;
+*/
                 }
             }
         }
@@ -752,8 +770,8 @@ namespace {
             delete [] tok;
         }
         if (argc) {
-            *argc = new char[8];
-            snprintf(*argc, 8, "%d", cnt);
+            *argc = new char[16];
+            snprintf(*argc, 16, "%d", cnt);
         }
         return (rptr);
     }
@@ -763,9 +781,16 @@ namespace {
 // Static Function.
 //
 int
-cTclTk::app_init(const char *cmd, Tcl_Interp *rp)
+cTclTk::app_init(const char *cmd, Tcl_Interp **rp)
 {
-    Tcl_Interp *interp = rp ? rp : Tcl_CreateInterp(); 
+    Tcl_Interp *interp;
+    if (rp && *rp)
+        interp = *rp;
+    else {
+        interp = Tcl_CreateInterp();
+        if (rp)
+            *rp = interp;
+    }
     if (interp == nullptr) {
         Errs()->add_error("Failed to create Tcl interpreter.");
         return (TCL_ERROR);
@@ -793,19 +818,11 @@ cTclTk::app_init(const char *cmd, Tcl_Interp *rp)
     }
 #endif
 
-printf("x0\n");
-printf("x1\n");
-printf("x2\n");
-
-    // Call tcl_CreateCommand for application-specific commands, if
-    // they weren't already created by the init procedures called above.
-
     Tcl_CreateCommand(interp, "exit", (Tcl_CmdProc*)exit_proc, 0, 0);
     Tcl_CreateCommand(interp, "xic", (Tcl_CmdProc*)xic_proc, 0, 0);
 #ifdef HAVE_TK
     Tcl_CreateCommand(interp, "xwin", (Tcl_CmdProc*)xwin_proc, 0, 0);
 #endif
-printf("x3\n");
 
     // The Xic imports are "object commands" that take Tcl_Obj
     // arguments instead of old-fashioned char* arguments.  This
@@ -818,7 +835,6 @@ printf("x3\n");
             0, 0);
     }
 
-printf("x4\n");
     // Specify a user-specific startup file to invoke if the
     // application is run interactively.  Typically the startup
     // file is "~/.apprc" where "app" is the name of the
@@ -826,7 +842,6 @@ printf("x4\n");
     // startup file will be run under any conditions.
 
     Tcl_SetVar(interp, "Tcl_rcFileName", "~/.xic-wishrc", TCL_GLOBAL_ONLY);
-printf("x5\n");
 
     if (cmd) {
         char *argc, *argv0;

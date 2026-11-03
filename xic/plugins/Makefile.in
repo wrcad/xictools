@@ -29,8 +29,7 @@ BASE = ../../xt_base
 INCLUDE = -I../include -I$(BASE)/include
 
 HFILES =
-CCFILES = \
-  py.cc tcltk.cc
+CCFILES = py.cc tcltk.cc
 CCOBJS = $(CCFILES:.cc=.o)
 
 TARGETS : py.$(SOEXT)  tcltk.$(SOEXT) tcl.$(SOEXT)

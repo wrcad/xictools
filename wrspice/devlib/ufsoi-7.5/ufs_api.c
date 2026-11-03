@@ -611,7 +611,7 @@ double Vlddd, Vgbwk, Dumchg, /*Yfb,*/ Xminf, Am, Bm, Cm, Xkm, Vxmf, Xminb;
 double Aam, Vxmb, Qmobf, Qmobb, Uef, Ueb, Efs, Efd, Ebs, Ebd, Xftl, Xbtl;
 double Lf, Lb, Iwkf, Iwkb, Iwk, Xemwk, Xem=0.0, Xk11, Xk22/*, Vgbwk11, Vgbwk22*/;
 double Ich=0.0, /*Vo1,*/ Xbfact, Mobred, Mobref, Xbmu, Lcfac, Lefac, Ist, Arg3;
-double Ist1=0.0, Ist2, Mobref1=0.0, Mobref2, Mobred1, Mobred2, Xbmu1, Xbmu2;
+double Ist1=0.0, Ist2=0.0, Mobref1=0.0, Mobref2=0.0, Mobred1=0.0, Mobred2=0.0, Xbmu1, Xbmu2;
 double DeltaVth=0.0, Gst, Gwk, R2, R3, Vref, Xs, Psf_bjt/*, Dellwk1, Dellwk2*/;          /* 4.5 */
 double Vbseff, Vbdeff, /*Ds, Dd,*/ Xlbjt=0.0, Xleff, Feff, Psb_bjt, Xaf, Exp_af=0.0;
 double Xbf=0.0, Exp_bf=0.0, Ph_f, P0f, Tf1, Tf2, Xintegf, Xintegr, Ph_r, Tr1, Tr2;
@@ -619,27 +619,27 @@ double Ibjtf, Ibjtr, Ibjt, Itot, Eslope, Igts0, Igtd0, Irs0, Ird0, Dell_f;
 double Irs1, Ird1, Rgtd, Rgts, Igt_g, Igt_r, Igt, Ir_g, Ir_r, Ir, Igi=0.0;
 double Xecf, Xemf, Betap, Te_ch, Mult_ch, Mult_dep, Mult_qnr, Mult_drn;
 double Mult, Mult_wk, Te_ldd, Ldep, Tempdell, Xstart, Xend, Te_dep/*, Dellwk*/;      /* 4.5 */
-double Lcf, Power, CoxWL, Qd, Qn, Qgf, Qby, Xingvsf, Psiwk/*, Xvbys, Psieff*/;
+double Lcf, Power, CoxWL, Qd, Qn=0.0, Qgf, Qby, Xingvsf, Psiwk/*, Xvbys, Psieff*/;
 double Xco0, Xco1, Xco2, Vgfsacc, /*Vgfseff,*/ Qgfwk1, Qgfwk2=0.0;
 double Vgfvt, /*Qnqsh,*/ Qdqsh, Covf, Vdsx, Arg2, Dnmgf, Args;
 double Qdeta, Xp, Argu, Argz, Xfactd, Tzm1, Qcfle, Qns, Zfact, Qgfst1;
 double Qgfst2=0.0, Qdst1, Qdst2=0.0, Qnst1, Qnst2=0.0, Cst, Cwk, Vp, Qp;
 double X3a, X3b, X3c, Xarg, t, Qnqff, Qnqfb, Qddep, Qsdep, /*Qterm,*/ Qterms;
-double Qtermd, Qnd, Qps, Qpd, Vgfst, Xemst, Iwk1, Iwk2, Qds, Qgb, Ad, As;
+double Qtermd, Qnd, Qps, Qpd, Vgfst, Xemst, Iwk1=0.0, Iwk2=0.0, Qds, Qgb, Ad, As;
 double Vldd[40], Vd[40];
-double Vdsx1=0.0, Vdsx2, Lefac1=0.0, Lefac2, Vdseff, Xchk;				 /* 4.41 */
+double Vdsx1=0.0, Vdsx2=0.0, Lefac1=0.0, Lefac2, Vdseff, Xchk;				 /* 4.41 */
 double /*Egbgn,*/ Wkfgd, Vfbgd, Vgdx, Esd, Vgdt;                                     /* 4.41 */
 double Igidl, Rmass, h, Eg, Qacc, Qinv;                                          /* 4.5 */
-double Pdj, Psj, /*E_db, hnt, htoc, Itun,*/ Ueffwk, Ueffst, Qs, Qnwk1;               /* 4.5 */
-double Qnwk2, Lewk, Igtb0, Ueffwk1, Ueffst1, Xemst1, Xemwk1, Qsst1;              /* 4.5 */
-double Vgfstp, Alphap, Psigf1=0.0, Alphap1=0.0, Psigf2, Alphap2, Psigf, Vo1p;            /* 4.5pd */
+double Pdj, Psj, /*E_db, hnt, htoc, Itun,*/ Ueffwk, Ueffst, Qs, Qnwk1=0.0;               /* 4.5 */
+double Qnwk2=0.0, Lewk, Igtb0, Ueffwk1=0.0, Ueffst1, Xemst1, Xemwk1=0.0, Qsst1;              /* 4.5 */
+double Vgfstp, Alphap, Psigf1=0.0, Alphap1=0.0, Psigf2=0.0, Alphap2=0.0, Psigf, Vo1p;            /* 4.5pd */
 double Qmobff, Qmobfb, Qmobbf, Qmobbb, Exf, Exb, Mult_st1=0.0, Mult_st2=0.0;             /* 4.5 */
-double Xchk2, Xchk3, Xchk4, Xchk5, Xchk10, Xx, Vdseff1, Lewk1, Qsst2=0.0;	         /* 5.0 */
+double Xchk2, Xchk3, Xchk4, Xchk5, Xchk10, Xx, Vdseff1, Lewk1=0.0, Qsst2=0.0;	         /* 5.0 */
 double Ess, DelEg, PhibQM, XninQM, Vths1, Pst1, Psb1, Qbeff1, Qst1;              /* 4.5qm */
 double Pst_bjt, Vths_bjt, D_bjt, /*Vths0,*/ PstOld, Es1, Es2, DelEg1, DelEg2;        /* 4.5qm */
-double DumchgQM1, DumchgQM2, Vthsx, /*Vthsxo,*/ Vthsx1=0.0, Vthsx2, Pst2, Qst2;          /* 4.5qm */
+double DumchgQM1, DumchgQM2, Vthsx, /*Vthsxo,*/ Vthsx1=0.0, Vthsx2=0.0, Pst2, Qst2;          /* 4.5qm */
 double ExfLim, QmT1, QmT2, QmT3, QmT4, QmT5, Coeffz, VthsOld, Pst0, DVgfs;       /* 4.5F */
-double T, Exo, Ueffo, Sich, Lc, Sis1, Sis2=0.0, Siw1, Siw2, Ich0, Le;                /* 5.0 */
+double T, Exo, Ueffo, Sich, Lc, Sis1, Sis2=0.0, Siw1=0.0, Siw2=0.0, Ich0, Le;                /* 5.0 */
 int I, J, K, IB, Region, ICONT, JFlg;                                            /* 4.5F */
 double Vo, Vsat, Vth, Vds_dif, Vds_eff, Uo, /*Toxf,*/ Theta, Vtfa, Vgba;             /* 5.0vo */
 double Xalpha, Ldf, Ld, Xec, Xex, Tau_w, /*Phib, Qb,*/ Qcbycox;
@@ -2451,15 +2451,15 @@ nfdEvalMod(double Vds, double Vgfs, double Vbs, double Vgbs,
 //struct ufsDebugData *pDebug;
 double Xnin, Xnin2, Arg, Sqrt_s, Sqrt_d, Dell=0.0, Dshare, Qshare, Delqc;
 double Vtm, Qc, Qc0, Qcs, Vths, Vthw, Vfbf, /*Vfbb,*/ Qbeff, Leff, Weff;
-double Vbi, Ldd, /*Lds,*/ Vdss, Qc1, Qc2, Psis, Psiw, Coeffa, Mobfac1;
+double Vbi, Ldd, /*Lds,*/ Vdss, Qc1=0.0, Qc2=0.0, Psis, Psiw, Coeffa, Mobfac1;
 double T0, T1, T2, T3, T4, T5=0.0, T6, T7, T8, T9, T10, T11, T12, T13/*, T14*/;
-double Vdsat, Vbs_bjt, Argbjts, Vbd_bjt, Argbjtd, Qp_b;
+double Vdsat=0.0, Vbs_bjt, Argbjts, Vbd_bjt, Argbjtd, Qp_b;
 double Exf00, Exf0, Exf, Sinh1, Cosh1, Dsh, Ddh, Qinv, Qacc/*, Qcle*/;               /* 4.5 */
 double /*Gbwk, Mobrefwk,*/ Vgstart, Vgfso, /*PsiwOld,*/ PsisOld;                         /* 4.5F */
 double Coxf, Coxb, Cb, Tshare, Vlddd, /*Dumchg, Veff,*/ Xleff_b;
-double Xem, WL, WLe, CoxWLe, Le, Lefac1, Lefac2, Qsst1, Qsst2=0.0;
+double Xem, WL, WLe, CoxWLe, Le, Lefac1=0.0, Lefac2=0.0, Qsst1, Qsst2=0.0;
 double Ich, Xbfact, Mobred, Mobref, Xbmu, Lcfac, Lefac, Ist;
-double Ist1, Ist2, Mobref1, Mobref2, Mobred1, Mobred2, Xbmu1, Xbmu2;
+double Ist1=0.0, Ist2=0.0, Mobref1=0.0, Mobref2=0.0, Mobred1=0.0, Mobred2=0.0, Xbmu1, Xbmu2;
 double DeltaVth, Gst, Gwk, R2, R3, Vref, Xs, Psf_bjt;
 double Vbseffh, Vbseffl, Vbdeffh, Vbdeffl;                                       /* 4.5 */
 double Ds, Dd, Xleff_t, Feff, Xaf=0.0, Exp_af=0.0, Qddb, Qdsb;
@@ -2470,35 +2470,35 @@ double Xecf, Xemf, Betap, Te_ch, Mult_ch, Mult_dep, Mult_qnr, Mult_drn;
 double Mult, Mult_st1=0.0, Mult_wk=0.0, Te_ldd, Ldep, Tempdell, Xstart, Xend, Te_dep;    /* 4.5 */
 double /*Lcf,*/ Power, CoxWL, Qd, Qn=0.0, Qgf, Qby, /*Xingvsf,*/ Psiwk=0.0;
 //double Xco0, Xco1, Xco2, Vgfsacc, Vgfseff, Qgfwk;
-double /*Qnqsh, Qdqsh,*/ Covf, Vdsx, /*Arg2,*/ Dnmgf, Args;
+double /*Qnqsh, Qdqsh,*/ Covf, Vdsx=0.0, /*Arg2,*/ Dnmgf, Args;
 double Qdeta, Xp, Argu, Argz, Xfactd, Tzm1, Qcfle, Qns, Zfact, Qgfst1;
 double Qgfst2=0.0, Qdst1, Qdst2=0.0, Qnst1, Qnst2=0.0, Cst, Cwk, Vp, Qp;
 double X3a, X3b, X3c, Xarg, t, Qnqff, Qnqfb, Qddep, Qsdep, /*Qterm,*/ Qterms;
 double Qtermd, Qnd, Qps, Qpd, /*Iwkpr,*/ Qds, Qgb, Ad, As;
 double Xlbjt_t=0.0, Xlbjt_b=0.0, Qs, Ibjtf_b, Ibjtr_b, Ibjt_b;
 double Vldd[40], Vd[40];
-double Vdsx1, Vdsx2, Vdseff, Xchk;						 /* 4.41 */
+double Vdsx1=0.0, Vdsx2=0.0, Vdseff, Xchk;						 /* 4.41 */
 double Egbgn, Wkfgd, Vfbgd, Vgdx, Esd, Vgdt;                                     /* 4.41 */
 double Igidl, Rmass, h, Eg;                                                      /* 4.41 */
-double Pdj, Psj, /*Qnwk,*/ Ueff, Qc01, Qc02, Igtb0, Eo;                              /* 4.5 */
-double T11pd, Alphap, Psigf1, Alphap1, Psigf2, Alphap2, Psigf;                   /* 4.5pd */
+double Pdj, Psj, /*Qnwk,*/ Ueff, Qc01=0.0, Qc02=0.0, Igtb0, Eo;                              /* 4.5 */
+double T11pd, Alphap, Psigf1=0.0, Alphap1=0.0, Psigf2=0.0, Alphap2=0.0, Psigf;                   /* 4.5pd */
 double toc, Btrev, E_dbm, /*E_dbo,*/ E_sbm, /*E_sbo,*/ Ituns, Itund;                     /* 4.5 */
-double Mult_st2=0.0, Qnwk1, Qnwk2, Psiwk1, Psiwk2, Mobrefwk1=0.0, Qgfwk1, Qgfwk2;        /* 4.5F */
+double Mult_st2=0.0, Qnwk1=0.0, Qnwk2=0.0, Psiwk1=0.0, Psiwk2=0.0, Mobrefwk1=0.0, Qgfwk1, Qgfwk2;        /* 4.5F */
 double /*VthsOld,*/ Ess, DelEg, PhibQM, XniFac, XniFac2, Coeffz, Psis_str, Psis_bjt; /* 4.5F */
 double DelEgQM, DelEgEx, QinvEx, NinvEx, NvlyEx;                                 /* 7.0Y */
-double Vths_bjt, Esw, Psis1, Psis2, QmT00, QmT0, QmT1, QmT2, QmT3, QmT4, Exf02;  /* 4.5F */
+double Vths_bjt, Esw, Psis1=0.0, Psis2=0.0, QmT00, QmT0, QmT1, QmT2, QmT3, QmT4, Exf02;  /* 4.5F */
 double Coeffz0, ExfLim, QmT5, DVgfs, Iwk1=0.0, Iwk2=0.0;                                 /* 4.5F */
 double Exf_Vthw, Coeffb, Coeffb2, Coeffb3, QmT2_Vths, Exf02_Vths;                /* 7.0Y */
-double Dvtol, dVbd_bjtds, dPsigfgfs, Dicefac, CbbyCof;                           /* 5.0 */
-double dVbdeffhds, dVdsxds, dLefacds, Gm1, Go1, Giigfs, Giids;                   /* 5.0 */
-double dPsigfgfs1, dVdsxds1, dLefacds1, Go2, Gichds, Gow1=0.0, Gmw1=0.0, Gow2=0.0;           /* 5.0 */
+double Dvtol, dVbd_bjtds, dPsigfgfs=0.0, Dicefac, CbbyCof;                           /* 5.0 */
+double dVbdeffhds, dVdsxds, dLefacds, Gm1=0.0, Go1=0.0, Giigfs, Giids;                   /* 5.0 */
+double dPsigfgfs1=0.0, dVdsxds1=0.0, dLefacds1=0.0, Go2=0.0, Gichds, Gow1=0.0, Gmw1=0.0, Gow2=0.0;           /* 5.0 */
 double dGst, dGwk, Gom, Gichgfs, Gibjtds, Gidds, Gigtds;                         /* 5.0 */
 double Gitundds, Gigidlgfs, Gigidlds, Gigigfs=0.0, Gigids=0.0;                           /* 5.0 */
 double Gigbds, Gigbgfs, Vdsx_gb, Vgfsx_gb, Igb_ds, Igb_gfs;                      /* 7.0Y */
 double dMult_chds, dMult_drnds, dMultds, dMult_wk=0.0, dMult_st1=0.0, Gidgfs;            /* 5.0 */
 double CobWL, Cgfgfswk1, Cgfdswk1, Cgfgfs, Cgfds, Cdds, Csds/*, Cddsst*/;            /* 5.0 */
 double Cdgfs, Csgfs, Cdgbs, Cbgfs, Cgbds, Csgbs, Cgbgbs, Cbds, Cbgbs;            /* 5.0 */
-double T, Exo, Ueffo, Sich, Lc, Sis1, Sis2, Siw1=0.0, Siw2=0.0, Ich0;                    /* 5.0 */
+double T, Exo, Ueffo, Sich, Lc, Sis1=0.0, Sis2=0.0, Siw1=0.0, Siw2=0.0, Ich0;                    /* 5.0 */
 double Ibjt_t, dSqrt_dds, dArgbjtdds, dVbdefflds;                                /* 5.0 */
 double dDdhds, dDdds, dDdhdsi, dDddsi, dQpdds, Qpd_t, Qpd_b,dQpd_bds;            /* 5.0 */
 int I, /*J,*/ K, IB, Region, ICONT, Irfldd;                                          /* 4.5F */
