@@ -77,7 +77,7 @@ namespace {
     // Dynamically open our helper lib, and return a pointer to the
     // OA interface if successful.
     //
-    cOA_base *find_oa(char **lname)
+    cOA_base *find_oa()
     {
         bool verbose = (getenv("XIC_PLUGIN_DBG") != 0);
 #ifdef HAVE_SECURE
@@ -120,19 +120,15 @@ namespace {
 
         void *handle = dlopen(lstr.string(), RTLD_LAZY | RTLD_GLOBAL);
         if (!handle) {
-            if (verbose) {
+            if (verbose)
                 printf("dlopen failed: %s\n", dlerror());
-                printf("plugin: %s\n", lstr.string());
-            }
             return (0);
         }
 
         cOA_base*(*oaptr)() = (cOA_base*(*)())dlsym(handle, "oaptr");
         if (!oaptr) {
-            if (verbose) {
+            if (verbose)
                 printf("dlsym failed: %s\n", dlerror());
-                printf("plugin: %s\n", lstr.string());
-            }
             return (0);
         }
 
@@ -145,17 +141,14 @@ namespace {
                 printf ("OpenAccess plug-in version mismatch:\n"
                     "Xic is \"%s\", plug-in is \"%s\"\n", idstr,
                     oa->id_string() ? oa->id_string() : "");
-                printf("plugin: %s\n", lstr.string());
             }
-            return (0);
+            oa = 0;
         }
         if (!oa) {
             if (verbose)
                 printf ("oa interface returned null pointer\n");
             return (0);
         }
-        if (lname)
-            *lname = lstring::copy(lstring::strip_path(lstr.string()));
         return (oa);
     }
 #endif
@@ -227,8 +220,7 @@ cOAif::cOAif()
     instancePtr = this;
 
 #ifdef HAVE_OA
-    char *lname = 0;
-    oaPtr = find_oa(&lname);
+    oaPtr = find_oa();
     if (oaPtr) {
         has_oa = true;
         setup_bang_cmds();
@@ -241,7 +233,6 @@ cOAif::cOAif()
         HLP()->define("OpenAccess");
 #endif
         printf("Using OpenAccess %s.\n", oaPtr->version());
-        delete [] lname;
         return;
     }
 #endif

@@ -119,7 +119,7 @@ namespace {
         if (TclIf()->run(s))
             PL()->ShowPrompt("Tcl/Tk done.");
         else {
-            Log()->ErrorLog("Tck/Tk Interface", Errs()->get_error());
+            Log()->ErrorLog("Tcl/Tk Interface", Errs()->get_error());
             PL()->ShowPrompt("Tcl/Tk execution failed.");
         }
     }
@@ -144,7 +144,7 @@ cMain::openTclTk()
                 tcl->version(true));
         }
         else
-            printf("Using Tcl (%s).\n", tcl->version(false));
+            printf("Using Tcl %s.\n", tcl->version(false));
     }
 #endif
     return (new cTclIf(tcl));

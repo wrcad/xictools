@@ -102,6 +102,7 @@ private:
 
     void tcl_Exit(int status)
         {
+printf("longjmp\n");
             if (status != 0) {
                 // uh-oh, fatal error
                 longjmp(jbuf, status);
@@ -114,7 +115,7 @@ private:
         }
 
 
-    static int app_init(Tcl_Interp*);
+    static int app_init(const char*, Tcl_Interp*);
 
     static int exit_proc(ClientData, Tcl_Interp*, int, char**);
     static int xic_proc(ClientData, Tcl_Interp*, int, char**);
@@ -183,7 +184,7 @@ extern "C" {
     //
     int Tcl_AppInit(Tcl_Interp *interp)
     {
-        return (TclTk()->app_init(interp));
+        return (TclTk()->app_init(0, interp));
     }
 
 
@@ -192,6 +193,8 @@ extern "C" {
     //
     void Tcl_Exit(int status)
     {
+printf("xxxxxxit\n");
+fflush(stdout);
         TclTk()->tcl_Exit(status);
     }
 
@@ -262,44 +265,6 @@ cTclTk::init(SymTab *tab)
 }
 
 
-namespace {
-    char **mk_args(const char *s, int *nargs)
-    {
-        *nargs = 0;
-        stringlist *s0 = new stringlist(lstring::copy(XM()->Program()), 0);
-        stringlist *se = s0;
-        int cnt = 1;
-        char *tok;
-        while ((tok = lstring::getqtok(&s)) != 0) {
-            se->next = new stringlist(tok, 0);
-            se = se->next;
-            cnt++;
-        }
-        char **a = new char*[cnt+1];
-        cnt = 0;
-        while (s0) {
-            a[cnt] = s0->string;
-            s0->string = 0;
-            stringlist *sx = s0;
-            s0 = s0->next;
-            delete sx;
-            cnt++;
-        }
-        a[cnt] = 0;
-        *nargs = cnt;
-        return (a);
-    }
-
-
-    void free_args(char **a)
-    {
-        for (int i = 0; a[i]; i++)
-            delete [] a[i];
-        delete [] a;
-    }
-}
-
-
 // Public function to run a tcl/tk script.  The argument contains
 // the script name plus any arguments.  For tk, this blocks, while
 // servicing events, until the last window is destroyed.  Tor tcl, the
@@ -309,45 +274,52 @@ bool
 cTclTk::run(const char *s, bool is_tk)
 {
     Errs()->init_error();
-    int argc;
-    char **argv = mk_args(s, &argc);
 
-    if (!wrap_setjmp(jbuf)) {
-        if (!is_tk) {
-            SI()->PushLexprCx();
-            Tcl_Main(argc, argv, app_init);
-            SI()->PopLexprCx();
-        }
-        else {
-#ifdef HAVE_TK
-            SI()->PushLexprCx();
-            Tcl_Interp *interp = Tcl_CreateInterp();
-            if (!wrap_setjmp(jbuf)) {
-                Tk_MainEx(argc, argv, app_init, interp);
-
-                while (Tk_GetNumMainWindows() > 0) {
-                    if (wrap_setjmp(jbuf))
-                        break;
-                    while (Tcl_DoOneEvent(TCL_DONT_WAIT)) ;
-                    if (interp_exiting == interp) {
-                        interp_exiting = 0;
-                        break;
-                    }
-                    if (SIparse()->ifCheckInterrupt())
-                        break;
-                }
+    try {
+        if (!wrap_setjmp(jbuf)) {
+            if (!is_tk) {
+                SI()->PushLexprCx();
+                app_init(s, 0);
+                SI()->PopLexprCx();
             }
-            Tcl_DeleteInterp(interp);
-            SI()->PopLexprCx();
+            /*
+            else {
+#ifdef HAVE_TK
+                SI()->PushLexprCx();
+                Tcl_Interp *interp = Tcl_CreateInterp();
+                if (!wrap_setjmp(jbuf)) {
+                    app_init(s);
+                    // Tk_MainEx(argc, argv, app_init, interp);
+
+                    while (Tk_GetNumMainWindows() > 0) {
+                        if (wrap_setjmp(jbuf))
+                            break;
+                        while (Tcl_DoOneEvent(TCL_DONT_WAIT)) ;
+                        if (interp_exiting == interp) {
+                            interp_exiting = 0;
+                            break;
+                        }
+                        if (SIparse()->ifCheckInterrupt())
+                            break;
+                    }
+                }
+                Tcl_DeleteInterp(interp);
+                SI()->PopLexprCx();
 #else
-            free_args(argv);
-            Errs()->add_error("Tk is not available.");
-            return (false);
+                free_args(argv);
+                Errs()->add_error("Tk is not available.");
+                return (false);
 #endif
+            }
+            */
         }
+printf("y2\n");
+        return (!Errs()->has_error());
     }
-    free_args(argv);
-    return (!Errs()->has_error());
+    catch (...) {
+        Errs()->add_error("Caught an exception...");
+        return (false);
+    }
 }
 
 
@@ -748,39 +720,82 @@ cTclTk::xwin_proc(ClientData, Tcl_Interp *interp, int argc, char **argv)
     return (TCL_OK);
 }
 #endif
-// End of cTclTc functions.
+
+
+namespace {
+    // Return pointer into s where the second token would start,
+    // and (as arguments) the size of the argument list (tokens in
+    // returned string) and a copy of the first token in s.  The
+    // latter two need to be freed.
+    //
+    const char *mk_args(const char *s, char **argc, char **argv0)
+    {
+        if (argc)
+            *argc = 0;
+        if (argv0)
+            *argv0 = 0;
+        if (!s)
+            return (0);
+        int cnt = 0;
+        const char *rptr = 0;
+        char *tok = lstring::getqtok(&s);
+        if (tok) {
+            // This is not part of the TCL argument count.
+            rptr = s;
+            if (argv0)
+                *argv0 = tok;
+            else
+                delete [] tok;
+        }
+        while ((tok = lstring::getqtok(&s)) != 0) {
+            cnt++;
+            delete [] tok;
+        }
+        if (argc) {
+            *argc = new char[8];
+            snprintf(*argc, 8, "%d", cnt);
+        }
+        return (rptr);
+    }
+}
 
 
 // Static Function.
 //
 int
-cTclTk::app_init(Tcl_Interp *interp)
+cTclTk::app_init(const char *cmd, Tcl_Interp *rp)
 {
+    Tcl_Interp *interp = rp ? rp : Tcl_CreateInterp(); 
+    if (interp == nullptr) {
+        Errs()->add_error("Failed to create Tcl interpreter.");
+        return (TCL_ERROR);
+    }
     if (!tcl_delete_interp) {
         tcl_delete_interp = (fTcl_DeleteInterp)dlsym(RTLD_NEXT,
             "Tcl_DeleteInterp");
         if (!tcl_delete_interp) {
-            fprintf(stderr, "%s\n", dlerror());
+            Errs()->add_error("Symbol not found: %s\n", dlerror());
             return (TCL_ERROR);
         }
     }
-    if (Tcl_Init(interp) == TCL_ERROR)
+    if (Tcl_Init(interp) != TCL_OK) {
+        Errs()->add_error("Tcl initialization failed: %s\n",
+            Tcl_GetStringResult(interp));
+        Tcl_DeleteInterp(interp);
         return (TCL_ERROR);
-
-    // Call the init procedures for included packages.  Each call should
-    // look like this:
-    //
-    // if (Mod_Init(interp) == TCL_ERROR) {
-    //     return TCL_ERROR;
-    // }
-    //
-    // where "Mod" is the name of the module.
-    //
+    }
 #ifdef HAVE_TK
-    if (Tk_Init(interp) == TCL_ERROR)
+    if (Tk_Init(interp) != TCL_OK) {
+        Errs()->add_error("Tk initialization failed: %s\n",
+            Tcl_GetStringResult(interp));
+        Tcl_DeleteInterp(interp);
         return (TCL_ERROR);
-    Tcl_StaticPackage(interp, "Tk", Tk_Init, Tk_SafeInit);
+    }
 #endif
+
+printf("x0\n");
+printf("x1\n");
+printf("x2\n");
 
     // Call tcl_CreateCommand for application-specific commands, if
     // they weren't already created by the init procedures called above.
@@ -790,6 +805,7 @@ cTclTk::app_init(Tcl_Interp *interp)
 #ifdef HAVE_TK
     Tcl_CreateCommand(interp, "xwin", (Tcl_CmdProc*)xwin_proc, 0, 0);
 #endif
+printf("x3\n");
 
     // The Xic imports are "object commands" that take Tcl_Obj
     // arguments instead of old-fashioned char* arguments.  This
@@ -797,10 +813,12 @@ cTclTk::app_init(Tcl_Interp *interp)
     //
     SymTabGen gen(TclTk()->functions);
     SymTabEnt *ent;
-    while ((ent = gen.next()) != 0)
+    while ((ent = gen.next()) != 0) {
         Tcl_CreateObjCommand(interp, ent->stTag, (Tcl_ObjCmdProc*)ent->stData,
             0, 0);
+    }
 
+printf("x4\n");
     // Specify a user-specific startup file to invoke if the
     // application is run interactively.  Typically the startup
     // file is "~/.apprc" where "app" is the name of the
@@ -808,6 +826,31 @@ cTclTk::app_init(Tcl_Interp *interp)
     // startup file will be run under any conditions.
 
     Tcl_SetVar(interp, "Tcl_rcFileName", "~/.xic-wishrc", TCL_GLOBAL_ONLY);
+printf("x5\n");
+
+    if (cmd) {
+        char *argc, *argv0;
+        const char *argv = mk_args(cmd, &argc, &argv0);
+
+        // argc is a string giving the argument count.
+        Tcl_SetVar(interp, "argc", argc, TCL_GLOBAL_ONLY);
+
+        // argv is a list of arguments.
+        Tcl_SetVar(interp, "argv", argv, TCL_GLOBAL_ONLY);
+
+        // argv0 is the name of the script.
+        Tcl_SetVar(interp, "argv0", argv0, TCL_GLOBAL_ONLY);
+
+        int result = Tcl_EvalFile(interp, argv0);
+        if (result != TCL_OK) {
+            Errs()->add_error("Script error: %s\n",
+                Tcl_GetStringResult(interp));
+        }
+
+        delete [] argc;
+        delete [] argv0;
+    }
+
     return (TCL_OK);
 }
 
@@ -822,6 +865,7 @@ cTclTk::exit_proc(ClientData, Tcl_Interp *interp, int, char**)
     TclTk()->interp_exiting = interp;
     return (TCL_OK);
 }
+// End of cTclTk functions.
 
 #endif  // HAVE_TCL
 

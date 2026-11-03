@@ -6142,7 +6142,7 @@ misc1_funcs::IFhasTk(Variable *res, Variable*, void*)
 // (int) RunTcl(command [, arg, ...])
 //
 // Pass a command string to the Tcl interpreter for evaluation.  The
-// first argument is a path to a Tck/Tk script.  If both Tcl and Tk
+// first argument is a path to a Tcl/Tk script.  If both Tcl and Tk
 // are available, the script file must have a .tcl or .tk extension. 
 // If only Tcl is available, there is no extension requirement, but
 // the file should contain only Tcl commands.  A Tcl script is

@@ -49,10 +49,31 @@
 #include <dlfcn.h>
 
 namespace {
-    cPy_base *open_py(const char *path)
+    // Dynamically open our helper lib, and return a pointer to the
+    // interface if successful.
+    //
+    cPy_base *find_py()
     {
         bool verbose = (getenv("XIC_PLUGIN_DBG") != 0);
-        void *handle = dlopen(path, RTLD_LAZY | RTLD_GLOBAL);
+        sLstr lstr;
+        const char *pyso_path = getenv("XIC_PYSO_PATH");
+        if (pyso_path) {
+            // User told us where to look.
+            lstr.add(pyso_path);
+        }
+        else {
+            // Look in the plugins directory.
+            lstr.add(XM()->ProgramRoot());
+            lstr.add("/plugins/");
+            lstr.add("py.");
+#ifdef __APPLE__
+            lstr.add("dylib");
+#else
+            lstr.add("so");
+#endif
+        }
+
+        void *handle = dlopen(lstr.string(), RTLD_LAZY | RTLD_GLOBAL);
         if (!handle) {
             if (verbose)
                 printf("dlopen failed: %s\n", dlerror());
@@ -87,44 +108,6 @@ namespace {
     }
 
 
-    // Dynamically open our helper lib, and return a pointer to the
-    // interface if successful.
-    //
-    cPy_base *find_py(char **lname)
-    {
-        char *path = 0;
-        const char *pyso_path = getenv("XIC_PYSO_PATH");
-        if (pyso_path) {
-            // User told us where to look.
-            path = lstring::copy(pyso_path);
-        }
-        else {
-            // Look in the plugins directory.
-            sLstr lstr;
-            lstr.add(XM()->ProgramRoot());
-            lstr.add("/plugins/");
-            lstr.add("py.");
-#ifdef __APPLE__
-            lstr.add("dylib");
-#else
-            lstr.add("so");
-#endif
-            path = lstr.string_trim();    // py.so
-        }
-
-        cPy_base *py = open_py(path);
-        if (py) {
-            // found py
-            if (lname)
-                *lname = lstring::copy(lstring::strip_path(path));
-            delete [] path;
-            return (py);
-        }
-        delete [] path;
-        return (0);
-    }
-
-
     // The "bang" command to run a Python script.
     //
     void bang_py(const char *s)
@@ -147,7 +130,7 @@ cMain::openPY()
 {
     cPy_base *py = 0;
 #ifdef HAVE_PYTHON
-    py = find_py(0);
+    py = find_py();
     if (py) {
         RegisterBangCmd("py", &bang_py);
         printf("Using Python %s.\n", py->version());
