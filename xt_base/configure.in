@@ -1132,6 +1132,16 @@ elif test ${OSNAME:0:5} = "Linux"; then
             TK_LIBS="-ltk$vrs"
             echo '#define HAVE_TK 1'>> confdefs.h
         fi
+    elif test -d /usr/include/tcl; then
+        vrs=`echo 'puts $tcl_version; exit 0' | tclsh`
+        TCL_INCLUDE="-I/usr/include/tcl"
+        TCL_LIBS="-ltcl$vrs"
+        echo '#define HAVE_TCL 1'>> confdefs.h
+        if test -d /usr/include/tk; then
+            TK_INCLUDE="$X_CFLAGS -I/usr/include/tk"
+            TK_LIBS="-ltk$vrs"
+            echo '#define HAVE_TK 1'>> confdefs.h
+        fi
     fi
 fi
 
