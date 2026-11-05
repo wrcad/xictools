@@ -1,7 +1,6 @@
 dnl Configure input script for XicTools.
 dnl Process this file with autoconf to produce a configure script.
-dnl Copyright (c) Whiteley Research Inc, 2002
-dnl $Id: configure.in,v 1.233 2016/09/28 22:49:23 stevew Exp $
+dnl Copyright (c) Whiteley Research Inc, 2026
 
 dnl ***
 dnl *** Initialize
@@ -1067,21 +1066,112 @@ if test $OSNAME = "Darwin"; then
         PY_LIBS=
     fi
 
-    echo '#define HAVE_TCL 1'>> confdefs.h
-    echo '#define HAVE_TK 1'>> confdefs.h
-    if test -f /opt/local/include/tcl.h; then
-        # MacPorts tcl/tk 8.6 (recommended)
-        TCL_INCLUDE="-isystem /opt/local/include"
-        TCL_LIBS="-L/opt/local/lib -ltcl"
-        TK_INCLUDE="-isystem /opt/X11/include"
-        TK_LIBS="-ltk"
-    else
-        # Buggy deprecated Apple-supplied version.
+    # Apple Tcl/Tk support.  Uncomment exactly one of these.
+    #tsel="mp90q"	# MacPorts Tcl/Tk 9.0 for quartz
+    #tsel="mp90x"	# MacPorts Tcl/Tk 9.0 for X11
+    #tsel="mp90n"	# MacPorts Tcl 9.0 without Tk
+    #tsel="mp86q"	# MacPorts Tcl/Tk 8.6 for quartz
+    tsel="mp86x"	# MacPorts Tcl/Tk 8.6 for X11
+    #tsel="mp86n"	# MacPorts Tcl 8.6 without Tk
+    #tsel="df85q"	# Apple Tcl/Tk 8.5 for quartz
+    #tsel="df85n"	# Apple Tcl 8.5 without Tk
+
+    # NOTE: 11/5/2026
+    # Any version above that uses a Quartz Tk generates an exception
+    # as the first window is being created, i.e., so is unusable.  The
+    # X11 versions seem OK.
+
+    if test $tsel = mp90q; then
+        # MacPorts tcl/tk 9.0 quartz
+        if test -d /opt/local/include/tcl9; then
+            TCL_INCLUDE="-isystem /opt/local/include/tcl9"
+            TCL_LIBS="-L/opt/local/lib/tcl9 \
+  -Wl,-rpath,/opt/local/lib/tcl9 -ltcl9.0"
+            echo '#define HAVE_TCL 1'>> confdefs.h
+            if test -d /opt/local/include/tk9-quartz; then
+                TK_INCLUDE="-isystem /opt/local/include/tk9-quartz"
+                TK_LIBS="-L/opt/local/lib/tk9-quartz \
+  -Wl,-rpath,/opt/local/lib/tk9-quartz -ltcl9tk9.0"
+                echo '#define HAVE_TK 1'>> confdefs.h
+            fi
+        fi
+    elif test $tsel = mp90x; then
+        # MacPorts tcl/tk 9.0 X11
+        if test -d /opt/local/include/tcl9; then
+            TCL_INCLUDE="-isystem /opt/local/include/tcl9"
+            TCL_LIBS="-L/opt/local/lib/tcl9 \
+  -Wl,-rpath,/opt/local/lib/tcl9 -ltcl9.0"
+            echo '#define HAVE_TCL 1'>> confdefs.h
+            if test -d /opt/local/include/tk9-x11; then
+                TK_INCLUDE="-isystem /opt/local/include/tk9-x11 \
+      -isystem /opt/x11/include"
+                TK_LIBS="-L/opt/local/lib/tk9-x11 \
+  -Wl,-rpath,/opt/local/lib/tk9-x11 -ltcl9tk9.0"
+                echo '#define HAVE_TK 1'>> confdefs.h
+            fi
+        fi
+    elif test $tsel = mp90n; then
+        # MacPorts tcl 9.0 no Tk
+        if test -d /opt/local/include/tcl9; then
+            TCL_INCLUDE="-isystem /opt/local/include/tcl9"
+            TCL_LIBS="-L/opt/local/lib/tcl9 \
+  -Wl,-rpath,/opt/local/lib/tcl9 -ltcl9.0"
+            echo '#define HAVE_TCL 1'>> confdefs.h
+        fi
+
+    elif test $tsel = mp86q; then
+        # MacPorts tcl/tk 8.6 quartz
+        if test -d /opt/local/include/tcl8; then
+            TCL_INCLUDE="-isystem /opt/local/include/tcl8"
+            TCL_LIBS="-L/opt/local/lib/tcl8 \
+  -Wl,-rpath,/opt/local/lib/tk8 -ltcl8.6"
+            echo '#define HAVE_TCL 1'>> confdefs.h
+            if test -d /opt/local/include/tk8-quartz; then
+                TK_INCLUDE="-isystem /opt/local/include/tk8-quartz"
+                TK_LIBS="-L/opt/local/lib/tk8-quartz \
+  -Wl,-rpath,/opt/local/lib/tk8-X11 -ltk8.6"
+                echo '#define HAVE_TK 1'>> confdefs.h
+            fi
+        fi
+    elif test $tsel = mp86x; then
+        # MacPorts tcl/tk 8.6 X11
+        if test -d /opt/local/include/tcl8; then
+            TCL_INCLUDE="-isystem /opt/local/include/tcl8"
+            TCL_LIBS="-L/opt/local/lib/tcl8 \
+  -Wl,-rpath,/opt/local/lib/tk8 -ltcl8.6"
+            echo '#define HAVE_TCL 1'>> confdefs.h
+            if test -d /opt/local/include/tk8-x11; then
+                TK_INCLUDE="-isystem /opt/local/include/tk8-x11 \
+  -isystem /opt/x11/include"
+                TK_LIBS="-L/opt/local/lib/tk8-X11 \
+  -Wl,-rpath,/opt/local/lib/tk8-X11 -ltk8.6"
+                echo '#define HAVE_TK 1'>> confdefs.h
+            fi
+        fi
+    elif test $tsel = mp86n; then
+        # MacPorts tcl 8.6 no Tk
+        if test -d /opt/local/include/tcl8; then
+            TCL_INCLUDE="-isystem /opt/local/include/tcl8"
+            TCL_LIBS="-L/opt/local/lib/tcl8 \
+  -Wl,-rpath,/opt/local/lib/tk8 -ltcl8.6"
+            echo '#define HAVE_TCL 1'>> confdefs.h
+        fi
+
+    elif test $tsel = df85q; then
+        # Buggy deprecated Apple-supplied version with quartz Tk
         TCL_INCLUDE=
         TCL_LIBS="-ltcl"
         TK_INCLUDE="-isystem /opt/X11/include"
         TK_LIBS="-ltk"
+        echo '#define HAVE_TCL 1'>> confdefs.h
+        echo '#define HAVE_TK 1'>> confdefs.h
+    elif test $tsel = df85n; then
+        # Buggy deprecated Apple-supplied version with no Tk
+        TCL_INCLUDE=
+        TCL_LIBS="-ltcl"
+        echo '#define HAVE_TCL 1'>> confdefs.h
     fi
+
 elif test ${OSNAME:0:5} = "Linux"; then
     if test [ $with_cni == yes ]; then
         PY_INCLUDE="-I$cni_loc/linux64/3rd/Python/include/python2.6"

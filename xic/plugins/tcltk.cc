@@ -60,6 +60,14 @@
 #include "tcl_base.h"
 #include "reltag.h"
 
+extern "C" {
+    void Tcl_DeleteInterp(Tcl_Interp*);
+    int Tcl_AppInit(Tcl_Interp*);
+    void Tcl_Exit(int);
+#ifdef HAVE_TK
+    void Tk_MainLoop();
+#endif
+}
 
 class cTclTk *TclTk();
 
@@ -291,6 +299,12 @@ cTclTk::run(const char *s, bool is_tk)
         Errs()->add_error("Caught an unexpected exception, resetting.\n");
         Tcl_DeleteInterp(interp);
         SI()->PopLexprCx();
+#ifdef __APPLE__
+// Quartz Tk generates an exception when it tries to create the initial
+// window.  Uncomment this to exit the program and display a stack trace
+// when this happens.
+//        throw;
+#endif
         return (false);
     }
 }
