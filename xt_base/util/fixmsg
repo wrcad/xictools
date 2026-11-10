@@ -1,0 +1,8 @@
+#! /bin/bash
+
+# Replace the text for tag.
+
+tag=$1
+text=$2
+
+git tag $tag $tag^{} -f -m "$text"

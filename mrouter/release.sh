@@ -1,4 +1,6 @@
-#! /bin/sh
+#! /bin/bash
+
+# This can only be run from the git repository!!!
 
 # This release is in sync with qrouter-1.3.62.
 
@@ -26,7 +28,20 @@
 # for configuration and utilities.  The previoulsy existing
 # configuration script and local utilities port were discarded.
 
-version="1.2.8"
+# release.sh script for mrouter
+PRENUM="1.2"
+PRETOK="mrouter-$PRENUM"
+sequence_number="8"
 
-echo $version
+# If no argument, print the tag string with appname stripped.
+if [[ -z "$1" ]]; then
+    echo $PRENUM.$sequence_number
+    exit 0
+fi
+
+
+# See this file for documentation about the arguments to and use of
+# this script.
+dir=$(dirname "$(realpath "$0")")
+source "$dir/../xt_base/util/release-sub.sh"
 
