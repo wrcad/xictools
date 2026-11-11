@@ -152,16 +152,20 @@ else
 if [[ -n "$1" && "$1" = "-r" ]]; then
     for t in $(git tag -l); do
         st=$(git tag -l --format='%(contents)' $t | grep "@RELEASE $cur_tag@")
-        echo $st
-        exit 0
+        if [ -n "$st" ]; then
+            echo $t
+            exit 0
+        fi
     done
     exit 1
 fi
 if [[ -n "$1" && "$1" = "-lr" ]]; then
     for t in $(git tag -l); do
         st=$(git tag -l --format='%(contents)' $t | grep "@RELEASE $prev_tag@")
-        echo $st
-        exit 0
+        if [ -n "$st" ]; then
+            echo $t
+            exit 0
+        fi
     done
     exit 1
 fi

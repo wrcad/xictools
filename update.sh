@@ -1,12 +1,12 @@
 #! /bin/bash
 
-# update.sh -- A tool for managing tool and tool set releases.
+# update.sh -- A tool for managing tool and toolset releases.
 #
 # Usage:  ./update.sh [-u] [-d] [adms] [fastcap] ...
 # This can be run ONLY from within the xictools git repository.
 #
 # The keywords used as arguments must match the words below.
-# If -u is given, the most recent indicators for a release of
+# If -u is given, the most recent markers for a release of
 # the tools named will be deleted.
 # Otherwise, an indicator will be added for the tools listed
 # for a new release.  If -d is given, the steps taken will be
@@ -63,7 +63,7 @@ if [[ -n "$unupd" && "$unupd" == yes ]]; then
     # For each given tool, 1) erase the @RELEASE@ indicator in the
     # corresponding repo tag message, and 2) decrement the tool
     # sequence count.  Presently, we DO NOT commit the file changes
-    # at this point.  XXX should we commit?
+    # at this point.
     #
     # Note: one can't change old commit messages without changing all
     # the hashes which can be a huge mess.  That is why we save this
@@ -72,40 +72,22 @@ if [[ -n "$unupd" && "$unupd" == yes ]]; then
 
 for t in "${TOOLS[@]}"; do
     set -- $t
-    tool=$1
     doit=$2
-    if [[ -n "$doit" && "$doit" == 1 ]]; then
-        file=$tool/release.sh
-        tooltag=$($file -lt)
-        if [ -z "$tooltag" ]; then
-            echo "\'$file -lt\' failed, skipping."
-            continue;
+    if [[ -z "$doit" || "$doit" != "1" ]]; then
+        continue
+    fi
+    tool=$1
+    file=$tool/release.sh
+    repotag=$($file -r)
+    if [ -z "$repotag" ]; then
+        # Give up if the prev mark is not found.  May want to follow
+        # this to lower values?
+        if [ -z "$($file -lr)" ]; then
+            echo "No $tool release mark found. skipping."
+            continue
         fi
-        cid=$($file -lc)
-        if [ -z "$cid" ]; then
-            echo "\'$file -lc\' failed, skipping."
-            continue;
-        fi
-        echo "Removing $tooltag from commit tag message."
-        repotag=$($file -lr)
-        if [ -z "$repotag" ]; then
-            echo "\'$file -lr\' failed, skipping."
-            continue;
-        fi
-        tagtext=$(git tag -l --format='%(contents)' $repotag)
-        if [[ -z "$tagtext" ]]; then
-            echo "\'$file -lr\' failed, skipping."
-            continue;
-        fi
-
-        newtt=$(echo $tagtest |sed -e s/@RELEASE $tooltag@// )
-        if [[ -n "$newtt" && "$newtt" != "$tagtext" ]]; then
-            git tag $repotag $repotag^{} -f -m "$newtt"
-        fi
-        # We have removed the label from the tag text, now decrement
-        # the sequence number.
-        echo "Decrementing sequence_number in $file."
-
+        # Decrement to sequence number.
+        echo "Decrementing $tool sequence number."
         if [[ -n "$dryrun" && "$dryrun" == yes ]]; then 
             echo awk -F'"' '/^sequence_number="/ {OFS="\""; $2=$2-1} {print}' \
             '$file > $file.tmp && mv -f $file.tmp $file && chmod 755 $file'
@@ -113,9 +95,37 @@ for t in "${TOOLS[@]}"; do
             awk -F'"' '/^sequence_number="/ {OFS="\""; $2=$2-1} {print}' \
             $file > $file.tmp && mv -f $file.tmp $file && chmod 755 $file
         fi
+        repotag=$($file -r)
+    fi
+
+    tooltag=$($file -t)
+    if [ -z "$tooltag" ]; then
+        echo "\'$file -t\' failed, skipping."
+        continue;
+    fi
+    cid=$($file -lc)
+    if [ -z "$cid" ]; then
+        echo "\'$file -c\' failed, skipping."
+        continue;
+    fi
+
+    echo "Removing $tooltag from tag message."
+    tagtext=$(git tag -l --format='%(contents)' $repotag)
+    found=0
+    if [ -n "$tagtext" ]; then
+        newtt="$(echo $tagtext |\
+            sed "s/@RELEASE $tooltag@/@IGNORE $tooltag@/")"
+        if [ "$newtt" != "$tagtext" ]; then
+            git tag $repotag $repotag^{} -f -m "$newtt"
+            found=1
+        fi
+    fi
+    if [ "found" = "0" ]; then
+        echo "No $tool release tag found. skipping."
+        continue
     fi
 done
-    exit 0
+exit 0
 fi  # End of option -u.
 
 
@@ -181,10 +191,11 @@ fi
 # text a contains tokens the store the tool tags for the releases
 # to be marked here.
 
-# Cycke through the active tools.  While the tool sequence number is
+# Cycle through the active tools.  While the tool sequence number is
 # already registered for a release, increment it.  Otherwise, add the
 # tool tag to the commit message.
 commit_msg=
+tag_msg=
 for t in "${TOOLS[@]}"; do
     set -- $t
     tool=$1
@@ -206,19 +217,25 @@ for t in "${TOOLS[@]}"; do
         fi
     done
     tooltag=$($tool/release.sh -t)
-    commit_msg="$commit_msg @RELEASE $tooltag@"
+    if [ -z "$commit_msg" ]; then
+        commit_msg="Final for release: $tooltag"
+        tag_msg="@RELEASE $tooltag@"
+    else
+        commit_msg="$commit_msg, $tooltag"
+        tag_msg="$tag_msg@RELEASE $tooltag@"
+    fi
     echo "Added tag $tooltag to message."
 done
-if [[ -z "$commit_msg" ]]; then
-    commit_msg="no tool release"
+if [[ -z "$tag_msg" ]]; then
+    tag_msg="no tool release"
 fi
 
 # Check in changes.
 echo "Committing changes into devel."
 if [[ -n "$dryrun" && "$dryrun" == yes ]]; then 
-    echo git commit -a -m "$commit_msg"
+    echo git commit -a -m "$repo_tag: $commit_msg"
 else
-    git commit -a -m "$commit_msg"
+    git commit -a -m "$repo_tag: $commit_msg"
 fi
 
 # Tag the HEAD with the repo_tag string.
@@ -226,12 +243,11 @@ fi
 # possibly redundant, but the tag cuts down the number of commits we
 # have to search.  We know that $repo_tag is unused.
 #
-echo "Tagging the repo with $repo_tag, message $commit_msg"
+echo "Tagging HEAD with $repo_tag, message $tag_msg"
 if [[ -n "$dryrun" && "$dryrun" == yes ]]; then 
-    echo "git tag -a -m \"New sequence number $repo_seq, $commit_msg\" \
-$repo_tag" 
+    echo "git tag -a -m \"$tag_msg\" $repo_tag" 
 else
-    git tag -a -m "Sequence number $repo_seq, $commit_msg" $repo_tag 
+    git tag -a -m "$tag_msg" $repo_tag 
 fi
 
 # Switch to master, merge devel into master.
