@@ -1043,23 +1043,33 @@ if test $OSNAME = "Darwin"; then
     if test $pysel = mp314; then
         # Python3.14 installed in MacPorts.
         py314=/opt/local/Library/Frameworks/Python.framework/Versions/3.14
-        PY_INCLUDE="-I$py314/Headers"
-        PY_LIBS="-L$py314/lib -lpython3.14"
-        echo '#define HAVE_PYTHON 1'>> confdefs.h
+        if test -d $py314; then
+            PY_INCLUDE="-I$py314/Headers"
+            PY_LIBS="-L$py314/lib -lpython3.14"
+            echo '#define HAVE_PYTHON 1'>> confdefs.h
+        fi
     elif test $pysel = clt39; then
         # Python3.9 from Command Line Tools.
-        py39=/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9
         pyr=/Library/Developer/CommandLineTools/Library/Frameworks
-        PY_INCLUDE="-I$py39/Headers"
-        PY_LIBS="-L$py39/lib -Wl,-rpath,$pyr -lpython3.9"
-        echo '#define HAVE_PYTHON 1'>> confdefs.h
+        if test -n "$pyr"; then
+            py39=$pyr/Python3.framework/Versions/3.9
+            if test -d "$py39"; then
+                PY_INCLUDE="-I$py39/Headers"
+                PY_LIBS="-L$py39/lib -Wl,-rpath,$pyr -lpython3.9"
+                echo '#define HAVE_PYTHON 1'>> confdefs.h
+            fi
+        fi
     elif test $pysel = xc39; then
         # Python 3.9 from Xcode.
-        py39=/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9
         pyr=/Applications/Xcode.app/Contents/Developer/Library/Frameworks
-        PY_INCLUDE="-I$py39/Headers"
-        PY_LIBS="-L$py39/lib -Wl,-rpath,$pyr -lpython3.9"
-        echo '#define HAVE_PYTHON 1'>> confdefs.h
+        if test -n "$pyr"; then
+            py39=$pyr/Python3.framework/Versions/3.9
+            if test -d "$py39"; then
+                PY_INCLUDE="-I$py39/Headers"
+                PY_LIBS="-L$py39/lib -Wl,-rpath,$pyr -lpython3.9"
+                echo '#define HAVE_PYTHON 1'>> confdefs.h
+            fi
+        fi
     else
         # No python support.
         PY_INCLUDE=

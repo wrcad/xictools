@@ -14,7 +14,7 @@ distclean:
 
 # Create/update the reltag.h file.
 reltag:
-	@version=`../release.sh wrspice`; \
+	@version=$$(../release.sh); \
 	if [ -z "$$version" ]; then \
 	    echo "Can't find version!"; \
 	    exit; \

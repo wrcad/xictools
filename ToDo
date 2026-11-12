@@ -15,3 +15,11 @@ If the other tools change, the tool release number will increment.
 Upload new packages for the tool.
 Do NOT merge into master.
 Do NOT tag xictools.
+
+Xic
+add a NoShowContextInPush variable to allow user to change the default
+on to off.  Turn this off when expanding symbolic cells, as the context will
+generally be garbage in this case.
+
+WRspice, already done?
+Add a way to create CSV files.
