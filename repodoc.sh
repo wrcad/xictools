@@ -37,13 +37,6 @@ for a in $*; do
     break  # just one arg
 done
 
-# Get the repository sequence number.
-repo_seq=$(./release.sh -s)
-if [ -z "$repo_seq" ]; then
-    echo "Error getting sequence number for repo."
-    exit 1
-fi
-
 if [ -n "$tool" ]; then
     prev_cid=$(./$tool/release.sh -c)
     prev_tag=$(./$tool/release.sh -r)
@@ -58,10 +51,6 @@ else
         prev_cid=$(./release.sh -lc)
         prev_tag=$(./release.sh -lt)
     fi
-fi
-if [ -z "$prev_cid" ]; then
-    echo "Error getting commit id for last release."
-    exit 1
 fi
 
 IFS="."
