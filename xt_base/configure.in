@@ -62,13 +62,13 @@ fi
 
 DATE=`/bin/date`
 if test -d ../wrspice; then
-    WRSPICE_VERSION=`../wrspice/release.sh wrspice`
-    DEVLIB_VERSION=`../wrspice/release.sh devlib`
+    WRSPICE_VERSION=`../wrspice/release.sh`
+    DEVLIB_VERSION=`../wrspice/release.sh`
     DEVLIB_SHARED_FILE=libwrsdev.so.2.0
     DEVLIB_STATIC_FILE=libwrsdev.a
 fi
 if test -d ../xic; then
-    XIC_VERSION=`../xic/release.sh xic`
+    XIC_VERSION=`../xic/release.sh`
 fi
 TOOLROOT=$toolroot
 AC_SUBST(prefix)
