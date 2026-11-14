@@ -246,6 +246,18 @@ namespace {
             return;
         (*old_print_handler)(string);
     }
+
+    // Filter out the message
+    //   Gtk-Message: <time>: Failed to load module "pk-gtk-module"
+    void log_handler(const char *domain, GLogLevelFlags level,
+        const char *mesg, void *user_data)
+    {
+
+        if (mesg != nullptr &&
+                strstr(mesg, "Failed to load module \"pk-gtk-module\""))
+            return;
+        g_log_default_handler(domain, level, mesg, user_data);
+    }
 }
 
 
@@ -292,6 +304,9 @@ GTKdev::Init(int *argc, char **argv)
         }
     }
 #endif
+
+    // Filter out nonsense.
+    g_log_set_handler("Gtk", G_LOG_LEVEL_MESSAGE, log_handler, nullptr);
 
     if (!gtk_init_check(argc, &argv)) {
 #ifdef GDK_WINDOWING_X11
