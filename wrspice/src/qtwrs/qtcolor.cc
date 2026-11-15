@@ -147,9 +147,11 @@ namespace {
     {
         if (!x_dsp) {
             x_dsp = XOpenDisplay(nullptr);
-            if (!x_dsp) {
+            if (!x_dsp)
                 x_dsp = (Display*)(intptr_t)-1;
-                GRpkg::self()->ErrPrintf(ET_ERROR, "X system not available.\n");
+            else {
+                // This will print in the banner on startup.
+                printf("X-Window system is available.\n");
             }
         }
         if (x_dsp == (Display*)(intptr_t)-1)
