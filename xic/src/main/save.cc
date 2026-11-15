@@ -533,24 +533,33 @@ cMain::SaveCellAs(const char *name, bool silent_errors)
             if (FIO()->IsSupportedArchiveFormat(ft))
                 snprintf(buf, sizeof(buf), prmsg_h, FIO()->TypeName(ft));
             else if (ft == Fnative) {
-                if (token2 && !strcmp(token2, "*"))
+                if (token1 && !strcmp(token1, "*")) {
+                    if (token2 && !strcmp(token2, "*")) {
+                        // This is a syntax error, silently fix.
+                        delete [] token2;
+                        token2 = 0;
+                    }
+                    snprintf(buf, sizeof(buf), prmsg_h, FIO()->TypeName(ft));
+                }
+                else if (token2 && !strcmp(token2, "*"))
                     snprintf(buf, sizeof(buf), prmsg_h, FIO()->TypeName(ft));
                 else
                     snprintf(buf, sizeof(buf), prmsg_c, FIO()->TypeName(ft));
             }
             else if (ft == Foa) {
-                const char *t1 = token1;
-                const char *t2 = token2;
-                if (!t1)
-                    t1 = "";
-                else if (t1[0] == '*' && t1[1] == 0) {
-                    t2 = t1;
-                    t1 = "";
+                if (token1 && !strcmp(token1, "*")) {
+                    if (token2 && !strcmp(token2, "*")) {
+                        // This is a syntax error, silently fix.
+                        delete [] token2;
+                        token2 = 0;
+                    }
+                    const char *s = CDvdb()->getVariable(VA_OaDefLibrary);
+                    snprintf(buf, sizeof(buf), prmsg_hoa, s);
                 }
-                if (t2 && !strcmp(t2, "*"))
-                    snprintf(buf, sizeof(buf), prmsg_hoa, t1);
+                else if (token2 && !strcmp(token2, "*"))
+                    snprintf(buf, sizeof(buf), prmsg_hoa, token1);
                 else
-                    snprintf(buf, sizeof(buf), prmsg_coa, t1);
+                    snprintf(buf, sizeof(buf), prmsg_coa, token1);
             }
             else {
                 // Can't get here.
